@@ -18,6 +18,7 @@ sys.path.insert(0, os.path.join(ROOT, "pipeline_v3"))  # common
 
 from run_diff import run_diff, CXX          # noqa: E402
 from authored import ITEMS                  # noqa: E402
+from concepts import augment, family_of     # noqa: E402
 import common                               # noqa: E402
 
 
@@ -60,9 +61,10 @@ def build(src_items, out_name):
         except Exception as e:
             concepts, lc = [0] * len(common.PROPS), {}
             print("     [warn] annotate loi: %s" % str(e)[:80])
+        concepts, lc = augment(it["func_vuln"], concepts, lc)   # va deref don `*ptr` bo sot
         d = dict(it)
         d["concepts"], d["lines_concept"] = concepts, lc
-        d["family_pred"] = common.predict_family({"func": it["func_vuln"], "lines_concept": lc})
+        d["family_pred"] = family_of(it["func_vuln"], lc)       # family chuan hon (bench-local)
         good.append(d)
 
     with open(out_path, "w") as f:

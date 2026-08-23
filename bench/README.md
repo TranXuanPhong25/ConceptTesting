@@ -42,8 +42,9 @@ GOLD=bench/items/gold_juliet.jsonl BENCH_CACHE=bench/juliet_cache.jsonl .venv/bi
 |---|---|
 | `authored.py` | 27 case tự soạn (vuln/fixed/ref_test/expect) |
 | `run_diff.py` | harness vi-phân: assemble + compile_run (ASAN+UBSan) + run_diff |
-| `build_items.py` | tự kiểm oracle + annotate concept → `items/gold.jsonl` |
-| `prompts.py` | prompt blind/concept (tái dùng `pipeline_v3/common.py`, không leak `func_fixed`) |
+| `concepts.py` | augmenter (`*ptr`→ptr_deref) + `family_of` (oob cần buffer thật) bench-local |
+| `build_items.py` | tự kiểm oracle + annotate + augment concept → `items/gold.jsonl` |
+| `prompts.py` | prompt blind/concept (không leak `func_fixed`); `prompt_key` = hash prompt → đổi prompt tự invalidate cache |
 | `gen.py` | sinh test qua Groq → `bench_cache.jsonl` |
 | `score.py` | bảng TP/FP/DISCRIM + per-family + negative control |
 

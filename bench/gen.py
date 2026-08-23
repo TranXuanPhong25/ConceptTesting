@@ -11,8 +11,8 @@ import os, sys, json, time
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(ROOT, "pipeline_v3"))
-import common          # noqa: E402
-from prompts import BUILD  # noqa: E402
+import common                        # noqa: E402
+from prompts import BUILD, prompt_key  # noqa: E402
 
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_RPM   = int(os.environ.get("GROQ_RPM", "30"))
@@ -25,7 +25,7 @@ if not KEY:
 
 
 def _key(item, cond):
-    return common.cache_key(GROQ_MODEL, cond, item["id"] + "::" + item["func_vuln"])
+    return prompt_key(GROQ_MODEL, cond, item)
 
 
 _cache = {}

@@ -7,8 +7,8 @@ Chay:  .venv/bin/python bench/diagnose.py            (bang)
 import os, sys, json
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(ROOT, "pipeline_v3"))
-import common
 from run_diff import run_diff, extract_code
+from prompts import prompt_key
 
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GOLD = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold.jsonl"))
@@ -20,7 +20,7 @@ for l in open(CACHE):
         o = json.loads(l); cache[o["key"]] = o["target"]
     except Exception:
         pass
-def key(it, c): return common.cache_key(GROQ_MODEL, c, it["id"] + "::" + it["func_vuln"])
+def key(it, c): return prompt_key(GROQ_MODEL, c, it)
 items = [json.loads(l) for l in open(GOLD)]
 
 if len(sys.argv) > 1:

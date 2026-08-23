@@ -8,7 +8,7 @@ KHONG dinh nghia lai -> test link duoc voi CA func_vuln lan func_fixed.
 Concept dung `family_pred` (heuristic tu concept, khong dung nhan CWE) va concept_lines: khong leak.
 Generator CHI thay func_vuln + prelude (khai bao), KHONG BAO GIO thay func_fixed.
 """
-import os, sys
+import os, sys, hashlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "pipeline_v3"))
@@ -46,3 +46,10 @@ def build_bench_concept(item):
 
 
 BUILD = {"bench_blind": build_bench_blind, "bench_concept": build_bench_concept}
+
+
+def prompt_key(model, cond, item):
+    """Cache key = hash CUA PROMPT that -> doi prompt (vd family_pred thay) TU dong invalidate."""
+    m = BUILD[cond](item)
+    blob = "::".join([model, cond, item["id"], m[0]["content"], m[1]["content"]])
+    return hashlib.sha1(blob.encode()).hexdigest()

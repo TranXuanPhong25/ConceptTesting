@@ -15,8 +15,8 @@ import os, sys, json, collections
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(ROOT, "pipeline_v3"))
-import common                       # noqa: E402
 from run_diff import run_diff, CXX  # noqa: E402
+from prompts import prompt_key      # noqa: E402
 
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GOLD  = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold.jsonl"))
@@ -25,7 +25,7 @@ CONDS = ["bench_blind", "bench_concept"]
 
 
 def _key(item, cond):
-    return common.cache_key(GROQ_MODEL, cond, item["id"] + "::" + item["func_vuln"])
+    return prompt_key(GROQ_MODEL, cond, item)
 
 
 def load_cache():
