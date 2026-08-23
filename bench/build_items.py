@@ -39,18 +39,20 @@ def check(item):
     return ok, r
 
 
-def main():
+def build(src_items, out_name):
+    """Self-check + annotate -> ghi bench/items/<out_name>. Tra (good, bad). Dung chung
+    cho seed (authored) va Juliet (juliet_extract)."""
     if not CXX:
         raise SystemExit("Khong co compiler (cc/gcc/clang).")
     os.chdir(ROOT)                          # annotator dung duong dan tuong doi ConceptCoder/...
     annotate = load_annotator()
-    out_path = os.path.join(ROOT, "bench", "items", "gold.jsonl")
+    out_path = os.path.join(ROOT, "bench", "items", out_name)
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 
     good, bad = [], []
-    for it in ITEMS:
+    for it in src_items:
         ok, r = check(it)
-        print("  [%s] %-14s %s" % ("OK " if ok else "FAIL", it["id"], "" if ok else r))
+        print("  [%s] %-30s %s" % ("OK " if ok else "FAIL", it["id"], "" if ok else r))
         if not ok:
             bad.append(it["id"]); continue
         try:
@@ -66,9 +68,14 @@ def main():
     with open(out_path, "w") as f:
         for d in good:
             f.write(json.dumps(d) + "\n")
-    print("\nGold: %d/%d OK -> %s" % (len(good), len(ITEMS), out_path))
+    print("\n%s: %d/%d OK -> %s" % (out_name, len(good), len(src_items), out_path))
     if bad:
         print("FAIL (sua truoc khi dung): %s" % ", ".join(bad))
+    return good, bad
+
+
+def main():
+    good, _ = build(ITEMS, "gold.jsonl")
     print("family_pred:", dict(collections.Counter(d["family_pred"] for d in good)))
     print("\n%-14s %-12s %s" % ("id", "gold", "pred (concept signal)"))
     for d in good:

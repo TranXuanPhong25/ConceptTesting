@@ -19,7 +19,7 @@ import common                       # noqa: E402
 from run_diff import run_diff, CXX  # noqa: E402
 
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
-GOLD  = os.path.join(ROOT, "bench", "items", "gold.jsonl")
+GOLD  = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold.jsonl"))
 CACHE = os.environ.get("BENCH_CACHE", os.path.join(ROOT, "bench", "bench_cache.jsonl"))
 CONDS = ["bench_blind", "bench_concept"]
 
