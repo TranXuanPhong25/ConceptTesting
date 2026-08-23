@@ -55,23 +55,35 @@ def extract(path):
     b = _bad_body(src)
     if not b:
         return None
+    b = re.sub(r"/\*.*?\*/", " ", b, flags=re.S)          # bo comment (chua 'data' -> nhieu regex)
+    b = re.sub(r"//[^\n]*", " ", b)
     mt = re.search(r"^\s*([A-Za-z_][\w ]*?)\s*\*\s*data\s*;", b, re.M)     # TYPE * data;
-    ms = re.search(r"(print\w*Line\s*\([^;]*\bdata\b[^;]*\))\s*;", b)      # SINK dung data
+    ms = re.search(r"(print\w*Line\s*\([^;]*?\bdata\b[^;]*?\))\s*;", b)    # SINK dung data (non-greedy)
     if not (mt and ms):
         return None
     typ, sink = mt.group(1).strip(), ms.group(1).strip()
-    if not re.search(r"\*\s*data|data\s*->", sink):     # PHAI la deref data (khong phai &data ...)
+    kind = _sinkkind(sink)                              # deref | idx | field ; None -> khong deref data
+    if not kind:
         return None
-    var = re.search(r"__([A-Za-z0-9_]+)_01\.c$", os.path.basename(path))
-    var = var.group(1) if var else "x"
-    fn = re.sub(r"\W", "_", "nd_" + var)
-    return {"id": "juliet_476_" + var, "cwe": "CWE-476", "family": "null_deref", "focal": fn,
-            "signature": "void %s(%s * data)" % (fn, typ),
+    tslug = re.sub(r"\W", "_", typ)
+    fn = "nd_%s_%s" % (tslug, kind)                     # ten theo (type, sink) -> flow-variant TRUNG focal -> dedup
+    return {"id": "juliet_476_%s_%s" % (tslug, kind), "cwe": "CWE-476", "family": "null_deref",
+            "focal": fn, "signature": "void %s(%s * data)" % (fn, typ),
             "driver_prelude": PRELUDE,
             "func_vuln":  "void %s(%s * data){ %s; }" % (fn, typ, sink),
             "func_fixed": "void %s(%s * data){ if (data != NULL) { %s; } }" % (fn, typ, sink),
             "ref_test":   "int main(void){ %s * data = NULL; %s(data); return 0; }" % (typ, fn),
-            "expect": "fires_on_vuln", "note": "Juliet CWE476 Flow-01: deref NULL data"}
+            "expect": "fires_on_vuln", "note": "Juliet CWE476: deref NULL data (%s)" % kind}
+
+
+def _sinkkind(sink):
+    if re.search(r"data\s*->", sink):
+        return "field"
+    if re.search(r"data\s*\[", sink):
+        return "idx"
+    if re.search(r"\*\s*data\b", sink):
+        return "deref"
+    return None
 
 
 def _ensure_source():
@@ -90,13 +102,16 @@ def _ensure_source():
 def main():
     if not _ensure_source():
         raise SystemExit("Khong co nguon Juliet CWE476.")
-    files = sorted(glob.glob(os.path.join(CWE476, "*_01.c")))
-    items, skip = [], []
+    files = sorted(glob.glob(os.path.join(CWE476, "*.c")))   # MOI flow-variant; dedup theo focal
+    seen, skip = {}, 0
     for f in files:
         it = extract(f)
-        (items.append(it) if it else skip.append(os.path.basename(f)))
-    print("CWE476 _01: %d file -> %d item (skip %d: %s)\n"
-          % (len(files), len(items), len(skip), ", ".join(skip) or "-"))
+        if it:
+            seen.setdefault(it["func_vuln"], it)             # flow-variant trung (type,sink) -> gop 1
+        else:
+            skip += 1
+    items = sorted(seen.values(), key=lambda d: d["id"])
+    print("CWE476: %d file -> %d item UNIQUE (khong-parse/skip %d)\n" % (len(files), len(items), skip))
     build(items, "gold_juliet.jsonl")
 
 
