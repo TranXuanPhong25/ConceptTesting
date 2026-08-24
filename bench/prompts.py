@@ -19,10 +19,14 @@ def _harness_note(item, fn):
     pre = (item.get("driver_prelude") or "").strip()
     blk = ("Khai bao DA CO SAN (struct/typedef/helper — dung tham chieu, KHONG dinh nghia lai):\n"
            "```c\n%s\n```\n" % pre) if pre else ""
-    return ("\n\n%sQUAN TRONG (harness): KHONG dinh nghia lai ham `%s` hay cac struct/helper tren "
-            "(se duoc cung cap khi bien dich). Chi viet `int main()` GOI `%s(...)` voi input DOC HAI "
-            "de kich hoat loi bo nho duoi AddressSanitizer/UBSan. Chi #include header chuan. "
-            "Tra DUY NHAT mot khoi ```c ... ```." % (blk, fn, fn))
+    return ("\n\n%sQUAN TRONG (harness — test la CHUONG TRINH C THUAN, bien dich bang "
+            "`gcc -fsanitize=address,undefined`, KHONG co gtest/CppUTest):\n"
+            "- KHONG dinh nghia lai `%s` hay cac struct/helper tren (se duoc cung cap khi bien dich).\n"
+            "- TUYET DOI KHONG dung EXPECT_DEATH/ASSERT_DEATH/TEST()/gtest/CppUTest "
+            "(se KHONG bien dich duoc voi gcc thuan).\n"
+            "- Chi viet `int main()` GOI `%s(...)` voi input DOC HAI; AddressSanitizer/UBSan TU abort "
+            "khi co loi bo nho (KHONG can macro oracle). Chi #include header chuan.\n"
+            "- Tra DUY NHAT mot khoi ```c ... ```." % (blk, fn, fn))
 
 
 def _d(item):
