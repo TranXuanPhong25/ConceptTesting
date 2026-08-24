@@ -16,6 +16,7 @@ from prompts import BUILD, prompt_key  # noqa: E402
 
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_RPM   = int(os.environ.get("GROQ_RPM", "30"))
+SAMPLES    = int(os.environ.get("SAMPLES", "1"))    # K mau/item (temperature -> khac nhau) -> giam nhieu
 CONDS      = os.environ.get("CONDS", "bench_blind,bench_concept").split(",")
 GOLD       = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold.jsonl"))
 CACHE      = os.environ.get("BENCH_CACHE", os.path.join(ROOT, "bench", "bench_cache.jsonl"))
@@ -58,17 +59,18 @@ def call(msgs):
 
 
 items = [json.loads(l) for l in open(GOLD) if l.strip()]
-print("items:", len(items), "| model:", GROQ_MODEL, "| conds:", CONDS)
+print("items:", len(items), "| model:", GROQ_MODEL, "| conds:", CONDS, "| SAMPLES:", SAMPLES)
 new = 0
 for i, it in enumerate(items):
     for cond in CONDS:
-        k = _key(it, cond)
-        if k in _cache:
-            continue
-        o = call(BUILD[cond](it))
-        if o and len(o) > 40:
-            _cache[k] = o
-            open(CACHE, "a").write(json.dumps({"key": k, "target": o}) + "\n"); new += 1
+        for s in range(SAMPLES):
+            k = _key(it, cond) + "#%d" % s
+            if k in _cache:
+                continue
+            o = call(BUILD[cond](it))       # temperature 0.3 -> moi mau khac nhau
+            if o and len(o) > 40:
+                _cache[k] = o
+                open(CACHE, "a").write(json.dumps({"key": k, "target": o}) + "\n"); new += 1
     if (i + 1) % 5 == 0:
         print("  %d/%d (moi %d, cache %d)" % (i + 1, len(items), new, len(_cache)))
 print("\nXONG. cache:", len(_cache), "| file:", CACHE)

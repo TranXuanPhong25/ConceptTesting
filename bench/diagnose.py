@@ -20,7 +20,7 @@ for l in open(CACHE):
         o = json.loads(l); cache[o["key"]] = o["target"]
     except Exception:
         pass
-def key(it, c): return prompt_key(GROQ_MODEL, c, it)
+def key(it, c): return prompt_key(GROQ_MODEL, c, it) + "#0"   # xem mau dau tien
 items = [json.loads(l) for l in open(GOLD)]
 
 if len(sys.argv) > 1:

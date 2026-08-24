@@ -23,6 +23,8 @@ GROQ_API_KEY=gsk_... .venv/bin/python bench/gen.py
 # 3) Chấm điểm executed: concept vs blind (DISCRIM, per-family, negative control)
 .venv/bin/python bench/score.py
 ```
+> **Số vững (giảm nhiễu n nhỏ):** `export SAMPLES=3` TRƯỚC khi gen+score (cùng biến cho cả 2 lệnh).
+> Mỗi item sinh K test (temperature), metric = tỉ lệ mẫu đạt → hết dao động ±9 giữa các lần.
 
 ## Phase 2 — Juliet (NIST SARD) — 14 item, 3 họ
 `juliet_extract.py` tham-số-hoá `_bad`/`goodB2G` của Juliet → `focal(TYPE*)` vuln/fixed, qua CÙNG pipeline:
