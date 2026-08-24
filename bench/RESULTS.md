@@ -1,0 +1,54 @@
+# Kết quả — Concept-guided vs Blind unit-test generation (executed, de-leaked)
+
+**Thiết lập.** Mỗi case là hàm `focal(input)` build được ở 2 bản cùng chữ ký: `func_vuln` / `func_fixed`.
+Teacher (`openai/gpt-oss-120b`) sinh test từ 2 điều kiện — **blind** (few-shot + CoT, không concept)
+và **concept** (dòng rủi ro do tree-sitter + họ nghi ngờ `family_pred` heuristic + recipe; **không** dùng
+nhãn CWE, **không** thấy `func_fixed`). Test được compile+chạy với **từng** bản dưới `gcc -fsanitize=address,undefined`.
+Chấm **executed, multi-sample K=3** (metric = tỉ lệ mẫu đạt).
+
+- **DISCRIM** = compile cả 2 ∧ **nổ trên vuln** ∧ **KHÔNG nổ trên fixed** → test định vị ĐÚNG bug (không crash bừa).
+- Không rò rỉ: concept dùng heuristic (không nhãn CWE); `func_fixed` không vào prompt; cache key = hash prompt.
+
+## Bảng 1 — Seed (27 case tự soạn, 6 họ memory-safety), K=3
+| cond | compile_v | FIRES_v | clean_fixed | **DISCRIM** |
+|---|---|---|---|---|
+| blind | 80% | 79% | 89% | **68%** |
+| **concept** | **91%** | **89%** | 89% | **79%** |
+
+DISCRIM theo họ (disc/n, TB qua 3 mẫu): oob_write 4.7→**5.0** · null_deref 0.3→**2.0** · uaf 2.0→**2.7** ·
+double_free 2.0→**2.3** · oob 2.0=2.0 · oob_read **4.0**→3.3 (blind nhỉnh).
+Negative control (sạch cả 2 = tốt): blind 1.0/5 · **concept 2.7/5** (concept ít báo động giả hơn).
+
+## Bảng 2 — Juliet Test Suite / NIST SARD (14 case thật, 3 họ), K=3
+| cond | compile_v | FIRES_v | clean_fixed | **DISCRIM** |
+|---|---|---|---|---|
+| blind | 90% | 90% | 67% | **57%** |
+| **concept** | **93%** | 83% | **86%** | **69%** |
+
+DISCRIM theo họ: null_deref 0.3→**3.7** · double_free **4.7**→4.3 · uaf **3.0**→1.7 (blind nhỉnh).
+Blind `clean_fixed` chỉ 67% = **nổ trên bản fixed 33%** (crash bừa) → DISCRIM thấp; concept kỷ luật hơn (86%).
+
+## Diễn giải
+- **Concept +11 (seed) / +12 (Juliet) điểm DISCRIM**, ổn định qua K=3 (hết dao động ±9 của 1-mẫu).
+- Lợi thế lớn nhất ở **null_deref**: blind đoán nhầm loại bug (tưởng use-after-free → truyền con trỏ đã freed →
+  nổ CẢ vuln lẫn fixed), còn concept biết "deref NULL → truyền NULL" → chỉ nổ trên vuln. Đây là giá trị cốt lõi
+  của concept-guidance: **định hướng đúng LOẠI lỗi** để sinh input phù hợp.
+- Concept cũng cải thiện **specificity** (ít false-fire trên hàm an toàn / bản fixed).
+- Điểm mềm: oob_read (seed) & uaf (Juliet) — blind nhỉnh hơn chút, biên nhỏ; và `[buf_access+ptr_deref]` không
+  buffer_alloc thì 8 concept không tách được oob_read vs null_deref (hạn chế của BỘ concept).
+
+## Giới hạn (trung thực)
+- Mức **teacher** (model mạnh) — không phải student finetune (student nhỏ bị catastrophic forgetting, ngoài phạm vi).
+- n nhỏ (seed 22 pos, Juliet 14) → tin cột **tổng DISCRIM** hơn per-family. K=3 đã giảm nhiễu.
+- Phạm vi: 6 họ memory-safety mà 8 concept phủ; `int_overflow`/`div_zero` ngoài phạm vi. Juliet: chỉ họ
+  executable-triggerable + có input DOF (CWE476/416/415); bỏ CWE690/122/124.
+
+## Tái lập
+```bash
+export SAMPLES=3
+.venv/bin/python bench/build_items.py            # gold seed (self-check 27/27)
+.venv/bin/python bench/juliet_extract.py         # gold Juliet (self-check 14/14)
+GROQ_API_KEY=... .venv/bin/python bench/gen.py && .venv/bin/python bench/score.py
+GOLD=bench/items/gold_juliet.jsonl BENCH_CACHE=bench/juliet_cache.jsonl GROQ_API_KEY=... .venv/bin/python bench/gen.py
+GOLD=bench/items/gold_juliet.jsonl BENCH_CACHE=bench/juliet_cache.jsonl .venv/bin/python bench/score.py
+```
