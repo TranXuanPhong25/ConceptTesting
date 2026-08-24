@@ -72,11 +72,15 @@ def compile_run(src, timeout=20):
 
 def assemble(item, impl_field, raw_test):
     """1 chuong trinh C: HEADER + prelude + (func_vuln|func_fixed) + test-da-lam-sach."""
+    pre = item.get("driver_prelude") or ""
     test = strip_focal_def(extract_code(raw_test), item["focal"])
+    # Bo cac dong test SAO CHEP lai prelude (typedef/stub) -> tranh loi redefinition khi prelude
+    # da duoc prepend canonical. Prompt co hien prelude nen model hay chep lai nguyen van.
+    prelines = {ln.strip() for ln in pre.split("\n") if ln.strip()}
+    test = "\n".join(l for l in test.split("\n") if l.strip() not in prelines)
     if "int main" not in test:
         test = "int main(void){\n" + test + "\nreturn 0;\n}"
-    return (HEADER + (item.get("driver_prelude") or "") + "\n"
-            + item[impl_field] + "\n\n" + test)
+    return HEADER + pre + "\n" + item[impl_field] + "\n\n" + test
 
 
 def run_diff(raw_test, item):
