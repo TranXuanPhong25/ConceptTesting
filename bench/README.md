@@ -24,7 +24,10 @@ GROQ_API_KEY=gsk_... .venv/bin/python bench/gen.py
 .venv/bin/python bench/score.py
 ```
 
-## Phase 2 — Juliet (CWE476 null-deref, Flow-01)
+## Phase 2 — Juliet (NIST SARD) — 14 item, 3 họ
+`juliet_extract.py` tham-số-hoá `_bad`/`goodB2G` của Juliet → `focal(TYPE*)` vuln/fixed, qua CÙNG pipeline:
+- **CWE476 → null_deref** (deref con trỏ NULL) · **CWE416 → uaf** (free rồi deref) · **CWE415 → double_free** (free 2 lần)
+- Bỏ: CWE690 (calloc hiếm NULL), CWE122/124 (attack hardcode, không có input DOF). Flow-variant trùng focal → dedup theo (family,type,sink).
 ```bash
 git clone --depth 1 --filter=blob:none --sparse \
     https://github.com/arichardson/juliet-test-suite-c.git vendor/juliet   # (extractor tự sparse-checkout)
