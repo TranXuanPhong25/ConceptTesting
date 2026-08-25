@@ -28,6 +28,19 @@ Negative control (sạch cả 2 = tốt): blind 1.0/5 · **concept 2.7/5** (conc
 DISCRIM theo họ: null_deref 0.3→**3.7** · double_free **4.7**→4.3 · uaf **3.0**→1.7 (blind nhỉnh).
 Blind `clean_fixed` chỉ 67% = **nổ trên bản fixed 33%** (crash bừa) → DISCRIM thấp; concept kỷ luật hơn (86%).
 
+## Bảng 3 — Execution-feedback loop (hướng 1, KHÔNG train), K=1, ROUNDS=3
+`concept_fb` = concept_1shot + oracle refine (compile/ASAN → feedback → viết lại, ≤3 vòng, giữ best).
+Đơn-mẫu (K=1) nhưng feedback đơn điệu (concept_fb ≥ concept_1shot mọi họ). Xem `feedback/`.
+
+| bộ | blind_1shot | concept_1shot | **concept_fb** |
+|---|---|---|---|
+| **Seed** (22) | 68% | 77% | **91%** (20/22) |
+| **Juliet** (14) | 57% | 64% | **79%** (11/14) |
+
+Feedback nâng concept **+14** (seed 77→91) / **+15** (Juliet 64→79); so blind là **+23 / +22**.
+Per-family: mọi họ concept_fb ≥ concept_1shot. Điểm mềm: uaf/Juliet (concept_fb 2/3 < blind 3/3, n=3).
+→ Oracle-in-the-loop là đòn bẩy lớn nhất của hướng concept, không cần finetune.
+
 ## Diễn giải
 - **Concept +11 (seed) / +12 (Juliet) điểm DISCRIM**, ổn định qua K=3 (hết dao động ±9 của 1-mẫu).
 - Lợi thế lớn nhất ở **null_deref**: blind đoán nhầm loại bug (tưởng use-after-free → truyền con trỏ đã freed →
