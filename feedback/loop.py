@@ -96,6 +96,17 @@ def _diag(test, item):
     return _crun(assemble(item, "func_vuln", test)), _crun(assemble(item, "func_fixed", test))
 
 
+def _scoreVF(v, f):
+    """3=discriminate > 2=compile+no vuln > 1=compile > 0. De giu output TOT NHAT qua cac vong."""
+    if v["compiles"] and f["compiles"] and v["fires"] and not f["fires"]:
+        return 3
+    if v["compiles"] and v["fires"]:
+        return 2
+    if v["compiles"]:
+        return 1
+    return 0
+
+
 def _feedback(v, f, fn):
     """Thong diep sua loi dua tren ket qua thuc thi. None = da discriminate (dung)."""
     if not v["compiles"]:
@@ -121,22 +132,26 @@ def gen_1shot(item, builder, tag):
     _save(k, out); return out
 
 
-def gen_feedback(item):
-    k = hashlib.sha1(("%s::fb%d::%s::%s" % (GROQ_MODEL, ROUNDS, item["id"], item["func_vuln"])).encode()).hexdigest()
+def gen_feedback(item, seed_out):
+    """concept_fb = concept_1shot (seed_out, vong 0) + refine bang feedback <=ROUNDS lan.
+    Giu output TOT NHAT -> concept_fb LUON >= concept_1shot (co lap dung dong gop feedback)."""
+    k = hashlib.sha1(("%s::fbseed%d::%s::%s" % (GROQ_MODEL, ROUNDS, item["id"], item["func_vuln"])).encode()).hexdigest()
     if k in _cache:
         return _cache[k]
     m = build_bench_concept(item)
     hist = [SystemMessage(content=m[0]["content"]), HumanMessage(content=m[1]["content"])]
-    fn = item["focal"]; out = ""
-    for rnd in range(ROUNDS):
-        out = call(hist) or ""
-        v, f = _diag(out, item)
-        if (v["compiles"] and f["compiles"] and v["fires"] and not f["fires"]) or rnd == ROUNDS - 1:
-            break                                              # discriminate hoac het luot
-        fb = _feedback(v, f, fn)
+    fn = item["focal"]; out = seed_out
+    v, f = _diag(out, item); best = (_scoreVF(v, f), out)      # vong 0 = concept_1shot
+    for _ in range(ROUNDS):
+        if best[0] == 3:
+            break                                              # da discriminate -> dung
         hist.append(AIMessage(content=out))
-        hist.append(HumanMessage(content=fb + "\n\nVIET LAI test HOAN CHINH (mot khoi ```c ... ```)."))
-    _save(k, out); return out
+        hist.append(HumanMessage(content=_feedback(v, f, fn) + "\n\nVIET LAI test HOAN CHINH (mot khoi ```c ... ```)."))
+        out = call(hist) or out
+        v, f = _diag(out, item); sc = _scoreVF(v, f)
+        if sc > best[0]:
+            best = (sc, out)
+    _save(k, best[1]); return best[1]
 
 
 def disc_of(out, item):
@@ -152,9 +167,10 @@ def main():
     fam = {c: collections.defaultdict(lambda: [0, 0]) for c in CONDS}
     print("items:", len(pos), "| model:", GROQ_MODEL, "| ROUNDS:", ROUNDS, "| gold:", os.path.basename(GOLD))
     for i, it in enumerate(pos):
+        c1 = gen_1shot(it, build_bench_concept, "bench_concept")
         outs = {"blind_1shot": gen_1shot(it, build_bench_blind, "bench_blind"),
-                "concept_1shot": gen_1shot(it, build_bench_concept, "bench_concept"),
-                "concept_fb": gen_feedback(it)}
+                "concept_1shot": c1,
+                "concept_fb": gen_feedback(it, c1)}          # feedback bat dau tu concept_1shot
         for c in CONDS:
             d = disc_of(outs[c], it)
             agg[c] += d; fam[c][it["family"]][0] += d; fam[c][it["family"]][1] += 1
