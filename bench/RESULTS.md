@@ -41,6 +41,18 @@ Feedback nâng concept **+14** (seed 77→91) / **+15** (Juliet 64→79); so bli
 Per-family: mọi họ concept_fb ≥ concept_1shot. Điểm mềm: uaf/Juliet (concept_fb 2/3 < blind 3/3, n=3).
 → Oracle-in-the-loop là đòn bẩy lớn nhất của hướng concept, không cần finetune.
 
+## Bảng 4 — Ablation: concept "giàu" (đặc-tả tấn công đầy đủ) HẠI ở teacher, K=3
+`concept2` = concept + đặc-tả tấn công viết tay (buffer/size/biến-nguy-hiểm/ràng-buộc, từ `extract_facts`).
+
+| bộ | blind | concept | **concept2** |
+|---|---|---|---|
+| **Seed** (22) | 68% | **79%** | 65% (compile 91→76%) |
+
+→ **Model mạnh (gpt-oss-120b) đã TỰ suy ra buffer/size/ràng buộc từ code.** Thêm công thức tấn công viết tay
+là **thừa**: prompt dài hơn → model over-engineer (tự chép typedef/scaffold → fail compile), vài đặc-tả chưa
+chuẩn còn misdirect. **Bài học:** concept-guidance nên NGẮN GỌN (loại bug + dòng rủi ro), KHÔNG phải recipe
+đầy đủ. Đặc-tả tường minh để dành cho **student nhỏ** (không tự infer được) khi làm finetune.
+
 ## Diễn giải
 - **Concept +11 (seed) / +12 (Juliet) điểm DISCRIM**, ổn định qua K=3 (hết dao động ±9 của 1-mẫu).
 - Lợi thế lớn nhất ở **null_deref**: blind đoán nhầm loại bug (tưởng use-after-free → truyền con trỏ đã freed →
