@@ -32,3 +32,14 @@ Resumable (cache kết quả cuối mỗi item). ~110 call (seed) / ~70 (Juliet)
 
 > Tái dùng `bench/run_diff` (oracle) + `bench/prompts` (blind/concept, không leak `func_fixed`).
 > Không finetune. Đây là trần "concept + kiểm chứng" của hướng hiện tại.
+
+## Hướng A — concept lái feedback bằng coverage (`loop_cov.py`)
+Thêm tín hiệu **concept-coverage** (gcov): test có CHẠM dòng thao tác nguy hiểm mà concept đánh dấu không?
+→ feedback cụ thể hơn: *"chưa chạm dòng `free(..)`/`*p` → lái execution tới đó"* vs *"chạm rồi nhưng input chưa đủ độc hại"*.
+So **concept_fb** (feedback thường) vs **concept_fb_cov** (có coverage) → đo coverage-steering thêm được bao nhiêu.
+```bash
+export ROUNDS=3
+.venv/bin/python feedback/loop_cov.py                                                        # seed
+GOLD=bench/items/gold_juliet.jsonl FB_CACHE=feedback/fb_juliet.jsonl .venv/bin/python feedback/loop_cov.py   # juliet
+```
+Tái dùng cache của `loop.py` cho 3 cột đầu → chỉ sinh mới `concept_fb_cov`. Cần `gcov` (macOS/Linux có sẵn).
