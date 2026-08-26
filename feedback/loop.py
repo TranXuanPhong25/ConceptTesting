@@ -20,9 +20,11 @@ import os, sys, json, time, hashlib, subprocess, tempfile, shutil, collections
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); BENCH = os.path.join(ROOT, "bench")
 sys.path.insert(0, BENCH); sys.path.insert(0, os.path.join(ROOT, "pipeline_v3"))
 import common                                                  # noqa: E402,F401
-from prompts import build_bench_blind, build_bench_concept     # noqa: E402
+from prompts import build_bench_blind, BUILD                   # noqa: E402
 from run_diff import assemble, run_diff, CXX                   # noqa: E402
 
+CONCEPT_COND = os.environ.get("CONCEPT_COND", "bench_concept")  # bench_concept | bench_concept2 (huong 2)
+_concept_builder = BUILD[CONCEPT_COND]
 ROUNDS     = int(os.environ.get("ROUNDS", "3"))
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_RPM   = int(os.environ.get("GROQ_RPM", "30"))
@@ -135,10 +137,10 @@ def gen_1shot(item, builder, tag):
 def gen_feedback(item, seed_out):
     """concept_fb = concept_1shot (seed_out, vong 0) + refine bang feedback <=ROUNDS lan.
     Giu output TOT NHAT -> concept_fb LUON >= concept_1shot (co lap dung dong gop feedback)."""
-    k = hashlib.sha1(("%s::fbseed%d::%s::%s" % (GROQ_MODEL, ROUNDS, item["id"], item["func_vuln"])).encode()).hexdigest()
+    k = hashlib.sha1(("%s::fbseed%d::%s::%s::%s" % (GROQ_MODEL, ROUNDS, CONCEPT_COND, item["id"], item["func_vuln"])).encode()).hexdigest()
     if k in _cache:
         return _cache[k]
-    m = build_bench_concept(item)
+    m = _concept_builder(item)
     hist = [SystemMessage(content=m[0]["content"]), HumanMessage(content=m[1]["content"])]
     fn = item["focal"]; out = seed_out
     v, f = _diag(out, item); best = (_scoreVF(v, f), out)      # vong 0 = concept_1shot
@@ -167,7 +169,7 @@ def main():
     fam = {c: collections.defaultdict(lambda: [0, 0]) for c in CONDS}
     print("items:", len(pos), "| model:", GROQ_MODEL, "| ROUNDS:", ROUNDS, "| gold:", os.path.basename(GOLD))
     for i, it in enumerate(pos):
-        c1 = gen_1shot(it, build_bench_concept, "bench_concept")
+        c1 = gen_1shot(it, _concept_builder, CONCEPT_COND)
         outs = {"blind_1shot": gen_1shot(it, build_bench_blind, "bench_blind"),
                 "concept_1shot": c1,
                 "concept_fb": gen_feedback(it, c1)}          # feedback bat dau tu concept_1shot

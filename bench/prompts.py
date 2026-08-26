@@ -11,8 +11,10 @@ Generator CHI thay func_vuln + prelude (khai bao), KHONG BAO GIO thay func_fixed
 import os, sys, hashlib
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(HERE, "..", "pipeline_v3"))
-import common  # noqa: E402
+import common                     # noqa: E402
+from concepts import extract_facts  # noqa: E402
 
 
 def _harness_note(item, fn):
@@ -49,7 +51,18 @@ def build_bench_concept(item):
     return msgs
 
 
-BUILD = {"bench_blind": build_bench_blind, "bench_concept": build_bench_concept}
+def build_bench_concept2(item):
+    """Huong 2 — concept GIAU: concept + DAC TA TAN CONG muc bien (buffer/size/bien-nguy-hiem/
+    rang buoc kich hoat) tu extract_facts. Van khong leak func_fixed / nhan CWE."""
+    d = _d(item); msgs = common.build_concept(d)
+    fn = common.focal(item["func_vuln"]) or item["focal"]
+    msgs[-1]["content"] += "\n\nDAC TA TAN CONG (phan tich tinh muc BIEN):\n" + extract_facts(item)
+    msgs[-1]["content"] += _harness_note(item, fn)
+    return msgs
+
+
+BUILD = {"bench_blind": build_bench_blind, "bench_concept": build_bench_concept,
+         "bench_concept2": build_bench_concept2}
 
 
 def prompt_key(model, cond, item):

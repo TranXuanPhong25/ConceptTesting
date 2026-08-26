@@ -22,7 +22,7 @@ GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GOLD  = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold.jsonl"))
 CACHE = os.environ.get("BENCH_CACHE", os.path.join(ROOT, "bench", "bench_cache.jsonl"))
 SAMPLES = int(os.environ.get("SAMPLES", "1"))
-CONDS = ["bench_blind", "bench_concept"]
+CONDS = os.environ.get("CONDS", "bench_blind,bench_concept").split(",")
 
 
 def _key(item, cond):
@@ -94,11 +94,11 @@ def main():
               % (c, a["has"], a["n"], 100 * a["cv"] / n, 100 * a["tp"] / n,
                  100 * (a["n"] - a["fp"]) / n, 100 * a["disc"] / n))
 
-    print("\n=== DISCRIM theo ho (disc/n, trung binh qua %d mau) — concept vs blind ===" % SAMPLES)
-    print("  %-13s %10s %10s" % ("family", "blind", "concept"))
+    print("\n=== DISCRIM theo ho (disc/n, trung binh qua %d mau) ===" % SAMPLES)
+    print("  %-13s " % "family" + " ".join("%14s" % c.replace("bench_", "") for c in CONDS))
     for f in sorted({x for c in CONDS for x in fam[c]}):
-        b = fam["bench_blind"][f]; co = fam["bench_concept"][f]
-        print("  %-13s %7.1f/%-2d %7.1f/%-2d" % (f, b[0], b[1], co[0], co[1]))
+        cells = ["%11.1f/%-2d" % (fam[c][f][0], fam[c][f][1]) for c in CONDS]
+        print("  %-13s " % f + " ".join(cells))
 
     print("\n=== negative controls (sach ca 2 = tot) ===")
     for c in CONDS:
