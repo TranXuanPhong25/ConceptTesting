@@ -41,6 +41,12 @@ Feedback nâng concept **+14** (seed 77→91) / **+15** (Juliet 64→79); so bli
 Per-family: mọi họ concept_fb ≥ concept_1shot. Điểm mềm: uaf/Juliet (concept_fb 2/3 < blind 3/3, n=3).
 → Oracle-in-the-loop là đòn bẩy lớn nhất của hướng concept, không cần finetune.
 
+**Hướng A — concept lái feedback bằng coverage (gcov):** `concept_fb_cov` = `concept_fb` ĐÚNG BẰNG NHAU
+(seed 91%/20-22, Juliet 86%/12-14, per-family y hệt) → **không lift**. Hàm nhỏ, một-đường-chạy → "đã chạm
+dòng nguy hiểm" gần như luôn đúng → tín hiệu coverage trùng với plain feedback. **Kết luận:** với model mạnh +
+hàm nhỏ, trần nằm ở `concept_fb`; concept giàu hơn (spec/coverage) chỉ có ý nghĩa với **hàm lớn/nhiều path
+(real-world)** hoặc **model yếu (student)** — nơi tự-infer/tự-tìm-đường-tới-sink là khó.
+
 ## Bảng 4 — Ablation: concept "giàu" (đặc-tả tấn công đầy đủ) HẠI ở teacher, K=3
 `concept2` = concept + đặc-tả tấn công viết tay (buffer/size/biến-nguy-hiểm/ràng-buộc, từ `extract_facts`).
 
