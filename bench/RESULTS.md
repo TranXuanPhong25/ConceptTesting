@@ -59,29 +59,29 @@ là **thừa**: prompt dài hơn → model over-engineer (tự chép typedef/sca
 chuẩn còn misdirect. **Bài học:** concept-guidance nên NGẮN GỌN (loại bug + dòng rủi ro), KHÔNG phải recipe
 đầy đủ. Đặc-tả tường minh để dành cho **student nhỏ** (không tự infer được) khi làm finetune.
 
-## Bảng 5 — Placebo (concept-shuffle): concept CONTENT là nhân-quả, K=1
+## Bảng 5 — Placebo (concept-shuffle): concept CONTENT là nhân-quả, **K=3** ⭐
 `concept_shuffle` = concept nhưng xáo tag rủi ro giữa các dòng + đảo family (concept-shaped, SAI nội dung).
 
-| bộ | blind | concept | concept_shuffle |
-|---|---|---|---|
-| **Seed** (22) | 77% | 73% | **32%** (McNemar concept>shuffle p=0.022 *) |
-| **Juliet** (14) | 50% | 64% | 43% |
+| bộ | blind | concept | concept_shuffle | McNemar concept>shuffle |
+|---|---|---|---|---|
+| **Seed** (22) | 70% | 77% | **33%** | **14–0, p=0.0001 (\*\*\*)** |
+| **Juliet** (14) | 48% | 71% | 38% | 6–1, p=0.125 (ns, n nhỏ) |
 
-→ Concept SAI tụt xuống **32% — THẤP HƠN cả blind**: model **thực sự dùng** nội dung concept, corrupt nó là hại.
-Chứng minh vai trò **nhân-quả** của concept content (control literature CHƯA ai làm). (concept-vs-blind ns do K=1;
-K=3 ở Bảng 1 cho +9/+7.) `placebo/run.py`.
+→ Concept SAI tụt còn **33% — THẤP HƠN cả blind (70%)**: model **thực sự dùng** nội dung concept, corrupt là hại.
+**Bằng chứng nhân-quả mạnh** (control literature CHƯA ai làm). concept-vs-blind trending (seed 6–1, Juliet 4–0)
+nhưng ns ở n=22/14 — hạn chế small-n. `placebo/run.py`.
 
-## Bảng 6 — Patch-derived concept (guidance từ diff vuln↔fixed), K=1
+## Bảng 6 — Patch-derived concept (guidance từ diff vuln↔fixed), **K=3**
 `bench_patch` = blind base + điều kiện AN TOÀN bản vá áp đặt (rút từ diff) = điều cần VI PHẠM để trigger (kiểu DIG).
 
 | bộ | blind | concept (tree-sitter) | **bench_patch** |
 |---|---|---|---|
-| **Seed** (22, dễ) | 68% | 68% | 68% (bão hoà — model tự infer) |
-| **Juliet** (14, khó/NIST) | 21% | 64% | **86%** (McNemar patch>blind p=0.0039 ***) |
+| **Seed** (22, dễ) | 61% | 76% | 59% (≈ blind; concept nhỉnh) |
+| **Juliet** (14, khó/NIST) | 36% | 71% | **74%** (patch≈concept; patch>blind 5–0, p=0.0625) |
 
-→ Đúng "guidance binds on hard targets": trên target khó, guidance càng chính xác càng thắng —
-**patch (điều kiện từ diff) > concept (tree-sitter) > blind**. Trên seed dễ thì bão hoà (như concept2/coverage).
-`patch_concept/run.py`. (patch-vs-concept cần K=3 để firm significance.)
+→ **Patch-derived ≈ tree-sitter concept — nguồn guidance thay thế TƯƠNG ĐƯƠNG, KHÔNG vượt.** Cả hai đều giúp
+trên target khó (Juliet, >> blind), đều bão hoà trên seed dễ. (Con số K=1 "patch 86 / p=0.004" là NHIỄU do blind
+rơi thấp lần đó — K=3 đã sửa.) `patch_concept/run.py`.
 
 ## Diễn giải
 - **Concept +11 (seed) / +12 (Juliet) điểm DISCRIM**, ổn định qua K=3 (hết dao động ±9 của 1-mẫu).
