@@ -59,6 +59,30 @@ là **thừa**: prompt dài hơn → model over-engineer (tự chép typedef/sca
 chuẩn còn misdirect. **Bài học:** concept-guidance nên NGẮN GỌN (loại bug + dòng rủi ro), KHÔNG phải recipe
 đầy đủ. Đặc-tả tường minh để dành cho **student nhỏ** (không tự infer được) khi làm finetune.
 
+## Bảng 5 — Placebo (concept-shuffle): concept CONTENT là nhân-quả, K=1
+`concept_shuffle` = concept nhưng xáo tag rủi ro giữa các dòng + đảo family (concept-shaped, SAI nội dung).
+
+| bộ | blind | concept | concept_shuffle |
+|---|---|---|---|
+| **Seed** (22) | 77% | 73% | **32%** (McNemar concept>shuffle p=0.022 *) |
+| **Juliet** (14) | 50% | 64% | 43% |
+
+→ Concept SAI tụt xuống **32% — THẤP HƠN cả blind**: model **thực sự dùng** nội dung concept, corrupt nó là hại.
+Chứng minh vai trò **nhân-quả** của concept content (control literature CHƯA ai làm). (concept-vs-blind ns do K=1;
+K=3 ở Bảng 1 cho +9/+7.) `placebo/run.py`.
+
+## Bảng 6 — Patch-derived concept (guidance từ diff vuln↔fixed), K=1
+`bench_patch` = blind base + điều kiện AN TOÀN bản vá áp đặt (rút từ diff) = điều cần VI PHẠM để trigger (kiểu DIG).
+
+| bộ | blind | concept (tree-sitter) | **bench_patch** |
+|---|---|---|---|
+| **Seed** (22, dễ) | 68% | 68% | 68% (bão hoà — model tự infer) |
+| **Juliet** (14, khó/NIST) | 21% | 64% | **86%** (McNemar patch>blind p=0.0039 ***) |
+
+→ Đúng "guidance binds on hard targets": trên target khó, guidance càng chính xác càng thắng —
+**patch (điều kiện từ diff) > concept (tree-sitter) > blind**. Trên seed dễ thì bão hoà (như concept2/coverage).
+`patch_concept/run.py`. (patch-vs-concept cần K=3 để firm significance.)
+
 ## Diễn giải
 - **Concept +11 (seed) / +12 (Juliet) điểm DISCRIM**, ổn định qua K=3 (hết dao động ±9 của 1-mẫu).
 - Lợi thế lớn nhất ở **null_deref**: blind đoán nhầm loại bug (tưởng use-after-free → truyền con trỏ đã freed →
