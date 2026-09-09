@@ -13,13 +13,20 @@ Chay TU REPO ROOT (sau `bash magma/setup.sh`):
 import os, sys, re, struct, zlib, tempfile, subprocess, argparse
 
 RUNONCE = "/magma/magma/runonce.sh"          # in-container path (Dockerfile: MAGMA=/magma/magma)
+HERE = os.path.dirname(os.path.abspath(__file__))
+# Ban noi limit (TIMELIMIT/MEMLIMIT) bind-mount de len fuzzers/vanilla/runonce.sh (goc 0.1s/50MB nuot trigger)
+PATCHED = os.path.join(HERE, "patched_runonce.sh")
+TIMELIMIT = os.environ.get("MAGMA_TIMELIMIT", "5s")
+MEMLIMIT_MB = os.environ.get("MAGMA_MEMLIMIT_MB", "2000")
 
 
-def _run_container(image, program, input_path, timeout=60):
+def _run_container(image, program, input_path, timeout=90):
     """docker run harness tren 1 input -> (exit_code, bug_or_None, raw). exit_code=-1 neu loi docker."""
     d = os.path.dirname(os.path.abspath(input_path)); name = os.path.basename(input_path)
-    cmd = ["docker", "run", "--rm", "--platform", "linux/amd64", "-e", "PROGRAM=%s" % program,
-           "-v", "%s:/host" % d, "--entrypoint", "bash", image, RUNONCE, "/host/%s" % name]
+    cmd = ["docker", "run", "--rm", "--platform", "linux/amd64",
+           "-e", "PROGRAM=%s" % program, "-e", "TIMELIMIT=%s" % TIMELIMIT, "-e", "MEMLIMIT_MB=%s" % MEMLIMIT_MB,
+           "-v", "%s:/host" % d, "-v", "%s:/magma/fuzzers/vanilla/runonce.sh:ro" % PATCHED,
+           "--entrypoint", "bash", image, RUNONCE, "/host/%s" % name]
     try:
         r = subprocess.run(cmd, capture_output=True, timeout=timeout)
     except subprocess.TimeoutExpired:

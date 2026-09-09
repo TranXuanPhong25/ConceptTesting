@@ -1,0 +1,21 @@
+#!/bin/bash -e
+# Ban NOI LIMIT cua fuzzers/vanilla/runonce.sh (goc: TIMELIMIT=0.1s, MEMLIMIT=50MB — qua ngat, nuot trigger).
+# Bind-mount de len /magma/fuzzers/vanilla/runonce.sh trong container (xem oracle.py). Doc env, co default.
+export TIMELIMIT="${TIMELIMIT:-5s}"
+export MEMLIMIT_MB="${MEMLIMIT_MB:-2000}"
+
+run_limited()
+{
+    ulimit -Sv $[MEMLIMIT_MB << 10];
+    ${@:1}
+    test $? -lt 128
+}
+export -f run_limited
+
+args="${ARGS/@@/"'$1'"}"
+if [ -z "$args" ]; then
+    args="'$1'"
+fi
+
+timeout -s KILL --preserve-status $TIMELIMIT bash -c \
+    "run_limited '$OUT/$PROGRAM' $args"
