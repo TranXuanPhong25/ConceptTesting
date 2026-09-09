@@ -15,6 +15,8 @@ Khác `bench/` (Juliet synthetic, LLM viết C gọi `focal`), ở đây **LLM s
 - ✅ **Milestone 0 (oracle)**: `oracle.py --selftest PNG003` → VULN `bug=PNG003`, FIXED sạch, **DISCRIM=1**
   trên CVE thật (oversized-PLTE, `png_handle_PLTE`, fault `num > max_palette_length`).
 - ✅ **Milestone 1 plumbing**: gen→render_input→oracle→score→McNemar chạy đủ (validate bằng cache giả).
+- ✅ **Scale: 100 bug real-CVE / 7 libs** — libpng7 lua4 libtiff14 libxml2 17 sqlite20 libsndfile18 openssl20
+  (family: oob48 null31 df13 uaf3). php/poppler build nặng bị kill dưới QEMU (VM RAM) — để sau nếu cần thêm.
 - ⏳ Cần `GROQ_API_KEY` để sinh test thật (blind vs concept) → điền bảng.
 
 ## Files
@@ -25,15 +27,16 @@ Khác `bench/` (Juliet synthetic, LLM viết C gọi `focal`), ở đây **LLM s
   func_vuln, concepts, family_pred}; nguồn hàm vuln lấy từ image, concept qua tree-sitter (`load_annotator`).
 - `prompts.py` — blind (chỉ "làm crash <lib>") vs concept (focal + loại bug + fault_cond + fix_hint, KHÔNG leak input).
 - `gen.py` / `score.py` — sinh qua Groq (resumable) / chấm DISCRIM + McNemar (`bench/lab.mcnemar`).
-- `items/libpng.jsonl` — 7 bug PNG (PNG001–007), 6/7 có focal chuẩn.
+- `items/*.jsonl` — 100 bug / 7 libs (gen.py & score.py tự gộp mọi file items/*.jsonl).
 
 ## Tái lập
 ```bash
 git clone --depth 1 --branch v1.2.1 https://github.com/HexHive/magma.git vendor/magma
-bash magma/setup.sh                                   # build 2 image (Docker, ~amd64/QEMU, one-time)
+T="libpng lua libtiff libxml2 sqlite3 libsndfile openssl"
+TARGETS="$T" bash magma/setup.sh                      # build vuln+fixed moi target (Docker amd64/QEMU, one-time)
 .venv/bin/python magma/oracle.py --selftest PNG003    # gate: DISCRIM=1
-.venv/bin/python magma/extract.py --target libpng     # -> items/libpng.jsonl (7 bug + concept)
-GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py
+for t in $T; do .venv/bin/python magma/extract.py --target $t; done   # -> items/*.jsonl (100 bug + concept)
+GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py          # gop het items/*.jsonl
 .venv/bin/python magma/score.py                       # bang blind vs concept + McNemar
 ```
 
@@ -43,6 +46,7 @@ GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py
 - Apple Silicon arm64: libpng build `arm/*.S`, Magma ép `-include canary.h` vào assembler → lỗi → `--platform linux/amd64` (QEMU).
 - Bảo mật: `gen.py` đọc `GROQ_API_KEY` từ env, KHÔNG hardcode.
 
-## Scale (kế hoạch)
-libtiff (TIF001–014), libxml2 (XML001–017), lua (LUA001–004) — cùng `setup.sh TARGET=...` + `extract.py --target ...`.
-Input khó one-shot → dùng feedback loop (reached/triggered) như `feedback/loop.py` (Milestone 2).
+## Scale
+Đã có **100 bug / 7 libs**. Thêm nữa: php (PHP001–016), poppler (PDF001–022) — build C/C++ nặng, dưới QEMU
+hay bị kill (VM RAM); tăng RAM Docker Desktop rồi `TARGETS="php" bash magma/setup.sh` từng cái.
+Input khó one-shot → **Milestone 2 = feedback loop** (reached/triggered → refine), nơi concept lợi thế nhất.
