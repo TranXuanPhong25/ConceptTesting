@@ -44,9 +44,32 @@ dựng input hợp lệ (95 vs 56) → **chạm hàm lỗi (17 vs 5, ×3.4)** �
 - Discordant nhỏ (8) nhưng một chiều (8–0) → p<0.01. REACHED (17 vs 5) củng cố hướng.
 - php/poppler chưa build (nặng dưới QEMU) → còn có thể mở rộng.
 
+## Bảng 3 — "concept++" ablation ladder (de-leak + reachability + concolic) ⟵ CHỜ số thật (cần key)
+Trả lời critique "concept = mách đáp án (fault_cond bê từ patch)". Thang bậc, đo TRIGGER+REACHED, McNemar liền kề:
+
+| cond | guidance | leak? |
+|---|---|---|
+| `blind` | không | — |
+| `concept` (patch) | fault_cond+fix_hint từ PATCH | **có** (baseline "đơn giản") |
+| `concept_static` (C1) | `func_vuln` source + tree-sitter sink/buffer/guard/var, tự suy | **không** (`magma/concept_static.py`) |
+| `concept_shuffle` | placebo: như static nhưng nhãn/family/var XÁO | không |
+| `concept_reach` (C1+C2) | + seed đã-chạm-sink (bootstrap) + grammar | không (`reach/taint.py`) |
+| `concept_cc` (C1+C2+C3) | + concolic quét giá trị byte 'fault' (oracle-verify) | không (`concolic/loop_cc.py`) |
+
+Giả thuyết: `concept_static ≥ blind` & `≈ concept_patch` (de-leak vẫn thắng, không cần đáp án) · `> shuffle`
+(nội dung nhân-quả) · `concept_reach > concept_static` (reachability) · `concept_cc > concept_reach` (concolic).
+**Phát hiện kỹ thuật (trung thực):** taint byte-level trên định dạng có CRC (PNG…) chỉ ra 'structure' bytes,
+KHÔNG 'fault' → concolic byte-sweep defer sang LLM-as-solver; giá trị concrete-solve ở trường số/index không-CRC
+(SQL/openssl). bootstrap reach = None cho bug không có seed reaching (đếm & báo riêng).
+
 ## Tái lập
 ```bash
 # (sau setup.sh + extract 7 targets -> items/*.jsonl = 100 bug)
-GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python magma/loop.py     # blind_fb vs concept_fb
-GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py && .venv/bin/python magma/score.py   # one-shot
+GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python magma/loop.py     # blind_fb vs concept_fb (Bảng 2)
+# Ablation de-leak/placebo (Bảng 3, phần tĩnh):
+CONDS=magma_blind,magma_concept,magma_concept_static,magma_concept_shuffle \
+  GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python magma/loop.py
+# Reachability + concolic (Bảng 3, phần động):
+GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python concolic/loop_cc.py
+GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py && .venv/bin/python magma/score.py   # one-shot (Bảng 1)
 ```
