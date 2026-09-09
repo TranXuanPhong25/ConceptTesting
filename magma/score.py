@@ -74,7 +74,7 @@ def main():
                     continue
                 rendered += 1
                 res = run_input(data, it)
-                t = 1 if (res["bug_vuln"] == it["bug_id"] or res["crash_vuln"]) else 0
+                t = res["triggered"]                         # canary dung bug muc tieu (ground-truth)
                 d = discrim(res)
                 trig += t; disc += d; any_disc = max(any_disc, d)
             k = len(smp)

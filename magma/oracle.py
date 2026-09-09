@@ -40,8 +40,16 @@ def _run_container(image, program, input_path, timeout=60):
     return (ec, bug, out)
 
 
+# CHI dem crash do LOI THAT (signal fault), KHONG dem SIGKILL(137=timeout/OOM limit) hay docker-err(125).
+_FAULT = {132, 134, 135, 136, 139}    # SIGILL/SIGABRT/SIGBUS/SIGFPE/SIGSEGV (128+sig)
+
+
+def _real_crash(ec):
+    return int(ec is not None and ec in _FAULT)
+
+
 def run_input(data, item, timeout=60):
-    """data: bytes. item co {target, program, bug_id}. Tra dict oracle vi-phan."""
+    """data: bytes. item co {target, program, bug_id}. Tin hieu ground-truth = CANARY (bug_vuln==bug)."""
     tgt, prog, bug = item["target"], item["program"], item["bug_id"]
     with tempfile.TemporaryDirectory() as d:
         p = os.path.join(d, "tc")
@@ -49,15 +57,14 @@ def run_input(data, item, timeout=60):
             f.write(data if isinstance(data, (bytes, bytearray)) else data.encode())
         ev, bv, _ = _run_container("magma-%s-vuln" % tgt, prog, p, timeout)
         ef, bf, _ = _run_container("magma-%s-fixed" % tgt, prog, p, timeout)
-    return {"bug_vuln": bv, "exit_vuln": ev, "exit_fixed": ef,
-            "crash_vuln": int(ev is not None and ev >= 128),
-            "crash_fixed": int(ef is not None and ef >= 128), "target": bug}
+    return {"bug_vuln": bv, "exit_vuln": ev, "exit_fixed": ef, "target": bug,
+            "triggered": int(bv == bug),                       # canary dung bug muc tieu (ground-truth)
+            "crash_vuln": _real_crash(ev), "crash_fixed": _real_crash(ef)}
 
 
 def discrim(res):
-    """Kich hoat DUNG bug muc tieu tren vuln, SACH tren fixed."""
-    trig = (res["bug_vuln"] == res["target"]) or res["crash_vuln"]  # canary bug HOAC abort tren vuln
-    return int(bool(trig) and res["crash_fixed"] == 0)
+    """Kich hoat DUNG bug muc tieu (canary) tren vuln & KHONG crash-that tren fixed."""
+    return int(res["triggered"] and res["crash_fixed"] == 0)
 
 
 def render_input(model_text, timeout=10, maxlen=8 << 20):
