@@ -20,31 +20,44 @@ TIMELIMIT = os.environ.get("MAGMA_TIMELIMIT", "5s")
 MEMLIMIT_MB = os.environ.get("MAGMA_MEMLIMIT_MB", "2000")
 
 
+# Chay harness qua monitor, DUMP HUMAN day du -> lay reached+triggered CUA TUNG bug (khong chi triggered).
+_CMD = ('cd "$SHARED"; cp "/host/%s" rt; '
+        '"$OUT/monitor" --fetch watch --dump human "$FUZZER/runonce.sh" "$SHARED/rt"; '
+        'echo "MAGMA_RC=$?"')
+
+
 def _run_container(image, program, input_path, timeout=90):
-    """docker run harness tren 1 input -> (exit_code, bug_or_None, raw). exit_code=-1 neu loi docker."""
+    """docker run -> (exit_code, human_dump). human_dump co dong 'BUGID reached R triggered T'."""
     d = os.path.dirname(os.path.abspath(input_path)); name = os.path.basename(input_path)
     cmd = ["docker", "run", "--rm", "--platform", "linux/amd64",
            "-e", "PROGRAM=%s" % program, "-e", "TIMELIMIT=%s" % TIMELIMIT, "-e", "MEMLIMIT_MB=%s" % MEMLIMIT_MB,
            "-v", "%s:/host" % d, "-v", "%s:/magma/fuzzers/vanilla/runonce.sh:ro" % PATCHED,
-           "--entrypoint", "bash", image, RUNONCE, "/host/%s" % name]
+           "--entrypoint", "bash", image, "-c", _CMD % name]
     try:
         r = subprocess.run(cmd, capture_output=True, timeout=timeout)
     except subprocess.TimeoutExpired:
-        return (137, None, "TIMEOUT")
+        return (137, "")
     out = (r.stdout or b"").decode(errors="ignore") + (r.stderr or b"").decode(errors="ignore")
-    ec, bug = None, None
+    ec = r.returncode
     for line in out.splitlines():
-        if line.startswith("exit_code"):
-            parts = line.split()
+        if line.startswith("MAGMA_RC="):
             try:
-                ec = int(parts[1])
+                ec = int(line.split("=", 1)[1])
+            except ValueError:
+                pass
+    return (ec, out)
+
+
+def _bug_counts(dump, bug):
+    """(reached, triggered) cua bug muc tieu tu human dump. 0 neu khong thay."""
+    for line in dump.splitlines():
+        p = line.split()
+        if p and p[0] == bug and "reached" in p and "triggered" in p:
+            try:
+                return int(p[p.index("reached") + 1]), int(p[p.index("triggered") + 1])
             except (IndexError, ValueError):
                 pass
-            if "bug" in parts:
-                bug = parts[parts.index("bug") + 1]
-    if ec is None:
-        ec = r.returncode
-    return (ec, bug, out)
+    return 0, 0
 
 
 # CHI dem crash do LOI THAT (signal fault), KHONG dem SIGKILL(137=timeout/OOM limit) hay docker-err(125).
@@ -55,17 +68,19 @@ def _real_crash(ec):
     return int(ec is not None and ec in _FAULT)
 
 
-def run_input(data, item, timeout=60):
-    """data: bytes. item co {target, program, bug_id}. Tin hieu ground-truth = CANARY (bug_vuln==bug)."""
+def run_input(data, item, timeout=90):
+    """data: bytes. item co {target, program, bug_id}. Ground-truth = canary reached/triggered."""
     tgt, prog, bug = item["target"], item["program"], item["bug_id"]
     with tempfile.TemporaryDirectory() as d:
         p = os.path.join(d, "tc")
         with open(p, "wb") as f:
             f.write(data if isinstance(data, (bytes, bytearray)) else data.encode())
-        ev, bv, _ = _run_container("magma-%s-vuln" % tgt, prog, p, timeout)
-        ef, bf, _ = _run_container("magma-%s-fixed" % tgt, prog, p, timeout)
-    return {"bug_vuln": bv, "exit_vuln": ev, "exit_fixed": ef, "target": bug,
-            "triggered": int(bv == bug),                       # canary dung bug muc tieu (ground-truth)
+        ev, dv = _run_container("magma-%s-vuln" % tgt, prog, p, timeout)
+        ef, df = _run_container("magma-%s-fixed" % tgt, prog, p, timeout)
+    reached, triggered = _bug_counts(dv, bug)                  # tren build VULN (co canary)
+    return {"exit_vuln": ev, "exit_fixed": ef, "target": bug,
+            "reached": int(reached > 0),                       # cham dong bug (mem, dan duong feedback)
+            "triggered": int(triggered > 0),                   # thoa dieu kien loi (ground-truth)
             "crash_vuln": _real_crash(ev), "crash_fixed": _real_crash(ef)}
 
 
@@ -109,7 +124,7 @@ def selftest(bug):
     data = make_plte_png(n_entries=8, bit_depth=1)     # num=8 > max=2 -> canary num>max_palette_length
     print("[selftest] PNG %d bytes: PLTE 8 entries, bit_depth 1 (max_palette=2)" % len(data))
     res = run_input(data, {"target": "libpng", "program": "libpng_read_fuzzer", "bug_id": bug})
-    print("  VULN : exit=%s bug=%s crash=%d" % (res["exit_vuln"], res["bug_vuln"], res["crash_vuln"]))
+    print("  VULN : reached=%d triggered=%d crash=%d" % (res["reached"], res["triggered"], res["crash_vuln"]))
     print("  FIXED: exit=%s crash=%d" % (res["exit_fixed"], res["crash_fixed"]))
     ok = discrim(res)
     print("  DISCRIM =", ok, "(1 = oracle vi-phan DUNG: no vuln, sach fixed)")

@@ -26,7 +26,10 @@ Khác `bench/` (Juliet synthetic, LLM viết C gọi `focal`), ở đây **LLM s
 - `extract.py` — parse `targets/<t>/patches/bugs/*.patch` → item {bug_id, focal, fault_cond, fix_hint,
   func_vuln, concepts, family_pred}; nguồn hàm vuln lấy từ image, concept qua tree-sitter (`load_annotator`).
 - `prompts.py` — blind (chỉ "làm crash <lib>") vs concept (focal + loại bug + fault_cond + fix_hint, KHÔNG leak input).
-- `gen.py` / `score.py` — sinh qua Groq (resumable) / chấm DISCRIM + McNemar (`bench/lab.mcnemar`).
+- `gen.py` / `score.py` — one-shot: sinh qua Groq (resumable) / chấm TRIGGER+DISCRIM + McNemar.
+- `loop.py` — **Milestone 2 feedback (CEGIS)**: sinh → oracle (REACHED/triggered) → phản hồi → viết lại ≤ROUNDS,
+  giữ best. Oracle giờ trả cả `reached` (chạm hàm lỗi, mềm hơn) lẫn `triggered` (thoả fault_cond, ground-truth).
+- `patched_runonce.sh` — nới harness limit 0.1s/50MB → 5s/2000MB (bind-mount, khỏi rebuild).
 - `items/*.jsonl` — 100 bug / 7 libs (gen.py & score.py tự gộp mọi file items/*.jsonl).
 
 ## Tái lập
