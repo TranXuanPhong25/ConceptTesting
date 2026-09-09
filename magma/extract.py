@@ -65,10 +65,10 @@ def _ctx_func(hunk_ctx):
 
 def parse_patch(path):
     """-> {bug_id, focal_file, focal_ctx, fault_cond} tu hunk chua MAGMA_LOG."""
-    txt = open(path, errors="ignore").read()
+    lines = open(path, errors="ignore").read().splitlines()
     bug_id = os.path.basename(path)[:-6]
     cur_file, last_ctx = None, ""
-    for line in txt.splitlines():
+    for idx, line in enumerate(lines):
         m = re.match(r"\+\+\+ b/(.+)$", line)
         if m:
             cur_file = m.group(1).strip()
@@ -76,8 +76,14 @@ def parse_patch(path):
         if mh:
             last_ctx = mh.group(1)
         if "MAGMA_LOG" in line and "%MAGMA_BUG%" in line:
-            paren = line.find("(", line.find("MAGMA_LOG"))
-            inner = _balanced(line, paren)                 # "%MAGMA_BUG%", <cond>
+            buf = ""                                       # gom DA DONG (MAGMA_LOG co the tran nhieu dong)
+            for j in range(idx, min(idx + 14, len(lines))):
+                seg = lines[j]
+                buf += (seg[1:] if seg[:1] in "+ " else seg) + " "   # bo prefix diff '+'/' '
+                if buf.count("(") and buf.count("(") == buf.count(")"):
+                    break
+            paren = buf.find("(", buf.find("MAGMA_LOG"))
+            inner = _balanced(buf, paren)                  # "%MAGMA_BUG%", <cond>
             cond = inner[inner.find(",") + 1:].strip()
             return {"bug_id": bug_id, "focal_file": cur_file, "focal_ctx": _ctx_func(last_ctx),
                     "fault_cond": _fault_readable(cond)}
