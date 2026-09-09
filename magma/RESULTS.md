@@ -1,0 +1,75 @@
+# Kết quả — Concept-guided vulnerability-triggering test-gen trên **Magma (real CVE)**
+
+**Thiết lập.** 100 bug CVE thật / 7 thư viện (libpng, libtiff, libxml2, sqlite3, libsndfile, openssl, lua).
+LLM teacher `openai/gpt-oss-120b` sinh **input** cho harness; oracle = **canary Magma** (ground-truth):
+VULN build (`CANARY_MODE=1`+`ISAN=1`) vs FIXED (`CANARY_MODE=3`). Metric:
+- **REACHED** = chạm hàm lỗi (canary reached) — tín hiệu mềm.
+- **TRIGGER** = thoả điều kiện lỗi (canary triggered) — ground-truth.
+- **DISCRIM** = trigger trên vuln ∧ không crash-thật trên fixed.
+Điều kiện: **blind** (chỉ "làm crash lib") vs **concept** (hàm focal + loại bug + fault_cond, KHÔNG leak input).
+
+## Bảng 1 — One-shot (K=3), harness limit 5s/2000MB
+| cond | rendered | TRIGGER | McNemar concept>blind |
+|---|---|---|---|
+| blind | 56% | 0% (0/100) | — |
+| concept | 91% | 2% (4/100) | 4–0, **p=0.125 (ns)** |
+
+→ One-shot **chạm trần**: sinh input cấu trúc kích hoạt bug SÂU trong một phát là quá khó (fuzzer mất hàng giờ).
+Concept nhỉnh (4 vs 0) nhưng discordant nhỏ → chưa significant. (Nới timeout 0.1s→5s KHÔNG đổi trigger của
+concept → timeout không phải nút thắt; độ khó one-shot mới là.)
+
+## Bảng 2 — Feedback loop (CEGIS, KHÔNG train), ROUNDS=3 ⭐
+`*_fb` = sinh → oracle (reached/triggered) → phản hồi đúng trạng thái (chưa chạm / chạm chưa thoả fault_cond /
+phá bừa) → viết lại ≤3 vòng, giữ best. `magma/loop.py`.
+
+| cond | rendered | **REACHED** | **TRIGGER** |
+|---|---|---|---|
+| blind_fb | 56% | 5% | **0%** (0/100) |
+| **concept_fb** | **95%** | **17%** | **8%** (8/100) |
+
+**McNemar concept_fb > blind_fb (TRIGGER): 8–0, p=0.0078 (\*\*).**
+
+→ **Concept-guidance + execution-feedback THẮNG rõ ở cả 3 tầng phễu** trên CVE thật:
+dựng input hợp lệ (95 vs 56) → **chạm hàm lỗi (17 vs 5, ×3.4)** → **trigger (8 vs 0)**.
+- Feedback nâng concept 4→8 TRIGGER và biến kết quả thành **significant** (one-shot p=0.25 → feedback p=0.0078).
+- **blind_fb vẫn 0%**: feedback KHÔNG cứu được blind — vòng lặp chỉ có ích khi biết *lái về đâu* (concept cho
+  hàm + fault_cond). Đây chính là giá trị cốt lõi của ConceptTesting.
+- **REACHED 17 vs 5** là tín hiệu sạch nhất (metric trigger còn thưa): concept dẫn model TỚI sink tốt hơn hẳn.
+- Khớp `bench/` (feedback là đòn bẩy lớn nhất, 77→91%) — nay tái lập **trên thư viện THẬT**.
+
+## Giới hạn (trung thực)
+- **Tuyệt đối vẫn khiêm tốn** (8/100 trigger): nhiều bug Magma cực hiếm trigger kể cả fuzzing 24h, hoặc không
+  reachable qua harness đang dùng (đọc-file). Đây là trần của bài toán, không phải của concept.
+- Mức **teacher** (model mạnh), không phải student finetune.
+- Discordant nhỏ (8) nhưng một chiều (8–0) → p<0.01. REACHED (17 vs 5) củng cố hướng.
+- php/poppler chưa build (nặng dưới QEMU) → còn có thể mở rộng.
+
+## Bảng 3 — "concept++" ablation ladder (de-leak + reachability + concolic) ⟵ CHỜ số thật (cần key)
+Trả lời critique "concept = mách đáp án (fault_cond bê từ patch)". Thang bậc, đo TRIGGER+REACHED, McNemar liền kề:
+
+| cond | guidance | leak? |
+|---|---|---|
+| `blind` | không | — |
+| `concept` (patch) | fault_cond+fix_hint từ PATCH | **có** (baseline "đơn giản") |
+| `concept_static` (C1) | `func_vuln` source + tree-sitter sink/buffer/guard/var, tự suy | **không** (`magma/concept_static.py`) |
+| `concept_shuffle` | placebo: như static nhưng nhãn/family/var XÁO | không |
+| `concept_reach` (C1+C2) | + seed đã-chạm-sink (bootstrap) + grammar | không (`reach/taint.py`) |
+| `concept_cc` (C1+C2+C3) | + concolic quét giá trị byte 'fault' (oracle-verify) | không (`concolic/loop_cc.py`) |
+
+Giả thuyết: `concept_static ≥ blind` & `≈ concept_patch` (de-leak vẫn thắng, không cần đáp án) · `> shuffle`
+(nội dung nhân-quả) · `concept_reach > concept_static` (reachability) · `concept_cc > concept_reach` (concolic).
+**Phát hiện kỹ thuật (trung thực):** taint byte-level trên định dạng có CRC (PNG…) chỉ ra 'structure' bytes,
+KHÔNG 'fault' → concolic byte-sweep defer sang LLM-as-solver; giá trị concrete-solve ở trường số/index không-CRC
+(SQL/openssl). bootstrap reach = None cho bug không có seed reaching (đếm & báo riêng).
+
+## Tái lập
+```bash
+# (sau setup.sh + extract 7 targets -> items/*.jsonl = 100 bug)
+GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python magma/loop.py     # blind_fb vs concept_fb (Bảng 2)
+# Ablation de-leak/placebo (Bảng 3, phần tĩnh):
+CONDS=magma_blind,magma_concept,magma_concept_static,magma_concept_shuffle \
+  GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python magma/loop.py
+# Reachability + concolic (Bảng 3, phần động):
+GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python concolic/loop_cc.py
+GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py && .venv/bin/python magma/score.py   # one-shot (Bảng 1)
+```

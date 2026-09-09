@@ -49,8 +49,8 @@ def build_patch(item):
 
 
 CONDS = {"bench_blind": build_bench_blind, "bench_concept": build_bench_concept, "bench_patch": build_patch}
-GOLD = os.environ.get("GOLD", os.path.join(BENCH, "items", "gold.jsonl"))
-CACHE = os.environ.get("PATCH_CACHE", os.path.join(HERE, "patch_cache.jsonl"))
+GOLD = os.environ.get("GOLD", os.path.join(BENCH, "items", "gold_juliet.jsonl"))
+CACHE = os.environ.get("PATCH_CACHE", os.path.join(HERE, "juliet.jsonl"))
 
 
 def main():
