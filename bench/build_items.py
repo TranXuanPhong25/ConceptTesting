@@ -77,6 +77,9 @@ def build(src_items, out_name):
 
 
 def main():
+    # LUU Y: gold.jsonl (seed tu soan) chi con la SMOKE FIXTURE cho harness — KHONG dung bao cao.
+    # Duong bang-chung chinh la Juliet: `python bench/juliet_extract.py` -> gold_juliet.jsonl.
+    print("[smoke] build seed gold.jsonl (fixture kiem harness; evidence = gold_juliet.jsonl)\n")
     good, _ = build(ITEMS, "gold.jsonl")
     print("family_pred:", dict(collections.Counter(d["family_pred"] for d in good)))
     print("\n%-14s %-12s %s" % ("id", "gold", "pred (concept signal)"))

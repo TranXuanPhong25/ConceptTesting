@@ -36,8 +36,8 @@ def build_shuffle(item):
 
 
 CONDS = {"bench_blind": build_bench_blind, "bench_concept": build_bench_concept, "concept_shuffle": build_shuffle}
-GOLD = os.environ.get("GOLD", os.path.join(BENCH, "items", "gold.jsonl"))
-CACHE = os.environ.get("PLACEBO_CACHE", os.path.join(HERE, "placebo_cache.jsonl"))
+GOLD = os.environ.get("GOLD", os.path.join(BENCH, "items", "gold_juliet.jsonl"))
+CACHE = os.environ.get("PLACEBO_CACHE", os.path.join(HERE, "juliet.jsonl"))
 
 
 def main():

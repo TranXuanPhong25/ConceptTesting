@@ -19,8 +19,8 @@ from run_diff import run_diff, CXX  # noqa: E402
 from prompts import prompt_key      # noqa: E402
 
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
-GOLD  = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold.jsonl"))
-CACHE = os.environ.get("BENCH_CACHE", os.path.join(ROOT, "bench", "bench_cache.jsonl"))
+GOLD  = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold_juliet.jsonl"))
+CACHE = os.environ.get("BENCH_CACHE", os.path.join(ROOT, "bench", "juliet_cache.jsonl"))
 SAMPLES = int(os.environ.get("SAMPLES", "1"))
 CONDS = os.environ.get("CONDS", "bench_blind,bench_concept").split(",")
 

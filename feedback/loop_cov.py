@@ -25,8 +25,8 @@ _concept_builder = BUILD[CONCEPT_COND]
 ROUNDS     = int(os.environ.get("ROUNDS", "3"))
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_RPM   = int(os.environ.get("GROQ_RPM", "30"))
-GOLD       = os.environ.get("GOLD", os.path.join(BENCH, "items", "gold.jsonl"))
-CACHE      = os.environ.get("FB_CACHE", os.path.join(HERE, "fb_cache.jsonl"))
+GOLD       = os.environ.get("GOLD", os.path.join(BENCH, "items", "gold_juliet.jsonl"))
+CACHE      = os.environ.get("FB_CACHE", os.path.join(HERE, "fb_juliet.jsonl"))
 KEY        = os.environ.get("GROQ_API_KEY")
 GCOV       = shutil.which("gcov")
 RISK       = {2, 4, 6}                                   # ptr_deref, buffer_access, free = thao tac nguy hiem

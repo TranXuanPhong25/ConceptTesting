@@ -18,8 +18,8 @@ GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_RPM   = int(os.environ.get("GROQ_RPM", "30"))
 SAMPLES    = int(os.environ.get("SAMPLES", "1"))    # K mau/item (temperature -> khac nhau) -> giam nhieu
 CONDS      = os.environ.get("CONDS", "bench_blind,bench_concept").split(",")
-GOLD       = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold.jsonl"))
-CACHE      = os.environ.get("BENCH_CACHE", os.path.join(ROOT, "bench", "bench_cache.jsonl"))
+GOLD       = os.environ.get("GOLD", os.path.join(ROOT, "bench", "items", "gold_juliet.jsonl"))
+CACHE      = os.environ.get("BENCH_CACHE", os.path.join(ROOT, "bench", "juliet_cache.jsonl"))
 KEY        = os.environ.get("GROQ_API_KEY")
 if not KEY:
     raise SystemExit("Thieu GROQ_API_KEY. Chay: GROQ_API_KEY=gsk_... .venv/bin/python bench/gen.py")

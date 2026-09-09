@@ -2,17 +2,40 @@
 """Trich Juliet Test Suite -> schema benchmark (parametrized vuln/fixed), qua CUNG pipeline build().
 
 Ho da ho tro (in-scope voi 8 concept memory-safety):
-  CWE476 NULL Pointer Deref -> null_deref   (`*data`, `data[0]`, `data->f` tren con tro NULL)
-  CWE416 Use-After-Free     -> uaf          (free(data) roi DEREF data sau do)
-  CWE415 Double-Free        -> double_free  (free(data) HAI lan)
+  TEMPORAL (con tro, sink `data`):
+    CWE476 NULL Pointer Deref -> null_deref   (`*data`, `data[0]`, `data->f` tren con tro NULL)
+    CWE416 Use-After-Free     -> uaf          (free(data) roi DEREF data sau do)
+    CWE415 Double-Free        -> double_free  (free(data) HAI lan)
+  SPATIAL (chi so `buffer[data]`, kieu CWE839 — bound check THIEU):
+    CWE121 Stack Overflow     -> oob_write over  (buffer[data]=... , data>=size)
+    CWE122 Heap Overflow      -> oob_write over  (buffer heap, data>=size)
+    CWE124 Buffer Underwrite  -> oob_write under (data<0)
+    CWE126 Buffer Overread    -> oob_read  over  (doc buffer[data], data>=size)
+    CWE127 Buffer Underread   -> oob_read  under (data<0)
 
-Tham-so-hoa: bo 'source flow' cua Juliet, focal(TYPE*) nhan input tu TEST (NULL, hoac buffer malloc).
-Stub print-helper = NO-OP -> use dang `printLine(data)` (KHONG deref cu phap) se KHONG fire
--> self-check TU LOAI (chi giu case concept PHAT HIEN duoc). Flow-variant trung focal -> dedup.
-CWE690 (calloc it khi NULL -> khong trigger duoc), CWE122/124 (attack hardcode trong struct/offset,
-self-trigger, khong co input DOF) -> BO qua.
+Tham-so-hoa: bo 'source flow' cua Juliet (fscanf/rand/socket/fixed...), thay bang THAM SO focal.
+  - Con tro: focal(TYPE*) nhan NULL / buffer malloc tu test.
+  - Chi so:  focal(int data) — buffer khai bao TRONG focal, `data` la chi so tu test.
+Guard vuln = guard cua bad() (THIEU, vd `if(data>=0)`); guard fixed = guard cua goodB2G()
+(`if(data>=0 && data<N)`) — tuc DUNG BAN VA CUA NIST, khong tu che.
+
+** Vi sao BO subfamily "hardcode-constant" (memcpy sizeof(struct), strcpy(SRC), loop SRC_STRING)? **
+KHONG phai vi "khong co cho input" (bai toan la SINH UNIT TEST — `main(){bad();}` cung la unit test hop le).
+Ma vi chung KHONG PHAN BIET duoc concept: trigger nhoi cung -> MOI dieu kien (blind/concept/shuffle) deu
+sinh dung 1 driver tam thuong `bad();` -> DISCRIM = 1 cho tat ca -> benchmark do duoc CON SO 0 ve dong gop
+cua concept. Ngoai ra ban va cua chung la "sua HANG SO" chu khong phai "them bound check theo input" ->
+tham-so-hoa se thanh TU CHE ban va. Nguoc lai, subfamily CWE839 (buffer[data]) co INPUT THAT (chi so) +
+ban va input-conditioned cua NIST -> vua faithful vua PHAN BIET duoc concept. Do la ly do chi lay no.
+
+** Vi sao KHONG "chay full 100%% Juliet"? ** ~64k case Juliet la boi so cua {sink x source-flow x data-type x
+ flow-variant obfuscation (if(5==5), goto, con tro ham, da-TU...)} tren MOT SO IT flaw goc. Voi bai toan sinh
+test, flow-variant CUNG sink la trung-lap ngu nghia (test giong het) -> dedup theo focal la DUNG. Moi
+(family x type x sink) chi con ~vai focal unique; "100%%" chi bom n bang ban sao gan-trung, KHONG them do kho.
+
+CWE690 (calloc it khi NULL) -> bo. Flow-variant trung focal -> dedup.
 
 Chuan bi:  git clone --depth 1 --filter=blob:none --sparse .../juliet-test-suite-c vendor/juliet
+           git -C vendor/juliet sparse-checkout add testcases/CWE121_... (extractor tu add neu thieu)
 Chay TU REPO ROOT:  .venv/bin/python bench/juliet_extract.py
 """
 import os, re, sys, glob, subprocess
@@ -24,7 +47,12 @@ from build_items import build   # noqa: E402
 JROOT = os.path.join(ROOT, "vendor", "juliet")
 DIRS = {"CWE476": "testcases/CWE476_NULL_Pointer_Dereference",
         "CWE416": "testcases/CWE416_Use_After_Free",
-        "CWE415": "testcases/CWE415_Double_Free"}
+        "CWE415": "testcases/CWE415_Double_Free",
+        "CWE121": "testcases/CWE121_Stack_Based_Buffer_Overflow",
+        "CWE122": "testcases/CWE122_Heap_Based_Buffer_Overflow",
+        "CWE124": "testcases/CWE124_Buffer_Underwrite",
+        "CWE126": "testcases/CWE126_Buffer_Overread",
+        "CWE127": "testcases/CWE127_Buffer_Underread"}
 
 # Stub NO-OP (khong deref) -> use opaque `printLine(data)` khong fire -> self-check loai.
 PRELUDE = (
@@ -131,7 +159,95 @@ def handler_free(path, cwe):
             "expect": "fires_on_vuln", "note": "Juliet %s: %s" % (cid, fam)}
 
 
-HANDLERS = [("CWE476", handler_null), ("CWE416", handler_free), ("CWE415", handler_free)]
+# ===== SPATIAL: chi so buffer[data] (CWE839) — guard vuln=bad(), guard fixed=goodB2G() =====
+# fam, direction(over/under), heap?  -> trigger: over=size, under=-1
+IDX_MAP = {"CWE121": ("oob_write", "over", False), "CWE122": ("oob_write", "over", True),
+           "CWE124": ("oob_write", "under", False), "CWE126": ("oob_read", "over", False),
+           "CWE127": ("oob_read", "under", False)}
+
+
+def _fn_body(src, pat):
+    """Than `{...}` cua ham dau tien khop pat (brace-match)."""
+    m = re.search(pat, src)
+    if not m:
+        return None
+    depth = 0
+    for j in range(m.end() - 1, len(src)):
+        if src[j] == "{":
+            depth += 1
+        elif src[j] == "}":
+            depth -= 1
+            if depth == 0:
+                return src[m.end():j]
+    return None
+
+
+def _if_cond(body, need_and=False):
+    """Dieu kien cua `if (...)` dau tien co 'data' (paren-balanced, giu nested `(N)`).
+    need_and=True -> chi lay guard DAY DU (co '&&', tuc goodB2G)."""
+    for m in re.finditer(r"if\s*\(", body):
+        depth = 0; start = m.end() - 1
+        for j in range(start, len(body)):
+            if body[j] == "(":
+                depth += 1
+            elif body[j] == ")":
+                depth -= 1
+                if depth == 0:
+                    cond = body[start + 1:j].strip()
+                    if "data" in cond and (not need_and or "&&" in cond):
+                        return re.sub(r"\s+", " ", cond)
+                    break
+    return None
+
+
+def handler_index(path, cwe):
+    """CWE839 index sink: buffer[data] duoi guard THIEU (bad) -> vuln; guard DU (goodB2G) -> fixed.
+    Tham-so-hoa: source flow (fscanf/rand/...) -> tham so `int data`. Buffer nam TRONG focal."""
+    fam, direction, heap = IDX_MAP[cwe]
+    src = open(path, errors="ignore").read()
+    bad = _fn_body(src, r"_bad\s*\(\s*\)\s*\{")
+    if not bad:
+        return None
+    bad = _clean(bad)
+    if "buffer[data]" not in re.sub(r"\s", "", bad):
+        return None
+    mst = re.search(r"([A-Za-z_][\w ]*?)\s+buffer\s*\[\s*(\d+)\s*\]", bad)          # stack: TYPE buffer[N]
+    mhp = re.search(r"([A-Za-z_][\w ]*?)\s*\*\s*buffer\s*=\s*.*?(?:malloc|c?alloca|ALLOCA)\s*\(\s*(\d+)", bad)
+    if mst and not heap:
+        typ, size = mst.group(1).strip(), mst.group(2)
+    elif mhp:
+        typ, size = mhp.group(1).strip(), mhp.group(2)
+    else:
+        return None
+    bad_guard = _if_cond(bad)                                                       # guard THIEU cua bad()
+    if not bad_guard:
+        return None
+    write = bool(re.search(r"buffer\s*\[\s*data\s*\]\s*=", bad))
+    good = _clean(_fn_body(src, r"goodB2G\s*\(\s*\)\s*\{") or "")                   # guard DU cua goodB2G()
+    good_guard = _if_cond(good, need_and=True) or ("data >= 0 && data < (%s)" % size)
+
+    if heap:
+        decl = ("%s * buffer = (%s *)malloc((%s) * sizeof(%s));\n    if (buffer == NULL) return;"
+                % (typ, typ, size, typ))
+    else:
+        decl = "%s buffer[%s] = {0};" % (typ, size)
+    sink = "buffer[data] = 1;" if write else "volatile %s _sink = buffer[data]; (void)_sink;" % typ
+    tmpl = "void %%s(int data){\n    %s\n    if (%%s) {\n        %s\n    }\n}" % (decl, sink)
+    tag = ("ow" if write else "or") + "_" + direction + ("_heap" if heap else "")
+    fn = "idx_%s_%s" % (cwe[3:], tag)
+    trig = size if direction == "over" else "-1"
+    return {"id": "juliet_%s_%s" % (cwe[3:], tag), "cwe": "CWE-%s" % cwe[3:], "family": fam,
+            "focal": fn, "signature": "void %s(int data)" % fn, "driver_prelude": PRELUDE,
+            "func_vuln": tmpl % (fn, bad_guard), "func_fixed": tmpl % (fn, good_guard),
+            "ref_test": "int main(void){ %s(%s); return 0; }" % (fn, trig),
+            "expect": "fires_on_vuln",
+            "note": "Juliet CWE%s idx %s %s: vuln guard `%s`, fix `%s`"
+                    % (cwe[3:], "write" if write else "read", direction, bad_guard, good_guard)}
+
+
+HANDLERS = [("CWE476", handler_null), ("CWE416", handler_free), ("CWE415", handler_free),
+            ("CWE121", handler_index), ("CWE122", handler_index), ("CWE124", handler_index),
+            ("CWE126", handler_index), ("CWE127", handler_index)]
 
 
 def _ensure_source():
