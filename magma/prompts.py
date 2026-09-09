@@ -44,7 +44,26 @@ def build_concept(item):
     return [{"role": "system", "content": _SYS}, {"role": "user", "content": "\n".join(lines)}]
 
 
-BUILD = {"magma_blind": build_blind, "magma_concept": build_concept}
+def build_concept_static(item):
+    """C1 de-leaked: dua ca SOURCE ham vuln + concept tinh (sink/buffer/guard/bien), KHONG fault_cond tu patch."""
+    import concept_static as cs                                   # magma path (loop/gen da them HERE)
+    hp = ("Thu vien `%s`.\n%s\n\nSOURCE ham co lo hong:\n```c\n%s\n```\n\n%s"
+          % (item["target"], cs.concept_text(item), cs.func_excerpt(item),
+             _OUT % (item["program"], item["target"])))
+    return [{"role": "system", "content": _SYS}, {"role": "user", "content": hp}]
+
+
+def build_concept_shuffle(item):
+    """PLACEBO cua concept_static: source that + facts XAO (nhan/family/bien SAI). Chung minh nhan-qua."""
+    import concept_static as cs
+    hp = ("Thu vien `%s`.\n%s\n\nSOURCE ham co lo hong:\n```c\n%s\n```\n\n%s"
+          % (item["target"], cs.concept_text_shuffle(item), cs.func_excerpt(item),
+             _OUT % (item["program"], item["target"])))
+    return [{"role": "system", "content": _SYS}, {"role": "user", "content": hp}]
+
+
+BUILD = {"magma_blind": build_blind, "magma_concept": build_concept,
+         "magma_concept_static": build_concept_static, "magma_concept_shuffle": build_concept_shuffle}
 
 
 def prompt_key(model, cond, item):

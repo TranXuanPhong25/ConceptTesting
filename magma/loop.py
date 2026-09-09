@@ -132,10 +132,9 @@ def main():
     for c in CONDS:
         a = agg[c]
         print("%-14s %8d%% %8d%% %8d%%" % (c, 100 * a["rend"] // n, 100 * a["reach"] // n, 100 * a["trig"] // n))
-    if len(CONDS) >= 2:
-        b, c_, p = lab.mcnemar(binv[CONDS[1]], binv[CONDS[0]])
-        print("\nMcNemar %s>%s (TRIGGER): concept-only=%d blind-only=%d p=%.4f"
-              % (CONDS[1], CONDS[0], b, c_, p))
+    for lo, hi in zip(CONDS, CONDS[1:]):                         # McNemar tung cap lien ke (thang ablation)
+        b, c_, p = lab.mcnemar(binv[hi], binv[lo])
+        print("McNemar %s > %s (TRIGGER): +%d -%d p=%.4f" % (hi, lo, b, c_, p))
     print("status: 0 chua render | 1 render | 2 REACHED ham loi | 3 TRIGGER (discrim).")
 
 
