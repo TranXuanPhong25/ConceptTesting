@@ -12,16 +12,13 @@ Chay TU REPO ROOT (sau `bash magma/setup.sh`):
 """
 import os, sys, re, struct, zlib, tempfile, subprocess, argparse
 
-PROGRAM = os.environ.get("MAGMA_PROGRAM", "libpng_read_fuzzer")
-TARGET  = os.environ.get("MAGMA_TARGET", "libpng")
-IMAGES  = {"vuln": "magma-%s-vuln" % TARGET, "fixed": "magma-%s-fixed" % TARGET}
 RUNONCE = "/magma/magma/runonce.sh"          # in-container path (Dockerfile: MAGMA=/magma/magma)
 
 
-def _run_container(image, input_path, timeout=60):
+def _run_container(image, program, input_path, timeout=60):
     """docker run harness tren 1 input -> (exit_code, bug_or_None, raw). exit_code=-1 neu loi docker."""
     d = os.path.dirname(os.path.abspath(input_path)); name = os.path.basename(input_path)
-    cmd = ["docker", "run", "--rm", "--platform", "linux/amd64", "-e", "PROGRAM=%s" % PROGRAM,
+    cmd = ["docker", "run", "--rm", "--platform", "linux/amd64", "-e", "PROGRAM=%s" % program,
            "-v", "%s:/host" % d, "--entrypoint", "bash", image, RUNONCE, "/host/%s" % name]
     try:
         r = subprocess.run(cmd, capture_output=True, timeout=timeout)
@@ -43,17 +40,18 @@ def _run_container(image, input_path, timeout=60):
     return (ec, bug, out)
 
 
-def run_input(data, target_bug, timeout=60):
-    """data: bytes. Tra dict {triggered_bug_vuln, exit_vuln, exit_fixed, crash_vuln, crash_fixed}."""
+def run_input(data, item, timeout=60):
+    """data: bytes. item co {target, program, bug_id}. Tra dict oracle vi-phan."""
+    tgt, prog, bug = item["target"], item["program"], item["bug_id"]
     with tempfile.TemporaryDirectory() as d:
         p = os.path.join(d, "tc")
         with open(p, "wb") as f:
             f.write(data if isinstance(data, (bytes, bytearray)) else data.encode())
-        ev, bv, _ = _run_container(IMAGES["vuln"], p, timeout)
-        ef, bf, _ = _run_container(IMAGES["fixed"], p, timeout)
+        ev, bv, _ = _run_container("magma-%s-vuln" % tgt, prog, p, timeout)
+        ef, bf, _ = _run_container("magma-%s-fixed" % tgt, prog, p, timeout)
     return {"bug_vuln": bv, "exit_vuln": ev, "exit_fixed": ef,
             "crash_vuln": int(ev is not None and ev >= 128),
-            "crash_fixed": int(ef is not None and ef >= 128), "target": target_bug}
+            "crash_fixed": int(ef is not None and ef >= 128), "target": bug}
 
 
 def discrim(res):
@@ -96,7 +94,7 @@ def selftest(bug):
         print("Self-test builder chi ho tro PNG003 (oversized PLTE)."); return 2
     data = make_plte_png(n_entries=8, bit_depth=1)     # num=8 > max=2 -> canary num>max_palette_length
     print("[selftest] PNG %d bytes: PLTE 8 entries, bit_depth 1 (max_palette=2)" % len(data))
-    res = run_input(data, bug)
+    res = run_input(data, {"target": "libpng", "program": "libpng_read_fuzzer", "bug_id": bug})
     print("  VULN : exit=%s bug=%s crash=%d" % (res["exit_vuln"], res["bug_vuln"], res["crash_vuln"]))
     print("  FIXED: exit=%s crash=%d" % (res["exit_fixed"], res["crash_fixed"]))
     ok = discrim(res)

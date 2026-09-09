@@ -10,7 +10,8 @@ set -e
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export MAGMA="$ROOT/vendor/magma"
 export USER="${USER:-$(whoami)}"
-TARGET="${TARGET:-libpng}"
+# TARGETS: danh sach target (space-separated). Vd: TARGETS="libtiff libxml2 lua" bash magma/setup.sh
+TARGETS="${TARGETS:-${TARGET:-libpng}}"
 
 if [ ! -d "$MAGMA/.git" ]; then
     echo "[!] Thieu vendor/magma. Chay:"
@@ -35,13 +36,20 @@ build_one() {   # $1=tag | $2=CANARY_MODE(1|3) | $3=isan(0|1)
         --build-arg fuzzer_name=vanilla \
         --build-arg target_name="$TARGET" \
         --build-arg USER_ID=1000 --build-arg GROUP_ID=1000 \
-        $margs -f "$MAGMA/docker/Dockerfile" "$MAGMA"
+        $margs -f "$MAGMA/docker/Dockerfile" "$MAGMA" || return 1
     echo "-> built $tag"
 }
 
-build_one "magma-$TARGET-vuln"  1 1
-build_one "magma-$TARGET-fixed" 3 0
+set +e                                    # 1 target hong KHONG lam abort ca batch
+OKS=""; FAILS=""
+for TARGET in $TARGETS; do
+    if build_one "magma-$TARGET-vuln" 1 1 && build_one "magma-$TARGET-fixed" 3 0; then
+        OKS="$OKS $TARGET"; echo "== DONE $TARGET =="
+    else
+        FAILS="$FAILS $TARGET"; echo "== [FAIL] $TARGET =="
+    fi
+done
 
 echo
-echo "XONG. Images: magma-$TARGET-vuln , magma-$TARGET-fixed"
-echo "-> Kiem chung oracle:  .venv/bin/python magma/oracle.py --selftest PNG003"
+echo "XONG. OK:$OKS  | FAIL:$FAILS"
+echo "-> Trich:  for t in$OKS; do .venv/bin/python magma/extract.py --target \$t; done"

@@ -20,11 +20,18 @@ _ps = importlib.util.spec_from_file_location("magma_prompts", os.path.join(HERE,
 _pm = importlib.util.module_from_spec(_ps); _ps.loader.exec_module(_pm)
 prompt_key = _pm.prompt_key
 
+import glob                                                       # noqa: E402
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
-GOLD  = os.environ.get("GOLD", os.path.join(HERE, "items", "libpng.jsonl"))
 CACHE = os.environ.get("MAGMA_GEN_CACHE", os.path.join(HERE, "gen_cache.jsonl"))
 SAMPLES = int(os.environ.get("SAMPLES", "1"))
 CONDS = os.environ.get("CONDS", "magma_blind,magma_concept").split(",")
+
+
+def load_items():
+    """GOLD (1 file) neu set, khong thi gop tat ca magma/items/*.jsonl (da-target)."""
+    g = os.environ.get("GOLD")
+    files = [g] if g else sorted(glob.glob(os.path.join(HERE, "items", "*.jsonl")))
+    return [json.loads(l) for f in files for l in open(f) if l.strip()]
 
 
 def load_cache():
@@ -47,7 +54,7 @@ def main():
     cache = load_cache()
     if not cache:
         raise SystemExit("Cache rong (%s). Chay magma/gen.py truoc." % CACHE)
-    items = [json.loads(l) for l in open(GOLD) if l.strip()]
+    items = load_items()
     agg = {c: {"n": 0, "has": 0, "render": 0.0, "trig": 0.0, "disc": 0.0} for c in CONDS}
     # per-item discriminate (max qua K mau) cho McNemar — DICT keyed by bug_id (lab.mcnemar yeu cau)
     binv = {c: {} for c in CONDS}
@@ -66,7 +73,7 @@ def main():
                 if not data:
                     continue
                 rendered += 1
-                res = run_input(data, it["bug_id"])
+                res = run_input(data, it)
                 t = 1 if (res["bug_vuln"] == it["bug_id"] or res["crash_vuln"]) else 0
                 d = discrim(res)
                 trig += t; disc += d; any_disc = max(any_disc, d)
