@@ -44,23 +44,36 @@ dựng input hợp lệ (95 vs 56) → **chạm hàm lỗi (17 vs 5, ×3.4)** �
 - Discordant nhỏ (8) nhưng một chiều (8–0) → p<0.01. REACHED (17 vs 5) củng cố hướng.
 - php/poppler chưa build (nặng dưới QEMU) → còn có thể mở rộng.
 
-## Bảng 3 — "concept++" ablation ladder (de-leak + reachability + concolic) ⟵ CHỜ số thật (cần key)
-Trả lời critique "concept = mách đáp án (fault_cond bê từ patch)". Thang bậc, đo TRIGGER+REACHED, McNemar liền kề:
+## Bảng 3 — "concept++" ablation (de-leak + reachability + concolic), ROUNDS=3 — **NULL ở teacher (trung thực)**
+Trả lời critique "concept = mách đáp án (fault_cond bê từ patch)". Chạy 2 thí nghiệm ablation trên 100 CVE.
 
-| cond | guidance | leak? |
-|---|---|---|
-| `blind` | không | — |
-| `concept` (patch) | fault_cond+fix_hint từ PATCH | **có** (baseline "đơn giản") |
-| `concept_static` (C1) | `func_vuln` source + tree-sitter sink/buffer/guard/var, tự suy | **không** (`magma/concept_static.py`) |
-| `concept_shuffle` | placebo: như static nhưng nhãn/family/var XÁO | không |
-| `concept_reach` (C1+C2) | + seed đã-chạm-sink (bootstrap) + grammar | không (`reach/taint.py`) |
-| `concept_cc` (C1+C2+C3) | + concolic quét giá trị byte 'fault' (oracle-verify) | không (`concolic/loop_cc.py`) |
+### 3a — De-leak + Placebo (`magma/loop.py`, 4 cond)
+| cond | rendered | REACHED | TRIGGER |
+|---|---|---|---|
+| blind | 56% | 5% | 0% |
+| **concept** (patch, **LEAK** fault_cond) | 95% | 17% | **8%** |
+| concept_static (C1, de-leak: source+tree-sitter, tự suy) | 97% | 19% | **4%** |
+| concept_shuffle (placebo: nhãn/family/var XÁO, source thật) | 97% | 23% | **6%** |
 
-Giả thuyết: `concept_static ≥ blind` & `≈ concept_patch` (de-leak vẫn thắng, không cần đáp án) · `> shuffle`
-(nội dung nhân-quả) · `concept_reach > concept_static` (reachability) · `concept_cc > concept_reach` (concolic).
-**Phát hiện kỹ thuật (trung thực):** taint byte-level trên định dạng có CRC (PNG…) chỉ ra 'structure' bytes,
-KHÔNG 'fault' → concolic byte-sweep defer sang LLM-as-solver; giá trị concrete-solve ở trường số/index không-CRC
-(SQL/openssl). bootstrap reach = None cho bug không có seed reaching (đếm & báo riêng).
+McNemar: `concept>blind` **+8 −0 p=0.0078** · `concept_static>concept` +1 −5 p=0.22 · `shuffle>static` +3 −1 p=0.625.
+
+### 3b — Reachability + Concolic (`concolic/loop_cc.py`, 3 cond) — bootstrap reaching **34/100**
+| cond | rendered | REACHED | TRIGGER |
+|---|---|---|---|
+| concept_static (C1) | 95% | 20% | 4% |
+| concept_reach (+C2 seed reaching + grammar) | 98% | **24%** | 4% |
+| concept_cc (+C3 concolic byte-sweep) | 100% | 25% | **5%** |
+
+McNemar: `reach>static` +2 −2 p=1.0 · `cc>reach` +1 −0 p=1.0.
+
+### Diễn giải (thẳng — phần lớn NULL ở teacher)
+1. **Leak thổi số**: `concept` 8% có được nhờ **fault_cond bê từ patch** (mách đáp án). Bỏ leak → `concept_static` **4%**. Con số trung thực là 4%.
+2. **Placebo bác annotation**: `shuffle` (6%) ≥ `static` (4%), REACHED 23≥19, p=0.625 → **các annotation tree-sitter KHÔNG nhân-quả** ở teacher; cái giúp là **source code** (đưa vào cả 2). Khớp `bench/` (concept2 "giàu" hại teacher).
+3. **Reachability/concolic không thêm trên trigger**: reach≈static (+2−2), cc chỉ solve **+1 bug** (cơ chế chạy thật nhưng ns). Reachability chỉ nhích **REACHED** (20→24). bootstrap **34/100** = trần: 2/3 bug không có seed chạm-sink để reach/solve.
+4. **Điều kiện tường minh > source-alone**: `concept`(8%, chỉ điều kiện, KHÔNG source) > `concept_static`(4%, source, KHÔNG điều kiện) → ở teacher model thà được *nói thẳng điều kiện* hơn tự đọc hàm. ⇒ lever là **điều kiện tường minh** (nếu suy-ra được, không leak); annotation/reach/concolic đều **thừa** ở teacher.
+5. **Throughline**: model mạnh chỉ cần **source/điều-kiện + feedback**; mọi lớp concept/kĩ-thuật thêm vào đều redundant Ở MỨC TEACHER → giá trị của chúng (nếu có) thuộc về **student (model yếu)** không tự infer từ code. Đây là kết quả **rigor & trung thực**: de-leak + placebo + technique-ablation chỉ ra *cái gì THỰC SỰ giúp*.
+
+**Kỹ thuật ghi nhận:** byte-taint trên format CRC (PNG) chỉ ra 'structure' bytes, KHÔNG 'fault' → concolic defer LLM-solver; concrete-solve chỉ hợp trường số/index không-CRC (SQL/openssl).
 
 ## Tái lập
 ```bash
