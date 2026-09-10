@@ -115,8 +115,7 @@ def feedback(res, item, rendered):
     return "Lan truoc: KHONG cham `%s` (parser bo som). Sua header/chunk cho hop le de di toi sink." % foc
 
 
-def run_item(item, cond):
-    boot = taint.bootstrap_reaching(item) if cond in ("magma_concept_reach", "magma_concept_cc") else None
+def run_item(item, cond, boot=None):
     msgs = _init_msgs(item, cond, boot); best = 0
     for r in range(ROUNDS + 1):
         out = call(msgs, prompt_key(GROQ_MODEL, cond, item) + "@r%d" % r)
@@ -144,13 +143,15 @@ def main():
     items = [json.loads(l) for f in files for l in open(f) if l.strip()]
     print("items:", len(items), "| ROUNDS:", ROUNDS, "| conds:", CONDS)
     agg = {c: {"trig": 0, "reach": 0, "rend": 0} for c in CONDS}; binv = {c: {} for c in CONDS}
+    need_boot = any(c in ("magma_concept_reach", "magma_concept_cc") for c in CONDS)
     boot_ok = 0
     for it in items:
-        if taint.bootstrap_reaching(it, budget=12):
+        boot = taint.bootstrap_reaching(it) if need_boot else None   # 1 LAN/bug, dung lai cho moi cond
+        if boot:
             boot_ok += 1
         row = []
         for c in CONDS:
-            b = run_item(it, c)
+            b = run_item(it, c, boot)
             agg[c]["trig"] += (b == 3); agg[c]["reach"] += (b >= 2); agg[c]["rend"] += (b >= 1)
             binv[c][it["bug_id"]] = int(b == 3)
             row.append("%s=%d" % (c.replace("magma_concept_", "").replace("magma_", ""), b))
