@@ -6,7 +6,7 @@
   concept : them CONCEPT (khong ro ri input): loai bug + ham focal + dieu kien loi (fault_cond) +
             check con THIEU (fix_hint). Day la huong dan MUC KHAI NIEM, khong phai bytes cu the.
 """
-import hashlib
+import os, hashlib
 
 _OUT = ("Xuat DUY NHAT mot khoi ```python dinh nghia `build()` tra ve `bytes` cua MOT input. "
         "Chi dung thu vien chuan (struct, zlib, os...). KHONG in, KHONG doc file ngoai, KHONG main. "
@@ -53,6 +53,32 @@ def build_concept_static(item):
     return [{"role": "system", "content": _SYS}, {"role": "user", "content": hp}]
 
 
+def _fewshot_mod():
+    import importlib.util
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    sp = importlib.util.spec_from_file_location("fewshot_examples", os.path.join(root, "fewshot", "examples.py"))
+    m = importlib.util.module_from_spec(sp); sp.loader.exec_module(m)
+    return m
+
+
+def _fewshot_prompt(item, block):
+    import concept_static as cs
+    hp = ("%s\n---\nBAI TOAN THAT — Thu vien `%s`.\n%s\n\nSOURCE ham co lo hong:\n```c\n%s\n```\n\n%s"
+          % (block, item["target"], cs.concept_text(item), cs.func_excerpt(item),
+             _OUT % (item["program"], item["target"])))
+    return [{"role": "system", "content": _SYS}, {"role": "user", "content": hp}]
+
+
+def build_fewshot_authored(item):
+    """Few-shot TU CHE: vi du build()->bytes viet tay (khop dinh dang) + concept_static (de-leak)."""
+    return _fewshot_prompt(item, _fewshot_mod().AUTHORED)
+
+
+def build_fewshot_juliet(item):
+    """Few-shot JULIET: cap vuln/fixed THAT lam vi du day reasoning + concept_static (de-leak)."""
+    return _fewshot_prompt(item, _fewshot_mod().juliet_examples(2))
+
+
 def build_concept_shuffle(item):
     """PLACEBO cua concept_static: source that + facts XAO (nhan/family/bien SAI). Chung minh nhan-qua."""
     import concept_static as cs
@@ -63,7 +89,8 @@ def build_concept_shuffle(item):
 
 
 BUILD = {"magma_blind": build_blind, "magma_concept": build_concept,
-         "magma_concept_static": build_concept_static, "magma_concept_shuffle": build_concept_shuffle}
+         "magma_concept_static": build_concept_static, "magma_concept_shuffle": build_concept_shuffle,
+         "magma_fewshot_authored": build_fewshot_authored, "magma_fewshot_juliet": build_fewshot_juliet}
 
 
 def prompt_key(model, cond, item):
