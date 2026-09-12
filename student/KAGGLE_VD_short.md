@@ -38,6 +38,27 @@ VARIANT=regular      EPOCH=3 bash student/run_short.sh
   vẫn đo được (đủ cho luận điểm).
 - **Chỉ đủ 1 GPU** (P100/Colab): `num_processes: 1` trong `student/accelerate_kaggle.yaml`.
 
+## Hướng A — dùng ConceptCoder làm BỘ CẤP CONCEPT cho generator (sinh test)
+ConceptCoder là **classifier** (không sinh test). Nhưng model dự đoán **concept per-line** (lớp `cbl` → sigmoid),
+đúng format `lines_concept` của tree-sitter → drop thẳng vào prompt sinh-test hiện có. Pipeline:
+```bash
+# 1) (Kaggle) train xong -> co checkpoint (VARIANT=conceptcoder EPOCH=3 bash student/run_short.sh)
+# 2) (Kaggle) du doan concept HOC-DUOC cho ham target (Magma/bench):
+python student/predict_concepts.py \
+   --ckpt data/saved_models/VD/concept/Qwen2.5-Coder-3B/checkpoint-best-f1/statement_level_sequential/Qwen2.5-Coder-3B \
+   --base Qwen/Qwen2.5-Coder-3B --model_type qwen \
+   --in magma/items/libpng.jsonl --out magma/items_learned/libpng.jsonl --func_key func_vuln
+# 3) (local) sinh test SO: concept tree-sitter vs concept ConceptCoder (cung generator Groq)
+GOLD=magma/items/libpng.jsonl        ... magma/loop.py   # tree-sitter
+GOLD=magma/items_learned/libpng.jsonl ... magma/loop.py  # learned (lines_concept da thay)
+```
+`predict_concepts.py` thay `lines_concept` = concept học-được (giữ bản cũ ở `lines_concept_treesitter`).
+Prompt builder `concept`/`concept_static` đọc `lines_concept` → KHÔNG cần code sinh-test mới.
+
+**Kỳ vọng trung thực:** ConceptCoder học TRÊN nhãn tree-sitter → learned ≈ static về nội dung. Điểm có thể hơn:
+concept học-được **định vị root-cause** tốt hơn (semantic) so với tree-sitter (gắn cờ MỌI sink theo cú pháp).
+Ở teacher có thể vẫn null (placebo đã bác annotation); giá trị rõ hơn khi cấp cho **student generator**.
+
 ## Vì sao đáng làm
 Mọi kết quả teacher phiên trước = NULL (concept bão hoà). Paper cho thấy **ở 3B concept +8.3 F1**. Đây là bằng
 chứng "concept có giá trị ở model YẾU" — mảnh còn thiếu để đóng khung: *teacher không cần concept, student thì có*.
