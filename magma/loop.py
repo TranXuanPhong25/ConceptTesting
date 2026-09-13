@@ -13,7 +13,7 @@ import os, sys, json, time, glob, importlib.util
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(ROOT, "bench"))
 import lab                                                      # noqa: E402 (bench)
-from oracle import run_input, render_input                      # noqa: E402 (magma)
+from oracle import run_input, render_input, assert_healthy, have_images                      # noqa: E402 (magma)
 _ps = importlib.util.spec_from_file_location("magma_prompts", os.path.join(HERE, "prompts.py"))
 _pm = importlib.util.module_from_spec(_ps); _ps.loader.exec_module(_pm)
 BUILD, prompt_key = _pm.BUILD, _pm.prompt_key
@@ -23,9 +23,7 @@ GROQ_RPM = int(os.environ.get("GROQ_RPM", "30"))
 ROUNDS = int(os.environ.get("ROUNDS", "3"))
 CONDS = os.environ.get("CONDS", "magma_blind,magma_concept").split(",")
 CACHE = os.environ.get("MAGMA_LOOP_CACHE", os.path.join(HERE, "loop_cache.jsonl"))
-KEY = os.environ.get("GROQ_API_KEY")
-if not KEY:
-    raise SystemExit("Thieu GROQ_API_KEY.")
+KEY = os.environ.get("GROQ_API_KEY")   # co the BO TRONG neu cache da du (cham lai mien phi)
 
 _cache = {}
 if os.path.exists(CACHE):
@@ -37,7 +35,7 @@ if os.path.exists(CACHE):
 
 from langchain_groq import ChatGroq                              # noqa: E402
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage  # noqa: E402
-llm = ChatGroq(model=GROQ_MODEL, temperature=0.6, groq_api_key=KEY)
+llm = ChatGroq(model=GROQ_MODEL, temperature=0.6, groq_api_key=KEY) if KEY else None
 mi = 60.0 / max(1, GROQ_RPM); last = [0.0]
 
 
@@ -53,6 +51,8 @@ def _lc(msgs):
 def call(msgs, key):
     if key in _cache:
         return _cache[key]
+    if llm is None:
+        raise SystemExit("Cache thieu key=%s va KHONG co GROQ_API_KEY." % key)
     for a in range(6):
         dt = time.monotonic() - last[0]
         if dt < mi:
@@ -112,9 +112,15 @@ def run_item(item, cond):
 
 
 def main():
+    assert_healthy()                 # GATE: oracle phai song moi cham diem
     g = os.environ.get("GOLD")
     files = [g] if g else sorted(glob.glob(os.path.join(HERE, "items", "*.jsonl")))
     items = [json.loads(l) for f in files for l in open(f) if l.strip()]
+    skipped = sorted({i["target"] for i in items if not have_images(i["target"])})
+    if skipped:
+        n0 = len(items); items = [i for i in items if have_images(i["target"])]
+        print("[BO QUA] thieu image cho: %s -> loai %d/%d item (KHONG dem la that bai)"
+              % (", ".join(skipped), n0 - len(items), n0))
     print("items:", len(items), "| ROUNDS:", ROUNDS, "| conds:", CONDS)
     agg = {c: {"trig": 0, "reach": 0, "rend": 0} for c in CONDS}
     binv = {c: {} for c in CONDS}
