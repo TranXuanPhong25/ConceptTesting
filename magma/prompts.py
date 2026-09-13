@@ -93,6 +93,9 @@ BUILD = {"magma_blind": build_blind, "magma_concept": build_concept,
          "magma_fewshot_authored": build_fewshot_authored, "magma_fewshot_juliet": build_fewshot_juliet}
 
 
+PROMPT_VERSION = "v2-nofbleak"   # BUMP khi doi prompt/feedback -> cache cu (nhiem leak) KHONG bi replay
+
+
 def prompt_key(model, cond, item):
-    h = hashlib.sha1(("%s::%s::%s" % (model, cond, item["id"])).encode()).hexdigest()[:16]
-    return "%s::%s::%s" % (cond, item["id"], h)
+    h = hashlib.sha1(("%s::%s::%s::%s" % (PROMPT_VERSION, model, cond, item["id"])).encode()).hexdigest()[:16]
+    return "%s::%s::%s::%s" % (PROMPT_VERSION, cond, item["id"], h)

@@ -79,19 +79,24 @@ def call(msgs, key):
 
 
 def feedback(res, item, rendered):
-    """Phan hoi theo dung trang thai oracle -> dan model tien tung buoc toi trigger."""
-    foc = item.get("focal") or "ham loi"; fc = item.get("fault_cond") or "dieu kien loi"
+    """Phan hoi CHI tu tin hieu ORACLE quan sat duoc (rendered/reached/triggered/crash_fixed).
+
+    !! DA SUA LOI RO RI (2026-09-13): ban cu nhet item["fault_cond"] va item["focal"] — ca hai LAY TU PATCH —
+    vao MOI nhanh feedback. Nghia la tu vong 2 tro di, MOI dieu kien (ke ca `blind`, `concept_static`,
+    `shuffle`, `fewshot`, `learned`) deu duoc mach dieu kien loi => cac so sanh GIUA CAC COND bi nhiem.
+    Feedback gio KHONG nhac ten ham/dieu kien loi; chi noi trang thai oracle (giong coverage-feedback cua fuzzer).
+    Dieu kien LEAK (`magma_concept`) van giu fault_cond — nhung CHI trong prompt vong 1, dung dinh nghia cua no.
+    """
     if not rendered:
         return "Lan truoc: build() KHONG tra ve bytes hop le. Viet lai `def build()` chi dung struct/zlib, return bytes."
     if res.get("crash_fixed"):
-        return ("Lan truoc: input lam CRASH ca ban DA VA -> pha bua, khong dac hieu. "
-                "Can input CHI thoa `%s` tai `%s`, khong lam hong linh tinh." % (fc, foc))
+        return ("Lan truoc: input lam CRASH CA ban da va -> pha bua, khong dac hieu. "
+                "Can input chi kich hoat DUNG loi can tim, khong lam hong linh tinh.")
     if res.get("reached"):
-        return ("Lan truoc: ĐA cham `%s` nhung CHUA thoa dieu kien loi `%s`. "
-                "Chinh gia tri input de `%s` thanh DUNG (dieu chinh truong/kich thuoc lien quan)." % (foc, fc, fc))
-    return ("Lan truoc: input chay nhung KHONG cham `%s` (parser bo som). "
-            "Sua header/chunk cho hop le hon de di toi `%s`, roi moi thoa `%s`." % (foc, foc, fc))
-
+        return ("Lan truoc: da CHAM duoc vung code co lo hong, nhung CHUA thoa dieu kien loi. "
+                "Giu nguyen cau truc, chinh GIA TRI cac truong (kich thuoc/chi so/so luong) cho cuc doan hon.")
+    return ("Lan truoc: input chay nhung CHUA cham vung code co lo hong (parser bo som). "
+            "Sua header/chunk cho hop le hon de di sau vao thu vien.")
 
 def _status(data, res):
     if not data:

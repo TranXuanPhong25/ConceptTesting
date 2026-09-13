@@ -37,6 +37,25 @@ dựng input hợp lệ (95 vs 56) → **chạm hàm lỗi (17 vs 5, ×3.4)** �
 - **REACHED 17 vs 5** là tín hiệu sạch nhất (metric trigger còn thưa): concept dẫn model TỚI sink tốt hơn hẳn.
 - Khớp `bench/` (feedback là đòn bẩy lớn nhất, 77→91%) — nay tái lập **trên thư viện THẬT**.
 
+> ## ⚠️ CẢNH BÁO — Bảng 3, 4, 5 bị NHIỄM LỖ RÒ (phát hiện 2026-09-13, đã sửa code)
+> `feedback()` trong `magma/loop.py` (bản cũ) nhét **`item["fault_cond"]` và `item["focal"]` — cả hai LẤY TỪ PATCH** —
+> vào **mọi nhánh** phản hồi. Nghĩa là **từ vòng 2 trở đi, MỌI điều kiện** (kể cả `blind`, `concept_static`,
+> `shuffle`, `fewshot_*`, `learned`) đều **được mách tên hàm lỗi + điều kiện lỗi**.
+> **Mức phơi nhiễm: 1771/2371 lượt gọi (75%) là vòng ≥1**; hầu hết item chạy đủ 4 vòng (TB 3.81–4.00).
+>
+> **Hệ quả — cái gì còn, cái gì hỏng:**
+> - ❌ **HỎNG: mọi so sánh GIỮA các cond** (`shuffle ≈ static`, `fewshot ≈ placebo`, `learned ≈ tree-sitter`).
+>   Chúng hoà nhau **có thể chỉ vì từ vòng 2 tất cả nhận CÙNG một gợi ý bị rò** → không kết luận được
+>   "nội dung concept không nhân-quả".
+> - ✅ **CÒN VỮNG (thậm chí mạnh hơn): `blind` ≪ mọi cond khác.** `blind` **cũng** nhận leak trong feedback
+>   mà **vẫn 0/100 trigger, 5/100 reached, 56% render** → thiếu source thì dù được mách đáp án cũng không
+>   dựng nổi input hợp lệ. Đây là so sánh **bảo thủ** (thiên vị blind) nên kết luận càng chắc.
+>
+> **Đã sửa:** `feedback()` giờ chỉ dùng tín hiệu oracle quan sát được (rendered/reached/triggered/crash_fixed),
+> **không** nhắc tên hàm hay điều kiện lỗi (giống coverage-feedback của fuzzer). `magma_concept` vẫn giữ
+> fault_cond nhưng **chỉ ở prompt vòng 1** — đúng định nghĩa của nó. `PROMPT_VERSION="v2-nofbleak"` được đưa vào
+> `prompt_key` để **cache nhiễm KHÔNG bị replay**. Cần **chạy lại toàn bộ (tốn API)** mới có số sạch.
+
 ## Bảng 4 — ⭐ BẢNG CHỐT: 6 điều kiện trên **ĐỦ 100 bug**, ROUNDS=3 (oracle đã verify lành)
 libtiff đã fix build (autogen tải `config.guess` lỗi) → **14/14 image, 100/100 bug**. Tất cả từ cache, 0 API call.
 
