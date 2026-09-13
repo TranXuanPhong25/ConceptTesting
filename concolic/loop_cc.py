@@ -105,15 +105,18 @@ def concolic_solve(data, item, budget=16):
 
 
 def feedback(res, item, rendered):
-    foc = item.get("focal") or "ham loi"
+    """CHI tin hieu oracle quan sat duoc — KHONG nhac ten ham/dieu kien loi (dong bo voi magma/loop.py sau khi
+    sua lo ro 2026-09-13). Cac cond o day deu da co source trong prompt vong 1 nen khong mat thong tin."""
     if not rendered:
         return "Lan truoc: build() KHONG tra bytes hop le. Viet lai `def build()` chi dung struct/zlib, return bytes."
     if res.get("crash_fixed"):
-        return "Lan truoc: CRASH ca ban da va -> pha bua. Chi thoa dung dieu kien loi tai `%s`, khong pha linh tinh." % foc
+        return ("Lan truoc: CRASH CA ban da va -> pha bua. Can input chi kich hoat DUNG loi can tim, "
+                "khong lam hong linh tinh.")
     if res.get("reached"):
-        return "Lan truoc: ĐA cham `%s` nhung CHUA thoa dieu kien loi. Chinh gia tri input (bien/kich thuoc lien quan)." % foc
-    return "Lan truoc: KHONG cham `%s` (parser bo som). Sua header/chunk cho hop le de di toi sink." % foc
-
+        return ("Lan truoc: da CHAM duoc vung code co lo hong nhung CHUA thoa dieu kien loi. "
+                "Giu cau truc, chinh GIA TRI cac truong (kich thuoc/chi so/so luong) cho cuc doan hon.")
+    return ("Lan truoc: CHUA cham vung code co lo hong (parser bo som). "
+            "Sua header/chunk cho hop le hon de di sau vao thu vien.")
 
 def run_item(item, cond, boot=None):
     msgs = _init_msgs(item, cond, boot); best = 0
