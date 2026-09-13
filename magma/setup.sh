@@ -40,6 +40,15 @@ build_one() {   # $1=tag | $2=CANARY_MODE(1|3) | $3=isan(0|1)
     echo "-> built $tag"
 }
 
+# FIXUP libtiff: autogen.sh tai config.guess/config.sub tu savannah.gnu.org; server tra loi -> wget exit 8
+# -> `exit $retval` giet build. Nhung `automake --add-missing` DA cai san config.guess roi => tai la THUA.
+# Bo `exit $retval` (tai loi thi khong mv, giu file automake da cai). Idempotent.
+_tiff_build="$MAGMA/targets/libtiff/build.sh"
+if [ -f "$_tiff_build" ] && ! grep -q 'FIX-autogen' "$_tiff_build"; then
+    perl -0pi -e 's{\./autogen\.sh}{# FIX-autogen: bo qua loi tai config.guess (savannah tra loi -> wget exit 8)\nsed -i "s/exit \\\$retval/true/g" autogen.sh\n./autogen.sh}' "$_tiff_build"
+    echo "[fixup] libtiff/build.sh: vo hieu 'exit \$retval' trong autogen.sh"
+fi
+
 set +e                                    # 1 target hong KHONG lam abort ca batch
 OKS=""; FAILS=""
 for TARGET in $TARGETS; do

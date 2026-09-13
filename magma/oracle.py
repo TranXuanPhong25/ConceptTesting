@@ -89,6 +89,32 @@ def discrim(res):
     return int(res["triggered"] and res["crash_fixed"] == 0)
 
 
+_IMG_CACHE = {}
+
+
+def have_images(target):
+    """Co DU ca 2 image vuln+fixed cho target khong (de bo qua item khong danh gia duoc,
+    thay vi dem NHAM thanh that bai)."""
+    if target not in _IMG_CACHE:
+        ok = all(subprocess.run(["docker", "image", "inspect", "magma-%s-%s" % (target, v)],
+                                capture_output=True).returncode == 0 for v in ("vuln", "fixed"))
+        _IMG_CACHE[target] = ok
+    return _IMG_CACHE[target]
+
+
+def assert_healthy():
+    """GATE: bat buoc chay TRUOC khi cham diem. Neu oracle hong (mat image/docker down) thi MOI item se
+    ra reached=0/triggered=0 -> bang so RAC ma nhin van 'hop le'. Da dinh 1 lan (mat 14 image) -> abort som."""
+    ok = discrim(run_input(make_plte_png(8, 1),
+                           {"target": "libpng", "program": "libpng_read_fuzzer", "bug_id": "PNG003"}))
+    if not ok:
+        raise SystemExit("[ORACLE HONG] selftest PNG003 that bai (DISCRIM=0). Kiem tra:\n"
+                         "  docker images | grep magma-   (thieu image? -> bash magma/setup.sh)\n"
+                         "  docker ps                      (daemon chay chua?)\n"
+                         "KHONG cham diem khi oracle hong — moi cond se ra 0%% (so RAC).")
+    return True
+
+
 def render_input(model_text, timeout=10, maxlen=8 << 20):
     """Rut khoi ```python ... ``` dinh nghia build(), chay trong subprocess -> bytes input. None neu loi."""
     m = re.search(r"```(?:python)?\s*([\s\S]*?)```", model_text or "")

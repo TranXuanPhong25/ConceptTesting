@@ -75,8 +75,9 @@ def build_fewshot_authored(item):
 
 
 def build_fewshot_juliet(item):
-    """Few-shot JULIET: cap vuln/fixed THAT lam vi du day reasoning + concept_static (de-leak)."""
-    return _fewshot_prompt(item, _fewshot_mod().juliet_examples(2))
+    """Few-shot JULIET: cap vuln/fixed THAT day reasoning + concept_static (de-leak).
+    KHOP HO: vi du dau chon cung `family_pred` voi bug dang giai (retrieval few-shot)."""
+    return _fewshot_prompt(item, _fewshot_mod().juliet_examples(2, item.get("family_pred")))
 
 
 def build_concept_shuffle(item):
@@ -93,6 +94,9 @@ BUILD = {"magma_blind": build_blind, "magma_concept": build_concept,
          "magma_fewshot_authored": build_fewshot_authored, "magma_fewshot_juliet": build_fewshot_juliet}
 
 
+PROMPT_VERSION = "v2-nofbleak"   # BUMP khi doi prompt/feedback -> cache cu (nhiem leak) KHONG bi replay
+
+
 def prompt_key(model, cond, item):
-    h = hashlib.sha1(("%s::%s::%s" % (model, cond, item["id"])).encode()).hexdigest()[:16]
-    return "%s::%s::%s" % (cond, item["id"], h)
+    h = hashlib.sha1(("%s::%s::%s::%s" % (PROMPT_VERSION, model, cond, item["id"])).encode()).hexdigest()[:16]
+    return "%s::%s::%s::%s" % (PROMPT_VERSION, cond, item["id"], h)

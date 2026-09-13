@@ -13,7 +13,7 @@ import os, sys, json, collections, importlib.util
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(ROOT, "bench"))
 import lab                                                      # noqa: E402  (bench/lab -> cache sys.modules['prompts']=bench)
-from oracle import run_input, discrim, render_input             # noqa: E402  (magma, ten rieng)
+from oracle import run_input, discrim, render_input, assert_healthy             # noqa: E402  (magma, ten rieng)
 
 # magma/prompts va bench/prompts TRUNG ten -> nap magma/prompts theo DUONG DAN (tranh bench/prompts da cache).
 _ps = importlib.util.spec_from_file_location("magma_prompts", os.path.join(HERE, "prompts.py"))
@@ -51,6 +51,7 @@ def _samples(item, cond, cache):
 
 
 def main():
+    assert_healthy()                 # GATE: oracle phai song moi cham diem
     cache = load_cache()
     if not cache:
         raise SystemExit("Cache rong (%s). Chay magma/gen.py truoc." % CACHE)
