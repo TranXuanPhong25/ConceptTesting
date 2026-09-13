@@ -37,6 +37,49 @@ dựng input hợp lệ (95 vs 56) → **chạm hàm lỗi (17 vs 5, ×3.4)** �
 - **REACHED 17 vs 5** là tín hiệu sạch nhất (metric trigger còn thưa): concept dẫn model TỚI sink tốt hơn hẳn.
 - Khớp `bench/` (feedback là đòn bẩy lớn nhất, 77→91%) — nay tái lập **trên thư viện THẬT**.
 
+## Bảng 4 — ⭐ BẢNG CHỐT: 6 điều kiện trên CÙNG 86 bug, ROUNDS=3 (nhất quán, oracle đã verify)
+86/100 bug (libtiff 14 bug build fail → **loại, không đếm là thất bại**). Tất cả từ cache, 0 API call.
+
+| cond | có source? | có đáp án? | rendered | REACHED | TRIGGER |
+|---|---|---|---|---|---|
+| `blind` | ✗ | ✗ | 48% | **4/86** | **0/86** |
+| `concept` (LEAK) | ✗ | ✓ fault_cond từ patch | 94% | 16/86 | **8/86** |
+| `concept_static` (C1) | ✓ | ✗ | 96% | 18/86 | 4/86 |
+| `concept_shuffle` (**placebo**) | ✓ | ✗ (nhãn **SAI**) | 96% | 20/86 | 6/86 |
+| `fewshot_authored` | ✓ | ✗ | 97% | 18/86 | 5/86 |
+| `fewshot_juliet` | ✓ | ✗ | **100%** | **22/86** | 7/86 |
+
+**McNemar vs `blind`** — mọi cond thắng **một chiều tuyệt đối (không thua ca nào)**:
+| cond | TRIGGER | REACHED |
+|---|---|---|
+| concept (leak) | +8 −0 p=0.0078 | +13 −1 **p=0.0018** |
+| concept_static | +4 −0 p=0.125 | +15 −1 **p=0.0005** |
+| concept_shuffle | +6 −0 p=0.031 | +17 −1 **p=0.0001** |
+| fewshot_authored | +5 −0 p=0.063 | +14 −0 **p=0.0001** |
+| fewshot_juliet | +7 −0 p=0.016 | +18 −0 **p=0.00001** |
+
+**Giữa các cond (không tính blind) — TẤT CẢ ns:**
+`juliet > static` +3−0 p=0.25 · `juliet vs concept(leak)` +2−3 p=1.0 · `static vs concept` +1−5 p=0.22 ·
+`static vs shuffle` +1−3 p=0.63 · **`juliet > shuffle` +2−1 p=1.0 (TRIGGER), +3−1 p=0.63 (REACHED)**
+
+### Kết luận chốt (phủ định phần lớn, nhưng có 1 khẳng định mạnh)
+1. **KHẲNG ĐỊNH MẠNH — thông tin bug-cụ-thể là thứ DUY NHẤT quan trọng.** `blind` gần như vô dụng
+   (**0/86 trigger, 4/86 reached, chỉ 48% render nổi input hợp lệ**). Mọi cond có *bất kỳ* thông tin cụ thể nào
+   (source HOẶC điều kiện lỗi) đều nhảy vọt: REACHED 4→16-22, **p ≤ 0.0018 tới 0.00001**. Đây là kết quả
+   **significant và nhất quán nhất** của cả dự án.
+2. **PHỦ ĐỊNH — DẠNG của thông tin thì KHÔNG quan trọng.** Mọi cặp giữa các cond ns:
+   - `concept_shuffle` (nhãn concept **SAI hoàn toàn**) = 6/86, **≥ `concept_static` (đúng) 4/86** → **lần thứ 2
+     độc lập** xác nhận annotation tree-sitter **KHÔNG nhân-quả**.
+   - **`fewshot_juliet` KHÔNG hơn placebo** (+2−1 p=1.0) → few-shot cũng **không** nhân-quả. (Ban đầu
+     tôi tưởng juliet "lấy lại được 8% mà không leak" — **sai**: placebo cũng làm được tương đương.)
+   - reachability (C2) +0, concolic (C3) +1 bug — đã đo ở Bảng 3b, cũng ns.
+3. **Suy ra:** với model mạnh, đưa **source hàm lỗi hoặc điều kiện lỗi** + feedback loop là ĐỦ; mọi lớp
+   concept/annotation/few-shot/reachability/concolic chồng thêm đều **không phân biệt được về mặt thống kê**.
+   Giá trị của chúng (nếu có) thuộc về **model yếu (student)**, không phải teacher.
+
+**Phương pháp luận rút ra:** nếu không có **placebo control**, ta đã kết luận sai 3 lần
+(concept "thắng", few-shot "thắng", juliet "lấy lại được leak"). Placebo là thứ bác bỏ cả 3.
+
 ## Giới hạn (trung thực)
 - **Tuyệt đối vẫn khiêm tốn** (8/100 trigger): nhiều bug Magma cực hiếm trigger kể cả fuzzing 24h, hoặc không
   reachable qua harness đang dùng (đọc-file). Đây là trần của bài toán, không phải của concept.
