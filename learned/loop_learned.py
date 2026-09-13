@@ -20,7 +20,13 @@ import lab                                                      # noqa: E402 (be
 from oracle import run_input, render_input, assert_healthy, have_images                      # noqa: E402 (magma)
 _ps = importlib.util.spec_from_file_location("magma_prompts", os.path.join(MAGMA, "prompts.py"))
 _pm = importlib.util.module_from_spec(_ps); _ps.loader.exec_module(_pm)
-BUILD, prompt_key = _pm.BUILD, _pm.prompt_key
+BUILD, _pk = _pm.BUILD, _pm.prompt_key
+
+
+def prompt_key(model, cond, item):
+    """LEARNED-SALT: prompt_key goc chi hash model::cond::item_id (KHONG hash noi dung prompt) ->
+    item learned va item tree-sitter se ra KEY TRUNG NHAU. Them salt de tuyet doi khong lan cache."""
+    return "learned::" + _pk(model, cond, item)
 
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_RPM = int(os.environ.get("GROQ_RPM", "30"))
