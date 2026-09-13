@@ -33,9 +33,23 @@ def build():
 
 
 def _fmt_juliet(it):
-    return ("Vi du (Juliet %s, %s): ham co lo hong:\n```c\n%s\n```\nTest kich hoat: `%s`\n"
-            "Ly do: guard hien co KHONG chan het -> truyen gia tri VI PHAM bien.\n"
-            % (it.get("cwe", ""), it.get("family", ""), (it["func_vuln"] or "").strip(), it.get("ref_test", "")))
+    """Vi du phai MIRROR dung format bai that: [block CONCEPT] -> [suy luan] -> [input kich hoat].
+
+    !! SUA 2026-09-13: ban cu CHI dua source + test, KHONG dua block concept => model khong he duoc day
+    'doc block concept nhu the nao'. Bai that lai dua dung block do (Buffer/sink/guard/bien) => vi du va
+    bai that LECH FORMAT, few-shot mat phan lon tac dung. Gio chay CHINH `concept_static.concept_text()`
+    (cung ham dung cho bai that) len vi du Juliet -> day tron chuoi suy luan concept -> input.
+    """
+    import os as _os, sys as _sys
+    _sys.path.insert(0, _os.path.join(ROOT, "magma"))
+    import concept_static as cs                                   # cung bo trich concept voi bai that
+    block = cs.concept_text(it)
+    # bo dong ket "=> HAY TU SUY..." cua vi du: o day ta TRA LOI thay vi hoi
+    block = "\n".join(l for l in block.split("\n") if not l.startswith("=> HAY TU SUY"))
+    return ("--- Vi du (Juliet %s) ---\n%s\nSOURCE:\n```c\n%s\n```\n"
+            "SUY LUAN: guard hien co khong chan het mien gia tri cua bien input -> chon gia tri VI PHAM bien.\n"
+            "INPUT KICH HOAT: `%s`\n"
+            % (it.get("cwe", ""), block, (it["func_vuln"] or "").strip(), it.get("ref_test", "")))
 
 
 def juliet_examples(k=2):
@@ -45,8 +59,11 @@ def juliet_examples(k=2):
         return ""
     items = [json.loads(l) for l in open(p) if l.strip()]
     pick, seen = [], set()
-    for it in items:                                    # da-dang ho: 1 dai dien / family
-        f = it.get("family")
+    # da-dang theo `family_pred` (= truong bai that dung), KHONG theo `family`:
+    # dedup theo `family` cho ra oob_write+oob_read -> ca hai deu map ve family_pred "oob" (trung lap).
+    # Magma phan bo: oob 48, null_deref 31, double_free 13, uaf 3 -> can 1 spatial + 1 temporal.
+    for it in items:
+        f = it.get("family_pred") or it.get("family")
         if f not in seen and it.get("func_vuln") and it.get("ref_test"):
             seen.add(f); pick.append(it)
         if len(pick) >= k:
