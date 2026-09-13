@@ -91,7 +91,7 @@ libtiff đã fix build (autogen tải `config.guess` lỗi) → **14/14 image, 1
      độc lập** xác nhận annotation tree-sitter **KHÔNG nhân-quả**.
    - **`fewshot_juliet` KHÔNG hơn placebo** (+2−1 p=1.0) → few-shot cũng **không** nhân-quả. (Ban đầu
      tôi tưởng juliet "lấy lại được 8% mà không leak" — **sai**: placebo cũng làm được tương đương.)
-   - reachability (C2) +0, concolic (C3) +1 bug — đã đo ở Bảng 3b, cũng ns.
+   - reachability (C2) +0, byte-sweep (C3) +1 bug — đã đo ở Bảng 3b, cũng ns.
 3. **Suy ra:** với model mạnh, đưa **source hàm lỗi hoặc điều kiện lỗi** + feedback loop là ĐỦ; mọi lớp
    concept/annotation/few-shot/reachability/concolic chồng thêm đều **không phân biệt được về mặt thống kê**.
    Giá trị của chúng (nếu có) thuộc về **model yếu (student)**, không phải teacher.
@@ -151,14 +151,14 @@ Trả lời critique "concept = mách đáp án (fault_cond bê từ patch)". Ch
 
 McNemar: `concept>blind` **+8 −0 p=0.0078** · `concept_static>concept` +1 −5 p=0.22 · `shuffle>static` +3 −1 p=0.625.
 
-### 3b — Reachability + Concolic (`concolic/loop_cc.py`, 3 cond) — bootstrap reaching **34/100**
+### 3b — Reachability + Concolic (`byte_sweep/loop_bytesweep.py`, 3 cond) — bootstrap reaching **34/100**
 | cond | rendered | REACHED | TRIGGER |
 |---|---|---|---|
 | concept_static (C1) | 95% | 20% | 4% |
 | concept_reach (+C2 seed reaching + grammar) | 98% | **24%** | 4% |
-| concept_cc (+C3 concolic byte-sweep) | 100% | 25% | **5%** |
+| concept_bytesweep (+C3 byte-sweep) | 100% | 25% | **5%** |
 
-McNemar: `reach>static` +2 −2 p=1.0 · `cc>reach` +1 −0 p=1.0.
+McNemar: `reach>static` +2 −2 p=1.0 · `bytesweep>reach` +1 −0 p=1.0.
 
 ### Diễn giải (thẳng — phần lớn NULL ở teacher)
 1. **Leak thổi số**: `concept` 8% có được nhờ **fault_cond bê từ patch** (mách đáp án). Bỏ leak → `concept_static` **4%**. Con số trung thực là 4%.
@@ -177,6 +177,6 @@ GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python magma/loop.py     # blind_fb vs c
 CONDS=magma_blind,magma_concept,magma_concept_static,magma_concept_shuffle \
   GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python magma/loop.py
 # Reachability + concolic (Bảng 3, phần động):
-GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python concolic/loop_cc.py
+GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python byte_sweep/loop_bytesweep.py
 GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py && .venv/bin/python magma/score.py   # one-shot (Bảng 1)
 ```
