@@ -75,8 +75,9 @@ def build_fewshot_authored(item):
 
 
 def build_fewshot_juliet(item):
-    """Few-shot JULIET: cap vuln/fixed THAT lam vi du day reasoning + concept_static (de-leak)."""
-    return _fewshot_prompt(item, _fewshot_mod().juliet_examples(2))
+    """Few-shot JULIET: cap vuln/fixed THAT day reasoning + concept_static (de-leak).
+    KHOP HO: vi du dau chon cung `family_pred` voi bug dang giai (retrieval few-shot)."""
+    return _fewshot_prompt(item, _fewshot_mod().juliet_examples(2, item.get("family_pred")))
 
 
 def build_concept_shuffle(item):

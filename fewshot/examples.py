@@ -32,6 +32,19 @@ def build():
 """
 
 
+# Loi suy luan phai KHOP HO — ban cu hardcode 1 cau kieu OOB, dung cho ca vi du null_deref/uaf => day SAI.
+_REASON = {
+    "oob":         "guard hien co khong chan het mien gia tri cua bien input -> chon gia tri VUOT bien buffer.",
+    "oob_write":   "guard hien co khong chan het -> chon chi so/kich thuoc VUOT bien de GHI ngoai buffer.",
+    "oob_read":    "guard hien co khong chan het -> chon chi so VUOT bien de DOC ngoai buffer.",
+    "null_deref":  "ham deref con tro ma KHONG kiem NULL -> truyen thang NULL vao.",
+    "uaf":         "con tro bi free roi van duoc dung lai -> di dung duong dan cham vao no SAU khi free.",
+    "double_free": "cung mot con tro bi free HAI lan -> di duong dan lam ca hai lan free deu chay.",
+    "int_overflow": "phep tinh kich thuoc bi tran -> chon gia tri lam ket qua wrap ve nho/am.",
+    None:          "tim gia tri input lam VI PHAM gia dinh an toan cua doan code nguy hiem.",
+}
+
+
 def _fmt_juliet(it):
     """Vi du phai MIRROR dung format bai that: [block CONCEPT] -> [suy luan] -> [input kich hoat].
 
@@ -47,27 +60,39 @@ def _fmt_juliet(it):
     # bo dong ket "=> HAY TU SUY..." cua vi du: o day ta TRA LOI thay vi hoi
     block = "\n".join(l for l in block.split("\n") if not l.startswith("=> HAY TU SUY"))
     return ("--- Vi du (Juliet %s) ---\n%s\nSOURCE:\n```c\n%s\n```\n"
-            "SUY LUAN: guard hien co khong chan het mien gia tri cua bien input -> chon gia tri VI PHAM bien.\n"
+            "SUY LUAN: %s\n"
             "INPUT KICH HOAT: `%s`\n"
-            % (it.get("cwe", ""), block, (it["func_vuln"] or "").strip(), it.get("ref_test", "")))
+            % (it.get("cwe", ""), block, (it["func_vuln"] or "").strip(),
+               _REASON.get(it.get("family_pred") or it.get("family"), _REASON[None]),
+               it.get("ref_test", "")))
 
 
-def juliet_examples(k=2):
-    """Lay k cap vuln/fixed THAT tu Juliet gold (da-dang ho) lam few-shot day reasoning."""
+def juliet_examples(k=2, target_family=None):
+    """k vi du Juliet. Neu co `target_family` -> KHOP HO (retrieval few-shot): vi du dau tien CUNG HO voi
+    bug dang giai, vi du sau khac ho (doi chieu).
+
+    !! SUA 2026-09-13 (user chi ra thieu da dang). Ban cu: chon CO DINH `oob`+`double_free` cho ca 100 bug
+    => `null_deref` (31/100 bug Magma — ho lon thu 2) KHONG co vi du nao, `uaf` cung khong.
+    Kho Juliet co du: oob 7, double_free 5, null_deref 4, uaf 3.
+    HAN CHE CON LAI (khong sua duoc bang Juliet): vi du dai 3-7 dong (median 4) trong khi ham Magma
+    median 55 / max 782 dong -> lech quy mo ~14x. Vi du day duoc LOI SUY LUAN, khong day duoc do phuc tap that.
+    """
     p = os.path.join(ROOT, "bench", "items", "gold_juliet.jsonl")
     if not os.path.exists(p):
         return ""
-    items = [json.loads(l) for l in open(p) if l.strip()]
+    items = [it for it in (json.loads(l) for l in open(p) if l.strip())
+             if it.get("func_vuln") and it.get("ref_test")]
+    fam = lambda it: it.get("family_pred") or it.get("family")
     pick, seen = [], set()
-    # da-dang theo `family_pred` (= truong bai that dung), KHONG theo `family`:
-    # dedup theo `family` cho ra oob_write+oob_read -> ca hai deu map ve family_pred "oob" (trung lap).
-    # Magma phan bo: oob 48, null_deref 31, double_free 13, uaf 3 -> can 1 spatial + 1 temporal.
-    for it in items:
-        f = it.get("family_pred") or it.get("family")
-        if f not in seen and it.get("func_vuln") and it.get("ref_test"):
-            seen.add(f); pick.append(it)
+    if target_family:                                   # uu tien vi du CUNG HO voi bug muc tieu
+        for it in items:
+            if fam(it) == target_family:
+                pick.append(it); seen.add(fam(it)); break
+    for it in items:                                    # bu them cac ho KHAC (doi chieu)
         if len(pick) >= k:
             break
+        if fam(it) not in seen:
+            seen.add(fam(it)); pick.append(it)
     if not pick:
         return ""
     return ("VI DU (cap vuln/fixed THAT — hoc cach: guard thieu gi -> gia tri nao vi pham):\n\n"
