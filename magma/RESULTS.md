@@ -77,6 +77,38 @@ libtiff đã fix build (autogen tải `config.guess` lỗi) → **14/14 image, 1
    concept/annotation/few-shot/reachability/concolic chồng thêm đều **không phân biệt được về mặt thống kê**.
    Giá trị của chúng (nếu có) thuộc về **model yếu (student)**, không phải teacher.
 
+## Bảng 5 — Concept HỌC-ĐƯỢC (ConceptCoder) vs tree-sitter — **xác nhận độc lập LẦN 3**
+`learned/loop_learned.py` (clone, cache riêng). Concept từ **lớp `cbl` của ConceptCoder tự train** (Kaggle,
+Qwen2.5-Coder-3B LoRA 3 epoch, VD F1 64.36) thay cho tree-sitter. Prompt template **giữ nguyên** → biến duy
+nhất = NGUỒN CONCEPT. Cùng 100 bug, ROUNDS=3.
+
+| nguồn concept | rendered | REACHED | TRIGGER |
+|---|---|---|---|
+| tree-sitter (tĩnh) | 97% | 19/100 | 4/100 |
+| **ConceptCoder (học-được)** | 98% | **19/100** | **5/100** |
+
+McNemar `learned > tree-sitter`: TRIGGER +2 −1 **p=1.0** · REACHED +6 −6 **p=1.0** (hoà tuyệt đối).
+
+**Đáng chú ý:** concept học-được bị **hỏng nặng** về chất lượng — `buffer_allocation` **0/38**, `bound_check`
+**1/35**, và PNG003 bị gán **SAI họ** (`null_deref` thay vì `oob`), không liệt kê nổi buffer/sink/guard nào.
+Dự đoán trước khi chạy là *"learned sẽ thua rõ"* — **SAI**. Chi tiết cục bộ thì đúng (PNG003 **chính là** bug
+duy nhất tree-sitter trigger được mà learned mất), nhưng learned lại được **LUA004 + TIF007** → **hoà**.
+
+⇒ **Ngay cả concept SAI/hỏng cũng không làm giảm hiệu năng** — trùng khớp hoàn toàn với placebo.
+
+## ⭐ Tổng kết: 3 control độc lập, cùng một kết luận
+| # | Control | Concept bị làm gì | Kết quả |
+|---|---|---|---|
+| 1 | `concept_shuffle` | xáo nhãn, đảo family (**SAI có chủ đích**) | 6/100 **≥** static 4/100 |
+| 2 | `fewshot_juliet` | thêm ví dụ dạy suy luận | +2 −1 vs placebo, **p=1.0** |
+| 3 | `learned` (ConceptCoder) | nhãn **collapse, sai họ** (model tự học) | +2 −1 vs tree-sitter, **p=1.0** |
+
+Ba cách làm hỏng/thay đổi concept theo 3 kiểu khác nhau → **không cái nào đổi kết quả**. Trong khi bỏ hẳn
+thông tin (`blind`) thì sập hoàn toàn (0/100 trigger, 5/100 reached, 56% render). 
+
+**Kết luận cuối cùng:** cái model cần là **sự hiện diện của thông tin bug-cụ-thể** (source hàm lỗi hoặc điều kiện
+lỗi), **không phải chất lượng/dạng của concept annotation**.
+
 **Phương pháp luận rút ra:** nếu không có **placebo control**, ta đã kết luận sai 3 lần
 (concept "thắng", few-shot "thắng", juliet "lấy lại được leak"). Placebo là thứ bác bỏ cả 3.
 
