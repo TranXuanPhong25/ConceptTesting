@@ -90,6 +90,38 @@ def _status(res):
     return 2 if res["reached"] else 1
 
 
+# ===== XUAT HINT NGAY TRONG LUC CHAM (EMIT_HINTS=1) =====
+# loop_symcc (cham baseline SymCC-thuan) va export_hints (lay hint cho hybrid) DEU solve SymCC cung 100 bug.
+# De khoi solve 2 lan (~2-4h), khi EMIT_HINTS=1 loop_symcc luu luon hint: mot input SymCC giai ra ma CHAM
+# ham loi + cac byte no doi so voi seed. Sau do run_hybrid.sh bo qua export (hint da co) va chi gen.
+EMIT_HINTS = os.environ.get("EMIT_HINTS") == "1"
+HINTDIR = os.path.join(HERE, "hints")
+HINT_MAXBYTES = int(os.environ.get("HINT_MAXBYTES", "192"))
+
+
+def _hex(b, cap=HINT_MAXBYTES):
+    b = b[:cap]
+    return " ".join("%02x" % c for c in b)
+
+
+def _changed(seed, solved, topk=12):
+    n = min(len(seed), len(solved)); diffs = []
+    for i in range(n):
+        if seed[i] != solved[i]:
+            diffs.append((i, seed[i], solved[i]))
+    return diffs[:topk]
+
+
+def _save_hint(item, seed, solved, n_solved):
+    os.makedirs(HINTDIR, exist_ok=True)
+    ch = _changed(seed, solved)
+    json.dump({"bug_id": item["bug_id"], "target": item["target"], "pick_mode": "loop-reached",
+               "n_solved": n_solved, "seed_len": len(seed), "solved_len": len(solved),
+               "solved_hex": _hex(solved), "seed_hex": _hex(seed),
+               "changed": [{"off": o, "from": "0x%02x" % a, "to": "0x%02x" % b} for (o, a, b) in ch]},
+              open(os.path.join(HINTDIR, "%s.json" % item["bug_id"]), "w"), indent=1)
+
+
 def _bootstrap(item):
     """Nhu taint.bootstrap_reaching nhung KIEM SOAT nguon seed (xem ghi chu SEED_SRC o dau file).
     Mac dinh corpus-only => khong thua huong bat ky input nao do LLM sinh (ke ca cond co leak)."""
@@ -116,7 +148,15 @@ def run_item(item):
     if not boot:
         return 0, 0, False                                     # khong co seed nao CHAM ham loi => SymCC vo phuong
     seeds, best, nsolved, seen = [boot["seed"]], 2 + boot["triggered"], 0, set()
+    hint_saved = [False]
+
+    def _maybe_hint(solved):                                   # luu 1 input CHAM ham loi lam hint (lan dau)
+        if EMIT_HINTS and not hint_saved[0]:
+            _save_hint(item, boot["seed"], solved, nsolved); hint_saved[0] = True
+
     if best == 3:                                              # seed da trigger san (hiem) -> khong can giai
+        if EMIT_HINTS:
+            _save_hint(item, boot["seed"], boot["seed"], 0)
         return 3, 0, True
     for _ in range(ROUNDS):
         nxt = []
@@ -128,6 +168,8 @@ def run_item(item):
                 seen.add(h); nsolved += 1
                 st = _status(run_input(c, item))
                 best = max(best, st)
+                if st >= 2:
+                    _maybe_hint(c)                             # input nay CHAM ham loi -> dung lam hint
                 if st == 3:
                     return 3, nsolved, True
                 # GUIDE=canary: chi dao sau input CON cham ham loi — tin hieu nay tu canary (= tu patch),
@@ -141,6 +183,20 @@ def run_item(item):
 
 
 def main():
+    # GUARD chong chay TRUNG (su co 2026-09-14: chay 2 lan song song -> 2x RAM Z3 + de len run100.log/
+    # results_symcc.json/oracle_cache). Chi cho 1 tien trinh loop_symcc mot luc.
+    import atexit
+    lock = os.path.join(HERE, ".loop_symcc.lock")
+    if os.path.exists(lock):
+        try:
+            pid = int(open(lock).read().strip()); os.kill(pid, 0)
+            raise SystemExit("[DANG CHAY] da co loop_symcc.py khac (PID %d). Chay song song se tranh RAM "
+                             "va de len ket qua. Doi no xong, hoac: kill %d && rm %s" % (pid, pid, lock))
+        except (ValueError, ProcessLookupError, PermissionError):
+            pass
+    open(lock, "w").write(str(os.getpid()))
+    atexit.register(lambda: os.path.exists(lock) and os.remove(lock))
+
     assert_healthy()
     g = os.environ.get("GOLD")
     files = [g] if g else sorted(glob.glob(os.path.join(ROOT, "magma", "items", "*.jsonl")))

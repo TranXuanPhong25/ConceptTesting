@@ -30,20 +30,8 @@ MAXHEX = int(os.environ.get("HINT_MAXBYTES", "192"))          # cat hexdump cho 
 OUTDIR = os.path.join(HERE, "hints")
 
 
-def _hex(b, cap=MAXHEX):
-    b = b[:cap]
-    return " ".join("%02x" % c for c in b) + ("" if len(b) <= cap else " ...")
-
-
-def _changed(seed, solved, topk=12):
-    """Cac offset byte SymCC doi (seed -> solved), tap trung noi thay doi. Poor-man constraint."""
-    n = min(len(seed), len(solved)); diffs = []
-    for i in range(n):
-        if seed[i] != solved[i]:
-            diffs.append((i, seed[i], solved[i]))
-    if len(solved) > len(seed):
-        diffs.append((n, None, solved[n] if n < len(solved) else 0))
-    return diffs[:topk]
+_hex = ls._hex                                                # dung chung ham voi loop_symcc (EMIT_HINTS)
+_changed = ls._changed
 
 
 def make_hint(item):
