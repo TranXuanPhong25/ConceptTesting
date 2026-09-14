@@ -180,3 +180,47 @@ CONDS=magma_blind,magma_concept,magma_concept_static,magma_concept_shuffle \
 GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python byte_sweep/loop_bytesweep.py
 GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py && .venv/bin/python magma/score.py   # one-shot (Bảng 1)
 ```
+
+## Bảng 6 — SymCC (concolic THẬT) + Hybrid SymCC→LLM — trên 7 bug libpng
+`symcc/` (SymCC + Z3, fuzzer `symcc_std` = vanilla + SymCC, KHÔNG AFL). Seed corpus gốc (không LLM).
+Chỉ build image symcc cho libpng → đo trên 7 bug libpng (không phải 100). `loop_symcc.py` chấm bằng
+đúng oracle vi-phân của bảng LLM.
+
+### 6a — SymCC thuần vs có canary dẫn đường (7 bug libpng)
+| cond | có seed | REACHED | TRIGGER | input Z3 giải |
+|---|---|---|---|---|
+| SymCC `GUIDE=none` (thuần) | 5/7 | 5/7 | **1/7** (PNG003) | 694 |
+| SymCC `GUIDE=canary` (dẫn đường = tín hiệu patch) | 5/7 | 5/7 | **1/7** | 1684 |
+
+→ **Canary dẫn đường giải gấp 2.4× input nhưng KHÔNG thêm trigger nào.** Vấn đề không phải thiếu dẫn
+đường mà là **không tới được nhánh fault** — SymCC-không-AFL chỉ lật nhánh nằm trên đường đi của seed
+tĩnh. PNG002/PNG004 không có seed chạm → SymCC vô phương (best=0). Đây là trần của concolic-không-fuzzer.
+
+**So LLM vs SymCC trên cùng 7 bug libpng:** LLM (cond tốt nhất, gộp) **3/7** (PNG001, PNG003, PNG007) >
+SymCC thuần **1/7** (PNG003). SymCC không trigger được bug nào LLM không làm được. PNG001 (magic value
+`0x55555555`) SymCC trượt vì seed corpus không dẫn tới nhánh `row_factor` overflow (paper: SymCC-**AFL**
+mới nhanh trên bug này; ta bỏ AFL).
+
+### 6b — Hybrid SymCC→LLM (`magma_hybrid_symcc`): nhét reasoning SymCC vào prompt LLM
+Cond = `concept_static` (de-leak) + hint từ SymCC (1 input CHẠM hàm lỗi + byte SymCC phải đổi so với seed).
+5 bug libpng có hint (PNG001/003/005/006/007). Feedback loop, ROUNDS=3.
+
+| cond | rendered | REACHED | TRIGGER |
+|---|---|---|---|
+| blind | 60% | 40% | 0% |
+| concept_static | 100% | **100%** (5/5) | 20% (1/5) |
+| **hybrid_symcc** | 100% | **80%** (4/5) | 20% (1/5) |
+
+McNemar `hybrid > concept_static` (TRIGGER): **+0 −0 p=1.0** (hòa). REACHED hybrid **KÉM hơn**.
+
+Per-bug: PNG001 `concept_static=2` (reached) → `hybrid=1` (chỉ render, MẤT reached). Hint SymCC cho PNG001
+chỉ nói "đổi IHDR→IDAT" (nhánh nông) → model bám gợi ý đó, bỏ hướng `width` overflow mà concept_static
+tự suy ra được. **Thông tin đúng nhưng sai-hướng còn hại hơn không có.**
+
+### Kết luận Bảng 6 (control độc lập thứ 4)
+1. **SymCC-thuần ≤ LLM** trên libpng (1/7 vs 3/7). Bỏ AFL → concolic bị trần bởi seed tĩnh.
+2. **Hybrid SymCC→LLM KHÔNG giúp** (= concept_static về trigger, KÉM về reached). Vì SymCC-không-AFL không
+   tới nhánh fault → hint không chứa constraint fault → nhồi vào chỉ gây nhiễu.
+3. Cùng kết luận tổng: teacher mạnh chỉ cần **source + feedback**; concept/few-shot/reachability/byte-sweep/
+   concolic-hint đều không vượt được. Giá trị (nếu có) thuộc về student, không phải teacher.
+4. Giới hạn: n=5 (chỉ libpng có image symcc), power thấp. Cần build 6 target còn lại để có bảng 100 đối xứng.
