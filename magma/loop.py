@@ -18,7 +18,8 @@ _ps = importlib.util.spec_from_file_location("magma_prompts", os.path.join(HERE,
 _pm = importlib.util.module_from_spec(_ps); _ps.loader.exec_module(_pm)
 BUILD, prompt_key = _pm.BUILD, _pm.prompt_key
 
-GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+import llm_client                                                # noqa: E402 (magma) — chon provider qua env
+GROQ_MODEL = llm_client.model_id()   # ten model theo LLM_PROVIDER (groq gpt-oss | router gemini) -> tach cache
 GROQ_RPM = int(os.environ.get("GROQ_RPM", "30"))
 ROUNDS = int(os.environ.get("ROUNDS", "3"))
 CONDS = os.environ.get("CONDS", "magma_blind,magma_concept").split(",")
@@ -50,9 +51,8 @@ if os.path.exists(CACHE):
         except Exception:
             pass
 
-from langchain_groq import ChatGroq                              # noqa: E402
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage  # noqa: E402
-llm = ChatGroq(model=GROQ_MODEL, temperature=0.6, groq_api_key=KEY) if KEY else None
+llm = llm_client.make_llm(temperature=0.6)   # Groq hoac 9router/Vertex Gemini theo LLM_PROVIDER
 mi = 60.0 / max(1, GROQ_RPM); last = [0.0]
 
 
