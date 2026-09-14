@@ -78,10 +78,13 @@ def main():
     items = [i for i in items if have_images(i["target"]) and ls.have_symcc(i["target"])]
     print("items:", len(items), "| HINT_PICK:", HINT_PICK,
           "" if HINT_PICK == "first" else "(loc bang canary reached -> hybrid CO DAN DUONG)")
+    force = os.environ.get("HINT_FORCE") == "1"
     ok = 0
     for it in items:
-        h = make_hint(it)
         p = os.path.join(OUTDIR, "%s.json" % it["bug_id"])
+        if os.path.exists(p) and not force:                  # da co hint -> bo qua (mo rong len 100 khong xuat lai)
+            ok += 1; print("  %-8s da co (bo qua; HINT_FORCE=1 de lam lai)" % it["bug_id"]); continue
+        h = make_hint(it)
         if h:
             json.dump(h, open(p, "w"), indent=1); ok += 1
             print("  %-8s OK  n_solved=%d changed=%d -> %s" % (it["bug_id"], h["n_solved"], len(h["changed"]), p))
