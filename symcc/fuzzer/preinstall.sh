@@ -11,9 +11,13 @@ set -e
 #     apt.llvm.org — chinh cho da lam build `libfuzzer` that bai (bionic-11 bi go => exit 100).
 ##
 
+# python3-distutils: BAT BUOC. Build Z3 chay scripts/update_api.py (sinh api_commands.cpp), script do
+# `import distutils.sysconfig`. Ubuntu tach distutils khoi python3-minimal => thieu goi nay thi Z3 chet
+# o buoc 753/795 voi "ModuleNotFoundError: No module named 'distutils.sysconfig'" (da dinh 2026-09-14).
 apt-get update && \
     apt-get install -y make build-essential git wget cmake ninja-build \
-        clang-10 llvm-10-dev libz3-dev zlib1g-dev python3
+        clang-10 llvm-10-dev libz3-dev zlib1g-dev \
+        python3 python3-distutils python3-setuptools
 
 # symcc goi `clang`/`clang++`/`llvm-config` khong hau to
 update-alternatives \

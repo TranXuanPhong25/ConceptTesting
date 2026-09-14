@@ -30,6 +30,22 @@ MAX_CAND = int(os.environ.get("MAX_CAND", "200"))
 SEED_BUDGET = int(os.environ.get("SEED_BUDGET", "25"))
 DOCKER_TIMEOUT = int(os.environ.get("DOCKER_TIMEOUT", "900"))
 
+# ===== CHONG RO RI (them 2026-09-14) =====
+# SEED_SRC: nguon seed khoi dong.
+#   corpus (MAC DINH) — chi dung corpus goc cua thu vien. Dung DUNG giao thuc cua paper Magma
+#       ("bootstrapped with the same set of seed files, sourced from the original target codebase")
+#       va KHONG dinh gi tu LLM => SymCC la baseline doc lap that su.
+#   llm    — them cac input LLM da sinh (taint._cache_inputs). CANH BAO: cache do gom ca cond
+#       `magma_concept` (bê fault_cond tu PATCH) va ca cac key v1 tu truoc khi va lo ro feedback.
+#       Dung cai nay thi SymCC KHONG con doc lap — no thua huong dap an qua seed. Chi dung khi muon
+#       do "SymCC noi tiep LLM" (hybrid) va PHAI goi dung ten nhu vay.
+# GUIDE: chon input nao de dao sau o vong sau.
+#   canary (MAC DINH) — giu input con `reached`. Tin hieu nay lay tu CANARY, ma canary duoc dat DUNG
+#       cho patch => la thong tin tu dap an. Day la concolic CO DAN DUONG, phai khai bao.
+#   none   — khong dung canary, giu input dau tien theo thu tu SymCC sinh ra (vanilla SymCC).
+SEED_SRC = os.environ.get("SEED_SRC", "corpus")
+GUIDE = os.environ.get("GUIDE", "canary")
+
 # Chay solve.sh trong container: seed vao /host/seed, cac input giai duoc do ra /host/out.
 _SOLVE = ('set -e; mkdir -p /tmp/out; cp /host/seed /tmp/seed; '
           '"$FUZZER/solve.sh" /tmp/seed /tmp/out || true; '
@@ -74,9 +90,29 @@ def _status(res):
     return 2 if res["reached"] else 1
 
 
+def _bootstrap(item):
+    """Nhu taint.bootstrap_reaching nhung KIEM SOAT nguon seed (xem ghi chu SEED_SRC o dau file).
+    Mac dinh corpus-only => khong thua huong bat ky input nao do LLM sinh (ke ca cond co leak)."""
+    pool = taint._corpus_seeds(item)
+    if SEED_SRC == "llm":
+        pool = taint._cache_inputs(item) + pool
+    seen, tried = set(), 0
+    for d in pool:
+        if tried >= SEED_BUDGET:
+            break
+        h = hash(d)
+        if h in seen or not d:
+            continue
+        seen.add(h); tried += 1
+        res = run_input(d, item)
+        if res["reached"]:
+            return {"seed": d, "reached": 1, "triggered": res["triggered"]}
+    return None
+
+
 def run_item(item):
     """Tra (best_status, so_input_da_giai, co_seed_khong). best: 0 khong co seed cham | 1 | 2 | 3."""
-    boot = taint.bootstrap_reaching(item, budget=SEED_BUDGET)
+    boot = _bootstrap(item)
     if not boot:
         return 0, 0, False                                     # khong co seed nao CHAM ham loi => SymCC vo phuong
     seeds, best, nsolved, seen = [boot["seed"]], 2 + boot["triggered"], 0, set()
@@ -94,8 +130,10 @@ def run_item(item):
                 best = max(best, st)
                 if st == 3:
                     return 3, nsolved, True
-                if st == 2:
-                    nxt.append(c)                              # con cham ham loi -> dao sau vong sau
+                # GUIDE=canary: chi dao sau input CON cham ham loi — tin hieu nay tu canary (= tu patch),
+                # nen day la concolic CO DAN DUONG. GUIDE=none: khong dung canary (vanilla SymCC).
+                if GUIDE != "canary" or st == 2:
+                    nxt.append(c)
         if not nxt:
             break
         seeds = nxt[:8]                                        # chan no bung so nhanh
@@ -113,6 +151,9 @@ def main():
         n0 = len(items); items = [i for i in items if have_symcc(i["target"])]
         print("[BO QUA] chua co image symcc cho: %s -> con %d/%d item" % (", ".join(miss), len(items), n0))
     print("items:", len(items), "| ROUNDS:", ROUNDS, "| SOLVE_TIMELIMIT:", SOLVE_TIMELIMIT)
+    print("SEED_SRC=%s%s | GUIDE=%s%s"
+          % (SEED_SRC, "" if SEED_SRC == "corpus" else "  <-- KHONG doc lap: seed tu cache LLM (co cond leak)",
+             GUIDE, "  <-- co dan duong bang canary (tin hieu tu patch)" if GUIDE == "canary" else ""))
 
     agg = {"seed": 0, "reach": 0, "trig": 0, "solved": 0}
     per = {}
