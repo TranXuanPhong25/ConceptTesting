@@ -80,6 +80,37 @@ def build_fewshot_juliet(item):
     return _fewshot_prompt(item, _fewshot_mod().juliet_examples(2, item.get("family_pred")))
 
 
+def _symcc_hint_block(item):
+    """Doc hint do symcc/export_hints.py xuat (neu co). Tra chuoi block hoac "" neu khong co hint."""
+    root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    p = os.path.join(root, "symcc", "hints", "%s.json" % item["bug_id"])
+    if not os.path.exists(p):
+        return ""
+    import json as _json
+    h = _json.load(open(p))
+    ch = "; ".join("byte[%d]:%s->%s" % (c["off"], c["from"] or "(them)", c["to"]) for c in h.get("changed", []))
+    return ("THONG TIN TU SYMBOLIC EXECUTION (SymCC + Z3) — thu that, KHONG phai ban va:\n"
+            "- SymCC da giai ra %d input tu mot seed hop le; MOT input CHAM duoc ham loi la (hex, cat gon):\n"
+            "  %s\n"
+            "- So voi seed lanh, SymCC phai DOI cac byte: %s\n"
+            "  (day la cac vi tri byte co y nghia dieu khien luong chay toi vung lo hong.)\n"
+            "=> Dua vao cau truc input tren, chinh GIA TRI cac truong (kich thuoc/chi so/so luong) tai cac "
+            "byte do cho DU cuc doan de VUOT dieu kien an toan (LLM giai not phan so hoc/bien Z3 chua toi).\n"
+            % (h.get("n_solved", 0), h.get("solved_hex", ""), ch or "(khong ro)"))
+
+
+def build_hybrid_symcc(item):
+    """HYBRID SymCC->LLM: concept_static (de-leak) + HINT tu symbolic execution (input cham + byte dieu khien).
+    Neu chua co hint (symcc/hints/<bug>.json) -> lui ve concept_static va bao ro trong prompt."""
+    import concept_static as cs
+    blk = _symcc_hint_block(item)
+    body = (cs.concept_text(item) if not blk
+            else cs.concept_text(item) + "\n\n" + blk)
+    hp = ("Thu vien `%s`.\n%s\n\nSOURCE ham co lo hong:\n```c\n%s\n```\n\n%s"
+          % (item["target"], body, cs.func_excerpt(item), _OUT % (item["program"], item["target"])))
+    return [{"role": "system", "content": _SYS}, {"role": "user", "content": hp}]
+
+
 def build_concept_shuffle(item):
     """PLACEBO cua concept_static: source that + facts XAO (nhan/family/bien SAI). Chung minh nhan-qua."""
     import concept_static as cs
@@ -91,7 +122,8 @@ def build_concept_shuffle(item):
 
 BUILD = {"magma_blind": build_blind, "magma_concept": build_concept,
          "magma_concept_static": build_concept_static, "magma_concept_shuffle": build_concept_shuffle,
-         "magma_fewshot_authored": build_fewshot_authored, "magma_fewshot_juliet": build_fewshot_juliet}
+         "magma_fewshot_authored": build_fewshot_authored, "magma_fewshot_juliet": build_fewshot_juliet,
+         "magma_hybrid_symcc": build_hybrid_symcc}
 
 
 PROMPT_VERSION = "v2-nofbleak"   # BUMP khi doi prompt/feedback -> cache cu (nhiem leak) KHONG bi replay
