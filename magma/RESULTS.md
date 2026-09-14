@@ -186,6 +186,19 @@ GROQ_API_KEY=gsk_... SAMPLES=3 .venv/bin/python magma/gen.py && .venv/bin/python
 Chỉ build image symcc cho libpng → đo trên 7 bug libpng (không phải 100). `loop_symcc.py` chấm bằng
 đúng oracle vi-phân của bảng LLM.
 
+### 6a-100 — SymCC thuần trên ĐỦ 100 bug (x86 native, SEED_SRC=corpus, GUIDE=none)
+| metric | /100 |
+|---|---|
+| có seed chạm (bootstrap corpus-only) | **14** |
+| REACHED | 14 |
+| **TRIGGER** | **4** (PNG003, SND017, LUA004, SSL003) |
+| input Z3 giải | 1600 |
+
+→ **có seed chỉ 14/100** (không phải ~34 như ước lượng cũ dùng corpus+cache-LLM): với **chỉ corpus gốc**,
+86/100 bug KHÔNG có input chạm hàm lỗi → SymCC vô phương ngay bước bootstrap. Đây là trần rõ nhất của
+concolic-không-AFL. TRIGGER 4/100 = ngang `concept_static` (baseline sạch LLM), thua `concept` leak (8).
+SymCC-thuần KHÔNG hơn LLM. (EMIT_HINTS đồng thời tạo 14 hint cho bước hybrid.)
+
 ### 6a — SymCC thuần vs có canary dẫn đường (7 bug libpng)
 | cond | có seed | REACHED | TRIGGER | input Z3 giải |
 |---|---|---|---|---|
