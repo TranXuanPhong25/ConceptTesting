@@ -48,8 +48,20 @@ mkdir -p "$OUT"
 find "$FUZZER/symcc/build" "$FUZZER/z3/install" -name 'libSymRuntime.so*' -o -name 'libz3.so*' \
     | xargs -I{} cp -a {} "$OUT/" 2>/dev/null || true
 
-# driver standalone (giong vanilla): doc file -> LLVMFuzzerTestOneInput. Bien bang g++ THUONG —
-# driver khong phai phan ta muon theo vet symbolic, va tranh phai dung sym++ (can libc++ instrument).
-g++ $CXXFLAGS -std=c++11 -c "$FUZZER/src/afl_driver.cpp" -fPIC -o "$OUT/afl_driver.o"
+# Driver standalone: doc file -> LLVMFuzzerTestOneInput.
+#
+# PHAI bien bang `sym++`, KHONG duoc dung g++ (toi da lam sai va mat 1 vong build):
+# SymCC khong interpose libc bang ten symbol. `runtime/LibcWrappers.cpp` dinh nghia `SYM(fread)` voi
+# `#define SYM(x) x##_symbolized`, va PASS cua SymCC viet lai loi goi `fread` -> `fread_symbolized`
+# CHI TRONG CODE DO NO BIEN DICH. Driver moi la cho DOC FILE. Bien driver bang g++ => `fread` giu
+# nguyen => du lieu KHONG BAO GIO thanh symbolic => chay xong tra ve 0 input (da do: dung 0).
+# Bien bang sym++ => 467 input giai duoc tu 1 seed.
+#
+# SYMCC_REGULAR_LIBCXX=1: bao sym++ dung libstdc++ he thong. Neu khong dat, sym++ doi
+# SYMCC_LIBCXX_PATH (libc++ co instrument) va `exit 255`. Ta co tinh KHONG build libc++ do.
+# -fPIC tuong minh: o buoc nay CXXFLAGS con RONG (Dockerfile set ENV CFLAGS/CXXFLAGS SAU layer nay).
+export SYMCC_REGULAR_LIBCXX=1
+"$FUZZER/symcc/build/sym++" $CXXFLAGS -std=c++11 -c "$FUZZER/src/afl_driver.cpp" -fPIC \
+    -o "$OUT/afl_driver.o"
 
 echo "[symcc_std] xong: symcc=$FUZZER/symcc/build/symcc  z3=$FUZZER/z3/install"
