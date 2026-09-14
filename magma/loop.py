@@ -25,6 +25,24 @@ CONDS = os.environ.get("CONDS", "magma_blind,magma_concept").split(",")
 CACHE = os.environ.get("MAGMA_LOOP_CACHE", os.path.join(HERE, "loop_cache.jsonl"))
 KEY = os.environ.get("GROQ_API_KEY")   # co the BO TRONG neu cache da du (cham lai mien phi)
 
+# ===== GUARD chong chay TRUNG (them 2026-09-14) =====
+# Su co: user lo chay 3 tien trinh song song -> ca 3 nap cache luc KHOI DONG (deu rong) -> cung goi
+# CUNG bo API => 5283 call cho 1947 key duy nhat = 63%% lang phi. Cache chi chong lap GIUA cac lan chay
+# TUAN TU, khong chong duoc song song. Dung lock file de chi cho 1 tien trinh chay mot luc.
+import atexit
+_LOCK = os.path.join(HERE, ".loop.lock")
+if os.path.exists(_LOCK):
+    try:
+        _pid = int(open(_LOCK).read().strip())
+        os.kill(_pid, 0)                                   # PID con song?
+        raise SystemExit("[DANG CHAY] da co loop.py khac (PID %d). Chay song song se GOI TRUNG API va mat tien.
+"
+                         "  Doi no xong, hoac: kill %d && rm %s" % (_pid, _pid, _LOCK))
+    except (ValueError, ProcessLookupError, PermissionError):
+        pass                                               # lock mo coi -> ghi de
+open(_LOCK, "w").write(str(os.getpid()))
+atexit.register(lambda: os.path.exists(_LOCK) and os.remove(_LOCK))
+
 _cache = {}
 if os.path.exists(CACHE):
     for l in open(CACHE):
