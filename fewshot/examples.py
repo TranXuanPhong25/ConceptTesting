@@ -9,39 +9,39 @@ import os, json
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 
 # ============ Ban 1: TU CHE — vi du build() (khop dinh dang Magma: Python -> bytes) ============
-AUTHORED = """VI DU (cach suy tu concept -> input, va DINH DANG output `build()`):
+AUTHORED = """EXAMPLES (how to reason from concept -> input, and the `build()` output FORMAT):
 
-Vi du A — buffer overflow do TRUONG KICH THUOC khong chan tren:
-  Concept: ghi N byte vao buffer 16B; N doc tu header; guard chi kiem N>0 (thieu chan tren).
-  Suy luan: de vuot bien, dat truong size LON hon 16.
+Example A — buffer overflow from a SIZE FIELD with no upper bound:
+  Concept: write N bytes into a 16B buffer; N is read from the header; the guard only checks N>0 (no upper bound).
+  Reasoning: to overflow, set the size field LARGER than 16.
 ```python
 def build():
     import struct
     body = b"A" * 64
-    return struct.pack("<I", len(body)) + body   # size=64 >> 16 -> tran
+    return struct.pack("<I", len(body)) + body   # size=64 >> 16 -> overflow
 ```
 
-Vi du B — CHI SO mang tu input khong chan tren:
-  Concept: doc buffer[idx] (mang 10 phan tu); idx tu input; guard chi kiem idx>=0.
-  Suy luan: dat idx VUOT so phan tu.
+Example B — array INDEX from input with no upper bound:
+  Concept: read buffer[idx] (10-element array); idx comes from input; the guard only checks idx>=0.
+  Reasoning: set idx BEYOND the number of elements.
 ```python
 def build():
     import struct
-    return struct.pack("<i", 100000)   # idx qua lon -> doc ngoai bien
+    return struct.pack("<i", 100000)   # idx too large -> out-of-bounds read
 ```
 """
 
 
 # Loi suy luan phai KHOP HO — ban cu hardcode 1 cau kieu OOB, dung cho ca vi du null_deref/uaf => day SAI.
 _REASON = {
-    "oob":         "guard hien co khong chan het mien gia tri cua bien input -> chon gia tri VUOT bien buffer.",
-    "oob_write":   "guard hien co khong chan het -> chon chi so/kich thuoc VUOT bien de GHI ngoai buffer.",
-    "oob_read":    "guard hien co khong chan het -> chon chi so VUOT bien de DOC ngoai buffer.",
-    "null_deref":  "ham deref con tro ma KHONG kiem NULL -> truyen thang NULL vao.",
-    "uaf":         "con tro bi free roi van duoc dung lai -> di dung duong dan cham vao no SAU khi free.",
-    "double_free": "cung mot con tro bi free HAI lan -> di duong dan lam ca hai lan free deu chay.",
-    "int_overflow": "phep tinh kich thuoc bi tran -> chon gia tri lam ket qua wrap ve nho/am.",
-    None:          "tim gia tri input lam VI PHAM gia dinh an toan cua doan code nguy hiem.",
+    "oob":         "the existing guard does not cover the full range of the input variable -> pick a value that goes OUT of the buffer bounds.",
+    "oob_write":   "the existing guard is incomplete -> pick an index/size OUT of bounds to WRITE past the buffer.",
+    "oob_read":    "the existing guard is incomplete -> pick an index OUT of bounds to READ past the buffer.",
+    "null_deref":  "a function dereferences a pointer WITHOUT a NULL check -> pass NULL directly.",
+    "uaf":         "a pointer is freed but still used -> follow the path that touches it AFTER the free.",
+    "double_free": "the same pointer is freed TWICE -> follow the path where both frees execute.",
+    "int_overflow": "a size computation overflows -> pick values that make the result wrap to small/negative.",
+    None:          "find an input value that VIOLATES the safety assumption of the dangerous code.",
 }
 
 
@@ -57,11 +57,11 @@ def _fmt_juliet(it):
     _sys.path.insert(0, _os.path.join(ROOT, "magma"))
     import concept_static as cs                                   # cung bo trich concept voi bai that
     block = cs.concept_text(it)
-    # bo dong ket "=> HAY TU SUY..." cua vi du: o day ta TRA LOI thay vi hoi
-    block = "\n".join(l for l in block.split("\n") if not l.startswith("=> HAY TU SUY"))
-    return ("--- Vi du (Juliet %s) ---\n%s\nSOURCE:\n```c\n%s\n```\n"
-            "SUY LUAN: %s\n"
-            "INPUT KICH HOAT: `%s`\n"
+    # bo dong ket "=> INFER..." cua vi du: o day ta TRA LOI thay vi hoi
+    block = "\n".join(l for l in block.split("\n") if not l.startswith("=> INFER"))
+    return ("--- Example (Juliet %s) ---\n%s\nSOURCE:\n```c\n%s\n```\n"
+            "REASONING: %s\n"
+            "TRIGGERING INPUT: `%s`\n"
             % (it.get("cwe", ""), block, (it["func_vuln"] or "").strip(),
                _REASON.get(it.get("family_pred") or it.get("family"), _REASON[None]),
                it.get("ref_test", "")))
@@ -95,6 +95,7 @@ def juliet_examples(k=2, target_family=None):
             seen.add(fam(it)); pick.append(it)
     if not pick:
         return ""
-    return ("VI DU (cap vuln/fixed THAT — hoc cach: guard thieu gi -> gia tri nao vi pham):\n\n"
+    return ("EXAMPLES (REAL vuln/fixed pairs — learn the pattern: which guard is missing -> which value "
+            "violates it):\n\n"
             + "\n".join(_fmt_juliet(it) for it in pick)
-            + "\n(Voi thu vien duoi day, ap dung cung loi suy luan roi xuat `build()`->bytes.)\n")
+            + "\n(For the library below, apply the same reasoning and output `build()`->bytes.)\n")

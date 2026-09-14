@@ -80,9 +80,10 @@ def _init_msgs(item, cond, boot):
     """Prompt khoi tao. reach/cc: concept_static + SEED reaching + grammar. Con lai: BUILD[cond]."""
     if cond in ("magma_concept_reach", "magma_concept_bytesweep") and boot:
         gram = ", ".join(taint.grammar_hint(item["target"])[:16])
-        extra = ("\n\nMOT input DA CHAM ham loi (reached) nhung CHUA trigger — hay SUA no de thoa dieu kien:\n%s"
-                 "\n\nTokens dinh dang: %s" % (taint.seed_repr(boot["seed"]), gram))
-        hp = ("Thu vien `%s`.\n%s\n\nSOURCE ham co lo hong:\n```c\n%s\n```%s\n\n%s"
+        extra = ("\n\nAN input that REACHES the faulty function but does NOT yet trigger it — modify it to "
+                 "satisfy the fault condition:\n%s"
+                 "\n\nFormat tokens: %s" % (taint.seed_repr(boot["seed"]), gram))
+        hp = ("Library `%s`.\n%s\n\nSOURCE of the vulnerable function:\n```c\n%s\n```%s\n\n%s"
               % (item["target"], cs.concept_text(item), cs.func_excerpt(item), extra,
                  _pm._OUT % (item["program"], item["target"])))
         return [{"role": "system", "content": _pm._SYS}, {"role": "user", "content": hp}]
@@ -115,15 +116,17 @@ def feedback(res, item, rendered):
     """CHI tin hieu oracle quan sat duoc — KHONG nhac ten ham/dieu kien loi (dong bo voi magma/loop.py sau khi
     sua lo ro 2026-09-13). Cac cond o day deu da co source trong prompt vong 1 nen khong mat thong tin."""
     if not rendered:
-        return "Lan truoc: build() KHONG tra bytes hop le. Viet lai `def build()` chi dung struct/zlib, return bytes."
+        return ("Previous attempt: build() did NOT return valid bytes. Rewrite `def build()` using only "
+                "struct/zlib and return bytes.")
     if res.get("crash_fixed"):
-        return ("Lan truoc: CRASH CA ban da va -> pha bua. Can input chi kich hoat DUNG loi can tim, "
-                "khong lam hong linh tinh.")
+        return ("Previous attempt: it crashed BOTH the patched and vulnerable builds -> it breaks things "
+                "indiscriminately. Produce an input that triggers ONLY the target bug, without corrupting "
+                "unrelated state.")
     if res.get("reached"):
-        return ("Lan truoc: da CHAM duoc vung code co lo hong nhung CHUA thoa dieu kien loi. "
-                "Giu cau truc, chinh GIA TRI cac truong (kich thuoc/chi so/so luong) cho cuc doan hon.")
-    return ("Lan truoc: CHUA cham vung code co lo hong (parser bo som). "
-            "Sua header/chunk cho hop le hon de di sau vao thu vien.")
+        return ("Previous attempt: you REACHED the vulnerable code region but did NOT satisfy the fault "
+                "condition. Keep the structure, make the field VALUES (size/index/count) more extreme.")
+    return ("Previous attempt: did NOT reach the vulnerable code region (the parser bailed out early). "
+            "Fix the header/chunk to be more valid so it goes deeper into the library.")
 
 def run_item(item, cond, boot=None):
     msgs = _init_msgs(item, cond, boot); best = 0
