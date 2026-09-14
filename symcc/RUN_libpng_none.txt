@@ -1,0 +1,27 @@
+######## GUIDE=none (SymCC THUAN — khong dan duong bang canary) ########
+[BO QUA] chua co image symcc cho: libsndfile, libtiff, libxml2, lua, openssl, sqlite3 -> con 7/100 item
+items: 7 | ROUNDS: 2 | SOLVE_TIMELIMIT: 120s
+SEED_SRC=corpus | GUIDE=none
+  PNG001     best=2  input_giai=167   337s
+  PNG002     best=0  input_giai=0     10s  (KHONG co seed cham)
+  PNG003     best=3  input_giai=26    149s
+  PNG004     best=0  input_giai=0     4s  (KHONG co seed cham)
+  PNG005     best=2  input_giai=167   327s
+  PNG006     best=2  input_giai=167   302s
+  PNG007     best=2  input_giai=167   312s
+
+SymCC (concolic that)      /7
+co seed                     5   (seed bootstrap cham ham loi)
+REACHED                     5
+TRIGGER                     1
+input da giai             694   (tong input Z3 giai ra)
+-> ghi /Users/mac/Documents/py-toy/symcc/results_symcc.json (dung lab.mcnemar de so voi bang LLM)
+
+######## GUIDE=canary (co dan duong bang canary = tin hieu tu patch) ########
+[BO QUA] chua co image symcc cho: libsndfile, libtiff, libxml2, lua, openssl, sqlite3 -> con 7/100 item
+items: 7 | ROUNDS: 2 | SOLVE_TIMELIMIT: 120s
+SEED_SRC=corpus | GUIDE=canary  <-- co dan duong bang canary (tin hieu tu patch)
+  PNG001     best=2  input_giai=478   1357s
+  PNG002     best=0  input_giai=0     7s  (KHONG co seed cham)
+  PNG003     best=3  input_giai=26    155s
+  PNG004     best=0  input_giai=0     10s  (KHONG co seed cham)

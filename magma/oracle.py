@@ -68,20 +68,76 @@ def _real_crash(ec):
     return int(ec is not None and ec in _FAULT)
 
 
+# ===== CACHE KET QUA ORACLE (them 2026-09-14) =====
+# Moi lan rerun mot bang (5 cond x 100 bug x 4 vong) = ~4000 cap container = vai GIO duoi QEMU, du input
+# Y NGUYEN (cache LLM da tra ve cung bytes). Container chay deterministic => cache duoc theo noi dung input.
+# KHOA gom ca IMAGE ID (vuln+fixed) + TIMELIMIT/MEMLIMIT: image build lai hay noi limit => khoa doi => KHONG
+# an nham ket qua cu (chinh la su co "14 image bien mat -> 0% toan bang" hom truoc).
+import hashlib, json as _json                                                       # noqa: E402
+
+ORACLE_CACHE = os.environ.get("MAGMA_ORACLE_CACHE", os.path.join(HERE, "oracle_cache.jsonl"))
+_ORC, _ORC_LOADED = {}, [False]
+_IMG_CACHE_ID = {}
+
+
+def _img_id(image):
+    if image not in _IMG_CACHE_ID:
+        r = subprocess.run(["docker", "image", "inspect", "-f", "{{.Id}}", image], capture_output=True)
+        _IMG_CACHE_ID[image] = (r.stdout or b"").decode().strip()[:19] if r.returncode == 0 else "?"
+    return _IMG_CACHE_ID[image]
+
+
+def _orc_load():
+    if _ORC_LOADED[0]:
+        return
+    _ORC_LOADED[0] = True
+    if os.path.exists(ORACLE_CACHE):
+        for l in open(ORACLE_CACHE):
+            try:
+                o = _json.loads(l); _ORC[o["k"]] = o["v"]
+            except Exception:
+                pass
+
+
+def _sane(dv, df, bug):
+    """Chi cache khi CA HAI container that su da chay xong — neu khong, mot su co ha tang (image bien mat,
+    docker down, timeout) se bi DONG BANG vinh vien thanh 'ket qua 0/0' nhu su co hom truoc.
+    - VULN: phai co dong bang monitor cua dung bug nay (chung to canary+monitor song).
+    - FIXED: build nay KHONG co canary nen KHONG co bang; chi can sentinel MAGMA_RC= (chung to da chay het)."""
+    ok_v = any(p and p[0] == bug and "reached" in p for p in (l.split() for l in dv.splitlines()))
+    return ok_v and "MAGMA_RC=" in df
+
+
 def run_input(data, item, timeout=90):
     """data: bytes. item co {target, program, bug_id}. Ground-truth = canary reached/triggered."""
     tgt, prog, bug = item["target"], item["program"], item["bug_id"]
+    iv, ifx = "magma-%s-vuln" % tgt, "magma-%s-fixed" % tgt
+    raw = data if isinstance(data, (bytes, bytearray)) else data.encode()
+    use_cache = os.environ.get("MAGMA_NO_ORACLE_CACHE") != "1"
+    key = None
+    if use_cache:
+        _orc_load()
+        key = hashlib.sha1(("%s|%s|%s|%s|%s|%s|%s" % (bug, tgt, prog, TIMELIMIT, MEMLIMIT_MB,
+                                                      _img_id(iv), _img_id(ifx))).encode()
+                           + b"|" + hashlib.sha1(raw).digest()).hexdigest()
+        if key in _ORC:
+            return _ORC[key]
     with tempfile.TemporaryDirectory() as d:
         p = os.path.join(d, "tc")
         with open(p, "wb") as f:
-            f.write(data if isinstance(data, (bytes, bytearray)) else data.encode())
-        ev, dv = _run_container("magma-%s-vuln" % tgt, prog, p, timeout)
-        ef, df = _run_container("magma-%s-fixed" % tgt, prog, p, timeout)
+            f.write(raw)
+        ev, dv = _run_container(iv, prog, p, timeout)
+        ef, df = _run_container(ifx, prog, p, timeout)
     reached, triggered = _bug_counts(dv, bug)                  # tren build VULN (co canary)
-    return {"exit_vuln": ev, "exit_fixed": ef, "target": bug,
-            "reached": int(reached > 0),                       # cham dong bug (mem, dan duong feedback)
-            "triggered": int(triggered > 0),                   # thoa dieu kien loi (ground-truth)
-            "crash_vuln": _real_crash(ev), "crash_fixed": _real_crash(ef)}
+    res = {"exit_vuln": ev, "exit_fixed": ef, "target": bug,
+           "reached": int(reached > 0),                        # cham dong bug (mem, dan duong feedback)
+           "triggered": int(triggered > 0),                    # thoa dieu kien loi (ground-truth)
+           "crash_vuln": _real_crash(ev), "crash_fixed": _real_crash(ef)}
+    if use_cache and _sane(dv, df, bug):
+        _ORC[key] = res
+        with open(ORACLE_CACHE, "a") as f:
+            f.write(_json.dumps({"k": key, "v": res}) + "\n")
+    return res
 
 
 def discrim(res):

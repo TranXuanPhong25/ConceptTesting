@@ -1,14 +1,20 @@
 #!/usr/bin/env python3
-"""C3 — concolic / solver-in-the-loop, ghep C1 (de-leak) + C2 (reachability/taint).
+"""C3 — BYTE-SWEEP solver-in-the-loop, ghep C1 (de-leak) + C2 (reachability/taint).
+
+!! DOI TEN 2026-09-13: truoc day goi la "concolic" — SAI/phong dai. Cai nay KHONG co symbolic execution,
+KHONG thu thap path constraint, KHONG dung SMT solver. No chi la: do byte mu (XOR-flip cua so 2 byte,
+lay mau ~20 vi tri) roi thu 4 GIA TRI HARDCODE (0xFF/0x7F/0x01/0x00), oracle xac nhan. ~36 lan chay.
+Dung ten: mutational byte-sweep / black-box sensitivity analysis.
+Concolic THAT co san trong Magma: fuzzers/symcc_afl (SymCC + Z3) — xem ghi chu cuoi file.
 
 Dieu kien (thang ablation, so voi loop.py cho blind/concept/concept_static):
   magma_concept_reach : concept_static + SEED da cham sink (bootstrap) + grammar -> LLM MUTATE (feedback).
-  magma_concept_cc    : concept_reach + CONCOLIC — khi reached-chua-trigger, quet gia tri tren cac byte
+  magma_concept_bytesweep    : concept_reach + BYTE-SWEEP — khi reached-chua-trigger, quet gia tri tren cac byte
                         'fault' (taint) de solve concrete (oracle-verify). Bo tro cho LLM-as-solver.
 Ground-truth = canary reached/triggered. Giu best (monotonic).
 
-Chay TU REPO ROOT:  GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python concolic/loop_cc.py
-Env: GROQ_MODEL | GROQ_RPM=30 | ROUNDS=3 | CONDS | GOLD | MAGMA_LOOP_CACHE(concolic/cc_cache.jsonl)
+Chay TU REPO ROOT:  GROQ_API_KEY=gsk_... ROUNDS=3 .venv/bin/python byte_sweep/loop_bytesweep.py
+Env: GROQ_MODEL | GROQ_RPM=30 | ROUNDS=3 | CONDS | GOLD | MAGMA_LOOP_CACHE(byte_sweep/bs_cache.jsonl)
 """
 import os, sys, json, time, glob, importlib.util
 
@@ -26,8 +32,8 @@ BUILD, prompt_key = _pm.BUILD, _pm.prompt_key
 GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 GROQ_RPM = int(os.environ.get("GROQ_RPM", "30"))
 ROUNDS = int(os.environ.get("ROUNDS", "3"))
-CONDS = os.environ.get("CONDS", "magma_concept_static,magma_concept_reach,magma_concept_cc").split(",")
-CACHE = os.environ.get("MAGMA_LOOP_CACHE", os.path.join(HERE, "cc_cache.jsonl"))
+CONDS = os.environ.get("CONDS", "magma_concept_static,magma_concept_reach,magma_concept_bytesweep").split(",")
+CACHE = os.environ.get("MAGMA_LOOP_CACHE", os.path.join(HERE, "bs_cache.jsonl"))
 KEY = os.environ.get("GROQ_API_KEY")
 if not KEY:
     raise SystemExit("Thieu GROQ_API_KEY.")
@@ -72,20 +78,22 @@ def call(msgs, key):
 
 def _init_msgs(item, cond, boot):
     """Prompt khoi tao. reach/cc: concept_static + SEED reaching + grammar. Con lai: BUILD[cond]."""
-    if cond in ("magma_concept_reach", "magma_concept_cc") and boot:
+    if cond in ("magma_concept_reach", "magma_concept_bytesweep") and boot:
         gram = ", ".join(taint.grammar_hint(item["target"])[:16])
-        extra = ("\n\nMOT input DA CHAM ham loi (reached) nhung CHUA trigger — hay SUA no de thoa dieu kien:\n%s"
-                 "\n\nTokens dinh dang: %s" % (taint.seed_repr(boot["seed"]), gram))
-        hp = ("Thu vien `%s`.\n%s\n\nSOURCE ham co lo hong:\n```c\n%s\n```%s\n\n%s"
+        extra = ("\n\nAN input that REACHES the faulty function but does NOT yet trigger it — modify it to "
+                 "satisfy the fault condition:\n%s"
+                 "\n\nFormat tokens: %s" % (taint.seed_repr(boot["seed"]), gram))
+        hp = ("Library `%s`.\n%s\n\nSOURCE of the vulnerable function:\n```c\n%s\n```%s\n\n%s"
               % (item["target"], cs.concept_text(item), cs.func_excerpt(item), extra,
                  _pm._OUT % (item["program"], item["target"])))
         return [{"role": "system", "content": _pm._SYS}, {"role": "user", "content": hp}]
-    base = "magma_concept_static" if cond in ("magma_concept_reach", "magma_concept_cc") else cond
+    base = "magma_concept_static" if cond in ("magma_concept_reach", "magma_concept_bytesweep") else cond
     return list(BUILD[base](item))
 
 
-def concolic_solve(data, item, budget=16):
-    """CONCRETE solver: quet gia tri tren byte 'fault' (taint) -> oracle-verify. Tra bytes trigger hoac None.
+def byte_sweep_solve(data, item, budget=16):
+    """Quet 4 gia tri hardcode tren byte 'fault' (taint) -> oracle-verify. Tra bytes trigger hoac None.
+    KHONG phai concolic: khong symbolic, khong path constraint, khong SMT solver.
     Han che THAT: dinh dang co CRC/length-coupled (PNG...) it khi solve duoc byte-level -> LLM-as-solver lo phan do."""
     ctrl = taint.locate_controlling_bytes(data, item, window=2, max_probes=20)
     faults = [c for c in ctrl if c["effect"] == "fault"] or ctrl[:3]
@@ -108,15 +116,17 @@ def feedback(res, item, rendered):
     """CHI tin hieu oracle quan sat duoc — KHONG nhac ten ham/dieu kien loi (dong bo voi magma/loop.py sau khi
     sua lo ro 2026-09-13). Cac cond o day deu da co source trong prompt vong 1 nen khong mat thong tin."""
     if not rendered:
-        return "Lan truoc: build() KHONG tra bytes hop le. Viet lai `def build()` chi dung struct/zlib, return bytes."
+        return ("Previous attempt: build() did NOT return valid bytes. Rewrite `def build()` using only "
+                "struct/zlib and return bytes.")
     if res.get("crash_fixed"):
-        return ("Lan truoc: CRASH CA ban da va -> pha bua. Can input chi kich hoat DUNG loi can tim, "
-                "khong lam hong linh tinh.")
+        return ("Previous attempt: it crashed BOTH the patched and vulnerable builds -> it breaks things "
+                "indiscriminately. Produce an input that triggers ONLY the target bug, without corrupting "
+                "unrelated state.")
     if res.get("reached"):
-        return ("Lan truoc: da CHAM duoc vung code co lo hong nhung CHUA thoa dieu kien loi. "
-                "Giu cau truc, chinh GIA TRI cac truong (kich thuoc/chi so/so luong) cho cuc doan hon.")
-    return ("Lan truoc: CHUA cham vung code co lo hong (parser bo som). "
-            "Sua header/chunk cho hop le hon de di sau vao thu vien.")
+        return ("Previous attempt: you REACHED the vulnerable code region but did NOT satisfy the fault "
+                "condition. Keep the structure, make the field VALUES (size/index/count) more extreme.")
+    return ("Previous attempt: did NOT reach the vulnerable code region (the parser bailed out early). "
+            "Fix the header/chunk to be more valid so it goes deeper into the library.")
 
 def run_item(item, cond, boot=None):
     msgs = _init_msgs(item, cond, boot); best = 0
@@ -127,8 +137,8 @@ def run_item(item, cond, boot=None):
         data = render_input(out)
         res = run_input(data, item) if data else {}
         st = 3 if (data and res["triggered"] and not res["crash_fixed"]) else (2 if data and res["reached"] else (1 if data else 0))
-        if cond == "magma_concept_cc" and st == 2:               # reached-chua-trigger -> thu concolic solve
-            solved = concolic_solve(data, item)
+        if cond == "magma_concept_bytesweep" and st == 2:               # reached-chua-trigger -> thu byte-sweep solve
+            solved = byte_sweep_solve(data, item)
             if solved is not None:
                 st = 3
         best = max(best, st)
@@ -147,7 +157,7 @@ def main():
     items = [json.loads(l) for f in files for l in open(f) if l.strip()]
     print("items:", len(items), "| ROUNDS:", ROUNDS, "| conds:", CONDS)
     agg = {c: {"trig": 0, "reach": 0, "rend": 0} for c in CONDS}; binv = {c: {} for c in CONDS}
-    need_boot = any(c in ("magma_concept_reach", "magma_concept_cc") for c in CONDS)
+    need_boot = any(c in ("magma_concept_reach", "magma_concept_bytesweep") for c in CONDS)
     boot_ok = 0
     for it in items:
         boot = taint.bootstrap_reaching(it) if need_boot else None   # 1 LAN/bug, dung lai cho moi cond
@@ -174,3 +184,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# ===== GHI CHU: concolic THAT (chua lam) =====
+# Magma ship san fuzzers/symcc_afl va fuzzers/klee — SymCC clone kem Z3 solver. Muon concolic dung nghia:
+#   FUZZER=symcc_afl TARGET=libpng  -> instrument chuong trinh, thu path constraint, Z3 giai input lat nhanh.
+# Nang (build LLVM/SymCC/Z3 duoi QEMU). Xem README.md trong thu muc nay.
