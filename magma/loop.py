@@ -31,13 +31,16 @@ KEY = os.environ.get("GROQ_API_KEY")   # co the BO TRONG neu cache da du (cham l
 # CUNG bo API => 5283 call cho 1947 key duy nhat = 63% lang phi. Cache chi chong lap GIUA cac lan chay
 # TUAN TU, khong chong duoc song song. Dung lock file de chi cho 1 tien trinh chay mot luc.
 import atexit
-_LOCK = os.path.join(HERE, ".loop.lock")
+# Lock THEO cache file (khong con co dinh .loop.lock): 2 loop dung CACHE KHAC nhau -> khoa khac -> chay
+# SONG SONG duoc (vd chay CoT canh static+fewshot). Cung CACHE -> cung khoa -> van chan goi trung API.
+_LOCK = CACHE + ".lock"
 if os.path.exists(_LOCK):
     try:
         _pid = int(open(_LOCK).read().strip())
         os.kill(_pid, 0)                                   # PID con song?
-        raise SystemExit("[DANG CHAY] da co loop.py khac (PID %d). Chay song song se GOI TRUNG API "
-                         "va mat tien. Doi no xong, hoac: kill %d && rm %s" % (_pid, _pid, _LOCK))
+        raise SystemExit("[DANG CHAY] da co loop.py khac (PID %d) dung CUNG cache %s -> se GOI TRUNG API. "
+                         "Doi no xong, dung MAGMA_LOOP_CACHE khac de chay song song, hoac: kill %d && rm %s"
+                         % (_pid, CACHE, _pid, _LOCK))
     except (ValueError, ProcessLookupError, PermissionError):
         pass                                               # lock mo coi -> ghi de
 open(_LOCK, "w").write(str(os.getpid()))
@@ -149,12 +152,13 @@ def main():
     print("items:", len(items), "| ROUNDS:", ROUNDS, "| conds:", CONDS)
     agg = {c: {"trig": 0, "reach": 0, "rend": 0} for c in CONDS}
     binv = {c: {} for c in CONDS}
+    bval = {c: {} for c in CONDS}                                # best status day du (de tach theo family)
     for it in items:
         row = []
         for c in CONDS:
             b = run_item(it, c)
             agg[c]["trig"] += (b == 3); agg[c]["reach"] += (b >= 2); agg[c]["rend"] += (b >= 1)
-            binv[c][it["bug_id"]] = int(b == 3)
+            binv[c][it["bug_id"]] = int(b == 3); bval[c][it["bug_id"]] = b
             row.append("%s=%d" % (c.replace("magma_", ""), b))
         print("  %-10s %s" % (it["bug_id"], " ".join(row)))
 
@@ -167,6 +171,25 @@ def main():
         b, c_, p = lab.mcnemar(binv[hi], binv[lo])
         print("McNemar %s > %s (TRIGGER): +%d -%d p=%.4f" % (hi, lo, b, c_, p))
     print("status: 0 chua render | 1 render | 2 REACHED ham loi | 3 TRIGGER (discrim).")
+
+    # ===== TACH THEO LOAI BUG (oob vs lifecycle) — concept 'buffer/sink/guard' chi hop oob =====
+    _FG = {"oob": "oob", "oob_read": "oob", "oob_write": "oob",
+           "null_deref": "lifecycle", "double_free": "lifecycle", "uaf": "lifecycle"}
+    grp = lambda it: _FG.get(it.get("family_pred") or it.get("family"), "other")
+    groups = {}
+    for it in items:
+        groups.setdefault(grp(it), []).append(it["bug_id"])
+    print("\n===== TACH THEO LOAI BUG (concept buffer/sink/guard chi mo ta lop OOB) =====")
+    for gname in ("oob", "lifecycle", "other"):
+        ids = groups.get(gname, [])
+        if not ids:
+            continue
+        m = len(ids)
+        print("--- %s (%d bug) ---" % (gname, m))
+        print("  %-24s %8s %8s" % ("cond", "REACHED", "TRIGGER"))
+        for c in CONDS:
+            r = sum(bval[c][b] >= 2 for b in ids); t = sum(bval[c][b] == 3 for b in ids)
+            print("  %-24s %6d/%d %6d/%d" % (c, r, m, t, m))
 
 
 if __name__ == "__main__":
