@@ -31,13 +31,16 @@ KEY = os.environ.get("GROQ_API_KEY")   # co the BO TRONG neu cache da du (cham l
 # CUNG bo API => 5283 call cho 1947 key duy nhat = 63% lang phi. Cache chi chong lap GIUA cac lan chay
 # TUAN TU, khong chong duoc song song. Dung lock file de chi cho 1 tien trinh chay mot luc.
 import atexit
-_LOCK = os.path.join(HERE, ".loop.lock")
+# Lock THEO cache file (khong con co dinh .loop.lock): 2 loop dung CACHE KHAC nhau -> khoa khac -> chay
+# SONG SONG duoc (vd chay CoT canh static+fewshot). Cung CACHE -> cung khoa -> van chan goi trung API.
+_LOCK = CACHE + ".lock"
 if os.path.exists(_LOCK):
     try:
         _pid = int(open(_LOCK).read().strip())
         os.kill(_pid, 0)                                   # PID con song?
-        raise SystemExit("[DANG CHAY] da co loop.py khac (PID %d). Chay song song se GOI TRUNG API "
-                         "va mat tien. Doi no xong, hoac: kill %d && rm %s" % (_pid, _pid, _LOCK))
+        raise SystemExit("[DANG CHAY] da co loop.py khac (PID %d) dung CUNG cache %s -> se GOI TRUNG API. "
+                         "Doi no xong, dung MAGMA_LOOP_CACHE khac de chay song song, hoac: kill %d && rm %s"
+                         % (_pid, CACHE, _pid, _LOCK))
     except (ValueError, ProcessLookupError, PermissionError):
         pass                                               # lock mo coi -> ghi de
 open(_LOCK, "w").write(str(os.getpid()))
