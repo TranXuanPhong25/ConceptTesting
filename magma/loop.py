@@ -152,12 +152,13 @@ def main():
     print("items:", len(items), "| ROUNDS:", ROUNDS, "| conds:", CONDS)
     agg = {c: {"trig": 0, "reach": 0, "rend": 0} for c in CONDS}
     binv = {c: {} for c in CONDS}
+    bval = {c: {} for c in CONDS}                                # best status day du (de tach theo family)
     for it in items:
         row = []
         for c in CONDS:
             b = run_item(it, c)
             agg[c]["trig"] += (b == 3); agg[c]["reach"] += (b >= 2); agg[c]["rend"] += (b >= 1)
-            binv[c][it["bug_id"]] = int(b == 3)
+            binv[c][it["bug_id"]] = int(b == 3); bval[c][it["bug_id"]] = b
             row.append("%s=%d" % (c.replace("magma_", ""), b))
         print("  %-10s %s" % (it["bug_id"], " ".join(row)))
 
@@ -170,6 +171,25 @@ def main():
         b, c_, p = lab.mcnemar(binv[hi], binv[lo])
         print("McNemar %s > %s (TRIGGER): +%d -%d p=%.4f" % (hi, lo, b, c_, p))
     print("status: 0 chua render | 1 render | 2 REACHED ham loi | 3 TRIGGER (discrim).")
+
+    # ===== TACH THEO LOAI BUG (oob vs lifecycle) — concept 'buffer/sink/guard' chi hop oob =====
+    _FG = {"oob": "oob", "oob_read": "oob", "oob_write": "oob",
+           "null_deref": "lifecycle", "double_free": "lifecycle", "uaf": "lifecycle"}
+    grp = lambda it: _FG.get(it.get("family_pred") or it.get("family"), "other")
+    groups = {}
+    for it in items:
+        groups.setdefault(grp(it), []).append(it["bug_id"])
+    print("\n===== TACH THEO LOAI BUG (concept buffer/sink/guard chi mo ta lop OOB) =====")
+    for gname in ("oob", "lifecycle", "other"):
+        ids = groups.get(gname, [])
+        if not ids:
+            continue
+        m = len(ids)
+        print("--- %s (%d bug) ---" % (gname, m))
+        print("  %-24s %8s %8s" % ("cond", "REACHED", "TRIGGER"))
+        for c in CONDS:
+            r = sum(bval[c][b] >= 2 for b in ids); t = sum(bval[c][b] == 3 for b in ids)
+            print("  %-24s %6d/%d %6d/%d" % (c, r, m, t, m))
 
 
 if __name__ == "__main__":
