@@ -4,7 +4,11 @@
 Chay TU REPO ROOT:
   # Groq (mac dinh):
   GROQ_API_KEY=gsk_... .venv/bin/python magma/test_llm.py
-  # 9router / Vertex Gemini:
+  # Vertex AI NATIVE (khuyen nghi):
+  gcloud auth application-default login
+  LLM_PROVIDER=vertex VERTEX_PROJECT=my-gcp-proj VERTEX_LOCATION=us-central1 \
+    LLM_MODEL=gemini-3.1-pro-preview python3 magma/test_llm.py
+  # 9router (OpenAI-compatible):
   LLM_PROVIDER=router ROUTER_BASE_URL=https://.../v1 ROUTER_API_KEY=... \
     LLM_MODEL=vertex/gemini-3.1-pro-preview python3 magma/test_llm.py
 """
@@ -14,7 +18,11 @@ import llm_client                                              # noqa: E402
 
 prov = os.environ.get("LLM_PROVIDER", "groq")
 print("provider =", prov, "| model =", llm_client.model_id())
-if prov == "router":
+if prov == "vertex":
+    print("VERTEX_PROJECT  =", os.environ.get("VERTEX_PROJECT") or os.environ.get("GOOGLE_CLOUD_PROJECT") or "(THIEU!)")
+    print("VERTEX_LOCATION =", os.environ.get("VERTEX_LOCATION", "us-central1"))
+    print("ADC creds       =", os.environ.get("GOOGLE_APPLICATION_CREDENTIALS", "(dung gcloud ADC neu co)"))
+elif prov == "router":
     print("ROUTER_BASE_URL =", os.environ.get("ROUTER_BASE_URL") or "(THIEU!)")
     print("ROUTER_API_KEY  =", "co" if (os.environ.get("ROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")) else "(THIEU!)")
 
