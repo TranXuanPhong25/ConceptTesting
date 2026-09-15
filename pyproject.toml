@@ -1,0 +1,20 @@
+[project]
+name = "concepttester"
+version = "0.1.0"
+description = "Concept-guided vulnerability-triggering test generation on the Magma benchmark"
+requires-python = ">=3.11"
+dependencies = [
+    # LLM teacher qua langchain (magma/loop.py, llm_client.py)
+    "langchain-core>=1.6",
+    "langchain-groq>=1.1",      # LLM_PROVIDER=groq  (gpt-oss-120b)
+    "langchain-openai>=1.6",    # LLM_PROVIDER=router (9router / OpenAI-compatible -> Gemini)
+    "pypdf>=6",                 # doc paper PDF
+]
+
+[project.optional-dependencies]
+# LLM_PROVIDER=vertex: goi Vertex AI native. Cai bang:  uv sync --extra vertex
+vertex = ["langchain-google-vertexai>=2"]
+
+[tool.uv]
+# oracle.py / loop_symcc.py / export_hints.py chi dung stdlib -> khong can dep nao
+package = false
