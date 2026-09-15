@@ -105,15 +105,17 @@ def feedback(res, item, rendered):
     Dieu kien LEAK (`magma_concept`) van giu fault_cond — nhung CHI trong prompt vong 1, dung dinh nghia cua no.
     """
     if not rendered:
-        return "Lan truoc: build() KHONG tra ve bytes hop le. Viet lai `def build()` chi dung struct/zlib, return bytes."
+        return ("Previous attempt: build() did NOT return valid bytes. Rewrite `def build()` using only "
+                "struct/zlib and return bytes.")
     if res.get("crash_fixed"):
-        return ("Lan truoc: input lam CRASH CA ban da va -> pha bua, khong dac hieu. "
-                "Can input chi kich hoat DUNG loi can tim, khong lam hong linh tinh.")
+        return ("Previous attempt: the input crashed BOTH the patched and vulnerable builds -> it breaks "
+                "things indiscriminately. Produce an input that triggers ONLY the target bug, without "
+                "corrupting unrelated state.")
     if res.get("reached"):
-        return ("Lan truoc: da CHAM duoc vung code co lo hong, nhung CHUA thoa dieu kien loi. "
-                "Giu nguyen cau truc, chinh GIA TRI cac truong (kich thuoc/chi so/so luong) cho cuc doan hon.")
-    return ("Lan truoc: input chay nhung CHUA cham vung code co lo hong (parser bo som). "
-            "Sua header/chunk cho hop le hon de di sau vao thu vien.")
+        return ("Previous attempt: you REACHED the vulnerable code region, but did NOT satisfy the fault "
+                "condition. Keep the same structure, make the field VALUES (size/index/count) more extreme.")
+    return ("Previous attempt: the input ran but did NOT reach the vulnerable code region (the parser bailed "
+            "out early). Fix the header/chunk to be more valid so it goes deeper into the library.")
 
 def _status(data, res):
     if not data:

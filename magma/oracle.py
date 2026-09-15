@@ -172,9 +172,13 @@ def assert_healthy():
 
 
 def render_input(model_text, timeout=10, maxlen=8 << 20):
-    """Rut khoi ```python ... ``` dinh nghia build(), chay trong subprocess -> bytes input. None neu loi."""
-    m = re.search(r"```(?:python)?\s*([\s\S]*?)```", model_text or "")
-    code = (m.group(1) if m else (model_text or "")).strip()
+    """Rut khoi ```python ... ``` dinh nghia build(), chay trong subprocess -> bytes input. None neu loi.
+
+    CHON block chua `def build` (block CUOI neu nhieu) -> ben voi chain-of-thought: model co the viet
+    suy luan (co the co block code vi du) TRUOC roi moi den block build() that o cuoi."""
+    blocks = re.findall(r"```(?:python)?\s*([\s\S]*?)```", model_text or "")
+    cand = [b for b in blocks if "def build" in b]
+    code = (cand[-1] if cand else (blocks[0] if blocks else (model_text or ""))).strip()
     if "def build" not in code:
         return None
     runner = code + "\n\nimport sys as _s\n_d = build()\n_s.stdout.buffer.write(_d if isinstance(_d,(bytes,bytearray)) else bytes(_d))\n"

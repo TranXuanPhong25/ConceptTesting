@@ -53,19 +53,22 @@ def static_facts(item):
 def concept_text(item):
     """Chi tro vao sink/buffer/guard/bien — KHONG noi dieu kien loi. Model tu suy."""
     f = static_facts(item)
-    L = ["Ham CO lo hong bo nho (source ben duoi). Phan tich TINH (tree-sitter, khong dung ban va):"]
+    L = ["A function with a memory-safety vulnerability (source below). Static analysis (tree-sitter, "
+         "NOT using the patch):"]
     if f["family"]:
-        L.append("- Loai (suy tu concept): %s" % f["family"])
+        L.append("- Type (inferred from concept): %s" % f["family"])
     if f["buffers"]:
-        L.append("- Buffer: " + " ; ".join("L%d `%s`" % (i, t[:50]) for i, t in f["buffers"][:4]))
+        L.append("- Buffers: " + " ; ".join("L%d `%s`" % (i, t[:50]) for i, t in f["buffers"][:4]))
     if f["sinks"]:
-        L.append("- Thao tac NGUY HIEM (sink can lam vuot bien / dung-sau-free): "
+        L.append("- DANGEROUS operations (sinks that may overflow / use-after-free): "
                  + " ; ".join("L%d `%s`" % (i, t[:50]) for i, t in f["sinks"][:6]))
     if f["guards"]:
-        L.append("- Guard hien co (CO THE chua du): " + " ; ".join("L%d `%s`" % (i, t[:50]) for i, t in f["guards"][:4]))
+        L.append("- Existing guards (POSSIBLY insufficient): "
+                 + " ; ".join("L%d `%s`" % (i, t[:50]) for i, t in f["guards"][:4]))
     if f["danger"]:
-        L.append("- Bien tu INPUT (test dieu khien duoc): %s" % ", ".join(f["danger"]))
-    L.append("=> HAY TU SUY dieu kien input can thoa de sink vuot bien / UAF, roi tao input kich hoat.")
+        L.append("- Input-derived variables (controllable by the test): %s" % ", ".join(f["danger"]))
+    L.append("=> INFER the input condition needed to make the sink overflow / UAF, then craft an input "
+             "that triggers it.")
     return "\n".join(L)
 
 
@@ -75,21 +78,24 @@ def concept_text_shuffle(item):
     import hashlib, random
     f = static_facts(item)
     rnd = random.Random(int(hashlib.sha1(("shuf::" + item["id"]).encode()).hexdigest(), 16) % (2 ** 32))
-    cats = [("Buffer", f["buffers"]), ("Thao tac NGUY HIEM (sink)", f["sinks"]), ("Guard hien co", f["guards"])]
+    cats = [("Buffers", f["buffers"]), ("DANGEROUS operations (sinks)", f["sinks"]),
+            ("Existing guards", f["guards"])]
     pool = [t for _, lst in cats for _, t in lst]; rnd.shuffle(pool)
     it = iter(pool)
     FAMS = ["oob", "null_deref", "uaf", "double_free", "int_overflow"]
     fam = rnd.choice([x for x in FAMS if x != f["family"]] or FAMS)
     toks = list({w for w in re.findall(r"[A-Za-z_]\w{2,}", item["func_vuln"]) if w not in f["params"]})
     rnd.shuffle(toks)
-    L = ["Ham CO lo hong bo nho (source ben duoi). Phan tich TINH (tree-sitter, khong dung ban va):",
-         "- Loai (suy tu concept): %s" % fam]
+    L = ["A function with a memory-safety vulnerability (source below). Static analysis (tree-sitter, "
+         "NOT using the patch):",
+         "- Type (inferred from concept): %s" % fam]
     for name, lst in cats:
         cells = [next(it) for _ in lst]
         if cells:
             L.append("- %s: %s" % (name, " ; ".join("`%s`" % c[:50] for c in cells)))
-    L.append("- Bien tu INPUT (test dieu khien duoc): %s" % ", ".join(toks[:3] or f["params"][:3]))
-    L.append("=> HAY TU SUY dieu kien input can thoa de sink vuot bien / UAF, roi tao input kich hoat.")
+    L.append("- Input-derived variables (controllable by the test): %s" % ", ".join(toks[:3] or f["params"][:3]))
+    L.append("=> INFER the input condition needed to make the sink overflow / UAF, then craft an input "
+             "that triggers it.")
     return "\n".join(L)
 
 

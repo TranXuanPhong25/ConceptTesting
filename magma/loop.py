@@ -18,7 +18,8 @@ _ps = importlib.util.spec_from_file_location("magma_prompts", os.path.join(HERE,
 _pm = importlib.util.module_from_spec(_ps); _ps.loader.exec_module(_pm)
 BUILD, prompt_key = _pm.BUILD, _pm.prompt_key
 
-GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+import llm_client                                                # noqa: E402 (magma) — chon provider qua env
+GROQ_MODEL = llm_client.model_id()   # ten model theo LLM_PROVIDER (groq gpt-oss | router gemini) -> tach cache
 GROQ_RPM = int(os.environ.get("GROQ_RPM", "30"))
 ROUNDS = int(os.environ.get("ROUNDS", "3"))
 CONDS = os.environ.get("CONDS", "magma_blind,magma_concept").split(",")
@@ -30,13 +31,16 @@ KEY = os.environ.get("GROQ_API_KEY")   # co the BO TRONG neu cache da du (cham l
 # CUNG bo API => 5283 call cho 1947 key duy nhat = 63% lang phi. Cache chi chong lap GIUA cac lan chay
 # TUAN TU, khong chong duoc song song. Dung lock file de chi cho 1 tien trinh chay mot luc.
 import atexit
-_LOCK = os.path.join(HERE, ".loop.lock")
+# Lock THEO cache file (khong con co dinh .loop.lock): 2 loop dung CACHE KHAC nhau -> khoa khac -> chay
+# SONG SONG duoc (vd chay CoT canh static+fewshot). Cung CACHE -> cung khoa -> van chan goi trung API.
+_LOCK = CACHE + ".lock"
 if os.path.exists(_LOCK):
     try:
         _pid = int(open(_LOCK).read().strip())
         os.kill(_pid, 0)                                   # PID con song?
-        raise SystemExit("[DANG CHAY] da co loop.py khac (PID %d). Chay song song se GOI TRUNG API "
-                         "va mat tien. Doi no xong, hoac: kill %d && rm %s" % (_pid, _pid, _LOCK))
+        raise SystemExit("[DANG CHAY] da co loop.py khac (PID %d) dung CUNG cache %s -> se GOI TRUNG API. "
+                         "Doi no xong, dung MAGMA_LOOP_CACHE khac de chay song song, hoac: kill %d && rm %s"
+                         % (_pid, CACHE, _pid, _LOCK))
     except (ValueError, ProcessLookupError, PermissionError):
         pass                                               # lock mo coi -> ghi de
 open(_LOCK, "w").write(str(os.getpid()))
@@ -50,9 +54,8 @@ if os.path.exists(CACHE):
         except Exception:
             pass
 
-from langchain_groq import ChatGroq                              # noqa: E402
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage  # noqa: E402
-llm = ChatGroq(model=GROQ_MODEL, temperature=0.6, groq_api_key=KEY) if KEY else None
+llm = llm_client.make_llm(temperature=0.6)   # Groq hoac 9router/Vertex Gemini theo LLM_PROVIDER
 mi = 60.0 / max(1, GROQ_RPM); last = [0.0]
 
 
@@ -95,15 +98,18 @@ def feedback(res, item, rendered):
     Dieu kien LEAK (`magma_concept`) van giu fault_cond — nhung CHI trong prompt vong 1, dung dinh nghia cua no.
     """
     if not rendered:
-        return "Lan truoc: build() KHONG tra ve bytes hop le. Viet lai `def build()` chi dung struct/zlib, return bytes."
+        return ("Previous attempt: build() did NOT return valid bytes. Rewrite `def build()` using only "
+                "struct/zlib and return bytes.")
     if res.get("crash_fixed"):
-        return ("Lan truoc: input lam CRASH CA ban da va -> pha bua, khong dac hieu. "
-                "Can input chi kich hoat DUNG loi can tim, khong lam hong linh tinh.")
+        return ("Previous attempt: the input crashed BOTH the patched and vulnerable builds -> it breaks "
+                "things indiscriminately, not specific. Produce an input that triggers ONLY the target bug, "
+                "without corrupting unrelated state.")
     if res.get("reached"):
-        return ("Lan truoc: da CHAM duoc vung code co lo hong, nhung CHUA thoa dieu kien loi. "
-                "Giu nguyen cau truc, chinh GIA TRI cac truong (kich thuoc/chi so/so luong) cho cuc doan hon.")
-    return ("Lan truoc: input chay nhung CHUA cham vung code co lo hong (parser bo som). "
-            "Sua header/chunk cho hop le hon de di sau vao thu vien.")
+        return ("Previous attempt: you REACHED the vulnerable code region, but did NOT satisfy the fault "
+                "condition. Keep the same structure, and make the field VALUES (size/index/count) more "
+                "extreme.")
+    return ("Previous attempt: the input ran but did NOT reach the vulnerable code region (the parser bailed "
+            "out early). Fix the header/chunk to be more valid so it goes deeper into the library.")
 
 def _status(data, res):
     if not data:
@@ -146,12 +152,13 @@ def main():
     print("items:", len(items), "| ROUNDS:", ROUNDS, "| conds:", CONDS)
     agg = {c: {"trig": 0, "reach": 0, "rend": 0} for c in CONDS}
     binv = {c: {} for c in CONDS}
+    bval = {c: {} for c in CONDS}                                # best status day du (de tach theo family)
     for it in items:
         row = []
         for c in CONDS:
             b = run_item(it, c)
             agg[c]["trig"] += (b == 3); agg[c]["reach"] += (b >= 2); agg[c]["rend"] += (b >= 1)
-            binv[c][it["bug_id"]] = int(b == 3)
+            binv[c][it["bug_id"]] = int(b == 3); bval[c][it["bug_id"]] = b
             row.append("%s=%d" % (c.replace("magma_", ""), b))
         print("  %-10s %s" % (it["bug_id"], " ".join(row)))
 
@@ -164,6 +171,25 @@ def main():
         b, c_, p = lab.mcnemar(binv[hi], binv[lo])
         print("McNemar %s > %s (TRIGGER): +%d -%d p=%.4f" % (hi, lo, b, c_, p))
     print("status: 0 chua render | 1 render | 2 REACHED ham loi | 3 TRIGGER (discrim).")
+
+    # ===== TACH THEO LOAI BUG (oob vs lifecycle) — concept 'buffer/sink/guard' chi hop oob =====
+    _FG = {"oob": "oob", "oob_read": "oob", "oob_write": "oob",
+           "null_deref": "lifecycle", "double_free": "lifecycle", "uaf": "lifecycle"}
+    grp = lambda it: _FG.get(it.get("family_pred") or it.get("family"), "other")
+    groups = {}
+    for it in items:
+        groups.setdefault(grp(it), []).append(it["bug_id"])
+    print("\n===== TACH THEO LOAI BUG (concept buffer/sink/guard chi mo ta lop OOB) =====")
+    for gname in ("oob", "lifecycle", "other"):
+        ids = groups.get(gname, [])
+        if not ids:
+            continue
+        m = len(ids)
+        print("--- %s (%d bug) ---" % (gname, m))
+        print("  %-24s %8s %8s" % ("cond", "REACHED", "TRIGGER"))
+        for c in CONDS:
+            r = sum(bval[c][b] >= 2 for b in ids); t = sum(bval[c][b] == 3 for b in ids)
+            print("  %-24s %6d/%d %6d/%d" % (c, r, m, t, m))
 
 
 if __name__ == "__main__":
