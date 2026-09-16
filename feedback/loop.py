@@ -7,32 +7,44 @@ no ca ban fixed) -> model VIET LAI -> lap <=ROUNDS. Concept dan huong vong 1, OR
 So 3 dieu kien tren CUNG gold (DISCRIM = compile ca 2 & no vuln & KHONG no fixed):
   blind_1shot | concept_1shot | concept_fb (concept + feedback loop)
 
-Tai dung bench/{run_diff,prompts,common}. Teacher Groq. Resumable (cache ket qua CUOI moi item).
+Tai dung bench/{run_diff,prompts,common}. Teacher qua magma/llm_client (Groq | router/9router | vertex
+native) — them 2026-09-16 de chay Juliet voi Gemini, dong bo voi magma/loop.py. Resumable (cache ket qua
+CUOI moi item, key da gom MODEL -> doi provider/model KHONG dam cache cu).
 
-Chay TU REPO ROOT:
-  GROQ_API_KEY=... .venv/bin/python feedback/loop.py                          # seed
-  GOLD=bench/items/gold_juliet.jsonl FB_CACHE=feedback/fb_juliet.jsonl \\
-      GROQ_API_KEY=... .venv/bin/python feedback/loop.py                       # Juliet
-Env: ROUNDS=3 | GROQ_MODEL=openai/gpt-oss-120b | GROQ_RPM=30 | GOLD | FB_CACHE
+Chay TU REPO ROOT (Groq, mac dinh, ban tieng Viet cu):
+  GROQ_API_KEY=... .venv/bin/python feedback/loop.py
+
+Chay voi Gemini qua 9router (English prompt — tranh confound ngon ngu):
+  LLM_PROVIDER=router ROUTER_BASE_URL=https://.../v1 ROUTER_API_KEY=... LLM_MODEL=vertex/gemini-3-flash-preview \\
+  GOLD=bench/items/gold_juliet.jsonl FB_CACHE=feedback/fb_juliet_en_gemini.jsonl \\
+  CONCEPT_COND=bench_concept_en BLIND_COND=bench_blind_en \\
+      .venv/bin/python feedback/loop.py
+
+Env: ROUNDS=3 | GROQ_RPM=30 | GOLD | FB_CACHE | CONCEPT_COND=bench_concept|bench_concept2|bench_concept_en
+     | BLIND_COND=bench_blind|bench_blind_en | LLM_PROVIDER=groq|router|vertex (xem magma/llm_client.py)
 """
-import os, sys, json, time, hashlib, subprocess, tempfile, shutil, collections
+import os, sys, json, time, hashlib, subprocess, tempfile, shutil, collections, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE); BENCH = os.path.join(ROOT, "bench")
 sys.path.insert(0, BENCH); sys.path.insert(0, os.path.join(ROOT, "pipeline_v3"))
 import common                                                  # noqa: E402,F401
-from prompts import build_bench_blind, BUILD                   # noqa: E402
+from prompts import BUILD                                      # noqa: E402
 from run_diff import assemble, run_diff, CXX                   # noqa: E402
+# magma/llm_client.py nap qua importlib (KHONG sys.path.insert(0,"magma")): magma/ CUNG co prompts.py
+# trung ten voi bench/prompts.py -> insert vao sys.path se DE `from prompts import BUILD` o tren nhap NHAM
+# module cua magma (BUILD khac schema, thieu key bench_concept/bench_blind).
+_llc = importlib.util.spec_from_file_location("magma_llm_client", os.path.join(ROOT, "magma", "llm_client.py"))
+llm_client = importlib.util.module_from_spec(_llc); _llc.loader.exec_module(llm_client)
 
-CONCEPT_COND = os.environ.get("CONCEPT_COND", "bench_concept")  # bench_concept | bench_concept2 (huong 2)
+CONCEPT_COND = os.environ.get("CONCEPT_COND", "bench_concept")  # bench_concept | bench_concept2 | bench_concept_en
+BLIND_COND = os.environ.get("BLIND_COND", "bench_blind")        # bench_blind | bench_blind_en
 _concept_builder = BUILD[CONCEPT_COND]
-ROUNDS     = int(os.environ.get("ROUNDS", "3"))
-GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
-GROQ_RPM   = int(os.environ.get("GROQ_RPM", "30"))
-GOLD       = os.environ.get("GOLD", os.path.join(BENCH, "items", "gold_juliet.jsonl"))
-CACHE      = os.environ.get("FB_CACHE", os.path.join(HERE, "fb_juliet.jsonl"))
-KEY        = os.environ.get("GROQ_API_KEY")
-if not KEY:
-    raise SystemExit("Thieu GROQ_API_KEY.")
+_blind_builder = BUILD[BLIND_COND]
+ROUNDS   = int(os.environ.get("ROUNDS", "3"))
+MODEL    = llm_client.model_id()          # ten model theo LLM_PROVIDER (groq | router | vertex) -> tach cache
+GROQ_RPM = int(os.environ.get("GROQ_RPM", "30"))
+GOLD     = os.environ.get("GOLD", os.path.join(BENCH, "items", "gold_juliet.jsonl"))
+CACHE    = os.environ.get("FB_CACHE", os.path.join(HERE, "fb_juliet.jsonl"))
 if not CXX:
     raise SystemExit("Khong co compiler.")
 
@@ -50,13 +62,15 @@ def _save(k, v):
     open(CACHE, "a").write(json.dumps({"key": k, "target": v}) + "\n")
 
 
-from langchain_groq import ChatGroq                                        # noqa: E402
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage  # noqa: E402
-llm = ChatGroq(model=GROQ_MODEL, temperature=0.3, groq_api_key=KEY)
+llm = llm_client.make_llm(temperature=0.3)   # None neu thieu key -> chi doc duoc tu cache co san
 _mi = 60.0 / max(1, GROQ_RPM); _last = [0.0]
 
 
 def call(msgs):
+    if llm is None:
+        raise SystemExit("Cache mieng va KHONG co LLM (thieu key/base_url cho LLM_PROVIDER=%s)."
+                          % os.environ.get("LLM_PROVIDER", "groq"))
     for a in range(6):
         dt = time.monotonic() - _last[0]
         if dt < _mi:
@@ -125,8 +139,29 @@ def _feedback(v, f, fn):
     return None
 
 
+# EN (2026-09-16): feedback tieng Anh — dung khi CONCEPT_COND/BLIND_COND la ban _en (Gemini), de khong
+# tron ngon ngu GIUA vong 0 (English) va cac vong feedback sau (se la Vietnamese neu dung ham cu).
+def _feedback_en(v, f, fn):
+    if not v["compiles"]:
+        return ("The test did NOT compile.\n%s\nFix: only #include standard headers, CALL `%s(...)`, "
+                "do NOT redefine the provided functions/structs, do NOT use gtest/EXPECT_DEATH." % (v["err"], fn))
+    if not v["fires"]:
+        return ("The test compiled OK but AddressSanitizer/UBSan did NOT report an error on the vulnerable "
+                "build -> the bug was not triggered. Use a more malicious input, make sure `%s(...)` goes "
+                "down the faulty path (e.g. pass NULL / a size beyond the buffer / an already-freed pointer) "
+                "so the sanitizer fires." % fn)
+    if f["fires"]:
+        return ("The test makes the PATCHED (safe) build fire too -> FALSE POSITIVE: the test itself causes "
+                "a memory error (e.g. an overflow in `main`) rather than a bug in `%s(...)`. Only trigger the "
+                "error INSIDE `%s(...)`; `main` itself must not crash." % (fn, fn))
+    return None
+
+
+_EN = CONCEPT_COND.endswith("_en") or BLIND_COND.endswith("_en")   # 1 cong tac dong bo ngon ngu ca 2 nhanh
+
+
 def gen_1shot(item, builder, tag):
-    k = hashlib.sha1(("%s::%s::%s::%s" % (GROQ_MODEL, tag, item["id"], item["func_vuln"])).encode()).hexdigest()
+    k = hashlib.sha1(("%s::%s::%s::%s" % (MODEL, tag, item["id"], item["func_vuln"])).encode()).hexdigest()
     if k in _cache:
         return _cache[k]
     m = builder(item)
@@ -137,18 +172,21 @@ def gen_1shot(item, builder, tag):
 def gen_feedback(item, seed_out):
     """concept_fb = concept_1shot (seed_out, vong 0) + refine bang feedback <=ROUNDS lan.
     Giu output TOT NHAT -> concept_fb LUON >= concept_1shot (co lap dung dong gop feedback)."""
-    k = hashlib.sha1(("%s::fbseed%d::%s::%s::%s" % (GROQ_MODEL, ROUNDS, CONCEPT_COND, item["id"], item["func_vuln"])).encode()).hexdigest()
+    k = hashlib.sha1(("%s::fbseed%d::%s::%s::%s" % (MODEL, ROUNDS, CONCEPT_COND, item["id"], item["func_vuln"])).encode()).hexdigest()
     if k in _cache:
         return _cache[k]
     m = _concept_builder(item)
     hist = [SystemMessage(content=m[0]["content"]), HumanMessage(content=m[1]["content"])]
     fn = item["focal"]; out = seed_out
     v, f = _diag(out, item); best = (_scoreVF(v, f), out)      # vong 0 = concept_1shot
+    _fb = _feedback_en if _EN else _feedback
+    _rewrite = "\n\nRewrite the COMPLETE test (a single ```c ... ``` block)." if _EN \
+        else "\n\nVIET LAI test HOAN CHINH (mot khoi ```c ... ```)."
     for _ in range(ROUNDS):
         if best[0] == 3:
             break                                              # da discriminate -> dung
         hist.append(AIMessage(content=out))
-        hist.append(HumanMessage(content=_feedback(v, f, fn) + "\n\nVIET LAI test HOAN CHINH (mot khoi ```c ... ```)."))
+        hist.append(HumanMessage(content=_fb(v, f, fn) + _rewrite))
         out = call(hist) or out
         v, f = _diag(out, item); sc = _scoreVF(v, f)
         if sc > best[0]:
@@ -167,10 +205,11 @@ def main():
     CONDS = ["blind_1shot", "concept_1shot", "concept_fb"]
     agg = {c: 0 for c in CONDS}
     fam = {c: collections.defaultdict(lambda: [0, 0]) for c in CONDS}
-    print("items:", len(pos), "| model:", GROQ_MODEL, "| ROUNDS:", ROUNDS, "| gold:", os.path.basename(GOLD))
+    print("items:", len(pos), "| model:", MODEL, "| ROUNDS:", ROUNDS, "| gold:", os.path.basename(GOLD),
+          "| CONCEPT_COND:", CONCEPT_COND, "| BLIND_COND:", BLIND_COND)
     for i, it in enumerate(pos):
         c1 = gen_1shot(it, _concept_builder, CONCEPT_COND)
-        outs = {"blind_1shot": gen_1shot(it, build_bench_blind, "bench_blind"),
+        outs = {"blind_1shot": gen_1shot(it, _blind_builder, BLIND_COND),
                 "concept_1shot": c1,
                 "concept_fb": gen_feedback(it, c1)}          # feedback bat dau tu concept_1shot
         for c in CONDS:

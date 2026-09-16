@@ -26,7 +26,7 @@ def model_id():
     return os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
 
 
-def make_llm(temperature=0.6):
+def make_llm(temperature=0.6, timeout=None, max_retries=None, max_tokens=None):
     """Tra ve LLM co .invoke(messages).content, hoac None neu thieu cau hinh (chay bang cache)."""
     provider = os.environ.get("LLM_PROVIDER", "groq")
     if provider == "vertex":
@@ -36,14 +36,38 @@ def make_llm(temperature=0.6):
             return None                                       # thieu project -> chay bang cache
         from langchain_google_vertexai import ChatVertexAI     # lazy: pip install langchain-google-vertexai
         # auth qua ADC (gcloud auth application-default login) hoac GOOGLE_APPLICATION_CREDENTIALS
-        return ChatVertexAI(model=model_id(), temperature=temperature, project=proj, location=loc)
+        options = {}
+        if timeout is not None:
+            options["timeout"] = timeout
+        if max_retries is not None:
+            options["max_retries"] = max_retries
+        if max_tokens is not None:
+            options["max_tokens"] = max_tokens
+        thinking_budget = os.environ.get("LLM_THINKING_BUDGET")
+        if thinking_budget is not None:
+            options["thinking_budget"] = int(thinking_budget)
+        return ChatVertexAI(model=model_id(), temperature=temperature, project=proj, location=loc, **options)
     if provider == "router":
         key = os.environ.get("ROUTER_API_KEY") or os.environ.get("OPENAI_API_KEY")
         base = os.environ.get("ROUTER_BASE_URL")
         if not (key and base):
             return None
         from langchain_openai import ChatOpenAI                # lazy: chi can khi that su dung router
-        return ChatOpenAI(model=model_id(), temperature=temperature, api_key=key, base_url=base)
+        options = {}
+        if timeout is not None:
+            options["timeout"] = timeout
+        if max_retries is not None:
+            options["max_retries"] = max_retries
+        if max_tokens is not None:
+            options["max_tokens"] = max_tokens
+        return ChatOpenAI(model=model_id(), temperature=temperature, api_key=key, base_url=base, **options)
     from langchain_groq import ChatGroq
     key = os.environ.get("GROQ_API_KEY")
-    return ChatGroq(model=model_id(), temperature=temperature, groq_api_key=key) if key else None
+    options = {}
+    if timeout is not None:
+        options["timeout"] = timeout
+    if max_retries is not None:
+        options["max_retries"] = max_retries
+    if max_tokens is not None:
+        options["max_tokens"] = max_tokens
+    return ChatGroq(model=model_id(), temperature=temperature, groq_api_key=key, **options) if key else None
