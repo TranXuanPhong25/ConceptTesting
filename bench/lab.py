@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
-"""Harness thi nghiem DUNG CHUNG: sinh test qua Groq + cham diem vi-phan + McNemar.
+"""Harness thi nghiem DUNG CHUNG: sinh test qua LLM (Groq | 9router | Vertex native) + cham diem vi-phan + McNemar.
 
 Dung cho cac huong (placebo, patch_concept, ...): moi huong chi dinh nghia them DIEU KIEN
 (name -> builder(item)->messages) roi goi generate() + report(). Tai dung bench/run_diff (oracle).
 
-Env: GROQ_API_KEY | GROQ_MODEL=openai/gpt-oss-120b | GROQ_RPM=30 | SAMPLES=1
+Env: GROQ_RPM=30 | SAMPLES=1 | LLM_PROVIDER=groq|router|vertex (xem magma/llm_client.py, them 2026-09-16
+     de chay Juliet qua Gemini dong bo voi feedback/loop.py). Cache key da gom MODEL nen doi provider/model
+     KHONG dam cache cu.
 """
-import os, sys, json, time, math, hashlib
+import os, sys, json, time, math, hashlib, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
 sys.path.insert(0, HERE); sys.path.insert(0, os.path.join(ROOT, "pipeline_v3"))
 import common                       # noqa: E402,F401
 from run_diff import run_diff       # noqa: E402
+_llc = importlib.util.spec_from_file_location("magma_llm_client", os.path.join(ROOT, "magma", "llm_client.py"))
+llm_client = importlib.util.module_from_spec(_llc); _llc.loader.exec_module(llm_client)
 
-GROQ_MODEL = os.environ.get("GROQ_MODEL", "openai/gpt-oss-120b")
+MODEL      = llm_client.model_id()
 GROQ_RPM   = int(os.environ.get("GROQ_RPM", "30"))
 SAMPLES    = int(os.environ.get("SAMPLES", "1"))
 
 
 def _key(cond, item, builder, s):
     m = builder(item)
-    blob = "::".join([GROQ_MODEL, cond, item["id"], str(s), m[0]["content"], m[1]["content"]])
+    blob = "::".join([MODEL, cond, item["id"], str(s), m[0]["content"], m[1]["content"]])
     return hashlib.sha1(blob.encode()).hexdigest()
 
 
@@ -36,14 +40,12 @@ def load_cache(path):
 
 
 def generate(items, conds, cache_path):
-    """conds: dict name->builder. Sinh K=SAMPLES mau/item/cond qua Groq. Resumable."""
-    key = os.environ.get("GROQ_API_KEY")
-    if not key:
-        raise SystemExit("Thieu GROQ_API_KEY.")
+    """conds: dict name->builder. Sinh K=SAMPLES mau/item/cond qua LLM (llm_client). Resumable."""
     cache = load_cache(cache_path)
-    from langchain_groq import ChatGroq
     from langchain_core.messages import SystemMessage, HumanMessage
-    llm = ChatGroq(model=GROQ_MODEL, temperature=0.3, groq_api_key=key)
+    llm = llm_client.make_llm(temperature=0.3)
+    if llm is None:
+        raise SystemExit("Thieu key/base_url cho LLM_PROVIDER=%s." % os.environ.get("LLM_PROVIDER", "groq"))
     mi = 60.0 / max(1, GROQ_RPM); last = [0.0]
 
     def call(m):
@@ -109,7 +111,7 @@ def mcnemar(bin_a, bin_b):
 
 def report(items, conds, cache, mcnemar_pairs=()):
     ev = evaluate(items, conds, cache)
-    print("\nmodel: %s | items: %d | SAMPLES: %d\n" % (GROQ_MODEL, len(items), SAMPLES))
+    print("\nmodel: %s | items: %d | SAMPLES: %d\n" % (MODEL, len(items), SAMPLES))
     print("  %-22s %8s   %s" % ("cond", "DISCRIM", "(disc/n)"))
     for c in conds:
         a = ev[c]; n = a["n"] or 1
