@@ -1,1 +1,1 @@
-"""LLM test-generation runner for the Python/TestEval benchmark."""
+"""LLM test-generation and evaluation helpers for Python/TestEval."""

@@ -24,6 +24,7 @@ SYSTEM_PROMPT = (
 )
 
 PROMPT_VERSION = "symbolic-v1"
+BASELINE_PROMPT_VERSION = "baseline-v1"
 
 
 def build_line_prompt(record: dict[str, Any], annotation: dict[str, Any], target: dict[str, Any]) -> str:
@@ -48,6 +49,24 @@ def build_line_prompt(record: dict[str, Any], annotation: dict[str, Any], target
         code=target.get("code", ""),
         target_concepts=", ".join(target.get("concepts", [])) or "none",
         concepts=concepts,
+    )
+
+
+def build_baseline_line_prompt(record: dict[str, Any], target: dict[str, Any]) -> str:
+    source = _numbered_source(record["python_solution"])
+    return (
+        "Write one Python test function for the function `{func}`.\n\n"
+        "Problem description:\n{description}\n\n"
+        "Program under test (line-numbered):\n```python\n{source}\n```\n\n"
+        "The test must execute target line {line}.\n\n"
+        "Start exactly with `def test_{func}():`, create `solution = Solution()`, "
+        "and call the method with concrete inputs. Do not return explanations, markdown, "
+        "or assertions about implementation details."
+    ).format(
+        func=record["func_name"],
+        description=record.get("description", ""),
+        source=source,
+        line=target["line"],
     )
 
 
@@ -87,7 +106,12 @@ def clean_model_output(raw: str) -> str:
     return text.strip()
 
 
-def result_record(record: dict[str, Any], mode: str, tests: dict[int, str] | list[dict[str, Any]]) -> dict[str, Any]:
+def result_record(
+    record: dict[str, Any],
+    mode: str,
+    tests: dict[int, str] | list[dict[str, Any]],
+    prompt_version: str = PROMPT_VERSION,
+) -> dict[str, Any]:
     if mode == "line":
         tests = {str(line): test for line, test in tests.items()}
     return {
@@ -98,7 +122,7 @@ def result_record(record: dict[str, Any], mode: str, tests: dict[int, str] | lis
         "code": record["python_solution"],
         "tests": tests,
         "generation_mode": mode,
-        "prompt_version": PROMPT_VERSION,
+        "prompt_version": prompt_version,
     }
 
 
@@ -170,10 +194,10 @@ def _generate_with_retry(llm: Any, prompt: str, retries: int, sleep_seconds: flo
     raise RuntimeError(f"LLM call failed after {retries + 1} attempt(s): {last_error}") from last_error
 
 
-def _target_key(mode: str, task_num: int, target: dict[str, Any], index: int) -> str:
+def _target_key(mode: str, task_num: int, target: dict[str, Any], index: int, prompt_version: str = PROMPT_VERSION) -> str:
     if mode == "line":
-        return f"{PROMPT_VERSION}:line:{task_num}:{target['line']}"
-    return f"{PROMPT_VERSION}:branch:{task_num}:{index}:{target['start']}:{target['end']}"
+        return f"{prompt_version}:line:{task_num}:{target['line']}"
+    return f"{prompt_version}:branch:{task_num}:{index}:{target['start']}:{target['end']}"
 
 
 def _load_cache(path: Path) -> dict[str, str]:
@@ -199,7 +223,13 @@ def _append_jsonl(path: Path, row: dict[str, Any]) -> None:
         os.fsync(handle.fileno())
 
 
-def _seed_cache_from_output(path: Path, mode: str, cached: dict[str, str], cache_path: Path) -> None:
+def _seed_cache_from_output(
+    path: Path,
+    mode: str,
+    cached: dict[str, str],
+    cache_path: Path,
+    prompt_version: str = PROMPT_VERSION,
+) -> None:
     if not path.exists():
         return
     with path.open() as handle:
@@ -211,16 +241,16 @@ def _seed_cache_from_output(path: Path, mode: str, cached: dict[str, str], cache
             except json.JSONDecodeError:
                 continue
             task_num = row.get("task_num")
-            if row.get("prompt_version") != PROMPT_VERSION:
+            if row.get("prompt_version") != prompt_version:
                 continue
             if mode == "line":
                 entries = [
-                    (f"{PROMPT_VERSION}:line:{task_num}:{target_line}", test)
+                    (f"{prompt_version}:line:{task_num}:{target_line}", test)
                     for target_line, test in row.get("tests", {}).items()
                 ]
             else:
                 entries = [
-                    (f"{PROMPT_VERSION}:branch:{task_num}:{index}:{test.get('start')}:{test.get('end')}", test.get("test"))
+                    (f"{prompt_version}:branch:{task_num}:{index}:{test.get('start')}:{test.get('end')}", test.get("test"))
                     for index, test in enumerate(row.get("tests", []))
                 ]
             for key, test in entries:
@@ -232,6 +262,10 @@ def _seed_cache_from_output(path: Path, mode: str, cached: dict[str, str], cache
 def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any] | None = None) -> int:
     if args.mode not in {"line", "branch"}:
         raise SystemExit("--mode must be line or branch")
+    prompt_mode = getattr(args, "prompt_mode", "symbolic")
+    if prompt_mode not in {"symbolic", "baseline"}:
+        raise SystemExit("--prompt-mode must be symbolic or baseline")
+    prompt_version = PROMPT_VERSION if prompt_mode == "symbolic" else BASELINE_PROMPT_VERSION
     path_by_task = _load_paths(args.paths)
     llm = (
         None
@@ -246,7 +280,7 @@ def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any
     cache_path = Path(args.cache) if args.cache else Path(str(output) + ".cache.jsonl")
     errors_path = Path(str(output) + ".errors.jsonl")
     cached = _load_cache(cache_path)
-    _seed_cache_from_output(output, args.mode, cached, cache_path)
+    _seed_cache_from_output(output, args.mode, cached, cache_path, prompt_version)
     count = 0
     with Path(args.input).open() as source, output.open("w") as destination:
         for raw_line in source:
@@ -262,8 +296,12 @@ def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any
                 tests = {}
                 targets = annotation["line_targets"][: args.max_targets or None]
                 for index, target in enumerate(targets):
-                    prompt = build_line_prompt(record, annotation, target)
-                    key = _target_key(args.mode, record["task_num"], target, index)
+                    prompt = (
+                        build_line_prompt(record, annotation, target)
+                        if prompt_mode == "symbolic"
+                        else build_baseline_line_prompt(record, target)
+                    )
+                    key = _target_key(args.mode, record["task_num"], target, index, prompt_version)
                     try:
                         if args.dry_run:
                             generated = "# DRY RUN\n" + prompt
@@ -284,8 +322,12 @@ def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any
                 tests = []
                 targets = annotation["branch_targets"][: args.max_targets or None]
                 for index, target in enumerate(targets):
-                    prompt = build_branch_prompt(record, annotation, target)
-                    key = _target_key(args.mode, record["task_num"], target, index)
+                    prompt = (
+                        build_branch_prompt(record, annotation, target)
+                        if prompt_mode == "symbolic"
+                        else build_baseline_branch_prompt(record, target)
+                    )
+                    key = _target_key(args.mode, record["task_num"], target, index, prompt_version)
                     try:
                         if args.dry_run:
                             generated = "# DRY RUN\n" + prompt
@@ -302,7 +344,7 @@ def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any
                         generated = ""
                         print(f"[error] {key}: {type(exc).__name__}: {exc}", flush=True)
                     tests.append({"start": target["start"], "end": target["end"], "test": generated})
-            destination.write(json.dumps(result_record(record, args.mode, tests), ensure_ascii=False) + "\n")
+            destination.write(json.dumps(result_record(record, args.mode, tests, prompt_version), ensure_ascii=False) + "\n")
             destination.flush()
             os.fsync(destination.fileno())
             count += 1
@@ -322,6 +364,25 @@ def _default_llm_factory(temperature: float, request_timeout: float, max_output_
     )
 
 
+def build_baseline_branch_prompt(record: dict[str, Any], target: dict[str, Any]) -> str:
+    source = _numbered_source(record["python_solution"])
+    return (
+        "Write one Python test function for the function `{func}`.\n\n"
+        "Problem description:\n{description}\n\n"
+        "Program under test (line-numbered):\n```python\n{source}\n```\n\n"
+        "The test must execute the target branch from line {start} to line {end}.\n\n"
+        "Start exactly with `def test_{func}():`, create `solution = Solution()`, "
+        "and call the method with concrete inputs. Do not return explanations, markdown, "
+        "or assertions about implementation details."
+    ).format(
+        func=record["func_name"],
+        description=record.get("description", ""),
+        source=source,
+        start=target["start"],
+        end=target["end"],
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--in", dest="input", required=True, help="Raw or annotated TestEval leetcode-py JSONL")
@@ -329,6 +390,7 @@ def main() -> None:
     parser.add_argument("--out", required=True, help="TestEval-compatible prediction JSONL")
     parser.add_argument("--cache", help="Successful target cache; defaults to <out>.cache.jsonl")
     parser.add_argument("--mode", choices=("line", "branch"), default="line")
+    parser.add_argument("--prompt-mode", choices=("symbolic", "baseline"), default="symbolic")
     parser.add_argument("--limit", type=int, default=0, help="Maximum tasks; 0 means all")
     parser.add_argument("--max-targets", type=int, default=0, help="Maximum targets per task; 0 means all")
     parser.add_argument("--temperature", type=float, default=0.0)

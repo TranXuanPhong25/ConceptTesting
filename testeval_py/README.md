@@ -47,3 +47,17 @@ source scripts/vertex_env.sh
 Gemini 3 Flash uses `gemini-3-flash-preview` at the `global` location. The
 runner caps output at 4096 tokens by default (`--max-output-tokens`) and
 supports `LLM_THINKING_BUDGET=0` for this short test-generation workload.
+
+For execution-feedback generation, use the separate loop runner:
+
+```bash
+source scripts/vertex_env.sh
+.venv/bin/python -m testeval_py.feedback_loop \
+  --in concept_annotator_py/testeval_py_concepts.jsonl \
+  --out /tmp/testeval_feedback_symbolic.jsonl \
+  --prompt-mode symbolic --rounds 2
+```
+
+It generates one test, executes it against the target, feeds back
+`not_covered`, `assertion_failed`, or runtime status, and retries the same
+target up to `--rounds`. Its cache is separate from one-shot generation.

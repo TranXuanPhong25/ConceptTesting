@@ -10,6 +10,7 @@ from concept_annotator_py import annotate_record
 from testeval_py.llm_runner import (
     PROMPT_VERSION,
     _chat,
+    build_baseline_line_prompt,
     _default_llm_factory,
     build_branch_prompt,
     build_line_prompt,
@@ -17,6 +18,7 @@ from testeval_py.llm_runner import (
     result_record,
     run,
 )
+from testeval_py.assertion_eval import evaluate_predictions
 
 
 RECORD = {
@@ -55,6 +57,34 @@ class TestEvalPyLLMTests(unittest.TestCase):
         self.assertIn("def twoSum", prompt)
         self.assertIn("def test_twoSum():", prompt)
         self.assertIn("Do not return explanations", prompt)
+
+    def test_baseline_prompt_omits_symbolic_context(self):
+        prompt = build_baseline_line_prompt(self.record, self.annotation["line_targets"][0])
+
+        self.assertIn("target line 6", prompt)
+        self.assertIn("def twoSum", prompt)
+        self.assertNotIn("Target-specific symbolic concept", prompt)
+        self.assertNotIn("Target concepts:", prompt)
+
+    def test_assertion_evaluator_separates_execution_from_assertion(self):
+        with tempfile.TemporaryDirectory() as td:
+            prediction_path = Path(td) / "prediction.jsonl"
+            row = result_record(
+                self.record,
+                "line",
+                {
+                    6: "def test_twoSum():\n    solution = Solution()\n    assert solution.twoSum([1, 2], 3) == [0, 1]",
+                    7: "def test_twoSum():\n    solution = Solution()\n    assert solution.twoSum([1, 2], 3) == [1, 0]",
+                },
+            )
+            prediction_path.write_text(json.dumps(row) + "\n")
+
+            result = evaluate_predictions(str(prediction_path))
+
+        self.assertEqual(result["tests"], 2)
+        self.assertEqual(result["syntax_correct"], 2)
+        self.assertEqual(result["executable_correct"], 2)
+        self.assertEqual(result["assertion_correct"], 1)
 
     def test_branch_prompt_contains_condition(self):
         prompt = build_branch_prompt(self.record, self.annotation, self.annotation["branch_targets"][0])
