@@ -14,6 +14,8 @@ dependencies = [
 [project.optional-dependencies]
 # LLM_PROVIDER=vertex: goi Vertex AI native. Cai bang:  uv sync --extra vertex
 vertex = ["langchain-google-vertexai>=2"]
+testcase = ["datasets>=4"]
+eval = ["pytest>=9", "pytest-cov>=7", "sortedcontainers>=2"]
 
 [tool.uv]
 # oracle.py / loop_symcc.py / export_hints.py chi dung stdlib -> khong can dep nao
