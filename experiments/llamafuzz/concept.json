@@ -1,0 +1,7 @@
+{
+  "base_seed": "MSG|3|cat",
+  "format": "MSG|DECLARED_LEN|PAYLOAD",
+  "guard": "declared_len >= 7 and payload begins with MAGMA",
+  "relations": ["declared_len == len(payload)"],
+  "required_label": "guard_hit"
+}
