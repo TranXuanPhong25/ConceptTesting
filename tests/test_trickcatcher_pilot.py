@@ -9,6 +9,9 @@ from trickcatcher_pilot.reparse import parse_lenient
 from trickcatcher_pilot.stats import summarize
 from trickcatcher_pilot.paired import compare
 from trickcatcher_pilot.static_concepts import static_concept
+from trickcatcher_pilot.cpp_run import parse_inputs as parse_cpp_inputs, build_prompt as build_cpp_prompt
+from trickcatcher_pilot.cpp_evaluate import _compile as compile_cpp, _run as run_cpp_binary
+from trickcatcher_pilot.cpp_validity import valid_input as valid_cpp_input
 from trickcatcher_pilot.prompt_provenance import read_original_templates
 
 
@@ -59,6 +62,26 @@ class TrickCatcherPilotTests(unittest.TestCase):
         system, user = read_original_templates(template_dir)
         self.assertIn("professional software testing engineer", system)
         self.assertIn("{function_and_docstring}", user)
+
+    def test_cpp_input_sections_preserve_multiline_stdin(self):
+        raw = "INPUT1:\n2\n1 2\nINPUT2: 3 4\nINPUT3:\n```\n5\n```"
+        self.assertEqual(parse_cpp_inputs(raw), ["2\n1 2\n", "3 4\n", "5\n"])
+        template = "Problem: {pro_des}\nCode: {code}"
+        self.assertEqual(build_cpp_prompt(template, "spec", "int main(){}"), "Problem: spec\nCode: int main(){}")
+
+    def test_cpp_differential_runner_detects_output_difference(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "main.cpp"
+            binary = Path(directory) / "main"
+            source.write_text('#include <iostream>\nint main(){int x; std::cin>>x; std::cout<<(x+1);}\n')
+            self.assertEqual(compile_cpp(source, binary), "")
+            self.assertEqual(run_cpp_binary(binary, "2\n")["output"], "3")
+
+    def test_cpp_spec_validator_rejects_truncated_sequence(self):
+        self.assertFalse(valid_cpp_input("p02616", "200000 1\n-1 -1 -1\n"))
+        self.assertTrue(valid_cpp_input("p02616", "3 1\n-1 -1 -1\n"))
+        self.assertFalse(valid_cpp_input("p02598", "3 0\n1 2\n"))
+        self.assertTrue(valid_cpp_input("p02598", "1 1\n2\n"))
 
     def test_contract_and_canonical_execution_are_separate(self):
         contract = "def __contract(x):\n    assert x >= 0, 'invalid inputs'\n"
