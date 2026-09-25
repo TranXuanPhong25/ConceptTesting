@@ -9,6 +9,7 @@ from unittest.mock import patch
 from concept_annotator_py import annotate_record
 from testeval_py.llm_runner import (
     PROMPT_VERSION,
+    _prompt_version,
     _chat,
     build_baseline_line_prompt,
     _default_llm_factory,
@@ -51,8 +52,8 @@ class TestEvalPyLLMTests(unittest.TestCase):
         prompt = build_line_prompt(self.record, self.annotation, self.annotation["line_targets"][0])
 
         self.assertIn("target line 6", prompt)
-        self.assertIn("Target-specific symbolic concept", prompt)
-        self.assertIn("required path constraint", prompt)
+        self.assertIn("Reachability facts for the target", prompt)
+        self.assertIn("loop_one_plus_iteration", prompt)
         self.assertIn("enumerate(nums) must produce at least one iteration", prompt)
         self.assertIn("def twoSum", prompt)
         self.assertIn("def test_twoSum():", prompt)
@@ -65,6 +66,25 @@ class TestEvalPyLLMTests(unittest.TestCase):
         self.assertIn("def twoSum", prompt)
         self.assertNotIn("Target-specific symbolic concept", prompt)
         self.assertNotIn("Target concepts:", prompt)
+
+    def test_line_prompt_can_filter_to_branch_and_input_facts(self):
+        record = dict(RECORD)
+        record["target_lines"] = [7]
+        annotation = annotate_record(record)["concept_annotation_py"]
+        prompt = build_line_prompt(
+            record,
+            annotation,
+            annotation["line_targets"][0],
+            fact_kinds={"branch_true", "branch_false", "input_relation"},
+        )
+
+        self.assertIn("branch_true: target - x in seen", prompt)
+        self.assertNotIn("input_relation: target - x in seen", prompt)
+        self.assertNotIn("loop_one_plus_iteration", prompt)
+        self.assertEqual(
+            _prompt_version("symbolic", {"branch_true", "input_relation"}),
+            "reachability-v3.branch_true-input_relation",
+        )
 
     def test_assertion_evaluator_separates_execution_from_assertion(self):
         with tempfile.TemporaryDirectory() as td:

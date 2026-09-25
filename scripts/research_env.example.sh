@@ -17,6 +17,10 @@ export LLM_MODEL="${LLM_MODEL:-vertex/gemini-3-flash-preview}"
 export G2FUZZ_API_KEY="$ROUTER_API_KEY"
 export G2FUZZ_BASE_URL="$ROUTER_BASE_URL"
 export G2FUZZ_MODEL="$LLM_MODEL"
+# G2FUZZ upstream sends requests in bursts. Keep this conservative until you
+# know your 9router quota; increase it only after confirming the allowed RPM.
+export G2FUZZ_RPM="${G2FUZZ_RPM:-5}"
+export G2FUZZ_MAX_RETRIES="${G2FUZZ_MAX_RETRIES:-6}"
 export CKGFUZZER_API_KEY="$ROUTER_API_KEY"
 export CKGFUZZER_BASE_URL="$ROUTER_BASE_URL"
 export CKGFUZZER_ANALYZER_MODEL="$LLM_MODEL"

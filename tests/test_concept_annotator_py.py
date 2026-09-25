@@ -74,7 +74,7 @@ class ConceptAnnotatorPyTests(unittest.TestCase):
         annotated = annotate_record(TESTEVAL_RECORD, PATH_RECORD)
 
         ann = annotated["concept_annotation_py"]
-        self.assertEqual(ann["schema"], "concept_annotator_py.v2")
+        self.assertEqual(ann["schema"], "concept_annotator_py.v4")
         self.assertIn("hash_map", ann["program_concepts"])
         self.assertIn("loop", ann["program_concepts"])
         self.assertIn("membership_test", ann["program_concepts"])
@@ -122,12 +122,15 @@ class ConceptAnnotatorPyTests(unittest.TestCase):
         ann = annotate_record(TESTEVAL_RECORD, PATH_RECORD)["concept_annotation_py"]
         block = render_prompt_block(ann, max_lines=2, max_branches=1, max_paths=1)
 
-        self.assertIn("Target-specific symbolic concept", block)
+        self.assertIn("Reachability facts for the target", block)
         self.assertIn("target L9", block)
-        self.assertIn("required path constraint", block)
+        self.assertIn("branch_true: target - x in seen", block)
+        self.assertIn("state_before_use: seen already contains target - x", block)
+        self.assertIn("loop_two_plus_iteration: seen starts empty", block)
+        self.assertNotIn("index_in_bounds: need selects an existing element of seen", block)
         self.assertIn("target - x in seen", block)
-        self.assertIn("branch L8->L9", block)
-        self.assertIn("path 1", block)
+        self.assertNotIn("hash_map", block)
+        self.assertNotIn("return_value", block)
 
     def test_symbolic_synthesis_expands_aliases_to_input_constraints(self):
         record = {
@@ -193,6 +196,55 @@ class ConceptAnnotatorPyTests(unittest.TestCase):
 
         self.assertEqual(constraint["source_expression"], "size > 0")
         self.assertEqual(constraint["expanded_expression"], "size > 0")
+
+    def test_target_requires_bypassing_prior_continue_and_updated_loop_state(self):
+        record = {
+            "task_num": 15,
+            "func_name": "threeSum",
+            "python_solution": """class Solution:
+  def threeSum(self, nums):
+    nums.sort()
+    for i in range(len(nums) - 2):
+      if i > 0 and nums[i] == nums[i - 1]:
+        continue
+      l = i + 1
+      r = len(nums) - 1
+      while l < r:
+        summ = nums[i] + nums[l] + nums[r]
+        if summ == 0:
+          l += 1
+          r -= 1
+          while nums[l] == nums[l - 1] and l < r:
+            l += 1
+        else:
+          l += 1
+""",
+            "target_lines": [15],
+            "blocks": [],
+        }
+        facts = annotate_record(record)["concept_annotation_py"]["line_targets"][0]["symbolic"]["reachability_facts"]
+        self.assertIn({"kind": "avoid_early_exit", "detail": "at L5: not (i > 0 and nums[i] == nums[i - 1])"}, facts)
+        self.assertIn(
+            {"kind": "state_after_update", "detail": "after `l += 1`, require `nums[l] == nums[l - 1] and l < r`"},
+            facts,
+        )
+
+    def test_sequence_index_fact_is_not_applied_to_dictionary_assignment(self):
+        record = {
+            "task_num": 1,
+            "func_name": "f",
+            "python_solution": """class Solution:
+  def f(self, values: list[int]):
+    seen = {}
+    seen[values[0]] = 1
+    return seen[values[0]]
+""",
+            "target_lines": [4],
+            "blocks": [],
+        }
+        facts = annotate_record(record)["concept_annotation_py"]["line_targets"][0]["symbolic"]["reachability_facts"]
+        self.assertTrue(any(f["kind"] == "index_in_bounds" and "values" in f["detail"] for f in facts))
+        self.assertFalse(any(f["kind"] == "index_in_bounds" and "seen" in f["detail"] for f in facts))
 
     def test_cli_merges_testeval_records_with_path_records(self):
         with tempfile.TemporaryDirectory() as td:

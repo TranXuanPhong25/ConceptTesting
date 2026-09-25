@@ -33,7 +33,7 @@ def annotate_record(record: dict[str, Any], path_record: dict[str, Any] | None =
     ]
 
     out["concept_annotation_py"] = {
-        "schema": "concept_annotator_py.v2",
+        "schema": "concept_annotator_py.v4",
         "source": "TestEval",
         "task_num": record.get("task_num"),
         "task_title": record.get("task_title"),
@@ -47,46 +47,26 @@ def annotate_record(record: dict[str, Any], path_record: dict[str, Any] | None =
     return out
 
 
-def render_prompt_block(annotation: dict[str, Any], max_lines: int = 6, max_branches: int = 4, max_paths: int = 3) -> str:
+def render_prompt_block(
+    annotation: dict[str, Any],
+    max_lines: int = 6,
+    max_branches: int = 4,
+    max_paths: int = 3,
+    fact_kinds: set[str] | None = None,
+) -> str:
     """Render a compact prompt block for TestEval target generation."""
 
-    lines = ["Target-specific symbolic concept:"]
+    lines = ["Reachability facts for the target:"]
 
     for target in annotation.get("line_targets", [])[:max_lines]:
         symbolic = target.get("symbolic", {})
         lines.append("- target L%d: %s" % (target["line"], target["code"]))
-        if symbolic.get("intent"):
-            lines.append("  intent: " + symbolic["intent"])
-        for constraint in symbolic.get("path_constraints", []):
-            lines.append(
-                "  required path constraint (L%d): %s"
-                % (constraint["line"], constraint["input_expression"])
-            )
-            if constraint["source_expression"] != constraint["expanded_expression"]:
-                lines.append("    derived from source guard: " + constraint["source_expression"])
-        for relation in symbolic.get("avoid_relations", []):
-            lines.append("  avoid: " + relation)
-        if symbolic.get("state_transition"):
-            lines.append("  state transition: " + symbolic["state_transition"])
-        for strategy in symbolic.get("boundary_strategy", []):
-            lines.append("  boundary strategy: " + strategy)
+        for fact in symbolic.get("reachability_facts", []):
+            if fact_kinds is not None and fact["kind"] not in fact_kinds:
+                continue
+            lines.append("  %s: %s" % (fact["kind"], fact["detail"]))
 
-    for branch in annotation.get("branch_targets", [])[:max_branches]:
-        lines.append(
-            "- branch L%d->L%d (%s) [%s]: %s"
-            % (
-                branch["start"],
-                branch["end"],
-                branch["type"],
-                ", ".join(branch["concepts"]),
-                branch["condition"] or "(fallthrough)",
-            )
-        )
-
-    for path in annotation.get("path_targets", [])[:max_paths]:
-        lines.append("- path %d: %s" % (path["index"] + 1, path["summary"]))
-
-    lines.append("Use the required relations and state transition to choose the smallest concrete input that reaches the target.")
+    lines.append("Choose the smallest concrete input satisfying every fact above. Do not add facts that are not required to reach the target.")
     return "\n".join(lines)
 
 
@@ -108,6 +88,7 @@ class _AstIndex:
         self.parents: dict[ast.AST, ast.AST] = {}
         self.nodes: list[ast.AST] = []
         self._index(tree)
+        self.sequence_names = _sequence_names(self.function)
 
     def line_code(self, line: int) -> str:
         if 1 <= line <= len(self.lines):
@@ -184,6 +165,28 @@ class _AstIndex:
             if value is not None and all(item is not None and _safe_symbolic_value(item) for _, item in name_writes):
                 bindings[name] = value
         return bindings
+
+    def prior_exit_guards(self, line: int) -> list[tuple[ast.If, bool]]:
+        """Find earlier sibling guards that must be bypassed to reach a line."""
+        cursor = _statement_node(self.node_at(line), self)
+        guards: list[tuple[ast.If, bool]] = []
+        while cursor is not None:
+            parent = self.parents.get(cursor)
+            if parent is None:
+                break
+            for _, value in ast.iter_fields(parent):
+                if not isinstance(value, list) or cursor not in value:
+                    continue
+                for sibling in value[: value.index(cursor)]:
+                    if not isinstance(sibling, ast.If):
+                        continue
+                    body_exits = _definitely_exits(sibling.body)
+                    else_exits = _definitely_exits(sibling.orelse)
+                    if body_exits != else_exits:
+                        guards.append((sibling, not body_exits))
+                break
+            cursor = parent if isinstance(parent, ast.stmt) else None
+        return sorted(guards, key=lambda item: item[0].lineno)
 
     def program_concepts(self) -> list[str]:
         tags: list[str] = []
@@ -280,6 +283,36 @@ def _line_in_statements(statements: list[ast.stmt], line: int) -> bool:
 
 def _stored_names(node: ast.AST) -> list[str]:
     return [item.id for item in ast.walk(node) if isinstance(item, ast.Name) and isinstance(item.ctx, ast.Store)]
+
+
+def _definitely_exits(statements: list[ast.stmt]) -> bool:
+    if not statements:
+        return False
+    last = statements[-1]
+    if isinstance(last, (ast.Return, ast.Raise, ast.Break, ast.Continue)):
+        return True
+    if isinstance(last, ast.If) and last.orelse:
+        return _definitely_exits(last.body) and _definitely_exits(last.orelse)
+    return False
+
+
+def _sequence_names(function: ast.AST | None) -> set[str]:
+    """Conservatively identify names known to hold indexable sequences."""
+    if not isinstance(function, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        return set()
+    names: set[str] = set()
+    for arg in (*function.args.posonlyargs, *function.args.args, *function.args.kwonlyargs):
+        if arg.annotation is not None:
+            annotation = ast.unparse(arg.annotation)
+            if annotation in {"str", "bytes", "list", "tuple"} or annotation.startswith(
+                ("List[", "list[", "Tuple[", "tuple[", "Sequence[")
+            ):
+                names.add(arg.arg)
+    for node in ast.walk(function):
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            if isinstance(node.value, (ast.List, ast.ListComp, ast.Tuple)):
+                names.add(node.targets[0].id)
+    return names
 
 
 def _statement_dominates(statement: ast.stmt, target: ast.stmt, parents: dict[ast.AST, ast.AST]) -> bool:
@@ -438,9 +471,11 @@ def _symbolic_synthesis(node: ast.AST | None, line: int, index: _AstIndex) -> di
     input_relations: list[str] = []
     avoid_relations: list[str] = []
     strategies: list[str] = []
+    facts: list[dict[str, str]] = []
 
     for control, info in index.control_path(line):
         truth = bool(info["required_truth"])
+        required: ast.AST | None = None
         if isinstance(control, (ast.If, ast.While)):
             source_node = control.test
             expanded = _expand_expression(source_node, bindings)
@@ -476,17 +511,134 @@ def _symbolic_synthesis(node: ast.AST | None, line: int, index: _AstIndex) -> di
         constraints.append(constraint)
         _append_unique(input_relations, required_text)
         _append_unique(avoid_relations, avoided_text)
+        if isinstance(control, ast.If):
+            _append_fact(facts, "branch_true" if truth else "branch_false", required_text)
+        elif isinstance(control, (ast.While, ast.For)):
+            _append_fact(facts, "loop_one_plus_iteration", required_text)
+        if required is not None:
+            for detail in _state_before_use(required):
+                _append_fact(facts, "state_before_use", detail)
+            if isinstance(control, ast.If) and truth:
+                for detail in _prior_iteration_setup(control, index):
+                    _append_fact(facts, "loop_two_plus_iteration", detail)
+            if isinstance(control, ast.While):
+                for detail in _state_after_update(control, index):
+                    _append_fact(facts, "state_after_update", detail)
         if strategy:
             _append_unique(strategies, strategy)
+
+    for guard, truth in index.prior_exit_guards(line):
+        required = _condition_for_truth(guard.test, truth)
+        _append_fact(facts, "avoid_early_exit", f"at L{guard.lineno}: {ast.unparse(required)}")
+
+    for detail in _index_bounds(node, index):
+        _append_fact(facts, "index_in_bounds", detail)
+    transition = _state_transition(node, index)
+    if transition.startswith("Recursive call remaps inputs:"):
+        _append_fact(facts, "recursive_argument_swap", transition.removeprefix("Recursive call remaps inputs: ").rstrip("."))
 
     return {
         "intent": _target_intent(node, index),
         "path_constraints": constraints,
         "input_relations": input_relations,
         "avoid_relations": avoid_relations,
-        "state_transition": _state_transition(node, index),
+        "state_transition": transition,
         "boundary_strategy": strategies,
+        "reachability_facts": facts,
     }
+
+
+def _state_before_use(required: ast.AST) -> list[str]:
+    """Derive population preconditions from membership guards such as ``x in seen``."""
+    facts: list[str] = []
+    for compare in ast.walk(required):
+        if not isinstance(compare, ast.Compare) or len(compare.ops) != 1 or len(compare.comparators) != 1:
+            continue
+        if isinstance(compare.ops[0], ast.In):
+            _append_unique(facts, f"{ast.unparse(compare.comparators[0])} already contains {ast.unparse(compare.left)}")
+        elif isinstance(compare.ops[0], ast.NotIn):
+            _append_unique(facts, f"{ast.unparse(compare.comparators[0])} does not contain {ast.unparse(compare.left)}")
+    return facts
+
+
+def _prior_iteration_setup(guard: ast.If, index: _AstIndex) -> list[str]:
+    """Find an empty map populated after this guard in a surrounding loop."""
+    facts: list[str] = []
+    collections = {
+        compare.comparators[0].id
+        for compare in ast.walk(guard.test)
+        if isinstance(compare, ast.Compare)
+        and len(compare.ops) == 1
+        and isinstance(compare.ops[0], ast.In)
+        and len(compare.comparators) == 1
+        and isinstance(compare.comparators[0], ast.Name)
+    }
+    loop = index.parents.get(guard)
+    while loop is not None and not isinstance(loop, (ast.For, ast.While)):
+        loop = index.parents.get(loop)
+    if not isinstance(loop, (ast.For, ast.While)):
+        return facts
+    for name in collections:
+        initialized_empty = any(
+            isinstance(stmt, ast.Assign)
+            and stmt.lineno < loop.lineno
+            and len(stmt.targets) == 1
+            and isinstance(stmt.targets[0], ast.Name)
+            and stmt.targets[0].id == name
+            and isinstance(stmt.value, ast.Dict)
+            and not stmt.value.keys
+            for stmt in ast.walk(index.function or index.tree)
+        )
+        if not initialized_empty:
+            continue
+        for stmt in ast.walk(loop):
+            if not isinstance(stmt, ast.Assign) or stmt.lineno <= guard.lineno:
+                continue
+            if any(
+                isinstance(target, ast.Subscript)
+                and isinstance(target.value, ast.Name)
+                and target.value.id == name
+                for target in stmt.targets
+            ):
+                _append_unique(facts, f"{name} starts empty; a previous loop iteration must execute `{ast.unparse(stmt)}`")
+                break
+    return facts
+
+
+def _state_after_update(loop: ast.While, index: _AstIndex) -> list[str]:
+    parent = index.parents.get(loop)
+    if parent is None:
+        return []
+    for _, value in ast.iter_fields(parent):
+        if not isinstance(value, list) or loop not in value:
+            continue
+        facts: list[str] = []
+        for stmt in value[: value.index(loop)]:
+            if not isinstance(stmt, ast.AugAssign) or not isinstance(stmt.target, ast.Name):
+                continue
+            if any(isinstance(n, ast.Name) and n.id == stmt.target.id for n in ast.walk(loop.test)):
+                _append_unique(facts, f"after `{ast.unparse(stmt)}`, require `{ast.unparse(loop.test)}`")
+        return facts
+    return []
+
+
+def _index_bounds(node: ast.AST | None, index: _AstIndex) -> list[str]:
+    """Only claim an index bound when the container is known to be a sequence."""
+    if node is None:
+        return []
+    facts: list[str] = []
+    for subscript in ast.walk(node):
+        if isinstance(subscript, ast.Subscript):
+            root = subscript.value
+            while isinstance(root, ast.Subscript):
+                root = root.value
+            if not isinstance(root, ast.Name) or root.id not in index.sequence_names:
+                continue
+            _append_unique(
+                facts,
+                f"{ast.unparse(subscript.slice)} selects an existing element of {ast.unparse(subscript.value)}",
+            )
+    return facts
 
 
 def _concepts_for_node(node: ast.AST | None, func_name: str | None = None) -> list[str]:
@@ -652,6 +804,12 @@ def _summary(line_targets: list[dict[str, Any]], branch_targets: list[dict[str, 
 def _append_unique(items: list[str], value: str) -> None:
     if value and value not in items:
         items.append(value)
+
+
+def _append_fact(facts: list[dict[str, str]], kind: str, detail: str) -> None:
+    fact = {"kind": kind, "detail": detail}
+    if detail and fact not in facts:
+        facts.append(fact)
 
 
 def _extend_unique(items: list[str], values: Iterable[str]) -> None:

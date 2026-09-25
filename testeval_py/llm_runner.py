@@ -7,6 +7,7 @@ import argparse
 import ast
 import json
 import os
+import random
 import re
 import time
 from pathlib import Path
@@ -23,21 +24,39 @@ SYSTEM_PROMPT = (
     "and do not use markdown fences."
 )
 
-PROMPT_VERSION = "symbolic-v1"
+PROMPT_VERSION = "reachability-v3"
 BASELINE_PROMPT_VERSION = "baseline-v1"
+REACHABILITY_FACT_KINDS = frozenset(
+    {
+        "branch_true",
+        "branch_false",
+        "loop_one_plus_iteration",
+        "loop_two_plus_iteration",
+        "avoid_early_exit",
+        "state_after_update",
+        "state_before_use",
+        "input_relation",
+        "recursive_argument_swap",
+        "index_in_bounds",
+        "index_out_of_bounds",
+    }
+)
 
 
-def build_line_prompt(record: dict[str, Any], annotation: dict[str, Any], target: dict[str, Any]) -> str:
+def build_line_prompt(
+    record: dict[str, Any], annotation: dict[str, Any], target: dict[str, Any], fact_kinds: set[str] | None = None
+) -> str:
     source = _numbered_source(record["python_solution"])
-    concepts = render_prompt_block({**annotation, "line_targets": [target], "branch_targets": [], "path_targets": []})
+    concepts = render_prompt_block(
+        {**annotation, "line_targets": [target], "branch_targets": [], "path_targets": []}, fact_kinds=fact_kinds
+    )
     return (
         "Write one Python unittest method for the function `{func}`.\n\n"
         "Problem description:\n{description}\n\n"
         "Program under test (line-numbered):\n```python\n{source}\n```\n\n"
         "The test must execute target line {line}.\n"
         "Target code: `{code}`\n"
-        "Target concepts: {target_concepts}\n\n"
-        "Static TestEval context:\n{concepts}\n\n"
+        "{concepts}\n\n"
         "Start exactly with `def test_{func}():`, create `solution = Solution()`, "
         "and call the method with concrete inputs. Do not return explanations, markdown, "
         "or assertions about implementation details."
@@ -47,7 +66,6 @@ def build_line_prompt(record: dict[str, Any], annotation: dict[str, Any], target
         source=source,
         line=target["line"],
         code=target.get("code", ""),
-        target_concepts=", ".join(target.get("concepts", [])) or "none",
         concepts=concepts,
     )
 
@@ -182,7 +200,32 @@ def _validate_generated_test(source: str) -> None:
         raise ValueError("LLM test function must not use self.assert methods")
 
 
-def _generate_with_retry(llm: Any, prompt: str, retries: int, sleep_seconds: float) -> str:
+def _retry_delay_seconds(error: Exception, attempt: int, base_seconds: float, max_seconds: float) -> float:
+    """Return a provider-aware delay for transient router failures.
+
+    9router surfaces the upstream wait as either a Retry-After header or text
+    such as ``reset after 18s``.  Retrying before that point turns a temporary
+    overload into a long run of avoidable 503s.
+    """
+    headers = getattr(getattr(error, "response", None), "headers", {}) or {}
+    try:
+        retry_after = float(headers.get("retry-after", ""))
+    except (AttributeError, TypeError, ValueError):
+        retry_after = 0.0
+    reset_match = re.search(r"reset after\s+(\d+(?:\.\d+)?)s", str(error), re.IGNORECASE)
+    reset_after = float(reset_match.group(1)) if reset_match else 0.0
+    exponential = base_seconds * (2**attempt)
+    delay = min(max_seconds, max(retry_after, reset_after, exponential))
+    return delay + random.uniform(0, min(1.0, delay * 0.1))
+
+
+def _generate_with_retry(
+    llm: Any,
+    prompt: str,
+    retries: int,
+    sleep_seconds: float,
+    max_wait_seconds: float,
+) -> str:
     last_error: Exception | None = None
     for attempt in range(retries + 1):
         try:
@@ -190,7 +233,13 @@ def _generate_with_retry(llm: Any, prompt: str, retries: int, sleep_seconds: flo
         except Exception as exc:  # network/provider errors are retriable
             last_error = exc
             if attempt < retries:
-                time.sleep(sleep_seconds * (2**attempt))
+                delay = _retry_delay_seconds(exc, attempt, sleep_seconds, max_wait_seconds)
+                print(
+                    f"[retry] attempt {attempt + 1}/{retries} failed; waiting {delay:.1f}s: "
+                    f"{type(exc).__name__}: {str(exc)[:160]}",
+                    flush=True,
+                )
+                time.sleep(delay)
     raise RuntimeError(f"LLM call failed after {retries + 1} attempt(s): {last_error}") from last_error
 
 
@@ -198,6 +247,26 @@ def _target_key(mode: str, task_num: int, target: dict[str, Any], index: int, pr
     if mode == "line":
         return f"{prompt_version}:line:{task_num}:{target['line']}"
     return f"{prompt_version}:branch:{task_num}:{index}:{target['start']}:{target['end']}"
+
+
+def _parse_fact_kinds(raw: str | None) -> set[str] | None:
+    if not raw:
+        return None
+    kinds = {item.strip() for item in raw.split(",") if item.strip()}
+    unknown = kinds - REACHABILITY_FACT_KINDS
+    if unknown:
+        raise SystemExit("Unknown --concept-facts: " + ", ".join(sorted(unknown)))
+    if not kinds:
+        raise SystemExit("--concept-facts must name at least one fact kind")
+    return kinds
+
+
+def _prompt_version(prompt_mode: str, fact_kinds: set[str] | None) -> str:
+    if prompt_mode == "baseline":
+        return BASELINE_PROMPT_VERSION
+    if fact_kinds is None:
+        return PROMPT_VERSION
+    return PROMPT_VERSION + "." + "-".join(sorted(fact_kinds))
 
 
 def _load_cache(path: Path) -> dict[str, str]:
@@ -265,7 +334,8 @@ def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any
     prompt_mode = getattr(args, "prompt_mode", "symbolic")
     if prompt_mode not in {"symbolic", "baseline"}:
         raise SystemExit("--prompt-mode must be symbolic or baseline")
-    prompt_version = PROMPT_VERSION if prompt_mode == "symbolic" else BASELINE_PROMPT_VERSION
+    fact_kinds = _parse_fact_kinds(getattr(args, "concept_facts", None)) if prompt_mode == "symbolic" else None
+    prompt_version = _prompt_version(prompt_mode, fact_kinds)
     path_by_task = _load_paths(args.paths)
     llm = (
         None
@@ -297,7 +367,7 @@ def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any
                 targets = annotation["line_targets"][: args.max_targets or None]
                 for index, target in enumerate(targets):
                     prompt = (
-                        build_line_prompt(record, annotation, target)
+                        build_line_prompt(record, annotation, target, fact_kinds=fact_kinds)
                         if prompt_mode == "symbolic"
                         else build_baseline_line_prompt(record, target)
                     )
@@ -308,7 +378,9 @@ def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any
                         elif key in cached:
                             generated = cached[key]
                         else:
-                            generated = _generate_with_retry(llm, prompt, args.retries, args.retry_sleep)
+                            generated = _generate_with_retry(
+                                llm, prompt, args.retries, args.retry_sleep, getattr(args, "retry_max_wait", 180.0)
+                            )
                             cached[key] = generated
                             _append_jsonl(cache_path, {"key": key, "test": generated})
                         tests[target["line"]] = generated
@@ -334,7 +406,9 @@ def run(args: argparse.Namespace, llm_factory: Callable[[float, float, int], Any
                         elif key in cached:
                             generated = cached[key]
                         else:
-                            generated = _generate_with_retry(llm, prompt, args.retries, args.retry_sleep)
+                            generated = _generate_with_retry(
+                                llm, prompt, args.retries, args.retry_sleep, getattr(args, "retry_max_wait", 180.0)
+                            )
                             cached[key] = generated
                             _append_jsonl(cache_path, {"key": key, "test": generated})
                     except Exception as exc:
@@ -391,13 +465,18 @@ def main() -> None:
     parser.add_argument("--cache", help="Successful target cache; defaults to <out>.cache.jsonl")
     parser.add_argument("--mode", choices=("line", "branch"), default="line")
     parser.add_argument("--prompt-mode", choices=("symbolic", "baseline"), default="symbolic")
+    parser.add_argument(
+        "--concept-facts",
+        help="Comma-separated reachability facts for a symbolic ablation; omit for all facts.",
+    )
     parser.add_argument("--limit", type=int, default=0, help="Maximum tasks; 0 means all")
     parser.add_argument("--max-targets", type=int, default=0, help="Maximum targets per task; 0 means all")
     parser.add_argument("--temperature", type=float, default=0.0)
-    parser.add_argument("--request-timeout", type=float, default=60.0, help="Timeout per provider request in seconds")
-    parser.add_argument("--max-output-tokens", type=int, default=4096, help="Maximum tokens in one generated test")
-    parser.add_argument("--retries", type=int, default=2)
-    parser.add_argument("--retry-sleep", type=float, default=2.0)
+    parser.add_argument("--request-timeout", type=float, default=360.0, help="Timeout per provider request in seconds")
+    parser.add_argument("--max-output-tokens", type=int, default=1024, help="Maximum tokens in one generated test")
+    parser.add_argument("--retries", type=int, default=5)
+    parser.add_argument("--retry-sleep", type=float, default=8.0, help="Initial retry delay in seconds")
+    parser.add_argument("--retry-max-wait", type=float, default=180.0, help="Maximum one retry delay in seconds")
     parser.add_argument("--dry-run", action="store_true", help="Write prompts without calling the LLM")
     parser.add_argument("--fail-fast", action="store_true", help="Stop after a target exhausts all retries")
     run(parser.parse_args())

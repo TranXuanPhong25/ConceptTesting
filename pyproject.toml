@@ -4,11 +4,17 @@ version = "0.1.0"
 description = "Concept-guided vulnerability-triggering test generation on the Magma benchmark"
 requires-python = ">=3.11"
 dependencies = [
+    "coverage>=7.16.1",
     # LLM teacher qua langchain (magma/loop.py, llm_client.py)
     "langchain-core>=1.6",
+    "langchain-google-vertexai>=3.2.4",
     "langchain-groq>=1.1",      # LLM_PROVIDER=groq  (gpt-oss-120b)
     "langchain-openai>=1.6",    # LLM_PROVIDER=router (9router / OpenAI-compatible -> Gemini)
+    "piexif>=1.1.3",
     "pypdf>=6",                 # doc paper PDF
+    "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
+    "sortedcontainers>=2.4.0",
     "tqdm>=4.70.1",
 ]
 

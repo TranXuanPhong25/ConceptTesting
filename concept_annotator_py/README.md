@@ -9,7 +9,7 @@ This package targets the official TestEval schema rather than the C/C++ vulnerab
 - `blocks`
 - optional `sampled_paths` / `sampled_condition_paths` from `tgt_paths.jsonl`
 
-and adds `concept_annotation_py` (`concept_annotator_py.v2`) with AST-backed
+and adds `concept_annotation_py` (`concept_annotator_py.v4`) with AST-backed
 target annotations:
 
 - line target code, AST node, concepts, reads/writes, and control context
@@ -17,8 +17,12 @@ target annotations:
 - path constraints parsed from TestEval condition paths
 - program-level concepts such as `loop`, `hash_map`, `membership_test`, `sorting`, `binary_search`, `dynamic_programming`
 - target-specific symbolic synthesis: branch polarity, alias-expanded input
-  constraints, relations to avoid, state transitions, and nearest-boundary
-  strategies
+  constraints, prior exit guards, simple state updates, map population across
+  iterations, and conservative sequence-index facts
+
+The broad AST labels remain in the annotation for analysis; the paper-protocol
+concept prompt uses target-specific reachability facts. Facts are heuristic and
+do not establish that a concrete input satisfies every condition.
 
 For example, a target guarded by `n1 > n2` after `n1 = len(nums1)` and
 `n2 = len(nums2)` is rendered as `len(nums1) > len(nums2)`, with
