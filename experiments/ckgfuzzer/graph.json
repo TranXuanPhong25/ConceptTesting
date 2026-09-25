@@ -1,0 +1,40 @@
+{
+  "schema": "ckgfuzzer-mvp.v1",
+  "fixture": "ledger",
+  "concept_hints": {
+    "entry_api": "ledger_create",
+    "state_model": "a ledger is open after construction; commit closes it",
+    "target_sink": "ledger_commit",
+    "guard": "staged_amount <= 0 returns -2",
+    "boundary": "staged_amount = 0",
+    "fault_model": "changing <= to < accepts an empty commit"
+  },
+  "apis": [
+    {
+      "name": "ledger_create",
+      "result": "ledger",
+      "requires": [],
+      "establishes": ["ledger_exists", "ledger_open"]
+    },
+    {
+      "name": "ledger_add",
+      "requires": ["ledger_exists", "ledger_open"],
+      "establishes": ["staged_amount_known"]
+    },
+    {
+      "name": "ledger_commit",
+      "requires": ["ledger_exists", "ledger_open", "staged_amount_known"],
+      "establishes": ["commit_attempted"],
+      "clears": ["ledger_open"]
+    }
+  ],
+  "target": {
+    "sink": "ledger_commit",
+    "sequence": [
+      {"api": "ledger_create", "arguments": []},
+      {"api": "ledger_add", "arguments": [0]},
+      {"api": "ledger_commit", "arguments": []}
+    ],
+    "expected": {"ledger_add": 0, "ledger_commit": -2}
+  }
+}

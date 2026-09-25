@@ -1,0 +1,25 @@
+{
+  "schema": "concept-guided-dgf.v1",
+  "scope": "local deliberately-vulnerable teaching fixture only",
+  "target": {
+    "call_path": ["main", "parse_packet", "copy_payload"],
+    "target_branch": "declared_len > 8",
+    "target_signal": "TARGET_HIT",
+    "sink": "memcpy into an 8-byte local buffer"
+  },
+  "input_format": {
+    "header": "HG",
+    "version": 1,
+    "length_offset": 3,
+    "payload_offset": 4,
+    "checksum": "xor of every preceding byte"
+  },
+  "path_predicates": [
+    "input[0:2] == b'HG'",
+    "input[2] == 1",
+    "input[3] > 8",
+    "len(input) == 5 + input[3]",
+    "input[-1] == xor(input[:-1])"
+  ],
+  "budget": {"max_cases": 16, "per_case_timeout_seconds": 2}
+}
