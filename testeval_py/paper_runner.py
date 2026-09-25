@@ -85,7 +85,7 @@ def _witness_block(witness: dict[str, Any] | None) -> str | None:
         f"{name}={value!r}" for name, value in witness.get("locals_at_target", {}).items()
     )
     lines = [
-        "Execution-verified target witness:",
+        "Verified execution witness:",
         f"- {witness['call']} reached line {witness['target_line']} and returned normally.",
         "- Recent executed source lines: " + " -> ".join(map(str, witness.get("recent_lines", []))),
     ]
@@ -93,6 +93,31 @@ def _witness_block(witness: dict[str, Any] | None) -> str | None:
         lines.append("- State immediately before target line: " + locals_text)
     lines.append("- LeetCode input constraints were not independently verified by this search.")
     return "\n".join(lines)
+
+
+def _condition_hypotheses_block(facts: str | None, witness: str | None) -> str | None:
+    parts: list[str] = []
+    if facts:
+        parts.append(facts.replace("Reachability facts for this target:", "Static facts from program analysis:"))
+    if witness:
+        parts.append(witness)
+    if not parts:
+        return None
+    parts.append(
+        "Use these facts to derive the necessary conditions for reaching the target. "
+        "Correct them if they conflict with the source."
+    )
+    return "\n\n".join(parts)
+
+
+def _test_witness_block(witness: str | None) -> str | None:
+    if not witness:
+        return None
+    return (
+        "Generated conditions above are the primary constraints.\n\n"
+        + witness
+        + "\n\nGenerate the test that satisfies both the generated conditions and the verified witness."
+    )
 
 
 def _response_text_if_complete(response: Any) -> str:
@@ -269,15 +294,13 @@ def run(args: argparse.Namespace, llm: Any | None = None) -> dict[str, int]:
             block = None
             if annotation is not None:
                 block = _concept_block(annotation["line_targets"][index], kinds)
-            if witness_result is not None:
-                witness_text = _witness_block(verified.get(line))
-                if witness_text:
-                    block = (block + "\n\n" if block else "") + witness_text
             if protocol == "two-step":
                 numbered = data_utils.add_lineno_comment(record["python_solution"])
                 condition_prompt = condition_template.format(program=numbered, targetline=line)
-                if block:
-                    condition_prompt += "\n\n" + block
+                witness_text = _witness_block(verified.get(line)) if witness_result is not None else None
+                condition_hypotheses = _condition_hypotheses_block(block, witness_text)
+                if condition_hypotheses:
+                    condition_prompt += "\n\n" + condition_hypotheses
                 condition_key = hashlib.sha256(
                     (model_id() + "\0two-step:conditions\0" + system + "\0" + condition_prompt).encode()
                 ).hexdigest()
@@ -303,8 +326,9 @@ def run(args: argparse.Namespace, llm: Any | None = None) -> dict[str, int]:
                 test_prompt = test_template.format(
                     func_name=record["func_name"], program=numbered, conditions=condition
                 )
-                if block:
-                    test_prompt += "\n\n" + block
+                test_witness = _test_witness_block(witness_text)
+                if test_witness:
+                    test_prompt += "\n\n" + test_witness
                 prompt = test_prompt
                 key = hashlib.sha256(
                     (model_id() + "\0two-step:test\0" + system + "\0" + prompt).encode()
