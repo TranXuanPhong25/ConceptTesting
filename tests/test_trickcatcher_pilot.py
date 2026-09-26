@@ -9,7 +9,10 @@ from trickcatcher_pilot.reparse import parse_lenient
 from trickcatcher_pilot.stats import summarize
 from trickcatcher_pilot.paired import compare
 from trickcatcher_pilot.static_concepts import static_concept
-from trickcatcher_pilot.cpp_run import parse_inputs as parse_cpp_inputs, build_prompt as build_cpp_prompt
+from trickcatcher_pilot.cpp_run import (
+    parse_inputs as parse_cpp_inputs, build_prompt as build_cpp_prompt,
+    build_plan_prompt as build_cpp_plan_prompt,
+)
 from trickcatcher_pilot.cpp_evaluate import _compile as compile_cpp, _run as run_cpp_binary
 from trickcatcher_pilot.cpp_validity import valid_input as valid_cpp_input
 from trickcatcher_pilot.prompt_provenance import read_original_templates
@@ -82,6 +85,20 @@ class TrickCatcherPilotTests(unittest.TestCase):
         self.assertTrue(valid_cpp_input("p02616", "3 1\n-1 -1 -1\n"))
         self.assertFalse(valid_cpp_input("p02598", "3 0\n1 2\n"))
         self.assertTrue(valid_cpp_input("p02598", "1 1\n2\n"))
+        self.assertTrue(valid_cpp_input("p02716", "3\n-5 -10 -15\n"))
+        self.assertFalse(valid_cpp_input("p02709", "3\n1 2\n"))
+        self.assertTrue(valid_cpp_input("p02777", "red blue\n3 4\nred\n"))
+        self.assertFalse(valid_cpp_input("p02777", "red red\n3 4\nred\n"))
+
+    def test_cpp_matched_planners_differ_by_concept_evidence(self):
+        generic = build_cpp_plan_prompt("spec", "code", None)
+        concept = build_cpp_plan_prompt("spec", "code", [{"line": 4, "labels": ["bound_check"], "source": "i < n"}])
+        self.assertIn("spec", generic)
+        self.assertIn("code", generic)
+        self.assertNotIn("bound_check", generic)
+        self.assertIn("bound_check", concept)
+        self.assertIn("exactly three valid", generic)
+        self.assertIn("exactly three valid", concept)
 
     def test_contract_and_canonical_execution_are_separate(self):
         contract = "def __contract(x):\n    assert x >= 0, 'invalid inputs'\n"

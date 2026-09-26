@@ -74,15 +74,20 @@ def annotate(source: str, upstream: Any, max_statements: int = 12) -> list[dict[
     ]
 
 
-def export(puts: Path, artifact: Path, out: Path, limit: int) -> int:
+def export(puts: Path, artifact: Path, out: Path, limit: int, skip: int = 0) -> int:
     upstream = load_upstream_annotator(artifact)
     count = 0
+    eligible = 0
     with out.open("w") as destination:
         for source_file in sorted(puts.glob("*/*.cpp")):
             source = source_file.read_text(errors="replace")
             statements = annotate(source, upstream)
             if not statements:
                 continue
+            if eligible < skip:
+                eligible += 1
+                continue
+            eligible += 1
             row = {
                 "problem_id": source_file.parent.name,
                 "put_name": source_file.name,
@@ -103,8 +108,9 @@ def main() -> None:
     parser.add_argument("--artifact", default="ConceptCoder_org")
     parser.add_argument("--out", required=True)
     parser.add_argument("--limit", type=int, default=30)
+    parser.add_argument("--skip", type=int, default=0, help="Skip this many eligible, sorted PUTs")
     args = parser.parse_args()
-    print(json.dumps({"cards": export(Path(args.puts), Path(args.artifact), Path(args.out), args.limit)}))
+    print(json.dumps({"cards": export(Path(args.puts), Path(args.artifact), Path(args.out), args.limit, args.skip)}))
 
 
 if __name__ == "__main__":

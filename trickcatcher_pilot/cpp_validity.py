@@ -21,6 +21,19 @@ def _integers(stdin: str) -> list[int] | None:
 
 
 def valid_input(problem_id: str, stdin: str) -> bool | None:
+    tokens = stdin.split()
+    if problem_id == "p02775":
+        return len(tokens) == 1 and tokens[0].isdigit() and int(tokens[0]) >= 1 and len(tokens[0]) <= 1_000_001
+    if problem_id == "p02777":
+        if len(tokens) != 5:
+            return False
+        s, t, a_raw, b_raw, u = tokens
+        try:
+            a, b = int(a_raw), int(b_raw)
+        except ValueError:
+            return False
+        return (1 <= len(s) <= 10 and 1 <= len(t) <= 10 and s.islower() and t.islower()
+                and s.isalpha() and t.isalpha() and s != t and u in {s, t} and 1 <= a <= 10 and 1 <= b <= 10)
     values = _integers(stdin)
     if values is None:
         return False
@@ -71,6 +84,45 @@ def valid_input(problem_id: str, stdin: str) -> bool | None:
         excluded = values[2:]
         return (1 <= x <= 100 and 0 <= n <= 100 and len(excluded) == n
                 and len(set(excluded)) == n and all(1 <= p <= 100 for p in excluded))
+    if problem_id == "p02709":
+        if not values:
+            return False
+        n = values[0]
+        return 2 <= n <= 2000 and len(values) == 1 + n and all(1 <= x <= 10**9 for x in values[1:])
+    if problem_id == "p02716":
+        if not values:
+            return False
+        n = values[0]
+        return 2 <= n <= 200_000 and len(values) == 1 + n and all(abs(x) <= 10**9 for x in values[1:])
+    if problem_id == "p02726":
+        return len(values) == 3 and 3 <= values[0] <= 2000 and 1 <= values[1] <= values[0] \
+            and 1 <= values[2] <= values[0] and values[1] + 1 < values[2]
+    if problem_id == "p02732":
+        if not values:
+            return False
+        n = values[0]
+        return 3 <= n <= 200_000 and len(values) == 1 + n and all(1 <= x <= n for x in values[1:])
+    if problem_id == "p02733":
+        if len(tokens) < 3:
+            return False
+        try:
+            h, w, k = map(int, tokens[:3])
+        except ValueError:
+            return False
+        rows = tokens[3:]
+        return (1 <= h <= 10 and 1 <= w <= 1000 and 1 <= k <= h * w and len(rows) == h
+                and all(len(row) == w and set(row) <= {"0", "1"} for row in rows))
+    if problem_id == "p02767":
+        if not values:
+            return False
+        n = values[0]
+        return 1 <= n <= 100 and len(values) == 1 + n and all(1 <= x <= 100 for x in values[1:])
+    if problem_id == "p02787":
+        if len(values) < 2:
+            return False
+        h, n = values[:2]
+        return (1 <= h <= 10_000 and 1 <= n <= 1000 and len(values) == 2 + 2 * n
+                and all(1 <= value <= 10_000 for value in values[2:]))
     return None
 
 

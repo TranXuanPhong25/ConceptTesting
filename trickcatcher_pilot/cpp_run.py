@@ -18,6 +18,17 @@ from trickcatcher_pilot.run import _response_text
 
 
 DIRECT_PROMPT_SHA256 = "26d075a69cc99a00b7ddd6095634cdc0468fcc54c6a7b09bc6f4a87498f2832b"
+GENERIC_PLAN_INSTRUCTION = (
+    "Analyze the following programming problem and buggy solution. Produce a compact test-input plan with exactly "
+    "three valid corner-case relations likely to distinguish this solution from the specification. Do not give "
+    "concrete test inputs or expected outputs. Ground each relation in the specification and code."
+)
+CONCEPT_PLAN_INSTRUCTION = (
+    "Analyze the following programming problem and buggy solution using the supplied ConceptCoder statement labels. "
+    "Infer a compact test-input plan with exactly three valid separating relations: each must connect a labeled "
+    "statement or nearby operation to a property in the specification. Do not give concrete test inputs or expected "
+    "outputs. Treat labels as source facts, not proof that a statement is buggy."
+)
 
 
 def parse_inputs(raw: str) -> list[str]:
@@ -46,6 +57,28 @@ def concept_block(statements: list[dict[str, Any]]) -> str:
 def build_prompt(template: str, description: str, code: str, statements: list[dict[str, Any]] | None = None) -> str:
     prompt = template.replace("{pro_des}", description).replace("{code}", code)
     return prompt + (concept_block(statements) if statements else "")
+
+
+def build_plan_prompt(description: str, code: str, statements: list[dict[str, Any]] | None) -> str:
+    instruction = CONCEPT_PLAN_INSTRUCTION if statements is not None else GENERIC_PLAN_INSTRUCTION
+    prompt = f"{instruction}\n\nPROBLEM DESCRIPTION:\n{description}\n\nCODE:\n{code}"
+    return prompt + (concept_block(statements) if statements is not None else "")
+
+
+def _invoke_with_retries(llm: Any, prompt: str, retries: int) -> str:
+    for attempt in range(retries + 1):
+        try:
+            response = llm.invoke([HumanMessage(content=prompt)])
+            text = _response_text(getattr(response, "content", response)).strip()
+            if not text:
+                raise ValueError("empty response")
+            return text
+        except Exception as exc:
+            transient = any(token in str(exc) for token in ("429", "504", "ResourceExhausted", "DeadlineExceeded"))
+            if attempt >= retries or not transient:
+                raise
+            time.sleep(15 * (attempt + 1))
+    raise AssertionError("unreachable")
 
 
 def run(args: argparse.Namespace, llm: Any | None = None) -> dict[str, int]:
@@ -79,31 +112,31 @@ def run(args: argparse.Namespace, llm: Any | None = None) -> dict[str, int]:
             if source_hash != card["source_sha256"]:
                 raise ValueError(f"source changed for {pid}")
             description = (Path(args.problems) / pid / "problem_description.txt").read_text(errors="replace")
-            statements = card["statements"] if args.arm == "concept" else None
-            prompt = build_prompt(template, description, source, statements)
+            direct_statements = card["statements"] if args.arm == "concept" else None
+            plan_statements = card["statements"] if args.arm == "concept_plan" else None
+            plan = ""
+            plan_prompt = ""
+            if args.arm in {"generic_plan", "concept_plan"}:
+                plan_prompt = build_plan_prompt(description, source, plan_statements)
+            prompt = build_prompt(template, description, source, direct_statements)
             row = {
                 "problem_id": pid, "put_name": card["put_name"], "arm": args.arm,
                 "model": model_id(), "artifact_commit": ARTIFACT_COMMIT,
                 "paper_prompt_sha256": digest,
-                "prompt_lineage": "verbatim_original" if args.arm == "baseline" else "concept_extension",
-                "concept_annotator": card["annotator"] if statements else None,
+                "prompt_lineage": ({"baseline": "verbatim_original", "concept": "concept_extension"}
+                                   .get(args.arm, "planned_extension")),
+                "concept_annotator": card["annotator"] if args.arm in {"concept", "concept_plan"} else None,
                 "source_sha256": source_hash,
                 "description_sha256": hashlib.sha256(description.encode()).hexdigest(),
+                "plan_prompt": plan_prompt, "plan": plan,
                 "prompt": prompt, "raw_response": "", "inputs": [], "error": "",
             }
             try:
-                for attempt in range(args.retries + 1):
-                    try:
-                        response = llm.invoke([HumanMessage(content=prompt)])
-                        row["raw_response"] = _response_text(getattr(response, "content", response)).strip()
-                        if not row["raw_response"]:
-                            raise ValueError("empty response")
-                        break
-                    except Exception as exc:
-                        transient = any(token in str(exc) for token in ("429", "504", "ResourceExhausted", "DeadlineExceeded"))
-                        if attempt >= args.retries or not transient:
-                            raise
-                        time.sleep(15 * (attempt + 1))
+                if plan_prompt:
+                    row["plan"] = _invoke_with_retries(llm, plan_prompt, args.retries)
+                    prompt += "\n\nTest-input planning notes (verify them against the original specification):\n" + row["plan"]
+                    row["prompt"] = prompt
+                row["raw_response"] = _invoke_with_retries(llm, prompt, args.retries)
                 row["inputs"] = parse_inputs(row["raw_response"])
             except Exception as exc:
                 row["error"] = f"{type(exc).__name__}: {exc}"
@@ -122,7 +155,7 @@ def main() -> None:
     parser.add_argument("--artifact-commit", default=ARTIFACT_COMMIT)
     parser.add_argument("--problems", default="/tmp/TrickyBugs-selected/problems")
     parser.add_argument("--cards", required=True)
-    parser.add_argument("--arm", choices=("baseline", "concept"), required=True)
+    parser.add_argument("--arm", choices=("baseline", "concept", "generic_plan", "concept_plan"), required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--max-tokens", type=int, default=1600)
     parser.add_argument("--delay", type=float, default=5)
