@@ -14,6 +14,7 @@ cases. Every counted exposure must satisfy both checks ("strict" validity).
 from __future__ import annotations
 
 import json
+import os
 import threading
 from pathlib import Path
 from typing import Any
@@ -158,5 +159,9 @@ def summarize(rows: list[dict], arm_key: str, n_puts: int, k: int) -> dict:
 
 
 def dump(rows: list[dict], path: Path) -> None:
+    """Atomic write so a concurrent reader (e.g. trickcatcher_concept.report) never sees a
+    truncated file mid-write."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in rows))
+    os.replace(tmp, path)
