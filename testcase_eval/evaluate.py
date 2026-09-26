@@ -45,7 +45,7 @@ class Evaluator:
         self.validators: dict[str, str] = {}
         if validators_path:
             for row in read_jsonl(validators_path):
-                if row.get("code"):
+                if row.get("code") and row.get("status") == "ok":
                     self.validators[row["problem_id"]] = row["code"]
 
     # -- execution -------------------------------------------------------

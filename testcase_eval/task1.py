@@ -55,7 +55,7 @@ Return ONLY a JSON object in a ```json fence:
 def run_generation(args: argparse.Namespace) -> None:
     problems = open(args.problems).read().split()
     task1 = {r["extra_info"]["problem_id"]: r for r in load_rows("task1")}
-    validators = {r["problem_id"]: r for r in read_jsonl(args.validators) if r.get("code")}
+    validators = {r["problem_id"]: r for r in read_jsonl(args.validators) if r.get("code") and r.get("status") == "ok"}
     done = {(r["problem_id"], int(r["response_id"])) for r in read_jsonl(args.out)}
     gen = Gemini(temperature=1.0, max_output_tokens=2048 if args.condition == "cot" else 8192, timeout=180)
     helper = Gemini(temperature=1.0, max_output_tokens=4096, timeout=120)

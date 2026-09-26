@@ -347,7 +347,7 @@ def main() -> None:
         wanted = [int(x) for x in Path(args.targets).read_text().split()]
         index = {int(r["extra_info"]["submission_id"]): r for r in task2}
         task2 = [index[i] for i in wanted if i in index]
-    validators = {r["problem_id"]: r for r in read_jsonl(args.validators) if r.get("code")} if args.validators else {}
+    validators = {r["problem_id"]: r for r in read_jsonl(args.validators) if r.get("code") and r.get("status") == "ok"} if args.validators else {}
     cot_rows = {int(r["submission_id"]): r for r in read_jsonl(args.cot)} if args.cot else {}
     done = {int(r["submission_id"]) for r in read_jsonl(args.out) if r.get("condition") == args.condition}
     todo = [r for r in task2 if int(r["extra_info"]["submission_id"]) not in done]

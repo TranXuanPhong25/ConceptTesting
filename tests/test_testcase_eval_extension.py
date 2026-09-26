@@ -209,7 +209,7 @@ class SubsetAndEvaluatorTests(unittest.TestCase):
         ]
         with tempfile.TemporaryDirectory() as td:
             vpath = Path(td) / "v.jsonl"
-            vpath.write_text(json.dumps({"problem_id": "T", "code": VALIDATOR}) + "\n")
+            vpath.write_text(json.dumps({"problem_id": "T", "code": VALIDATOR, "status": "ok"}) + "\n")
             with patch("testcase_eval.evaluate.Executor", lambda: Executor(Path(td) / "build")), \
                  patch("testcase_eval.sandbox.PYTHON3", sys.executable):
                 ev = Evaluator(Path(td) / "c.sqlite", vpath, subs)
