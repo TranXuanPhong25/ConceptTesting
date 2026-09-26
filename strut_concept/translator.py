@@ -15,11 +15,32 @@ STUB_SIGNATURE_RE = re.compile(
 )
 
 
+_C_STYLE_HEX_ESCAPE_RE = re.compile(r"\\x([0-9a-fA-F]{2})")
+_C_STYLE_NUL_ESCAPE_RE = re.compile(r"\\0(?!\d)")
+
+
+def _repair_json_escapes(text: str) -> str:
+    """Rewrite C-style `\\xHH`/`\\0` escapes into valid JSON `\\u00HH`.
+
+    The model sometimes emits a deliberate, meaningful probe (an embedded
+    null byte, a raw 0xff byte) using C string-literal syntax instead of
+    JSON's, which is otherwise a hard JSONDecodeError. Only `\\x` and `\\0`
+    are rewritten; every valid JSON escape (`\\n`, `\\"`, `\\u...`, ...) is
+    left untouched.
+    """
+    text = _C_STYLE_HEX_ESCAPE_RE.sub(lambda m: "\\u00" + m.group(1), text)
+    # A plain string `repl` goes through re's own backslash-escape parsing
+    # (which rejects `\u` as an unknown escape), so a callable is required
+    # here too to insert the literal six characters `\u0000` untouched.
+    return _C_STYLE_NUL_ESCAPE_RE.sub(lambda m: "\\u0000", text)
+
+
 def parse_cases(raw: str) -> list[dict[str, Any]]:
     text = raw.strip()
     fenced = re.search(r"```(?:json)?\s*(.*?)```", text, re.I | re.S)
     if fenced:
         text = fenced.group(1).strip()
+    text = _repair_json_escapes(text)
     try:
         value = json.loads(text)
     except json.JSONDecodeError:

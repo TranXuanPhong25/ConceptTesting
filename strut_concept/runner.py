@@ -103,13 +103,16 @@ def run(
             seed = build_seed(context, extended=arm == "extended")
             prompt = prompt_for(arm, context, seed)
             started = time.time()
+            raw, usage, harness = "", {}, ""
             try:
                 raw, usage = _invoke(llm, prompt)
                 harness = clean_c_output(raw) if arm == "direct" else translate_cases(subject, parse_cases(raw))
                 evaluation = evaluate(subject, source, harness, output_dir / "build" / subject.name / arm)
                 error = ""
             except Exception as exc:
-                raw, usage, harness = "", {}, ""
+                # Preserve any raw model output already obtained even when a
+                # later step (translation/evaluation) fails, so generation
+                # errors remain auditable instead of leaving an empty file.
                 evaluation = None
                 error = f"{type(exc).__name__}: {exc}"
             artifact = output_dir / "generated" / subject.name

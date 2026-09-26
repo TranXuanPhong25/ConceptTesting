@@ -52,6 +52,18 @@ def test_parse_individual_or_array_cases():
     assert parse_cases("```json\n" + json.dumps([case]) + "\n```") == [case]
 
 
+def test_parse_cases_repairs_c_style_escapes_without_touching_valid_ones():
+    # Observed live-model behavior: a deliberate embedded-null or raw-byte
+    # probe rendered with C string-literal syntax (\0, \xHH) instead of
+    # JSON's, which is otherwise an unrecoverable JSONDecodeError.
+    raw = (
+        '[{"Inputs": [{"ExprInput": "s", "Type": "const char *", '
+        '"Value": "A\\0B\\xffZ\\n"}], "Outputs": [], "Stubs": []}]'
+    )
+    [case] = parse_cases(raw)
+    assert case["Inputs"][0]["Value"] == "A\x00B\xffZ\n"
+
+
 def test_rule_translator_compiles_runs_and_covers(tmp_path: Path):
     cases = [
         {
