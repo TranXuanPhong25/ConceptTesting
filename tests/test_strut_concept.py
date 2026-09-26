@@ -90,6 +90,44 @@ def test_coverage_prefers_focal_file_when_header_has_same_symbol(tmp_path: Path)
     assert result.branch_total >= 2
 
 
+def test_translator_encodes_high_byte_string_values_as_single_bytes(tmp_path: Path):
+    # A JSON code point in U+0080..U+00FF must become one raw C byte, not the
+    # UTF-8 expansion GCC applies to a \u00XX universal-character-name inside
+    # a narrow string literal (this previously made high-byte strcmp oracles
+    # fail even though the model's Inputs/Outputs were correct).
+    subject = Subject("strcmp", "int", (("const char *", "string", "a"), ("const char *", "string", "b")))
+    source = "int strcmp(const char *a, const char *b) { return (unsigned char)*a - (unsigned char)*b; }\n"
+    case = {
+        "Inputs": [
+            {"ExprInput": "a", "Type": "const char *", "Value": "ÿ"},
+            {"ExprInput": "b", "Type": "const char *", "Value": "\u0001"},
+        ],
+        "Outputs": [{"ExprOutput": "return", "Type": "int", "Value": 254}],
+        "Stubs": [],
+    }
+    harness = translate_cases(subject, [case])
+    assert "\\377" in harness and "\\u00ff" not in harness
+    result = evaluate(subject, source, harness, tmp_path)
+    assert result.status == "passed", result.error
+
+
+def test_translator_rejects_narrow_string_values_above_one_byte():
+    case = {
+        "Inputs": [
+            {"ExprInput": "a", "Type": "const char *", "Value": "Ā"},
+            {"ExprInput": "b", "Type": "const char *", "Value": ""},
+        ],
+        "Outputs": [{"ExprOutput": "return", "Type": "int", "Value": 0}],
+        "Stubs": [],
+    }
+    subject = Subject("strcmp", "int", (("const char *", "string", "a"), ("const char *", "string", "b")))
+    try:
+        translate_cases(subject, [case])
+        assert False, "expected ValueError"
+    except ValueError:
+        pass
+
+
 def test_translator_rejects_expression_injection():
     case = {
         "Inputs": [

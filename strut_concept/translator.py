@@ -32,11 +32,29 @@ def parse_cases(raw: str) -> list[dict[str, Any]]:
     return value
 
 
+_HIGH_UESCAPE_RE = re.compile(r"\\u00([0-9a-fA-F]{2})")
+
+
 def _c_string(value: Any, wide: bool = False) -> str:
     if not isinstance(value, str):
         raise ValueError("string input Value must be JSON string")
+    if wide:
+        return "L" + json.dumps(value, ensure_ascii=True)
+    # Narrow (char) string: a JSON code point in U+0080..U+00FF is exactly one
+    # raw byte in the oracle's intended sense (high-byte/signed-char cases are
+    # a common, meaningful probe for strcmp-family functions). json.dumps with
+    # ensure_ascii=True renders such a code point as a \u00XX universal
+    # character name, but C (6.4.4.4/6.10.8.2) expands a UCN >= 0x80 inside a
+    # *narrow* string literal to its multi-byte UTF-8 encoding, silently
+    # turning one intended byte into two and corrupting any byte-exact
+    # oracle. Reject code points that cannot be a single byte at all, and
+    # rewrite the safe ones to a zero-padded (fixed-width, non-greedy) octal
+    # byte escape instead.
+    for ch in value:
+        if ord(ch) > 0xFF:
+            raise ValueError("narrow string Value must be representable as single bytes (<= U+00FF)")
     literal = json.dumps(value, ensure_ascii=True)
-    return ("L" if wide else "") + literal
+    return _HIGH_UESCAPE_RE.sub(lambda m: "\\%03o" % int(m.group(1), 16), literal)
 
 
 def _integer(value: Any) -> str:
