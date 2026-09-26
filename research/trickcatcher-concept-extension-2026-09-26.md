@@ -4,6 +4,8 @@
 
 This extends [TrickCatcher](https://aclanthology.org/2025.acl-long.20/) (ACL 2025) itself, not just its direct-input prompt. The prior pilot (`trickcatcher_pilot/`) only ran a *direct-input prompt ablation* and injected ConceptCoder's static tree-sitter syntax labels (`null_check`, `buffer_access`, ...); it found no gain (7/26 vs 7/26 on TrickyBugs C++) because those labels carry no information an LLM cannot already read from the source. This report implements the **full three-stage TrickCatcher pipeline** -- PUT-guided program variant generation, generator-based input generation, and diversity-driven differential testing -- reusing the paper's own released prompts and dataset, and adds a concept layer designed to be **fault-relevant** rather than syntactic: enumerated input-constraint rules, a selected validator, PUT-specific fault hypotheses that steer both variant repair and input generation, and independent re-execution of every reported exposure.
 
+**Status honestly up front**: the pipeline is fully implemented, unit-tested, and validated end-to-end with real Gemini calls (a single-PUT smoke run plus a 10-task slice of the seeded subset). It is **not yet statistically conclusive** -- this Vertex project's requests-per-minute quota for the preview model turned out to be the binding constraint on wall-clock progress, not the pipeline or the paper's own generation budget, and only 10 of the planned 75 seeded-subset tasks had completed by report time. The run continues in the background and is resume-safe; see "Resuming and extending" for how to continue it and regenerate this report's numbers.
+
 Code: `trickcatcher_concept/` (new package). Tests: `tests/test_trickcatcher_concept.py` (all passing; see Testing section).
 
 ## Paper and artifact provenance
@@ -72,23 +74,73 @@ EvalPlus (AI-generated buggy programs, the paper's third dataset) is **not** run
 
 ## Results
 
-<!-- FILLED IN AFTER THE RUNS COMPLETE. See the accompanying JSON in research/results/ for exact per-k tables. -->
+**Status at report time: 10 of the 75 seeded-subset tasks have completed; the run is still in progress in the background (see "Resuming and extending" below).** This section reports those 10 tasks honestly as an interim, underpowered sample -- not a conclusion -- alongside the infrastructure evidence (cost, validity mechanics) that is already meaningful at this size. Exact per-task, per-k numbers are archived in [`research/results/trickcatcher-concept-subset-interim/`](results/trickcatcher-concept-subset-interim) (`results_10of75.jsonl`, `report_10of75.json`, `config.json`); regenerate the summary at any time with:
 
-### Seeded subset (~75 PUTs)
+```bash
+.venv/bin/python -m trickcatcher_concept.report --results /home/phong/dev/trickcatcher-concept-data/runs/subset-v1/results.jsonl
+```
 
-_[to be filled in]_
+### Why only 10/75 so far: a Vertex requests-per-minute wall, not a pipeline problem
+
+Real wall-clock progress on this Vertex project has been dominated by `ResourceExhausted` (429) responses for `gemini-3-flash-preview`, which this session could not fully characterize (no access to the project's quota console). Concretely:
+
+- At `--llm-concurrency 10` (no pacing), an early sample showed only 100/221 calls (45%) succeeding on the first attempt.
+- Reducing concurrency alone (`4`) did not help -- confirming a requests-per-minute limit, not a concurrency limit.
+- Adding explicit inter-call pacing (`--llm-min-interval`, see Infrastructure notes) reduced but did not eliminate 429s even down to an aggregate ~7.5 requests/minute across both model clients combined.
+
+This means the *pipeline* is not the bottleneck -- it is fully implemented, tested, and (per the smoke run and this 10-task sample) producing sane, mechanistically explicable results -- but *this specific Vertex project's default quota for a preview model* limits how fast either arm's calls can land. This is disclosed rather than worked around by, e.g., silently shrinking the paper's own generation budget (10 variants, 100 inputs) to fit the quota.
+
+### Seeded subset, interim sample (10 of 75 PUTs, all C++ so far)
+
+Best-F1 row (`k = 10`, matching the paper's own best-k for TrickCatcher on TrickyBugs C++), `strict` validity (independent evaluation validator + reference agreement both required):
+
+| Arm | Recall | Precision | F1 | Tasks exposed |
+| --- | ---: | ---: | ---: | ---: |
+| Baseline (paper, unmodified) | 30.0% | 75.0% | 42.9% | 3/10 |
+| Concept | 30.0% | **100.0%** | 46.2% | 3/10 |
+
+Paired per-task exposure: 2 tasks exposed by both arms, 1 baseline-only (`p02581`), 1 concept-only (`p02599`), exact McNemar p = 1.0 (n = 10 is far too small to be informative; reported for completeness, not as a claim of significance).
+
+### Validity (interim sample)
+
+| Arm | Generated | Usable (validator-filtered) | Independent-validator-invalid rate (of usable) | Reference-invalid rate (of usable) |
+| --- | ---: | ---: | ---: | ---: |
+| Baseline (no concept validator) | 954 | 954 (unfiltered) | 26.9% | 10.5% |
+| Concept (own validator applied) | 833 | 797 | 18.8% | **0.0%** |
+
+Two things are already visible even at n = 10: (1) the concept arm's own AutoCode-style validator drives its reference-invalid rate to exactly zero in this sample -- i.e. it never lets through an input that disagrees with the reference programs' agreed output being usable as ground truth, which is precisely the failure mode of the earlier pilot (`N=200000` declared, 696 numbers supplied); (2) the concept arm's *independent* evaluation-validator invalid rate (18.8%) is still nonzero and lower than baseline's (26.9%) but not zero, showing the concept arm's own validator and the independently-built evaluation validator do not perfectly agree -- exactly the kind of gap `strict` validity is designed to catch rather than launder.
+
+### Cost (interim sample, 10 tasks, both arms, plus their evaluation-validator calls)
+
+364 LLM calls, 353,476 input tokens, 218,809 output tokens across `gemini-3-flash-preview` (generation) and `gemini-3.1-pro-preview` (independent evaluation validator); this aggregate is in `report_10of75.json`. The full per-call records (prompt, response, token usage, latency, cache hit) live in `<run-dir>/llm_cache/` and are kept outside git (per instructions) since that directory grows large over a full run.
 
 ### Full dataset (325 PUTs)
 
-_[to be filled in]_
+Not started in this session: starting a second run against the same Vertex project while the subset run is still quota-constrained would only compound the 429 pressure. The subset run should be allowed to finish (or be judged sufficiently informative) before running `--split full`; see "Resuming and extending" below for the exact command, which reuses this run's directory and therefore skips every already-completed task.
 
-### Validity
+## Resuming and extending
 
-_[to be filled in]_
+The subset run (`/home/phong/dev/trickcatcher-concept-data/runs/subset-v1`, PID varies per restart, logs at `/tmp/claude-1000/subset_run6.log` in this session) is resume-safe: every LLM call and every pipeline stage is cached as its own file, so killing and rerunning the identical command only fills in what is missing.
 
-### Cost
+```bash
+source /home/phong/dev/ConceptTester/scripts/vertex_env.sh
+cd /home/phong/dev/ConceptTester   # or this worktree
+.venv/bin/python -m trickcatcher_concept.run --split subset --arms baseline,concept \
+    --run-dir /home/phong/dev/trickcatcher-concept-data/runs/subset-v1 \
+    --task-workers 6 --llm-concurrency 3 --llm-min-interval 8.0 --procs 16
+```
 
-_[to be filled in]_
+Once the subset is judged sufficient (all 75, or a stable trend), extend to the full 325-task set by pointing `--split full` at the **same** run directory (it will skip the 75 subset tasks it already scored and only process the remaining ~250):
+
+```bash
+.venv/bin/python -m trickcatcher_concept.run --split full --arms baseline,concept \
+    --run-dir /home/phong/dev/trickcatcher-concept-data/runs/subset-v1 \
+    --task-workers 6 --llm-concurrency 3 --llm-min-interval 8.0 --procs 16
+```
+
+If the actual Vertex quota turns out to be higher than empirically found here (e.g. after a quota increase, or on a different project), raise `--llm-concurrency` and lower `--llm-min-interval` together and watch `<run-dir>/llm_cache/_retries.jsonl` for the error mix (`ResourceExhausted` should disappear first; occasional `InternalServerError`/`DeadlineExceeded` are normal and already retried).
+
+Re-run `trickcatcher_concept.report` at any time against the growing `results.jsonl` to get updated recall/precision/F1, paired McNemar, validity and cost numbers without any further model calls.
 
 ## Testing
 
@@ -98,8 +150,11 @@ A single-PUT smoke run with real Gemini calls (`p03076`, both arms) additionally
 
 ## Limitations and open issues
 
+- **Not yet statistically conclusive.** Only 10 of the 75 seeded-subset tasks had completed at report time, all C++; no Python subset tasks, and no full-dataset tasks, have been scored yet. The paired McNemar test at n = 10 is not informative either way. The subset run is left running (resume-safe, see above); the honest conclusion of this report is "the full pipeline and concept layer are implemented, tested, and behaving as designed" rather than "the concept layer improves TrickCatcher's recall/precision/F1" -- that comparison needs the completed subset and full runs.
+- **Vertex quota, not compute, is now the critical path.** This session could not determine or raise the project's actual requests-per-minute ceiling for `gemini-3-flash-preview`; empirically, pacing down to ~7.5 combined requests/minute across both model clients reduced but did not eliminate `ResourceExhausted` responses. Whoever continues this run should check the Vertex AI quota console for `gemini-3-flash-preview` / `gemini-3.1-pro-preview` in the configured project and consider requesting a quota increase before the full 325-task run, which at the current rate would take on the order of a day of wall-clock time.
 - The task list is 250 C++ / 115 Python before exclusions vs. the paper's reported 251/115; the 1-PUT C++ discrepancy traces to the artifact's own released `.pkl` result files rather than to our selection code (see Provenance).
 - 40/365 PUTs (11%) are excluded because they do not reproduce their own existing tests under our toolchain; this is disclosed, not hidden, but it means the reported metrics are conditioned on toolchain-reproducible PUTs, which the paper's own environment (GCC 9.2.1) may not have needed to exclude.
 - ASLR-disabling and ONLINE_JUDGE/`_FORTIFY_SOURCE` compile-flag choices are principled (they intentionally undo debug/local-only code paths and reduce address-layout non-determinism) but still cannot reproduce the *original* online judge's exact runtime.
-- EvalPlus is not covered by the new full-pipeline package in this report.
-- [Further items to be added once the full run's results and any additional failure modes are known.]
+- EvalPlus is not covered by the new full-pipeline package in this report; only the prior pilot's direct-input ablation covers it.
+- The concept card's fault hypotheses are exactly that -- hypotheses. The `p03076` smoke-test example in Testing shows the harness correctly declining to count a plausible-sounding but ultimately incorrect hypothesis as an exposure; this is evidence the oracle is not rubber-stamping the concept arm, but it also means a task-level win is not guaranteed just because the model produced a well-reasoned card.
+- `--steer-fraction` (share of the 10 variant calls that receive a hypothesis), the number of card hypotheses (3-5), and generation temperature (1.0, matching the paper) were set from first principles and the batch-07 paper guidance, not swept on the subset, due to the quota constraint above; a real hyperparameter sweep is future work.
