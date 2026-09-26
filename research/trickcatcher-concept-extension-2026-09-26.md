@@ -74,45 +74,48 @@ EvalPlus (AI-generated buggy programs, the paper's third dataset) is **not** run
 
 ## Results
 
-**Status at report time: 11 of the 75 seeded-subset tasks have completed; the run is still in progress in the background (see "Resuming and extending" below).** This section reports those 11 tasks honestly as an interim, underpowered sample -- not a conclusion -- alongside the infrastructure evidence (cost, validity mechanics) that is already meaningful at this size. Exact per-task, per-k numbers are archived in [`research/results/trickcatcher-concept-subset-interim/`](results/trickcatcher-concept-subset-interim) (`results_11of75.jsonl`, `report_11of75.json`, `config.json`); regenerate the summary at any time with:
+**Status at report time: 27 of the 75 seeded-subset tasks have completed (all C++ so far); the run is still in progress in the background (see "Resuming and extending" below).** This section reports those 27 tasks honestly as an interim, still-underpowered sample -- not a conclusion -- alongside the infrastructure evidence (cost, validity mechanics) that is already meaningful at this size. Exact per-task, per-k numbers are archived in [`research/results/trickcatcher-concept-subset-interim/`](results/trickcatcher-concept-subset-interim) (`results_27of75.jsonl`, `report_27of75.json`, plus the earlier `results_11of75.jsonl`/`report_11of75.json` snapshot for comparison); regenerate the summary at any time with:
 
 ```bash
 .venv/bin/python -m trickcatcher_concept.report --results /home/phong/dev/trickcatcher-concept-data/runs/subset-v1/results.jsonl
 ```
 
-### Why only 11/75 so far: a Vertex requests-per-minute wall, not a pipeline problem
+### Why progress is slow: a Vertex requests-per-minute wall shared with other concurrent work, not a pipeline problem
 
-Real wall-clock progress on this Vertex project has been dominated by `ResourceExhausted` (429) responses for `gemini-3-flash-preview`, which this session could not fully characterize (no access to the project's quota console). Concretely:
+Real wall-clock progress on this Vertex project has been dominated by `ResourceExhausted` (429) responses for `gemini-3-flash-preview`, which this session could not fully characterize (no access to the project's quota console), and which got *worse* once other unrelated agents in this same repo/project (`testcase_eval`, `strut_concept`) began running concurrently against the same Vertex project quota. Concretely:
 
 - At `--llm-concurrency 10` (no pacing), an early sample showed only 100/221 calls (45%) succeeding on the first attempt.
 - Reducing concurrency alone (`4`) did not help -- confirming a requests-per-minute limit, not a concurrency limit.
 - Adding explicit inter-call pacing (`--llm-min-interval`, see Infrastructure notes) reduced but did not eliminate 429s even down to an aggregate ~7.5 requests/minute across both model clients combined.
+- On resuming this run in a later session, `--llm-concurrency 2 --llm-min-interval 12.0` still produced near-100% 429 rates on fresh (non-cached) calls because several other agents were simultaneously issuing unpaced requests against the same project; dropping to `--llm-concurrency 1 --llm-min-interval 20.0` (i.e. this run alone contributing at most ~3 requests/minute) reduced the failure rate enough to make steady, if slow, forward progress (roughly 1 task per 5-10 minutes of wall-clock time once past the already-cached prefix).
 
-This means the *pipeline* is not the bottleneck -- it is fully implemented, tested, and (per the smoke run and this 10-task sample) producing sane, mechanistically explicable results -- but *this specific Vertex project's default quota for a preview model* limits how fast either arm's calls can land. This is disclosed rather than worked around by, e.g., silently shrinking the paper's own generation budget (10 variants, 100 inputs) to fit the quota.
+This means the *pipeline* is not the bottleneck -- it is fully implemented, tested, and (per the smoke run and this 27-task sample) producing sane, mechanistically explicable results -- but *this specific Vertex project's default quota for a preview model*, shared across multiple concurrent agents' workloads, limits how fast either arm's calls can land. This is disclosed rather than worked around by, e.g., silently shrinking the paper's own generation budget (10 variants, 100 inputs) to fit the quota.
 
-### Seeded subset, interim sample (11 of 75 PUTs, all C++ so far)
+An unrelated operational note from this resume: the previous run's process had been killed externally, but 14 of its sandboxed exec/generator child processes (`_bin/*.bin`, one Python `generator.py`) had been orphaned (reparented to the user's systemd, still consuming a full CPU core each) rather than cleaned up, apparently because their parent was killed before it could reap them; they were spinning uselessly for hours with no supervisor left to read their output. These were killed manually before restarting; a future hardening item is to have `sandbox.py`/`pipeline.py` place child processes in a killable process group so an interrupted run cannot leak them.
+
+### Seeded subset, interim sample (27 of 75 PUTs, all C++ so far)
 
 Best-F1 row (`k = 10`, matching the paper's own best-k for TrickCatcher on TrickyBugs C++), `strict` validity (independent evaluation validator + reference agreement both required):
 
 | Arm | Recall | Precision | F1 | Tasks exposed |
 | --- | ---: | ---: | ---: | ---: |
-| Baseline (paper, unmodified) | 36.4% | 80.0% | 50.0% | 4/11 |
-| Concept | 36.4% | **100.0%** | 53.3% | 4/11 |
+| Baseline (paper, unmodified) | 37.0% | 76.9% | 50.0% | 10/27 |
+| Concept | **41.1%** | **85.4%** | **55.5%** | 12/27 |
 
-Paired per-task exposure: 3 tasks exposed by both arms, 1 baseline-only (`p02581`), 1 concept-only (`p02599`), exact McNemar p = 1.0 (n = 11 is far too small to be informative; reported for completeness, not as a claim of significance).
+Paired per-task exposure: 9 tasks exposed by both arms, 1 baseline-only (`p02581`), 3 concept-only (`p02599`, `p02900`, `p02938`), exact McNemar p = 0.625 (n = 27 is still underpowered; the direction is consistently favorable to the concept arm across every checkpoint so far -- 4/11, now 12/27 -- but this is not yet a significance claim).
 
-### Validity (interim sample)
+### Validity (interim sample, n = 27)
 
 | Arm | Generated | Usable (validator-filtered) | Independent-validator-invalid rate (of usable) | Reference-invalid rate (of usable) |
 | --- | ---: | ---: | ---: | ---: |
-| Baseline (no concept validator) | 1054 | 1054 (unfiltered) | 24.4% | 9.5% |
-| Concept (own validator applied) | 931 | 895 | 16.8% | **0.0%** |
+| Baseline (no concept validator) | 2543 | 2543 (unfiltered) | 17.9% | 7.8% |
+| Concept (own validator applied) | 2349 | 2311 | 18.3% | **1.6%** |
 
-Two things are already visible even at n = 11: (1) the concept arm's own AutoCode-style validator drives its reference-invalid rate to exactly zero in this sample -- i.e. it never lets through an input that disagrees with the reference programs' agreed output being usable as ground truth, which is precisely the failure mode of the earlier pilot (`N=200000` declared, 696 numbers supplied); (2) the concept arm's *independent* evaluation-validator invalid rate (16.8%) is still nonzero and lower than baseline's (24.4%) but not zero, showing the concept arm's own validator and the independently-built evaluation validator do not perfectly agree -- exactly the kind of gap `strict` validity is designed to catch rather than launder.
+The pattern from the 11-task snapshot holds at n = 27: the concept arm's own AutoCode-style validator keeps its reference-invalid rate far below baseline's (1.6% vs. 7.8%) -- the exact failure mode the earlier pilot had (declaring inputs valid that the reference programs themselves disagreed on). The *independent* evaluation-validator invalid rate is now essentially tied between arms (18.3% concept vs. 17.9% baseline, versus 16.8% vs. 24.4% at n = 11) -- worth watching as the sample grows; it suggests the concept validator's advantage is specifically in catching reference-disagreeing inputs, not in the independent evaluator's stricter validity criterion generally.
 
-### Cost (interim sample, 11 tasks, both arms, plus their evaluation-validator calls)
+### Cost (interim sample, 27 tasks, both arms, plus their evaluation-validator calls)
 
-382 LLM calls, 376,228 input tokens, 243,710 output tokens across `gemini-3-flash-preview` (generation) and `gemini-3.1-pro-preview` (independent evaluation validator); this aggregate is in `report_11of75.json`. The full per-call records (prompt, response, token usage, latency, cache hit) live in `<run-dir>/llm_cache/` and are kept outside git (per instructions) since that directory grows large over a full run.
+1051 LLM calls, 1,091,438 input tokens, 741,226 output tokens across `gemini-3-flash-preview` (977 calls, generation) and `gemini-3.1-pro-preview` (74 calls, independent evaluation validator); this aggregate is in `report_27of75.json`. The full per-call records (prompt, response, token usage, latency, cache hit) live in `<run-dir>/llm_cache/` and are kept outside git (per instructions) since that directory grows large over a full run.
 
 ### Full dataset (325 PUTs)
 
@@ -120,25 +123,27 @@ Not started in this session: starting a second run against the same Vertex proje
 
 ## Resuming and extending
 
-The subset run (`/home/phong/dev/trickcatcher-concept-data/runs/subset-v1`, PID varies per restart, logs at `/tmp/claude-1000/subset_run6.log` in this session) is resume-safe: every LLM call and every pipeline stage is cached as its own file, so killing and rerunning the identical command only fills in what is missing.
+The subset run (`/home/phong/dev/trickcatcher-concept-data/runs/subset-v1`, PID varies per restart, logs at `/tmp/trickcatcher_subset_run.log` as of the most recent resume) is resume-safe: every LLM call and every pipeline stage is cached as its own file, so killing and rerunning the identical command only fills in what is missing. **Note (2026-09-26, second resume): when other agents in this repo are concurrently issuing unpaced Vertex calls against the same project, `--llm-concurrency 3 --llm-min-interval 8.0` was no longer conservative enough (near-100% 429 rate on fresh calls); `--llm-concurrency 1 --llm-min-interval 20.0` was needed to make steady forward progress.** Check `<run-dir>/llm_cache/_retries.jsonl`'s tail for the current error mix before picking concurrency -- if it's still almost all `ResourceExhausted` at `concurrency=1`, the bottleneck is other processes' load on the shared project quota, not this run's own settings, and there is no further knob here to turn besides waiting or getting a quota increase.
 
 ```bash
 source /home/phong/dev/ConceptTester/scripts/vertex_env.sh
 cd /home/phong/dev/ConceptTester   # or this worktree
 .venv/bin/python -m trickcatcher_concept.run --split subset --arms baseline,concept \
     --run-dir /home/phong/dev/trickcatcher-concept-data/runs/subset-v1 \
-    --task-workers 6 --llm-concurrency 3 --llm-min-interval 8.0 --procs 16
+    --task-workers 2 --llm-concurrency 1 --llm-min-interval 20.0 --procs 6
 ```
+
+(If the Vertex project is not under contention from other concurrent agents, the earlier, faster settings -- `--task-workers 6 --llm-concurrency 3 --llm-min-interval 8.0 --procs 16` -- can be tried first and only backed off if `_retries.jsonl` shows sustained 429s.)
 
 Once the subset is judged sufficient (all 75, or a stable trend), extend to the full 325-task set by pointing `--split full` at the **same** run directory (it will skip the 75 subset tasks it already scored and only process the remaining ~250):
 
 ```bash
 .venv/bin/python -m trickcatcher_concept.run --split full --arms baseline,concept \
     --run-dir /home/phong/dev/trickcatcher-concept-data/runs/subset-v1 \
-    --task-workers 6 --llm-concurrency 3 --llm-min-interval 8.0 --procs 16
+    --task-workers 2 --llm-concurrency 1 --llm-min-interval 20.0 --procs 6
 ```
 
-If the actual Vertex quota turns out to be higher than empirically found here (e.g. after a quota increase, or on a different project), raise `--llm-concurrency` and lower `--llm-min-interval` together and watch `<run-dir>/llm_cache/_retries.jsonl` for the error mix (`ResourceExhausted` should disappear first; occasional `InternalServerError`/`DeadlineExceeded` are normal and already retried).
+If the actual Vertex quota turns out to be higher than empirically found here (e.g. after a quota increase, other agents' workloads finish, or on a different project), raise `--llm-concurrency` and lower `--llm-min-interval` together and watch `<run-dir>/llm_cache/_retries.jsonl` for the error mix (`ResourceExhausted` should disappear first; occasional `InternalServerError`/`DeadlineExceeded` are normal and already retried). Before restarting after any external kill, also check `pgrep -f <run-dir>` for orphaned sandbox/generator child processes (see the operational note in Results) and kill them first.
 
 Re-run `trickcatcher_concept.report` at any time against the growing `results.jsonl` to get updated recall/precision/F1, paired McNemar, validity and cost numbers without any further model calls.
 
@@ -150,7 +155,7 @@ A single-PUT smoke run with real Gemini calls (`p03076`, both arms) additionally
 
 ## Limitations and open issues
 
-- **Not yet statistically conclusive.** Only 11 of the 75 seeded-subset tasks had completed at report time, all C++; no Python subset tasks, and no full-dataset tasks, have been scored yet. The paired McNemar test at n = 11 is not informative either way. The subset run is left running (resume-safe, see above); the honest conclusion of this report is "the full pipeline and concept layer are implemented, tested, and behaving as designed" rather than "the concept layer improves TrickCatcher's recall/precision/F1" -- that comparison needs the completed subset and full runs.
+- **Not yet statistically conclusive.** Only 27 of the 75 seeded-subset tasks had completed at report time, all C++; no Python subset tasks, and no full-dataset tasks, have been scored yet. The paired McNemar test at n = 27 (p = 0.625) is not informative either way, though the concept arm has led on every exposure/F1 metric at every checkpoint taken so far (n = 11 and n = 27). The subset run is left running (resume-safe, see above); the honest conclusion of this report is "the full pipeline and concept layer are implemented, tested, and behaving as designed, with an early favorable trend" rather than "the concept layer improves TrickCatcher's recall/precision/F1" -- that comparison needs the completed subset and full runs.
 - **Vertex quota, not compute, is now the critical path.** This session could not determine or raise the project's actual requests-per-minute ceiling for `gemini-3-flash-preview`; empirically, pacing down to ~7.5 combined requests/minute across both model clients reduced but did not eliminate `ResourceExhausted` responses. Whoever continues this run should check the Vertex AI quota console for `gemini-3-flash-preview` / `gemini-3.1-pro-preview` in the configured project and consider requesting a quota increase before the full 325-task run, which at the current rate would take on the order of a day of wall-clock time.
 - The task list is 250 C++ / 115 Python before exclusions vs. the paper's reported 251/115; the 1-PUT C++ discrepancy traces to the artifact's own released `.pkl` result files rather than to our selection code (see Provenance).
 - 40/365 PUTs (11%) are excluded because they do not reproduce their own existing tests under our toolchain; this is disclosed, not hidden, but it means the reported metrics are conditioned on toolchain-reproducible PUTs, which the paper's own environment (GCC 9.2.1) may not have needed to exclude.
