@@ -71,11 +71,27 @@ def strip_code_fence(text: str) -> str:
     return stripped
 
 
-def install_test_class(checkout: Path, package: str, suite_text: str) -> str:
+_TEST_METHOD_RE = re.compile(r"@Test\b.*?(?:public\s+)?void\s+(\w+)\s*\(", re.DOTALL)
+
+
+def extract_test_methods(suite_text: str) -> list[str]:
+    methods = _TEST_METHOD_RE.findall(suite_text)
+    if not methods:
+        raise ValueError("no @Test method found in generated suite")
+    return methods
+
+
+def install_test_class(checkout: Path, package: str, suite_text: str) -> tuple[str, list[str]]:
+    """Write ``suite_text`` as a compilable test class under the checkout's real test root.
+
+    Returns ``(fully_qualified_class_name, test_method_names)``. Raises ``ValueError`` if no class
+    declaration or no ``@Test`` method can be found (nothing is written in that case).
+    """
     suite_text = strip_code_fence(suite_text)
     match = _CLASS_RE.search(suite_text) or _ANY_CLASS_RE.search(suite_text)
     if not match:
         raise ValueError("no Java class declaration found in generated suite")
+    methods = extract_test_methods(suite_text)
     class_name = match.group(1)
     body = _PACKAGE_RE.sub("", suite_text, count=1)
     final_text = f"package {package};\n\n{body.strip()}\n"
@@ -83,7 +99,7 @@ def install_test_class(checkout: Path, package: str, suite_text: str) -> str:
     target_dir = test_root / package.replace(".", "/")
     target_dir.mkdir(parents=True, exist_ok=True)
     (target_dir / f"{class_name}.java").write_text(final_text, encoding="utf-8")
-    return f"{package}.{class_name}"
+    return f"{package}.{class_name}", methods
 
 
 def compile_checkout(checkout: Path, timeout: float = 240) -> tuple[bool, str]:
@@ -92,25 +108,44 @@ def compile_checkout(checkout: Path, timeout: float = 240) -> tuple[bool, str]:
     return result.returncode == 0, (result.stdout[-1500:] + result.stderr[-1500:])
 
 
-def run_test_class(checkout: Path, fqcn: str, timeout: float = 240) -> tuple[bool, str]:
-    result = subprocess.run(["defects4j", "test", "-t", fqcn], cwd=checkout, text=True,
-                             capture_output=True, timeout=timeout, check=False)
-    failing_tests = Path(checkout) / "failing_tests"
-    content = failing_tests.read_text(encoding="utf-8", errors="replace") if failing_tests.exists() else ""
-    passed = result.returncode == 0 and not content.strip()
-    feedback = content[-1500:] if content.strip() else (result.stdout[-1000:] + result.stderr[-500:])
+def run_methods(checkout: Path, fqcn: str, methods: list[str], timeout: float = 240) -> dict[str, bool]:
+    """Run each test method individually via ``defects4j test -t Class::method``.
+
+    Defects4J's single-test option (``Project::run_tests``) only accepts exactly one
+    ``<classname>::<methodname>`` pair; there is no "whole class" filter, and — critically —
+    ``defects4j test`` exits 0 regardless of whether the JUnit run had failures (failures are only
+    recorded in the ``failing_tests`` file). Both of these were found the hard way in this session:
+    an earlier version of this function passed a bare class name (silently rejected by defects4j's
+    Perl layer as a format error, itself masked because the caller never checked the exit code
+    against the *right* failure signal) and separately trusted ``returncode == 0`` as "passed".
+    Returns ``{method_name: passed}`` for every requested method.
+    """
+    results: dict[str, bool] = {}
+    for method in methods:
+        subprocess.run(["defects4j", "test", "-t", f"{fqcn}::{method}"], cwd=checkout, text=True,
+                        capture_output=True, timeout=timeout, check=False)
+        failing_tests = Path(checkout) / "failing_tests"
+        content = failing_tests.read_text(encoding="utf-8", errors="replace") if failing_tests.exists() else ""
+        results[method] = not content.strip()
+    return results
+
+
+def run_test_class(checkout: Path, fqcn: str, methods: list[str], timeout: float = 240) -> tuple[bool, str]:
+    results = run_methods(checkout, fqcn, methods, timeout)
+    passed = all(results.values())
+    feedback = "; ".join(f"{m}={'PASS' if ok else 'FAIL'}" for m, ok in sorted(results.items()))
     return passed, feedback
 
 
 def install_and_run(checkout: Path, package: str, suite_text: str) -> tuple[bool, str]:
     try:
-        fqcn = install_test_class(checkout, package, suite_text)
+        fqcn, methods = install_test_class(checkout, package, suite_text)
     except ValueError as exc:
         return False, str(exc)
     ok, feedback = compile_checkout(checkout)
     if not ok:
         return False, "compile failed: " + feedback
-    return run_test_class(checkout, fqcn)
+    return run_test_class(checkout, fqcn, methods)
 
 
 def run_pit(checkout: Path, target_class: str, timeout: float = 600) -> list[dict[str, Any]]:
@@ -182,11 +217,35 @@ def make_generate(llm: Any, max_retries: int = 6) -> Callable[[str], tuple[str, 
 from .prompts import SYSTEM as SYSTEM_TEXT  # noqa: E402
 
 
+def _method_execution(checkout: Path, fqcn: str, methods: list[str], version: str, attempt: int, timeout: float) -> Execution:
+    """Build a real ``Execution`` whose ``passed``/digest reflect the ``failing_tests`` file, not
+    the (always-0) defects4j exit code — see ``run_methods`` docstring for why that distinction
+    matters. The whole suite "passes" iff every method passes; the digest is the sorted per-method
+    pass/fail vector (stable and meaningful for re-execution-consistency comparison), not raw stdout.
+    """
+    import hashlib
+    import time as _time
+
+    started = _time.monotonic()
+    timed_out = False
+    try:
+        results = run_methods(checkout, fqcn, methods, timeout)
+    except subprocess.TimeoutExpired:
+        results = {m: False for m in methods}
+        timed_out = True
+    duration = _time.monotonic() - started
+    digest_text = ";".join(f"{m}={results[m]}" for m in sorted(results))
+    all_passed = all(results.values()) and not timed_out
+    returncode = 0 if all_passed else 1
+    return Execution(version, attempt, returncode, timed_out, duration,
+                      hashlib.sha256(digest_text.encode()).hexdigest(), digest_text[-2000:])
+
+
 def final_detection(ctx: TaskContext, suite_text: str, reruns: int = 2) -> dict[str, Any]:
     if not suite_text.strip():
         return {"detected": False, "reason": "no passing suite produced", "stable": False}
     try:
-        fqcn = install_test_class(ctx.fixed_checkout, ctx.package, suite_text)
+        fqcn, methods = install_test_class(ctx.fixed_checkout, ctx.package, suite_text)
         install_test_class(ctx.buggy_checkout, ctx.package, suite_text)
     except ValueError as exc:
         return {"detected": False, "reason": f"install failed: {exc}", "stable": False}
@@ -198,10 +257,10 @@ def final_detection(ctx: TaskContext, suite_text: str, reruns: int = 2) -> dict[
         return {"detected": False, "reason": "final suite does not compile on buggy checkout", "stable": False}
 
     def fixed_run(attempt: int) -> Execution:
-        return run_command(["defects4j", "test", "-t", fqcn], ctx.fixed_checkout, "fixed", attempt, 240)
+        return _method_execution(ctx.fixed_checkout, fqcn, methods, "fixed", attempt, 240)
 
     def buggy_run(attempt: int) -> Execution:
-        return run_command(["defects4j", "test", "-t", fqcn], ctx.buggy_checkout, "buggy", attempt, 240)
+        return _method_execution(ctx.buggy_checkout, fqcn, methods, "buggy", attempt, 240)
 
     detection = independent_reexecution(fixed_run, buggy_run, reruns=reruns)
     return {"detected": detection.detected, "stable": detection.stable, "reason": detection.reason}
