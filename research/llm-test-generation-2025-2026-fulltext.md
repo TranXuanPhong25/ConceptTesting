@@ -1,6 +1,6 @@
 # Evidence-Based Reading Notes: LLM Testing Papers (2025-2026)
 
-This is the full-text rewrite of the 122-paper catalog in
+This is the full-text rewrite of the 131-paper catalog in
 [llm-test-generation-2025-2026.md](llm-test-generation-2025-2026.md).
 
 Each paper note answers five questions:
@@ -27,6 +27,7 @@ The notes use direct prose rather than generic “method/hook” labels. Numeric
 | 61-80 | [Batch 04](fulltext-batches/batch-04.md) |
 | 81-100 | [Batch 05](fulltext-batches/batch-05.md) |
 | 101-122 | [Batch 06](fulltext-batches/batch-06.md) |
+| 123-131 | [Batch 07](fulltext-batches/batch-07.md) — bug-finding additions |
 
 ## What The Corpus Says About Concept-Guided Testing
 
