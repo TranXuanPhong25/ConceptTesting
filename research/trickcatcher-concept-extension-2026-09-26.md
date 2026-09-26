@@ -74,13 +74,13 @@ EvalPlus (AI-generated buggy programs, the paper's third dataset) is **not** run
 
 ## Results
 
-**Status at report time: 27 of the 75 seeded-subset tasks have completed (all C++ so far); the run is still in progress in the background (see "Resuming and extending" below).** This section reports those 27 tasks honestly as an interim, still-underpowered sample -- not a conclusion -- alongside the infrastructure evidence (cost, validity mechanics) that is already meaningful at this size. Exact per-task, per-k numbers are archived in [`research/results/trickcatcher-concept-subset-interim/`](results/trickcatcher-concept-subset-interim) (`results_27of75.jsonl`, `report_27of75.json`, plus the earlier `results_11of75.jsonl`/`report_11of75.json` snapshot for comparison); regenerate the summary at any time with:
+**Status at report time: the 75-task seeded subset is complete (50 C++ + 25 Python, 0 errors on the final resumed pass); the full 325-task run has now been launched against the same run directory (see "Full dataset" below).** Exact per-task, per-k numbers for the finished subset are archived in [`research/results/trickcatcher-concept-subset-interim/`](results/trickcatcher-concept-subset-interim) (`results_75of75_final.jsonl`, `report_75of75_final.json`, `bootstrap_75of75_final.json`; earlier `results_11of75.jsonl`/`results_27of75.jsonl` snapshots kept for the progression record); regenerate the summary at any time with:
 
 ```bash
 .venv/bin/python -m trickcatcher_concept.report --results /home/phong/dev/trickcatcher-concept-data/runs/subset-v1/results.jsonl
 ```
 
-### Why progress is slow: a Vertex requests-per-minute wall shared with other concurrent work, not a pipeline problem
+### Why progress was slow: a Vertex requests-per-minute wall shared with other concurrent work, not a pipeline problem
 
 Real wall-clock progress on this Vertex project has been dominated by `ResourceExhausted` (429) responses for `gemini-3-flash-preview`, which this session could not fully characterize (no access to the project's quota console), and which got *worse* once other unrelated agents in this same repo/project (`testcase_eval`, `strut_concept`) began running concurrently against the same Vertex project quota. Concretely:
 
@@ -93,33 +93,39 @@ This means the *pipeline* is not the bottleneck -- it is fully implemented, test
 
 An unrelated operational note from this resume: the previous run's process had been killed externally, but 14 of its sandboxed exec/generator child processes (`_bin/*.bin`, one Python `generator.py`) had been orphaned (reparented to the user's systemd, still consuming a full CPU core each) rather than cleaned up, apparently because their parent was killed before it could reap them; they were spinning uselessly for hours with no supervisor left to read their output. These were killed manually before restarting; a future hardening item is to have `sandbox.py`/`pipeline.py` place child processes in a killable process group so an interrupted run cannot leak them.
 
-### Seeded subset, interim sample (27 of 75 PUTs, all C++ so far)
+### Seeded subset, final (75 of 75 PUTs: 50 C++ + 25 Python)
 
-Best-F1 row (`k = 10`, matching the paper's own best-k for TrickCatcher on TrickyBugs C++), `strict` validity (independent evaluation validator + reference agreement both required):
+Best-F1 row (`k = 10`, matching the paper's own best-k for TrickCatcher on TrickyBugs), `strict` validity (independent evaluation validator + reference agreement both required). Reported per language (the paper's own convention, since C++/Python are disjoint PUT sets) and pooled overall (this report's own additional statistic, not a paper convention):
 
-| Arm | Recall | Precision | F1 | Tasks exposed |
-| --- | ---: | ---: | ---: | ---: |
-| Baseline (paper, unmodified) | 37.0% | 76.9% | 50.0% | 10/27 |
-| Concept | **41.1%** | **85.4%** | **55.5%** | 12/27 |
+| Split | Arm | Recall | Precision | F1 | Tasks exposed |
+| --- | --- | ---: | ---: | ---: | ---: |
+| C++ (n=50) | Baseline | 48.5% | 86.6% | 62.2% | 25/50 |
+| C++ (n=50) | Concept | 47.8% | **91.8%** | **62.8%** | 25/50 |
+| Python (n=25) | Baseline | 67.5% | 76.7% | 71.8% | 17/25 |
+| Python (n=25) | Concept | **73.0%** | **79.3%** | **76.0%** | 19/25 |
+| Overall pooled (n=75) | Baseline | 54.8% | 82.3% | 65.8% | 42/75 |
+| Overall pooled (n=75) | Concept | **56.2%** | **86.0%** | **67.9%** | 44/75 |
 
-Paired per-task exposure: 9 tasks exposed by both arms, 1 baseline-only (`p02581`), 3 concept-only (`p02599`, `p02900`, `p02938`), exact McNemar p = 0.625 (n = 27 is still underpowered; the direction is consistently favorable to the concept arm across every checkpoint so far -- 4/11, now 12/27 -- but this is not yet a significance claim).
+Paired per-task exposure (overall, n = 75): 38 tasks exposed by both arms, 4 baseline-only (`cpp/p02581`, `cpp/p03089`, `cpp/p03561`, `python/p02992`), 6 concept-only (`cpp/p02599`, `cpp/p02900`, `cpp/p02938`, `python/p02900`, `python/p03452`, `python/p04012`), exact McNemar p = 0.754 (per-language: C++ p = 1.0 with 3 vs. 3 splits; Python p = 0.625 with 1 vs. 3). **Not statistically significant at this sample size.** A paired bootstrap (5000 resamples of tasks, with replacement, recomputing both arms' recall/precision/F1 on each resample; seed `20260926`, script and full output in `bootstrap_75of75_final.json`) gives 95% CIs for the concept-minus-baseline difference, overall pooled: recall +1.3 pp [-6.0, +8.5], precision +3.7 pp [-0.1, +9.1], F1 +2.1 pp [-4.3, +8.6] -- every interval still spans zero, though the precision interval is the closest to excluding it (lower bound -0.1 pp).
 
-### Validity (interim sample, n = 27)
+**Honest reading**: across every checkpoint taken during this run (n=11, n=27, n=75), the concept arm has led baseline on precision, F1, and task-exposure count every single time, and on recall in 2 of 3 (Python consistently, C++ essentially tied). That consistency of direction is suggestive, but no single checkpoint's paired test reaches conventional significance, and the checkpoints are not independent samples (n=75 is a superset of n=27 which is a superset of n=11), so this is one trend observation, not three corroborating ones. The full 325-task run (below) is needed for a claim stronger than "consistent favorable direction, not yet significant."
+
+### Validity, final (n = 75)
 
 | Arm | Generated | Usable (validator-filtered) | Independent-validator-invalid rate (of usable) | Reference-invalid rate (of usable) |
 | --- | ---: | ---: | ---: | ---: |
-| Baseline (no concept validator) | 2543 | 2543 (unfiltered) | 17.9% | 7.8% |
-| Concept (own validator applied) | 2349 | 2311 | 18.3% | **1.6%** |
+| Baseline (no concept validator) | 7106 | 7106 (unfiltered) | 14.55% | 5.01% |
+| Concept (own validator applied) | 6361 | 6257 | 14.58% | **2.86%** |
 
-The pattern from the 11-task snapshot holds at n = 27: the concept arm's own AutoCode-style validator keeps its reference-invalid rate far below baseline's (1.6% vs. 7.8%) -- the exact failure mode the earlier pilot had (declaring inputs valid that the reference programs themselves disagreed on). The *independent* evaluation-validator invalid rate is now essentially tied between arms (18.3% concept vs. 17.9% baseline, versus 16.8% vs. 24.4% at n = 11) -- worth watching as the sample grows; it suggests the concept validator's advantage is specifically in catching reference-disagreeing inputs, not in the independent evaluator's stricter validity criterion generally.
+This is the most consistent finding across every sample size checked (n=11: 0.0% vs 9.5%; n=27: 1.6% vs 7.8%; n=75: 2.86% vs 5.01%): the concept arm's own AutoCode-style validator keeps letting through noticeably fewer reference-disagreeing inputs than baseline's unfiltered generator output, even as the gap narrows somewhat with more tasks (partly because the n=11/27 samples were all-C++, and C++'s gap, 1.2% vs 4.4% at n=50, is smaller than the early all-C++ samples suggested, while Python's gap is essentially zero, 6.5% vs 6.4% at n=25 -- the concept validator's advantage is concentrated in C++). The *independent* evaluation-validator invalid rate stays essentially tied between arms at every sample size (14.58% vs 14.55% overall) -- the concept arm's validator and the independently-built evaluation validator are not simply agreeing with each other more; the concept arm specifically wins on reference-agreement validity, not on the independent evaluator's separate criterion.
 
-### Cost (interim sample, 27 tasks, both arms, plus their evaluation-validator calls)
+### Cost, final (75 tasks, both arms, plus their evaluation-validator calls)
 
-1051 LLM calls, 1,091,438 input tokens, 741,226 output tokens across `gemini-3-flash-preview` (977 calls, generation) and `gemini-3.1-pro-preview` (74 calls, independent evaluation validator); this aggregate is in `report_27of75.json`. The full per-call records (prompt, response, token usage, latency, cache hit) live in `<run-dir>/llm_cache/` and are kept outside git (per instructions) since that directory grows large over a full run.
+1980 LLM calls, 1,933,161 input tokens, 1,271,901 output tokens across `gemini-3-flash-preview` (1830 calls, generation) and `gemini-3.1-pro-preview` (150 calls, independent evaluation validator); this aggregate is in `report_75of75_final.json`. The full per-call records (prompt, response, token usage, latency, cache hit) live in `<run-dir>/llm_cache/` and are kept outside git (per instructions) since that directory grows large over a full run.
 
 ### Full dataset (325 PUTs)
 
-Not started in this session: starting a second run against the same Vertex project while the subset run is still quota-constrained would only compound the 429 pressure. The subset run should be allowed to finish (or be judged sufficiently informative) before running `--split full`; see "Resuming and extending" below for the exact command, which reuses this run's directory and therefore skips every already-completed task.
+Launched after the subset finished cleanly (0 errors), reusing the same run directory (`/home/phong/dev/trickcatcher-concept-data/runs/subset-v1`, `--split full`); it skips the 75 subset tasks already scored (their stage files and LLM cache entries are reused unchanged) and processes only the remaining ~250 PUTs. See "Resuming and extending" for the exact command and current pacing. Given the subset's consistent-but-not-yet-significant direction, the full run is worth the wall-clock cost: it is the only way to either confirm the trend at a power the 75-task subset lacks, or reveal that it washes out. Results will be added to this report once a meaningful fraction has completed; see the run's live `results.jsonl` and `trickcatcher_concept.report` in the meantime.
 
 ## Resuming and extending
 
@@ -155,7 +161,7 @@ A single-PUT smoke run with real Gemini calls (`p03076`, both arms) additionally
 
 ## Limitations and open issues
 
-- **Not yet statistically conclusive.** Only 27 of the 75 seeded-subset tasks had completed at report time, all C++; no Python subset tasks, and no full-dataset tasks, have been scored yet. The paired McNemar test at n = 27 (p = 0.625) is not informative either way, though the concept arm has led on every exposure/F1 metric at every checkpoint taken so far (n = 11 and n = 27). The subset run is left running (resume-safe, see above); the honest conclusion of this report is "the full pipeline and concept layer are implemented, tested, and behaving as designed, with an early favorable trend" rather than "the concept layer improves TrickCatcher's recall/precision/F1" -- that comparison needs the completed subset and full runs.
+- **Not yet statistically conclusive.** The full 75-task seeded subset (50 C++ + 25 Python) is now complete; the paired McNemar test at n = 75 (p = 0.754 overall) is not significant, and the paired bootstrap 95% CIs for every metric (recall, precision, F1) span zero. The concept arm has nonetheless led baseline on precision, F1, and exposure count at every checkpoint taken during this run (n = 11, 27, 75) and on recall in 2 of 3 language splits -- a consistent direction, not yet a significant effect. The full 325-task run is in progress (see "Full dataset" above); the honest conclusion of this report remains "the full pipeline and concept layer are implemented, tested, and behaving as designed, with a consistent favorable trend that has not yet reached significance" rather than a confirmed claim that the concept layer improves TrickCatcher's recall/precision/F1 -- that needs the full-dataset numbers.
 - **Vertex quota, not compute, is now the critical path.** This session could not determine or raise the project's actual requests-per-minute ceiling for `gemini-3-flash-preview`; empirically, pacing down to ~7.5 combined requests/minute across both model clients reduced but did not eliminate `ResourceExhausted` responses. Whoever continues this run should check the Vertex AI quota console for `gemini-3-flash-preview` / `gemini-3.1-pro-preview` in the configured project and consider requesting a quota increase before the full 325-task run, which at the current rate would take on the order of a day of wall-clock time.
 - The task list is 250 C++ / 115 Python before exclusions vs. the paper's reported 251/115; the 1-PUT C++ discrepancy traces to the artifact's own released `.pkl` result files rather than to our selection code (see Provenance).
 - 40/365 PUTs (11%) are excluded because they do not reproduce their own existing tests under our toolchain; this is disclosed, not hidden, but it means the reported metrics are conditioned on toolchain-reproducible PUTs, which the paper's own environment (GCC 9.2.1) may not have needed to exclude.
