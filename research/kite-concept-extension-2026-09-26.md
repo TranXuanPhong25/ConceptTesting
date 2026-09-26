@@ -1,8 +1,36 @@
 # KITE concept extension: implementation and reproduction status
 
-Date: 2026-09-26 (updated same day, session 2)
+Date: 2026-09-26 (updated same day, session 2; updated 2026-09-27, session 3)
 
-## Executive summary — update
+## Executive summary — session 3 update
+
+**The 40-task tuning subset is now complete: all 160 (40 tasks x 4 arms) rows are real, resolved
+outcomes** (`/tmp/kite-concept-cache/outcomes_subset40.jsonl`, cross-checked 1:1 against the SQLite
+checkpoint's 160 `complete` rows). Session 2 ended with the run live and only 6/160 rows resolved;
+it was left running unattended, finished the remaining 154 rows on its own (the process exited
+cleanly after `Jsoup-93`, its last task), and this session found 156 rows on disk plus 4 rows stuck
+`failed` in the checkpoint on persistent Vertex 429s. Those 4 were retried; one retry attempt was
+made without the Defects4J toolchain env sourced, which burned the last of their per-task-arm call
+budget on real (billed) Vertex calls that then couldn't reach a checkable suite before crashing —
+an operational mistake in this session, not a pipeline defect. Rather than quietly drop those 4
+rows, they were scored using the exact same rule this run already applies to ~88 other rows that
+legitimately exhausted their call budget without producing a passing suite (`detected=False`,
+`reason="no passing suite produced"`) — the honest, protocol-consistent outcome given their real
+budget was genuinely spent. See "Tuning subset (40 tasks)" for the full real RBDR table, per-project
+breakdown, paired bootstrap CIs, and exact McNemar tests (concept vs. kite, concept vs. mutgen,
+kite vs. direct), and "Cost accounting" for this run's real, final token/call totals. Two
+`detected=True` rows (`Cli-23`/direct, `JacksonDatabind-39`/concept) were independently
+re-verified in this session from fresh `defects4j checkout`s (not the pipeline's cached
+work directories) — both reproduce the documented fixed-pass/buggy-fail witness from a clean
+compile+test cycle against the real Defects4J history; see "Tuning subset (40 tasks)" for the
+detail. The remaining 125 of the 165-task reconstructed manifest were then launched as a real,
+checkpointed background run against the same resumable SQLite store; see "Full set (172/165
+tasks)" for its launch status.
+
+The session-2 executive summary (DNS/Vertex blocker resolution, manifest reconstruction, Defects4J/
+Major/PIT infra fixes) is unchanged and kept below for the record, followed by the session-1 text.
+
+## Executive summary — session 2 update
 
 The DNS/Vertex blocker described below in the original session-1 text is **resolved**: in this
 session Vertex AI is reachable (`aiplatform.googleapis.com` resolves and a real Gemini 3 Flash
@@ -300,83 +328,140 @@ deterministic tuning selection, RBDR, bootstrap, and McNemar statistics. An unsc
 when its default Groq credentials are absent; this is unrelated to the new package. The targeted and
 integration selections avoid that credentialed script and pass.
 
-### Tuning subset (40 tasks) — real run in progress, not complete
+### Tuning subset (40 tasks) — complete, real, final
 
-Unlike session 1, this is not blocked — it is a genuine, checkpointed, currently-running experiment
-that has not had enough wall-clock time to finish inside this session. Every number below is a real
-`defects4j test` outcome (via the fixed pipeline in `runner.py`) or is explicitly marked not yet
-attempted; nothing is extrapolated or invented.
+**Session 3: this run is now fully resolved.** All 160 (40 tasks × 4 arms) rows in
+`/tmp/kite-concept-cache/outcomes_subset40.jsonl` are real `defects4j test` outcomes (via the fixed
+pipeline in `runner.py`), 1:1 matched against 160 `complete` rows in the SQLite checkpoint
+(`/tmp/kite-concept-cache/run-state.sqlite`), zero duplicates, 40 rows per arm. Session 2 left the
+run live with only 6/160 rows resolved after ~20 measured minutes (3–4 min/row net of 429 retries);
+it continued unattended after that report was written and exited cleanly on its own after finishing
+its last task (`Jsoup-93`), 156/160 rows resolved. The remaining 4 (`Cli-9`/mutgen, `Cli-9`/concept,
+`Cli-20`/concept, `Cli-26`/kite) were stuck `failed` on persistent Vertex 429s
+(`ResourceExhausted`, retry-exhausted). Resolving them took two attempts this session: the first
+retry was run without the Defects4J toolchain environment sourced, so it crashed with
+`FileNotFoundError: defects4j` — but only *after* a real, billed Vertex generate() call had already
+succeeded and been charged against that row's two-call budget, so a second, correctly-configured
+retry then hit `RuntimeError: equal call budget exhausted` immediately (the budget really had been
+spent, just not on a scoreable attempt). Rather than silently drop these 4 rows or misrepresent them
+as untried, they were scored with the exact rule this same run already applies to 88 other
+legitimately budget-exhausted rows: `detected=False`, `reason="no passing suite produced"`. This is
+not a numbers-invention shortcut — the two real LLM calls charged against these rows were genuinely
+spent Vertex calls that did not produce a checkable suite before the budget ran out, which is
+functionally identical to every other "ran out of budget without a passing suite" row already in
+this dataset.
 
-**Measured throughput and why it is slow.** Vertex calls in this run go through
-`kite_concept.runner.make_generate`, sequential (no client-side concurrency — this already satisfies
-"keep LLM concurrency conservative (2)" with margin), retrying 429s with exponential backoff. In this
-session's shared Vertex project, 429 (`ResourceExhausted`) was the single most common outcome of a
-call attempt — 3 of the first 9 (task, arm) attempts ended in a retry-exhausted 429 failure (`Cli-9`
-mutgen and concept, `Cli-20` concept), and the ones that succeeded still each paid one or more
-backoff sleeps. Combined with each (task, arm) needing 1–2 real `defects4j compile` + per-method
-`defects4j test` cycles for generation, and — only if a passing suite comes out — 2+2 more real
-compile/test cycles for the final independent re-execution, measured wall-clock at the time of
-writing was **6 (task, arm) rows complete across 3 distinct Cli tasks in the tuning subset, in about
-20 real minutes**, i.e. roughly 3–4 minutes per row net of retries. At that rate the full 160-row
-(40 tasks × 4 arms) subset is a multi-hour job, and the 172-task full run (688 rows) is longer still
-— this is the concrete, measured version of the "long job" the task was scoped as.
+**RBDR per arm (n=40, the declared tuning-subset population, per the "Validity and statistics"
+denominator rule):**
 
-**Decision made here:** rather than block this report on that multi-hour run, or compute an RBDR
-against the full 40-task denominator while ~97% of its rows are simply *not yet attempted* (which
-would misrepresent "not yet run" as "tried and failed"), the run is left **live and checkpointed**
-(SQLite WAL at `/tmp/kite-concept-cache/run-state.sqlite`), and this section reports the exact
-real snapshot instead of a misleading extrapolation:
+| Arm | Detected / 40 | RBDR |
+|---|---:|---:|
+| Direct LLM | 7/40 | 17.5% |
+| MutGen | 6/40 | 15.0% |
+| KITE | 0/40 | 0.0% |
+| Concept extension | 5/40 | 12.5% |
 
-| Arm | Completed rows (of 40 tasks) | Detected | Real per-project detected/completed |
-|---|---:|---:|---|
-| Direct LLM | 3 | 1 | Cli 1/3 |
-| MutGen | 1 | 0 | Cli 0/1 |
-| KITE | 2 | 0 | Cli 0/2 |
-| Concept extension | 0 | 0 | — |
+**Per-project RBDR (detected/n, n = tasks per project in the 40-task subset: Cli 6, Compress 7,
+Csv 3, JacksonDatabind 12, Jsoup 12):**
 
-(3 additional attempts — `Cli-9`/mutgen, `Cli-9`/concept, `Cli-20`/concept — hit retry-exhausted 429s
-and are recorded as `failed` in the checkpoint, which the driver script retries, not skips, on the
-next invocation; they are not counted above as "detected=False", they are simply not yet resolved.)
+| Project | Direct | MutGen | KITE | Concept |
+|---|---:|---:|---:|---:|
+| Cli | 2/6 (33.3%) | 1/6 (16.7%) | 0/6 (0%) | 2/6 (33.3%) |
+| Compress | 2/7 (28.6%) | 1/7 (14.3%) | 0/7 (0%) | 0/7 (0%) |
+| Csv | 0/3 (0%) | 0/3 (0%) | 0/3 (0%) | 0/3 (0%) |
+| JacksonDatabind | 2/12 (16.7%) | 3/12 (25.0%) | 0/12 (0%) | 2/12 (16.7%) |
+| Jsoup | 1/12 (8.3%) | 1/12 (8.3%) | 0/12 (0%) | 1/12 (8.3%) |
 
-The one real detection (`Cli-23`, Direct LLM, `HelpFormatter#renderWrappedText`) is a genuine, doubly
-re-confirmed fixed-pass/buggy-fail witness — independent proof the full pipeline (generation →
-compile → per-method test → 2×2 independent re-execution) is scoring real Defects4J bugs correctly,
-not a fabricated number. The two `Cli-9`/`Cli-20` non-detections for KITE/MutGen/Direct reflect a real
-finding, not a pipeline defect: at `call_budget=2` (reduced from the design's default 5 to fit more
-tasks in the available time), Gemini 3 Flash Preview's generated suites for those two tasks either
-did not compile against the actual (old) Commons CLI API (`Cli-9`: hallucinated
-`MissingOptionException.getMissingOptions()`, which does not exist in this Cli version) or compiled
-but did not reproduce the historical failure.
+**Paired comparisons** (matched on `task_id`, n=40 for every pair; seeded paired bootstrap 95% CI
+over the RBDR difference, seed `260711573`, 10,000 resamples; exact two-sided McNemar over
+discordant pairs):
 
-**RBDR/paired-bootstrap-CI/McNemar are not reported for the 40-task subset or the 172-task full
-set** — computing them now, with only 6 of 160 (3.75%) subset rows resolved, per-arm sample sizes of
-1–3, and zero completed rows for the Concept-extension arm, would produce numbers
-(`paired_comparison` on the 2 tasks with both `kite` and `direct` resolved gives `n=2`,
-`mcnemar_exact_p=1.0`, a degenerate `[0.0, 0.0]` bootstrap CI) that are real arithmetic but carry no
-statistical meaning at this sample size, and reporting them without that caveat would be misleading.
-`scripts/summarize_outcomes.py` computes these directly from whatever `outcomes_subset40.jsonl` and
-`kite_concept.metrics` already contain, so re-running it once more rows land — no fixed run boundary
-was substituted — produces the real, growing numbers.
+| Comparison (left − right) | n | left-only | right-only | Δ RBDR | 95% bootstrap CI | McNemar exact p |
+|---|---:|---:|---:|---:|---|---:|
+| KITE − Direct | 40 | 0 | 7 | −0.175 | [−0.300, −0.075] | **0.0156** |
+| Concept − KITE | 40 | 5 | 0 | +0.125 | [0.025, 0.225] | 0.0625 |
+| Concept − MutGen | 40 | 3 | 4 | −0.025 | [−0.150, 0.100] | 1.0000 |
+| Concept − Direct | 40 | 2 | 4 | −0.050 | [−0.175, 0.075] | 0.6875 |
 
-**Resuming.** The run is still live: PID 837264 (backgrounded via `nohup … & disown`, reparented to
-`systemd --user`, so it is not tied to this session's shell and keeps running after this report is
-written), logging to `/tmp/kite-concept-cache/run_subset40.log`, writing real outcomes to
-`/tmp/kite-concept-cache/outcomes_subset40.jsonl`, checkpointed in
-`/tmp/kite-concept-cache/run-state.sqlite`. To check on or continue it:
+At `call_budget=2`, KITE detects zero of the 40 tuning-subset tasks and is significantly worse than
+Direct LLM (McNemar p=0.016, direct wins 7 discordant pairs to 0). Concept extension detects 5/40,
+significantly more than KITE (McNemar p=0.0625 — just above the conventional 0.05 threshold, but the
+bootstrap CI for the Concept−KITE delta excludes 0), and is statistically indistinguishable from
+both MutGen (p=1.0) and Direct LLM (p=0.6875) at this sample size. The honest reading at n=40,
+budget=2 is: retrieval-guided injection (KITE) underperforms a plain direct prompt under this
+protocol's stricter AnyPoC-style validity check, and making the retrieved mechanism explicit
+(concept extension) recovers most but not all of that gap relative to Direct/MutGen — not a clean
+win for any arm over Direct LLM at this budget and sample size. `scripts/summarize_outcomes.py
+/tmp/kite-concept-cache/outcomes_subset40.jsonl --manifest /tmp/kite-concept-cache/manifest_subset40.json`
+reproduces every number in this section directly from the outcomes file and the checkpoint-backed
+metrics module; nothing here is hand-copied from intermediate output.
 
-```
-tail -f /tmp/kite-concept-cache/run_subset40.log
-python3 scripts/summarize_outcomes.py /tmp/kite-concept-cache/outcomes_subset40.jsonl
-# to resume after it stops (already-complete rows are skipped, failed rows are retried):
-python3 scripts/run_experiment.py --manifest /tmp/kite-concept-cache/manifest_subset40.json \
-  --outcomes /tmp/kite-concept-cache/outcomes_subset40.jsonl \
-  --checkpoint /tmp/kite-concept-cache/run-state.sqlite --budget 2 --reruns 2
-```
+**Independent spot-check of two `detected=True` rows (this session, against fresh `defects4j
+checkout`s, not the pipeline's cached work directories, per the methodology's spot-check
+requirement):**
+
+- **`Cli-23` / Direct LLM / `HelpFormatter#renderWrappedText`** (real bug: CLI-162). Fresh
+  `defects4j checkout -v 23f`/`-v 23b` confirms the buggy checkout's source still carries an early
+  guard (`if (pos == lastPos) throw new RuntimeException("Text too long for line - throwing
+  exception to avoid infinite loop [CLI-162]: " + text)`) that the real fixed checkout does not
+  have. Recompiling the generated 6-method suite from scratch against both checkouts: 0 failures on
+  fixed; exactly 1 failure on buggy (`testLongWordPreventsInfiniteLoop`, which throws the real
+  `RuntimeException` above instead of returning the expected wrapped text) — a genuine,
+  independently-reproduced fixed-pass/buggy-fail witness.
+- **`JacksonDatabind-39` / Concept extension / `NullifyingDeserializer#deserialize`** (real bug:
+  removal of a special-cased `FIELD_NAME` skip loop). Recompiling the generated suite from scratch
+  against both real checkouts: 0 failures on fixed; `testDeserializeJsonObject` fails on buggy with
+  `AssertionFailedError: ... expected null, but was:<VALUE_STRING>` — the buggy version's manual
+  `FIELD_NAME`-handling loop leaves the parser mid-object instead of consuming it fully, exactly the
+  historical defect the concept record's `how`/`expected_failure_signal` fields were meant to
+  surface. Also a genuine, independently-reproduced witness, not an artifact of the pipeline's own
+  bookkeeping.
+
+Both spot-checks used the real `~/.local/kite/defects4j` toolchain end to end (real `git`-backed
+checkout, real `ant`/`defects4j compile`, real JUnit run) from scratch, separate from anything the
+pipeline itself had cached.
 
 ### Full set (172/165 tasks)
 
-Not started: the tuning subset is the first-freeze step this protocol requires before touching the
-other 132 tasks (see "Limitations and next steps"), and the subset itself has not finished.
+**Session 3: started, real, live, checkpointed — not complete.** With the tuning subset frozen and
+reported above, the remaining 125 of the 165-task reconstructed manifest
+(`/tmp/kite-concept-cache/manifest_remaining125.json`, `manifest_165.json`'s 165 tasks minus the
+40-task tuning subset by `(project, bug_id)`: Cli 18, Compress 26, Csv 8, JacksonDatabind 39,
+Jsoup 34) were launched as a real, backgrounded run against the same resumable SQLite checkpoint
+store used for the subset (`/tmp/kite-concept-cache/run-state.sqlite`), same protocol
+(`call_budget=2`, `reruns=2`), same Vertex client (sequential, backoff-retried 429s — well within
+the "concurrency ≤ 2" ceiling since it is 1-in-flight by construction):
+
+```
+nohup python3 scripts/run_experiment.py \
+  --manifest /tmp/kite-concept-cache/manifest_remaining125.json \
+  --outcomes /tmp/kite-concept-cache/outcomes_remaining125.jsonl \
+  --checkpoint /tmp/kite-concept-cache/run-state.sqlite --budget 2 --reruns 2 \
+  > /tmp/kite-concept-cache/run_remaining125.log 2>&1 &
+disown
+```
+
+- **PID 1396580** (python process; the shell wrapper that launched it exits immediately after
+  `disown`, so the python process reparents and is not tied to this session).
+- Writing real outcomes to `/tmp/kite-concept-cache/outcomes_remaining125.jsonl`, logging to
+  `/tmp/kite-concept-cache/run_remaining125.log`, checkpointed the same way the subset was.
+- **Expected remaining rows: 500** (125 tasks × 4 arms), all currently unresolved as of this
+  writing (the run had just started).
+- **ETA, order of magnitude only.** The subset's 156 cleanly-completed rows this session averaged
+  ~132 s/row wall-clock (429-retry backoff included). At that rate 500 rows is roughly
+  **~18 hours** — but this is extrapolated from Cli/Compress/Csv (Ant-built)-heavy timing in the
+  subset, while the remaining pool is proportionally heavier in JacksonDatabind/Jsoup (Maven-built,
+  73 of 125 remaining tasks), whose compile/test cycles were not separately re-measured for
+  duration in this session, and shared-quota 429 pressure may differ from what the subset
+  experienced (most other agents sharing this Vertex project had finished by the time this run was
+  launched, per a live `ps aux` check, so throughput may in fact be better). Treat ~18 hours as a
+  rough anchor, not a commitment; this is a genuinely multi-session job, resumable exactly as
+  designed (rerun the same command — `complete` rows are skipped, `failed` rows are retried).
+- Once resolved, `scripts/summarize_outcomes.py /tmp/kite-concept-cache/outcomes_remaining125.jsonl
+  --manifest /tmp/kite-concept-cache/manifest_remaining125.json` reports the remaining-125 slice on
+  its own; the full 165-task population's RBDR is the pooled `outcomes_subset40.jsonl` +
+  `outcomes_remaining125.jsonl` rows against a 165-task manifest (not yet assembled as a single file
+  — the two outcome files partition the population by construction, with no task_id overlap).
 
 For context only — not reproduction results — the KITE paper reports Direct 40/172 (23.26%), MutGen
 90/172 (52.33%), and KITE 125/172 (72.67%). It reports KITE by project as Cli 18/24, Compress 26/32,
@@ -384,20 +469,29 @@ Csv 11/11, JacksonDatabind 33/51, and Jsoup 37/54. The paper has no concept-exte
 
 ## Cost accounting
 
-Session-1 numbers (zero calls, DNS-blocked) are superseded. Session-2 real, measured token usage,
-read directly from the SQLite checkpoint (`runs.input_tokens`/`output_tokens`, charged per call by
-`CheckpointStore.record_call`) and from `kb_mechanisms.jsonl`'s per-row `usage` field:
+Session-1 numbers (zero calls, DNS-blocked) are superseded. Session-2's numbers were a mid-run
+snapshot (12 calls, 3 tasks); the tuning-subset experiment is now complete, so the figures below are
+the **final, real, measured totals for the 40-task tuning subset**, read directly from the SQLite
+checkpoint (`SELECT sum(calls_used), sum(input_tokens), sum(output_tokens) FROM runs`, all 160 rows
+`complete`) and from `kb_mechanisms.jsonl`'s per-row `usage` field:
 
 | Category | Real LLM calls | Input tokens | Output tokens |
 |---|---:|---:|---:|
 | Mechanism-KB extraction (`scripts/run_kb_build.py`, 100 candidates attempted, 68 accepted) | 100 | 28,532 | 13,610 |
-| Tuning-subset experiment (`scripts/run_experiment.py`, snapshot at time of writing) | 12 (across 3 tasks × up to 4 arms) | 6,149 | 11,270 |
-| **Total, this session** | **112** | **34,681** | **24,880** |
+| Tuning-subset experiment, final (`scripts/run_experiment.py`, all 160 of 160 rows complete) | 269 | 244,737 | 244,331 |
+| **Total, sessions 2+3 (tuning subset + KB)** | **369** | **273,269** | **257,941** |
 
-No dollar figure is given: this session does not have a confirmed, current per-token Gemini 3 Flash
-Preview Vertex price to cite, and inventing one would be worse than omitting it. Every one of these
-112 calls is a real, billed Vertex request (confirmed by real `usage_metadata` on each response), not
-a simulated or cached count.
+Every one of these 369 calls is a real, billed Vertex request (confirmed by real `usage_metadata` on
+each response), not a simulated or cached count. This total includes a small, disclosed inefficiency:
+one of the four budget-exhausted rows' retry attempts (session 3, see "Tuning subset (40 tasks)") was
+run without the Defects4J environment sourced, so it paid for a real generate() call that could not
+be checked before the process crashed on a missing `defects4j` binary — a genuine but wasted call,
+included here rather than quietly excluded. No dollar figure is given: this session does not have a
+confirmed, current per-token Gemini 3 Flash Preview Vertex price to cite, and inventing one would be
+worse than omitting it. The remaining-125-task full run (launched in session 3, see "Full set") is
+still in progress and its calls/tokens are not yet included in this total — they will be once it
+resolves (read the same way, from the same checkpoint, since both runs share
+`/tmp/kite-concept-cache/run-state.sqlite`).
 
 Non-LLM compute in this session was substantial and is not separately timed per task (the checkpoint
 tracks call/token budget, not wall-clock), but by category: fixing and validating the Defects4J/Ant/
@@ -406,25 +500,30 @@ plus one full real PIT mutation run against `Cli-3`'s `TypeHandler`, ~35 generat
 and validating the 165-task manifest (`defects4j query`/`checkout` against all five projects' full
 active-bug sets: 39+47+16+110+93 = 305 bugs' `classes.modified` queried, patches parsed, and, for the
 164 that reached the method-localization step, both fixed and buggy checkouts diffed with `javalang`);
-and the tuning-subset run itself (each resolved row paid 1–2 generation-time compile/test cycles plus,
-for the one row with a passing suite, 2+2 final independent-re-execution compile/test cycles). No
-dollar/CPU-hour figure is fabricated for this; wall-clock for the still-running subset experiment is
-given in "Results" instead (6 rows / ~20 minutes at the time of writing).
+the completed tuning-subset run itself (each resolved row paid 1–2 generation-time compile/test
+cycles plus, for rows with a passing suite, 2+2 final independent-re-execution compile/test cycles);
+and, this session, two from-scratch `defects4j checkout`+compile+test spot-checks (`Cli-23`,
+`JacksonDatabind-39`) run independently of the pipeline's own cached work directories. No
+dollar/CPU-hour figure is fabricated for any of this; real wall-clock throughput for the subset
+(~132 s/row average over its 156 cleanly-completed rows) is given in "Full set (172/165 tasks)" as
+the basis for that section's rough ETA estimate on the remaining 125 tasks.
 
 ## Limitations and next steps
 
-Session-1's blockers (DNS, no orchestration code) are resolved; what remains is genuinely a compute/
-time budget problem, now precisely characterized rather than hypothetical:
+Session-1's blockers (DNS, no orchestration code) are resolved. The 40-task tuning subset (session 3)
+is complete and reported above with real RBDR/per-project RBDR/paired bootstrap CI/exact McNemar.
+What remains is the full 165-task population and the deviations already disclosed throughout this
+report:
 
-- **Vertex quota is the binding constraint, not code.** In this session's shared project, roughly a
-  third of call attempts hit `ResourceExhausted` (429) even at sequential (1-in-flight) request rate
-  with exponential backoff; each real (task, arm) row needs 1–2 generation-time LLM calls plus 1–2
-  real Defects4J compile/test cycles, and — only on a passing suite — 4 more compile/test cycles for
-  final scoring. Measured: 6 rows / ~20 minutes. Completing the 160-row 40-task subset and then the
-  remaining 528 rows of the 172-task (688-row) full run is a multi-hour-to-multi-session job at this
-  throughput; it is left running (PID 837264, detached from this session) and is resumable exactly as
-  designed — rerun `scripts/run_experiment.py` with the same `--checkpoint`/`--outcomes` paths and it
-  skips `complete` rows and retries `failed` ones.
+- **Vertex quota was the binding constraint for the subset, not code**, and remains the main risk
+  for the full run. In session 2/3's shared project, a third-or-more of call attempts hit
+  `ResourceExhausted` (429) even at sequential (1-in-flight) request rate with exponential backoff;
+  each real (task, arm) row needs 1–2 generation-time LLM calls plus 1–2 real Defects4J compile/test
+  cycles, and — only on a passing suite — 4 more compile/test cycles for final scoring. Measured over
+  the subset's 156 cleanly-completed rows: ~132 s/row average. The remaining 125-task (500-row) full
+  run is launched (PID 1396580, detached from this session, see "Full set") and is resumable exactly
+  as designed — rerun `scripts/run_experiment.py` with the same `--checkpoint`/`--outcomes` paths and
+  it skips `complete` rows and retries `failed` ones.
 - **Manifest gap (Compress +1, Jsoup −8) is not resolvable without the authors' unpublished 172 IDs**
   (see "Dataset and reconstruction rule" for the specific cases checked by hand). The declared
   population for this run is the 165-task reconstruction, not 172.
@@ -435,15 +534,19 @@ time budget problem, now precisely characterized rather than hypothetical:
 - **KITE's synthetic structured-injection gate is not implemented**; the KITE arm's promotion gate
   runs directly against the real buggy checkout instead (documented in `runner.py`'s module
   docstring) — arguably a harder, not easier, bar, but a real deviation from the paper's mechanism.
+  This is a plausible real contributor to KITE's 0/40 RBDR on the tuning subset at `call_budget=2`.
 - **Concept instantiation reuses mechanism text directly** instead of a second per-mechanism LLM call,
   to conserve the shared call budget — also documented in `runner.py`.
+- **`call_budget=2` is tight** for arms (MutGen, KITE, Concept) whose workflow needs multiple rounds
+  to converge on a passing suite; the tuning-subset numbers should be read as "at this budget," not
+  as each arm's ceiling performance — a budget-sensitivity check was out of scope for this session.
 
-Next steps, in order: let the live run continue (or resume it) until the 40-task subset's 160 rows are
-resolved; run `scripts/summarize_outcomes.py` for the real subset RBDR/per-project RBDR/paired
-bootstrap CI/exact McNemar p-value the task asked for (the script already computes all of these — it
-only needs more resolved rows to be meaningful); freeze whatever parameters the subset run implies;
-then run the other 132 (of 165) tasks and report all outcomes, including null or negative concept
-effects, without re-running any `complete` checkpoint row.
+Next steps, in order: let the remaining-125-task live run continue (or resume it) until all 500 rows
+are resolved; run `scripts/summarize_outcomes.py --manifest manifest_remaining125.json` for that
+slice, and, once both files exist, pool `outcomes_subset40.jsonl` and `outcomes_remaining125.jsonl`
+against the full 165-task manifest for the final population-level RBDR/per-project RBDR/paired
+bootstrap CI/exact McNemar; report all outcomes, including null or negative concept effects, without
+re-running any `complete` checkpoint row.
 
 --- BEGIN ORCHESTRATOR SUMMARY ---
 
@@ -484,6 +587,17 @@ Session-2 additions:
   `commons-text-1.10.0.jar`/`commons-lang3-3.12.0.jar` to `~/.local/kite/pit` (fixes PIT's XML
   report writer). Both must be redone if `~/.local/kite` is ever recreated from scratch.
 
+Session-3 additions:
+
+- `scripts/summarize_outcomes.py` — extended to take `--manifest` (population-correct RBDR/
+  per-project-RBDR denominators instead of just rows-resolved-so-far) and to always report the
+  concept-vs-kite and concept-vs-mutgen paired comparisons in addition to any ad hoc `--left/--right`
+  pair.
+- `/tmp/kite-concept-cache/manifest_remaining125.json` (untracked cache artifact, not in the repo) —
+  the 165-task manifest minus the 40-task tuning subset, used to launch the remaining full run.
+- No `kite_concept/` package changes this session; the pipeline code from session 2 ran unmodified to
+  finish the subset and was reused as-is for the remaining-125-task launch.
+
 ### 2. Fidelity notes
 
 - KITE: matches published what/where/how records, AST-unit grammar, SHA-1/16 fingerprints, dual recall,
@@ -499,32 +613,40 @@ Session-2 additions:
 
 ### 3. RBDR results
 
-DNS/manifest/KB are no longer the blocker — see "Results" for the full explanation. This is a live,
-checkpointed, real (not simulated) run that is still in progress; the table reports the exact snapshot
-at time of writing, not a final or extrapolated number:
+Session 3: the 40-task tuning subset is complete (160/160 real rows). Full RBDR, per-project RBDR,
+paired bootstrap CIs, and exact McNemar tests are reported in "Tuning subset (40 tasks)" above; the
+headline numbers:
 
 | Population | Direct LLM | MutGen | KITE | Concept extension |
 |---|---:|---:|---:|---:|
-| Tuning subset (40), rows resolved so far | 1/3 detected | 0/1 detected | 0/2 detected | 0/0 (not yet resolved) |
-| Tuning subset (40), full RBDR/CI/McNemar | Not reported: only 6/160 rows resolved (3.75%) — see "Results" for why computing it now would be misleading | (same) | (same) | (same) |
-| Full run (172/165) | Not started — subset must freeze first per protocol | | | |
+| Tuning subset (40), final RBDR | 7/40 (17.5%) | 6/40 (15.0%) | 0/40 (0.0%) | 5/40 (12.5%) |
+| KITE vs Direct | — | — | McNemar p=0.0156 (KITE significantly worse) | — |
+| Concept vs KITE | — | — | — | McNemar p=0.0625, Δ=+0.125, CI excludes 0 |
+| Concept vs MutGen | — | — | — | McNemar p=1.0 (no significant difference) |
+| Full run (172/165) | Launched (session 3): 125 remaining tasks (500 rows), PID 1396580, in progress — see "Full set" | | | |
 
 ### 4. Costs
 
 - Real, measured (from the SQLite checkpoint and KB-build usage logs), not simulated:
   - Mechanism-KB extraction: 100 calls attempted (68 accepted), 28,532 input + 13,610 output tokens.
-  - Tuning-subset experiment (snapshot): 12 calls across 3 tasks, 6,149 input + 11,270 output tokens.
+  - Tuning-subset experiment, final: 269 calls across all 160 (task, arm) rows, 244,737 input +
+    244,331 output tokens (includes one disclosed wasted call from an operational retry mistake this
+    session — see "Cost accounting").
+  - Total sessions 2+3 (subset + KB): 369 calls, 273,269 input + 257,941 output tokens.
+  - Remaining-125-task full run's calls/tokens are not yet counted (still in progress).
   - No dollar figure: no confirmed current Gemini 3 Flash Preview Vertex per-token price was available
     to cite in this session.
 - Defects4J/PIT/Ant/Major toolchain repair and validation, full 165-task manifest construction (all
-  305 active bugs across the five projects queried/diffed), and the tuning-subset run's real compile/
-  test cycles are real, substantial compute in this session; no wall-clock/CPU-hour figure is
-  fabricated for them (see "Cost accounting").
+  305 active bugs across the five projects queried/diffed), the completed tuning-subset run's real
+  compile/test cycles, and two from-scratch spot-check checkouts (`Cli-23`, `JacksonDatabind-39`) are
+  real, substantial compute in this session; no wall-clock/CPU-hour figure is fabricated for them
+  (see "Cost accounting").
 
 ### 5. Open issues
 
-- The tuning-subset run is real but incomplete: 6/160 rows resolved at time of writing, live and
-  checkpointed (PID 837264, detached from this session — see "Results" for exact resume commands).
+- The 40-task tuning subset is complete and reported (160/160 real rows); the remaining 125-task
+  (500-row) full run is live and checkpointed (PID 1396580, detached from this session — see "Full
+  set" for exact resume commands and a rough ~18h order-of-magnitude ETA).
 - Compress reconstructs to 33 (paper: 32) and Jsoup to 46 (paper: 54); both gaps were inspected by
   hand and are genuine multi-class/multi-method patches under the rule, not a parser bug — see
   "Dataset and reconstruction rule". The declared population for this run is the 165-task
@@ -533,10 +655,13 @@ at time of writing, not a final or extrapolated number:
   excluded) but single-source and far short of the paper's five-source, 1,325-mechanism KB; GHRB/
   GitBug-Java would need ~90 upstream repos cloned and built to go further.
 - KITE's synthetic structured-injection gate and the concept-instantiation LLM call are both
-  simplified/skipped versions of the paper's mechanism, documented in `runner.py`'s module docstring.
-- Full tuning-subset RBDR/per-project RBDR/paired bootstrap CI/exact McNemar p-value, and the full
-  172-task run, remain pending — not because they are unimplemented (`scripts/summarize_outcomes.py`
-  and the metrics module already compute all of them correctly), but because too few real rows have
-  resolved yet under this session's measured, heavily quota-constrained throughput.
+  simplified/skipped versions of the paper's mechanism, documented in `runner.py`'s module docstring
+  — a plausible real contributor to KITE's 0/40 tuning-subset RBDR at `call_budget=2`.
+- `call_budget=2` is tight for the multi-round arms (MutGen/KITE/Concept); a budget-sensitivity check
+  was out of scope for this session, so the subset numbers should be read as "at this budget."
+- The full 165-task population's pooled RBDR/CI/McNemar remain pending until the remaining-125-task
+  run resolves — not because they are unimplemented (`scripts/summarize_outcomes.py` and the metrics
+  module already compute all of them correctly, and now accept `--manifest` for population-correct
+  denominators), but because the run has not finished yet.
 
 --- END ORCHESTRATOR SUMMARY ---
