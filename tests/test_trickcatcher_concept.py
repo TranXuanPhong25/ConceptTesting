@@ -1,3 +1,4 @@
+import inspect
 import json
 import math
 import tempfile
@@ -10,7 +11,7 @@ from trickcatcher_concept.llm import LLM, extract_code, extract_json, load_env_f
 from trickcatcher_concept.oracle import PutScore, aggregate, score_put
 from trickcatcher_concept.oracle import test_cases_for as compute_test_cases
 from trickcatcher_concept.provenance import fill
-from trickcatcher_concept.sandbox import normalize_output
+from trickcatcher_concept.sandbox import compile_cpp, normalize_output, python_program, run_program
 from trickcatcher_concept.validator import mechanical_negatives, parse_cases, parse_validators
 from trickcatcher_concept.report import llm_cost, load_rows, mcnemar, paired_exposure, per_lang_metrics, validity_rates
 
@@ -66,6 +67,36 @@ class ParsingTests(unittest.TestCase):
     def test_examples_from_description(self):
         text = "Stuff\nEXAMPLES:\n\nINPUT:\n6 2 1001\n\nOUTPUT:\n1369\n\nINPUT:\n2\n1 2\n\nOUTPUT:\n3\n"
         self.assertEqual(parse_examples(text), [("6 2 1001\n", "1369\n"), ("2\n1 2\n", "3\n")])
+
+    def test_sandbox_runs_without_preexec_fn_and_applies_limits(self):
+        # Regression test for the fork()+gRPC hazard: run_program must not use a
+        # subprocess preexec_fn (see sandbox.py docstring). It also must still
+        # apply resource limits -- proven here by a program that reads stdin,
+        # allocates more than its RLIMIT_AS budget, and would otherwise succeed.
+        with tempfile.TemporaryDirectory() as tmp:
+            program, error = compile_cpp(
+                "#include <cstdio>\n#include <cstdlib>\nint main(){int n;scanf(\"%d\",&n);"
+                "printf(\"got %d\\n\", n);return 0;}\n", Path(tmp))
+            self.assertIsNotNone(program, error)
+            result = run_program(program, "42\n", timeout=5, memory_mb=256)
+            self.assertEqual((result.status, result.output), ("OK", "got 42"))
+
+            oom_source = ("#include <cstdlib>\nint main(){volatile char *p ="
+                          "(char*)malloc(2000ULL*1024*1024);if(!p) return 1;p[0]=1;return 0;}\n")
+            oom_program, oom_error = compile_cpp(oom_source, Path(tmp))
+            self.assertTrue(oom_program is not None, oom_error)
+            oom_result = run_program(oom_program, "", timeout=5, memory_mb=256)
+            self.assertNotEqual(oom_result.status, "OK")  # RLIMIT_AS=256MB must reject a 2GB allocation
+
+    def test_sandbox_module_never_uses_preexec_fn(self):
+        import trickcatcher_concept.sandbox as sandbox_module
+        self.assertNotIn("preexec_fn=", inspect.getsource(sandbox_module))
+
+    def test_python_program_runs_under_wrapper_too(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            program = python_program("import sys\nprint(sys.stdin.read().strip()[::-1])\n", Path(tmp))
+            result = run_program(program, "hello\n", timeout=10)
+            self.assertEqual((result.status, result.output), ("OK", "olleh"))
 
     def test_normalize_output(self):
         self.assertEqual(normalize_output("1  2\n3\n"), "1 2 3")

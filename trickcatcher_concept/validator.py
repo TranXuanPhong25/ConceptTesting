@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from trickcatcher_concept import sandbox
-from trickcatcher_concept.sandbox import PYTHON, _limits
+from trickcatcher_concept.sandbox import PYTHON, _wrap
 
 VALID, INVALID, ERROR = "valid", "invalid", "error"
 
@@ -70,8 +70,8 @@ def mechanical_negatives(valid_inputs: list[str], limit: int = 6) -> list[str]:
 def run_validator(path: Path, stdin_text: str, timeout: float = 20.0) -> str:
     try:
         with sandbox.process_slot():
-            proc = subprocess.run([PYTHON, str(path)], input=stdin_text.encode(), capture_output=True,
-                                  timeout=timeout, preexec_fn=_limits(4096))
+            proc = subprocess.run(_wrap([PYTHON, str(path)], 4096), input=stdin_text.encode(), capture_output=True,
+                                  timeout=timeout, start_new_session=True)
     except subprocess.TimeoutExpired:
         return ERROR
     if proc.returncode == 0:

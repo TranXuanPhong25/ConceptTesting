@@ -4,14 +4,24 @@ Outputs are whitespace-normalized as in TrickyBugs' judge (``oj t`` ignores
 spaces/newlines). Decimal tokens are rounded to 6 places so that formatting
 differences in floating-point answers are not reported as bugs; the same
 normalization is used by every arm and by the evaluator.
+
+Resource limits, ASLR and session grouping are applied by wrapping the
+argv with ``setarch -R`` and ``prlimit`` rather than a ``subprocess``
+``preexec_fn``. A ``preexec_fn`` forces CPython to fork() the whole
+(multi-threaded) interpreter for every single execution; when other
+threads are concurrently inside a gRPC call (as happens here, since LLM
+calls and program execution run concurrently), that fork() can land the
+child mid-gRPC-internals and abort with a c-ares fatal check failure
+("Check failed: channel_ != nullptr"). Wrapping the command instead lets
+CPython use its vfork()-based fast path, which does not carry this hazard.
 """
 
 from __future__ import annotations
 
 import hashlib
 import os
+import platform
 import re
-import resource
 import subprocess
 import tempfile
 import threading
@@ -20,6 +30,7 @@ from pathlib import Path
 
 DATA_ROOT = Path(os.environ.get("TCC_DATA", "/home/phong/dev/trickcatcher-concept-data"))
 PYTHON = os.environ.get("TCC_PYTHON", str(DATA_ROOT / "runvenv" / "bin" / "python"))
+_MACHINE = platform.machine()
 CXX_FLAGS = ["-std=gnu++17", "-O2", "-DONLINE_JUDGE", "-fno-stack-protector", "-U_FORTIFY_SOURCE",
              "-U_GLIBCXX_ASSERTIONS", "-include", "cassert", "-w"]
 OK, RUN_ERROR, TIME_OUT, COMPILE_ERROR = "OK", "RUN_ERROR", "TIME_OUT", "COMPILE_ERROR"
@@ -69,32 +80,15 @@ def normalize_output(text: str) -> str:
     return key
 
 
-ADDR_NO_RANDOMIZE = 0x0040000
-
-
-def _disable_aslr() -> None:
-    """Best-effort: many TrickyBugs PUTs read out-of-bounds/uninitialized memory
-    (that is often the tricky bug itself). Fixing the address layout makes a
-    given (binary, input) pair deterministic across repeated runs in *our*
-    environment, even though it cannot reproduce the original online judge's
-    memory layout. See the report's limitations section."""
-    try:
-        import ctypes
-        libc = ctypes.CDLL(None, use_errno=True)
-        libc.personality(ADDR_NO_RANDOMIZE)
-    except (OSError, AttributeError):
-        pass
-
-
-def _limits(memory_mb: int):
-    def apply() -> None:
-        resource.setrlimit(resource.RLIMIT_AS, (memory_mb * 2**20, memory_mb * 2**20))
-        resource.setrlimit(resource.RLIMIT_FSIZE, (256 * 2**20, 256 * 2**20))
-        resource.setrlimit(resource.RLIMIT_CORE, (0, 0))
-        resource.setrlimit(resource.RLIMIT_STACK, (1024 * 2**20, 1024 * 2**20))
-        _disable_aslr()
-        os.setsid()
-    return apply
+def _wrap(cmd: list[str], memory_mb: int) -> list[str]:
+    """Wrap ``cmd`` to run with fixed address layout (many TrickyBugs bugs are
+    themselves OOB/uninitialized-memory UB, which is otherwise non-deterministic
+    run to run in *our* environment -- it cannot reproduce the original online
+    judge's exact memory layout either way; see the report's limitations) and
+    bounded memory/file-size/core-dump, without a ``preexec_fn`` (see module
+    docstring)."""
+    return ["setarch", _MACHINE, "-R", "prlimit", f"--as={memory_mb * 2**20}",
+            f"--fsize={256 * 2**20}", "--core=0", f"--stack={1024 * 2**20}", "--", *cmd]
 
 
 def compile_cpp(source: str, cache_dir: Path) -> tuple[Program | None, str]:
@@ -142,13 +136,14 @@ def run_program(program: Program, stdin_text: str, timeout: float = 5.0, memory_
 
 
 def _run_program(program: Program, stdin_text: str, timeout: float, memory_mb: int) -> RunResult:
-    cmd = [program.path] if program.kind == "cpp" else [PYTHON, program.path]
+    raw_cmd = [program.path] if program.kind == "cpp" else [PYTHON, program.path]
+    cmd = _wrap(raw_cmd, memory_mb if program.kind == "cpp" else max(memory_mb, 4096))
     with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as inp, tempfile.TemporaryDirectory() as cwd:
         inp.write(stdin_text.encode())
         inp.seek(0)
         try:
             proc = subprocess.Popen(cmd, stdin=inp, stdout=out, stderr=subprocess.DEVNULL, cwd=cwd,
-                                    preexec_fn=_limits(memory_mb if program.kind == "cpp" else max(memory_mb, 4096)))
+                                    start_new_session=True)
         except OSError:
             return RunResult(RUN_ERROR, "")
         try:
@@ -174,8 +169,8 @@ def run_script(script: Path, cwd: Path, timeout: float = 120.0, memory_mb: int =
     """Run an LLM-written Python input generator inside ``cwd``."""
     try:
         with _process_slots:
-            proc = subprocess.run([PYTHON, str(script)], cwd=cwd, capture_output=True, text=True,
-                                  timeout=timeout, preexec_fn=_limits(memory_mb))
+            proc = subprocess.run(_wrap([PYTHON, str(script)], memory_mb), cwd=cwd, capture_output=True, text=True,
+                                  timeout=timeout, start_new_session=True)
     except subprocess.TimeoutExpired:
         return TIME_OUT, ""
     return proc.returncode, (proc.stderr or "")[-2000:]
