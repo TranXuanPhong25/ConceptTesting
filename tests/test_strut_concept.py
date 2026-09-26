@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from strut_concept.benchmark import Subject
+from strut_concept.benchmark import Subject, undef_after_last_include
 from strut_concept.evaluator import evaluate
 from strut_concept.extractor import build_context, build_seed
 from strut_concept.statistics import compare, exact_sign_p
@@ -87,6 +87,39 @@ def test_rule_translator_compiles_runs_and_covers(tmp_path: Path):
     assert result.status == "passed", result.error
     assert result.line_covered > 0
     assert result.branch_total > 0
+
+
+def test_undef_after_last_include_places_undef_after_includes_not_before():
+    text = "#include <a.h>\n#include <b.h>\n\nchar *strchr(const char *s, int c);\n"
+    result = undef_after_last_include(text, "strchr")
+    assert result.index("#include <b.h>") < result.index("#undef strchr") < result.index("char *strchr")
+
+
+def test_undef_after_last_include_falls_back_when_no_include_present():
+    result = undef_after_last_include("int x;\n", "foo")
+    assert "#undef foo" in result and result.index("#undef foo") < result.index("int x;")
+
+
+def test_direct_arm_harness_gets_same_undef_protection_as_translated_arms(tmp_path: Path):
+    # A model-authored "direct" harness that redeclares a libc name glibc
+    # now dispatches through a `_Generic` macro (e.g. strchr) must compile
+    # exactly like the structured arms' translator output does, so the
+    # comparison isn't unfair to whichever arm didn't get an #undef.
+    subject = Subject("strchr", "char *", (("const char *", "string", "s"), ("int", "char_code", "c")))
+    source = "char *strchr(const char *s, int c) {\n  for (; *s; s++) if (*s == c) return (char *)s;\n  return c == 0 ? (char *)s : 0;\n}\n"
+    model_harness = (
+        "#include <string.h>\n"
+        "char *strchr(const char *s, int c);\n"
+        "int main(void) {\n"
+        "  int failures = 0;\n"
+        "  const char *s = \"abc\";\n"
+        "  failures += !(strchr(s, 'b') == s + 1);\n"
+        "  return failures ? 1 : 0;\n"
+        "}\n"
+    )
+    harness = undef_after_last_include(model_harness, subject.name)
+    result = evaluate(subject, source, harness, tmp_path)
+    assert result.status == "passed", result.error
 
 
 def test_translator_undefs_focal_name_that_collides_with_a_libc_macro(tmp_path: Path):

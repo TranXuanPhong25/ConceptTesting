@@ -9,7 +9,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from .benchmark import SUBJECTS, TUNING_COUNT, Subject, default_picolibc_root, prepare_source
+from .benchmark import SUBJECTS, TUNING_COUNT, Subject, default_picolibc_root, prepare_source, undef_after_last_include
 from .evaluator import evaluate
 from .extractor import build_context, build_seed
 from .prompts import SYSTEM, prompt_for
@@ -106,7 +106,16 @@ def run(
             raw, usage, harness = "", {}, ""
             try:
                 raw, usage = _invoke(llm, prompt)
-                harness = clean_c_output(raw) if arm == "direct" else translate_cases(subject, parse_cases(raw))
+                if arm == "direct":
+                    # Give the model-authored harness the same C23/glibc
+                    # macro-collision protection translate_cases() gets for
+                    # the structured arms (see undef_after_last_include),
+                    # so all three arms face identical environment hazards
+                    # rather than penalizing direct alone for redeclaring a
+                    # focal name libc now defines as a `_Generic` macro.
+                    harness = undef_after_last_include(clean_c_output(raw), subject.name)
+                else:
+                    harness = translate_cases(subject, parse_cases(raw))
                 evaluation = evaluate(subject, source, harness, output_dir / "build" / subject.name / arm)
                 error = ""
             except Exception as exc:

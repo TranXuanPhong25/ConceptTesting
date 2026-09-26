@@ -79,6 +79,26 @@ def default_picolibc_root() -> Path:
     return Path("/usr/lib/tinygo/lib/picolibc/newlib/libc/string")
 
 
+def undef_after_last_include(text: str, name: str) -> str:
+    """Insert `#undef name` right after the last leading `#include` line.
+
+    Recent glibc/gcc redeclares several pointer-returning string/mem
+    functions (strchr, strpbrk, strstr, memchr, rawmemchr, ...) as a
+    `_Generic`-dispatching macro for const-correctness once a C23-capable
+    compiler is used, so redeclaring/defining the same name after
+    `#include <string.h>` without `#undef` is a hard compile error. This
+    applies the same environment-compatibility shim `prepare_source` uses
+    for the focal source to any other C text (e.g. a generated harness)
+    that also redeclares `name`.
+    """
+    marker = f"\n#undef {name}\n"
+    matches = list(re.finditer(r"^#include .*$", text, re.M))
+    if matches:
+        at = matches[-1].end()
+        return text[:at] + marker + text[at:]
+    return "#include <stddef.h>\n#include <string.h>\n#include <wchar.h>\n" + marker + text
+
+
 def prepare_source(subject: Subject, root: Path, destination: Path) -> str:
     """Make a host-buildable copy while preserving implementation lines.
 
@@ -92,13 +112,7 @@ def prepare_source(subject: Subject, root: Path, destination: Path) -> str:
     text = source_path.read_text()
     private = re.compile(r'^#include [<"](?:_ansi|picolib|local|reent|newlib|sys/config|sys/cdefs)\.h[>"]\s*$', re.M)
     text = private.sub("", text)
-    marker = f"\n#undef {subject.name}\n"
-    matches = list(re.finditer(r"^#include .*$", text, re.M))
-    if matches:
-        at = matches[-1].end()
-        text = text[:at] + marker + text[at:]
-    else:
-        text = "#include <stddef.h>\n#include <string.h>\n#include <wchar.h>\n" + marker + text
+    text = undef_after_last_include(text, subject.name)
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(text)
     return text
