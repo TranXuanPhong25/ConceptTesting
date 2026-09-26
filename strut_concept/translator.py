@@ -14,6 +14,15 @@ STUB_SIGNATURE_RE = re.compile(
     r"(?P<name>[A-Za-z_]\w*)\s*\((?P<params>[^()]*)\)\s*$"
 )
 
+# Matches the model's alternate return-offset encoding kept under
+# ExprOutput "return" instead of ExprOutput "return_offset:<base>": a bare
+# base name, or a base plus a `:`/`+`-separated signed integer literal
+# (whitespace tolerated), e.g. "return_offset:s1", "return_offset:s1+3",
+# "return_offset:src_void : -1", "return_offset:src_void + 2".
+_RETURN_OFFSET_VALUE_RE = re.compile(
+    r"^return_offset:(?P<base>[A-Za-z_]\w*)\s*(?:[:+]\s*(?P<offset>-?\d+))?$"
+)
+
 
 _C_STYLE_HEX_ESCAPE_RE = re.compile(r"\\x([0-9a-fA-F]{2})")
 _C_STYLE_NUL_ESCAPE_RE = re.compile(r"\\0(?!\d)")
@@ -119,7 +128,7 @@ def _stub_return(stub: dict[str, Any], return_type: str) -> str:
     return _integer(value)
 
 
-def _render_stubs(cases: list[dict[str, Any]], focal_name: str) -> list[str]:
+def _render_stubs(cases: list[dict[str, Any]], focal_name: str) -> tuple[list[str], list[str]]:
     grouped: dict[str, tuple[re.Match[str], dict[int, str]]] = {}
     for index, case in enumerate(cases):
         stubs = case.get("Stubs")
@@ -143,9 +152,11 @@ def _render_stubs(cases: list[dict[str, Any]], focal_name: str) -> list[str]:
                 grouped[canonical] = (match, {})
             grouped[canonical][1][index] = _stub_return(stub, match.group("return"))
     if not grouped:
-        return []
+        return [], []
     lines = ["static int strut_case_index = 0;", ""]
+    names = []
     for signature, (match, values) in grouped.items():
+        names.append(match.group("name"))
         params = match.group("params").strip()
         lines.append(signature + " {")
         if params and params != "void":
@@ -161,18 +172,28 @@ def _render_stubs(cases: list[dict[str, Any]], focal_name: str) -> list[str]:
             lines.append("    default: return (" + match.group("return") + ")0;")
             lines.append("  }")
         lines.extend(["}", ""])
-    return lines
+    return lines, names
 
 
 def translate_cases(subject: Subject, cases: list[dict[str, Any]]) -> str:
+    stub_lines, stub_names = _render_stubs(cases, subject.name)
+    # Recent glibc redeclares several pointer-returning string/mem functions
+    # (strchr, strchrnul, strpbrk, strstr, memchr, rawmemchr, ...) as a
+    # `_Generic`-dispatching macro for const-correctness once a C23-capable
+    # compiler is used, so simply redeclaring/defining the same name after
+    # `#include <string.h>` is a hard compile error ("expected identifier or
+    # '(' before '_Generic'"). `benchmark.prepare_source` already works
+    # around this for the focal source; the harness needs the same `#undef`
+    # for both the focal function and any full-signature stub it defines.
+    undefs = [f"#undef {name}" for name in [subject.name, *stub_names]]
     lines = [
         "#define _GNU_SOURCE 1", "#include <stddef.h>", "#include <stdint.h>",
         "#include <stdlib.h>", "#include <string.h>", "#include <wchar.h>",
         "#include <wctype.h>", "#include <locale.h>", "",
+        *undefs, "",
         subject.return_type + " " + subject.name + "(" + ", ".join(typ + " " + name for typ, _, name in subject.parameters) + ");",
         "",
     ]
-    stub_lines = _render_stubs(cases, subject.name)
     lines.extend(stub_lines)
     lines.extend(["int main(void) {", "  int failures = 0;",
         "  (void)setlocale(LC_ALL, \"C\");",
@@ -213,14 +234,31 @@ def translate_cases(subject: Subject, cases: list[dict[str, Any]]) -> str:
             if not isinstance(output, dict):
                 raise ValueError("each Output must be an object")
             expr, value = output.get("ExprOutput"), output.get("Value")
+            # Observed live-model behavior on every pointer-returning subject:
+            # the model reliably keeps ExprOutput "return" and instead encodes
+            # the pointer-offset oracle inside Value itself, e.g.
+            # "return_offset:s1+3", "return_offset:s1:3", or null for an
+            # expected NULL return, instead of the documented ExprOutput
+            # "return_offset:<base>". This is unambiguous and never a C
+            # expression (base name plus an optional integer literal), so
+            # normalize it into the documented form instead of discarding an
+            # otherwise well-formed oracle as a generation error.
+            if expr == "return" and "*" in subject.return_type:
+                if value is None:
+                    expr = "return_offset:"
+                elif isinstance(value, str):
+                    match = _RETURN_OFFSET_VALUE_RE.match(value)
+                    if match:
+                        expr = f"return_offset:{match.group('base')}"
+                        value = int(match.group("offset")) if match.group("offset") is not None else 0
             if expr == "return":
                 lines.append(f"  failures += !({ret} == ({subject.return_type}){_integer(value)});")
             elif isinstance(expr, str) and expr.startswith("return_offset:"):
                 base_name = expr.split(":", 1)[1]
-                if base_name not in base_by_name:
-                    raise ValueError(f"unknown pointer-offset base {base_name}")
                 if value is None:
                     lines.append(f"  failures += !({ret} == NULL);")
+                elif base_name not in base_by_name:
+                    raise ValueError(f"unknown pointer-offset base {base_name}")
                 else:
                     lines.append(f"  failures += !((const unsigned char *){ret} - (const unsigned char *){base_by_name[base_name]} == {_integer(value)});")
             elif expr in base_by_name:

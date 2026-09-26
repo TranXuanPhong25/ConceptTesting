@@ -89,6 +89,54 @@ def test_rule_translator_compiles_runs_and_covers(tmp_path: Path):
     assert result.branch_total > 0
 
 
+def test_translator_undefs_focal_name_that_collides_with_a_libc_macro(tmp_path: Path):
+    # Recent glibc/gcc redeclares several pointer-returning string/mem
+    # functions (strchr, strpbrk, strstr, memchr, rawmemchr, ...) as a
+    # `_Generic`-dispatching macro for const-correctness once a C23-capable
+    # compiler is in use, so redefining the same name after
+    # `#include <string.h>` without `#undef` is a real "expected identifier
+    # or '(' before '_Generic'" compile error against the *system* header
+    # (unrelated to the toy SOURCE below, which is why this must go through
+    # the real `evaluate()`/gcc path rather than only exercising translate).
+    subject = Subject("strchr", "char *", (("const char *", "string", "s"), ("int", "char_code", "c")))
+    source = "char *strchr(const char *s, int c) {\n  for (; *s; s++) if (*s == c) return (char *)s;\n  return c == 0 ? (char *)s : 0;\n}\n"
+    cases = [
+        {
+            "Inputs": [
+                {"ExprInput": "s", "Type": "const char *", "Value": "abc"},
+                {"ExprInput": "c", "Type": "int", "Value": 98},
+            ],
+            "Outputs": [{"ExprOutput": "return_offset:s", "Type": "char *", "Value": 1}],
+            "Stubs": [],
+        },
+    ]
+    result = evaluate(subject, source, translate_cases(subject, cases), tmp_path)
+    assert result.status == "passed", result.error
+
+
+def test_translator_normalizes_return_offset_kept_under_plain_return():
+    # Observed live-model behavior on every pointer-returning subject: the
+    # base/offset is encoded inside Value ("return_offset:s1+3",
+    # "return_offset:s1:3", or a bare null for NULL) while ExprOutput stays
+    # "return", instead of the documented ExprOutput "return_offset:<base>".
+    subject = Subject("strchr", "char *", (("const char *", "string", "s"), ("int", "char_code", "c")))
+    cases = [
+        {
+            "Inputs": [{"ExprInput": "s", "Type": "const char *", "Value": "abc"}, {"ExprInput": "c", "Type": "int", "Value": 98}],
+            "Outputs": [{"ExprOutput": "return", "Type": "char *", "Value": "return_offset:s+1"}],
+            "Stubs": [],
+        },
+        {
+            "Inputs": [{"ExprInput": "s", "Type": "const char *", "Value": "abc"}, {"ExprInput": "c", "Type": "int", "Value": 122}],
+            "Outputs": [{"ExprOutput": "return", "Type": "char *", "Value": None}],
+            "Stubs": [],
+        },
+    ]
+    code = translate_cases(subject, cases)
+    assert "c0_return - (const unsigned char *)c0_s == 1" in code
+    assert "c1_return == NULL" in code
+
+
 def test_coverage_prefers_focal_file_when_header_has_same_symbol(tmp_path: Path):
     source = "#include <string.h>\n#undef strcmp\nint strcmp(const char *a, const char *b) { while (*a && *a == *b) { a++; b++; } return (unsigned char)*a - (unsigned char)*b; }\n"
     subject = Subject("strcmp", "int", (("const char *", "string", "a"), ("const char *", "string", "b")))
