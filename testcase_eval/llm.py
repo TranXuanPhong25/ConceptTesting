@@ -31,6 +31,26 @@ PRICE_OUTPUT_PER_M = 3.00
 
 _ASSIGN = re.compile(r"^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)=(.*)$")
 
+# Process-wide call pacing: minimum seconds between call *starts*, shared by
+# every Gemini instance in this interpreter (a generation script typically
+# builds two: a `gen` LLM and a `helper` LLM, both hitting the same Vertex
+# quota).  Set TESTCASE_EVAL_MIN_INTERVAL to throttle proactively instead of
+# relying only on reactive 429 backoff; several agents in this repo share one
+# Vertex project's quota, so keep this conservative under concurrent runs.
+_PACE_LOCK = threading.Lock()
+_LAST_CALL_AT = [0.0]
+
+
+def _pace() -> None:
+    interval = float(os.environ.get("TESTCASE_EVAL_MIN_INTERVAL", "0") or 0)
+    if interval <= 0:
+        return
+    with _PACE_LOCK:
+        wait = _LAST_CALL_AT[0] + interval - time.monotonic()
+        if wait > 0:
+            time.sleep(wait)
+        _LAST_CALL_AT[0] = time.monotonic()
+
 
 def load_env_file(path: str | None = None, override: bool = False) -> list[str]:
     """Parse `export KEY=VALUE` lines into os.environ. Returns the key names only."""
@@ -134,6 +154,7 @@ class Gemini:
         messages.append(HumanMessage(content=prompt))
         last_error = None
         for attempt in range(self.max_attempts):
+            _pace()
             start = time.monotonic()
             try:
                 response = self.llm.invoke(messages)
