@@ -54,15 +54,39 @@ def response_text(content: Any) -> str:
 
 
 class LLM:
-    """Thread-safe cached caller. ``factory`` is injectable for tests."""
+    """Thread-safe cached caller. ``factory`` is injectable for tests.
 
-    def __init__(self, cache_root: Path, max_concurrency: int = 8, factory=None, model: str | None = None):
+    ``min_interval`` paces the *start* of every call attempt (a token-bucket-style
+    reservation, not just a cap on concurrent in-flight calls): the observed
+    failure mode against this Vertex project was sustained ResourceExhausted
+    (429) errors even at low concurrency, i.e. a requests-per-minute quota
+    rather than a concurrency quota, which only pacing -- not a smaller
+    semaphore -- fixes.
+    """
+
+    def __init__(self, cache_root: Path, max_concurrency: int = 8, factory=None, model: str | None = None,
+                min_interval: float = 0.0):
         self.cache_root = Path(cache_root)
         self.semaphore = threading.Semaphore(max_concurrency)
         self._clients: dict[tuple, Any] = {}
         self._lock = threading.Lock()
+        self._retry_log_lock = threading.Lock()
+        self._rate_lock = threading.Lock()
+        self._next_dispatch = 0.0
+        self.min_interval = min_interval
         self._factory = factory
         self.model = model or os.environ.get("LLM_MODEL", "")
+
+    def _throttle(self) -> None:
+        if self.min_interval <= 0:
+            return
+        with self._rate_lock:
+            now = time.monotonic()
+            reserved = max(now, self._next_dispatch)
+            self._next_dispatch = reserved + self.min_interval
+        wait = reserved - now
+        if wait > 0:
+            time.sleep(wait)
 
     def _client(self, temperature: float, max_tokens: int):
         key = (temperature, max_tokens, self.model)
@@ -97,6 +121,7 @@ class LLM:
         client = self._client(temperature, max_tokens)
         last_error = ""
         for attempt in range(retries + 1):
+            self._throttle()
             started = time.time()
             try:
                 with self.semaphore:
@@ -125,10 +150,21 @@ class LLM:
                 return record
             except Exception as exc:  # noqa: BLE001 - provider errors are heterogeneous
                 last_error = f"{type(exc).__name__}: {exc}"[:500]
+                self._log_retry(name, attempt, last_error)
                 if attempt >= retries or not any(token in last_error for token in TRANSIENT):
                     break
                 time.sleep(min(120, 10 * 2**attempt) * (0.5 + random.random()))
         raise RuntimeError(f"LLM call {name} failed: {last_error}")
+
+    def _log_retry(self, name: str, attempt: int, error: str) -> None:
+        """Append-only diagnostic log of every failed attempt (not the successful cache), so
+        retry causes (rate limits vs. other transient errors) can be audited after a run."""
+        line = json.dumps({"name": name, "attempt": attempt, "error": error,
+                           "at": time.strftime("%Y-%m-%dT%H:%M:%S")}) + "\n"
+        with self._retry_log_lock:
+            self.cache_root.mkdir(parents=True, exist_ok=True)
+            with (self.cache_root / "_retries.jsonl").open("a") as handle:
+                handle.write(line)
 
 
 def extract_code(response: str, lang: str) -> str:

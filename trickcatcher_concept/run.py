@@ -70,6 +70,9 @@ def main() -> None:
     parser.add_argument("--env-file", default=DEFAULT_ENV)
     parser.add_argument("--task-workers", type=int, default=4)
     parser.add_argument("--llm-concurrency", type=int, default=8)
+    parser.add_argument("--llm-min-interval", type=float, default=1.5,
+                        help="minimum seconds between the start of successive LLM calls per client "
+                             "(this project's Vertex quota is requests-per-minute, not just concurrency)")
     parser.add_argument("--procs", type=int, default=12)
     parser.add_argument("--limit", type=int, default=0)
     parser.add_argument("--only", default="", help="comma-separated pids")
@@ -90,8 +93,9 @@ def main() -> None:
                                                       "split": args.split, "eval_model": args.eval_model}, indent=1))
     import os
     gen_model = os.environ.get("LLM_MODEL", "")
-    llm = LLM(run_dir / "llm_cache", args.llm_concurrency, model=gen_model)
-    eval_llm = LLM(run_dir / "llm_cache", max(2, args.llm_concurrency // 2), model=args.eval_model)
+    llm = LLM(run_dir / "llm_cache", args.llm_concurrency, model=gen_model, min_interval=args.llm_min_interval)
+    eval_llm = LLM(run_dir / "llm_cache", max(2, args.llm_concurrency // 2), model=args.eval_model,
+                   min_interval=args.llm_min_interval)
     executor = Executor(args.procs * 2)
     entries = data.select(args.split)
     if args.only:

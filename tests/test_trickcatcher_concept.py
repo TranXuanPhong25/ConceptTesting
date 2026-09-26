@@ -2,6 +2,7 @@ import inspect
 import json
 import math
 import tempfile
+import threading
 import unittest
 from pathlib import Path
 
@@ -176,6 +177,32 @@ class DataTests(unittest.TestCase):
 
 
 class LLMCacheTests(unittest.TestCase):
+    def test_min_interval_paces_concurrent_calls(self):
+        import time
+        calls = []
+
+        class Fake:
+            def invoke(self, messages):
+                calls.append(time.monotonic())
+
+                class R:
+                    content = "x"
+                    usage_metadata = {}
+                return R()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            llm = LLM(Path(tmp), max_concurrency=8, factory=lambda t, m: Fake(), model="fake", min_interval=0.05)
+            threads = [threading.Thread(target=llm.call, args=(f"n{i}", f"p{i}"),
+                                        kwargs={"temperature": 0, "max_tokens": 5}) for i in range(5)]
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join(timeout=5)
+            calls.sort()
+            gaps = [b - a for a, b in zip(calls, calls[1:])]
+            self.assertEqual(len(calls), 5)
+            self.assertTrue(all(gap >= 0.04 for gap in gaps), gaps)  # small slack for scheduling jitter
+
     def test_cached_call_is_not_repeated_and_records_tokens(self):
         calls = []
 
