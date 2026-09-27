@@ -1,13 +1,37 @@
 """Multi-language executor for TestCase-Eval submissions (C++, Java, Python, PyPy).
 
-Port of the official `sandbox.py` (FlowRays/TestCase-Eval @ 45275c6):
-same language table, compile flags, time limit (3.0 s x per-language
-factor), 512 MB memory limit (RLIMIT_AS, not applied to Java, which gets
--Xmx512M), and the same verdict mapping (return code -9/137 or allocation
-failure text -> memory_limit_exceeded, other non-zero -> runtime_error,
-timeout -> time_limit_exceeded).
+The real upstream file (FlowRays/TestCase-Eval @ 45275c6, byte-verified,
+hash-pinned by tests/test_testcase_eval_vendor_provenance.py) is vendored
+verbatim at `vendor/upstream_sandbox.py` -- diff against it directly rather
+than trusting this docstring. It is not imported/subclassed here because its
+`MultiLanguageExecutor.execute()` is one ~190-line method with compile, run,
+memory-monitoring and verdict mapping all inlined (no overridable seam), and
+because using it as-is would actively break or silently corrupt results in
+this pipeline:
 
-Differences, all documented in the report:
+* `execute()` runs the checked submission via `subprocess.Popen(...,
+  preexec_fn=...)`, which forces `fork()`. This process also holds live
+  gRPC channels to Vertex AI (LLM calls happen in the same worker threads,
+  interleaved with sandbox execution -- see `generate.py`), and gRPC is not
+  fork-safe: background gRPC threads vanish in the forked child while their
+  mutexes stay locked, which can hang or crash. (The same bug class was hit
+  and fixed for real in `trickcatcher_concept`, commit `4b5cdde`.) This port
+  uses `prlimit` (an external command, no fork) instead.
+* Its C++ compile flags lack `-include cassert`; GCC 16's `<bits/stdc++.h>`
+  (this host) no longer pulls that in the way the judge's GCC 7-14 did, so
+  ~15/12,775 accepted submissions fail to compile verbatim.
+* Its `_replace_java_class_name` mis-renames when `main` lives in a
+  non-public class (5 accepted Java submissions fail self-check verbatim).
+
+This port keeps the same language table, compile flags (plus the one
+addition above), time limit (3.0 s x per-language factor), 512 MB memory
+limit (RLIMIT_AS, not applied to Java, which gets -Xmx512M), and the same
+verdict mapping (return code -9/137 or allocation failure text ->
+memory_limit_exceeded, other non-zero -> runtime_error, timeout ->
+time_limit_exceeded) -- diff the relevant sections of `vendor/upstream_sandbox.py`
+to confirm.
+
+Further differences, all documented in the report:
 * Compiled artefacts are cached by sha256(language, source) so each of the
   12,775 submissions is compiled once instead of once per run.
 * stdout goes to a file capped by RLIMIT_FSIZE (64 MB) instead of a pipe, so
