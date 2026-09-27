@@ -11,7 +11,7 @@ from testcase_eval.generate import Pipeline, extract_test_regex, render_hypothes
 from testcase_eval.llm import CallResult, load_env_file
 from testcase_eval.metrics import official_consensus, official_exposed, strict_consensus, validate_outputs
 from testcase_eval.report import cluster_bootstrap, paired
-from testcase_eval.sandbox import Executor, language_family, replace_java_class_name, run_command
+from testcase_eval.sandbox import Executor, language_family
 from testcase_eval.store import resolve_test, store_test
 from testcase_eval.validator import build_cases, parse_json_block, score
 
@@ -75,17 +75,29 @@ class SandboxTests(unittest.TestCase):
         self.assertEqual(language_family("PyPy 3-64"), "python")
         self.assertIsNone(language_family("Python 2"))
 
-    def test_java_class_is_renamed_like_official_sandbox(self):
-        code = "public class Main { public static void main(String[] a) { new Main(); } Main() {} }"
-        renamed = replace_java_class_name(code, "Solution")
-        self.assertIn("public class Solution", renamed)
-        self.assertIn("new Solution()", renamed)
+    @unittest.skipUnless(shutil.which("javac"), "javac missing")
+    def test_java_main_in_non_public_class_alongside_a_real_public_class(self):
+        """The official sandbox renames the class holding `main` to a random
+        name to avoid filename collisions; that breaks compilation the
+        moment the file also has a genuinely public class with a different
+        name (Java requires the filename to match the public class). Fixed
+        by not renaming at all -- every call already gets its own fresh
+        directory, so there is no collision to avoid -- and discovering the
+        actual main class post-compile via `javap` instead."""
+        code = (
+            "class Helper { public static void main(String[] a) { "
+            "System.out.println(\"hi\"); } }\n"
+            "public class Other { int x; }\n"
+        )
+        result = self.executor.execute("Java 21", code, "")
+        self.assertEqual((result["result"], result["output"].strip()), ("success_run", "hi"))
 
     def test_timeout_and_runtime_error_verdicts(self):
-        slow = run_command([sys.executable, "-c", "while True: pass"], "", timeout=0.5)
+        slow = self.executor.execute("Helper Python 3", "while True: pass", "", time_limit=0.5)
         self.assertEqual(slow["result"], "time_limit_exceeded")
-        crash = run_command([sys.executable, "-c", "raise SystemExit(3)"], "", timeout=5, limit_address_space=False)
+        crash = self.executor.execute("Helper Python 3", "import sys; sys.exit(3)", "", time_limit=5)
         self.assertEqual(crash["result"], "runtime_error")
+        self.assertEqual(crash["returncode"], 3)
 
     @unittest.skipUnless(shutil.which("g++"), "g++ missing")
     def test_cpp_compiles_once_and_runs(self):
@@ -102,9 +114,13 @@ class SandboxTests(unittest.TestCase):
         result = self.executor.execute("Java 21", source, "21")
         self.assertEqual((result["result"], result["output"].strip()), ("success_run", "42"))
 
-    def test_compilation_error_is_cached_and_reported(self):
+    def test_python_syntax_error_surfaces_as_runtime_error(self):
+        """The paper's own table has `is_compiled=False` for Python -- it
+        never pre-checks Python submissions with `py_compile`, so a syntax
+        error only shows up when the interpreter itself starts and raises
+        SyntaxError, i.e. as a runtime_error, not a compilation_error."""
         result = self.executor.execute("Python 3", "def broken(:\n", "")
-        self.assertEqual(result["result"], "compilation_error")
+        self.assertEqual(result["result"], "runtime_error")
 
 
 class StoreAndExtractionTests(unittest.TestCase):
