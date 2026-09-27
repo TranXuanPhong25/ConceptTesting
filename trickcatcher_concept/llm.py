@@ -22,13 +22,13 @@ from trickcatcher_concept.provenance import sha256_text
 
 TRANSIENT = ("429", "500", "503", "504", "ResourceExhausted", "DeadlineExceeded", "Unavailable",
              "UNAVAILABLE", "timed out", "Timeout", "RemoteDisconnected", "Connection", "empty response",
-             "watchdog")
+             "watchdog", "ngrok", "invalid or incomplete HTTP response")
 
 # The underlying ChatVertexAI client is given `timeout=180`, but a handful of calls have been
 # observed to block far longer than that (grpc/thinking-mode edge cases). A generous outer
 # watchdog on a dedicated pool guarantees `call()` always returns so one stuck request cannot
 # starve `max_concurrency` forever; the orphaned thread is left to finish or die with the process.
-WATCHDOG_TIMEOUT_S = 240
+WATCHDOG_TIMEOUT_S = int(os.environ.get("TCC_WATCHDOG_TIMEOUT_S", "240"))
 _watchdog_pool = cf.ThreadPoolExecutor(max_workers=256, thread_name_prefix="tcc-llm-watchdog")
 
 
@@ -98,7 +98,8 @@ class LLM:
                     from magma.llm_client import make_llm
                     if self.model:
                         os.environ["LLM_MODEL"] = self.model
-                    client = make_llm(temperature=temperature, timeout=180, max_retries=0, max_tokens=max_tokens)
+                    client_timeout = int(os.environ.get("TCC_LLM_TIMEOUT_S", "180"))
+                    client = make_llm(temperature=temperature, timeout=client_timeout, max_retries=0, max_tokens=max_tokens)
                     if client is None:
                         raise RuntimeError("Vertex/Gemini provider is not configured")
                     self._clients[key] = client
