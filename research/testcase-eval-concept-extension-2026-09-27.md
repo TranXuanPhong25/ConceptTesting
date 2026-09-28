@@ -9,8 +9,19 @@ benchmark, the paper's **CoT** prompt beats its **direct-output** prompt by
 paired) and **+13.4pp strict Fault Exposure** (31.0% vs 17.6%, p=2.7e-10).
 This replicates, at 4-5x the sample size and with a statistically decisive
 margin, the same-direction but non-significant n=96 tuning-subset result
-(38.5% vs 33.3%, ns). This run did **not** re-test this repo's own
-concept-guided condition at the 450-target scale — see Limitations.
+(38.5% vs 33.3%, ns).
+
+**Update (this run, completed):** `concept` and `concept_nohyp` were then run
+at the same n=450 scale against `cot_val` (the correctly-controlled
+reference that isolates the repair loop from concept content). The large
+n=96 tuning-subset gain **replicates decisively at n=450, with an even
+larger and now extremely significant effect**: `concept_nohyp` beats
+`cot_val` by **+21.9pp official** (59.4% vs 37.5%, p=1.6e-17) and **+20.3pp
+strict** (53.3% vs 33.0%, p=1.1e-15); `concept` beats `cot_val` by **+21.4pp
+official** (58.9% vs 37.5%, p=3.0e-18) and **+20.1pp strict** (53.1% vs
+33.0%, p=7.9e-17) — all four p-values many orders of magnitude past any
+conventional significance threshold, at n=448 paired. See "Results: n=450,
+concept/concept_nohyp vs cot_val" below.
 
 ## Method
 
@@ -114,20 +125,76 @@ fault hypothesis) by 7.3pp both metrics, but this is not significant at n=96
 (p=0.21) — i.e. no evidence yet that adding the hypothesis text helps over
 the plainer concept-generator prompt, and a hint that it might even hurt.
 
-**This n=96 result has not been replicated at the 450-target held-out
-scale** — the run reported here reran only `do`/`cot`. The concept pipeline
-is markedly more expensive (fault-hypothesis analyst call, generator call,
-up to 2 validator-feedback repairs vs. `do`/`cot`'s one call), which is
-presumably why it wasn't included in this first held-out pass.
+This n=96 result **has now been replicated at the 450-target held-out
+scale** — see the next section.
+
+## Results: n=450, `concept`/`concept_nohyp` vs `cot_val` (replication)
+
+Same held-out 450 targets, same seeded stratified split, run after the do/cot
+confirmatory pass above. `cot_val` regenerated at n=450 (450/450, $0.26,
+mostly free since it reuses the existing `cot` answer as attempt 1 and only
+calls the model for validator-feedback repairs); `concept_nohyp` and
+`concept` generated fresh (450/450 each, 0 failures, $1.33 and $2.58).
+
+| condition | family | n | FE official | FE strict | validator accept | strict valid |
+|---|---|---|---|---|---|---|
+| cot_val | all | 448 | 37.5% | 33.0% | 94.9% | 91.3% |
+| concept_nohyp | all | 448 | **59.4%** | **53.3%** | 97.5% | 91.5% |
+| concept | all | 448 | **58.9%** | **53.1%** | 97.1% | 91.7% |
+
+Paired against `cot_val` (exact McNemar + problem-clustered bootstrap 95% CI):
+
+| condition vs cot_val | metric | n | cond | ref | diff (95% CI) | McNemar p |
+|---|---|---|---|---|---|---|
+| concept_nohyp | FE official | 448 | 59.4% | 37.5% | +21.9pp [+17.0, +26.8] | **1.57e-17** |
+| concept_nohyp | FE strict | 448 | 53.3% | 33.0% | +20.3pp [+15.6, +25.2] | **1.09e-15** |
+| concept | FE official | 448 | 58.9% | 37.5% | +21.4pp [+16.7, +25.9] | **2.98e-18** |
+| concept | FE strict | 448 | 53.1% | 33.0% | +20.1pp [+15.4, +24.6] | **7.86e-17** |
+
+Both hold up per-language (cpp/java/python), all four cells individually
+significant at p < 0.0004 in every language split; full per-family table in
+`testcase_eval/results/full/report_n450_5cond.json`.
+
+**The n=96 tuning-subset finding replicates decisively, with a slightly
+*larger* effect at scale, not a shrinking one.** `concept_nohyp`'s n=450 gain
+(+21.9pp official) is almost identical to its n=96 gain (+21.9pp); `concept`'s
+n=450 gain (+21.4pp) is considerably *larger* than its n=96 gain (+14.6pp) —
+the earlier n=96 estimate for `concept` specifically was, if anything,
+conservative. `concept_nohyp` still edges out `concept` (59.4% vs 58.9%
+official, 53.3% vs 53.1% strict) as it did at n=96, but the gap has shrunk
+to under 1pp and is not tested for significance here (report.py's pairing is
+each condition against the shared reference, not against each other) — the
+n=96 hint that the fault-hypothesis text might not help (or might mildly
+hurt) is, at best, weakly supported at this scale; it is clearly not a large
+effect in either direction.
+
+As at n=96, `cot` itself is statistically indistinguishable from `cot_val` on
+the official metric (-0.2pp, p=1) — confirming again that the repair loop
+alone does not explain the `cot_val`→`concept*` jump, concept content does.
+On the strict metric `cot_val` is actually very slightly *worse* than plain
+`cot` (-2.0pp, p=0.012) — a small, likely repair-loop-introduced validity
+wobble, dwarfed by concept's own +20pp gain and not the driver of anything
+reported here.
+
+Total generation cost for this replication: concept $2.58 + concept_nohyp
+$1.33 + cot_val $0.26 = **$4.17** (450 targets x 3 conditions), on top of the
+$1.51 already spent on the do/cot confirmatory run above.
 
 ## Limitations
 
-- **The actual "concept extension" is untested at n=450.** Everything in the
-  headline results section above is a `cot`-vs-`do` **paper-baseline**
-  replication, not a concept-vs-baseline result. The concept pipeline's large
-  n=96 gain over the correct `cot_val` control is promising but n=96-only and
-  needs its own held-out run before it can be reported as an effect at scale.
-- A scoping bug briefly affected this run: the `cot`/`do` generation
+- The concept extension (`concept`/`concept_nohyp` vs `cot_val`) is now
+  tested at n=450 (see above) and replicates decisively, but it is still a
+  single held-out split — a second, independently-seeded 450-target split
+  would rule out this specific split being unusually favorable, though the
+  effect size here (+20pp, p < 1e-15) is far larger than sampling noise from
+  one split could plausibly produce.
+- `concept_nohyp` vs `concept` (does the fault hypothesis help, hurt, or do
+  nothing over the plainer concept-generator prompt) is not directly
+  paired-tested here — report.py pairs each condition against the shared
+  `cot_val` reference, not against each other. Both land within 1pp of each
+  other at n=450 (vs. 7.3pp apart at n=96, not significant there either), so
+  there's no strong evidence for a real difference at either scale.
+- A scoping bug briefly affected the earlier `cot`/`do` run: the `cot`/`do` generation
   processes were first launched without `--targets`, so for about 2.5 hours
   they generated against the full 10,000-item Task 2 corpus instead of the
   450-target held-out list, before being killed and relaunched correctly
@@ -151,17 +218,27 @@ presumably why it wasn't included in this first held-out pass.
   for generation once correctly scoped, plus ~5 hours for validator
   calibration on the 450 held-out problems.
 
-## Next step implied by this result
+## Conclusion
 
-Run `concept` (and `concept_nohyp`, since it outperformed `concept` at n=96
-though not significantly) on the same 450 held-out targets, using `cot_val`
-— not `do`/`cot` — as the reference condition, to test whether the large
-n=96 concept gain replicates at scale.
+The concept extension's central claim now rests on a decisive, n=450,
+held-out replication rather than an n=96 tuning-subset estimate: encoding
+each submission's suspected fault as an explicit, structured concept
+(enumerated input rules plus, for `concept`, a fault hypothesis) and feeding
+it into both the input generator and a validator-repair loop produces a
+Fault Exposure gain of roughly +20 to +22 percentage points over the
+correctly-controlled `cot_val` baseline, at p-values effectively ruling out
+chance (1e-15 to 1e-18) — not a marginal or fragile effect. The repair loop
+alone (`cot_val` vs `cot`) contributes approximately nothing on the official
+metric, so the gain is attributable to the concept content, not the extra
+generation/repair calls. Whether the fault-hypothesis text itself
+(`concept` vs `concept_nohyp`) adds anything beyond the plainer
+concept-generator prompt remains an open question this run cannot answer
+directly.
 
 ## Reproduce
 
 ```bash
-# Generation (already run for do/cot on the held-out set; concept/concept_nohyp/cot_val not yet run at n=450)
+# Generation (do/cot were already run before this doc's first version)
 .venv/bin/python -m testcase_eval.generate --condition cot --out testcase_eval/results/full/gen_cot.jsonl \
   --targets testcase_eval/subsets/task2_seed20260927_n450_heldout.txt --workers 4
 .venv/bin/python -m testcase_eval.generate --condition do  --out testcase_eval/results/full/gen_do.jsonl \
@@ -169,21 +246,47 @@ n=96 concept gain replicates at scale.
 .venv/bin/python -m testcase_eval.validator --out testcase_eval/results/validators.jsonl \
   --problems @testcase_eval/subsets/task2_seed20260927_n450_heldout_problems.txt --workers 3
 
+# concept/concept_nohyp/cot_val generation (this update), run sequentially
+# (never concurrently -- all three share one Vertex project's request-rate
+# quota with every other agent using it) at TESTCASE_EVAL_MIN_INTERVAL=15:
+.venv/bin/python -m testcase_eval.generate --condition concept --out testcase_eval/results/full/gen_concept.jsonl \
+  --targets testcase_eval/subsets/task2_seed20260927_n450_heldout.txt \
+  --validators testcase_eval/results/validators.jsonl --workers 6
+.venv/bin/python -m testcase_eval.generate --condition concept_nohyp --out testcase_eval/results/full/gen_concept_nohyp.jsonl \
+  --targets testcase_eval/subsets/task2_seed20260927_n450_heldout.txt \
+  --validators testcase_eval/results/validators.jsonl --workers 6
+.venv/bin/python -m testcase_eval.generate --condition cot_val --out testcase_eval/results/full/gen_cot_val.jsonl \
+  --targets testcase_eval/subsets/task2_seed20260927_n450_heldout.txt \
+  --validators testcase_eval/results/validators.jsonl \
+  --cot testcase_eval/results/full/gen_cot_heldout.jsonl --workers 6
+
 # Scoring (this repo filtered gen_{cot,do}.jsonl down to the 449 held-out-scoped rows per
 # condition first, into gen_{cot,do}_heldout.jsonl, to avoid re-scoring the ~1,384 stray
-# non-held-out rows left by the scoping bug described above)
+# non-held-out rows left by the scoping bug described above; concept/concept_nohyp/cot_val
+# were generated with --targets from the start, so no such filtering was needed for them)
 .venv/bin/python -m testcase_eval.evaluate --pred testcase_eval/results/full/gen_cot_heldout.jsonl \
   --out testcase_eval/results/full/eval_cot.jsonl --validators testcase_eval/results/validators.jsonl --workers 12
 .venv/bin/python -m testcase_eval.evaluate --pred testcase_eval/results/full/gen_do_heldout.jsonl \
   --out testcase_eval/results/full/eval_do.jsonl --validators testcase_eval/results/validators.jsonl --workers 12
+.venv/bin/python -m testcase_eval.evaluate --pred testcase_eval/results/full/gen_concept.jsonl \
+  --out testcase_eval/results/full/eval_concept.jsonl --validators testcase_eval/results/validators.jsonl --workers 12
+.venv/bin/python -m testcase_eval.evaluate --pred testcase_eval/results/full/gen_concept_nohyp.jsonl \
+  --out testcase_eval/results/full/eval_concept_nohyp.jsonl --validators testcase_eval/results/validators.jsonl --workers 12
+.venv/bin/python -m testcase_eval.evaluate --pred testcase_eval/results/full/gen_cot_val.jsonl \
+  --out testcase_eval/results/full/eval_cot_val.jsonl --validators testcase_eval/results/validators.jsonl --workers 12
 
-# Paired report
+# Paired report, all 5 conditions against cot_val
 .venv/bin/python -m testcase_eval.report \
-  --scored cot=testcase_eval/results/full/eval_cot.jsonl do=testcase_eval/results/full/eval_do.jsonl \
-  --gen cot=testcase_eval/results/full/gen_cot_heldout.jsonl do=testcase_eval/results/full/gen_do_heldout.jsonl \
-  --reference do --targets testcase_eval/subsets/task2_seed20260927_n450_heldout.txt \
-  --json-out testcase_eval/results/full/report_do_cot.json
+  --scored do=testcase_eval/results/full/eval_do.jsonl cot=testcase_eval/results/full/eval_cot.jsonl \
+    cot_val=testcase_eval/results/full/eval_cot_val.jsonl concept_nohyp=testcase_eval/results/full/eval_concept_nohyp.jsonl \
+    concept=testcase_eval/results/full/eval_concept.jsonl \
+  --gen do=testcase_eval/results/full/gen_do_heldout.jsonl cot=testcase_eval/results/full/gen_cot_heldout.jsonl \
+    cot_val=testcase_eval/results/full/gen_cot_val.jsonl concept_nohyp=testcase_eval/results/full/gen_concept_nohyp.jsonl \
+    concept=testcase_eval/results/full/gen_concept.jsonl \
+  --reference cot_val --targets testcase_eval/subsets/task2_seed20260927_n450_heldout.txt \
+  --json-out testcase_eval/results/full/report_n450_5cond.json
 ```
 
-Full JSON (per-family table + pairs + cost) is at
-`testcase_eval/results/full/report_do_cot.json`.
+Full JSON (per-family table + all pairs + cost) is at
+`testcase_eval/results/full/report_n450_5cond.json`; the earlier do-vs-cot-only
+report is preserved at `testcase_eval/results/full/report_do_cot.json`.
