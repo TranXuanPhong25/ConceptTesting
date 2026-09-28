@@ -180,7 +180,72 @@ Total generation cost for this replication: concept $2.58 + concept_nohyp
 $1.33 + cot_val $0.26 = **$4.17** (450 targets x 3 conditions), on top of the
 $1.51 already spent on the do/cot confirmatory run above.
 
-## Limitations
+## Results: n=450, Qwen2.5-Coder-7B-Instruct-AWQ backbone (self-hosted)
+
+All five conditions were re-run at the same 450-target held-out scale on a
+**self-hosted, free** backbone -- `Qwen2.5-Coder-7B-Instruct-AWQ` served via
+vLLM on a single Kaggle T4 GPU (behind an ngrok tunnel, `LLM_PROVIDER=router`
+through the same `magma.llm_client` factory used elsewhere in this repo) --
+to test whether the concept effect holds on a much weaker, non-frontier
+model. All five completed cleanly: 450/450 each, 0 generation failures.
+
+| condition | FE official | FE strict |
+|---|---|---|
+| do | 27.6% | 10.4% |
+| cot | 34.7% | 9.3% |
+| cot_val | 24.7% | 12.2% |
+| concept_nohyp | **37.1%** | 12.4% |
+| concept | 29.1% | 10.2% |
+
+Paired against `cot_val` (n=450, exact McNemar):
+
+| condition vs cot_val | metric | diff | McNemar p |
+|---|---|---|---|
+| concept_nohyp | FE official | +12.4pp (24.7%→37.1%) | **1.13e-05** (significant) |
+| concept_nohyp | FE strict | +0.2pp (12.2%→12.4%) | 1.0 (not significant) |
+| concept | FE official | +4.4pp (24.7%→29.1%) | 0.116 (not significant) |
+| concept | FE strict | -2.0pp (12.2%→10.2%) | 0.336 (not significant) |
+
+**This does not replicate the clean Gemini result, and the honest picture is
+more interesting than a simple "smaller effect on a weaker model."** Three
+things are different here, reported without forcing a narrative:
+
+1. **`cot_val` itself behaves unusually on this backbone.** Unlike Gemini
+   (where `cot_val` ≈ `cot` on both metrics, cleanly isolating the repair
+   loop as inert), here `cot_val` has the *lowest* official rate of the three
+   paper-baseline conditions (24.7%, below both `do` 27.6% and `cot` 34.7%)
+   despite by far the highest validator-accept rate (77.6% vs 55-62%) --
+   suggestive of the repair loop trading raw hit-rate for input validity on
+   a model that is not reliably good at editing its own previous answer.
+   This makes `cot_val` a less stable reference point than it is for Gemini,
+   and depresses every condition-vs-`cot_val` comparison's baseline.
+2. **`concept_nohyp` shows a real, significant effect on the official
+   metric only.** +12.4pp official (p=1.1e-05) is genuine and about half the
+   relative size of Gemini's +21.9pp, consistent with "the effect exists but
+   is weaker on a weaker model." But the strict-metric effect is
+   essentially zero (+0.2pp, p=1.0) -- concept content raises raw exposure
+   without a corresponding gain in validated exposure, unlike Gemini where
+   both metrics moved together.
+3. **`concept` (with the fault-hypothesis analyst step) is not significant
+   on either metric here, and actually trends negative on strict** (-2.0pp,
+   p=0.336, ns). This is the opposite of "more guidance is at least as good"
+   -- on this backbone, adding the one-shot fault-hypothesis analysis on top
+   of the concept-generator prompt does not help, and may hurt. A plausible
+   explanation: correctly diagnosing a specific bug from code in one LLM
+   call is itself a nontrivial reasoning task; a 7B model's hypothesis is
+   more likely to be wrong than a frontier model's, and a wrong hypothesis
+   can actively misdirect the generator toward a condition that does not
+   trigger the real bug, whereas `concept_nohyp`'s plainer "maximise failure
+   probability" instruction has no wrong hypothesis to be misled by. This
+   sharpens, rather than resolves, the weak n=96-subset hint that
+   `concept_nohyp` might outperform `concept` (there: 7.3pp apart, ns) into
+   a real, backbone-dependent effect: the fault-hypothesis step appears to
+   help on a strong model (Gemini) and hurt (or at least not help) on a weak
+   one.
+
+Generation cost for this backbone: **$0 (self-hosted)** -- the report tool's
+dollar figures above are computed from Gemini's per-token pricing constants
+applied to Qwen token counts and are meaningless here; ignore them.
 
 - The concept extension (`concept`/`concept_nohyp` vs `cot_val`) is now
   tested at n=450 (see above) and replicates decisively, but it is still a
