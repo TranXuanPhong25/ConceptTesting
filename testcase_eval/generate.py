@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import threading
 from concurrent.futures import ThreadPoolExecutor
@@ -355,8 +356,13 @@ def main() -> None:
         todo = todo[: args.limit]
     print(f"{args.condition}: {len(todo)} target(s) to generate ({len(done)} done)", flush=True)
 
-    gen = Gemini(temperature=1.0, max_output_tokens=2048 if args.condition in {"do", "cot", "cot_val"} else 8192, timeout=180)
-    helper = Gemini(temperature=1.0, max_output_tokens=4096, timeout=120)
+    # Timeouts are overridable for slow self-hosted backbones (e.g. a single-GPU
+    # Kaggle vLLM server behind a tunnel), which need far longer than Vertex
+    # Gemini's typical latency for the same max_output_tokens.
+    gen_timeout = float(os.environ.get("TESTCASE_EVAL_LLM_TIMEOUT_S", "180"))
+    helper_timeout = float(os.environ.get("TESTCASE_EVAL_HELPER_TIMEOUT_S", "120"))
+    gen = Gemini(temperature=1.0, max_output_tokens=2048 if args.condition in {"do", "cot", "cot_val"} else 8192, timeout=gen_timeout)
+    helper = Gemini(temperature=1.0, max_output_tokens=4096, timeout=helper_timeout)
     pipeline = Pipeline(gen, helper, validators, cot_rows)
     writer = JsonlWriter(args.out)
     counter = [0]
