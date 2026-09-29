@@ -1,8 +1,8 @@
 import os
 from tree_sitter import Language
 
-d4j_home = "/path/to/defects4j"
-d4j_proj_base = f"/path/to/repo/d4j_proj_base"
+d4j_home = "/defects4j"
+d4j_proj_base = "/repo/d4j_proj_base"
 # output_dir = "data/rq1/results_debug"
 output_dir = "data/rq1/results_test"
 code_base = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))

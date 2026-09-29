@@ -50,6 +50,9 @@ project_name_key = 'extra:project_name'
 # source_class_imports_key = "sourceClassImports"
 
 
+ADVANCED_SUMMARIZATION_POST_FIX_BASE = 'Please assume the role of an expert software engineer performing a critical code review. Your task is to produce a three-part response: a detailed analysis, a corrected implementation, and a formal docstring that captures the method\'s intended requirement.\n\n**Part 1: Critical Analysis**\nFirst, provide your analysis by completing the following sections. For each point, state your findings clearly. If no issues are found in a category, you must explicitly state "No issues found."\n\n1.  **Logical Mistakes:** Scrutinize the algorithm\'s logic. Based on the method\'s name and context, does its implementation correctly achieve its apparent goal, or are there logical flaws that would produce an incorrect result even on a "happy path"?\n2.  **Robustness Omissions:** Check for missing but necessary steps that production-quality code would include. This includes, but is not limited to, input validation (e.g., null checks, boundary conditions), proper error handling, and necessary data sanitization or escaping.\nYour analysis should be very detailed and step by step for the given code, make sure you clearly write out your entire analysis.\n\n**Part 2: Corrected Implementation**\nBased on your analysis in Part 1, provide a corrected, robust implementation of the method. This code should address all identified logical mistakes and robustness omissions, wrap this code inside a single ```java ``` markdown block.\n\n**Part 3: Final Requirement Docstring**\nBased on the **corrected implementation** you provided in Part 2, write a formal docstring that accurately describes its functionality, parameters, and return values. The docstring must be wrapped between `/**` and `*/`.\n\nPlease avoid directly quoting from the original focal method code, as it might be buggy. Output the final docstring separately and make sure the docstring is the only text wrapped between /** and */\n'
+
+
 class PromptFormatter():
 
     def __init__(self):
@@ -340,7 +343,9 @@ class PromptFormatter():
         # raise ValueError(f"No method found with the name '{method_name}'")
 
     def apply_format_summarize(self, data, model_name, strategy='generation', formatting="natural", ignore_feature="constructed",
-                     project_name=""):
+                     project_name="", advanced_analysis=False, **_):
+        # ponytail: the released repo lacks the advanced-prompt code; only the base-model + corrected-code
+        # variant (Prompt_example/Advanced_Docstring_Prompt_Base_Model) is restored, is_base/base_cot/corrected_code are assumed True.
         focal_method = data[focal_method_key]
         focal_class_name = data[focal_class_name_key]
         focal_class = data[focal_class_code_key]
@@ -448,7 +453,7 @@ class PromptFormatter():
 
         if formatting == 'comment':
             prompt += '\n```\n'
-        prompt += BasicModel.summarization_post_fix
+        prompt += ADVANCED_SUMMARIZATION_POST_FIX_BASE if advanced_analysis else BasicModel.summarization_post_fix
         if strategy == "extend":
             extend_postfix = add_class_delc_d4j(focal_class_signature, focal_class_imports)
             prompt += extend_postfix
