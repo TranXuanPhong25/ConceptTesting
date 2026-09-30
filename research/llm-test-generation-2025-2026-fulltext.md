@@ -28,6 +28,7 @@ The notes use direct prose rather than generic “method/hook” labels. Numeric
 | 81-100 | [Batch 05](fulltext-batches/batch-05.md) |
 | 101-122 | [Batch 06](fulltext-batches/batch-06.md) |
 | 123-131 | [Batch 07](fulltext-batches/batch-07.md) — bug-finding additions |
+| 40-131 | [Artifact availability](fulltext-batches/artifacts.md) — verified code / dataset / models per paper (checked 2026-09-29) |
 
 ## What The Corpus Says About Concept-Guided Testing
 

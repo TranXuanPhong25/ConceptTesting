@@ -16,6 +16,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Abstract-only; [primary arXiv record](https://arxiv.org/abs/2505.07870).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/G-Suavis/MR-Prioritization-LLMs](https://github.com/G-Suavis/MR-Prioritization-LLMs) (2 small Python scripts (diversity metrics, ranking) + MRs.zip, 236 KB, pushed 2024-11; first-author repo, paper shorturl blocked (403)). Dataset: 500 GPT-4-generated prompts with sensitive attributes, MR1-MR11; source/follow-up cases in MRs.zip — released by authors [github.com/G-Suavis/MR-Prioritization-LLMs](https://github.com/G-Suavis/MR-Prioritization-LLMs). Models: GPT-4 ('GPT-4.0'), Llama-3-70B-chat ('LLaMA-70B-chat').
+
 ## 82. ASSURE: Metamorphic Testing for AI-powered Browser Extensions (2025)
 
 **Method.** ASSURE combines a modular test generator, isolated browser execution, and validation rules for consistency, metamorphic relations, security boundaries, content alignment, and performance. It uses both metamorphic and adversarial generation strategies.
@@ -29,6 +31,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** High for browser/security work. Encode a page transformation, security-boundary hypothesis, and invariant as the concept; generate the paired pages and let the validation pipeline act as the oracle.
 
 **Evidence.** Full text; [primary arXiv PDF](https://arxiv.org/pdf/2507.05307).
+
+**Artifacts (checked 2026-09-29).** Code: link dead [anonymous.4open.science/r/ASSURE-5D33](https://anonymous.4open.science/r/ASSURE-5D33) (anonymous repo returns repository_expired; no de-anonymized repo found). Dataset: 6 AI browser extensions (Sider, Merlin, Immersive Translate, OpenAI Translator, QuillBot, ProWritingAid); synthetic web page templates — not released. Models: none named (SUTs are 6 LLM-powered extensions).
 
 ## 83. FLAG: Finding Line Anomalies in RTL Code with Generative AI (2025)
 
@@ -44,6 +48,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Full text; [primary author manuscript](https://arxiv.org/pdf/2306.12643) and [2025 journal record](https://doi.org/10.1145/3736411). The manuscript is an earlier version, so the 2025 counts above are cross-checked against the journal abstract/record.
 
+**Artifacts (checked 2026-09-29).** Code: verified source [zenodo.org/records/8012211](https://zenodo.org/records/8012211) (Zenodo flag.zip 259 MB: FLAG generation.py/evaluation.py, bug corpora, LLM outputs; 2023 arXiv version only). Dataset: 2023: 121 bugs C/Python/Verilog; 2025 TODAES: 120 real + 81 synthetic RTL bugs (CirFix, HW CWEs, HackAtDAC21, OpenTitan) — partially released [zenodo.org/records/8012211](https://zenodo.org/records/8012211). Models: code-davinci-002, gpt-3.5-turbo.
+
 ## 84. CKGFuzzer: LLM-Based Fuzz Driver Generation Enhanced By Code Knowledge Graph (2025)
 
 **Method.** CKGFuzzer builds an interprocedural code knowledge graph over repository entities and API relations. An LLM agent queries that graph to generate, compile-repair, and refine fuzz drivers and seeds; crash reports are also fed into analysis.
@@ -57,6 +63,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** Very high. A concept can be a graph-grounded API path: entry API, required object state, argument constraints, and target sink. This is closer to usable fuzz-driver context than flat AST tags.
 
 **Evidence.** Full text; [primary arXiv PDF](https://arxiv.org/pdf/2411.11532) and [official artifact](https://github.com/security-pride/CKGFuzzer).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/security-pride/CKGFuzzer](https://github.com/security-pride/CKGFuzzer) (Python agent (fuzzing_llm_engine: fuzzing.py, rag, roles, 8 project configs), 29 MB, last push 2025-02). Dataset: 8 OSS-Fuzz libraries: c-ares, cjson, curl, lcms, libpcap, libtiff, libvpx, zlib — public benchmark only. Models: DeepSeek-V2-Coder, DeepSeek-V2-Chat, BAAI/bge-small-en-v1.5 (embeddings).
 
 ## 85. Your Fix Is My Exploit: Enabling Comprehensive DL Library API Fuzzing with Large Language Models (2025)
 
@@ -72,6 +80,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Full text; [primary arXiv PDF](https://arxiv.org/pdf/2501.04312).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/DFUZZ-ICSE/DFUZZ](https://github.com/DFUZZ-ICSE/DFUZZ) (Python (edge_case_extraction, gen_program, get_api_reference) + bug reports, 5.4 MB, last push 2024-12). Dataset: PyTorch 1.12/2.2.1 + TensorFlow 2.10/2.15 APIs (TitanFuzz/FuzzGPT API set); API lists, edge cases, bugs in repo — released by authors [github.com/DFUZZ-ICSE/DFUZZ](https://github.com/DFUZZ-ICSE/DFUZZ). Models: gpt-3.5-turbo-1106, Llama-2-7B-chat, Llama-2-70B-chat.
+
 ## 86. The Seeds of the FUTURE Sprout from History: Fuzzing for Unveiling Vulnerabilities in Prospective Deep-Learning Libraries (2025)
 
 **Method.** FUTURE mines historical bug-reproduction code from established DL libraries, learns mappings between old and prospective-library APIs, then converts the old bug seeds into tests for the new library. It also transfers discoveries back toward the established library.
@@ -85,6 +95,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** Very high. “Historical vulnerability pattern + cross-library API mapping” is a concept representation with a natural oracle: transferred seed should trigger the analogous erroneous behavior. It is more fault-directed than line coverage.
 
 **Evidence.** Full text; [primary arXiv PDF](https://arxiv.org/pdf/2412.01317) and [official artifact](https://github.com/Redempt1onzzZZ/FUTURE).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/Redempt1onzzZZ/FUTURE](https://github.com/Redempt1onzzZZ/FUTURE) (bug spider, codepair gen, LoRA finetune scripts, gen/convert notebooks, detected bugs; 2.4 MB, last push 2025-12 (paper URL Redmept1on/FUTURE redirects)). Dataset: MLX, MindSpore, OneFlow (452 APIs); 1,530 TF/PyTorch historical bug codes; bug CSVs released, 600k finetune set not — partially released [github.com/Redempt1onzzZZ/FUTURE](https://github.com/Redempt1onzzZZ/FUTURE). Models: CodeLlama-13B (LoRA fine-tuned), gpt-3.5-turbo (TitanFuzz baseline).
 
 ## 87. Towards Leveraging LLMs to Generate Abstract Penetration Test Cases from Software Architecture (2026)
 
@@ -100,6 +112,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Full text; [primary arXiv PDF](https://arxiv.org/pdf/2603.23698).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [zenodo.org/records/19170498](https://zenodo.org/records/19170498) (Zenodo zip 30 MB: Java LLM pipeline (edu.kit.llm) + Palladio runner + GPT/Gemini results; paper DOI zenodo.15921823 points to unrelated LLM4MC record). Dataset: 3 Palladio (PCM) case studies (ABAC-Banking, PowerGrid, Maintenance), 5 CAWEs; models + results in Zenodo — released by authors [zenodo.org/records/19170498](https://zenodo.org/records/19170498). Models: GPT-5.2, Gemini-3-Pro.
+
 ## 88. Test Case Generation Using Large Language Models: A Systematic Literature Review (2026)
 
 **Method.** Systematic literature review of LLM-based test-case generation.
@@ -113,6 +127,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** Background only. Use it to trace taxonomies and primary papers, not as evidence that a concept design works.
 
 **Evidence.** Abstract-only; [primary DOI](https://doi.org/10.1007/s10586-026-06021-z). Full text was inaccessible from the publisher at review time.
+
+**Artifacts (checked 2026-09-29).** Code: none found (SLR, no tool; paper states code 'Not applicable'). Dataset: 38 primary studies (2020-2025), no dataset released — not released. Models: none (no experiments).
 
 ## 89. MultiFileTest: A Multi-File-Level LLM Unit Test Generation Benchmark and Impact of Error Fixing Mechanisms (2026)
 
@@ -128,6 +144,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Full text; [primary ACL PDF](https://aclanthology.org/2026.findings-acl.1403.pdf).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/YiboWANG214/ProjectTest](https://github.com/YiboWANG214/ProjectTest) (Gen/self-fix/eval scripts + dataset, 12 MB, push 2025-05; repo of arXiv predecessor ProjectTest (2502.06556), not linked in ACL PDF). Dataset: MultiFileTest: 20 Python + 20 Java + 20 JS multi-file projects — released by authors [huggingface.co/datasets/yibowang214/MultiFileTest](https://huggingface.co/datasets/yibowang214/MultiFileTest). Models: GPT-4 Turbo, GPT-3.5 Turbo, OpenAI o1, GPT-5 Mini, Gemini 2.0 Flash Experimental, Gemini 3.0 Pro, Claude 3.5 Sonnet, CodeQwen1.5-7B-Chat, DeepSeek-Coder-6.7B-Instruct, CodeLlama-7B-Instruct, CodeGemma-7B-IT.
+
 ## 90. BenjiTest: An Agentic Framework for Evaluating LLM-Based Unit Test Generation and Correction (2026)
 
 **Method.** BenjiTest frames test generation and correction as an agentic workflow that evaluates generated unit tests and applies correction steps.
@@ -141,6 +159,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** Plausibly high. A concept state can persist across generator, executor, and repair agents, but this needs verification from the manuscript before citing it as a specific design precedent.
 
 **Evidence.** Abstract-only; [primary SSRN record](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6843084). Full PDF was inaccessible in this environment.
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/lopsandrea/jss-benjitest-2026](https://github.com/lopsandrea/jss-benjitest-2026) (Python pkg benjitest/ (58 .py) + 331 tests, prompts, configs, analysis scripts, 24 MB, push 2026-09; README cites the paper (JSS)). Dataset: Classes2Test (147,473 classes) + Defects4J v3.0.1 (835 bugs) + memorization control corpus — released by authors [github.com/lopsandrea/jss-benjitest-2026/tree/main/data](https://github.com/lopsandrea/jss-benjitest-2026/tree/main/data). Models: gpt-4.1, gpt-4o-mini, o3, o4-mini, gemini-1.5-pro, gemini-2.5-pro, deepseek-r1, grok-3, llama3.1:70b.
 
 ## 91. Retry and Refine: A Multi-agent Framework for LLM Based Reliable Unit Test Generation (2025)
 
@@ -156,6 +176,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Abstract-only; [primary Springer chapter record](https://doi.org/10.1007/978-3-032-11402-0_7). Full chapter required publisher access.
 
+**Artifacts (checked 2026-09-29).** Code: none found (No link on Springer page; GitHub search (title, author Tanmay Ghosh) found nothing). Dataset: MBPP, HumanEval — public benchmark only. Models: GPT-4o-mini, DeepSeek-V3.
+
 ## 92. Intelligent Test Case Generation Method for Fuzzing IoT Protocols Based on LLM (2025)
 
 **Method.** LIPFuzzer asks an LLM to parse protocol knowledge, classify message fields, choose mutation fields, and mutate real protocol messages. It targets Modbus-TCP, MQTT, and CoAP implementations.
@@ -169,6 +191,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** Very high. A concept can be protocol state plus field semantics, mutation legality, checksum/length dependencies, and target behavior. This is nearly the same representation problem as structured test-input synthesis.
 
 **Evidence.** Full text; [primary open manuscript PDF](https://assets-eu.researchsquare.com/files/rs-6331846/v1_covered_cd29b2d6-2a8a-468e-b159-411b48c9313d.pdf). The catalog DOI points to the later journal version.
+
+**Artifacts (checked 2026-09-29).** Code: none found (No code link in preprint; journal DAS says only 'Data is provided within the related files'; GitHub 'lipfuzzer' hit is unrelated NDSS'19 tool). Dataset: Public targets: MOD_RSSIM 8.2.0 (Modbus-TCP), Mosquitto 1.5.8 (MQTT), libcoap 4.3.1 (CoAP); seed messages not released — public benchmark only. Models: GLM-4.
 
 ## 93. CITYWALK: Enhancing LLM-Based C++ Unit Test Generation via Project-Dependency Awareness and Language-Specific Knowledge (2025)
 
@@ -184,6 +208,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Full text; [primary author PDF](https://zhangyw.work/file/papers/Zhang2025TOSEM_B.pdf) and [primary arXiv record](https://arxiv.org/abs/2501.16155).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [zenodo.org/records/14022506](https://zenodo.org/records/14022506) (Zenodo CREAM.zip 4.7 MB (2024-11): Python src (run/analyzer/rag_module/evaluator), prompt templates, FAISS doc index; predates v2). Dataset: 10 public C++ GitHub projects (hjson-cpp, tinyxml2, yaml-cpp, re2, ninja, leveldb, json.cpp, glomap, papy, mlx), 1288 focal methods — partially released [zenodo.org/records/14022506](https://zenodo.org/records/14022506). Models: GPT-4o, gpt-3.5-turbo-0125, DeepSeek-V3, CodeGeeX4-9B.
+
 ## 94. YATE: The Role of Test Repair in LLM-Based Unit Test Generation (2025)
 
 **Method.** YATE repairs initially invalid LLM-generated Java tests using rule-based static analysis and re-prompting. Repaired tests become retained tests and potential seeds for further generation.
@@ -197,6 +223,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** High. Preserve the original reachability/fault concept through repair. Feed the repair agent the failed test plus the concept and error evidence, rather than asking it to make a generic test pass.
 
 **Evidence.** Full text; [primary arXiv PDF](https://arxiv.org/pdf/2507.18316).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/michaelkonstantinou/yate-java](https://github.com/michaelkonstantinou/yate-java) (Java/Kotlin impl (98 src files), 324 KB, push 2026-09 + yate-jk-plugin; not linked in arXiv paper; README 'more info coming soon'). Dataset: 6 public Java projects (Binance connector, Chesslib, ConfigMe, Event-ruler, Windward, Batch-processing-gateway) — public benchmark only. Models: GPT-4o-mini, GPT-4.1, DeepSeek-V3, Codestral.
 
 ## 95. TestLoter: A Logic-Driven Framework for Automated Unit Test Generation and Error Repair Using LLMs (2025)
 
@@ -212,6 +240,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Full text; [primary publisher article](https://doi.org/10.1016/j.cola.2025.101348).
 
+**Artifacts (checked 2026-09-29).** Code: placeholder repo (no real source) [github.com/yyyrf/TestLoter](https://github.com/yyyrf/TestLoter) (Empty repo (0 KB, created 2025-03-30), likely first author's; link from paper unverified (ScienceDirect 403)). Dataset: 9 public Java projects (commons CSV/CLI/Logging/Text, JsonSimple, Base64, NumberToWords, Arrays, Gson per 3rd-party SLR) — public benchmark only. Models: DeepSeek-V3, Llama3 (secondary; per search snippet, unverified).
+
 ## 96. Mokav: Execution-driven Differential Testing with LLMs (2025 journal version)
 
 **Method.** Mokav receives two program versions and one equal-output example input. It generates candidate inputs, executes both versions, feeds output and internal execution differences back to the LLM, and stops when it finds a difference-exposing test (DET).
@@ -225,6 +255,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** Extremely high. This is the closest direct template for semantic concept testing: concept = hypothesized behavioral difference; oracle = unequal outputs on buggy/mutant and correct/fixed versions. It can replace structural coverage as the feedback signal.
 
 **Evidence.** Full text; [primary author manuscript PDF](https://www.diva-portal.org/smash/get/diva2%3A1907143/FULLTEXT01.pdf), [official artifact](https://github.com/ASSERT-KTH/mokav), and [journal DOI](https://doi.org/10.1016/j.jss.2025.112571).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/ASSERT-KTH/mokav](https://github.com/ASSERT-KTH/mokav) (Python tool (src/, main.py, scripts, experiments) + data zips, ~1 GB, push 2025-09). Dataset: C4DET: 1,535 Codeforces program pairs + 32 QuixBugs pairs — released by authors [github.com/ASSERT-KTH/mokav/tree/main/data](https://github.com/ASSERT-KTH/mokav/tree/main/data). Models: gpt-3.5-turbo-0125, GPT-4o-2024-05-13, CodeLlama-Instruct-7B, Codestral-2501.
 
 ## 97. LSPAI: An IDE Plugin for LLM-Powered Multi-Language Unit Test Generation with Language Server Protocol (2025)
 
@@ -240,6 +272,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Full text; [primary author PDF](https://gwihwan-go.github.io/files/papers/FSE-Industry25-LSPAI.pdf) and [official artifact](https://zenodo.org/records/15206535).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [zenodo.org/records/15206535](https://zenodo.org/records/15206535) (VS Code ext TS src (retrieve/generate/lsp/promptBuilder) + eval scripts, Zenodo 2 MB (2025-04); GitHub THU-WingTecher/LSPAI now renamed LSPRAG). Dataset: 6 public projects: Commons-CLI, Commons-CSV (Java), Logrus, Cobra (Go), Black, Crawl4AI (Python); generated tests on Tsinghua cloud — released by authors [cloud.tsinghua.edu.cn/f/c51bd7b4bb894033ac82](https://cloud.tsinghua.edu.cn/f/c51bd7b4bb894033ac82/). Models: GPT-4o, GPT-4o-mini, DeepSeek-V3.
+
 ## 98. A System for Automated Unit Test Generation Using Large Language Models and Assessment of Generated Test Suites (2025)
 
 **Method.** AgoneTest automates class-level Java test generation and assessment. It starts from Methods2Test and creates a paired dataset for comparing human and LLM-generated tests, then runs an end-to-end quality assessment workflow.
@@ -253,6 +287,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** Moderate to high. It supplies an evaluation framework for whether concept-guided generation produces tests that survive project-level integration, which is more useful than syntax-only measures.
 
 **Evidence.** Full text; [primary arXiv PDF](https://arxiv.org/pdf/2408.07846) and [ICSTW DOI](https://doi.org/10.1109/ICSTW64639.2025.10962454).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/lopsandrea/classes2test](https://github.com/lopsandrea/classes2test) (AgoneTest/ Python framework (agone_test.py, execution_manager, errorCorrection) + outputs, 700 MB, push 2025-09; paper cites anonymous.4open.science/r/classes2test (live)). Dataset: Classes2Test (9,410 repos, derived from Methods2Test) — released by authors [github.com/lopsandrea/classes2test/tree/main/dataset](https://github.com/lopsandrea/classes2test/tree/main/dataset). Models: gpt-4-1106-preview, gpt-3.5-turbo.
 
 ## 99. AgentTester: An LLM-Based Tool for Unit Test Generation with Automatically Generated Prompts (2025)
 
@@ -268,6 +304,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 
 **Evidence.** Abstract-only; [primary Springer DOI](https://doi.org/10.1007/978-981-95-0011-6_10). Full chapter was inaccessible.
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/SkywalkerCHH/AgentTester](https://github.com/SkywalkerCHH/AgentTester) (Python scripts (AutoPrompting, PromptDistillation, ValidationRepair, JaCoCo coverage), 1.6 MB, push 2025-04; cited as ref [20]). Dataset: 3 public Java projects: jInstagram, tabula-java, zappos-json — released by authors [github.com/SkywalkerCHH/AgentTester/tree/main/RepoData](https://github.com/SkywalkerCHH/AgentTester/tree/main/RepoData). Models: GLM-4 (unverified: 3rd-party SLR table; repo also configures glm-zero-preview, deepseek-r1:8b).
+
 ## 100. QTRAN: Extending Metamorphic-Oracle Based Logical Bug Detection Techniques for Multiple-DBMS Dialect Support (2025)
 
 **Method.** QTRAN transfers metamorphic-oracle SQL query pairs from one DBMS dialect to another. It identifies dialect-specific features with parsing, queries a feature knowledge base through retrieval, uses an LLM to translate the pair, and mutates transferred queries for further testing.
@@ -281,6 +319,8 @@ Reviewed 2026-09-18. “Full text” means an author manuscript, arXiv PDF, ACL 
 **Concept applicability.** Very high. A metamorphic concept can encode the original SQL, relation-preserving transformation, dialect-specific feature mapping, and expected output relation. This is a concrete design for concepts that survive translation across contexts.
 
 **Evidence.** Full text; [primary paper PDF](https://matafeiyanll.github.io/paper/Issta25.pdf) and [official artifact](https://github.com/QTRANll/QTRAN).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/QTRANll/QTRAN](https://github.com/QTRANll/QTRAN) (Python src/ (TransferLLM, DialectMapping, MutationLLM fine-tune), feature KB 29 MB, 26.8 MB repo, last push 2025-12). Dataset: 8 DBMSs (MySQL, MariaDB, TiDB, PostgreSQL, SQLite, MonetDB, DuckDB, ClickHouse); SQL pairs from NoREC/TLP/Pinolo/DQE — released by authors [github.com/QTRANll/QTRAN-BUGLIST](https://github.com/QTRANll/QTRAN-BUGLIST). Models: GPT-4o-mini (gpt-4o-mini-2024-07-18), fine-tuned GPT-4o-mini (mutation LLM).
 
 ## Inaccessible full texts
 

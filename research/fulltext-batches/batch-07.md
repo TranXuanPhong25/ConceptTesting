@@ -16,6 +16,8 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 
 **Evidence.** Full text read (arXiv HTML). Code not stated. Primary source: <https://arxiv.org/abs/2607.11573>
 
+**Artifacts (checked 2026-09-29).** Code: none found (No availability statement in arXiv v1; no repo on GitHub search or ZJU-ACES-ISE org). Dataset: 172 Defects4J method-level tasks (Cli, Compress, Csv, JacksonDatabind, Jsoup); KB from Bears, Bugs.jar, GitBug-Java, GHRB — public benchmark only. Models: gpt-5.4.
+
 ## 124. CodeHacker: Automated Test Case Generation for Detecting Vulnerabilities in Competitive Programming Solutions
 
 **Method.** Phase I calibrates the evaluation tools. The validator is attacked with invalid inputs (bypass) and valid edge cases (rejection) and patched until it matches the statement. The checker is attacked with deceptive and alternative-valid outputs, backed by an anti-hallucination pipeline (small inputs, explicit reasoning, independent LLM judge); humans intervened in under 5% of cases. Phase II has a code analyst that uses static reading plus a C++ sandbox and a Python calculator. It drives three cascading generators: stress (size and structure extremes), LLM-targeted (WA/RE/TLE/MLE for the identified weakness), and anti-hash (lattice reduction or birthday attack).
@@ -29,6 +31,8 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 **Concept applicability.** Closest to TrickyBugs. The concept is an implementation-specific weakness hypothesis paired with a calibrated validator. This directly fixes the invalid-input failure seen in the pilot (declaring N=200000 but supplying 696 numbers).
 
 **Evidence.** Full text read. Code not stated. Primary source: <https://arxiv.org/abs/2602.20213>
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/shi0712/CodeHacker](https://github.com/shi0712/CodeHacker) (Python pkg (core/llm/prompts/demo+tests), 28 KB, created 2026-04, push 2026-08; demo-scale only (1 CF problem, no sandbox), not full exp pipeline). Dataset: CodeContests+ (2,000 problems), CodeHackerBench (~6k pairs), LiveCodeBench AtCoder (287) for RL — partially released [huggingface.co/datasets/sjw712/CodeHacker-Plus](https://huggingface.co/datasets/sjw712/CodeHacker-Plus). Models: DeepSeek-V3.2, GPT-5-Mini, Qwen3-Next-80B-A3B, Gemini-3.0-Flash-Preview, Qwen3-32B, Qwen3-4B (RL).
 
 ## 125. AutoCode: LLMs as Problem Setters for Competitive Programming
 
@@ -44,6 +48,8 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 
 **Evidence.** Full text read. Project page: <https://livecodebenchpro.com/projects/autocode/overview>. Primary source: <https://arxiv.org/abs/2510.12803>
 
+**Artifacts (checked 2026-09-29).** Code: none found (No official code; project page livecodebenchpro.com/projects/autocode returns 404; SZTU-ACM/AutoCode is unaffiliated community reimpl). Dataset: 7,538 problems from CodeContests+/CodeContests/HardTests/TACO intersection + 720 recent Codeforces problems — not released. Models: o3, GPT-5-High, GPT-4o.
+
 ## 126. Specification Grounding Drives Test Effectiveness for LLM Code
 
 **Method.** A controlled ablation. The tester prompt differs by one line: `spec` gets the specification enumerated into discrete rules (one test per rule); `free+` gets the ticket and is told to probe invalid inputs and edge cases. Both arms share the same repair loop and a hidden hand-written gold oracle.
@@ -57,6 +63,8 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 **Concept applicability.** Strong and cheap. It shows that *enumerated* rules beat both prose and "think about edge cases". A concept record should therefore be one atomic rule, one test.
 
 **Evidence.** Full text read. Code not stated. Primary source: <https://arxiv.org/abs/2607.06636>
+
+**Artifacts (checked 2026-09-29).** Code: none found (Paper describes harness/raw outputs as artifacts but gives no link; no repo found). Dataset: Own 18 spec-completeness tasks + 8 logic tasks (rules in appendix); HumanEval+ (EvalPlus) port — not released. Models: Claude Haiku 4.5, Claude Sonnet 4.6, Claude Opus 4.8, GPT-5.3-codex, Gemini 3.5 Flash, GPT-5.5, GPT-5-mini, GPT-4o-mini.
 
 ## 127. Extremal Testing for Network Software using LLMs
 
@@ -72,6 +80,8 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 
 **Evidence.** Abstract-only. Primary source: <https://arxiv.org/abs/2507.11898>
 
+**Artifacts (checked 2026-09-29).** Code: none found (Early-experience paper (manual prompting); no code link in text, no repo found). Dataset: OSS subjects: DNS (BIND,NSD,Knot,PowerDNS), HTTP (httpd,Nginx,Caddy,H2O,...), BGP (FRR,GoBGP,Batfish), shortest-path code — not released. Models: GPT-4o (ChatGPT), OpenAI Deep Research, DeepSeek (version unspecified), Gemini (version unspecified).
+
 ## 128. ReDig: Refining LLM-based Directed Test Input Generation via Runtime Value Feedback
 
 **Method.** The LLM generates inputs for a target line from the function and its shortest call path, and coverage is measured with llvm-cov. On a miss, the LLM proposes up to 5 runtime value queries (location + gdb expression); a gdb script collects the values, and the generator revises the seed input. A controller schedules 5 trials and restarts when progress stalls. 4,343 LoC of Python.
@@ -85,6 +95,8 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 **Concept applicability.** It is the online version of ConceptCoder's BP concepts (branch direction and quantized values): only the runtime values that explain a miss are collected, on demand.
 
 **Evidence.** Full text read. Code not stated. Primary source: <https://arxiv.org/abs/2608.07926>
+
+**Artifacts (checked 2026-09-29).** Code: none found (WIP paper; 4,343-LoC Python prototype described but not released; no link). Dataset: Poppler and libsndfile (Magma reference commits), 4 target-line case studies + 120-function pilot — public benchmark only. Models: GPT-5.4.
 
 ## 129. AnyPoC: Universal Proof-of-Concept Test Generation for Scalable LLM-Based Bug Detection
 
@@ -100,6 +112,8 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 
 **Evidence.** Full text read. Code not stated. Primary source: <https://arxiv.org/abs/2604.11950>
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/zzjas/anypoc](https://github.com/zzjas/anypoc) (Python CLI/scanner/skills + per-project Dockerfiles/prompts, 3 MB, push 2026-05; by author Zijie Zhao (UIUC), not linked in paper). Dataset: 12 OSS systems (Chromium, Firefox, LLVM, OpenSSL, FFmpeg, SQLite, ...); ~2.7k candidate reports; 192-report validation set — partially released [buglist-a2470.web.app/tool/anypoc](https://buglist-a2470.web.app/tool/anypoc). Models: Claude Opus 4.5, Claude Opus 4.6, Claude Sonnet 4.5, Claude Sonnet 4.6, GPT-5.2-Codex, GPT-5.3-Codex.
+
 ## 130. MutGen: Mutation-Guided Unit Test Generation with a Large Language Model
 
 **Method.** Mutation feedback goes into the prompt and generation repeats to kill surviving mutants. The paper also analyzes why mutants survive, per operator.
@@ -114,6 +128,8 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 
 **Evidence.** Abstract-only. Primary source: <https://arxiv.org/abs/2506.02954>
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/Amocy-Wang/MUTGEN](https://github.com/Amocy-Wang/MUTGEN) (Mutahunter-based Python impl + PIT/JaCoCo scripts + HumanEval-Java harness, 322 KB, push 2026-04). Dataset: HumanEval-Java + new LeetCode-Java (100 problems); 204 subjects — partially released [github.com/Amocy-Wang/MUTGEN](https://github.com/Amocy-Wang/MUTGEN). Models: Llama-3.3-70B.
+
 ## 131. TrickCatcher: LLM-Powered Test Case Generation for Detecting Bugs in Plausible Programs
 
 **Method.** (1) PUT-guided variant generation: the LLM sees the spec and the PUT and writes repaired variants. (2) The LLM writes a Python input generator from the constraints instead of writing inputs directly. (3) Diversity-driven differential testing: when a variant disagrees with the PUT, the variant's output (the most frequent one if several disagree) becomes the oracle.
@@ -127,3 +143,5 @@ _Read on 2026-09-26. Added after the TrickyBugs pilot showed that ConceptCoder's
 **Concept applicability.** This is the baseline already used in `trickcatcher_pilot`. Concepts can enter at every stage: variant generation (which fault to repair), the generator (which constraint boundary to hit), and oracle selection.
 
 **Evidence.** Full text read. Code: <https://github.com/RinCloud/TrickCatcher>. Primary source: <https://aclanthology.org/2025.acl-long.20/>
+
+**Artifacts (checked 2026-09-29).** Code: data/prompts only, no tool source [github.com/RinCloud/TrickCatcher](https://github.com/RinCloud/TrickCatcher) (51 MB: prompts, LLM-generated generators/variants/inputs, pkl results, RQ notebooks; no end-to-end generation/diff-testing pipeline). Dataset: TrickyBugs (366 PUTs: 251 C++, 115 Py) + EvalPlus (151 buggy programs) — released by authors [github.com/RinCloud/TrickCatcher](https://github.com/RinCloud/TrickCatcher). Models: gpt-3.5-turbo-0125, DeepSeek-V3.

@@ -16,6 +16,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Primary source](https://arxiv.org/abs/2501.12862).
 
+**Artifacts (checked 2026-09-29).** Code: closed / not released (ACH is internal Meta tooling; paper gives prompts (Table 1) but no code release). Dataset: Meta internal: 10,795 Android Kotlin classes in 7 Meta platforms; 9,095 mutants, 571 tests — not released. Models: Llama 3.1 70B.
+
 ## 42. MORTAR: Multi-turn Metamorphic Testing for LLM-based Dialogue Systems
 
 **Method.** MORTAR builds multi-turn dialogue tests from metamorphic relations. It transforms an earlier turn or dialogue context, then treats a violated relation between the two responses as the oracle.
@@ -29,6 +31,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 **Concept applicability.** High for stateful systems. A concept becomes: source dialogue state, allowed transformation, expected relation, and the turn at which the relation must hold. This is useful for API workflows and agents, less directly for isolated TestEval functions.
 
 **Evidence.** Full text read. [Primary source](https://arxiv.org/abs/2412.15557).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/Guoxiang365/MORTAR](https://github.com/Guoxiang365/MORTAR) (Python (perturbation, equivalent-context check, runners) + RQ notebooks, 2.7 MB, push 2026-04; mirror zenodo.org/records/19556799). Dataset: CoQA (dev set) as seed dialogues — public benchmark only [stanfordnlp.github.io/coqa](https://stanfordnlp.github.io/coqa/). Models: Qwen2-0.5B-Instruct, Qwen2-1.5B-Instruct, Qwen2-7B-Instruct, Mistral-7B-Instruct-v0.3, Llama-3-8B-Instruct, Gemma-2-9b-it, GPT-5-nano, GPT-5, gpt-oss-120B (pipeline, via Groq), gte-large-en-v1.5 (embeddings).
 
 ## 43. RUG: Turbo LLM for Rust Unit Test Generation
 
@@ -44,6 +48,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Author PDF](https://mainarke.github.io/assets/papers/icse25_cheng.pdf); [artifact](https://github.com/CXWorks/rug).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/CXWorks/rug](https://github.com/CXWorks/rug) (rug: example scripts + generated-test artifact (45 MB, push 2025-06); rustc-plugin source in CXWorks/rug-ae rug_ae1/source/safefinder). Dataset: 17 Rust crates from RULF/RPG, RustyUnit, SyRust benchmarks + 10 post-2022 crates (RQ5) — released by authors [github.com/CXWorks/rug/tree/main/ae](https://github.com/CXWorks/rug/tree/main/ae). Models: gpt-3.5-turbo-16k-0613, gpt-4-1106 (GPT-4 Turbo), gpt-3.5-turbo-0125 (RQ5).
+
 ## 44. Understanding LLM-Driven Test Oracle Generation
 
 **Method.** An empirical study varies prompt strategy and supplied context for LLM-generated test oracles, then measures whether the generated assertions expose failures rather than merely encode current behavior.
@@ -57,6 +63,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 **Concept applicability.** Very high. A concept can act as assertion evidence: invariant/postcondition, authority for it, relevant state transition, and counterexample condition. It is a better place to put concepts than a generic list of AST tags.
 
 **Evidence.** Full text read. [Author manuscript](https://valerio-terragni.github.io/assets/pdf/bodicoat-aiware-2025.pdf).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [doi.org/10.6084/m9.figshare.30472256](https://doi.org/10.6084/m9.figshare.30472256) (Figshare: tool.py, gpt_tool.py, starcoder_tool.py, prompts.md (~30 KB); tests.json is only a format template). Dataset: GHRB (GitHub Recent Bugs, Java) — public benchmark only. Models: StarCoder v1.0, gpt-4o-mini-2024-07-18.
 
 ## 45. Knowledge Matters: Injecting Project and Testing Knowledge into LLM-based Unit Test Generation
 
@@ -72,6 +80,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Author PDF](https://mingwei-liu.github.io/assets/pdf/ICSE26KTester.pdf); [official artifact](https://github.com/SYSUSELab/KTester).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/SYSUSELab/KTester](https://github.com/SYSUSELab/KTester) (Python pipeline (tools/, templates/) + Java static-analysis modules, 226 MB, push 2026-04; arXiv 2511.14224). Dataset: HITS dataset: 110 focal methods from 10 open-source Java projects — released by authors [github.com/SYSUSELab/KTester/tree/main/data](https://github.com/SYSUSELab/KTester/tree/main/data). Models: GPT-4o-mini (KTester + LLM baselines), CodeLlama-7B (UTGen baseline).
+
 ## 46. Acceptance Test Generation with Large Language Models: An Industrial Case Study
 
 **Method.** A two-stage workflow first generates Gherkin acceptance scenarios from user stories, then converts scenarios into Cypress scripts using page HTML. The work integrates AutoUAT and Test Flow into an industrial workflow.
@@ -85,6 +95,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 **Concept applicability.** Medium-high. A concept can carry acceptance criterion, user role, state precondition, UI elements, and expected observable outcome. It transfers well to workflow testing but not directly to algorithmic fault exposure.
 
 **Evidence.** Full text read. [Primary source](https://arxiv.org/abs/2504.07244).
+
+**Artifacts (checked 2026-09-29).** Code: closed / not released (AutoUAT and Test Flow built inside industrial partner's (automotive) Azure env; no release). Dataset: Partner-company web projects: user stories, pages, Gherkin/Cypress (confidential) — not released. Models: GPT-4 Turbo (gpt-4-1106-preview, Azure OpenAI).
 
 ## 47. ASTER: Natural and Multi-Language Unit Test Generation with LLMs
 
@@ -100,6 +112,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Primary source](https://arxiv.org/abs/2409.03093); [IBM technical note](https://research.ibm.com/blog/aster-llm-unit-testing).
 
+**Artifacts (checked 2026-09-29).** Code: data/prompts only, no tool source [github.com/aster-test-generation/aster](https://github.com/aster-test-generation/aster) (Repo = generated tests, modified CodaMOSA baseline, naturalness scripts, figures (166 MB); ASTER generator not released (IBM watsonx product)). Dataset: Commons CLI/Codec/Compress/JXPath, CargoTracker, PetClinic, DayTrader, proprietary App X; CodaMOSA Python benchmark — partially released [github.com/aster-test-generation/aster](https://github.com/aster-test-generation/aster). Models: GPT-4-turbo, Llama3-70B, CodeLlama-34B, Granite-34B, Llama3-8B, Granite-8B, GPT-3.5-turbo-instruct (CodaMOSA baseline).
+
 ## 48. Test Intention Guided LLM-Based Unit Test Generation
 
 **Method.** IntUT supplies an explicit test intention: test inputs, mock behavior, and expected result. The LLM writes the concrete Java test from that intention.
@@ -113,6 +127,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 **Concept applicability.** Direct fit. The current symbolic concept must become a full test intention: feasible input relation, mock/stub requirements, expected result, and target path. This is a close precedent for the proposed method.
 
 **Evidence.** Abstract-only. [Publisher record](https://doi.org/10.1109/ICSE55347.2025.00243).
+
+**Artifacts (checked 2026-09-29).** Code: none found (No public repo found; IntentionTest (arXiv 2507.20619) states IntUT code and data are not public). Dataset: 3 industrial Java projects + live study on 3 new Java projects — not released. Models: unknown.
 
 ## 49. LWDIFF: an LLM-Assisted Differential Testing Framework for WebAssembly Runtimes
 
@@ -128,6 +144,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Accepted manuscript](https://discovery.ucl.ac.uk/id/eprint/10222953); [author PDF](https://www4.comp.polyu.edu.hk/~csxluo/LWDIFF.pdf).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/erxiaozhou/LWDIFF2024](https://github.com/erxiaozhou/LWDIFF2024) (Python tester (363 .py), LLM spec-extraction code, Docker env, bug PoCs; 88 MB, push 2025-10). Dataset: 8 Wasm runtime configs (Wasmer, WasmEdge, Wasmtime, WAMR x5 modes) + Wasm spec; PoCs in repo — released by authors [github.com/erxiaozhou/LWDIFF2024](https://github.com/erxiaozhou/LWDIFF2024). Models: GPT-4.
+
 ## 50. DrWASI: LLM-assisted Differential Testing for WebAssembly System Interface Implementations
 
 **Method.** The catalog identifies DrWASI as LLM-assisted differential testing of WASI implementations. It generates tests and uses behavioral disagreement between implementations as the oracle.
@@ -141,6 +159,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 **Concept applicability.** Plausibly high: API contract, filesystem/process state, environment setup, and expected cross-implementation relation form a useful concept. Treat this as a hypothesis until the paper is read.
 
 **Evidence.** Abstract-only. [Primary source](https://doi.org/10.1145/3716379).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/Userzxcvbvnm/DrWASI_sourcecode](https://github.com/Userzxcvbvnm/DrWASI_sourcecode) (Python testcasegen/executor/resanalysis (163 .py) + 4,640 C test cases, 1 MB, push 2025-04; cited in paper refs). Dataset: LLM-generated WASI C test corpus (~4.6K) run on Wasmer, Wasmtime, WAMR, WasmEdge — released by authors [github.com/Userzxcvbvnm/DrWASI_sourcecode/tree/main/executedir](https://github.com/Userzxcvbvnm/DrWASI_sourcecode/tree/main/executedir). Models: GPT-3.5 (gpt-3.5-turbo).
 
 ## 51. LLAMAFUZZ: Large Language Model Enhanced Greybox Fuzzing
 
@@ -156,6 +176,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Primary source](https://arxiv.org/abs/2406.07714); [open manuscript](https://escholarship.org/content/qt3pj1v61n/qt3pj1v61n_noSplash_983dd4b5c940be2f93bebf8a450edc38.pdf).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/SecurityLab-UCD/LLAMAFUZZ](https://github.com/SecurityLab-UCD/LLAMAFUZZ) (Python LLM mutator + fine-tune script + LoRA checkpoints (785 MB, push 2024-12); AFL++ side in SecurityLab-UCD/AFLplusplus StructureFuzzer-stable). Dataset: Magma v1.2; FuzzBench/OSS-Fuzz structured-input targets; fine-tune seeds from FuzzBench runs (only example CSV released) — partially released. Models: Llama-2-7B-Chat (fine-tuned, main), Llama-3-8B-Instruct, Mistral-7B-Instruct-v0.2, Qwen2-7B-Instruct.
+
 ## 52. Automated Test Generation Using Large Language Models
 
 **Method.** A general LLM unit-test-generation study comparing prompting and model choices.
@@ -169,6 +191,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 **Concept applicability.** Unclear until full text is read. It appears to be a broad baseline study rather than a concept-guided method.
 
 **Evidence.** Abstract-only. [Primary source](https://doi.org/10.3390/data10100156).
+
+**Artifacts (checked 2026-09-29).** Code: closed / not released (Data Availability: code cannot be made public (Capgemini IP); data on request). Dataset: 50 Python 3.13 source/human-test pairs built by authors (Capgemini) — not released. Models: Llama-3-70B, Mistral Large, Claude 3 Sonnet.
 
 ## 53. Unlocking Low Frequency Syscalls in Kernel Fuzzing with Dependency-Based RAG
 
@@ -184,6 +208,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Author PDF](https://zhiyu.netlify.app/files/ISSTA25_SyzGPT_Zhiyu_Camera_Ready.pdf); [code index](https://github.com/google/syzkaller/blob/master/docs/research.md).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/QGrain/SyzGPT](https://github.com/QGrain/SyzGPT) (Python generator/extractor + modified Syzkaller fuzzer, 134 MB, push 2026-07; Zenodo 10.5281/zenodo.15537270). Dataset: Linux kernel via Syzkaller; 436 sampled low-frequency syscall targets; fine-tune set released — released by authors [doi.org/10.5281/zenodo.15537270](https://doi.org/10.5281/zenodo.15537270). Models: GPT-3.5-turbo-16k-0613, GPT-4-0613, Claude-3.5-Sonnet-0620, CodeLlama-7B-Instruct, Vicuna-7B-v1.5-16k, Llama-3-8B-Instruct, CodeLlama-syz (LoRA-tuned CodeLlama-7B).
+
 ## 54. Leveraging Large Language Models in Software Testing: A Review of Applications and Challenges
 
 **Method.** Literature review, not a new generator.
@@ -198,19 +224,23 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Abstract-only. [Primary source](https://doi.org/10.1109/ISDFS65363.2025.11011986).
 
+**Artifacts (checked 2026-09-29).** Code: none found (Literature review; no tool). Dataset: n/a (literature review) — unknown. Models: none (no experiments).
+
 ## 55. TestEval: Benchmarking Large Language Models for Test Case Generation
 
 **Method.** TestEval supplies target lines, branches, and paths for LeetCode-style programs, asks an LLM for targeted tests, and executes them under instrumentation.
 
 **Motivation.** Whole-suite coverage hides whether a generated test reaches the specific control-flow target it was asked to cover.
 
-**Dataset + shape.** 210 Python/Java programs; 1,340 target lines, 983 target branches, and 854 target paths. It provides instrumented programs, prompts, and evaluators.
+**Dataset + shape.** 210 LeetCode Python programs (Python only); 1,340 target lines, 983 target branches, and 854 target paths. It provides instrumented programs, prompts, and evaluators.
 
 **Evaluation.** The paper reports targeted line, branch, and path coverage alongside syntax, execution, and assertion correctness. GPT-4o reaches 80.97% target-line coverage with the basic prompt and 84.85% with two-step CoT.
 
 **Concept applicability.** High as a controlled structural ablation, limited as a fault-detection claim. The repo's symbolic concept and feedback-loop runs fit here, but need TestCase-Eval, mutants, or red/green revisions for semantic validation.
 
 **Evidence.** Full text read. [ACL paper](https://aclanthology.org/2025.findings-naacl.197/); [official code](https://github.com/LLM4SoftwareTesting/TestEval).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/LLM4SoftwareTesting/TestEval](https://github.com/LLM4SoftwareTesting/TestEval) (Python gen/eval scripts (OpenAI/HF/Gemini) + prompts + data, 565 KB, push 2025-01). Dataset: TestEval: 210 LeetCode Python programs (line/branch/path targets); Python only, not Java — released by authors [github.com/LLM4SoftwareTesting/TestEval/tree/main/data](https://github.com/LLM4SoftwareTesting/TestEval/tree/main/data). Models: GPT-3.5-turbo, GPT-4, GPT-4-turbo, GPT-4o, GPT-4o-mini, Gemini-1.0-pro, CodeLlama-7B/13B/34B, Llama-3-8B, Llama-3.1-8B, Gemma-7B, StarCoder2-15B-Instruct, DeepSeek-Coder-1.3B/6.7B/33B, CodeQwen-7B.
 
 ## 56. Large Language Models for C Test Case Generation: A Comparative Analysis
 
@@ -226,6 +256,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Open-access article](https://www.mdpi.com/2079-9292/14/11/2284).
 
+**Artifacts (checked 2026-09-29).** Code: none found (No code link in paper; GitHub search found nothing). Dataset: 40 introductory C problems, mostly authored by the paper's team (non-public by design) — not released. Models: GPT-4o Preview (Sep 2024), Claude-3.5-Sonnet (Oct 2024), Qwen2.5-Coder-32B-Instruct, Amazon Nova Pro, Llama-3.3-70B.
+
 ## 57. Unify and Triumph: Polyglot, Diverse, and Self-Consistent Generation of Unit Tests with LLMs
 
 **Method.** PolyTest generates tests in multiple programming languages at zero temperature and unifies them; it also samples diverse tests within a language at higher temperature before unification.
@@ -239,6 +271,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 **Concept applicability.** Medium-high. Keep the same semantic concept fixed while sampling several test implementations or language front-ends, then merge candidates by coverage, mutation kill, or fault exposure. The main value is diversity after analysis, not analysis itself.
 
 **Evidence.** Full text read. [Primary source](https://arxiv.org/abs/2503.16144).
+
+**Artifacts (checked 2026-09-29).** Code: link dead [anonymous.4open.science/r/Polytest-C96C](https://anonymous.4open.science/r/Polytest-C96C/) (Only link is an anonymous repo; API returns repository_expired; no GitHub copy found). Dataset: EvalPlus (HumanEval+, 164 problems); Pynguin baseline — public benchmark only. Models: Llama-3-70B, GPT-4o, GPT-3.5-turbo.
 
 ## 58. Towards Large Language Model Guided Kernel Direct Fuzzing
 
@@ -254,6 +288,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Full text read. [Open-access chapter](https://link.springer.com/chapter/10.1007/978-3-031-90900-9_2); [preprint](https://arxiv.org/abs/2503.02301).
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/SpencerL-Y/SyzAgent](https://github.com/SpencerL-Y/SyzAgent) (Scripts+results 110 MB, push 2025-08; submodules unlinked; source in SpencerL-Y/SyzLLM (Syzkaller fork, cites paper) + ChatAnalyzer). Dataset: 27 Linux kernel target functions (authors' benchmark); SyzDirect comparison on 3 targets — partially released [github.com/SpencerL-Y/SyzAgent](https://github.com/SpencerL-Y/SyzAgent). Models: GPT-4o.
+
 ## 59. LLM-Powered Security Test Generation: Oracles, Vulnerability Probes, and Adversarial Inputs
 
 **Method.** A security-testing overview of LLM-generated oracles, vulnerability probes, and adversarial inputs.
@@ -268,6 +304,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 
 **Evidence.** Abstract-only. [Primary source](https://doi.org/10.1109/MC.2025.3625694).
 
+**Artifacts (checked 2026-09-29).** Code: none found (IEEE Computer magazine article (Mastropaolo, Kuhn, Voas); no code found). Dataset: none identified (overview article) — unknown. Models: unknown.
+
 ## 60. Do LLMs Generate Useful Test Oracles? An Empirical Study with an Unbiased Dataset
 
 **Method.** Generates concrete assertions for existing test prefixes under four prompt configurations, using 10 LLMs from Llama, Phi, and Qwen families. It compares generated assertions with programmer-written ones and measures mutation score.
@@ -281,6 +319,8 @@ _Read on 2026-09-18. “Full text read” means an official PDF, an author-hoste
 **Concept applicability.** High, with a useful restraint: concepts should explain the intended postcondition and relevant state, but dumping more source may not help. Put the concept into an oracle-design stage after the input prefix is known, then score it with mutation testing.
 
 **Evidence.** Full text read. [Author PDF](https://homes.cs.washington.edu/~mernst/pubs/neurosymbolic-oracles-ase2025.pdf); [replication package](https://github.com/darthdaver/llm-prompts-empirical-study).
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/darthdaver/llm-prompts-empirical-study](https://github.com/darthdaver/llm-prompts-empirical-study) (Python test-miner, Ollama inference, RQ analysis + dataset.zip, 21 MB, push 2025-10). Dataset: 13,866 oracles from 135 post-2024-09 Java projects (SEART-sampled) — released by authors [github.com/darthdaver/llm-prompts-empirical-study/tree/main/resources](https://github.com/darthdaver/llm-prompts-empirical-study/tree/main/resources). Models: Qwen2.5-1.5B/14B/32B, Qwen2.5-Coder-1.5B/14B/32B, Phi-4-mini-3.8B, Phi-4-14B, Phi-4-reasoning-14B, Llama-3.3-70B.
 
 ## Inaccessible or abstract-only in this batch
 

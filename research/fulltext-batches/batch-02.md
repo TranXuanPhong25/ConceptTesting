@@ -282,6 +282,8 @@ _Read on 2026-09-18. “Full text” means an official open PDF, author-accepted
 
 **Evidence.** Full text. Primary source: https://arxiv.org/abs/2405.03786
 
+**Artifacts (checked 2026-09-29).** Code: verified source [doi.org/10.6084/m9.figshare.28282721.v3](https://doi.org/10.6084/m9.figshare.28282721.v3) (Figshare artifact, 7.2 GB zip: RQ1 fine-tune/inference .py (fine_tune_code_parrot.py etc.), RQ2-5 data+tests; no GitHub repo). Dataset: SF110-derived oracle dataset (fine-tune), OracleEval25 (25 Java projects), Defects4J — released by authors [doi.org/10.6084/m9.figshare.28282721.v3](https://doi.org/10.6084/m9.figshare.28282721.v3). Models: CodeGPT-small-java (110M), CodeParrot-small-multi (110M, selected), CodeGen-350M-multi, CodeGen-2B-multi, PolyCoder-0.4B, PolyCoder-2.7B, Phi-1 (1.3B).
+
 ## Inaccessible or incomplete full-text items
 
 - #22 Evaluating the Effectiveness of Large Language Models in Automated Unit Test Generation: publisher PDF not open.

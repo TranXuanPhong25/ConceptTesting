@@ -8,6 +8,7 @@ _Curated on 2026-09-18. 131 papers (122 from the 2026-09-18 pass + 9 bug-finding
 - Discovery used OpenAlex across 25 test-generation/fuzzing/bug/security queries; OpenAlex was discovery metadata only. Links below point to the paper owner (DOI, arXiv, ACL, ICLR, or publisher).
 - P0 = directly useful for concept-guided fault detection/fuzzing/oracles; P1 = direct test-generation method; P2 = benchmark, survey, or adjacent analysis.
 - “Method” and “concept hook” are concise research syntheses from titles/abstracts; read the linked paper before claiming implementation details.
+- Code/dataset/model availability for #40-131 (repos opened and checked on 2026-09-29): [fulltext-batches/artifacts.md](fulltext-batches/artifacts.md).
 
 ## Top 20 To Read First
 

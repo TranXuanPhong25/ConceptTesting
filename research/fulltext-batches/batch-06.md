@@ -16,6 +16,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://arxiv.org/abs/2404.03664>
 
+**Artifacts (checked 2026-09-29).** Code: closed / not released (Paper Data Availability: 'Due to confidentiality, we can not disclose the data, scripts, and systems'). Dataset: 58 Cancer Registry of Norway GURI medical rules, 2 rule-engine implementations — not released. Models: Mistral-7B, Llama-2-13B, Mixtral-8x7B, GPT-3.5.
+
 ## 102. AutoOracle: High-Quality C++ Test Oracle Generation via Data Quality-Driven and Filtering-Enabled LLMs
 
 **Method.** AutoOracle constructs C++ test-assert pairs by code de-differentiation, scores and filters noisy examples, fine-tunes a C++ oracle model, then filters suspicious generated assertions.
@@ -29,6 +31,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Strong. A concept record can produce the assertion target: postcondition, invariant, relation between inputs and outputs, and forbidden state. The suspicious-oracle filter is worth copying as a post-generation critic.
 
 **Evidence.** Abstract plus official dataset artifact; publisher full text unavailable. Primary sources: <https://doi.org/10.1145/3786583.3786868>, <https://github.com/SamsungDS/AutoOracleDataset>
+
+**Artifacts (checked 2026-09-29).** Code: data/prompts only, no tool source [github.com/SamsungDS/AutoOracleDataset](https://github.com/SamsungDS/AutoOracleDataset) (Samsung repo has only dataset JSON (train_1/train_2/test) + licenses; no AutoOracle tool/model code; no other SamsungDS repo). Dataset: AutoOracleDataset: 79,496 C++ test-assert pairs from 666 OSS projects; plus Samsung SSD firmware (internal) — partially released [github.com/SamsungDS/AutoOracleDataset](https://github.com/SamsungDS/AutoOracleDataset). Models: unknown (fine-tuned domain LLM; base model not named in accessible sources).
 
 ## 103. Leveraging Retrieval-augmented LLMs for Automated Test Case Generation from Software Requirements Specification
 
@@ -44,6 +48,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://oaji.net/articles/2025/3603-1766026568.pdf>
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/bondif/srs-to-testcase-generator](https://github.com/bondif/srs-to-testcase-generator) (Minimal: 92-LOC Streamlit RAG app + BLEU/leakage scripts, 9 KB, Zenodo 10.5281/zenodo.17484867, push 2025-10; no SRS data). Dataset: 50 SRS-test case pairs, 8 domains (public SRS + synthetic); only dataset card/metadata shared — not released. Models: GPT-4o, mistral:7b, phi4:14b, deepseek-r1:70b, marco-o1 (in repo app), MiniLM-L6-v2 (embeddings).
+
 ## 104. Software Testing with Large Language Models: An Interview Study with Practitioners
 
 **Method.** Qualitative interviews, analyzed with grounded-theory-style thematic analysis, yield a five-step workflow: define objective, prompt, refine, evaluate output, learn from use.
@@ -57,6 +63,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Indirect. It supports exposing the concept record to a tester or critic and recording why a test was accepted, repaired, or rejected. It does not validate a concept extractor by itself.
 
 **Evidence.** Full text read. Primary source: <https://arxiv.org/abs/2510.17164>
+
+**Artifacts (checked 2026-09-29).** Code: none found (Qualitative interview study; no tool). Dataset: 15 practitioner interviews; transcripts not shared (confidentiality), only quotes in paper — not released. Models: none (no experiments).
 
 ## 105. LLM-Based Property-Based Test Generation for Guardrailing Cyber-Physical Systems
 
@@ -72,6 +80,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://arxiv.org/abs/2505.23549>
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/khesoem/ChekProp](https://github.com/khesoem/ChekProp) (Python tool (src/llm, src/tgen, main.py, prompts) + generated PBTs, 341 KB, last push 2025-10). Dataset: 9 CPS Python programs (pneumatic control, temperature control, 7 Raspberry Pi/gpiozero apps) — released by authors [github.com/khesoem/ChekProp/tree/main/examples](https://github.com/khesoem/ChekProp/tree/main/examples). Models: gemini-2.0-flash-lite-preview-02-05.
+
 ## 106. A Review of Large Language Models for Automated Test Case Generation
 
 **Method.** Systematic literature review using IEEE Xplore, seed papers, Litmaps, ACM DL, and Scopus; it groups approaches into prompt engineering, feedback-driven generation, fine-tuning/pre-training, and hybrid methods.
@@ -85,6 +95,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Useful as a taxonomy check. A concept-guided paper should separate extraction, prompting, feedback, and oracle evaluation so it can be compared to these four families. It supplies no direct fault-exposure result.
 
 **Evidence.** Full text read. Primary source: <https://www.mdpi.com/2504-4990/7/3/97>
+
+**Artifacts (checked 2026-09-29).** Code: none found (Literature review (Celik & Mahmoud, MAKE 2025); no tool). Dataset: 84 primary studies (IEEE Xplore, Wang et al. seed set, Litmaps, ACM DL, Scopus) — not released. Models: none (no experiments).
 
 ## 107. Can Generative AI Produce Test Cases? An Experience from the Automotive Domain
 
@@ -100,6 +112,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://aisberg.unibg.it/retrieve/889f446d-9d3a-467f-87a7-7ad6a39ea240/2025_FSE_Industy.pdf>
 
+**Artifacts (checked 2026-09-29).** Code: closed / not released (Paper: complete replication package exists but cannot be shared (industrial partner confidentiality, Req. R3)). Dataset: Industrial RQM test specs -> ecu.test scripts (36 spec/script pairs, ~200 step pairs), confidential — not released. Models: gemma-7b, gemma-7b-it, codegemma-7b, codegemma-7b-it, Llama-2-7b, Llama-2-7b-chat, CodeLlama-7b, CodeLlama-7b-Instruct, Mistral-7B-v0.3, Mistral-7B-Instruct-v0.3.
+
 ## 108. CoverUp: Effective High Coverage Test Generation for Python
 
 **Method.** CoverUp instruments Python with SlipCover, prompts an LLM using uncovered line/branch information, lets it request extra code context, executes the test, and continues the dialogue after a failure or no coverage improvement.
@@ -113,6 +127,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Direct. Replace raw uncovered branch text with symbolic path constraints, aliases, state changes, and boundary cases; retain CoverUp's execution loop. This is the closest existing architecture to the current TestEval feedback runner.
 
 **Evidence.** Full text read. Primary source: <https://doi.org/10.1145/3729398>
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/plasma-umass/coverup](https://github.com/plasma-umass/coverup) (Python package (src/coverup: llm, prompt, testrunner...), tests, CI, 2.4 MB, last push 2026-04; also archived on Zenodo). Dataset: CM (CodaMosa suite, 35 projects), PY (84 modules), MT (MuTAP/HumanEval 163 fns) — released by authors [github.com/plasma-umass/coverup-eval](https://github.com/plasma-umass/coverup-eval). Models: GPT-4o (gpt-4o-2024-05-13), Codex (CodaMosa/MuTAP baselines).
 
 ## 109. ScenarioFuzz-LLM: Enhancing Diversity in Autonomous Driving Scenario Fuzzing with LLMs
 
@@ -128,6 +144,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Official artifact/abstract only; paper PDF was not accessible. Primary source: <https://github.com/ldegao/ScenarioFuzz-LLM>
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/ldegao/ScenarioFuzz-LLM](https://github.com/ldegao/ScenarioFuzz-LLM) (Python fuzzer (fuzzer.py, gpt.py, rag_module, metrics) on CARLA 0.9.13/Autoware, 50 MB, last push 2025-12). Dataset: CARLA 0.9.13 + Autoware/Behavior Agent scenarios; seeds, results, violation scenarios — released by authors [drive.google.com/file/d/179mu5w462AwPAI4bms6FHQ1WVwMmxdNy/view](https://drive.google.com/file/d/179mu5w462AwPAI4bms6FHQ1WVwMmxdNy/view). Models: GPT-4-turbo (repo default; paper not verified).
+
 ## 110. Automatic High-Level Test Case Generation using Large Language Models
 
 **Method.** The authors collect use-case to high-level-test-case pairs, evaluate GPT-4o/Gemini and fine-tuned LLaMA 3.1 8B/Mistral 7B, then use human review.
@@ -141,6 +159,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Strong for a requirements setting: business goal, actors, preconditions, alternate flow, boundary, and expected result can be a concept record before executable-test synthesis.
 
 **Evidence.** Full text read; quantitative tables were not machine-extractable from the accessible manuscript, so no values are asserted. Primary source: <https://arxiv.org/abs/2503.17998>
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/navidh86/usecase-to-testcase](https://github.com/navidh86/usecase-to-testcase) (Jupyter notebooks for fine-tuning/inference/eval (Llama, Mistral, GPT-4o), 1.3 MB, last push 2024-12). Dataset: 1,067 use-case -> high-level test-case samples (industry, student, UiPath projects) — released by authors [github.com/navidh86/usecase-to-testcase/blob/main/usecase-testcase-dataset.json](https://github.com/navidh86/usecase-to-testcase/blob/main/usecase-testcase-dataset.json). Models: GPT-4o, Gemini (unversioned; repo: gemini-1.5-pro-002), Llama-3.1-8B-Instruct (fine-tuned, 4-bit), Mistral-7B-Instruct-v0.3 (fine-tuned, 4-bit).
 
 ## 111. Automating a Complete Software Test Process Using LLMs: An Automotive Case Study
 
@@ -156,6 +176,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://arxiv.org/abs/2502.04008>
 
+**Artifacts (checked 2026-09-29).** Code: data/prompts only, no tool source [github.com/Wangshuaiia/replication_package](https://github.com/Wangshuaiia/replication_package) (Sanitized prompts, DSPy signatures, Jinja templates + ~370 LOC demo scripts; full SPAPI-Tester and Volvo data confidential). Dataset: 100+ Volvo in-vehicle SPAPI APIs, CAN signals, virtual vehicle docs (industrial) — not released. Models: GPT-3.5-turbo (2023-07-01-preview), Llama-3-70B, GPT-4o (2024-05-13), Llama-3.1-70B.
+
 ## 112. LLMorpheus: Mutation Testing Using Large Language Models
 
 **Method.** LLMorpheus replaces chosen JavaScript source expressions with placeholders, prompts an LLM for realistic replacements, and uses the resulting changes as mutants; it compares to StrykerJS operators.
@@ -169,6 +191,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Very strong. A surviving mutant is a ready-made behavioral concept: altered expression, expected behavioral difference, affected inputs, and kill oracle. It is a sensible bridge from TestEval coverage to semantic fault exposure.
 
 **Evidence.** Full text read. Primary source: <https://arxiv.org/abs/2404.09952>
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/neu-se/llmorpheus](https://github.com/neu-se/llmorpheus) (TypeScript tool (src/generator,model,prompt), 330 KB, push 2026-07; orig githubnext/llmorpheus archived; modified StrykerJS neu-se/stryker-js). Dataset: 13 npm packages (TestPilot subjects) + 4 Bugs.js bugs; generated mutants/results — released by authors [github.com/neu-se/mutation-testing-data](https://github.com/neu-se/mutation-testing-data). Models: codellama-34b-instruct, codellama-13b-instruct, llama-3.3-70b-instruct, mixtral-8x7b-instruct, gpt-4o-mini.
 
 ## 113. Evaluation of the Choice of LLM in a Multi-Agent Solution for GUI-Test Generation
 
@@ -184,6 +208,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://www.diva-portal.org/smash/get/diva2%3A1974470/FULLTEXT01.pdf>
 
+**Artifacts (checked 2026-09-29).** Code: verified source [symatiq.com/resources/pack_pathfinder/software_pack_pathfinder.zip](https://symatiq.com/resources/pack_pathfinder/software_pack_pathfinder.zip) (Replication zip 53 MB: source_pathfinder.zip (153 files, Python agents/scraper), jupyter.zip, dataframes.zip, user guide (Oct 2024)). Dataset: 4 e-commerce sites (saucedemo, spree demo, ikea.com, netonnet.se) x 27 LLM constellations; run logs as dataframes — released by authors [symatiq.com/resources/pack_pathfinder/software_pack_pathfinder.zip](https://symatiq.com/resources/pack_pathfinder/software_pack_pathfinder.zip). Models: Mistral-Nemo (4-bit, Ollama), Gemma2 (4-bit, Ollama), Llama 3.1 (4-bit, Ollama).
+
 ## 114. LLM-Based Automatic Metamorphic Test Case Generation for LLM Fairness Testing
 
 **Method.** The study defines fairness metamorphic relations and compares LLM-generated follow-up cases with human-written cases; experts judge relation conformity and sensitive-attribute relevance with Cohen's kappa.
@@ -197,6 +223,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Strong in form: the concept is the metamorphic relation, protected attribute transformation, invariant output property, and source-to-follow-up mapping. It is less directly useful for ordinary program test generation unless a domain relation is known.
 
 **Evidence.** Abstract-only; proceedings full text unavailable. Primary source: <https://doi.org/10.1109/aitest70988.2026.00012>
+
+**Artifacts (checked 2026-09-29).** Code: none found (No repo found (GitHub search, S2/OpenAlex/web); IEEE AITest 2026 paper, closed access). Dataset: Fairness MRs; LLM- vs human-generated follow-up cases, expert judgments (sizes not disclosed) — unknown. Models: unknown.
 
 ## 115. Multi-Agent LLM-Based Metamorphic Testing for REST APIs
 
@@ -212,6 +240,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://arxiv.org/abs/2605.28321>
 
+**Artifacts (checked 2026-09-29).** Code: linked but host unreachable, not verified [gitlab.abo.fi/virtualseatrial-public/ARMETA](https://gitlab.abo.fi/virtualseatrial-public/ARMETA) (Paper cites GitLab replication pkg; host gitlab.abo.fi times out (curl, WebFetch, proxy) so contents not checked; no GitHub mirror). Dataset: Swagger PetStore (19 ops) + microservice-rbac-user-management (28 ops); baseline LogiAgent — public benchmark only. Models: GPT-4o, GPT-4o-mini, GPT-5.1.
+
 ## 116. Scenario-Guided LLM-based Mobile App GUI Testing
 
 **Method.** ScenGen uses five agents: Observer, Decider, Executor, Supervisor, and Recorder. It combines visual widget extraction, multimodal semantic interpretation, context memory, state-transition checks, rollback/correction, and replayable JSON scripts.
@@ -225,6 +255,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Very strong. A scenario concept can persist across rounds as goal, preconditions, expected GUI state transition, widget role, and completion oracle. This offers a concrete multi-agent form for a feedback loop.
 
 **Evidence.** Full text read. Primary sources: <https://arxiv.org/abs/2506.05079>, <https://doi.org/10.1145/3816025>
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/iGUITest/ScenGen](https://github.com/iGUITest/ScenGen) (Python testbot (5 agent roles, UIED, llm.py), 65 KB, push 2025-10; data/ dirs are placeholders). Dataset: 99 tasks: 92 Android apps x 10 scenarios (Google Play/AppGallery); app list on project site, no APKs — partially released [sites.google.com/view/scengen](https://sites.google.com/view/scengen). Models: GPT-4V (gpt-4-vision-preview).
 
 ## 117. From Untestable to Testable: Metamorphic Testing in the Age of LLMs
 
@@ -240,6 +272,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Abstract-only/inaccessible PDF. Primary source: <https://arxiv.org/abs/2603.24774>
 
+**Artifacts (checked 2026-09-29).** Code: none found (Position column (IEEE Computer, SE column); no new tool; recaps author's prior LLMorph work (mt4nlp.github.io)). Dataset: none (no experiments; cites prior LLMorph study) — not released. Models: none (no experiments).
+
 ## 118. Less Is More: Failing Test Generation with Large Language Models
 
 **Method.** MitGen decomposes a program into smaller constituent snippets and targets fault-triggering tests there rather than generating a failing test from the whole program at once.
@@ -253,6 +287,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Very strong. The current symbolic concept should be localized to a behaviorally coherent snippet, then include the fault hypothesis, trigger condition, and minimal distinguishing assertion. This is more semantic than a line target.
 
 **Evidence.** Abstract-only; publisher full text unavailable. Primary source: <https://doi.org/10.1145/3793675>
+
+**Artifacts (checked 2026-09-29).** Code: link dead [github.com/mitgenT/MitGen](https://github.com/mitgenT/MitGen) (Artifact page (mitgent.github.io) says git clone mitgenT/MitGen but repo 404; only site repo exists). Dataset: EvoEval-Difficult, ClassEval + 100 real-world subjects; released failing tests, reference versions, mask ranks — partially released [github.com/mitgenT/mitgent.github.io/tree/main/Data](https://github.com/mitgenT/mitgent.github.io/tree/main/Data). Models: Starcoder2-15B-instruct-v0.1, Meta-Llama-3-8B-Instruct, CodeQwen1.5-7B-Chat.
 
 ## 119. TestExplora: Benchmarking LLMs for Proactive Bug Discovery via Repository-Level Test Generation
 
@@ -268,6 +304,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://arxiv.org/abs/2602.10471>
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/microsoft/TestExplora](https://github.com/microsoft/TestExplora) (Python benchmark builder + harness (22 .py; GPT/Gemini/vLLM/SWE-agent/Trae callers, docker eval), 72 KB, push 2026-03). Dataset: TestExplora: 2,389 tasks / 1,552 PRs / 482 repos (+Lite 517) — released by authors [huggingface.co/datasets/microsoft/TestExplora](https://huggingface.co/datasets/microsoft/TestExplora). Models: Qwen3-Coder-30B-A3B, GPT-4o-2024-05-13, GPT-5-mini, o3-mini, o4-mini, Gemini-2.5-pro, DeepSeek-R1, Claude-Sonnet-4.5, GPT-5.
+
 ## 120. TestGenEval: A Real World Unit Test Generation and Test Completion Benchmark
 
 **Method.** TestGenEval derives file-level unit-test generation and completion tasks from SWE-bench Docker environments, then runs generated tests to measure pass rate, coverage, and mutation score.
@@ -281,6 +319,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Strong external evaluation. A useful concept must describe dependency/fixture facts, missing behavior relative to existing tests, state setup, and a mutation or fault target. It is a serious test for whether the current approach generalizes beyond isolated TestEval functions.
 
 **Evidence.** Full text read. Primary sources: <https://proceedings.iclr.cc/paper_files/paper/2025/file/26ded5c8ee8ec1bc4caced4e1c9b1584-Paper-Conference.pdf>, <https://github.com/facebookresearch/testgeneval>
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/facebookresearch/testgeneval](https://github.com/facebookresearch/testgeneval) (Python pipeline (31 .py: creation, inference, swebench_docker, eval), 199 KB, push 2026-03; paper also cites figshare). Dataset: TestGenEval: 1,210 code/test pairs, 11 Python repos (SWE-bench based) + TestGenEvalLite — released by authors [huggingface.co/datasets/kjain14/testgeneval](https://huggingface.co/datasets/kjain14/testgeneval). Models: CodeLlama-7B-Instruct, CodeLlama-70B-Instruct, Llama-3.1-8B-Instruct, Llama-3.1-70B-Instruct, Llama-3.1-405B-Instruct, Codestral-22B-v0.1, DeepSeek-Coder-V2-Lite-Instruct, Gemma-2-9B-it, Gemma-2-27B-it, GPT-4o.
 
 ## 121. Can LLMs Generate High-Quality Test Cases for Algorithm Problems? TestCase-Eval: A Systematic Evaluation of Fault Coverage and Exposure
 
@@ -296,6 +336,8 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Evidence.** Full text read. Primary source: <https://aclanthology.org/2025.acl-short.82.pdf>
 
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/FlowRays/TestCase-Eval](https://github.com/FlowRays/TestCase-Eval) (Python scripts (generate, sandbox, extract, stat_task1/2), 2 MB, push 2025-07). Dataset: TestCase-Eval: 500 Codeforces problems, 100k solutions (HF org TestCase-Eval) — released by authors [huggingface.co/TestCase-Eval](https://huggingface.co/TestCase-Eval). Models: GPT-4.1-2025-04-14, GPT-4.1-mini-2025-04-14, GPT-4o-2024-11-20, Qwen3-8B, Qwen3-32B, DeepSeek-R1-Distill-Qwen-32B, QwQ-32B, Qwen2.5-7B-Instruct, Qwen2.5-Coder-7B-Instruct, Qwen2.5-32B-Instruct, Qwen2.5-Coder-32B-Instruct, Qwen2.5-72B-Instruct, Llama-3.1-70B-Instruct, Llama-3.3-70B-Instruct, Mistral-Small-24B-Instruct-2501, Codestral-22B-v0.1, Gemma-3-12B-it, Gemma-3-27B-it, Seed-Coder-8B-Instruct.
+
 ## 122. Vulnerability-Triggering Test Case Generation from Third-Party Libraries
 
 **Method.** VulEUT performs client-to-library reachability analysis for a disclosed vulnerability condition, tracks parameter propagation, and asks an LLM to write a unit test that confirms exploitation.
@@ -309,3 +351,5 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 **Concept applicability.** Direct fit. The concept should preserve source entry point, call chain, parameter-transfer transformation, vulnerability guard, exploit condition, and red/green assertion. It is the strongest security-specific route after TestCase-Eval.
 
 **Evidence.** Full text read. Primary sources: <https://arxiv.org/abs/2409.16701>, <https://doi.org/10.1109/forge66646.2025.00021>
+
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/pocmigrator/VulEUT](https://github.com/pocmigrator/VulEUT) (Java tool (65 src .java, ANTLR, prompts, python) + generated tests, 37 MB, push 2024-09; paper's anon.4open link expired). Dataset: 32-35 Java CVEs/issues in 20 TPLs, 70 Maven client projects; generated prompts + unit tests — released by authors [github.com/pocmigrator/VulEUT/tree/main/datasets](https://github.com/pocmigrator/VulEUT/tree/main/datasets). Models: gpt-3.5-turbo.
