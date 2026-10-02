@@ -1,0 +1,88 @@
+glitched (excluded): {'Only Doc (ref.)': ['Lang_11_buggy'], 'Advanced Doc': ['Cli_8_buggy', 'Lang_11_buggy', 'Lang_4_buggy'], 'Concept-Inputs': ['Cli_8_buggy', 'Lang_11_buggy'], 'Placebo-Inputs': ['Cli_8_buggy', 'Lang_11_buggy']}
+
+## Intersection of clean methods, all: 75 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Only Doc (ref.) | 1269 / 1166 | 10 (0.86%) | 77 (6.60%) | 281 (24.10%) | 0.215 | 5 | 27 |
+| Advanced Doc | 1239 / 1069 | 9 (0.84%) | 95 (8.89%) | 268 (25.07%) | 0.262 | 3 | 30 |
+| Concept-Inputs | 1788 / 1615 | 25 (1.55%) | 97 (6.01%) | 397 (24.58%) | 0.196 | 7 | 30 |
+| Placebo-Inputs | 1372 / 1235 | 8 (0.65%) | 83 (6.72%) | 282 (22.83%) | 0.227 | 4 | 29 |
+
+McNemar Concept-Inputs vs Advanced Doc: ≥1 E 30 vs 30: lost 9, gained 9, p=1.000; ≥1 M 7 vs 3: lost 0, gained 4, p=0.125
+McNemar Concept-Inputs vs Placebo-Inputs: ≥1 E 30 vs 29: lost 7, gained 8, p=1.000; ≥1 M 7 vs 4: lost 1, gained 4, p=0.375
+McNemar Placebo-Inputs vs Advanced Doc: ≥1 E 29 vs 30: lost 8, gained 7, p=1.000; ≥1 M 4 vs 3: lost 0, gained 1, p=1.000
+McNemar Concept-Inputs vs Only Doc (ref.): ≥1 E 30 vs 27: lost 6, gained 9, p=0.607; ≥1 M 7 vs 5: lost 3, gained 5, p=0.727
+
+## Intersection of clean methods, no Gson_4: 69 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Only Doc (ref.) | 1190 / 1090 | 10 (0.92%) | 45 (4.13%) | 266 (24.40%) | 0.145 | 5 | 21 |
+| Advanced Doc | 1153 / 1010 | 9 (0.89%) | 69 (6.83%) | 262 (25.94%) | 0.208 | 3 | 25 |
+| Concept-Inputs | 1682 / 1540 | 25 (1.62%) | 64 (4.16%) | 380 (24.68%) | 0.144 | 7 | 25 |
+| Placebo-Inputs | 1291 / 1160 | 8 (0.69%) | 50 (4.31%) | 271 (23.36%) | 0.156 | 4 | 23 |
+
+McNemar Concept-Inputs vs Advanced Doc: ≥1 E 25 vs 25: lost 9, gained 9, p=1.000; ≥1 M 7 vs 3: lost 0, gained 4, p=0.125
+McNemar Concept-Inputs vs Placebo-Inputs: ≥1 E 25 vs 23: lost 6, gained 8, p=0.791; ≥1 M 7 vs 4: lost 1, gained 4, p=0.375
+McNemar Placebo-Inputs vs Advanced Doc: ≥1 E 23 vs 25: lost 8, gained 6, p=0.791; ≥1 M 4 vs 3: lost 0, gained 1, p=1.000
+McNemar Concept-Inputs vs Only Doc (ref.): ≥1 E 25 vs 21: lost 5, gained 9, p=0.424; ≥1 M 7 vs 5: lost 3, gained 5, p=0.727
+
+## Per-method changes vs Advanced Doc (intersection)
+- Concept-Inputs ≥1 E: gained ['Codec_6.read', 'Csv_16.iterator', 'Lang_38.format', 'Lang_3.createNumber', 'Lang_46.escapeJava', 'Lang_47.appendFixedWidthPadRight', 'Lang_51.toBoolean', 'Lang_60.indexOf', 'Lang_60.contains']; lost ['Gson_15.value', 'Gson_7.nextInt', 'Lang_19.translate', 'Lang_1.createNumber', 'Lang_21.isSameLocalTime', 'Lang_28.translate', 'Lang_35.add', 'Lang_46.escapeJava', 'Lang_7.createNumber']
+- Concept-Inputs ≥1 M: gained ['Gson_12.skipValue', 'Lang_40.containsIgnoreCase', 'Lang_41.getShortClassName', 'Lang_63.formatPeriod']; lost []
+- Placebo-Inputs ≥1 E: gained ['Cli_1.hasOption', 'Codec_18.equals', 'Codec_6.read', 'Gson_4.value', 'Lang_47.appendFixedWidthPadRight', 'Lang_51.toBoolean', 'Lang_59.appendFixedWidthPadRight']; lost ['Gson_15.value', 'Gson_7.nextInt', 'Lang_21.isSameLocalTime', 'Lang_28.translate', 'Lang_35.add', 'Lang_45.abbreviate', 'Lang_46.escapeJava', 'Lang_63.formatPeriod']
+- Placebo-Inputs ≥1 M: gained ['Lang_24.isNumber']; lost []
+
+M-methods per config (method: M tests):
+- Only Doc (ref.): Cli_1.hasOption:1, Lang_1.createNumber:1, Lang_35.add:1, Lang_57.isAvailableLocale:6, Lang_7.createNumber:1
+- Advanced Doc: Cli_1.hasOption:7, Lang_57.isAvailableLocale:1, Lang_5.toLocale:1
+- Concept-Inputs: Cli_1.hasOption:14, Gson_12.skipValue:1, Lang_40.containsIgnoreCase:1, Lang_41.getShortClassName:1, Lang_57.isAvailableLocale:6, Lang_5.toLocale:1, Lang_63.formatPeriod:1
+- Placebo-Inputs: Cli_1.hasOption:1, Lang_24.isNumber:1, Lang_57.isAvailableLocale:5, Lang_5.toLocale:1
+M tests without the methods that are M in every config (['Cli_1.hasOption', 'Lang_57.isAvailableLocale']): Only Doc (ref.) 3, Advanced Doc 1, Concept-Inputs 5, Placebo-Inputs 2
+
+## Gson_4 (one bug, 6 methods) share of each config (intersection)
+- Only Doc (ref.): E 32, M 0, FP 15; methods ≥1 E 6
+- Advanced Doc: E 26, M 0, FP 6; methods ≥1 E 5
+- Concept-Inputs: E 33, M 0, FP 17; methods ≥1 E 5
+- Placebo-Inputs: E 33, M 0, FP 11; methods ≥1 E 6
+
+## Per bug concept (manual labels, intersection): methods ≥1 E / ≥1 M (M/E/FP tests; red-prec)
+
+| concept | n | Only Doc (ref.) | Advanced Doc | Concept-Inputs | Placebo-Inputs |
+|---|---|---|---|---|---|
+| C0 | 7 | E3 M1 (1/3/13; 0.19) | E3 M1 (7/3/11; 0.21) | E3 M2 (15/6/27; 0.18) | E3 M1 (1/8/27; 0.23) |
+| C1 | 12 | E6 M1 (1/15/19; 0.44) | E6 M0 (0/11/29; 0.28) | E6 M0 (0/11/29; 0.28) | E6 M0 (0/13/22; 0.37) |
+| C2 | 3 | E1 M0 (0/8/9; 0.47) | E2 M0 (0/5/7; 0.42) | E2 M0 (0/6/8; 0.43) | E2 M0 (0/6/10; 0.38) |
+| C3 | 17 | E6 M1 (1/15/105; 0.12) | E6 M0 (0/22/102; 0.18) | E7 M1 (1/15/151; 0.09) | E8 M0 (0/17/106; 0.14) |
+| C4 | 18 | E7 M2 (2/33/79; 0.29) | E9 M1 (1/32/70; 0.31) | E6 M1 (1/34/108; 0.24) | E8 M1 (1/35/62; 0.36) |
+| C5 | 10 | E2 M0 (0/8/50; 0.14) | E6 M1 (1/27/36; 0.43) | E5 M2 (2/24/38; 0.39) | E4 M2 (2/10/27; 0.27) |
+| C6 | 4 | E3 M1 (1/3/21; 0.12) | E3 M0 (0/6/28; 0.18) | E2 M0 (0/5/50; 0.09) | E2 M0 (0/2/19; 0.10) |
+| C7 | 11 | E0 M0 (0/0/36; 0.00) | E1 M1 (1/1/33; 0.03) | E0 M2 (2/0/53; 0.00) | E0 M1 (1/0/42; 0.00) |
+| C8 | 6 | E1 M1 (6/1/13; 0.07) | E0 M1 (1/0/16; 0.00) | E2 M1 (6/3/14; 0.18) | E0 M1 (5/0/24; 0.00) |
+
+Concept-Inputs, methods whose bug concept is in C1-C8 (68): is an item of that concept in the list?
+  listed: 63 methods; ≥1 E Concept-Inputs 23, Placebo 22, Advanced 23; ≥1 M Concept-Inputs 5, Placebo 3, Advanced 2
+  not listed: 5 methods; ≥1 E Concept-Inputs 4, Placebo 4, Advanced 4; ≥1 M Concept-Inputs 0, Placebo 0, Advanced 0
+
+## Appended section (all 78 methods)
+- concept: items min 4 · Q1 11 · median 12 · Q3 12 · max 12 · mean 11; chars min 401 · Q1 905 · median 1073 · Q3 1198 · max 2058 · mean 1076
+- placebo: items min 4 · Q1 11 · median 12 · Q3 12 · max 12 · mean 11; chars min 378 · Q1 710 · median 774 · Q3 888 · max 1221 · mean 793
+- Advanced docstring chars (unchanged part): min 424 · Q1 815 · median 1153 · Q3 1654 · max 68108 · mean 3802
+  - Concept-Inputs: methods ≥1 E by section-length tercile (short/mid/long): 8/25 · 12/25 · 10/25
+  - Placebo-Inputs: methods ≥1 E by section-length tercile (short/mid/long): 14/25 · 11/25 · 4/25
+
+## LLM calls
+- Concept-Inputs: test-generation records 78, with a ```java block 78
+- Placebo-Inputs: test-generation records 78, with a ```java block 78
+- m3 specs_spec.jsonl (reused, not re-run): 87 calls
+- m3 specs_placebo.jsonl (reused, not re-run): 82 calls
+
+## Reference: same spec tables as oracles (m3) vs as inputs, 74 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Advanced Doc | 1217 / 1062 | 9 (0.85%) | 95 (8.95%) | 266 (25.05%) | 0.263 | 3 | 30 |
+| Concept-Inputs | 1768 / 1595 | 25 (1.57%) | 97 (6.08%) | 395 (24.76%) | 0.197 | 7 | 30 |
+| Placebo-Inputs | 1353 / 1216 | 8 (0.66%) | 83 (6.83%) | 279 (22.94%) | 0.229 | 4 | 29 |
+| m3 Concept-Spec (ref.) | 1582 / 1408 | 48 (3.41%) | 100 (7.10%) | 262 (18.61%) | 0.276 | 16 | 22 |

@@ -1,0 +1,25 @@
+# @after 2
+import os
+tgt_model = os.environ['TGT_MODEL']
+version = os.environ['VERSION']
+format, strategy, ignore_feature = 'comment', 'generation', 'full'
+DOC_FILE = os.environ['DOC_FILE']          # which *_with_*docstring*.jsonl to read
+file_post_fix = os.environ['FILE_POST_FIX']
+WITH_CODE = os.environ.get('WITH_CODE') == '1'
+data = [json.loads(l) for l in open(os.path.join(code_base, 'data/prompts', DOC_FILE))]
+new_instance_data = []
+for instance in data:
+    bug_id = instance["extra:project_name"]
+    new_instance = {"focal_method_invoked": instance["focal_method_invoked"], "id": bug_id, "strategy": strategy,
+                    "format": format, "ablation": ignore_feature, "focal_method": instance[focal_method_key]}
+    is_public, new_instance['content'] = formatter.apply_format_with_docstring(
+        instance, 'chatgpt', strategy=strategy, formatting=format, ignore_feature=ignore_feature,
+        project_name=bug_id, with_code=WITH_CODE, with_docstring=True)
+    new_instance.update(class_name=bug_id, method_signature=instance['source:source_method_signature'],
+                        is_public="1" if is_public else "0", role="user")
+    new_instance_data.append(new_instance)
+output_file = os.path.join(code_base, "data/prompts/rq1/" + tgt_model + f"_{format}_{strategy}_{ignore_feature}_{version}_{file_post_fix}.jsonl")
+with open(output_file, "w") as f:
+    for instance in new_instance_data:
+        f.write(json.dumps(instance) + "\n")
+print(len(new_instance_data), 'prompts ->', output_file)

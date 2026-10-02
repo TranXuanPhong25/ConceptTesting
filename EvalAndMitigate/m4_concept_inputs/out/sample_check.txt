@@ -1,0 +1,281 @@
+sample idx [2, 8, 11, 13, 19, 30, 38, 50, 51, 61]
+===== concept 2 Cli_26_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: opt = null
+// - null inputs: OptionBuilder.description is null (i.e., withDescription() was never called)
+// - empty/blank inputs: opt = ""
+// - empty/blank inputs: opt = "   " (whitespace only)
+// - boundaries, indexes, lengths: opt = a single character string (e.g., 'a')
+// - boundaries, indexes, lengths: opt = a multi-character string (e.g., 'abc')
+// - invalid or unusual inputs: opt = null
+// - invalid or unusual inputs: Any other invalid configuration of OptionBuilder's static fields (e.g., an invalid type for 'type' if Option.setType() were stricter)
+// - escaping, normalisation, format: opt contains special characters (e.g., 'a-b', 'a/b')
+// - characters, locale, unicode: opt contains non-ASCII characters (e.g., 'é')
+// - state, repeated calls: Method call
+// - typical inputs: A valid short option string 'opt' (e.g., '-a', '-x'), and OptionBuilder's static fields (longopt, description, argName, required, numberOfArgs, type, optionalArg, valuesep) have been set to valid values via its fluent API.
+===== concept 8 Codec_6_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: b is null.
+// - null inputs: The underlying 'in' InputStream is null.
+// - empty/blank inputs: len is 0.
+// - boundaries, indexes, lengths: offset is negative.
+// - boundaries, indexes, lengths: len is negative.
+// - invalid or unusual inputs: b is null.
+// - invalid or unusual inputs: offset or len are out of bounds for 'b'.
+// - escaping, normalisation, format: Input stream contains valid Base64 characters (if decoding) or arbitrary binary data (if encoding).
+// - escaping, normalisation, format: Input stream contains non-Base64 characters (if decoding).
+// - state, repeated calls: Repeated calls to read().
+// - state, repeated calls: Call to read() when 'base64.setInitialBuffer' was previously called with the same 'b' array.
+// - typical inputs: Valid byte array 'b', non-negative 'offset', and positive 'len' where 'offset + len' is within 'b' bounds, and the underlying stream has data.
+===== concept 11 Codec_9_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: binaryData = null, isChunked = true, urlSafe = false, maxResultSize = 100
+// - empty/blank inputs: binaryData = [], isChunked = true, urlSafe = false, maxResultSize = 100
+// - boundaries, indexes, lengths: binaryData = [0x01], isChunked = false, urlSafe = false, maxResultSize = 4
+// - boundaries, indexes, lengths: binaryData = [0x01], isChunked = false, urlSafe = false, maxResultSize = 3
+// - invalid or unusual inputs: binaryData = null
+// - invalid or unusual inputs: Calculated encoded length (including chunking and separators) > maxResultSize
+// - escaping, normalisation, format: urlSafe = false
+// - escaping, normalisation, format: urlSafe = true
+// - numeric range, overflow, precision: binaryData representing very large numbers (e.g., BigInteger.toByteArray())
+// - characters, locale, unicode: binaryData containing arbitrary byte values (e.g., representing non-ASCII characters in a specific encoding)
+// - state, repeated calls: Method call with any valid input
+// - typical inputs: binaryData = [0x48, 0x65, 0x6c, 0x6c, 0x6f], isChunked = false, urlSafe = false, maxResultSize = 100
+===== concept 13 Csv_2_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: The 'name' parameter is null.
+// - null inputs: The 'mapping' field is null.
+// - empty/blank inputs: The 'name' parameter is an empty string ("").
+// - empty/blank inputs: The 'name' parameter is a whitespace-only string (e.g., "   ").
+// - boundaries, indexes, lengths: The mapped index is 0 (first element).
+// - boundaries, indexes, lengths: The mapped index is `values.length - 1` (last element).
+// - invalid or unusual inputs: The 'mapping' field is null.
+// - invalid or unusual inputs: A header name is not found in the mapping.
+// - escaping, normalisation, format: The 'name' parameter contains special characters or whitespace.
+// - characters, locale, unicode: The 'name' parameter contains non-ASCII or Unicode characters.
+// - state, repeated calls: Calling the method.
+// - typical inputs: A valid header name present in the mapping.
+===== concept 19 Gson_4_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: value is null
+// - empty/blank inputs: value is an empty string, e.g., ''
+// - empty/blank inputs: value is a whitespace-only string, e.g., '   '
+// - boundaries, indexes, lengths: value is a very long string (e.g., exceeding typical buffer sizes)
+// - escaping, normalisation, format: value contains characters requiring JSON escaping (e.g., '"', '\', '/', '\b', '\f', '\n', '\r', '\t')
+// - escaping, normalisation, format: value contains HTML-sensitive characters (e.g., '<', '>', '&') when `htmlSafe` is true
+// - characters, locale, unicode: value contains non-ASCII Unicode characters (e.g., '你好')
+// - characters, locale, unicode: value contains Unicode surrogate pairs (e.g., emoji characters)
+// - state, repeated calls: Calling `value(String value)`
+// - state, repeated calls: Calling `value(String value)` multiple times consecutively
+// - typical inputs: A non-null string value, e.g., 'hello'
+// - typical inputs: A non-null string value containing special JSON characters, e.g., '"hello\nworld"'
+===== concept 30 Lang_16_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: str is null
+// - empty/blank inputs: str is an empty string, e.g., ""
+// - empty/blank inputs: str is a blank string, e.g., "   ", "\t\n"
+// - boundaries, indexes, lengths: str represents the maximum or minimum value for a primitive type (e.g., Integer.MAX_VALUE, Long.MIN_VALUE)
+// - boundaries, indexes, lengths: str represents a number just outside the range of a primitive type (e.g., Integer.MAX_VALUE + 1)
+// - invalid or unusual inputs: str is null
+// - invalid or unusual inputs: str is blank or empty
+// - escaping, normalisation, format: str contains 'e' or 'E' for exponent notation, e.g., "1.23e-4", "5E+2"
+// - numeric range, overflow, precision: str represents a number that exceeds the range of Long but fits in BigInteger, e.g., "9223372036854775808"
+// - characters, locale, unicode: str contains non-ASCII digits or characters (e.g., Arabic numerals, full-width digits)
+// - state, repeated calls: Method call with a valid string
+// - typical inputs: A string representing an integer without a type suffix, e.g., "123", "-45"
+===== concept 38 Lang_27_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: str is null
+// - empty/blank inputs: str is empty ('')
+// - empty/blank inputs: str is blank (e.g., '   ', '\t\n')
+// - boundaries, indexes, lengths: str represents a very large number that exceeds `Long.MAX_VALUE` but is a valid integer string, e.g., '9223372036854775808'
+// - boundaries, indexes, lengths: str is a single digit, e.g., '5'
+// - invalid or unusual inputs: str is null
+// - invalid or unusual inputs: str is blank
+// - escaping, normalisation, format: Input strings with 'e' or 'E' for exponent (e.g., '1.2e3', '1.2E3')
+// - numeric range, overflow, precision: Numbers that underflow to 0.0F or 0.0D but the original string was not 'all zeros' (e.g., '1e-999f')
+// - characters, locale, unicode: Non-ASCII characters in the number string (e.g., '1²3')
+// - state, repeated calls: Consecutive calls with the same input string
+// - typical inputs: A valid integer string without a type suffix, e.g., '123'
+===== concept 50 Lang_36_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: null
+// - empty/blank inputs: ""
+// - empty/blank inputs: " "
+// - boundaries, indexes, lengths: "0"
+// - boundaries, indexes, lengths: "-0"
+// - invalid or unusual inputs: Any invalid number string (e.g., "abc", "12.3.4", "1E-")
+// - invalid or unusual inputs: null
+// - escaping, normalisation, format: Hexadecimal prefix "0x" or "0X"
+// - numeric range, overflow, precision: Numbers exceeding standard Java primitive type ranges (e.g., very large integers or floats)
+// - characters, locale, unicode: Non-ASCII digits or characters
+// - state, repeated calls: Any string input
+// - typical inputs: "123"
+===== concept 51 Lang_38_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: null 'calendar' argument.
+// - null inputs: null 'buf' argument.
+// - null inputs: null 'mTimeZone' when 'mTimeZoneForced' is true.
+// - invalid or unusual inputs: null 'calendar' argument.
+// - invalid or unusual inputs: null 'buf' argument.
+// - invalid or unusual inputs: null 'mTimeZone' when 'mTimeZoneForced' is true.
+// - state, repeated calls: Calling the method with 'mTimeZoneForced' as true.
+// - state, repeated calls: Calling the method with 'mTimeZoneForced' as false.
+// - state, repeated calls: Repeated calls to the method.
+// - typical inputs: A valid Calendar object and a StringBuffer.
+// - typical inputs: A valid Calendar object and a StringBuffer, where 'mTimeZoneForced' is true and 'mTimeZone' is set.
+// - typical inputs: A valid Calendar object and a StringBuffer, where 'mTimeZoneForced' is false.
+===== concept 61 Lang_47_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - null inputs: obj = null, width = 5, padChar = ' '
+// - empty/blank inputs: obj = "", width = 5, padChar = ' '
+// - boundaries, indexes, lengths: width = 0
+// - boundaries, indexes, lengths: width = -1
+// - escaping, normalisation, format: obj.toString() contains special characters (e.g., newlines, tabs)
+// - escaping, normalisation, format: padChar is a special character (e.g., newline, tab)
+// - numeric range, overflow, precision: width is a very large positive integer (e.g., close to Integer.MAX_VALUE)
+// - characters, locale, unicode: obj.toString() contains non-ASCII characters or Unicode supplementary characters
+// - characters, locale, unicode: padChar is a non-ASCII character or Unicode supplementary character
+// - state, repeated calls: Method call
+// - state, repeated calls: Consecutive calls to `appendFixedWidthPadLeft`
+// - typical inputs: obj = "Hello", width = 10, padChar = '-'
+===== placebo 2 Cli_26_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name `create`
+// - naming: Parameter name `opt`
+// - performance: Small number of `Option` properties to set (typical usage).
+// - performance: Large number of `Option` objects created sequentially.
+// - thread-safety: Multiple threads calling `create` concurrently after setting different `OptionBuilder` properties.
+// - thread-safety: Single thread calling `create` sequentially.
+// - logging: Any input or execution path.
+// - API stability: The method `create(String opt)` within `org.apache.commons.cli.OptionBuilder`.
+// - readability: The provided code snippet.
+// - dependencies: Internal dependencies of the `create` method.
+// - dependencies: External callers of the `create` method.
+// - typical inputs: A valid short option string (e.g., "a") and previously configured static OptionBuilder properties (e.g., `OptionBuilder.withLongOpt("alpha").withDescription("Alpha option.").isRequired().hasArg().create("a")`).
+===== placebo 8 Codec_6_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name 'read'
+// - naming: Parameter 'b'
+// - documentation: Method signature and Javadoc comments (implied by context)
+// - performance: Small inputs (small 'len', few bytes in stream)
+// - performance: Large inputs (large 'len', many bytes in stream)
+// - thread-safety: Concurrent calls from multiple threads on the same `Base64InputStream` instance.
+// - logging: Any operation within the method.
+// - API stability: Method's visibility and context.
+// - readability: Method structure and length.
+// - dependencies: Internal dependencies.
+// - dependencies: External callers.
+// - typical inputs: Valid byte array 'b', non-negative 'offset', non-negative 'len' where 'offset + len' is within 'b' bounds, and the underlying stream has Base64 data to process.
+===== placebo 11 Codec_9_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name: encodeBase64
+// - naming: Parameter name: binaryData
+// - documentation: Method documentation (implied from context)
+// - documentation: Parameter documentation: binaryData
+// - performance: Small inputs (e.g., 10 bytes)
+// - performance: Large inputs (e.g., 1MB)
+// - thread-safety: Concurrent calls with different inputs
+// - logging: Any execution path
+// - API stability: Method visibility
+// - readability: Method length and structure
+// - dependencies: Dependencies within `org.apache.commons.codec.binary.Base64`
+// - typical inputs: binaryData = null
+===== placebo 13 Csv_2_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name 'get'
+// - naming: Parameter name 'name'
+// - documentation: Method documentation
+// - documentation: Parameter 'name' documentation
+// - performance: Small number of headers/values
+// - performance: Large number of headers/values
+// - thread-safety: Concurrent calls to 'get' on the same CSVRecord instance
+// - logging: Any execution path
+// - API stability: Method visibility
+// - readability: Method structure and length
+// - dependencies: Dependencies
+// - typical inputs: A valid header name 'name' that exists in the 'mapping' and corresponds to a non-null value in 'values'. Example: name = 'Header1', mapping = {'Header1': 0}, values = ['Value1', 'Value2']
+===== placebo 19 Gson_4_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name: `value`
+// - naming: Parameter name: `value`
+// - documentation: Method documentation
+// - documentation: Parameter documentation for `value`
+// - performance: Small string input (e.g., "a")
+// - thread-safety: Concurrent calls from multiple threads on the same `JsonWriter` instance
+// - logging: Any input
+// - API stability: Method visibility: `public`
+// - readability: Method length and structure
+// - dependencies: Internal dependencies
+// - typical inputs: A non-null String value, e.g., "hello world"
+// - typical inputs: A null String value
+===== placebo 30 Lang_16_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name `createNumber`
+// - naming: Parameter name `str`
+// - documentation: Method signature and Javadoc
+// - documentation: Parameter `str` documentation
+// - performance: Small, valid number strings (e.g., "123", "1.23")
+// - performance: Large number strings (e.g., very long integers, high-precision decimals)
+// - thread-safety: Concurrent calls from multiple threads
+// - logging: Any input
+// - API stability: Method visibility `public static`
+// - readability: Overall structure and length
+// - dependencies: Internal dependencies
+// - typical inputs: str = null
+===== placebo 38 Lang_27_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: method name `createNumber`
+// - naming: parameter name `str`
+// - documentation: method documentation
+// - documentation: parameter `str` documentation
+// - performance: small to medium length numeric strings (e.g., "123", "1.23e-5", "-0xAF")
+// - performance: very long numeric strings (e.g., BigInteger or BigDecimal representations)
+// - thread-safety: concurrent calls from multiple threads
+// - logging: any input
+// - API stability: method visibility `public static`
+// - readability: method structure and length
+// - dependencies: dependencies
+// - typical inputs: null string
+===== placebo 50 Lang_36_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name 'isNumber'
+// - naming: Parameter name 'str'
+// - documentation: Method documentation
+// - documentation: Parameter documentation for 'str'
+// - performance: Small inputs (e.g., single digit, short number strings)
+// - performance: Large inputs (e.g., very long number strings)
+// - thread-safety: Concurrent calls
+// - logging: Method execution
+// - API stability: API status
+// - readability: Overall structure and length
+// - dependencies: Dependencies
+// - typical inputs: An empty string or a string containing only whitespace.
+===== placebo 51 Lang_38_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name 'format'
+// - naming: Parameter name 'calendar'
+// - documentation: Method documentation
+// - performance: Small to large Calendar inputs
+// - thread-safety: Concurrent calls with different Calendar objects and separate StringBuffers
+// - logging: Any input
+// - API stability: Method visibility
+// - readability: Method structure and length
+// - dependencies: Dependencies
+// - typical inputs: calendar = a Calendar object, buf = an empty StringBuffer, mTimeZoneForced = false
+// - typical inputs: calendar = a Calendar object, buf = an empty StringBuffer, mTimeZoneForced = true, mTimeZone = a specific TimeZone (e.g., 'America/New_York')
+// - typical inputs: calendar = a Calendar object, buf = a StringBuffer with existing content, mTimeZoneForced = false
+===== placebo 61 Lang_47_buggy
+// Input classes to exercise (derived from a concept checklist; expected results are intentionally not given - derive them from the specification above):
+// - naming: Method name: appendFixedWidthPadLeft
+// - naming: Parameter name: obj
+// - documentation: Method documentation
+// - documentation: Parameter `obj` documentation
+// - performance: Small inputs (e.g., width < 100)
+// - performance: Large inputs (e.g., width > 10000)
+// - thread-safety: Concurrent calls from multiple threads
+// - logging: Any execution path
+// - API stability: Method visibility and context
+// - readability: Method structure and length
+// - dependencies: Internal dependencies
+// - typical inputs: obj = "hello", width = 10, padChar = ' '

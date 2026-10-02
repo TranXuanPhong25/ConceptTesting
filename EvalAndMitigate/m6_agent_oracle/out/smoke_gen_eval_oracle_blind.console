@@ -1,0 +1,35 @@
+/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language.build_library is deprecated. Use the new bindings instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language(path, name) is deprecated. Use Language(ptr, name) instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+/repo
+3 prompts -> /repo/data/prompts/rq1/Gemini-2-5-flash_comment_generation_full_buggy_m6_oracle_blind_smoke.jsonl
+/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language.build_library is deprecated. Use the new bindings instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language(path, name) is deprecated. Use Language(ptr, name) instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+/repo
+Current PATH: /venv/bin:/defects4j/framework/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Updated PATH: /defects4j/framework/bin:/venv/bin:/defects4j/framework/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Total items in data: 3
+0
+Processing items:   0%|          | 0/3 [00:00<?, ?item/s]Generating unit test for Cli_32_buggy:   0%|          | 0/3 [00:00<?, ?item/s]Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+Generating unit test for Cli_32_buggy:  33%|███▎      | 1/3 [00:14<00:28, 14.03s/item]Generating unit test for Lang_20_buggy:  33%|███▎      | 1/3 [00:14<00:28, 14.03s/item]Generating unit test for Lang_20_buggy:  67%|██████▋   | 2/3 [00:25<00:12, 12.49s/item]Generating unit test for Lang_40_buggy:  67%|██████▋   | 2/3 [00:25<00:12, 12.49s/item]Generating unit test for Lang_40_buggy: 100%|██████████| 3/3 [00:34<00:00, 11.00s/item]Generating unit test for Lang_40_buggy: 100%|██████████| 3/3 [00:34<00:00, 11.56s/item]
+gemini retry 1: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.', 'status': 'RESOURCE_EXHAUSTED'}}
+3
+/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language.build_library is deprecated. Use the new bindings instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language(path, name) is deprecated. Use Language(ptr, name) instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+/repo
+Current PATH: /venv/bin:/defects4j/framework/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Updated PATH: /defects4j/framework/bin:/venv/bin:/defects4j/framework/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Total items in data: 3
+3
+Logging to file: /repo/data/rq1/logs/Gemini-2-5-flash_gen_test_evaluate_buggy_gen_test_non_private_or_default_m6_oracle_blind_smoke_log_1.log
+Processing items:   0%|          | 0/3 [00:00<?, ?item/s]Processing Cli_32_buggy:   0%|          | 0/3 [00:00<?, ?item/s]Processing Cli_32_buggy:   0%|          | 0/3 [00:00<?, ?item/s]
+Traceback (most recent call last):
+  File "/repo/run/out/eval_m6_oracle_blind_smoke.py", line 1974, in <module>
+    logger.info(f"reported test passed to compilable rate: {reported_passed_on_fixed/test_compiled}")
+                                                            ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~
+ZeroDivisionError: division by zero
