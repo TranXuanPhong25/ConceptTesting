@@ -1,0 +1,167 @@
+## 1. Rule labels vs my reading of all 78 in-method diffs
+
+| concept | rule+ | manual+ | TP | FP | FN | precision | recall | agreement | kappa |
+|---|---|---|---|---|---|---|---|---|---|
+| C0 | 31 | 8 | 6 | 25 | 2 | 0.19 | 0.75 | 0.65 | 0.17 |
+| C1 | 10 | 12 | 8 | 2 | 4 | 0.80 | 0.67 | 0.92 | 0.68 |
+| C2 | 3 | 3 | 2 | 1 | 1 | 0.67 | 0.67 | 0.97 | 0.65 |
+| C3 | 35 | 19 | 15 | 20 | 4 | 0.43 | 0.79 | 0.69 | 0.35 |
+| C4 | 10 | 19 | 10 | 0 | 9 | 1.00 | 0.53 | 0.88 | 0.63 |
+| C5 | 2 | 10 | 1 | 1 | 9 | 0.50 | 0.10 | 0.87 | 0.13 |
+| C6 | 2 | 4 | 0 | 2 | 4 | 0.00 | 0.00 | 0.92 | -0.04 |
+| C7 | 19 | 11 | 10 | 9 | 1 | 0.53 | 0.91 | 0.87 | 0.59 |
+| C8 | 3 | 6 | 1 | 2 | 5 | 0.33 | 0.17 | 0.91 | 0.18 |
+
+micro (C1-C8 label instances): precision 47/84 = 0.56, recall 47/84 = 0.56
+exact label-set match 20/78; methods where rule gives >=1 C1-C8 label and at least one is right: 41/47
+coverage (rule): methods with >=1 of C1-C8 47/78 (60%), only C0 31; bugs 36/60 (60%)
+coverage (manual): methods with >=1 of C1-C8 70/78 (90%), only C0 8; bugs 53/60 (88%)
+
+False-positive sources (concept, pattern): C3 `(?<![<>=!&|+\-*/])(<=|>=|<|>)(?![<>=])` x11; C3 `\b(charAt|substring|subSequence|indexOf|lastIndexOf|regionMatches)\(` x11; C3 `[+-]\s*1\b(?!\.)` x10; C3 `\w\[[^\]]+\]` x10; C3 `\blength\(\)|\.length\b|\bsize\(\)` x8; C7 `'(\\.|[^'\\])'` x7; C7 `\bchar\b|Character\.|codePoint|Locale|surrogate` x3; C8 `<class-field mutation>` x2; C1 `(==|!=)\s*null\b` x2; C6 `\bMath\.\w+|overflow|isNaN|isInfinite` x2; C8 `\bclone\(\)|\bcopyOf|new (Array|Hash|Linked|Tree)\w*\(\w+|unmodifiable|\breset\(` x1; C2 `\bis(Not)?(Empty|Blank)\s*\(` x1; C5 `\b(format|replace|replaceAll|trim|strip|normali[sz]e)\w*\(` x1; C3 `\+\+|--` x1
+scope: Counter({'method': 77, 'whole_patch': 1})
+
+## 2. LLM judge vs my verdicts
+
+cases 26; agreement 17/26 = 0.65
+confusion (mine -> judge): BUGGY->BUGGY 5, BUGGY->FIXED 1, FIXED->BUGGY 2, FIXED->FIXED 3, FIXED->NEITHER 3, NEITHER->BUGGY 3, NEITHER->NEITHER 9
+binary agreement BUGGY vs not: 20/26
+binary agreement FIXED vs not: 20/26
+BUGGY/FIXED verdicts whose quote occurs verbatim (whitespace/'*' normalised) in the docstring: 73/77
+judge calls 156 for 156 judgements; unparsed 0
+
+| docset | BUGGY | FIXED | NEITHER |
+|---|---|---|---|
+| basic | 29 (37.2%) | 3 (3.8%) | 46 (59.0%) |
+| advanced | 32 (41.0%) | 13 (16.7%) | 33 (42.3%) |
+basic -> advanced transitions: BUGGY->BUGGY 15, BUGGY->FIXED 7, BUGGY->NEITHER 7, FIXED->BUGGY 1, FIXED->FIXED 1, FIXED->NEITHER 1, NEITHER->BUGGY 16, NEITHER->FIXED 5, NEITHER->NEITHER 25
+
+## 3. Outcomes per bug concept (manual labels; multi-label, so rows overlap). Glitched methods excluded per config.
+
+### by manual labels: methods with >=1 E / >=1 M (M, E, FP tests; red-prec)
+
+| concept | n | Doc W/ Code | Only Doc | Advanced Doc | m1 review Only Doc | m1 review Adv Doc |
+|---|---|---|---|---|---|---|
+| C0 | 8 | E2 M1 (8/2/7; 0.22) | E3 M1 (1/3/16; 0.16) | E3 M1 (7/3/11; 0.21) | E3 M0 (0/3/9; 0.25) | E3 M1 (5/3/15; 0.17) |
+| C1 | 12 | E3 M3 (4/7/14; 0.33) | E6 M1 (1/15/19; 0.44) | E6 M0 (0/11/29; 0.28) | E1 M1 (1/1/9; 0.10) | E5 M0 (0/9/18; 0.33) |
+| C2 | 3 | E2 M0 (0/6/4; 0.60) | E1 M0 (0/8/9; 0.47) | E2 M0 (0/5/7; 0.42) | E0 M0 (0/0/3; 0.00) | E1 M0 (0/3/3; 0.50) |
+| C3 | 19 | E5 M1 (2/19/64; 0.23) | E6 M1 (1/15/121; 0.11) | E6 M0 (0/22/102; 0.18) | E5 M1 (1/9/71; 0.11) | E5 M0 (0/19/77; 0.20) |
+| C4 | 19 | E6 M3 (4/35/42; 0.45) | E7 M2 (2/33/79; 0.29) | E9 M1 (1/32/70; 0.31) | E4 M2 (2/15/39; 0.28) | E8 M1 (1/22/42; 0.34) |
+| C5 | 10 | E3 M0 (0/6/33; 0.15) | E2 M0 (0/8/50; 0.14) | E6 M1 (1/27/36; 0.43) | E2 M0 (0/8/34; 0.19) | E5 M1 (1/21/27; 0.44) |
+| C6 | 4 | E1 M1 (2/1/13; 0.07) | E3 M1 (1/3/21; 0.12) | E3 M0 (0/6/28; 0.18) | E2 M1 (1/2/17; 0.11) | E2 M0 (0/3/28; 0.10) |
+| C7 | 11 | E0 M0 (0/0/14; 0.00) | E0 M0 (0/0/36; 0.00) | E1 M1 (1/1/33; 0.03) | E0 M0 (0/0/25; 0.00) | E1 M1 (1/1/25; 0.04) |
+| C8 | 6 | E0 M1 (3/0/0; 0.00) | E1 M1 (6/1/13; 0.07) | E0 M1 (1/0/16; 0.00) | E1 M1 (5/1/5; 0.17) | E1 M0 (0/1/7; 0.12) |
+
+### by rule labels: methods with >=1 E / >=1 M (M, E, FP tests; red-prec)
+
+| concept | n | Doc W/ Code | Only Doc | Advanced Doc | m1 review Only Doc | m1 review Adv Doc |
+|---|---|---|---|---|---|---|
+| C0 | 31 | E11 M4 (14/48/41; 0.54) | E14 M3 (8/53/91; 0.37) | E14 M2 (8/43/62; 0.41) | E9 M2 (6/26/50; 0.34) | E11 M1 (5/25/45; 0.36) |
+| C1 | 10 | E1 M1 (1/1/12; 0.08) | E4 M0 (0/6/15; 0.29) | E2 M0 (0/6/31; 0.16) | E1 M0 (0/1/9; 0.10) | E2 M0 (0/6/24; 0.20) |
+| C2 | 3 | E1 M0 (0/1/1; 0.50) | E0 M0 (0/0/5; 0.00) | E1 M0 (0/3/9; 0.25) | E0 M0 (0/0/3; 0.00) | E1 M0 (0/3/9; 0.25) |
+| C3 | 35 | E8 M2 (3/21/103; 0.17) | E10 M1 (1/20/170; 0.11) | E12 M1 (1/46/178; 0.21) | E8 M1 (1/12/102; 0.11) | E12 M1 (1/44/142; 0.24) |
+| C4 | 10 | E0 M2 (3/0/20; 0.00) | E0 M1 (1/0/46; 0.00) | E2 M1 (1/2/47; 0.04) | E0 M1 (1/0/23; 0.00) | E2 M1 (1/2/27; 0.07) |
+| C5 | 2 | E0 M0 (0/0/18; 0.00) | E0 M0 (0/0/16; 0.00) | E1 M0 (0/2/12; 0.14) | E0 M0 (0/0/13; 0.00) | E1 M0 (0/2/11; 0.15) |
+| C6 | 2 | E1 M0 (0/1/0; 1.00) | E2 M0 (0/3/0; 1.00) | E1 M0 (0/1/0; 1.00) | E2 M0 (0/3/0; 1.00) | E1 M0 (0/1/0; 1.00) |
+| C7 | 19 | E4 M1 (2/17/31; 0.35) | E3 M1 (1/9/108; 0.08) | E7 M1 (1/28/94; 0.23) | E2 M1 (1/3/77; 0.04) | E7 M1 (1/26/67; 0.28) |
+| C8 | 3 | E0 M0 (0/0/18; 0.00) | E0 M0 (0/0/20; 0.00) | E1 M0 (0/2/12; 0.14) | E0 M0 (0/0/13; 0.00) | E1 M0 (0/2/13; 0.13) |
+
+## 4. Docstring verdict vs outcome, per config (methods; glitched excluded)
+
+| config | verdict | n | >=1 E | >=1 M |
+|---|---|---|---|---|
+| Doc W/ Code | FIXED | 3 | 0 | 0 |
+| Doc W/ Code | BUGGY | 29 | 8 | 4 |
+| Doc W/ Code | NEITHER | 46 | 12 | 4 |
+| Only Doc | FIXED | 3 | 1 | 0 |
+| Only Doc | BUGGY | 29 | 10 | 2 |
+| Only Doc | NEITHER | 45 | 16 | 3 |
+| Advanced Doc | FIXED | 12 | 6 | 0 |
+| Advanced Doc | BUGGY | 31 | 15 | 1 |
+| Advanced Doc | NEITHER | 32 | 9 | 2 |
+| m1 review Only Doc | FIXED | 3 | 0 | 0 |
+| m1 review Only Doc | BUGGY | 29 | 7 | 2 |
+| m1 review Only Doc | NEITHER | 46 | 11 | 2 |
+| m1 review Adv Doc | FIXED | 12 | 5 | 0 |
+| m1 review Adv Doc | BUGGY | 32 | 12 | 1 |
+| m1 review Adv Doc | NEITHER | 33 | 10 | 1 |
+
+Fisher exact (two-sided): share of methods with the outcome among verdict=v vs the rest
+
+| config | split | outcome | verdict=v | rest | p |
+|---|---|---|---|---|---|
+| Doc W/ Code | FIXED vs not | >=1 E | 0/3 | 20/75 | 0.565 |
+| Doc W/ Code | BUGGY vs not | >=1 M | 4/29 | 4/49 | 0.461 |
+| Doc W/ Code | BUGGY vs not | >=1 E | 8/29 | 12/49 | 0.793 |
+| Doc W/ Code | FIXED vs not | >=1 M | 0/3 | 8/75 | 1.000 |
+| Only Doc | FIXED vs not | >=1 E | 1/3 | 26/74 | 1.000 |
+| Only Doc | BUGGY vs not | >=1 M | 2/29 | 3/48 | 1.000 |
+| Only Doc | BUGGY vs not | >=1 E | 10/29 | 17/48 | 1.000 |
+| Only Doc | FIXED vs not | >=1 M | 0/3 | 5/74 | 1.000 |
+| Advanced Doc | FIXED vs not | >=1 E | 6/12 | 24/63 | 0.526 |
+| Advanced Doc | BUGGY vs not | >=1 M | 1/31 | 2/44 | 1.000 |
+| Advanced Doc | BUGGY vs not | >=1 E | 15/31 | 15/44 | 0.239 |
+| Advanced Doc | FIXED vs not | >=1 M | 0/12 | 3/63 | 1.000 |
+| m1 review Only Doc | FIXED vs not | >=1 E | 0/3 | 18/75 | 1.000 |
+| m1 review Only Doc | BUGGY vs not | >=1 M | 2/29 | 2/49 | 0.625 |
+| m1 review Only Doc | BUGGY vs not | >=1 E | 7/29 | 11/49 | 1.000 |
+| m1 review Only Doc | FIXED vs not | >=1 M | 0/3 | 4/75 | 1.000 |
+| m1 review Adv Doc | FIXED vs not | >=1 E | 5/12 | 22/65 | 0.744 |
+| m1 review Adv Doc | BUGGY vs not | >=1 M | 1/32 | 1/45 | 1.000 |
+| m1 review Adv Doc | BUGGY vs not | >=1 E | 12/32 | 15/45 | 0.810 |
+| m1 review Adv Doc | FIXED vs not | >=1 M | 0/12 | 2/65 | 1.000 |
+
+## 5. Misguided (>=1 M) and effective (>=1 E) methods: concept (manual) and docstring verdict
+
+- Doc W/ Code >=1 M (8): Cli_1#hasOption[C0;N], Cli_32#findWrapPos[C3;N], Lang_33#toClass[C1;B], Lang_35#add[C1+C4;B], Lang_35#add[C1+C4;B], Lang_49#reduce[C6;N], Lang_57#isAvailableLocale[C8;N], Lang_7#createNumber[C4;B]
+  concepts: {'C0': 1, 'C1': 3, 'C3': 1, 'C4': 3, 'C6': 1, 'C8': 1}; verdicts: {'NEITHER': 4, 'BUGGY': 4}
+- Doc W/ Code >=1 E (20): Cli_32#findWrapPos[C3;N], Codec_13#isDoubleMetaphoneEqual[C1+C2;N], Codec_17#newStringIso8859_1[C1;N], Codec_7#encodeBase64String[C5;B], Codec_9#encodeBase64[C3;B], Gson_4#value[C4;N], Gson_4#value[C4;N], Gson_4#value[C4;N], Gson_4#nullValue[C4;B], Gson_4#value[C4;B], Gson_4#value[C4;N], Lang_14#equals[C0;B], Lang_19#translate[C3;N], Lang_36#isNumber[C5;B], Lang_3#createNumber[C6;B], Lang_41#getPackageName[C2+C5;N], Lang_47#appendFixedWidthPadLeft[C1;N], Lang_51#toBoolean[C3;N], Lang_60#indexOf[C3;B], Lang_63#formatPeriod[C0;N]
+  concepts: {'C0': 2, 'C1': 3, 'C2': 2, 'C3': 5, 'C4': 6, 'C5': 3, 'C6': 1}; verdicts: {'NEITHER': 12, 'BUGGY': 8}
+- Only Doc >=1 M (5): Cli_1#hasOption[C0;N], Lang_1#createNumber[C3+C6;N], Lang_35#add[C1+C4;B], Lang_57#isAvailableLocale[C8;N], Lang_7#createNumber[C4;B]
+  concepts: {'C0': 1, 'C1': 1, 'C3': 1, 'C4': 2, 'C6': 1, 'C8': 1}; verdicts: {'NEITHER': 3, 'BUGGY': 2}
+- Only Doc >=1 E (27): Cli_1#hasOption[C0;N], Cli_32#findWrapPos[C3;N], Codec_13#isDoubleMetaphoneEqual[C1+C2;N], Codec_17#newStringIso8859_1[C1;N], Codec_18#equals[C3;B], Codec_7#encodeBase64String[C5;B], Codec_9#encodeBase64[C3;B], Csv_4#getHeaderMap[C1;N], Gson_12#skipValue[C3;N], Gson_15#value[C4+C6;F], Gson_4#value[C4;N], Gson_4#value[C4;N], Gson_4#value[C4;N], Gson_4#nullValue[C4;B], Gson_4#value[C4;B], Gson_4#value[C4;N], Lang_14#equals[C0;B], Lang_19#translate[C3;N], Lang_33#toClass[C1;B], Lang_36#isNumber[C5;B], Lang_38#format[C8;B], Lang_3#createNumber[C6;B], Lang_45#abbreviate[C3;N], Lang_47#appendFixedWidthPadRight[C1;N], Lang_47#appendFixedWidthPadLeft[C1;N], Lang_49#reduce[C6;N], Lang_63#formatPeriod[C0;N]
+  concepts: {'C0': 3, 'C1': 6, 'C2': 1, 'C3': 6, 'C4': 7, 'C5': 2, 'C6': 3, 'C8': 1}; verdicts: {'NEITHER': 16, 'BUGGY': 10, 'FIXED': 1}
+- Advanced Doc >=1 M (3): Cli_1#hasOption[C0;B], Lang_57#isAvailableLocale[C8;N], Lang_5#toLocale[C4+C5+C7;N]
+  concepts: {'C0': 1, 'C4': 1, 'C5': 1, 'C7': 1, 'C8': 1}; verdicts: {'BUGGY': 1, 'NEITHER': 2}
+- Advanced Doc >=1 E (30): Cli_32#findWrapPos[C3;B], Codec_13#isDoubleMetaphoneEqual[C1+C2;B], Codec_17#newStringIso8859_1[C1;F], Codec_7#encodeBase64String[C5;F], Codec_9#encodeBase64[C3;B], Gson_12#skipValue[C3;N], Gson_15#value[C4+C6;B], Gson_4#value[C4;N], Gson_4#value[C4;N], Gson_4#nullValue[C4;N], Gson_4#value[C4;N], Gson_4#value[C4;B], Gson_7#nextInt[C5;B], Lang_14#equals[C0;B], Lang_19#translate[C3;B], Lang_1#createNumber[C3+C6;B], Lang_21#isSameLocalTime[C0;B], Lang_28#translate[C7;B], Lang_33#toClass[C1;F], Lang_35#add[C1+C4;F], Lang_35#add[C1+C4;F], Lang_36#isNumber[C5;B], Lang_41#getShortClassName[C5;N], Lang_41#getPackageName[C2+C5;B], Lang_45#abbreviate[C3;N], Lang_46#escapeJava[C5;B], Lang_47#appendFixedWidthPadLeft[C1;F], Lang_49#reduce[C6;N], Lang_63#formatPeriod[C0;N], Lang_7#createNumber[C4;B]
+  concepts: {'C0': 3, 'C1': 6, 'C2': 2, 'C3': 6, 'C4': 9, 'C5': 6, 'C6': 3, 'C7': 1}; verdicts: {'BUGGY': 15, 'FIXED': 6, 'NEITHER': 9}
+- m1 review Only Doc >=1 M (4): Lang_1#createNumber[C3+C6;N], Lang_35#add[C1+C4;B], Lang_57#isAvailableLocale[C8;N], Lang_7#createNumber[C4;B]
+  concepts: {'C1': 1, 'C3': 1, 'C4': 2, 'C6': 1, 'C8': 1}; verdicts: {'NEITHER': 2, 'BUGGY': 2}
+- m1 review Only Doc >=1 E (18): Cli_1#hasOption[C0;N], Codec_18#equals[C3;B], Codec_7#encodeBase64String[C5;B], Codec_9#encodeBase64[C3;B], Gson_12#skipValue[C3;N], Gson_4#value[C4;N], Gson_4#value[C4;N], Gson_4#value[C4;N], Gson_4#value[C4;N], Lang_14#equals[C0;B], Lang_19#translate[C3;N], Lang_36#isNumber[C5;B], Lang_38#format[C8;B], Lang_3#createNumber[C6;B], Lang_45#abbreviate[C3;N], Lang_47#appendFixedWidthPadLeft[C1;N], Lang_49#reduce[C6;N], Lang_63#formatPeriod[C0;N]
+  concepts: {'C0': 3, 'C1': 1, 'C3': 5, 'C4': 4, 'C5': 2, 'C6': 2, 'C8': 1}; verdicts: {'NEITHER': 11, 'BUGGY': 7}
+- m1 review Adv Doc >=1 M (2): Cli_1#hasOption[C0;B], Lang_5#toLocale[C4+C5+C7;N]
+  concepts: {'C0': 1, 'C4': 1, 'C5': 1, 'C7': 1}; verdicts: {'BUGGY': 1, 'NEITHER': 1}
+- m1 review Adv Doc >=1 E (27): Cli_32#findWrapPos[C3;B], Codec_17#newStringIso8859_1[C1;F], Gson_12#skipValue[C3;N], Gson_4#value[C4;N], Gson_4#value[C4;N], Gson_4#nullValue[C4;N], Gson_4#value[C4;N], Gson_4#value[C4;B], Gson_7#nextInt[C5;B], Lang_14#equals[C0;B], Lang_19#translate[C3;B], Lang_1#createNumber[C3+C6;B], Lang_21#isSameLocalTime[C0;B], Lang_28#translate[C7;B], Lang_33#toClass[C1;F], Lang_35#add[C1+C4;F], Lang_35#add[C1+C4;F], Lang_36#isNumber[C5;B], Lang_41#getShortClassName[C5;N], Lang_41#getPackageName[C2+C5;B], Lang_45#abbreviate[C3;N], Lang_46#escapeJava[C5;B], Lang_47#appendFixedWidthPadLeft[C1;F], Lang_49#reduce[C6;N], Lang_57#isAvailableLocale[C8;N], Lang_63#formatPeriod[C0;N], Lang_7#createNumber[C4;B]
+  concepts: {'C0': 3, 'C1': 5, 'C2': 1, 'C3': 5, 'C4': 8, 'C5': 5, 'C6': 2, 'C7': 1, 'C8': 1}; verdicts: {'BUGGY': 12, 'FIXED': 5, 'NEITHER': 10}
+
+## 6. Config differences on the common clean methods (E-methods / M-methods per concept)
+
+common clean methods of the three baselines: 75
+
+| concept | n | Doc W/ Code E/M | Only Doc E/M | Advanced E/M |
+|---|---|---|---|---|
+| C0 | 7 | 2/1 | 3/1 | 3/1 |
+| C1 | 12 | 3/3 | 6/1 | 6/0 |
+| C2 | 3 | 2/0 | 1/0 | 2/0 |
+| C3 | 17 | 5/1 | 6/1 | 6/0 |
+| C4 | 18 | 6/3 | 7/2 | 9/1 |
+| C5 | 10 | 3/0 | 2/0 | 6/1 |
+| C6 | 4 | 1/1 | 3/1 | 3/0 |
+| C7 | 11 | 0/0 | 0/0 | 1/1 |
+| C8 | 6 | 0/1 | 1/1 | 0/1 |
+- basic docstring FIXED: n=3; Doc W/ Code: >=1E 0, >=1M 0; Only Doc: >=1E 1, >=1M 0
+- advanced docstring FIXED: n=12; Advanced Doc: >=1E 6, >=1M 0
+- basic docstring BUGGY: n=28; Doc W/ Code: >=1E 8, >=1M 4; Only Doc: >=1E 10, >=1M 2
+- advanced docstring BUGGY: n=31; Advanced Doc: >=1E 15, >=1M 1
+- basic docstring NEITHER: n=44; Doc W/ Code: >=1E 12, >=1M 4; Only Doc: >=1E 16, >=1M 3
+- advanced docstring NEITHER: n=32; Advanced Doc: >=1E 9, >=1M 2
+
+paired, same methods: >=1 E under Only Doc (basic docstring) vs Advanced Doc (advanced docstring), grouped by the (basic -> advanced) verdict transition
+- BUGGY->BUGGY n=14: Only Doc 5, Advanced 5 (Adv only 2, Only Doc only 2)
+- BUGGY->FIXED n=7: Only Doc 2, Advanced 4 (Adv only 2, Only Doc only 0)
+- BUGGY->NEITHER n=7: Only Doc 3, Advanced 2 (Adv only 0, Only Doc only 1)
+- FIXED->BUGGY n=1: Only Doc 1, Advanced 1 (Adv only 0, Only Doc only 0)
+- FIXED->FIXED n=1: Only Doc 0, Advanced 0 (Adv only 0, Only Doc only 0)
+- FIXED->NEITHER n=1: Only Doc 0, Advanced 0 (Adv only 0, Only Doc only 0)
+- NEITHER->BUGGY n=16: Only Doc 7, Advanced 9 (Adv only 5, Only Doc only 3)
+- NEITHER->FIXED n=4: Only Doc 3, Advanced 2 (Adv only 0, Only Doc only 1)
+- NEITHER->NEITHER n=24: Only Doc 6, Advanced 7 (Adv only 1, Only Doc only 0)

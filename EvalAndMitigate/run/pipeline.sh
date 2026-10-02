@@ -46,5 +46,10 @@ doc_code() { gen_cfg $DOC_CODE; eval_cfg $DOC_CODE; }
 adv_doc_gen() { gen_cfg $ADV_DOC; }
 adv_doc_eval() { eval_cfg $ADV_DOC; }
 doc_code_eval() { eval_cfg $DOC_CODE; }
+ONLY_DOC="${TGT_MODEL}_buggy_source_data_unified_invoked_with_docstring.jsonl 0 unified_invoked_docstring_prompt"
+only_doc() { gen_cfg $ONLY_DOC; eval_cfg $ONLY_DOC; }
+# generic steps for the m*_ method folders: take DOC_FILE, WITH_CODE, FILE_POST_FIX from the environment
+gen_env() { gen_cfg "$DOC_FILE" "$WITH_CODE" "$FILE_POST_FIX"; }
+eval_env() { eval_cfg x x "$FILE_POST_FIX"; }
 
 for step in "$@"; do $step; done

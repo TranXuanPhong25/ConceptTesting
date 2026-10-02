@@ -1,0 +1,484 @@
+{
+"0": {
+"concepts": [
+"C3"
+],
+"note": "defaults merged only when fewer values than defaults: count comparison, copy"
+},
+"1": {
+"concepts": [
+"C0"
+],
+"note": "long option / hyphen resolution via resolveOption"
+},
+"2": {
+"concepts": [
+"C4",
+"C8"
+],
+"note": "builder state not reset when Option constructor throws (try/finally)"
+},
+"3": {
+"concepts": [
+"C3"
+],
+"note": "wrap position scan past width/end of text"
+},
+"4": {
+"concepts": [
+"C3"
+],
+"note": "wrong start position argument (nextLineTabStop vs 0)"
+},
+"5": {
+"concepts": [
+"C1",
+"C2"
+],
+"note": "doubleMetaphone returns null for empty/blank input -> NPE; null-safe equals"
+},
+"6": {
+"concepts": [
+"C1"
+],
+"note": "null byte array -> NPE instead of null"
+},
+"7": {
+"concepts": [
+"C3"
+],
+"note": "different-length sequences compared up to max length"
+},
+"8": {
+"concepts": [
+"C0"
+],
+"note": "read() returned 0 bytes (InputStream contract); loop until data"
+},
+"9": {
+"concepts": [
+"C5"
+],
+"note": "output chunked with CRLF when it must not be (format)"
+},
+"10": {
+"concepts": [
+"C8"
+],
+"note": "caller buffer aliased as internal buffer (state)"
+},
+"11": {
+"concepts": [
+"C3"
+],
+"note": "max-size check uses chunked length for unchunked output"
+},
+"12": {
+"concepts": [
+"C8"
+],
+"note": "iterator() returned a fresh iterator per call instead of the shared one (state)"
+},
+"13": {
+"concepts": [
+"C4"
+],
+"note": "ArrayIndexOutOfBounds instead of IllegalArgumentException"
+},
+"14": {
+"concepts": [
+"C1"
+],
+"note": "null header map -> NPE"
+},
+"15": {
+"concepts": [
+"C3"
+],
+"note": "stackSize-1 index when stack empty"
+},
+"16": {
+"concepts": [
+"C0"
+],
+"note": "wildcard of wildcard bounds"
+},
+"17": {
+"concepts": [
+"C0"
+],
+"note": "wildcard of wildcard bounds"
+},
+"18": {
+"concepts": [
+"C4",
+"C6"
+],
+"note": "NaN/Infinity rejected even in lenient mode"
+},
+"19": {
+"concepts": [
+"C4"
+],
+"note": "top-level value throws IllegalStateException"
+},
+"20": {
+"concepts": [
+"C4"
+],
+"note": "top-level value throws IllegalStateException"
+},
+"21": {
+"concepts": [
+"C4"
+],
+"note": "top-level value throws IllegalStateException"
+},
+"22": {
+"concepts": [
+"C4"
+],
+"note": "top-level value throws IllegalStateException"
+},
+"23": {
+"concepts": [
+"C4"
+],
+"note": "top-level value throws IllegalStateException"
+},
+"24": {
+"concepts": [
+"C4"
+],
+"note": "top-level value throws IllegalStateException"
+},
+"25": {
+"concepts": [
+"C5"
+],
+"note": "unquoted numeric string in lenient mode not accepted"
+},
+"26": {
+"concepts": [
+"C4"
+],
+"note": "abstract class/interface instantiation must fail with a clear exception"
+},
+"27": {
+"concepts": [
+"C3",
+"C4"
+],
+"note": "end <= start with chars array must throw IAE"
+},
+"28": {
+"concepts": [
+"C2",
+"C3",
+"C4"
+],
+"note": "empty chars array -> IAE; start=end=0 must use chars.length"
+},
+"29": {
+"concepts": [
+"C0"
+],
+"note": "CharSequence (non-String) equality"
+},
+"30": {
+"concepts": [
+"C7"
+],
+"note": "upper-case 0X hex prefix"
+},
+"31": {
+"concepts": [
+"C3"
+],
+"note": "&# at end of input / missing ';' boundary"
+},
+"32": {
+"concepts": [
+"C3",
+"C6"
+],
+"note": "hex digit count vs Long/Integer range with leading zeros"
+},
+"33": {
+"concepts": [
+"C1"
+],
+"note": "element toString() null -> NPE"
+},
+"34": {
+"concepts": [
+"C1"
+],
+"note": "element toString() null -> NPE"
+},
+"35": {
+"concepts": [
+"C0"
+],
+"note": "HOUR vs HOUR_OF_DAY"
+},
+"36": {
+"concepts": [
+"C5"
+],
+"note": "'1.0L' number format accepted"
+},
+"37": {
+"concepts": [
+"C7"
+],
+"note": "locale not applied"
+},
+"38": {
+"concepts": [
+"C3",
+"C4"
+],
+"note": "exponent position past end -> StringIndexOutOfBounds instead of NFE"
+},
+"39": {
+"concepts": [
+"C7"
+],
+"note": "supplementary code points written as one char"
+},
+"40": {
+"concepts": [
+"C7"
+],
+"note": "method not changed; patch concerns surrogate pairs (whole-patch)"
+},
+"41": {
+"concepts": [
+"C7"
+],
+"note": "surrogate pairs"
+},
+"42": {
+"concepts": [
+"C7"
+],
+"note": "surrogate pairs"
+},
+"43": {
+"concepts": [
+"C7"
+],
+"note": "surrogate pairs"
+},
+"44": {
+"concepts": [
+"C7"
+],
+"note": "surrogate pairs"
+},
+"45": {
+"concepts": [
+"C7"
+],
+"note": "surrogate pairs"
+},
+"46": {
+"concepts": [
+"C1"
+],
+"note": "null element -> NPE"
+},
+"47": {
+"concepts": [
+"C1",
+"C4"
+],
+"note": "both null -> must throw IAE"
+},
+"48": {
+"concepts": [
+"C1",
+"C4"
+],
+"note": "both null -> must throw IAE"
+},
+"49": {
+"concepts": [
+"C5"
+],
+"note": "trailing '.' number format"
+},
+"50": {
+"concepts": [
+"C5"
+],
+"note": "trailing '.' number format"
+},
+"51": {
+"concepts": [
+"C8"
+],
+"note": "calendar fields not computed before clone (state)"
+},
+"52": {
+"concepts": [
+"C6"
+],
+"note": "float vs double precision choice"
+},
+"53": {
+"concepts": [
+"C7"
+],
+"note": "locale-sensitive upper-casing"
+},
+"54": {
+"concepts": [
+"C5"
+],
+"note": "JVM array class-name encoding ([Ljava.lang.String;)"
+},
+"55": {
+"concepts": [
+"C2",
+"C5"
+],
+"note": "empty string and array class-name encoding"
+},
+"56": {
+"concepts": [
+"C3",
+"C4"
+],
+"note": "single-character input -> StringIndexOutOfBounds instead of NFE"
+},
+"57": {
+"concepts": [
+"C3"
+],
+"note": "lower > length"
+},
+"58": {
+"concepts": [
+"C5"
+],
+"note": "escaping of '/'"
+},
+"59": {
+"concepts": [
+"C5"
+],
+"note": "escaping of '/'"
+},
+"60": {
+"concepts": [
+"C1"
+],
+"note": "toString() null -> NPE"
+},
+"61": {
+"concepts": [
+"C1"
+],
+"note": "toString() null -> NPE"
+},
+"62": {
+"concepts": [
+"C6"
+],
+"note": "zero numerator reduction"
+},
+"63": {
+"concepts": [
+"C0"
+],
+"note": "CharSequence vs String map key"
+},
+"64": {
+"concepts": [
+"C1"
+],
+"note": "null locale cache key"
+},
+"65": {
+"concepts": [
+"C1"
+],
+"note": "null locale cache key"
+},
+"66": {
+"concepts": [
+"C3"
+],
+"note": "length-3 case falls through to charAt(3)"
+},
+"67": {
+"concepts": [
+"C8"
+],
+"note": "stop after suspend overwrites stopTime (state)"
+},
+"68": {
+"concepts": [
+"C8"
+],
+"note": "static set initialisation order (state)"
+},
+"69": {
+"concepts": [
+"C3"
+],
+"note": "single-digit numeric with type suffix, substring(1) boundary"
+},
+"70": {
+"concepts": [
+"C3"
+],
+"note": "truncation copies strLen instead of width"
+},
+"71": {
+"concepts": [
+"C4",
+"C5",
+"C7"
+],
+"note": "'_GB' locale format rejected with IAE"
+},
+"72": {
+"concepts": [
+"C3"
+],
+"note": "scan up to buffer capacity instead of size"
+},
+"73": {
+"concepts": [
+"C3"
+],
+"note": "scan up to buffer capacity instead of size"
+},
+"74": {
+"concepts": [
+"C3"
+],
+"note": "search limit uses capacity, off by one"
+},
+"75": {
+"concepts": [
+"C0"
+],
+"note": "days-in-month calendar arithmetic"
+},
+"76": {
+"concepts": [
+"C4"
+],
+"note": "different enum class: ClassCastException / other classloader"
+},
+"77": {
+"concepts": [
+"C4"
+],
+"note": "'--' prefix returns null instead of NumberFormatException"
+}
+}

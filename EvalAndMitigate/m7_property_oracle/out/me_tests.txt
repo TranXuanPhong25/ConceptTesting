@@ -1,0 +1,2385 @@
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | LITERAL | testHasOption_OptionNotPresent
+{
+        String optionName = "nonExistentOption";
+        assertFalse(commandLine.hasOption(optionName));
+    }
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | LITERAL | testHasOption_OptionPresent
+{
+        String optionName = "testOption";
+        optionsMap.put(optionName, new Option(null, optionName, false, null));
+        assertTrue(commandLine.hasOption(optionName));
+    }
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | LITERAL | testHasOption_NullOptionName
+{
+        assertFalse(commandLine.hasOption(null));
+    }
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | LITERAL | testHasOption_OptionWithDifferentCase
+{
+        String optionName = "testOption";
+        optionsMap.put(optionName, new Option(null, optionName, false, null));
+        assertFalse(commandLine.hasOption("TestOption"));
+    }
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | RELATION | testHasOption_OverloadAgreement_CharAndString
+{
+        char charOption = 'c';
+        String stringOption = String.valueOf(charOption);
+        optionsMap.put(stringOption, new Option(null, stringOption, false, null));
+
+        // R2: agreement between overloads
+        assertEquals(commandLine.hasOption(stringOption), commandLine.hasOption(charOption));
+    }
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | RELATION | testHasOption_OverloadAgreement_CharAndString_NotPresent
+{
+        char charOption = 'd';
+        String stringOption = String.valueOf(charOption);
+
+        // R2: agreement between overloads
+        assertEquals(commandLine.hasOption(stringOption), commandLine.hasOption(charOption));
+    }
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | LITERAL | testHasOption_EmptyOptionName
+{
+        String optionName = "";
+        assertFalse(commandLine.hasOption(optionName));
+    }
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | LITERAL | testHasOption_AfterAddingOption
+{
+        String optionName = "newOption";
+        assertFalse(commandLine.hasOption(optionName)); // Should not have it initially
+
+        // Simulate adding an option
+        Option newOption = new Option(null, optionName, false, null);
+        commandLine.addOption(newOption);
+
+        // Access the internal map to verify (this is a white-box test for internal state)
+        try {
+            java.lang.reflect.Field field = CommandLine.class.getDeclaredField("options");
+            field.setAccessible(true);
+            Map<String, Option> currentOptions = (Map<String, Option>) field.get(commandLine);
+            assertTrue(currentOptions.containsKey(optionName));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            fail("Failed to access private field 'options': " + e.getMessage());
+        }
+
+        assertTrue(commandLine.hasOption(optionName)); // Should have it after adding
+    }
+
+====================================================================================================
+m7 prop | M | Cli_1.hasOption | LITERAL | testHasOption_MultipleOptionsPresent
+{
+        String option1 = "optionA";
+        String option2 = "optionB";
+        optionsMap.put(option1, new Option(null, option1, false, null));
+        optionsMap.put(option2, new Option(null, option2, false, null));
+
+        assertTrue(commandLine.hasOption(option1));
+        assertTrue(commandLine.hasOption(option2));
+    }
+
+====================================================================================================
+m7 prop | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_WordBreak_NoSpaceBeforeWidth
+{
+        String text = "longwordandanother";
+        int width = 5;
+        int startPos = 0;
+        assertEquals(5, formatter.findWrapPos(text, width, startPos)); // Chop at width
+
+        text = "longwordandanother";
+        width = 10;
+        startPos = 0;
+        assertEquals(10, formatter.findWrapPos(text, width, startPos)); // Chop at width
+    }
+
+====================================================================================================
+m7 prop | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_LongWordAtStart
+{
+        String text = "supercalifragilisticexpialidocious";
+        int width = 10;
+        int startPos = 0;
+        assertEquals(10, formatter.findWrapPos(text, width, startPos)); // Chop
+    }
+
+====================================================================================================
+m7 prop | E | Codec_13.isDoubleMetaphoneEqual | LITERAL | testIsDoubleMetaphoneEqual_EmptyStringsAlternate
+{
+        assertTrue(metaphone.isDoubleMetaphoneEqual("", "", true));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_13.isDoubleMetaphoneEqual | LITERAL | testIsDoubleMetaphoneEqual_EmptyStringsPrimary
+{
+        assertTrue(metaphone.isDoubleMetaphoneEqual("", "", false));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_17.newStringIso8859_1 | LITERAL | testNewStringIso8859_1_NullInput
+{
+        assertNull(StringUtils.newStringIso8859_1(null));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64String_SingleByte
+{
+        // R1 inverse / round-trip partners: decodeBase64(encodeBase64String(x)) vs x
+        byte[] singleByte = {(byte) 'A'};
+        String encoded = Base64.encodeBase64String(singleByte);
+        assertEquals("QQ==", encoded);
+        assertTrue(Arrays.equals(singleByte, Base64.decodeBase64(encoded)));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64String_ThreeBytes
+{
+        // R1 inverse / round-trip partners: decodeBase64(encodeBase64String(x)) vs x
+        byte[] threeBytes = {(byte) 'A', (byte) 'B', (byte) 'C'};
+        String encoded = Base64.encodeBase64String(threeBytes);
+        assertEquals("QUJD", encoded);
+        assertTrue(Arrays.equals(threeBytes, Base64.decodeBase64(encoded)));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_7.encodeBase64String | RELATION | testEncodeBase64String_Metamorphic_AppendByte
+{
+        // R4 metamorphic: transform the input in a way whose effect on the output is predictable
+        byte[] original = "abc".getBytes(StandardCharsets.UTF_8);
+        String encodedOriginal = Base64.encodeBase64String(original); // "YWJj"
+
+        byte[] appended = "abcd".getBytes(StandardCharsets.UTF_8);
+        String encodedAppended = Base64.encodeBase64String(appended); // "YWJjZA=="
+
+        // The first part of the appended string's encoding should match the original
+        assertTrue(encodedAppended.startsWith(encodedOriginal));
+        assertNotEquals(encodedOriginal, encodedAppended); // Ensure they are not identical
+    }
+
+====================================================================================================
+m7 prop | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64String_PaddingVariations
+{
+        // R1 inverse / round-trip partners: decodeBase64(encodeBase64String(x)) vs x
+        byte[] data1 = "f".getBytes(StandardCharsets.UTF_8); // 1 byte, 2 padding chars
+        String encoded1 = Base64.encodeBase64String(data1);
+        assertEquals("Zg==", encoded1);
+        assertTrue(Arrays.equals(data1, Base64.decodeBase64(encoded1)));
+
+        byte[] data2 = "fo".getBytes(StandardCharsets.UTF_8); // 2 bytes, 1 padding char
+        String encoded2 = Base64.encodeBase64String(data2);
+        assertEquals("Zm8=", encoded2);
+        assertTrue(Arrays.equals(data2, Base64.decodeBase64(encoded2)));
+
+        byte[] data3 = "foo".getBytes(StandardCharsets.UTF_8); // 3 bytes, no padding
+        String encoded3 = Base64.encodeBase64String(data3);
+        assertEquals("Zm9v", encoded3);
+        assertTrue(Arrays.equals(data3, Base64.decodeBase64(encoded3)));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64String_TwoBytes
+{
+        // R1 inverse / round-trip partners: decodeBase64(encodeBase64String(x)) vs x
+        byte[] twoBytes = {(byte) 'A', (byte) 'B'};
+        String encoded = Base64.encodeBase64String(twoBytes);
+        assertEquals("QUI=", encoded);
+        assertTrue(Arrays.equals(twoBytes, Base64.decodeBase64(encoded)));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64String_HelloWorld
+{
+        // R1 inverse / round-trip partners: decodeBase64(encodeBase64String(x)) vs x
+        byte[] helloWorld = "Hello, world!".getBytes(StandardCharsets.UTF_8);
+        String encoded = Base64.encodeBase64String(helloWorld);
+        assertEquals("SGVsbG8sIHdvcmxkIQ==", encoded);
+        assertTrue(Arrays.equals(helloWorld, Base64.decodeBase64(encoded)));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_7.encodeBase64String | RELATION | testEncodeBase64String_LongString
+{
+        // R1 inverse / round-trip partners: decodeBase64(encodeBase64String(x)) vs x
+        String longString = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+        byte[] longBytes = longString.getBytes(StandardCharsets.UTF_8);
+        String encoded = Base64.encodeBase64String(longBytes);
+        // The original Javadoc for encodeBase64String states it uses 76 character blocks with CRLF.
+        // However, the docstring for the method under test explicitly states "This method produces a continuous Base64 string without line separators (chunking)."
+        // This test verifies the behavior as described in the method's docstring.
+        assertFalse(encoded.contains("\r\n"));
+        assertTrue(Arrays.equals(longBytes, Base64.decodeBase64(encoded)));
+    }
+
+====================================================================================================
+m7 prop | E | Codec_9.encodeBase64 | LITERAL | testEncodeBase64_MaxResultSizeJustEnough_NoChunk
+{
+        byte[] data = "test".getBytes(StandardCharsets.UTF_8); // "test" -> "dGVzdA==" (8 chars)
+        byte[] encoded = Base64.encodeBase64(data, false, false, 8);
+        assertArrayEquals("dGVzdA==".getBytes(StandardCharsets.UTF_8), encoded);
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_EmptyObject
+{
+        JsonTreeReader reader = new JsonTreeReader(new JsonObject());
+        assertEquals(JsonToken.BEGIN_OBJECT, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_String
+{
+        JsonTreeReader reader = new JsonTreeReader(new JsonPrimitive("testString"));
+        assertEquals(JsonToken.STRING, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_ArrayWithNestedObject
+{
+        JsonObject nestedObject = new JsonObject();
+        nestedObject.addProperty("nestedKey", "nestedValue");
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add("item1");
+        jsonArray.add(nestedObject);
+        JsonTreeReader reader = new JsonTreeReader(jsonArray);
+        assertEquals(JsonToken.BEGIN_ARRAY, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_ObjectWithPrimitives
+{
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("key1", "value1");
+        jsonObject.addProperty("key2", 123);
+        JsonTreeReader reader = new JsonTreeReader(jsonObject);
+        assertEquals(JsonToken.BEGIN_OBJECT, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_Null
+{
+        JsonTreeReader reader = new JsonTreeReader(JsonNull.INSTANCE);
+        assertEquals(JsonToken.NULL, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_ArrayWithNestedArray
+{
+        JsonArray nestedArray = new JsonArray();
+        nestedArray.add("nestedItem");
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add("item1");
+        jsonArray.add(nestedArray);
+        JsonTreeReader reader = new JsonTreeReader(jsonArray);
+        assertEquals(JsonToken.BEGIN_ARRAY, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_EmptyArray
+{
+        JsonTreeReader reader = new JsonTreeReader(new JsonArray());
+        assertEquals(JsonToken.BEGIN_ARRAY, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_Boolean
+{
+        JsonTreeReader reader = new JsonTreeReader(new JsonPrimitive(true));
+        assertEquals(JsonToken.BOOLEAN, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_Number
+{
+        JsonTreeReader reader = new JsonTreeReader(new JsonPrimitive(123));
+        assertEquals(JsonToken.NUMBER, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_ArrayWithPrimitives
+{
+        JsonArray jsonArray = new JsonArray();
+        jsonArray.add("item1");
+        jsonArray.add(2);
+        jsonArray.add(true);
+        JsonTreeReader reader = new JsonTreeReader(jsonArray);
+        assertEquals(JsonToken.BEGIN_ARRAY, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_ObjectWithNestedObject
+{
+        JsonObject nestedObject = new JsonObject();
+        nestedObject.addProperty("nestedKey", "nestedValue");
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("key1", "value1");
+        jsonObject.add("nested", nestedObject);
+        JsonTreeReader reader = new JsonTreeReader(jsonObject);
+        assertEquals(JsonToken.BEGIN_OBJECT, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_12.skipValue | LITERAL | testSkipValue_ObjectWithNestedArray
+{
+        JsonArray nestedArray = new JsonArray();
+        nestedArray.add("item1");
+        nestedArray.add(2);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("key1", "value1");
+        jsonObject.add("nested", nestedArray);
+        JsonTreeReader reader = new JsonTreeReader(jsonObject);
+        assertEquals(JsonToken.BEGIN_OBJECT, reader.peek());
+        reader.skipValue();
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_15.value | LITERAL | testValueDoubleWithLenientModeNegativeInfinity
+{
+        jsonWriter.setLenient(true);
+        double value = Double.NEGATIVE_INFINITY;
+        jsonWriter.value(value);
+        assertEquals("-Infinity", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_15.value | LITERAL | testValueDoubleWithLenientModePositiveInfinity
+{
+        jsonWriter.setLenient(true);
+        double value = Double.POSITIVE_INFINITY;
+        jsonWriter.value(value);
+        assertEquals("Infinity", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_15.value | LITERAL | testValueDoubleWithLenientModeNaN
+{
+        jsonWriter.setLenient(true);
+        double value = Double.NaN;
+        jsonWriter.value(value);
+        assertEquals("NaN", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValue_stringWithSpecialChars
+{
+        String testString = "string with \"quotes\" and \\backslashes\\ \n new line \r carriage return \t tab";
+        jsonWriter.value(testString);
+        assertEquals("\"string with \\\"quotes\\\" and \\\\backslashes\\\\ \\n new line \\r carriage return \\t tab\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValue_withUnicodeEscapeCharactersNotHtmlSafe
+{
+        jsonWriter.setHtmlSafe(false);
+        String unicodeString = "\u2028 \u2029"; // Line Separator, Paragraph Separator
+        jsonWriter.value(unicodeString);
+        assertEquals("\"\\u2028 \\u2029\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValue_withUnicodeCharacters
+{
+        String unicodeString = "你好世界"; // Hello World in Chinese
+        jsonWriter.value(unicodeString);
+        assertEquals("\"你好世界\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValue_emptyString
+{
+        String testString = "";
+        jsonWriter.value(testString);
+        assertEquals("\"\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValue_overloadAgreementWithDouble
+{
+        StringWriter swDouble = new StringWriter();
+        JsonWriter jwDouble = new JsonWriter(swDouble);
+        jwDouble.value(123.45);
+
+        StringWriter swString = new StringWriter();
+        JsonWriter jwString = new JsonWriter(swString);
+        jwString.value("123.45");
+
+        assertNotEquals(swDouble.toString(), swString.toString()); // "123.45" vs "\"123.45\""
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValue_withHtmlSafeDisabled
+{
+        jsonWriter.setHtmlSafe(false);
+        String testString = "<script>alert('xss')</script>";
+        jsonWriter.value(testString);
+        assertEquals("\"<script>alert('xss')</script>\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValue_overloadAgreementWithBoolean
+{
+        StringWriter swBoolean = new StringWriter();
+        JsonWriter jwBoolean = new JsonWriter(swBoolean);
+        jwBoolean.value(true);
+
+        StringWriter swString = new StringWriter();
+        JsonWriter jwString = new JsonWriter(swString);
+        jwString.value("true");
+
+        assertNotEquals(swBoolean.toString(), swString.toString()); // "true" vs "\"true\""
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValue_stringValue
+{
+        String testString = "hello world";
+        jsonWriter.value(testString);
+        assertEquals("\"hello world\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValue_overloadAgreementWithLong
+{
+        StringWriter swLong = new StringWriter();
+        JsonWriter jwLong = new JsonWriter(swLong);
+        jwLong.value(123L);
+
+        StringWriter swString = new StringWriter();
+        JsonWriter jwString = new JsonWriter(swString);
+        jwString.value("123");
+
+        assertNotEquals(swLong.toString(), swString.toString()); // "123" vs "\"123\""
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValue_withUnicodeEscapeCharactersHtmlSafe
+{
+        jsonWriter.setHtmlSafe(true);
+        String unicodeString = "\u2028 \u2029"; // Line Separator, Paragraph Separator
+        jsonWriter.value(unicodeString);
+        assertEquals("\"\\u2028 \\u2029\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueBooleanWithHtmlSafe
+{
+        jsonWriter.setHtmlSafe(true);
+        jsonWriter.value(true);
+        assertEquals("true", stringWriter.toString()); // Booleans don't contain HTML-unsafe characters
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueBooleanFalse
+{
+        jsonWriter.value(false);
+        assertEquals("false", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueBooleanChaining
+{
+        JsonWriter returnedWriter = jsonWriter.value(true);
+        assertNotNull(returnedWriter);
+        assertTrue(returnedWriter == jsonWriter); // R3: returns this JsonWriter instance
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueBooleanTrue
+{
+        jsonWriter.value(true);
+        assertEquals("true", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueComparisonWithOverloadLong
+{
+        Long longValue = 12345L;
+        jsonWriter.value(longValue);
+        String output1 = stringWriter.toString();
+        stringWriter = new StringWriter(); // Reset writer
+        jsonWriter = new JsonWriter(stringWriter);
+        jsonWriter.value(longValue.longValue()); // Call specific long overload
+        String output2 = stringWriter.toString();
+        assertEquals(output1, output2); // R2 agreement between overloads
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueLong
+{
+        Long value = 123456789012345L;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueFloat
+{
+        Float value = 123.45f;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueNegativeInteger
+{
+        Number value = -123;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueBigDecimal
+{
+        BigDecimal value = new BigDecimal("12345678901234567890.1234567890");
+        jsonWriter.value(value);
+        assertEquals(value.toString(), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueDouble
+{
+        Double value = 123.45;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueNegativeDouble
+{
+        Number value = -123.45;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueBigInteger
+{
+        BigInteger value = new BigInteger("123456789012345678901234567890");
+        jsonWriter.value(value);
+        assertEquals(value.toString(), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueInteger
+{
+        Integer value = 123;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueZero
+{
+        Number value = 0;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueComparisonWithOverloadDouble
+{
+        Double doubleValue = 123.45;
+        jsonWriter.value(doubleValue);
+        String output1 = stringWriter.toString();
+        stringWriter = new StringWriter(); // Reset writer
+        jsonWriter = new JsonWriter(stringWriter);
+        jsonWriter.value(doubleValue.doubleValue()); // Call specific double overload
+        String output2 = stringWriter.toString();
+        assertEquals(output1, output2); // R2 agreement between overloads
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueNull
+{
+        jsonWriter.value((Number) null);
+        assertEquals("null", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.nullValue | LITERAL | testNullValueInRoot
+{
+        jsonWriter.nullValue();
+        assertEquals("null", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueDoubleAgreementWithNumberValueZero
+{
+        double doubleValue = 0.0;
+        jsonWriter.value(doubleValue);
+        String outputDouble = stringWriter.toString();
+
+        stringWriter = new StringWriter();
+        jsonWriter = new JsonWriter(stringWriter);
+        Number numberValue = doubleValue;
+        jsonWriter.value(numberValue);
+        String outputNumber = stringWriter.toString();
+
+        assertEquals(outputDouble, outputNumber);
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueDoubleAgreementWithNumberValueNegative
+{
+        double doubleValue = -123.45;
+        jsonWriter.value(doubleValue);
+        String outputDouble = stringWriter.toString();
+
+        stringWriter = new StringWriter();
+        jsonWriter = new JsonWriter(stringWriter);
+        Number numberValue = doubleValue;
+        jsonWriter.value(numberValue);
+        String outputNumber = stringWriter.toString();
+
+        assertEquals(outputDouble, outputNumber);
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueDoubleAgreementWithNumberValue
+{
+        double doubleValue = 123.45;
+        jsonWriter.value(doubleValue);
+        String outputDouble = stringWriter.toString();
+
+        stringWriter = new StringWriter();
+        jsonWriter = new JsonWriter(stringWriter);
+        Number numberValue = doubleValue;
+        jsonWriter.value(numberValue);
+        String outputNumber = stringWriter.toString();
+
+        assertEquals(outputDouble, outputNumber);
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueFiniteDouble
+{
+        double value = 123.45;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+
+        stringWriter = new StringWriter();
+        jsonWriter = new JsonWriter(stringWriter);
+        value = -0.0;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+
+        stringWriter = new StringWriter();
+        jsonWriter = new JsonWriter(stringWriter);
+        value = 0.0;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+
+        stringWriter = new StringWriter();
+        jsonWriter = new JsonWriter(stringWriter);
+        value = Double.MAX_VALUE;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+
+        stringWriter = new StringWriter();
+        jsonWriter = new JsonWriter(stringWriter);
+        value = Double.MIN_VALUE;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueLongRootValue
+{
+        long value = 500L;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueLongPositive
+{
+        long value = 123L;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | RELATION | testValueLongOverloadAgreement
+{
+        long longValue = 42L;
+        jsonWriter.value(longValue);
+        String outputLong = stringWriter.toString();
+        stringWriter = new StringWriter(); // Reset writer
+        jsonWriter = new JsonWriter(stringWriter);
+        jsonWriter.value((Number) longValue); // Use Number overload
+        String outputNumber = stringWriter.toString();
+        assertEquals(outputLong, outputNumber);
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueLongNegative
+{
+        long value = -456L;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueLongWithHtmlSafe
+{
+        jsonWriter.setHtmlSafe(true);
+        long value = 123L;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueLongChaining
+{
+        long value = 789L;
+        JsonWriter returnedWriter = jsonWriter.value(value);
+        assertSame(jsonWriter, returnedWriter);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueLongSerializeNulls
+{
+        jsonWriter.setSerializeNulls(false);
+        long value = 123L;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Gson_4.value | LITERAL | testValueLongZero
+{
+        long value = 0L;
+        jsonWriter.value(value);
+        assertEquals(String.valueOf(value), stringWriter.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Lang_14.equals | LITERAL | testEquals_EqualContent
+{
+        // R3 documented invariants: "abc" and "abc" are equal.
+        assertTrue(StringUtils.equals("abc", "abc")); // from Javadoc
+        assertTrue(StringUtils.equals(new StringBuilder("test"), new StringBuilder("test")));
+        assertTrue(StringUtils.equals("hello world", "hello world"));
+        assertTrue(StringUtils.equals("", ""));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_14.equals | LITERAL | testEquals_MixedCharSequenceTypes
+{
+        assertTrue(StringUtils.equals("hello", new StringBuilder("hello")));
+        assertTrue(StringUtils.equals(new StringBuilder("world"), "world"));
+        assertFalse(StringUtils.equals("hello", new StringBuilder("Hello")));
+        assertFalse(StringUtils.equals(new StringBuilder("world"), "World"));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_19.translate | LITERAL | testTranslateInputTooShortForEntity
+{
+        String input = "&#";
+        StringWriter writer = new StringWriter();
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(0, consumed);
+        assertEquals("", writer.toString());
+
+        input = "&#x";
+        writer = new StringWriter();
+        consumed = unescaper.translate(input, 0, writer);
+        assertEquals(0, consumed);
+        assertEquals("", writer.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Lang_19.translate | LITERAL | testTranslateNoEntityAtGivenIndex
+{
+        String input = "Hello World!";
+        StringWriter writer = new StringWriter();
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(0, consumed);
+        assertEquals("", writer.toString());
+
+        input = "Hello &World!";
+        writer = new StringWriter();
+        consumed = unescaper.translate(input, 6, writer);
+        assertEquals(0, consumed);
+        assertEquals("", writer.toString());
+
+        input = "Hello &#World!"; // Not a number or hex after &#
+        writer = new StringWriter();
+        consumed = unescaper.translate(input, 6, writer);
+        assertEquals(0, consumed);
+        assertEquals("", writer.toString());
+
+        input = "Hello &#xWorld!"; // Not a hex after &#x
+        writer = new StringWriter();
+        consumed = unescaper.translate(input, 6, writer);
+        assertEquals(0, consumed);
+        assertEquals("", writer.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Lang_24.isNumber | LITERAL | testIsNumber_R4_InvalidNumbers
+{
+        // R4: Strings that are not valid numbers should return false.
+        assertFalse(NumberUtils.isNumber("abc"));
+        assertFalse(NumberUtils.isNumber("123a"));
+        assertFalse(NumberUtils.isNumber("1.2.3"));
+        assertFalse(NumberUtils.isNumber("0xG")); // Invalid hex digit
+        assertFalse(NumberUtils.isNumber("123L.")); // Qualifier then decimal point
+        assertFalse(NumberUtils.isNumber("123.L")); // Decimal point then qualifier
+        assertFalse(NumberUtils.isNumber("123e")); // Incomplete scientific notation
+        assertFalse(NumberUtils.isNumber("e123")); // Starts with 'e'
+        assertFalse(NumberUtils.isNumber("--1"));
+        assertFalse(NumberUtils.isNumber("++1"));
+        assertFalse(NumberUtils.isNumber("1-"));
+        assertFalse(NumberUtils.isNumber("1+"));
+        assertFalse(NumberUtils.isNumber("InfinityL")); // Qualifier after special value
+        assertFalse(NumberUtils.isNumber("NaNF"));
+        assertFalse(NumberUtils.isNumber("0x")); // Incomplete hex
+        assertFalse(NumberUtils.isNumber("0x-1")); // Sign after 0x
+        assertFalse(NumberUtils.isNumber("0xFE.")); // Hex with decimal
+        assertFalse(NumberUtils.isNumber("123 456")); // Space in number
+        assertFalse(NumberUtils.isNumber(" 123")); // Leading space
+        assertFalse(NumberUtils.isNumber("123 ")); // Trailing space
+        assertFalse(NumberUtils.isNumber(".")); // Just a decimal point
+        assertFalse(NumberUtils.isNumber("-")); // Just a sign
+        assertFalse(NumberUtils.isNumber("+")); // Just a sign
+        assertFalse(NumberUtils.isNumber("e")); // Just 'e'
+        assertFalse(NumberUtils.isNumber("E")); // Just 'E'
+    }
+
+====================================================================================================
+m7 prop | E | Lang_28.translate | LITERAL | testTranslateSupplementaryCharacterHexadecimal
+{
+        // &#x1F600; is U+1F600 (Grinning Face emoji)
+        String input = "&#x1F600;";
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(input.length(), consumed);
+        assertEquals("\uD83D\uDE00", writer.toString()); // Surrogate pair
+    }
+
+====================================================================================================
+m7 prop | E | Lang_28.translate | LITERAL | testTranslateSupplementaryCharacterDecimal
+{
+        // &#128512; is U+1F600 (Grinning Face emoji)
+        String input = "&#128512;";
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(input.length(), consumed);
+        assertEquals("\uD83D\uDE00", writer.toString()); // Surrogate pair
+    }
+
+====================================================================================================
+m7 prop | E | Lang_33.toClass | RELATION | testToClassWithOnlyNulls
+{
+        Object[] input = {null, null, null};
+        Class<?>[] result = ClassUtils.toClass(input);
+
+        // R3: The length of the returned array should be the same as the input array.
+        assertEquals(input.length, result.length);
+
+        // R3: If an element in the input array is null, the corresponding element in the returned array will also be null.
+        for (Class<?> cls : result) {
+            assertNull(cls);
+        }
+    }
+
+====================================================================================================
+m7 prop | E | Lang_33.toClass | RELATION | testToClassWithMixedNullAndNonNull
+{
+        Object[] input = {
+            "first",
+            null,
+            123,
+            null,
+            true
+        };
+
+        Class<?>[] expectedClasses = {
+            String.class,
+            null,
+            Integer.class,
+            null,
+            Boolean.class
+        };
+
+        Class<?>[] result = ClassUtils.toClass(input);
+
+        // R3: The length of the returned array should be the same as the input array.
+        assertEquals(input.length, result.length);
+
+        // R3: For each non-null object, it retrieves its runtime class.
+        // R3: If an element in the input array is null, the corresponding element in the returned array will also be null.
+        for (int i = 0; i < input.length; i++) {
+            assertEquals(expectedClasses[i], result[i]);
+        }
+    }
+
+====================================================================================================
+m7 prop | E | Lang_35.add | LITERAL | testAddObjectArrayAtIndex
+{
+        // R3: If the original array is null, a new array of size 1 will be created
+        // with the component type inferred from the element.
+        String[] result1 = ArrayUtils.add(null, 0, "a");
+        assertNotNull(result1);
+        assertEquals(1, result1.length);
+        assertEquals("a", result1[0]);
+
+        // R3: If the original array is null, a new array of size 1 will be created
+        // with the component type inferred from the element.
+        // R3: If both `array` and `element` are `null`, IllegalArgumentException is thrown.
+        try {
+            ArrayUtils.add(null, 0, null);
+            fail("IllegalArgumentException expected for null array and null element");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        // R3: The new array will be of the same component type as the original array.
+        String[] originalArray = {"a", "b"};
+        String[] result2 = ArrayUtils.add(originalArray, 1, "c");
+        assertNotNull(result2);
+        assertEquals(originalArray.getClass().getComponentType(), result2.getClass().getComponentType());
+        assertEquals(originalArray.length + 1, result2.length);
+        assertEquals("a", result2[0]);
+        assertEquals("c", result2[1]);
+        assertEquals("b", result2[2]);
+        // R3: The original array is not modified.
+        assertEquals(2, originalArray.length);
+        assertEquals("a", originalArray[0]);
+        assertEquals("b", originalArray[1]);
+
+        // R1: add/remove round trip
+        String[] arrayForRoundTrip = {"x", "y", "z"};
+        String[] addedArray = ArrayUtils.add(arrayForRoundTrip, 1, "new");
+        String[] removedArray = ArrayUtils.remove(addedArray, 1);
+        assertArrayEquals(arrayForRoundTrip, removedArray);
+
+        // R2: Agreement with add(T[] array, T element) when index is array.length
+        String[] arrayForOverload = {"1", "2"};
+        String elementForOverload = "3";
+        String[] resultAddAtIndex = ArrayUtils.add(arrayForOverload, arrayForOverload.length, elementForOverload);
+        String[] resultAdd = ArrayUtils.add(arrayForOverload, elementForOverload);
+        assertArrayEquals(resultAdd, resultAddAtIndex);
+
+        // R3: IndexOutOfBoundsException if index < 0
+        try {
+            ArrayUtils.add(new String[]{"a"}, -1, "b");
+            fail("IndexOutOfBoundsException expected for index < 0");
+        } catch (IndexOutOfBoundsException e) {
+            // Expected
+        }
+
+        // R3: IndexOutOfBoundsException if index > array.length
+        try {
+            ArrayUtils.add(new String[]{"a"}, 2, "b");
+            fail("IndexOutOfBoundsException expected for index > array.length");
+        } catch (IndexOutOfBoundsException e) {
+            // Expected
+        }
+
+        // Add at the beginning
+        String[] arrayStart = {"b", "c"};
+        String[] resultStart = ArrayUtils.add(arrayStart, 0, "a");
+        assertArrayEquals(new String[]{"a", "b", "c"}, resultStart);
+
+        // Add at the end
+        String[] arrayEnd = {"a", "b"};
+        String[] resultEnd = ArrayUtils.add(arrayEnd, 2, "c");
+        assertArrayEquals(new String[]{"a", "b", "c"}, resultEnd);
+
+        // Add to an empty array
+        String[] emptyArray = {};
+        String[] resultEmpty = ArrayUtils.add(emptyArray, 0, "a");
+        assertArrayEquals(new String[]{"a"}, resultEmpty);
+
+        // Add null element to non-null array
+        String[] arrayWithNullElement = {"a", "b"};
+        String[] resultNullElement = ArrayUtils.add(arrayWithNullElement, 1, null);
+        assertArrayEquals(new String[]{"a", null, "b"}, resultNullElement);
+
+        // Test with Integer array
+        Integer[] intArray = {1, 2, 3};
+        Integer[] resultInt = ArrayUtils.add(intArray, 1, 99);
+        assertArrayEquals(new Integer[]{1, 99, 2, 3}, resultInt);
+
+        // Test with Integer array, add at end
+        Integer[] intArrayEnd = {1, 2, 3};
+        Integer[] resultIntEnd = ArrayUtils.add(intArrayEnd, 3, 99);
+        assertArrayEquals(new Integer[]{1, 2, 3, 99}, resultIntEnd);
+
+        // Test with Integer array, add at beginning
+        Integer[] intArrayStart = {1, 2, 3};
+        Integer[] resultIntStart = ArrayUtils.add(intArrayStart, 0, 99);
+        assertArrayEquals(new Integer[]{99, 1, 2, 3}, resultIntStart);
+    }
+
+====================================================================================================
+m7 prop | E | Lang_35.add | LITERAL-marked | testAddFromJavadocExamples
+{
+        // ArrayUtils.add(null, 0, null)      = [null]
+        // This example from the Javadoc is for the T[] add(T[] array, T element) overload.
+        // For the add(T[] array, int index, T element) method, it throws IllegalArgumentException.
+        try {
+            ArrayUtils.add(null, 0, null);
+            fail("IllegalArgumentException expected for null array and null element");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+
+        // ArrayUtils.add(null, 0, "a")       = ["a"] // from Javadoc
+        assertArrayEquals(new String[]{"a"}, ArrayUtils.add(null, 0, "a"));
+
+        // ArrayUtils.add(["a"], 1, null)     = ["a", null] // from Javadoc
+        assertArrayEquals(new String[]{"a", null}, ArrayUtils.add(new String[]{"a"}, 1, null));
+
+        // ArrayUtils.add(["a"], 1, "b")      = ["a", "b"] // from Javadoc
+        assertArrayEquals(new String[]{"a", "b"}, ArrayUtils.add(new String[]{"a"}, 1, "b"));
+
+        // ArrayUtils.add(["a", "b"], 3, "c") = ["a", "b", "c"]
+        // This example from the Javadoc is for the T[] add(T[] array, T element) overload.
+        // For the add(T[] array, int index, T element) method, index 3 is out of bounds for array of length 2.
+        try {
+            ArrayUtils.add(new String[]{"a", "b"}, 3, "c");
+            fail("IndexOutOfBoundsException expected for index > array.length");
+        } catch (IndexOutOfBoundsException e) {
+            // Expected
+        }
+    }
+
+====================================================================================================
+m7 prop | M | Lang_35.add | LITERAL | testAddNullElementToNullArray
+{
+        Object[] newArray = ArrayUtils.add(null, null); // from Javadoc
+        assertNotNull(newArray);
+        assertEquals(1, newArray.length);
+        assertNull(newArray[0]);
+        assertEquals(Object.class, newArray.getClass().getComponentType());
+    }
+
+====================================================================================================
+m7 prop | E | Lang_36.isNumber | LITERAL | testIsNumber_ValidDecimals
+{
+        assertTrue(NumberUtils.isNumber("123.45"));
+        assertTrue(NumberUtils.isNumber(".5"));
+        assertTrue(NumberUtils.isNumber("1."));
+        assertTrue(NumberUtils.isNumber("-1.23"));
+        assertTrue(NumberUtils.isNumber("0.0"));
+        assertTrue(NumberUtils.isNumber("1.23f"));
+        assertTrue(NumberUtils.isNumber("4.5F"));
+        assertTrue(NumberUtils.isNumber("6.7d"));
+        assertTrue(NumberUtils.isNumber("8.9D"));
+        assertTrue(NumberUtils.isNumber("-0.5f"));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_38.format | LITERAL | testFormatWithDifferentTimeZones
+{
+        String pattern = "yyyy-MM-dd HH:mm:ss z";
+        Calendar calendar = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
+        calendar.set(2023, Calendar.JANUARY, 1, 12, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        // Format with GMT+1
+        FastDateFormat fdfGMT1 = FastDateFormat.getInstance(pattern, TimeZone.getTimeZone("GMT+1"), Locale.US);
+        StringBuffer bufGMT1 = new StringBuffer();
+        fdfGMT1.format(calendar, bufGMT1);
+        assertEquals("2023-01-01 13:00:00 GMT+01:00", bufGMT1.toString());
+
+        // Format with GMT-8
+        FastDateFormat fdfGMT_8 = FastDateFormat.getInstance(pattern, TimeZone.getTimeZone("GMT-8"), Locale.US);
+        StringBuffer bufGMT_8 = new StringBuffer();
+        fdfGMT_8.format(calendar, bufGMT_8);
+        assertEquals("2023-01-01 04:00:00 GMT-08:00", bufGMT_8.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Lang_3.createNumber | RELATION | testCreateNumberBigDecimal
+{
+        String bigDecimalStr = "12345678901234567890.12345678901234567890";
+        Number number = NumberUtils.createNumber(bigDecimalStr);
+        assertTrue(number instanceof BigDecimal);
+        assertEquals(new BigDecimal(bigDecimalStr), number);
+
+        String negativeBigDecimalStr = "-98765432109876543210.98765432109876543210";
+        Number negativeNumber = NumberUtils.createNumber(negativeBigDecimalStr);
+        assertTrue(negativeNumber instanceof BigDecimal);
+        assertEquals(new BigDecimal(negativeBigDecimalStr), negativeNumber);
+
+        String bigDecimalExponent = "1.2345678901234567890E+100";
+        Number bigDecimalExponentNumber = NumberUtils.createNumber(bigDecimalExponent);
+        assertTrue(bigDecimalExponentNumber instanceof BigDecimal);
+        assertEquals(new BigDecimal(bigDecimalExponent), bigDecimalExponentNumber);
+
+        String bigDecimalExponentNegative = "-5.6789012345678901234E-100";
+        Number bigDecimalExponentNegativeNumber = NumberUtils.createNumber(bigDecimalExponentNegative);
+        assertTrue(bigDecimalExponentNegativeNumber instanceof BigDecimal);
+        assertEquals(new BigDecimal(bigDecimalExponentNegative), bigDecimalExponentNegativeNumber);
+    }
+
+====================================================================================================
+m7 prop | M | Lang_40.containsIgnoreCase | LITERAL | testContainsIgnoreCase
+{
+        // R3: A null String or null search String will return false.
+        assertFalse(StringUtils.containsIgnoreCase(null, "abc"));
+        assertFalse(StringUtils.containsIgnoreCase("abc", null));
+        assertFalse(StringUtils.containsIgnoreCase(null, null));
+
+        // R3: An empty search String ("") is considered to be contained within any non-null String, including an empty String.
+        assertTrue(StringUtils.containsIgnoreCase("", "")); // from Javadoc
+        assertTrue(StringUtils.containsIgnoreCase("abc", "")); // from Javadoc
+        assertTrue(StringUtils.containsIgnoreCase("ABC", ""));
+        assertTrue(StringUtils.containsIgnoreCase("aBc", ""));
+
+        // R2: agreement between contains and containsIgnoreCase when case does not matter
+        String str1 = "hello world";
+        String search1 = "world";
+        assertEquals(StringUtils.contains(str1, search1), StringUtils.containsIgnoreCase(str1, search1));
+
+        String str2 = "JAVA";
+        String search2 = "java";
+        assertTrue(StringUtils.containsIgnoreCase(str2, search2));
+        assertFalse(StringUtils.contains(str2, search2)); // Case-sensitive should be false
+
+        // R4: predictable change under a transformed input (changing case)
+        String originalStr = "HelloWorld";
+        String searchLower = "world";
+        String searchUpper = "WORLD";
+        String searchMixed = "WoRlD";
+        assertTrue(StringUtils.containsIgnoreCase(originalStr, searchLower));
+        assertTrue(StringUtils.containsIgnoreCase(originalStr, searchUpper));
+        assertTrue(StringUtils.containsIgnoreCase(originalStr, searchMixed));
+        assertTrue(StringUtils.containsIgnoreCase(originalStr.toLowerCase(), searchLower));
+        assertTrue(StringUtils.containsIgnoreCase(originalStr.toUpperCase(), searchUpper));
+        assertTrue(StringUtils.containsIgnoreCase(originalStr.toLowerCase(), searchUpper));
+        assertTrue(StringUtils.containsIgnoreCase(originalStr.toUpperCase(), searchLower));
+
+        // R3: Basic containment, ignoring case
+        assertTrue(StringUtils.containsIgnoreCase("abc", "a")); // from Javadoc
+        assertTrue(StringUtils.containsIgnoreCase("abc", "A")); // from Javadoc
+        assertFalse(StringUtils.containsIgnoreCase("abc", "z")); // from Javadoc
+        assertFalse(StringUtils.containsIgnoreCase("abc", "Z")); // from Javadoc
+        assertTrue(StringUtils.containsIgnoreCase("Abc", "b"));
+        assertTrue(StringUtils.containsIgnoreCase("aBc", "C"));
+        assertTrue(StringUtils.containsIgnoreCase("ABC", "abc"));
+        assertTrue(StringUtils.containsIgnoreCase("aBcDeF", "bCd"));
+        assertTrue(StringUtils.containsIgnoreCase("aBcDeF", "BCd"));
+        assertTrue(StringUtils.containsIgnoreCase("aBcDeF", "bcD"));
+
+        // R3: No containment
+        assertFalse(StringUtils.containsIgnoreCase("abc", "d"));
+        assertFalse(StringUtils.containsIgnoreCase("abc", "ax"));
+        assertFalse(StringUtils.containsIgnoreCase("abc", "abCde"));
+
+        // R4: Search string longer than the main string
+        assertFalse(StringUtils.containsIgnoreCase("a", "abc"));
+        assertFalse(StringUtils.containsIgnoreCase("abc", "abcdef"));
+
+        // R4: String with special characters
+        assertTrue(StringUtils.containsIgnoreCase("!@#$", "@#"));
+        assertTrue(StringUtils.containsIgnoreCase("!@#$", "!@#$"));
+        assertFalse(StringUtils.containsIgnoreCase("!@#$", "%"));
+
+        // R4: Empty string as the main string
+        assertFalse(StringUtils.containsIgnoreCase("", "a"));
+        assertFalse(StringUtils.containsIgnoreCase("", "ABC"));
+
+        // R4: Single character strings
+        assertTrue(StringUtils.containsIgnoreCase("a", "a"));
+        assertTrue(StringUtils.containsIgnoreCase("A", "a"));
+        assertTrue(StringUtils.containsIgnoreCase("a", "A"));
+        assertFalse(StringUtils.containsIgnoreCase("a", "b"));
+
+        // R4: Multiple occurrences, still true if any match
+        assertTrue(StringUtils.containsIgnoreCase("ababab", "BAB"));
+        assertTrue(StringUtils.containsIgnoreCase("ababab", "aB"));
+
+        // R4: Locale-independent check (though not directly testable without specific locale-sensitive characters)
+        // The docstring states it uses Locale.ROOT, implying consistent behavior.
+        // We can test with characters that might have different uppercase representations in other locales,
+        // but for English alphabet, it's straightforward.
+        assertTrue(StringUtils.containsIgnoreCase("straße", "STRASSE")); // Example for German ß -> SS
+        assertTrue(StringUtils.containsIgnoreCase("STRASSE", "straße"));
+        assertTrue(StringUtils.containsIgnoreCase("Straße", "strasse"));
+        assertTrue(StringUtils.containsIgnoreCase("strasse", "Straße"));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_41.getShortClassName | LITERAL | testGetShortClassName_ArrayTypes
+{
+        // R3: It correctly processes array type names by stripping the array encoding
+        assertEquals("Object[]", ClassUtils.getShortClassName("[Ljava.lang.Object;")); // from Javadoc
+        assertEquals("int[][]", ClassUtils.getShortClassName("[[I")); // from Javadoc
+        assertEquals("String[]", ClassUtils.getShortClassName("[Ljava.lang.String;"));
+        assertEquals("boolean[]", ClassUtils.getShortClassName("[Z"));
+        assertEquals("byte[]", ClassUtils.getShortClassName("[B"));
+        assertEquals("char[]", ClassUtils.getShortClassName("[C"));
+        assertEquals("double[]", ClassUtils.getShortClassName("[D"));
+        assertEquals("float[]", ClassUtils.getShortClassName("[F"));
+        assertEquals("long[]", ClassUtils.getShortClassName("[J"));
+        assertEquals("short[]", ClassUtils.getShortClassName("[S"));
+        assertEquals("int[]", ClassUtils.getShortClassName("[I"));
+
+        // R4: Predictable change - multiple dimensions
+        assertEquals("Object[][][]", ClassUtils.getShortClassName("[[[Ljava.lang.Object;"));
+        assertEquals("int[][][][]", ClassUtils.getShortClassName("[[[[I"));
+
+        // R4: Predictable change - array of inner class
+        assertEquals("Map.Entry[]", ClassUtils.getShortClassName("[Ljava.util.Map$Entry;"));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_41.getShortClassName | LITERAL | testGetShortClassName_MixedCases
+{
+        // R4: Combination of inner class and array
+        assertEquals("Outer.Inner[]", ClassUtils.getShortClassName("[Lcom.example.Outer$Inner;"));
+        assertEquals("Outer.Inner[][]", ClassUtils.getShortClassName("[[Lcom.example.Outer$Inner;"));
+
+        // R4: Class name with package but no inner class or array
+        assertEquals("String", ClassUtils.getShortClassName("java.lang.String"));
+        assertEquals("List", ClassUtils.getShortClassName("java.util.List"));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_41.getShortClassName | RELATION | testGetShortClassName_WithShortCanonicalName
+{
+        // R2: Agreement with getShortCanonicalName after canonicalization
+        assertEquals(ClassUtils.getShortCanonicalName("java.lang.String"), ClassUtils.getShortClassName("java.lang.String"));
+        assertEquals(ClassUtils.getShortCanonicalName("java.util.Map$Entry"), ClassUtils.getShortClassName("java.util.Map$Entry"));
+        assertEquals(ClassUtils.getShortCanonicalName("[Ljava.lang.Object;"), ClassUtils.getShortClassName("[Ljava.lang.Object;"));
+        assertEquals(ClassUtils.getShortCanonicalName("[[I"), ClassUtils.getShortClassName("[[I"));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_41.getPackageName | LITERAL | testGetPackageName_ArrayTypes
+{
+        // R3: For array types, the array encoding (e.g., `[L` and `;`) is first
+        // stripped to reveal the component type's fully qualified name, from
+        // which the package name is then derived.
+        String arrayClassName1 = "[Ljava.lang.String;";
+        assertEquals("java.lang", ClassUtils.getPackageName(arrayClassName1));
+
+        String arrayClassName2 = "[Lorg.apache.commons.lang.ClassUtils;";
+        assertEquals("org.apache.commons.lang", ClassUtils.getPackageName(arrayClassName2));
+
+        String arrayClassName3 = "[[Lcom.example.MyClass;";
+        assertEquals("com.example", ClassUtils.getPackageName(arrayClassName3));
+
+        String arrayClassName4 = "[LMyClass;"; // Array of class in default package
+        assertEquals("", ClassUtils.getPackageName(arrayClassName4));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_41.getPackageName | LITERAL | testGetPackageName_MixedCases
+{
+        // R3: Test various combinations
+        String className = "java.util.Map$Entry";
+        assertEquals("java.util", ClassUtils.getPackageName(className));
+
+        String arrayInnerClassName = "[Ljava.util.Map$Entry;";
+        assertEquals("java.util", ClassUtils.getPackageName(arrayInnerClassName));
+
+        String arrayDefaultPackageInner = "[LMyClass$Inner;";
+        assertEquals("", ClassUtils.getPackageName(arrayDefaultPackageInner));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_45.abbreviate | RELATION | testAbbreviate_NoTruncationNeeded_UpperIsNegativeOne
+{
+        String str = "Short string";
+        int lower = 20;
+        int upper = -1;
+        String appendToEnd = "...";
+        // R3: documented invariant - if length <= lower, no abbreviation
+        assertEquals(str, WordUtils.abbreviate(str, lower, upper, appendToEnd));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_45.abbreviate | RELATION | testAbbreviate_NoTruncationNeeded
+{
+        String str = "Short string";
+        int lower = 20;
+        int upper = 30;
+        String appendToEnd = "...";
+        // R3: documented invariant - if length <= lower, no abbreviation
+        assertEquals(str, WordUtils.abbreviate(str, lower, upper, appendToEnd));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_45.abbreviate | RELATION | testAbbreviate_UpperIsNegativeOne_StringShorterThanLower
+{
+        String str = "Short";
+        int lower = 10;
+        int upper = -1;
+        String appendToEnd = "...";
+        // R3: documented invariant - if length <= lower, no abbreviation, original string returned
+        assertEquals(str, WordUtils.abbreviate(str, lower, upper, appendToEnd));
+    }
+
+====================================================================================================
+m7 prop | E | Lang_45.abbreviate | LITERAL-marked | testAbbreviate_StringShorterThanLower
+{
+        String str = "Short";
+        int lower = 10;
+        int upper = 20;
+        String appendToEnd = "...";
+        // R3: documented invariant - if length <= lower, no abbreviation, original string returned
+        assertEquals(str, WordUtils.abbreviate(str, lower, upper, appendToEnd));
+        assertEquals("Short", WordUtils.abbreviate("Short", 0, 10, "...")); // from Javadoc
+    }
+
+====================================================================================================
+m7 prop | E | Lang_47.appendFixedWidthPadRight | LITERAL | testAppendFixedWidthPadRight_ObjectToStringReturnsNull
+{
+        StrBuilder sb = new StrBuilder();
+        Object obj = new Object() {
+            @Override
+            public String toString() {
+                return null;
+            }
+        };
+        int width = 4;
+        char padChar = 'x';
+        sb.appendFixedWidthPadRight(obj, width, padChar);
+        assertEquals("xxxx", sb.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Lang_47.appendFixedWidthPadRight | LITERAL | testAppendFixedWidthPadRight_NullObject
+{
+        StrBuilder sb = new StrBuilder();
+        sb.setNullText("NULL");
+        Object obj = null;
+        int width = 6;
+        char padChar = '*';
+        sb.appendFixedWidthPadRight(obj, width, padChar);
+        assertEquals("NULL**", sb.toString());
+
+        sb = new StrBuilder();
+        sb.setNullText(null); // null nullText
+        sb.appendFixedWidthPadRight(obj, width, padChar);
+        assertEquals("******", sb.toString()); // Should use empty string for nullText
+
+        sb = new StrBuilder();
+        sb.appendFixedWidthPadRight(obj, width, padChar); // Default nullText is null
+        assertEquals("******", sb.toString());
+    }
+
+====================================================================================================
+m7 prop | E | Lang_47.appendFixedWidthPadLeft | LITERAL | testAppendFixedWidthPadLeft_NullObjectDefaultNullText
+{
+        StrBuilder sb = new StrBuilder();
+        Object obj = null;
+        int width = 5;
+        char padChar = '0';
+        StrBuilder result = sb.appendFixedWidthPadLeft(obj, width, padChar);
+        // Default nullText is null, so it should use an empty string.
+        assertEquals("00000", result.toString());
+        assertEquals(width, result.length()); // R3: result length should be equal to width
+    }
+
+====================================================================================================
+m7 prop | E | Lang_49.reduce | LITERAL | testReduceZeroNumerator
+{
+        Fraction zeroFourths = Fraction.getFraction(0, 4);
+        Fraction reducedZeroFourths = zeroFourths.reduce();
+        // R3: A fraction is considered in its simplest form when its numerator and denominator have no common factors other than 1.
+        // R3: The canonical form also ensures that the denominator is always positive.
+        assertEquals(0, reducedZeroFourths.getNumerator());
+        assertEquals(1, reducedZeroFourths.getDenominator());
+        assertEquals(Fraction.ZERO, reducedZeroFourths);
+
+        Fraction zeroNegFive = Fraction.getFraction(0, -5);
+        Fraction reducedZeroNegFive = zeroNegFive.reduce();
+        assertEquals(0, reducedZeroNegFive.getNumerator());
+        assertEquals(1, reducedZeroNegFive.getDenominator());
+        assertEquals(Fraction.ZERO, reducedZeroNegFive);
+    }
+
+====================================================================================================
+m7 prop | E | Lang_57.isAvailableLocale | LITERAL | testIsAvailableLocale_UnavailableLocale
+{
+        // R4 metamorphic: If a locale is not in the availableLocaleSet, then isAvailableLocale should return false.
+        // We create a locale that is highly unlikely to be in the default available set.
+        Locale unavailableLocale = new Locale("xx", "YY");
+        assertFalse(LocaleUtils.isAvailableLocale(unavailableLocale));
+    }
+
+====================================================================================================
+m7 prop | M | Lang_63.formatPeriod | LITERAL | testFormatPeriod_CalendarUnitsOnly_LeapYear
+{
+        Calendar calStart = Calendar.getInstance(UTC);
+        calStart.set(2020, Calendar.JANUARY, 1, 0, 0, 0); // 2020 is a leap year
+        calStart.set(Calendar.MILLISECOND, 0);
+        long start = calStart.getTimeInMillis();
+
+        Calendar calEnd = Calendar.getInstance(UTC);
+        calEnd.set(2021, Calendar.JANUARY, 1, 0, 0, 0);
+        calEnd.set(Calendar.MILLISECOND, 0);
+        long end = calEnd.getTimeInMillis(); // Exactly 1 year (366 days)
+
+        String format = "y 'years,' d 'days'";
+        String result = DurationFormatUtils.formatPeriod(start, end, format, false, UTC);
+        // Should be 1 year, 0 days, as the year unit consumes the full year.
+        assertEquals("1 years, 0 days", result);
+
+        // Now, a duration that is 1 year and 1 day
+        calEnd.set(2021, Calendar.JANUARY, 2, 0, 0, 0);
+        end = calEnd.getTimeInMillis();
+        result = DurationFormatUtils.formatPeriod(start, end, format, false, UTC);
+        assertEquals("1 years, 1 days", result);
+
+        // Test with only months and days, crossing a year boundary
+        calStart.set(2023, Calendar.JANUARY, 1, 0, 0, 0);
+        calStart.set(Calendar.MILLISECOND, 0);
+        start = calStart.getTimeInMillis();
+
+        calEnd.set(2024, Calendar.FEBRUARY, 1, 0, 0, 0); // 2024 is a leap year
+        calEnd.set(Calendar.MILLISECOND, 0);
+        end = calEnd.getTimeInMillis();
+
+        format = "M 'months,' d 'days'";
+        result = DurationFormatUtils.formatPeriod(start, end, format, false, UTC);
+        // From Jan 1, 2023 to Feb 1, 2024 is 13 months and 0 days.
+        assertEquals("13 months, 0 days", result);
+    }
+
+====================================================================================================
+m7 prop | E | Lang_7.createNumber | THROWS | testCreateNumberInvalidDoubleDash
+{
+        NumberUtils.createNumber("--123");
+    }
+
+====================================================================================================
+m7 example | E | Cli_1.hasOption | LITERAL | testHasOption_OptionWithoutArgument
+{
+        CommandLine cmd = new CommandLine();
+        Option option = new Option("h", "help", false, "description");
+        cmd.addOption(option);
+        assertTrue(cmd.hasOption("h"));
+        assertTrue(cmd.hasOption("help"));
+    }
+
+====================================================================================================
+m7 example | E | Cli_1.hasOption | LITERAL | testHasOption_ShortAndLongOptionPresent
+{
+        CommandLine cmd = new CommandLine();
+        Option option = new Option("v", "verbose", false, "description");
+        cmd.addOption(option);
+        assertTrue(cmd.hasOption("v"));
+        assertTrue(cmd.hasOption("verbose"));
+    }
+
+====================================================================================================
+m7 example | E | Cli_1.hasOption | LITERAL | testHasOption_OptionWithArgument
+{
+        CommandLine cmd = new CommandLine();
+        Option option = new Option("f", "file", true, "description");
+        cmd.addOption(option);
+        assertTrue(cmd.hasOption("f"));
+        assertTrue(cmd.hasOption("file"));
+    }
+
+====================================================================================================
+m7 example | E | Cli_1.hasOption | LITERAL | testHasOption_CaseSensitivity
+{
+        CommandLine cmd = new CommandLine();
+        Option option = new Option("A", "Alpha", false, "description");
+        cmd.addOption(option);
+        assertTrue(cmd.hasOption("A"));
+        assertFalse(cmd.hasOption("a"));
+        assertTrue(cmd.hasOption("Alpha"));
+        assertFalse(cmd.hasOption("alpha"));
+    }
+
+====================================================================================================
+m7 example | M | Cli_1.hasOption | LITERAL | testHasOption_NullOptionName
+{
+        CommandLine cmd = new CommandLine();
+        assertFalse(cmd.hasOption(null));
+    }
+
+====================================================================================================
+m7 example | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_NoWhitespace_ChopMidString
+{
+        String text = "abcdefghijklmnopqrstuvwxyz";
+        int width = 10;
+        int startPos = 5; // "fghijklmnopqrstuvwxyz"
+        assertEquals(15, formatter.findWrapPos(text, width, startPos)); // "fghijklmno"
+    }
+
+====================================================================================================
+m7 example | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_NoWhitespace_ChopAtEnd
+{
+        String text = "abcdefghij";
+        int width = 5;
+        int startPos = 0;
+        assertEquals(5, formatter.findWrapPos(text, width, startPos));
+    }
+
+====================================================================================================
+m7 example | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_LongWord_ChopAndFindNextSpace
+{
+        String text = "Thisisalongword without spaces";
+        int width = 10;
+        int startPos = 0;
+        assertEquals(10, formatter.findWrapPos(text, width, startPos)); // Chop at width
+    }
+
+====================================================================================================
+m7 example | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_LongWordFollowedBySpace
+{
+        String text = "verylongword space";
+        int width = 10;
+        int startPos = 0;
+        assertEquals(10, formatter.findWrapPos(text, width, startPos)); // Chop 'verylongwo'
+    }
+
+====================================================================================================
+m7 example | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_LongWord_Chop
+{
+        String text = "Thisisalongwordwithoutspaces";
+        int width = 10;
+        int startPos = 0;
+        assertEquals(10, formatter.findWrapPos(text, width, startPos)); // Chop at width
+    }
+
+====================================================================================================
+m7 example | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_LongWordFollowedByNewline
+{
+        String text = "verylongword\nnewline";
+        int width = 10;
+        int startPos = 0;
+        assertEquals(10, formatter.findWrapPos(text, width, startPos)); // Chop 'verylongwo'
+    }
+
+====================================================================================================
+m7 example | E | Cli_32.findWrapPos | LITERAL | testFindWrapPos_LongWord_ChopAndFindNextSpace_AfterChop
+{
+        String text = "Thisisalongwordwithoutspaces and more";
+        int width = 10;
+        int startPos = 0;
+        assertEquals(10, formatter.findWrapPos(text, width, startPos)); // Chop at width
+    }
+
+====================================================================================================
+m7 example | E | Codec_13.isDoubleMetaphoneEqual | LITERAL | testIsDoubleMetaphoneEqual_EmptyStringsAlternate
+{
+        assertTrue(metaphone.isDoubleMetaphoneEqual("", "", true));
+    }
+
+====================================================================================================
+m7 example | E | Codec_13.isDoubleMetaphoneEqual | LITERAL | testIsDoubleMetaphoneEqual_EmptyStringsPrimary
+{
+        assertTrue(metaphone.isDoubleMetaphoneEqual("", "", false));
+    }
+
+====================================================================================================
+m7 example | E | Codec_17.newStringIso8859_1 | LITERAL | testNewStringIso8859_1_NullInput
+{
+        assertNull(StringUtils.newStringIso8859_1(null));
+    }
+
+====================================================================================================
+m7 example | E | Codec_6.read | LITERAL | testReadUnderlyingStreamReturnsZeroBytes
+{
+        // Simulate an InputStream that returns 0 bytes for some calls
+        InputStream mockIs = new InputStream() {
+            private final byte[] data = "SGVsbG8=".getBytes(StandardCharsets.US_ASCII);
+            private int index = 0;
+            private int zeroReadCount = 0;
+
+            @Override
+            public int read() throws IOException {
+                if (index < data.length) {
+                    return data[index++];
+                }
+                return -1;
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                if (index >= data.length) {
+                    return -1;
+                }
+                if (zeroReadCount < 1) { // Return 0 bytes once
+                    zeroReadCount++;
+                    return 0;
+                }
+                int bytesToRead = Math.min(len, data.length - index);
+                System.arraycopy(data, index, b, off, bytesToRead);
+                index += bytesToRead;
+                return bytesToRead;
+            }
+        };
+
+        Base64InputStream b64is = new Base64InputStream(mockIs, false);
+        byte[] buffer = new byte[10];
+        int bytesRead = b64is.read(buffer, 0, 10);
+        assertEquals(5, bytesRead);
+        assertArrayEquals(new byte[]{'H', 'e', 'l', 'l', 'o', 0, 0, 0, 0, 0}, buffer);
+        assertEquals(-1, b64is.read(buffer, 0, 10));
+        b64is.close();
+    }
+
+====================================================================================================
+m7 example | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64StringHelloWorld
+{
+        assertEquals("SGVsbG8gV29ybGQ=", Base64.encodeBase64String("Hello World".getBytes(StandardCharsets.UTF_8)));
+    }
+
+====================================================================================================
+m7 example | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64StringWithNonAsciiCharacters
+{
+        String input = "你好世界"; // "Hello World" in Chinese
+        String expected = "5L2g5aW95LiW55WM";
+        assertEquals(expected, Base64.encodeBase64String(input.getBytes(StandardCharsets.UTF_8)));
+    }
+
+====================================================================================================
+m7 example | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64StringThreeBytes
+{
+        assertEquals("AAAA", Base64.encodeBase64String(new byte[]{0, 0, 0}));
+        assertEquals("AAAB", Base64.encodeBase64String(new byte[]{0, 0, 1}));
+        assertEquals("////", Base64.encodeBase64String(new byte[]{(byte) 255, (byte) 255, (byte) 255}));
+        assertEquals("Zm9v", Base64.encodeBase64String("foo".getBytes(StandardCharsets.UTF_8)));
+    }
+
+====================================================================================================
+m7 example | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64StringPaddingCases
+{
+        // No padding
+        assertEquals("Zm9v", Base64.encodeBase64String("foo".getBytes(StandardCharsets.UTF_8)));
+        // One padding character
+        assertEquals("Zm9vYg==", Base64.encodeBase64String("foob".getBytes(StandardCharsets.UTF_8)));
+        // Two padding characters
+        assertEquals("Zm9vYmE=", Base64.encodeBase64String("fooba".getBytes(StandardCharsets.UTF_8)));
+    }
+
+====================================================================================================
+m7 example | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64StringTwoBytes
+{
+        assertEquals("AAA=", Base64.encodeBase64String(new byte[]{0, 0}));
+        assertEquals("AAE=", Base64.encodeBase64String(new byte[]{0, 1}));
+        assertEquals("//8=", Base64.encodeBase64String(new byte[]{(byte) 255, (byte) 255}));
+    }
+
+====================================================================================================
+m7 example | E | Codec_7.encodeBase64String | LITERAL | testEncodeBase64StringSingleByte
+{
+        assertEquals("AA==", Base64.encodeBase64String(new byte[]{0}));
+        assertEquals("AQ==", Base64.encodeBase64String(new byte[]{1}));
+        assertEquals("/w==", Base64.encodeBase64String(new byte[]{(byte) 255}));
+    }
+
+====================================================================================================
+m7 example | E | Codec_9.encodeBase64 | LITERAL | testEncodeBase64_MaxResultSizeExactNotChunked
+{
+        byte[] binaryData = "test".getBytes(); // Encodes to "dGVzdA==" (8 bytes)
+        boolean isChunked = false;
+        boolean urlSafe = false;
+        int maxResultSize = 8;
+        byte[] expected = "dGVzdA==".getBytes();
+        assertArrayEquals(expected, Base64.encodeBase64(binaryData, isChunked, urlSafe, maxResultSize));
+    }
+
+====================================================================================================
+m7 example | M | Gson_15.value | THROWS | testValueNegativeInfinityWithLenient
+{
+        jsonWriter.setLenient(true);
+        try {
+            jsonWriter.value(Double.NEGATIVE_INFINITY);
+            fail("Expected IllegalArgumentException for infinity even with lenient mode");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Numeric values must be finite, but was -Infinity", e.getMessage());
+        }
+    }
+
+====================================================================================================
+m7 example | M | Gson_15.value | THROWS | testValueNaNWithLenient
+{
+        jsonWriter.setLenient(true);
+        try {
+            jsonWriter.value(Double.NaN);
+            fail("Expected IllegalArgumentException for NaN even with lenient mode");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Numeric values must be finite, but was NaN", e.getMessage());
+        }
+    }
+
+====================================================================================================
+m7 example | M | Gson_15.value | THROWS | testValuePositiveInfinityWithLenient
+{
+        jsonWriter.setLenient(true);
+        try {
+            jsonWriter.value(Double.POSITIVE_INFINITY);
+            fail("Expected IllegalArgumentException for infinity even with lenient mode");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Numeric values must be finite, but was Infinity", e.getMessage());
+        }
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValue_emptyString
+{
+        jsonWriter.value("");
+        assertEquals("\"\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValue_stringWithUnicodeCharacters
+{
+        jsonWriter.value("你好世界");
+        assertEquals("\"你好世界\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValue_withHtmlSafeEnabled
+{
+        jsonWriter.setHtmlSafe(true);
+        jsonWriter.value("<script>");
+        assertEquals("\"\\u003cscript\\u003e\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValue_stringWithSpaces
+{
+        jsonWriter.value("hello world");
+        assertEquals("\"hello world\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValue_withHtmlSafeDisabled
+{
+        jsonWriter.setHtmlSafe(false);
+        jsonWriter.value("<script>");
+        assertEquals("\"<script>\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValue_simpleString
+{
+        jsonWriter.value("hello");
+        assertEquals("\"hello\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | RELATION | testValue_returnsThisInstance
+{
+        JsonWriter returnedWriter = jsonWriter.value("test");
+        assertNotNull(returnedWriter);
+        assertEquals(jsonWriter, returnedWriter);
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValue_stringWithSpecialCharacters
+{
+        jsonWriter.value("!@#$%^&*()");
+        assertEquals("\"!@#$%^&*()\"", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueTrue
+{
+        jsonWriter.value(true);
+        assertEquals("true", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueTrueChaining
+{
+        JsonWriter returnedWriter = jsonWriter.value(true);
+        assertNotNull(returnedWriter);
+        assertEquals(jsonWriter, returnedWriter);
+        assertEquals("true", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueFalse
+{
+        jsonWriter.value(false);
+        assertEquals("false", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueTrueWithHtmlSafe
+{
+        jsonWriter.setHtmlSafe(true);
+        jsonWriter.value(true);
+        assertEquals("true", stringWriter.toString()); // HTML safe doesn't affect boolean literals
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueFalseChaining
+{
+        JsonWriter returnedWriter = jsonWriter.value(false);
+        assertNotNull(returnedWriter);
+        assertEquals(jsonWriter, returnedWriter);
+        assertEquals("false", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.nullValue | LITERAL | testNullValueInRoot
+{
+        jsonWriter.nullValue();
+        assertEquals("null", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.nullValue | LITERAL | testNullValueWithSerializeNullsFalseAndNoName
+{
+        jsonWriter.setSerializeNulls(false);
+        jsonWriter.nullValue(); // Should still write "null" if not part of an object with a deferred name
+        assertEquals("null", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueZeroDouble
+{
+        jsonWriter.value(0.0);
+        assertEquals("0.0", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueNegativeDouble
+{
+        jsonWriter.value(-67.89);
+        assertEquals("-67.89", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueLargePositiveDouble
+{
+        jsonWriter.value(1.2345678901234567E20);
+        assertEquals("1.2345678901234567E20", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueDoubleWithManyDecimalPlaces
+{
+        jsonWriter.value(3.141592653589793);
+        assertEquals("3.141592653589793", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValuePositiveDouble
+{
+        jsonWriter.value(123.45);
+        assertEquals("123.45", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueNegativeLong
+{
+        jsonWriter.value(-67890L);
+        assertEquals("-67890", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | THROWS | testValueLongFollowedByObjectThrowsException
+{
+        jsonWriter.value(1L);
+        try {
+            jsonWriter.beginObject();
+            fail("Expected IllegalStateException for writing multiple root elements without structure");
+        } catch (IllegalStateException e) {
+            // Expected
+            assertEquals("JSON must have only one top-level value.", e.getMessage());
+        }
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | THROWS | testValueLongFollowedByAnotherRootElementThrowsException
+{
+        jsonWriter.value(1L);
+        try {
+            jsonWriter.value(2L);
+            fail("Expected IllegalStateException for writing multiple root elements without structure");
+        } catch (IllegalStateException e) {
+            // Expected
+            assertEquals("JSON must have only one top-level value.", e.getMessage());
+        }
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueLongMinValue
+{
+        jsonWriter.value(Long.MIN_VALUE);
+        assertEquals("-9223372036854775808", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueLongAsRootElement
+{
+        jsonWriter.value(987654321L);
+        assertEquals("987654321", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | THROWS | testValueLongFollowedByArrayThrowsException
+{
+        jsonWriter.value(1L);
+        try {
+            jsonWriter.beginArray();
+            fail("Expected IllegalStateException for writing multiple root elements without structure");
+        } catch (IllegalStateException e) {
+            // Expected
+            assertEquals("JSON must have only one top-level value.", e.getMessage());
+        }
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValuePositiveLong
+{
+        jsonWriter.value(12345L);
+        assertEquals("12345", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueZeroLong
+{
+        jsonWriter.value(0L);
+        assertEquals("0", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_4.value | LITERAL | testValueLongMaxValue
+{
+        jsonWriter.value(Long.MAX_VALUE);
+        assertEquals("9223372036854775807", stringWriter.toString());
+    }
+
+====================================================================================================
+m7 example | E | Gson_8.create | THROWS | testNewInstanceForVoidTypeThrowsException
+{
+        UnsafeAllocator allocator = UnsafeAllocator.create();
+        try {
+            allocator.newInstance(void.class);
+            fail("Expected InstantiationException for void type");
+        } catch (Exception e) {
+            assertTrue(e instanceof InstantiationException || e instanceof UnsupportedOperationException);
+        }
+    }
+
+====================================================================================================
+m7 example | E | Gson_8.create | THROWS | testNewInstanceForPrimitiveTypeThrowsException
+{
+        UnsafeAllocator allocator = UnsafeAllocator.create();
+        try {
+            allocator.newInstance(int.class);
+            fail("Expected InstantiationException for primitive type");
+        } catch (Exception e) {
+            assertTrue(e instanceof InstantiationException || e instanceof UnsupportedOperationException);
+        }
+    }
+
+====================================================================================================
+m7 example | E | Lang_14.equals | LITERAL | testEquals_CharSequenceImplementation
+{
+        CharSequence cs1 = new StringBuilder("hello");
+        CharSequence cs2 = new StringBuilder("hello");
+        assertTrue(StringUtils.equals(cs1, cs2));
+
+        CharSequence cs3 = "world";
+        CharSequence cs4 = new StringBuilder("world");
+        assertTrue(StringUtils.equals(cs3, cs4));
+
+        CharSequence cs5 = "test";
+        CharSequence cs6 = "TEST";
+        assertFalse(StringUtils.equals(cs5, cs6));
+    }
+
+====================================================================================================
+m7 example | E | Lang_19.translate | LITERAL | testTranslateHexEntityWithMixedContentAfter
+{
+        CharSequence input = "&#x41text";
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(5, consumed);
+        assertEquals("A", writer.toString());
+    }
+
+====================================================================================================
+m7 example | E | Lang_19.translate | LITERAL | testTranslateEntityAtEndOfInput
+{
+        CharSequence input = "Test&#65";
+        int consumed = unescaper.translate(input, 4, writer);
+        assertEquals(4, consumed);
+        assertEquals("A", writer.toString());
+    }
+
+====================================================================================================
+m7 example | E | Lang_19.translate | LITERAL | testTranslateHexEntityAtEndOfInput
+{
+        CharSequence input = "Test&#x41";
+        int consumed = unescaper.translate(input, 4, writer);
+        assertEquals(5, consumed);
+        assertEquals("A", writer.toString());
+    }
+
+====================================================================================================
+m7 example | E | Lang_19.translate | LITERAL | testTranslateInputWithAmpersandHash
+{
+        CharSequence input = "&#";
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(0, consumed);
+        assertEquals("", writer.toString());
+    }
+
+====================================================================================================
+m7 example | E | Lang_19.translate | LITERAL | testTranslateEntityWithMixedContentAfter
+{
+        CharSequence input = "&#65text";
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(4, consumed);
+        assertEquals("A", writer.toString());
+    }
+
+====================================================================================================
+m7 example | E | Lang_19.translate | LITERAL | testTranslateInputWithAmpersandHashX
+{
+        CharSequence input = "&#x";
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(0, consumed);
+        assertEquals("", writer.toString());
+    }
+
+====================================================================================================
+m7 example | M | Lang_19.translate | LITERAL | testTranslateEntityWithInvalidCharacterInMiddleHex
+{
+        CharSequence input = "&#x12g3;";
+        int consumed = unescaper.translate(input, 0, writer);
+        assertEquals(0, consumed); // Should not translate as it's not a valid hex entity
+        assertEquals("", writer.toString());
+    }
+
+====================================================================================================
+m7 example | E | Lang_1.createNumber | LITERAL | testCreateNumber_HexLong
+{
+        assertEquals(Long.valueOf(4294967295L), NumberUtils.createNumber("0xFFFFFFFF"));
+        assertEquals(Long.valueOf(-4294967295L), NumberUtils.createNumber("-0xFFFFFFFF"));
+        assertEquals(Long.valueOf(2863311530L), NumberUtils.createNumber("0xAAAAAAAA")); // 10 digits, fits in long
+    }
+
+====================================================================================================
+m7 example | E | Lang_28.translate | LITERAL | testTranslateSupplementaryCharacter
+{
+        StringWriter writer = new StringWriter();
+        // U+1F600 GRINNING FACE
+        int consumed = unescaper.translate("&#128512;", 0, writer);
+        assertEquals(9, consumed);
+        assertEquals("\uD83D\uDE00", writer.toString()); // Surrogate pair
+    }
+
+====================================================================================================
+m7 example | E | Lang_33.toClass | LITERAL | testToClass_ArrayWithNullElements
+{
+        Object[] input = {"one", null, "three", null};
+        Class<?>[] expected = {String.class, null, String.class, null};
+        assertArrayEquals(expected, ClassUtils.toClass(input));
+    }
+
+====================================================================================================
+m7 example | E | Lang_33.toClass | LITERAL | testToClass_ArrayWithSingleNull
+{
+        Object[] input = {null};
+        Class<?>[] expected = {null};
+        assertArrayEquals(expected, ClassUtils.toClass(input));
+    }
+
+====================================================================================================
+m7 example | E | Lang_33.toClass | LITERAL | testToClass_ArrayWithPrimitivesAndObjects
+{
+        Object[] input = {1, "hello", true, 3.14, new Integer(5), null};
+        Class<?>[] expected = {
+                Integer.class,
+                String.class,
+                Boolean.class,
+                Double.class,
+                Integer.class,
+                null
+        };
+        assertArrayEquals(expected, ClassUtils.toClass(input));
+    }
+
+====================================================================================================
+m7 example | E | Lang_35.add | THROWS | testAddWithNullArrayAndNullElement
+{
+        ArrayUtils.add(null, 0, null); // This case is handled by the method, but the docstring for the generic add says it throws IAE.
+                                       // The specific add(T[], int, T) method's Javadoc says "ArrayUtils.add(null, 0, null) = [null]"
+                                       // However, the general docstring at the top of the problem description states IAE.
+                                       // Following the general docstring for the generic method.
+    }
+
+====================================================================================================
+m7 example | E | Lang_36.isNumber | LITERAL | testIsNumber_ValidDecimals
+{
+        assertTrue(NumberUtils.isNumber("123.45"));
+        assertTrue(NumberUtils.isNumber(".5"));
+        assertTrue(NumberUtils.isNumber("1."));
+        assertTrue(NumberUtils.isNumber("-1.23"));
+        assertTrue(NumberUtils.isNumber("0.0"));
+        assertTrue(NumberUtils.isNumber("123.45f"));
+        assertTrue(NumberUtils.isNumber("123.45F"));
+        assertTrue(NumberUtils.isNumber("123.45d"));
+        assertTrue(NumberUtils.isNumber("123.45D"));
+        assertTrue(NumberUtils.isNumber(".5f"));
+        assertTrue(NumberUtils.isNumber("1.D"));
+        assertTrue(NumberUtils.isNumber("0.f"));
+    }
+
+====================================================================================================
+m7 example | E | Lang_38.format | LITERAL | testFormatForcedTimeZone
+{
+        TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+        FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss", utcTimeZone);
+
+        // Create a calendar in a different time zone (e.g., PST)
+        TimeZone pstTimeZone = TimeZone.getTimeZone("PST");
+        Calendar cal = new GregorianCalendar(pstTimeZone);
+        cal.set(2023, Calendar.JANUARY, 15, 10, 30, 45); // 10:30:45 PST
+        cal.set(Calendar.MILLISECOND, 0);
+
+        StringBuffer buf = new StringBuffer();
+        fdf.format(cal, buf);
+        // PST is UTC-8, so 10:30:45 PST is 18:30:45 UTC on the same day
+        assertEquals("2023-01-15 18:30:45", buf.toString());
+
+        // Verify original calendar's time zone is not modified
+        assertEquals(pstTimeZone, cal.getTimeZone());
+    }
+
+====================================================================================================
+m7 example | E | Lang_38.format | LITERAL | testFormatForcedTimeZoneDayBoundary
+{
+        TimeZone utcTimeZone = TimeZone.getTimeZone("UTC");
+        FastDateFormat fdf = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss", utcTimeZone);
+
+        // Create a calendar in a different time zone (e.g., PST)
+        TimeZone pstTimeZone = TimeZone.getTimeZone("PST");
+        Calendar cal = new GregorianCalendar(pstTimeZone);
+        cal.set(2023, Calendar.JANUARY, 15, 23, 30, 45); // 23:30:45 PST
+        cal.set(Calendar.MILLISECOND, 0);
+
+        StringBuffer buf = new StringBuffer();
+        fdf.format(cal, buf);
+        // PST is UTC-8, so 23:30:45 PST (Jan 15) is 07:30:45 UTC (Jan 16)
+        assertEquals("2023-01-16 07:30:45", buf.toString());
+    }
+
+====================================================================================================
+m7 example | E | Lang_3.createNumber | LITERAL | testCreateNumber_BigDecimal
+{
+        String bigDecimalStr = "12345678901234567890.12345678901234567890";
+        assertEquals(new BigDecimal(bigDecimalStr), NumberUtils.createNumber(bigDecimalStr));
+        String negativeBigDecimalStr = "-98765432109876543210.98765432109876543210";
+        assertEquals(new BigDecimal(negativeBigDecimalStr), NumberUtils.createNumber(negativeBigDecimalStr));
+        assertEquals(new BigDecimal("1.23e+1000"), NumberUtils.createNumber("1.23e+1000"));
+        assertEquals(new BigDecimal("1.23e-1000"), NumberUtils.createNumber("1.23e-1000"));
+    }
+
+====================================================================================================
+m7 example | E | Lang_3.createNumber | LITERAL | testCreateNumber_DoublePrecisionLoss
+{
+        // A number that requires BigDecimal for full precision
+        String veryPreciseDecimal = "0.123456789012345678901234567890123456789";
+        BigDecimal expectedBigDecimal = new BigDecimal(veryPreciseDecimal);
+        Number result = NumberUtils.createNumber(veryPreciseDecimal);
+        assertTrue(result instanceof BigDecimal);
+        assertEquals(expectedBigDecimal, result);
+    }
+
+====================================================================================================
+m7 example | E | Lang_3.createNumber | LITERAL | testCreateNumber_FloatPrecisionLoss
+{
+        // A number that can be represented as a double but loses precision as a float
+        String largeDoubleStr = "1.2345678901234567"; // More precision than float can handle
+        Double expectedDouble = Double.valueOf(largeDoubleStr);
+        Float expectedFloat = Float.valueOf(largeDoubleStr); // This will lose precision
+
+        // When no type qualifier, it should return Double if it fits, otherwise BigDecimal
+        // The current implementation might return Float if it tries Float first and then checks for precision.
+        // Based on the docstring, it checks for decimal point and then tries successively larger types.
+        // So it should try Float, then Double, then BigDecimal.
+        // If it fits in Double without precision loss, it should be Double.
+        // If it fits in Float but loses precision, it should be Double.
+        // The docstring says "If a type specifier is not found, it will check for a decimal point
+        // and then try successively larger types from Integer to BigInteger and from Float to BigDecimal."
+        // This implies it will try to find the *best* fit.
+        // Given the critical analysis, the float/double precision check is problematic.
+        // Let's assume it tries to return the smallest type that can represent it without *significant* loss.
+        // For this input, it should ideally be a Double.
+        Number result = NumberUtils.createNumber(largeDoubleStr);
+        assertTrue(result instanceof Double);
+        assertEquals(expectedDouble, result);
+
+        // Test a number that is exactly representable by float
+        assertEquals(Float.valueOf(0.125f), NumberUtils.createNumber("0.125"));
+    }
+
+====================================================================================================
+m7 example | E | Lang_41.getPackageName | LITERAL | testGetPackageName_ArrayOfInnerClass
+{
+        assertEquals("com.example", ClassUtils.getPackageName("[Lcom.example.Outer$Inner;"));
+    }
+
+====================================================================================================
+m7 example | E | Lang_41.getPackageName | LITERAL | testGetPackageName_ArrayOfString
+{
+        assertEquals("java.lang", ClassUtils.getPackageName("[Ljava.lang.String;"));
+    }
+
+====================================================================================================
+m7 example | E | Lang_41.getPackageName | LITERAL | testGetPackageName_MultiDimensionalArray
+{
+        assertEquals("java.lang", ClassUtils.getPackageName("[[Ljava.lang.String;"));
+        assertEquals("", ClassUtils.getPackageName("[[I"));
+    }
+
+====================================================================================================
+m7 example | E | Lang_45.abbreviate | LITERAL | testAbbreviate_StringShorterThanLower
+{
+        assertEquals("Short", WordUtils.abbreviate("Short", 5, 10, "..."));
+        assertEquals("Short", WordUtils.abbreviate("Short", 6, 10, "...")); // lower > length, no abbreviation
+        assertEquals("Hello", WordUtils.abbreviate("Hello", 5, 10, "..."));
+        assertEquals("Hello", WordUtils.abbreviate("Hello", 0, 10, "..."));
+    }
+
+====================================================================================================
+m7 example | E | Lang_47.appendFixedWidthPadRight | LITERAL | testAppendFixedWidthPadRight_ObjectWithToStringReturningNull
+{
+        StrBuilder sb = new StrBuilder();
+        Object obj = new Object() {
+            @Override
+            public String toString() {
+                return null;
+            }
+        };
+        sb.appendFixedWidthPadRight(obj, 5, '#');
+        assertEquals("#####", sb.toString()); // Should treat as empty string and pad
+    }
+
+====================================================================================================
+m7 example | E | Lang_47.appendFixedWidthPadRight | LITERAL | testAppendFixedWidthPadRight_NullObjectDefaultNullText
+{
+        StrBuilder sb = new StrBuilder();
+        sb.appendFixedWidthPadRight(null, 5, '-');
+        assertEquals("-----", sb.toString()); // Default nullText is empty string, then padded
+    }
+
+====================================================================================================
+m7 example | E | Lang_47.appendFixedWidthPadLeft | LITERAL | testAppendFixedWidthPadLeft_NullObjectDefaultNullText
+{
+        StrBuilder sb = new StrBuilder();
+        sb.appendFixedWidthPadLeft(null, 5, ' ');
+        assertEquals("     ", sb.toString()); // Default nullText is null, so it uses empty string
+
+        sb = new StrBuilder();
+        sb.setNullText("NULL");
+        sb.appendFixedWidthPadLeft(null, 6, '-');
+        assertEquals("--NULL", sb.toString());
+
+        sb = new StrBuilder();
+        sb.setNullText("N");
+        sb.appendFixedWidthPadLeft(null, 3, '0');
+        assertEquals("00N", sb.toString());
+    }
+
+====================================================================================================
+m7 example | E | Lang_47.appendFixedWidthPadLeft | LITERAL | testAppendFixedWidthPadLeft_NullObjectWithNullNullText
+{
+        StrBuilder sb = new StrBuilder();
+        sb.setNullText(null); // Explicitly set nullText to null
+        sb.appendFixedWidthPadLeft(null, 4, '#');
+        assertEquals("####", sb.toString()); // Should use empty string for null object
+    }
+
+====================================================================================================
+m7 example | E | Lang_49.reduce | RELATION | testReduceZeroNumerator
+{
+        Fraction fraction = Fraction.getFraction(0, 5);
+        Fraction expected = Fraction.getFraction(0, 1);
+        assertEquals("0/5 should reduce to 0/1", expected, fraction.reduce());
+
+        fraction = Fraction.getFraction(0, -10);
+        expected = Fraction.getFraction(0, 1);
+        assertEquals("0/-10 should reduce to 0/1", expected, fraction.reduce());
+    }
+
+====================================================================================================
+m7 example | E | Lang_55.stop | LITERAL | testStopFromSuspendedState
+{
+        stopWatch.start();
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        stopWatch.suspend();
+        try {
+            Thread.sleep(50); // Time in suspended state should not be counted
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        stopWatch.stop();
+        assertTrue(stopWatch.getTime() >= 50);
+        assertTrue(stopWatch.getTime() < 100); // Ensure suspended time is not counted
+        assertEquals(2, getRunningState(stopWatch)); // STATE_STOPPED
+        assertEquals(10, getSplitState(stopWatch)); // STATE_UNSPLIT
+    }
+
+====================================================================================================
+m7 example | E | Lang_58.createNumber | LITERAL | testCreateNumber_Long
+{
+        assertEquals(Long.valueOf(123L), NumberUtils.createNumber("123L"));
+        assertEquals(Long.valueOf(-45L), NumberUtils.createNumber("-45l"));
+        assertEquals(Long.valueOf(0L), NumberUtils.createNumber("0L"));
+        assertEquals(Long.valueOf(Integer.MAX_VALUE + 1L), NumberUtils.createNumber(String.valueOf(Integer.MAX_VALUE + 1L)));
+        assertEquals(Long.valueOf(Long.MAX_VALUE), NumberUtils.createNumber(String.valueOf(Long.MAX_VALUE)));
+        assertEquals(Long.valueOf(Long.MIN_VALUE), NumberUtils.createNumber(String.valueOf(Long.MIN_VALUE)));
+    }
+
+====================================================================================================
+m7 example | E | Lang_60.contains | LITERAL | testContainsChar_builderWithZeroLength
+{
+        StrBuilder sb = new StrBuilder("abc");
+        sb.setLength(0);
+        assertFalse(sb.contains('a'));
+    }
+
+====================================================================================================
+m7 example | E | Lang_7.createNumber | THROWS | testCreateNumber_InvalidFormat_DoubleDash
+{
+        NumberUtils.createNumber("--123");
+    }

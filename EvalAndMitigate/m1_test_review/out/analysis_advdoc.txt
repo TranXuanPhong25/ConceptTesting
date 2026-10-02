@@ -1,0 +1,35 @@
+## m1_review_advdoc vs unified_invoked_advanced_docstring_prompt
+
+logs: baseline ['data/rq1/logs/Gemini-2-5-flash_gen_test_evaluate_buggy_gen_test_non_private_or_default_unified_invoked_advanced_docstring_prompt_log_1.log']; arm ['data/rq1/logs/Gemini-2-5-flash_gen_test_evaluate_buggy_gen_test_non_private_or_default_m1_review_advdoc_log_1.log', 'data/rq1/logs/Gemini-2-5-flash_gen_test_evaluate_buggy_gen_test_non_private_or_default_m1_review_advdoc_part2_log_1.log']
+per-test lists consistent with counters: baseline 75/78, arm 77/78 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| baseline `unified_invoked_advanced_docstring_prompt` | 1308 / 1138 | 33 (2.90%) | 95 (8.35%) | 313 (27.50%) | 0.233 | 5 | 30 |
+| review `m1_review_advdoc` | 1001 / 890 | 6 (0.67%) | 75 (8.43%) | 232 (26.07%) | 0.244 | 2 | 27 |
+| random abstain r=0.235 (expected) | 1000 / 870 | 25.2 (2.90%) | 72.6 (8.35%) | 239.3 (27.50%) | 0.233 | 4.5 | 26.8 |
+
+reviewed @Test methods 1359: KEEP 1014, REWRITE 25 (1.8%), ABSTAIN 320 (23.5%); expected-value changes logged 33; notes ['no decision returned -> KEEP', 'salvaged from malformed JSON', 'salvaged from malformed JSON; rewrite did not parse as one @Test method -> ABSTAIN']
+reviewer LLM calls: 78 (files reviewed 75; parse failures 3)
+
+baseline outcome of ABSTAINED tests: {'E': 30, 'M': 3, 'FP': 61, 'TN/not-compiled': 226} (random abstention would remove E/M/FP in proportion: E 22.4, M 7.8, FP 73.7)
+baseline outcome of KEPT tests: {'E': 73, 'M': 6, 'FP': 123, 'TN/not-compiled': 812}; same outcome in the arm run: 1008/1014
+REWRITTEN tests, baseline outcome: {'E': 4, 'M': 0, 'FP': 9, 'TN/not-compiled': 12} -> arm outcome: {'E': 0, 'M': 0, 'FP': 13, 'TN/not-compiled': 12}
+
+McNemar methods ≥1 E (baseline vs review): lost 4, gained 1, p=0.375
+McNemar methods ≥1 M (baseline vs review): lost 3, gained 0, p=0.250
+
+P(random abstention at r drops >= 30 of the 107 recoverable baseline E tests) = 0.1630
+P(random abstention at r drops >= 61 of the 193 recoverable baseline FP tests) = 0.0065
+P(random abstention at r loses >= 4 of the 30 methods with >=1 E) = 0.4069
+
+infrastructure-failed blocks (a run 'failed' with an empty error report): baseline ['HelpFormatter#4', 'RandomStringUtils#27', 'LookupTranslator#63'], arm ['RandomStringUtils#27']
+
+sensitivity, excluding those 3 methods from both sides (75 methods):
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| baseline `unified_invoked_advanced_docstring_prompt` | 1239 / 1069 | 9 (0.84%) | 95 (8.89%) | 268 (25.07%) | 0.262 | 3 | 30 |
+| review `m1_review_advdoc` | 959 / 848 | 6 (0.71%) | 75 (8.84%) | 197 (23.23%) | 0.276 | 2 | 27 |
+
+McNemar (subset) ≥1 E: lost 4, gained 1, p=0.375; ≥1 M: lost 1, gained 0, p=1.000
