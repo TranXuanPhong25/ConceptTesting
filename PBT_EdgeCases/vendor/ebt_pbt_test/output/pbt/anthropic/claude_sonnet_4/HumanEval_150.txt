@@ -1,0 +1,116 @@
+Looking at the `x_or_y` function, I need to create property-based tests that verify it returns `x` when `n` is prime and `y` when `n` is not prime. Let me create comprehensive test cases:
+
+```python
+from hypothesis import given, strategies as st, assume
+import math
+
+def is_prime(n):
+    """Helper function to check if a number is prime"""
+    if n < 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+    for i in range(3, int(math.sqrt(n)) + 1, 2):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.integers(min_value=1, max_value=1000),
+    st.integers(min_value=-1000, max_value=1000),
+    st.integers(min_value=-1000, max_value=1000)
+)
+def test_prime_numbers_return_x(n, x, y):
+    """Property: When n is prime, function should return x"""
+    assume(is_prime(n))
+    result = x_or_y(n, x, y)
+    assert result == x, f"For prime number {n}, should return x={x} but got {result}"
+
+@given(
+    st.integers(min_value=1, max_value=1000),
+    st.integers(min_value=-1000, max_value=1000),
+    st.integers(min_value=-1000, max_value=1000)
+)
+def test_non_prime_numbers_return_y(n, x, y):
+    """Property: When n is not prime, function should return y"""
+    assume(not is_prime(n))
+    result = x_or_y(n, x, y)
+    assert result == y, f"For non-prime number {n}, should return y={y} but got {result}"
+
+@given(
+    st.sampled_from([2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47]),
+    st.integers(),
+    st.integers()
+)
+def test_known_primes_return_x(prime_n, x, y):
+    """Property: Known prime numbers should always return x"""
+    result = x_or_y(prime_n, x, y)
+    assert result == x, f"Known prime {prime_n} should return x={x} but got {result}"
+
+@given(
+    st.sampled_from([1, 4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 22, 24, 25]),
+    st.integers(),
+    st.integers()
+)
+def test_known_non_primes_return_y(non_prime_n, x, y):
+    """Property: Known non-prime numbers should always return y"""
+    result = x_or_y(non_prime_n, x, y)
+    assert result == y, f"Known non-prime {non_prime_n} should return y={y} but got {result}"
+
+@given(st.integers(), st.integers())
+def test_edge_case_one_returns_y(x, y):
+    """Property: n=1 is not prime, so should return y"""
+    result = x_or_y(1, x, y)
+    assert result == y, f"n=1 is not prime, should return y={y} but got {result}"
+
+@given(st.integers(), st.integers())
+def test_edge_case_two_returns_x(x, y):
+    """Property: n=2 is prime, so should return x"""
+    result = x_or_y(2, x, y)
+    assert result == x, f"n=2 is prime, should return x={x} but got {result}"
+
+@given(
+    st.integers(min_value=100, max_value=10000),
+    st.integers(),
+    st.integers()
+)
+def test_large_scale_inputs(n, x, y):
+    """Property: Function should work correctly for large inputs"""
+    result = x_or_y(n, x, y)
+    expected = x if is_prime(n) else y
+    assert result == expected, f"For n={n}, expected {expected} but got {result}"
+
+@given(
+    st.integers(min_value=1, max_value=1000),
+    st.integers(),
+    st.integers()
+)
+def test_return_type_consistency(n, x, y):
+    """Property: Function should always return either x or y exactly"""
+    result = x_or_y(n, x, y)
+    assert result == x or result == y, f"Result {result} should be either x={x} or y={y}"
+
+@given(
+    st.integers(min_value=1, max_value=1000),
+    st.integers(),
+    st.integers()
+)
+def test_deterministic_behavior(n, x, y):
+    """Property: Function should be deterministic - same inputs produce same output"""
+    result1 = x_or_y(n, x, y)
+    result2 = x_or_y(n, x, y)
+    assert result1 == result2, f"Function should be deterministic for inputs ({n}, {x}, {y})"
+```
+
+These test cases cover:
+
+1. **Basic Properties**: Testing that prime numbers return `x` and non-prime numbers return `y`
+2. **Known Values**: Testing with specific known prime and non-prime numbers
+3. **Edge Cases**: Testing boundary conditions like `n=1` and `n=2`
+4. **Large Scale**: Testing with larger input values to ensure scalability
+5. **Type Consistency**: Ensuring the function always returns one of the two provided values
+6. **Deterministic Behavior**: Verifying the function produces consistent results
+
+The tests use a helper function `is_prime()` to independently verify primality, allowing us to test the function's correctness against a known implementation.

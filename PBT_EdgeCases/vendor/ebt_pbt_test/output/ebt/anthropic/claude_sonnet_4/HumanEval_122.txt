@@ -1,0 +1,74 @@
+```python
+# Basic Test Cases
+# Test case 1: Simple case with mix of 1-digit, 2-digit, and 3+ digit numbers
+assert add_elements([111, 21, 3, 4000, 5, 6, 7, 8, 9], 4) == 24, "Basic test: sum of 21 + 3 from first 4 elements"
+
+# Test case 2: All elements have at most 2 digits
+assert add_elements([1, 22, 33, 4], 4) == 60, "Basic test: all elements qualify (1 + 22 + 33 + 4)"
+
+# Test case 3: No elements have at most 2 digits
+assert add_elements([111, 222, 333, 444], 4) == 0, "Basic test: no elements qualify"
+
+# Test case 4: Single element array with 1 digit
+assert add_elements([5], 1) == 5, "Basic test: single 1-digit element"
+
+# Test case 5: Single element array with 2 digits
+assert add_elements([42], 1) == 42, "Basic test: single 2-digit element"
+
+# Test case 6: Mix with negative numbers having at most 2 digits
+assert add_elements([-5, -12, 100, 7], 4) == -10, "Basic test: negative numbers (-5 + -12 + 7)"
+
+# Edge Test Cases
+# Test case 7: k = 1, only first element considered
+assert add_elements([5, 111, 222], 1) == 5, "Edge test: k=1, only first element"
+
+# Test case 8: All negative numbers with at most 2 digits
+assert add_elements([-1, -22, -99, 100], 3) == -122, "Edge test: all negative qualifying numbers"
+
+# Test case 9: Zero in the array
+assert add_elements([0, 111, 22], 3) == 22, "Edge test: zero included (0 + 22)"
+
+# Test case 10: Boundary values - exactly 2 digits (10, 99)
+assert add_elements([10, 99, 100], 3) == 109, "Edge test: boundary 2-digit numbers (10 + 99)"
+
+# Test case 11: Boundary values - exactly 3 digits (100, 999)
+assert add_elements([100, 999, 5], 3) == 5, "Edge test: boundary 3-digit numbers excluded"
+
+# Test case 12: Negative numbers with exactly 2 digits (-10, -99)
+assert add_elements([-10, -99, -100, 5], 4) == -104, "Edge test: negative 2-digit boundaries (-10 + -99 + 5)"
+
+# Test case 13: k equals array length
+assert add_elements([1, 2, 3], 3) == 6, "Edge test: k equals array length"
+
+# Test case 14: Large numbers mixed with small ones
+assert add_elements([9999, 1, 8888, 2], 4) == 3, "Edge test: very large numbers excluded"
+
+# Large Scale Test Cases
+# Test case 15: Maximum array size with all qualifying elements
+large_arr_all_qualify = [i % 100 for i in range(100)]  # 0-99 repeated
+assert add_elements(large_arr_all_qualify, 100) == sum(large_arr_all_qualify), "Large scale: 100 elements, all qualify"
+
+# Test case 16: Maximum array size with no qualifying elements
+large_arr_none_qualify = [1000 + i for i in range(100)]  # 1000-1099
+assert add_elements(large_arr_none_qualify, 100) == 0, "Large scale: 100 elements, none qualify"
+
+# Test case 17: Maximum array size with mixed elements
+large_arr_mixed = [i if i < 50 else 1000 + i for i in range(100)]  # 0-49 qualify, 1050-1149 don't
+expected_sum = sum(range(50))  # sum of 0-49
+assert add_elements(large_arr_mixed, 100) == expected_sum, "Large scale: 100 elements, half qualify"
+
+# Test case 18: Large k value with small qualifying numbers
+large_arr_small_numbers = [i % 10 for i in range(100)]  # 0-9 repeated
+expected_large = sum([i % 10 for i in range(100)])
+assert add_elements(large_arr_small_numbers, 100) == expected_large, "Large scale: single digits repeated"
+
+# Test case 19: Performance test with alternating pattern
+alternating_arr = [1 if i % 2 == 0 else 1000 for i in range(100)]
+expected_alternating = 50  # 50 ones
+assert add_elements(alternating_arr, 100) == expected_alternating, "Large scale: alternating qualifying/non-qualifying"
+
+# Test case 20: Edge of large scale - negative numbers
+large_negative_arr = [-i if i < 50 else -1000 - i for i in range(100)]
+expected_negative = sum([-i for i in range(50)])  # sum of 0 to -49
+assert add_elements(large_negative_arr, 100) == expected_negative, "Large scale: negative numbers pattern"
+```

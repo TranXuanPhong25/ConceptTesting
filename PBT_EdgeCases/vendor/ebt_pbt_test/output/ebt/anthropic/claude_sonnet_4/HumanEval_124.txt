@@ -1,0 +1,97 @@
+Looking at the `valid_date` function, I'll create comprehensive test cases covering basic functionality, edge cases, and large-scale scenarios.
+
+```python
+# Basic Test Cases - Normal valid and invalid dates
+assert valid_date('03-11-2000') == True, "Basic valid date test"
+assert valid_date('06-04-2020') == True, "Basic valid date test with June"
+assert valid_date('12-31-2021') == True, "Basic valid date with December 31st"
+assert valid_date('01-01-2000') == True, "Basic valid date with January 1st"
+assert valid_date('02-28-2021') == True, "Basic valid date with February 28th"
+
+# Basic Test Cases - Invalid formats
+assert valid_date('15-01-2012') == False, "Basic invalid date with month > 12"
+assert valid_date('04-0-2040') == False, "Basic invalid date with day = 0"
+assert valid_date('06/04/2020') == False, "Basic invalid date with wrong separator"
+assert valid_date('13-15-2020') == False, "Basic invalid date with month > 12"
+assert valid_date('02-30-2020') == False, "Basic invalid date with February 30th"
+
+# Edge Test Cases - Empty and malformed strings
+assert valid_date('') == False, "Edge case: empty string"
+assert valid_date('   ') == False, "Edge case: whitespace only string"
+assert valid_date('abc-def-ghij') == False, "Edge case: non-numeric characters"
+assert valid_date('1-1-1') == False, "Edge case: single digit components"
+assert valid_date('01-01') == False, "Edge case: missing year component"
+assert valid_date('01-01-20') == False, "Edge case: two-digit year"
+assert valid_date('1-01-2020') == False, "Edge case: single digit month"
+assert valid_date('01-1-2020') == False, "Edge case: single digit day"
+
+# Edge Test Cases - Boundary values for days
+assert valid_date('01-31-2020') == True, "Edge case: January with 31 days (valid)"
+assert valid_date('01-32-2020') == False, "Edge case: January with 32 days (invalid)"
+assert valid_date('04-30-2020') == True, "Edge case: April with 30 days (valid)"
+assert valid_date('04-31-2020') == False, "Edge case: April with 31 days (invalid)"
+assert valid_date('02-29-2020') == True, "Edge case: February with 29 days (valid)"
+assert valid_date('02-30-2020') == False, "Edge case: February with 30 days (invalid)"
+
+# Edge Test Cases - Boundary values for months
+assert valid_date('00-15-2020') == False, "Edge case: month = 0"
+assert valid_date('13-15-2020') == False, "Edge case: month = 13"
+assert valid_date('12-15-2020') == True, "Edge case: month = 12 (valid)"
+assert valid_date('01-15-2020') == True, "Edge case: month = 1 (valid)"
+
+# Edge Test Cases - All month types
+assert valid_date('03-31-2020') == True, "Edge case: March with 31 days"
+assert valid_date('05-31-2020') == True, "Edge case: May with 31 days"
+assert valid_date('07-31-2020') == True, "Edge case: July with 31 days"
+assert valid_date('08-31-2020') == True, "Edge case: August with 31 days"
+assert valid_date('10-31-2020') == True, "Edge case: October with 31 days"
+assert valid_date('06-30-2020') == True, "Edge case: June with 30 days"
+assert valid_date('09-30-2020') == True, "Edge case: September with 30 days"
+assert valid_date('11-30-2020') == True, "Edge case: November with 30 days"
+
+# Edge Test Cases - Invalid separators and formats
+assert valid_date('03.11.2000') == False, "Edge case: dot separator"
+assert valid_date('03 11 2000') == False, "Edge case: space separator"
+assert valid_date('03_11_2000') == False, "Edge case: underscore separator"
+assert valid_date('03--11--2000') == False, "Edge case: double dash separator"
+assert valid_date('2000-03-11') == False, "Edge case: yyyy-mm-dd format"
+# assert valid_date('11-03-2000') == False, "Edge case: dd-mm-yyyy format might be confused"
+
+# Edge Test Cases - Extra characters and spacing
+assert valid_date(' 03-11-2000 ') == False, "Edge case: leading/trailing spaces"
+assert valid_date('03-11-2000-') == False, "Edge case: trailing dash"
+assert valid_date('-03-11-2000') == False, "Edge case: leading dash"
+assert valid_date('03-11-2000a') == False, "Edge case: extra character at end"
+assert valid_date('a03-11-2000') == False, "Edge case: extra character at beginning"
+
+# Large Scale Test Cases - Multiple rapid validations
+test_dates_valid = ['01-01-2000', '02-28-2001', '03-31-2002', '04-30-2003', '05-31-2004']
+for date in test_dates_valid:
+    assert valid_date(date) == True, f"Large scale test: valid date {date}"
+
+test_dates_invalid = ['13-01-2000', '01-32-2001', '02-30-2002', '04-31-2003', '00-15-2004']
+for date in test_dates_invalid:
+    assert valid_date(date) == False, f"Large scale test: invalid date {date}"
+
+# Large Scale Test Cases - Year boundary testing
+years = ['0000', '0001', '1999', '2000', '2001', '9999']
+for year in years:
+    assert valid_date(f'06-15-{year}') == True, f"Large scale test: valid date with year {year}"
+
+# Large Scale Test Cases - All valid month-day combinations
+months_31_days = ['01', '03', '05', '07', '08', '10', '12']
+months_30_days = ['04', '06', '09', '11']
+
+for month in months_31_days:
+    assert valid_date(f'{month}-31-2020') == True, f"Large scale test: month {month} with 31 days"
+    assert valid_date(f'{month}-32-2020') == False, f"Large scale test: month {month} with 32 days (invalid)"
+
+for month in months_30_days:
+    assert valid_date(f'{month}-30-2020') == True, f"Large scale test: month {month} with 30 days"
+    assert valid_date(f'{month}-31-2020') == False, f"Large scale test: month {month} with 31 days (invalid)"
+
+# Large Scale Test Cases - Performance with malformed inputs
+malformed_inputs = ['', 'invalid', '99-99-9999', 'aa-bb-cccc', '1/1/1', '12345', 'null']
+for malformed in malformed_inputs:
+    assert valid_date(malformed) == False, f"Large scale test: malformed input '{malformed}'"
+```

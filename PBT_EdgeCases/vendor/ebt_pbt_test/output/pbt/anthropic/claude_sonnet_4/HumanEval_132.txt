@@ -1,0 +1,96 @@
+Looking at this function, I need to understand what it means for brackets to be "nested" according to the examples:
+- `'[[]]'` → True (inner brackets nested inside outer ones)
+- `'[]]]]]]][[[[[]'` → False (no valid nested structure)
+- `'[][]'` → False (adjacent, not nested)
+- `'[]'` → False (single pair, no nesting)
+- `'[[][]]'` → True (nested structure exists)
+- `'[[]][[' → True (has nested structure despite being incomplete)
+
+The function should return True if there's any valid subsequence where brackets are nested (one pair inside another).
+
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(alphabet='[]', min_size=0, max_size=50))
+def test_empty_or_single_bracket_not_nested(string):
+    """Strings with fewer than 4 characters cannot have nested brackets"""
+    if len(string) < 4:
+        result = is_nested(string)
+        assert result == False, "Strings shorter than 4 characters cannot contain nested brackets"
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_only_opening_or_closing_brackets_not_nested(string):
+    """Strings with only opening or only closing brackets cannot be nested"""
+    if set(string).issubset({'['}) or set(string).issubset({']'}):
+        result = is_nested(string)
+        assert result == False, "String with only opening or only closing brackets cannot be nested"
+
+@given(st.integers(min_value=2, max_value=10))
+def test_perfect_nested_structure_returns_true(n):
+    """Perfect nested structure [[...]] should return True"""
+    string = '[' * n + ']' * n
+    result = is_nested(string)
+    assert result == True, f"Perfect nested structure {string} should return True"
+
+@given(st.integers(min_value=1, max_value=10))
+def test_simple_consecutive_pairs_not_nested(n):
+    """Consecutive pairs [][]...[] should not be nested"""
+    string = '[]' * n
+    result = is_nested(string)
+    assert result == False, f"Consecutive pairs {string} should not be nested"
+
+@given(st.lists(st.text(alphabet='[]', min_size=1, max_size=10), min_size=1, max_size=10))
+def test_nested_structure_in_concatenation(bracket_strings):
+    """If we add a nested structure to any string, result should be True"""
+    base_string = ''.join(bracket_strings)
+    nested_string = base_string + '[[]]'  # Add a simple nested structure
+    
+    result = is_nested(nested_string)
+    assert result == True, "String containing [[]] should be nested"
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_result_is_boolean(string):
+    """Function should always return a boolean value"""
+    result = is_nested(string)
+    assert isinstance(result, bool), "Function should return a boolean value"
+
+@given(st.text(alphabet='[]', min_size=0, max_size=50))
+def test_adding_nested_structure_makes_true(string):
+    """Adding a known nested structure should make any string return True"""
+    # Insert [[]] somewhere in the string
+    if len(string) == 0:
+        test_string = '[[]]'
+    else:
+        insert_pos = len(string) // 2
+        test_string = string[:insert_pos] + '[[]]' + string[insert_pos:]
+    
+    result = is_nested(test_string)
+    assert result == True, f"String {test_string} with nested structure should return True"
+
+@given(st.integers(min_value=1, max_value=20))
+def test_alternating_pattern_properties(n):
+    """Test specific alternating patterns"""
+    # Pattern like ][][][ should not be nested
+    pattern1 = ']' + '[' * n + ']' * n
+    result1 = is_nested(pattern1)
+    
+    # Pattern like [[[...]]] should be nested if n >= 2
+    pattern2 = '[' * n + ']' * n
+    result2 = is_nested(pattern2)
+    
+    if n >= 2:
+        assert result2 == True, f"Pattern {pattern2} with {n} nested levels should be True"
+    else:
+        assert result2 == False, f"Single pair {pattern2} should be False"
+
+# @given(st.text(alphabet='[]', min_size=4, max_size=20))
+# def test_balanced_vs_unbalanced_with_nesting(string):
+#     """Test relationship between balanced strings and nesting detection"""
+#     # Create a definitely nested structure by wrapping string in brackets
+#     wrapped = '[' + string + ']'
+#     result = is_nested(wrapped)
+#     
+#     # If the inner string has any complete pairs, the wrapped version should be nested
+#     if '[]' in string or ('[[' in string and ']]' in string):
+#         assert result == True, f"Wrapped string {wrapped} should be nested when inner string has pairs"
+```

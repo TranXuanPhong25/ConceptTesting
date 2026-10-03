@@ -1,0 +1,111 @@
+```python
+from hypothesis import given, strategies as st
+from typing import List, Any
+
+@given(st.lists(st.one_of(
+    st.integers(),
+    st.floats(),
+    st.text(),
+    st.booleans(),
+    st.lists(st.integers()),
+    st.dictionaries(st.text(), st.integers()),
+    st.none()
+), max_size=20))
+def test_filter_integers_only_returns_integers(values):
+    """Property: All elements in the result should be integers"""
+    result = filter_integers(values)
+    assert all(isinstance(x, int) and not isinstance(x, bool) for x in result), \
+        "All returned elements should be integers (excluding booleans)"
+
+@given(st.lists(st.one_of(
+    st.integers(),
+    st.floats(),
+    st.text(),
+    st.booleans(),
+    st.lists(st.integers()),
+    st.dictionaries(st.text(), st.integers()),
+    st.none()
+), max_size=20))
+def test_filter_integers_preserves_all_integers(values):
+    """Property: All integers from input should be preserved in output"""
+    result = filter_integers(values)
+    input_integers = [x for x in values if isinstance(x, int) and not isinstance(x, bool)]
+    assert result == input_integers, \
+        "All integers from input should be preserved in the same order"
+
+@given(st.lists(st.one_of(
+    st.integers(),
+    st.floats(),
+    st.text(),
+    st.booleans(),
+    st.lists(st.integers()),
+    st.dictionaries(st.text(), st.integers()),
+    st.none()
+), max_size=20))
+def test_filter_integers_result_length(values):
+    """Property: Result length should equal count of integers in input"""
+    result = filter_integers(values)
+    expected_count = sum(1 for x in values if isinstance(x, int) and not isinstance(x, bool))
+    assert len(result) == expected_count, \
+        "Result length should match count of integers in input"
+
+@given(st.lists(st.floats(), max_size=15))
+def test_filter_integers_no_floats(float_values):
+    """Property: Filtering only floats should return empty list"""
+    result = filter_integers(float_values)
+    assert result == [], "Filtering only floats should return empty list"
+
+@given(st.lists(st.text(), max_size=15))
+def test_filter_integers_no_strings(string_values):
+    """Property: Filtering only strings should return empty list"""
+    result = filter_integers(string_values)
+    assert result == [], "Filtering only strings should return empty list"
+
+@given(st.lists(st.integers(), max_size=20))
+def test_filter_integers_all_integers(int_values):
+    """Property: Filtering only integers should return the same list"""
+    result = filter_integers(int_values)
+    assert result == int_values, "Filtering only integers should return identical list"
+
+def test_filter_integers_empty_list():
+    """Property: Empty input should return empty output"""
+    result = filter_integers([])
+    assert result == [], "Empty list should return empty list"
+
+@given(st.lists(st.booleans(), max_size=15))
+def test_filter_integers_no_booleans(bool_values):
+    """Property: Booleans should not be included (even though they're technically int subclass)"""
+    result = filter_integers(bool_values)
+    assert result == [], "Booleans should not be included in integer filtering"
+
+@given(st.lists(st.one_of(
+    st.integers(),
+    st.floats(),
+    st.text(),
+    st.booleans(),
+    st.lists(st.integers()),
+    st.dictionaries(st.text(), st.integers()),
+    st.none()
+), max_size=20))
+def test_filter_integers_preserves_order(values):
+    """Property: Order of integers should be preserved"""
+    result = filter_integers(values)
+    input_integers = [x for x in values if isinstance(x, int) and not isinstance(x, bool)]
+    
+    # Check that the order is preserved
+    for i, expected_int in enumerate(input_integers):
+        assert result[i] == expected_int, \
+            f"Integer order should be preserved: expected {expected_int} at position {i}"
+
+# @given(st.lists(st.one_of(
+#     st.large_integers(),  # Test with very large integers
+#     st.floats(),
+#     st.text(),
+# ), max_size=50))
+# def test_filter_integers_large_scale(values):
+#     """Property: Function should handle large integers and large lists correctly"""
+#     result = filter_integers(values)
+#     expected_integers = [x for x in values if isinstance(x, int) and not isinstance(x, bool)]
+#     assert result == expected_integers, \
+#         "Function should handle large integers and large lists correctly"
+```

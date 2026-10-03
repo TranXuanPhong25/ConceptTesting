@@ -1,0 +1,126 @@
+```python
+from hypothesis import given, strategies as st
+import re
+
+@given(st.text())
+def test_valid_date_empty_and_invalid_format(date_string):
+    """Property: Empty strings and strings not matching mm-dd-yyyy format should return False"""
+    result = valid_date(date_string)
+    
+    # If string is empty, should be False
+    if not date_string:
+        assert result == False, "Empty string should be invalid"
+    
+    # If string doesn't match mm-dd-yyyy format, should be False
+    if not re.match(r'^\d{2}-\d{2}-\d{4}$', date_string):
+        assert result == False, "String not matching mm-dd-yyyy format should be invalid"
+
+@given(st.integers(min_value=1, max_value=12),
+       st.integers(min_value=1, max_value=31),
+       st.integers(min_value=1000, max_value=9999))
+def test_valid_date_month_day_constraints(month, day, year):
+    """Property: Valid dates should respect month-specific day limits"""
+    date_string = f"{month:02d}-{day:02d}-{year}"
+    result = valid_date(date_string)
+    
+    # Days in each month (non-leap year rules as per problem)
+    days_in_month = {
+        1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30,
+        7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31
+    }
+    
+    max_days = days_in_month[month]
+    expected = 1 <= day <= max_days
+    
+    assert result == expected, f"Date {date_string} should be {expected} based on month {month} day limit {max_days}"
+
+@given(st.integers(min_value=13, max_value=99),
+       st.integers(min_value=1, max_value=31),
+       st.integers(min_value=1000, max_value=9999))
+def test_valid_date_invalid_months(month, day, year):
+    """Property: Months outside 1-12 range should always return False"""
+    date_string = f"{month:02d}-{day:02d}-{year}"
+    result = valid_date(date_string)
+    
+    assert result == False, f"Month {month} is outside valid range 1-12, should be False"
+
+@given(st.integers(min_value=0, max_value=12),
+       st.integers(min_value=0, max_value=0),
+       st.integers(min_value=1000, max_value=9999))
+def test_valid_date_zero_day(month, day, year):
+    """Property: Day 0 should always be invalid"""
+    if month == 0:
+        month = 1  # Use valid month to test day constraint
+    date_string = f"{month:02d}-{day:02d}-{year}"
+    result = valid_date(date_string)
+    
+    assert result == False, f"Day 0 should always be invalid"
+
+@given(st.integers(min_value=1, max_value=12),
+       st.integers(min_value=32, max_value=99),
+       st.integers(min_value=1000, max_value=9999))
+def test_valid_date_day_too_high(month, day, year):
+    """Property: Days higher than maximum for any month should be False"""
+    date_string = f"{month:02d}-{day:02d}-{year}"
+    result = valid_date(date_string)
+    
+    assert result == False, f"Day {day} exceeds maximum for any month, should be False"
+
+@given(st.integers(min_value=2, max_value=2),
+       st.integers(min_value=30, max_value=31),
+       st.integers(min_value=1000, max_value=9999))
+def test_valid_date_february_edge_case(month, day, year):
+    """Property: February should not have more than 29 days"""
+    date_string = f"{month:02d}-{day:02d}-{year}"
+    result = valid_date(date_string)
+    
+    assert result == False, f"February should not have {day} days"
+
+@given(st.sampled_from([4, 6, 9, 11]),
+       st.integers(min_value=31, max_value=31),
+       st.integers(min_value=1000, max_value=9999))
+def test_valid_date_thirty_day_months(month, day, year):
+    """Property: April, June, September, November should not have 31 days"""
+    date_string = f"{month:02d}-{day:02d}-{year}"
+    result = valid_date(date_string)
+    
+    assert result == False, f"Month {month} should not have 31 days"
+
+@given(st.integers(min_value=1, max_value=12),
+       st.integers(min_value=1, max_value=31),
+       st.integers(min_value=1000, max_value=9999))
+def test_valid_date_format_consistency(month, day, year):
+    """Property: Valid dates should be consistent with manual validation"""
+    date_string = f"{month:02d}-{day:02d}-{year}"
+    result = valid_date(date_string)
+    
+    # Manual validation logic
+    if month == 2:  # February
+        expected = 1 <= day <= 29
+    elif month in [4, 6, 9, 11]:  # 30-day months
+        expected = 1 <= day <= 30
+    elif month in [1, 3, 5, 7, 8, 10, 12]:  # 31-day months
+        expected = 1 <= day <= 31
+    else:
+        expected = False
+    
+    assert result == expected, f"Date {date_string} validation mismatch"
+
+@given(st.text().filter(lambda x: '/' in x or len(x.split('-')) != 3))
+def test_valid_date_wrong_separator_or_parts(date_string):
+    """Property: Dates with wrong separators or wrong number of parts should be False"""
+    result = valid_date(date_string)
+    
+    assert result == False, f"Date with wrong format {date_string} should be False"
+
+@given(st.integers(min_value=1, max_value=12),
+       st.integers(min_value=1, max_value=31),
+       st.integers(min_value=0, max_value=999))
+def test_valid_date_wrong_year_format(month, day, year):
+    """Property: Years not in 4-digit format should be False"""
+    date_string = f"{month:02d}-{day:02d}-{year}"
+    result = valid_date(date_string)
+    
+    # Year should be 4 digits, so less than 1000 should be invalid due to format
+    assert result == False, f"Year {year} not in 4-digit format should be False"
+```

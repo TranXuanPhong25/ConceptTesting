@@ -1,0 +1,42 @@
+Looking at the `is_nested` function, I need to create comprehensive test cases that verify if there's a valid subsequence of brackets where at least one bracket is nested inside another.
+
+```python
+# Basic Test Cases - Normal functionality
+assert is_nested('[[]]') == True, "Basic nested brackets - simple case"
+assert is_nested('[][]') == False, "Adjacent brackets without nesting"
+assert is_nested('[]') == False, "Single pair of brackets"
+assert is_nested('[[][]]') == True, "Nested brackets within outer brackets"
+assert is_nested('[[][]][]') == True, "Mixed nested and non-nested brackets"
+assert is_nested('[[[]]]') == True, "Triple nested brackets"
+assert is_nested('[[[]][[]]') == True, "Multiple nested groups with incomplete outer"
+
+# Edge Test Cases - Extreme/unusual conditions
+assert is_nested('') == False, "Empty string"
+assert is_nested('[') == False, "Single opening bracket"
+assert is_nested(']') == False, "Single closing bracket"
+assert is_nested(']][[') == False, "Reversed bracket order"
+assert is_nested('[]]') == False, "Unbalanced brackets - extra closing"
+assert is_nested('[[[') == False, "Unbalanced brackets - extra opening"
+assert is_nested('[]]]]]]][[[[[]') == False, "Complex unbalanced sequence from example"
+assert is_nested('[[]][[') == True, "Valid nested followed by incomplete brackets"
+assert is_nested('][') == False, "Wrong order brackets"
+assert is_nested('][][[') == False, "Multiple wrong order brackets"
+assert is_nested('[[]') == False, "Incomplete nested structure"
+assert is_nested('[]][]') == False, "Invalid then valid brackets"
+
+# Large Scale Test Cases - Performance and scalability
+assert is_nested('[[]]' * 1000) == True, "1000 repetitions of nested brackets"
+assert is_nested('[]' * 1000) == False, "1000 repetitions of non-nested brackets"
+# assert is_nested('[' * 500 + ']' * 500) == False, "500 opening followed by 500 closing brackets"
+assert is_nested('[' * 100 + '[' * 100 + ']' * 100 + ']' * 100) == True, "Large deeply nested structure"
+assert is_nested(('[]' * 999) + '[[]]') == True, "999 non-nested pairs followed by one nested pair"
+assert is_nested('[[]]' + ('[]' * 999)) == True, "One nested pair followed by 999 non-nested pairs"
+# assert is_nested('[' * 1000 + ']' * 1000) == False, "Very deep nesting but unbalanced"
+
+# Additional Edge Cases for robustness
+assert is_nested('[[[[[[]]]]]]') == True, "Deep nesting - 6 levels"
+assert is_nested('[[][][][[]]][][]') == True, "Complex mix with valid subsequence"
+assert is_nested(']]][[[') == False, "All closing then all opening"
+assert is_nested('[[][][]]') == True, "Nested structure with internal non-nested pairs"
+assert is_nested('[[][[]]]') == True, "Multiple levels of nesting"
+```

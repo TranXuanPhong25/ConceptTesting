@@ -1,0 +1,91 @@
+Looking at the `fibfib` function, I need to create comprehensive test cases for a sequence where:
+- fibfib(0) = 0
+- fibfib(1) = 0  
+- fibfib(2) = 1
+- fibfib(n) = fibfib(n-1) + fibfib(n-2) + fibfib(n-3) for n > 2
+
+Here are the test cases:
+
+```python
+# **Basic Test Cases**
+# Test the base cases defined in the sequence
+assert fibfib(0) == 0, "Base case: fibfib(0) should return 0"
+assert fibfib(1) == 0, "Base case: fibfib(1) should return 0"
+assert fibfib(2) == 1, "Base case: fibfib(2) should return 1"
+
+# Test small positive integers using the recurrence relation
+assert fibfib(3) == 1, "fibfib(3) = fibfib(2) + fibfib(1) + fibfib(0) = 1 + 0 + 0 = 1"
+assert fibfib(4) == 2, "fibfib(4) = fibfib(3) + fibfib(2) + fibfib(1) = 1 + 1 + 0 = 2"
+assert fibfib(5) == 4, "fibfib(5) = fibfib(4) + fibfib(3) + fibfib(2) = 2 + 1 + 1 = 4"
+assert fibfib(6) == 7, "fibfib(6) = fibfib(5) + fibfib(4) + fibfib(3) = 4 + 2 + 1 = 7"
+assert fibfib(7) == 13, "fibfib(7) = fibfib(6) + fibfib(5) + fibfib(4) = 7 + 4 + 2 = 13"
+assert fibfib(8) == 24, "fibfib(8) = fibfib(7) + fibfib(6) + fibfib(5) = 13 + 7 + 4 = 24"
+
+# Test medium range values
+assert fibfib(9) == 44, "fibfib(9) = fibfib(8) + fibfib(7) + fibfib(6) = 24 + 13 + 7 = 44"
+assert fibfib(10) == 81, "fibfib(10) = fibfib(9) + fibfib(8) + fibfib(7) = 44 + 24 + 13 = 81"
+
+# **Edge Test Cases**
+# Test boundary conditions and potential edge cases
+
+# Test negative input (should handle gracefully or raise appropriate error)
+# Note: The function signature doesn't specify behavior for negative inputs
+# This test checks if the function handles invalid input appropriately
+try:
+    result = fibfib(-1)
+    assert False, "fibfib(-1) should raise an error or handle negative input appropriately"
+except:
+    pass  # Expected behavior for negative input
+
+try:
+    result = fibfib(-5)
+    assert False, "fibfib(-5) should raise an error or handle negative input appropriately"
+except:
+    pass  # Expected behavior for negative input
+
+# Test very small positive values thoroughly
+assert fibfib(0) == 0, "Edge case: smallest valid input fibfib(0)"
+assert fibfib(1) == 0, "Edge case: second smallest valid input fibfib(1)"
+assert fibfib(2) == 1, "Edge case: third smallest valid input fibfib(2)"
+
+# **Large Scale Test Cases**
+# Test the function's performance and correctness with larger inputs
+
+# Test moderately large values to verify algorithmic correctness
+assert fibfib(15) == 1705, "Large scale test: fibfib(15) should handle medium-large input efficiently"
+assert fibfib(20) == 35890, "Large scale test: fibfib(20) should handle larger input efficiently"
+
+# Test computational efficiency with larger values
+# These test the function's ability to handle substantial computations
+assert fibfib(25) == 755476, "Large scale test: fibfib(25) tests computational efficiency"
+# assert fibfib(30) == 15902613, "Large scale test: fibfib(30) tests scalability and performance"
+
+# Performance stress test - very large input
+# This tests if the implementation is efficient enough for large inputs
+assert fibfib(35) == 334745777, "Large scale performance test: fibfib(35) should complete in reasonable time"
+
+# Memory and recursion depth test
+# This ensures the function doesn't cause stack overflow for larger inputs
+# assert fibfib(40) == 7049155580, "Large scale memory test: fibfib(40) tests recursion depth handling"
+
+# Sequence consistency test for large range
+# Verify that the recurrence relation holds for larger values
+n = 12
+expected = fibfib(11) + fibfib(10) + fibfib(9)
+assert fibfib(12) == expected, f"Large scale consistency test: fibfib(12) should equal fibfib(11) + fibfib(10) + fibfib(9)"
+
+# Test sequence growth pattern
+# Ensure the sequence grows as expected without integer overflow issues
+prev_val = fibfib(20)
+curr_val = fibfib(25)
+assert curr_val > prev_val, "Large scale growth test: fibfib sequence should be increasing for large values"
+```
+
+These test cases cover:
+
+1. **Basic functionality**: Base cases and small positive integers
+2. **Edge cases**: Boundary conditions, negative inputs, and smallest valid inputs  
+3. **Large scale**: Performance with bigger inputs, memory usage, and algorithmic efficiency
+4. **Correctness verification**: Sequence consistency and growth patterns
+
+The test cases ensure the function works correctly across all scenarios while maintaining good performance for larger inputs.

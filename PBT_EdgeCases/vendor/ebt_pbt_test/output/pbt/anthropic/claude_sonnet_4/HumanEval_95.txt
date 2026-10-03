@@ -1,0 +1,98 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.dictionaries(st.text(alphabet='abcdefghijklmnopqrstuvwxyz', min_size=1), st.text(), min_size=1))
+def test_all_lowercase_strings_returns_true(test_dict):
+    """Property: Dictionary with all lowercase string keys should return True"""
+    result = check_dict_case(test_dict)
+    assert result == True, "Dictionary with all lowercase string keys should return True"
+
+@given(st.dictionaries(st.text(alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ', min_size=1), st.text(), min_size=1))
+def test_all_uppercase_strings_returns_true(test_dict):
+    """Property: Dictionary with all uppercase string keys should return True"""
+    result = check_dict_case(test_dict)
+    assert result == True, "Dictionary with all uppercase string keys should return True"
+
+@given(st.dictionaries(st.one_of(st.integers(), st.floats(), st.booleans()), st.text(), min_size=1))
+def test_non_string_keys_returns_false(test_dict):
+    """Property: Dictionary with non-string keys should return False"""
+    result = check_dict_case(test_dict)
+    assert result == False, "Dictionary with non-string keys should return False"
+
+@given(st.just({}))
+def test_empty_dict_returns_false(test_dict):
+    """Property: Empty dictionary should return False"""
+    result = check_dict_case(test_dict)
+    assert result == False, "Empty dictionary should return False"
+
+@given(st.dictionaries(
+    st.one_of(
+        st.text(alphabet='abcdefghijklmnopqrstuvwxyz', min_size=1),
+        st.text(alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ', min_size=1)
+    ), 
+    st.text(), 
+    min_size=2
+).filter(lambda d: any(k.islower() for k in d.keys()) and any(k.isupper() for k in d.keys())))
+def test_mixed_case_strings_returns_false(test_dict):
+    """Property: Dictionary with mixed case string keys should return False"""
+    result = check_dict_case(test_dict)
+    assert result == False, "Dictionary with mixed case string keys should return False"
+
+@given(st.dictionaries(
+    st.one_of(
+        st.text(alphabet='abcdefghijklmnopqrstuvwxyz', min_size=1),
+        st.integers(),
+        st.floats()
+    ), 
+    st.text(), 
+    min_size=1
+).filter(lambda d: any(not isinstance(k, str) for k in d.keys())))
+def test_mixed_types_with_strings_returns_false(test_dict):
+    """Property: Dictionary with mix of string and non-string keys should return False"""
+    result = check_dict_case(test_dict)
+    assert result == False, "Dictionary with mixed string and non-string keys should return False"
+
+@given(st.dictionaries(st.text(alphabet='abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', min_size=1), st.text(), min_size=1))
+def test_alphanumeric_strings_returns_false_unless_uniform_case(test_dict):
+    """Property: Dictionary with alphanumeric keys should follow same case rules"""
+    result = check_dict_case(test_dict)
+    
+    # Check if all keys are strings
+    all_string_keys = all(isinstance(k, str) for k in test_dict.keys())
+    if not all_string_keys:
+        assert result == False, "Non-string keys should make result False"
+        return
+    
+    # Check case uniformity for string keys
+    all_lower = all(k.islower() for k in test_dict.keys())
+    all_upper = all(k.isupper() for k in test_dict.keys())
+    
+    expected = all_lower or all_upper
+    assert result == expected, f"Result should be {expected} based on case uniformity"
+
+@given(st.dictionaries(st.text(alphabet='', min_size=0, max_size=0), st.text(), min_size=1))
+def test_empty_string_keys_returns_false(test_dict):
+    """Property: Dictionary with empty string keys should return False"""
+    # Note: empty string keys would make the dictionary construction fail in most cases
+    # This test handles edge case of empty strings as keys
+    if test_dict:  # Only test if dict is not empty
+        result = check_dict_case(test_dict)
+        # Empty strings are neither upper nor lower case
+        assert result == False, "Dictionary with empty string keys should return False"
+
+@given(st.dictionaries(
+    st.text(alphabet='abcdefghijklmnopqrstuvwxyz\t\n ', min_size=1),
+    st.text(),
+    min_size=1
+).filter(lambda d: all(isinstance(k, str) and any(c in k for c in '\t\n ') for k in d.keys())))
+def test_whitespace_in_keys_follows_case_rules(test_dict):
+    """Property: Dictionary with whitespace characters in keys follows case rules"""
+    result = check_dict_case(test_dict)
+    
+    # Whitespace characters don't affect case determination
+    all_lower = all(k.islower() for k in test_dict.keys())
+    all_upper = all(k.isupper() for k in test_dict.keys())
+    
+    expected = all_lower or all_upper
+    assert result == expected, "Whitespace in keys should not affect case uniformity check"
+```

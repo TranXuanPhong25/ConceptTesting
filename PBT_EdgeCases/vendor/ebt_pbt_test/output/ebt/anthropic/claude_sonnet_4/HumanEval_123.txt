@@ -1,0 +1,28 @@
+```python
+# Basic Test Cases
+assert get_odd_collatz(1) == [1], "Basic: Collatz sequence for 1 should return [1]"
+assert get_odd_collatz(5) == [1, 5], "Basic: Collatz sequence for 5 should return [1, 5]"
+# assert get_odd_collatz(3) == [1, 3], "Basic: Collatz sequence for 3 should return [1, 3]"
+assert get_odd_collatz(2) == [1], "Basic: Collatz sequence for 2 should return [1]"
+assert get_odd_collatz(4) == [1], "Basic: Collatz sequence for 4 should return [1]"
+# assert get_odd_collatz(6) == [1], "Basic: Collatz sequence for 6 should return [1]"
+# assert get_odd_collatz(7) == [1, 7, 11], "Basic: Collatz sequence for 7 should return [1, 7, 11]"
+
+# Edge Test Cases
+assert get_odd_collatz(1) == [1], "Edge: Smallest positive integer input"
+# assert get_odd_collatz(15) == [1, 5, 15], "Edge: Number that produces sequence with multiple odd numbers"
+# assert get_odd_collatz(27) == [1, 5, 27, 41], "Edge: Number that produces a longer sequence with multiple odds"
+# assert get_odd_collatz(31) == [1, 7, 11, 17, 31, 47], "Edge: Number with complex sequence containing many odd numbers"
+assert get_odd_collatz(16) == [1], "Edge: Power of 2 should only contain 1 as odd number"
+assert get_odd_collatz(64) == [1], "Edge: Large power of 2 should only contain 1 as odd number"
+# assert get_odd_collatz(63) == [1, 5, 19, 29, 47, 63, 95], "Edge: Number just before power of 2"
+
+# Large Scale Test Cases
+# assert get_odd_collatz(100) == [1], "Large Scale: Testing with 100"
+assert get_odd_collatz(128) == [1], "Large Scale: Large power of 2"
+# assert get_odd_collatz(255) == [1, 5, 19, 29, 47, 71, 107, 191, 255, 383], "Large Scale: Large odd number producing complex sequence"
+# assert get_odd_collatz(511) == [1, 5, 19, 29, 47, 71, 107, 191, 255, 383, 511, 767], "Large Scale: Even larger odd number"
+# assert get_odd_collatz(1000) == [1], "Large Scale: Testing with 1000"
+assert get_odd_collatz(1024) == [1], "Large Scale: Large power of 2 (1024)"
+# assert get_odd_collatz(999) == [1, 3, 7, 11, 13, 37, 111, 167, 333, 499, 999], "Large Scale: Large number with many odd values in sequence"
+```

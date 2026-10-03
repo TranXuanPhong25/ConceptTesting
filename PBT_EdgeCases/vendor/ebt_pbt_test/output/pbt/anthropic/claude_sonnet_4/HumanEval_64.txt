@@ -1,0 +1,87 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(alphabet='aeiouAEIOU', min_size=1))
+def test_all_vowels_string(s):
+    """Test that a string containing only vowels (except 'y') returns correct count"""
+    result = vowels_count(s)
+    assert result == len(s), f"String with only vowels should return length {len(s)}, got {result}"
+
+@given(st.text(alphabet='bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ', min_size=1))
+def test_no_vowels_string(s):
+    """Test that a string with no vowels (including no 'y') returns 0"""
+    result = vowels_count(s)
+    assert result == 0, f"String with no vowels should return 0, got {result}"
+
+@given(st.text(alphabet='bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ'))
+def test_consonants_with_y_at_end(consonants):
+    """Test that 'y' at the end of word is counted as vowel"""
+    s = consonants + 'y'
+    result = vowels_count(s)
+    expected = 1 if len(s) > 0 and s[-1].lower() == 'y' else 0
+    assert result == expected, f"String ending with 'y' should count 'y' as vowel"
+
+@given(st.text(alphabet='bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ', min_size=1))
+def test_consonants_with_y_not_at_end(consonants):
+    """Test that 'y' not at the end is not counted as vowel"""
+    s = 'y' + consonants
+    result = vowels_count(s)
+    assert result == 0, f"String with 'y' not at end should not count 'y' as vowel"
+
+@given(st.text())
+def test_case_insensitive(s):
+    """Test that vowel counting is case insensitive"""
+    lower_result = vowels_count(s.lower())
+    upper_result = vowels_count(s.upper())
+    original_result = vowels_count(s)
+    assert lower_result == upper_result == original_result, \
+        "Vowel count should be case insensitive"
+
+@given(st.text(min_size=0, max_size=100))
+def test_vowel_count_bounds(s):
+    """Test that vowel count is within valid bounds"""
+    result = vowels_count(s)
+    assert 0 <= result <= len(s), \
+        f"Vowel count {result} should be between 0 and string length {len(s)}"
+
+@given(st.builds(lambda chars, y_pos: ''.join(chars[:y_pos] + ['y'] + chars[y_pos:]),
+                st.lists(st.sampled_from('bcdfghjklmnpqrstvwxz'), min_size=1, max_size=10),
+                st.integers(0, 10)))
+def test_y_position_matters(s):
+    """Test that 'y' is only counted when at the end of the word"""
+    result = vowels_count(s)
+    expected = 1 if s and s[-1].lower() == 'y' else 0
+    assert result == expected, f"Only 'y' at end should be counted as vowel"
+
+@given(st.text(alphabet='aeiouAEIOU', min_size=0, max_size=20),
+       st.text(alphabet='bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ', min_size=0, max_size=20))
+def test_mixed_vowels_and_consonants(vowels, consonants):
+    """Test strings with mixed vowels and consonants"""
+    s = vowels + consonants
+    result = vowels_count(s)
+    expected_vowels = len(vowels)
+    assert result == expected_vowels, \
+        f"Expected {expected_vowels} vowels, got {result}"
+
+@given(st.text(alphabet='aeiouAEIOU', min_size=0, max_size=20),
+       st.text(alphabet='bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ', min_size=0, max_size=20))
+def test_mixed_with_y_at_end(vowels, consonants):
+    """Test strings with mixed characters and 'y' at the end"""
+    s = vowels + consonants + 'y'
+    result = vowels_count(s)
+    expected_vowels = len(vowels) + 1  # +1 for 'y' at end
+    assert result == expected_vowels, \
+        f"Expected {expected_vowels} vowels (including 'y' at end), got {result}"
+
+# @given(st.text())
+# def test_empty_string():
+#     """Test empty string returns 0 vowels"""
+#     result = vowels_count("")
+#     assert result == 0, "Empty string should return 0 vowels"
+
+@given(st.text(alphabet='y', min_size=1, max_size=1))
+def test_single_y(s):
+    """Test single 'y' character is counted as vowel"""
+    result = vowels_count(s)
+    assert result == 1, "Single 'y' should be counted as vowel since it's at the end"
+```

@@ -1,0 +1,30 @@
+Looking at the `filter_integers` function, I need to create comprehensive test cases that cover basic functionality, edge cases, and large-scale scenarios. Here are the test cases:
+
+```python
+# Basic Test Cases
+assert filter_integers(['a', 3.14, 5]) == [5], "Basic test: mixed types with one integer"
+assert filter_integers([1, 2, 3, 'abc', {}, []]) == [1, 2, 3], "Basic test: multiple integers with various non-integer types"
+assert filter_integers([10, 20, 30]) == [10, 20, 30], "Basic test: list containing only integers"
+assert filter_integers(['hello', 3.14, 'world']) == [], "Basic test: list with no integers"
+assert filter_integers([0, -5, 42]) == [0, -5, 42], "Basic test: integers including zero and negative numbers"
+
+# Edge Test Cases
+assert filter_integers([]) == [], "Edge test: empty list"
+assert filter_integers([None]) == [], "Edge test: list containing None"
+assert filter_integers([True, False]) == [], "Edge test: boolean values (not integers in this context)"
+assert filter_integers([1.0, 2.0, 3.5]) == [], "Edge test: float numbers that look like integers"
+assert filter_integers(['1', '2', '3']) == [], "Edge test: string representations of numbers"
+assert filter_integers([complex(1, 2), complex(3, 0)]) == [], "Edge test: complex numbers"
+assert filter_integers([[1, 2], [3, 4]]) == [], "Edge test: nested lists containing integers"
+assert filter_integers([{1: 'one'}, {'key': 2}]) == [], "Edge test: dictionaries containing integers"
+assert filter_integers([(1, 2), (3, 4)]) == [], "Edge test: tuples containing integers"
+assert filter_integers([float('inf'), float('-inf'), float('nan')]) == [], "Edge test: special float values"
+assert filter_integers([2**31-1, -2**31, 2**63-1]) == [2**31-1, -2**31, 2**63-1], "Edge test: large integer values at boundaries"
+
+# Large Scale Test Cases
+assert len(filter_integers(list(range(1000)))) == 1000, "Large scale test: 1000 consecutive integers"
+assert len(filter_integers([i if i % 2 == 0 else str(i) for i in range(1000)])) == 500, "Large scale test: 1000 elements with 500 integers and 500 strings"
+assert filter_integers(['text'] * 10000) == [], "Large scale test: 10000 non-integer elements"
+assert len(filter_integers([42] * 5000 + [3.14] * 5000)) == 5000, "Large scale test: 10000 elements with 5000 integers and 5000 floats"
+assert len(filter_integers(list(range(-500, 500)) + ['string'] * 1000 + [None] * 500)) == 1000, "Large scale test: mixed large dataset with 1000 integers among 2500 total elements"
+```

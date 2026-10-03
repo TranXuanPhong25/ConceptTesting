@@ -1,0 +1,44 @@
+Looking at the `x_or_y` function, I need to create comprehensive test cases that verify it returns `x` when `n` is prime and `y` when `n` is not prime. Here are my test cases:
+
+```python
+# Basic Test Cases - Normal functionality verification
+assert x_or_y(7, 34, 12) == 34, "Basic Test: 7 is prime, should return x=34"
+assert x_or_y(15, 8, 5) == 5, "Basic Test: 15 is not prime, should return y=5"
+assert x_or_y(2, 100, 200) == 100, "Basic Test: 2 is prime (smallest prime), should return x=100"
+assert x_or_y(3, 50, 60) == 50, "Basic Test: 3 is prime, should return x=50"
+assert x_or_y(4, 10, 20) == 20, "Basic Test: 4 is not prime (2*2), should return y=20"
+assert x_or_y(9, 15, 25) == 25, "Basic Test: 9 is not prime (3*3), should return y=25"
+assert x_or_y(11, 7, 8) == 7, "Basic Test: 11 is prime, should return x=7"
+assert x_or_y(13, 1, 2) == 1, "Basic Test: 13 is prime, should return x=1"
+assert x_or_y(17, 99, 88) == 99, "Basic Test: 17 is prime, should return x=99"
+assert x_or_y(19, 77, 66) == 77, "Basic Test: 19 is prime, should return x=77"
+
+# Edge Test Cases - Extreme and unusual conditions
+assert x_or_y(1, 100, 200) == 200, "Edge Test: 1 is not prime by definition, should return y=200"
+assert x_or_y(0, 50, 75) == 75, "Edge Test: 0 is not prime, should return y=75"
+assert x_or_y(-1, 30, 40) == 40, "Edge Test: Negative number -1 is not prime, should return y=40"
+assert x_or_y(-7, 10, 20) == 20, "Edge Test: Negative number -7 is not prime, should return y=20"
+assert x_or_y(2, -5, -10) == -5, "Edge Test: 2 is prime with negative x, should return x=-5"
+assert x_or_y(6, -15, -25) == -25, "Edge Test: 6 is not prime with negative y, should return y=-25"
+assert x_or_y(23, 0, 1) == 0, "Edge Test: 23 is prime, should return x=0"
+assert x_or_y(25, 1, 0) == 0, "Edge Test: 25 is not prime (5*5), should return y=0"
+assert x_or_y(2, 5, 5) == 5, "Edge Test: Same x and y values with prime n, should return x=5"
+assert x_or_y(4, 10, 10) == 10, "Edge Test: Same x and y values with non-prime n, should return y=10"
+
+# Large Scale Test Cases - Performance and scalability
+assert x_or_y(97, 1000, 2000) == 1000, "Large Scale: 97 is prime (large prime), should return x=1000"
+assert x_or_y(98, 1500, 2500) == 2500, "Large Scale: 98 is not prime (2*49), should return y=2500"
+assert x_or_y(101, 3000, 4000) == 3000, "Large Scale: 101 is prime (large prime), should return x=3000"
+assert x_or_y(121, 5000, 6000) == 6000, "Large Scale: 121 is not prime (11*11), should return y=6000"
+assert x_or_y(997, 10000, 20000) == 10000, "Large Scale: 997 is prime (very large prime), should return x=10000"
+assert x_or_y(1000, 15000, 25000) == 25000, "Large Scale: 1000 is not prime (multiple factors), should return y=25000"
+assert x_or_y(1009, 50000, 60000) == 50000, "Large Scale: 1009 is prime (very large prime), should return x=50000"
+assert x_or_y(1024, 70000, 80000) == 80000, "Large Scale: 1024 is not prime (2^10), should return y=80000"
+assert x_or_y(1013, 100000, 200000) == 100000, "Large Scale: 1013 is prime (very large prime), should return x=100000"
+assert x_or_y(1001, 150000, 250000) == 250000, "Large Scale: 1001 is not prime (7*11*13), should return y=250000"
+```
+
+These test cases comprehensively cover:
+- **Basic functionality** with common prime and non-prime numbers
+- **Edge cases** including negative numbers, zero, one, and boundary conditions
+- **Large scale scenarios** testing performance with larger prime numbers and values

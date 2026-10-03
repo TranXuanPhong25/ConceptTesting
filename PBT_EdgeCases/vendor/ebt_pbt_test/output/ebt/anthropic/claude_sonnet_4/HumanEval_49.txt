@@ -1,0 +1,53 @@
+Looking at the `modp` function, I need to create comprehensive test cases for a function that calculates 2^n modulo p. Let me analyze the expected behavior from the docstring examples and create test cases covering basic, edge, and large-scale scenarios.
+
+```python
+# Basic Test Cases - Verify fundamental functionality under normal conditions
+assert modp(3, 5) == 3, "Basic test: 2^3 mod 5 = 8 mod 5 = 3"
+assert modp(1101, 101) == 2, "Basic test: large exponent with medium modulus"
+assert modp(0, 101) == 1, "Basic test: 2^0 mod 101 = 1 (any number to power 0 equals 1)"
+assert modp(3, 11) == 8, "Basic test: 2^3 mod 11 = 8"
+assert modp(100, 101) == 1, "Basic test: 2^100 mod 101 = 1"
+assert modp(1, 7) == 2, "Basic test: 2^1 mod 7 = 2"
+assert modp(4, 7) == 2, "Basic test: 2^4 mod 7 = 16 mod 7 = 2"
+assert modp(5, 13) == 6, "Basic test: 2^5 mod 13 = 32 mod 13 = 6"
+assert modp(10, 17) == 4, "Basic test: 2^10 mod 17 = 1024 mod 17 = 4"
+
+# Edge Test Cases - Evaluate behavior under extreme or unusual conditions
+assert modp(0, 2) == 1, "Edge case: exponent 0 with small modulus"
+assert modp(1, 2) == 0, "Edge case: 2^1 mod 2 = 0 (even base with even modulus)"
+assert modp(0, 3) == 1, "Edge case: exponent 0 with prime modulus 3"
+assert modp(2, 3) == 1, "Edge case: 2^2 mod 3 = 4 mod 3 = 1"
+assert modp(1, 3) == 2, "Edge case: 2^1 mod 3 = 2"
+assert modp(10, 2) == 0, "Edge case: any positive power of 2 mod 2 = 0"
+assert modp(50, 2) == 0, "Edge case: large even exponent with modulus 2"
+assert modp(0, 1000000007) == 1, "Edge case: exponent 0 with large prime modulus"
+assert modp(1, 1000000007) == 2, "Edge case: exponent 1 with large prime modulus"
+
+# Large Scale Test Cases - Assess performance and scalability with large data
+# assert modp(1000, 1000000007) == 976371285, "Large scale: very large exponent with large prime modulus"
+# assert modp(2000, 1000000007) == 725000252, "Large scale: very large exponent with large prime modulus"
+# assert modp(100000, 97) == 63, "Large scale: very large exponent with medium prime modulus"
+# assert modp(50000, 1009) == 271, "Large scale: large exponent with medium prime modulus"
+# assert modp(10000, 7919) == 1343, "Large scale: large exponent with prime modulus"
+# assert modp(500000, 982451653) == 303595777, "Large scale: extremely large exponent with large modulus"
+# assert modp(1000000, 1000000009) == 49, "Large scale: million-level exponent with large prime"
+# assert modp(999999, 1000003) == 49152, "Large scale: near-million exponent with large prime"
+# assert modp(123456, 654321) == 225616, "Large scale: large random exponent and modulus"
+# assert modp(987654, 123457) == 30803, "Large scale: stress test with large numbers"
+```
+
+These test cases cover:
+
+**Basic Tests**: Normal operations with various small to medium values, including the provided examples from the docstring.
+
+**Edge Cases**: 
+- Zero exponent (should always return 1)
+- Powers of 2 with modulus 2 (should always be 0 for positive exponents)
+- Small prime moduli
+- Boundary conditions
+
+**Large Scale Tests**: 
+- Very large exponents (up to 1,000,000)
+- Large prime moduli (including common large primes used in cryptography)
+- Performance stress tests to ensure the function can handle computationally intensive cases efficiently
+- Tests that would require efficient modular exponentiation algorithms to complete in reasonable time

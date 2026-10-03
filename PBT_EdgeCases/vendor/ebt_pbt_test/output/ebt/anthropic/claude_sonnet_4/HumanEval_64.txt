@@ -1,0 +1,108 @@
+Looking at the `vowels_count` function, I need to create comprehensive test cases that cover basic functionality, edge cases, and large-scale scenarios. The function counts vowels ('a', 'e', 'i', 'o', 'u') in a string, with 'y' counting as a vowel only when it's at the end of the word.
+
+```python
+# Basic Test Cases - Fundamental functionality under normal conditions
+
+# Test with lowercase vowels
+assert vowels_count("hello") == 2, "Basic test: lowercase vowels - 'e' and 'o'"
+
+# Test with uppercase vowels  
+assert vowels_count("HELLO") == 2, "Basic test: uppercase vowels - 'E' and 'O'"
+
+# Test with mixed case vowels
+assert vowels_count("HeLLo") == 2, "Basic test: mixed case vowels"
+
+# Test with all standard vowels
+assert vowels_count("aeiou") == 5, "Basic test: all lowercase standard vowels"
+
+# Test with all uppercase vowels
+assert vowels_count("AEIOU") == 5, "Basic test: all uppercase standard vowels"
+
+# Test with 'y' at the end (should count as vowel)
+assert vowels_count("happy") == 2, "Basic test: 'y' at end counts as vowel - 'a' and 'y'"
+
+# Test with 'y' not at the end (should not count as vowel)
+# assert vowels_count("python") == 2, "Basic test: 'y' in middle doesn't count - only 'y' and 'o'"
+
+# Test from provided examples
+assert vowels_count("abcde") == 2, "Example test: 'abcde' has vowels 'a' and 'e'"
+assert vowels_count("ACEDY") == 3, "Example test: 'ACEDY' has vowels 'A', 'E' and 'Y'"
+
+# Test with no vowels
+assert vowels_count("bcdfg") == 0, "Basic test: no vowels in consonant-only string"
+
+# Test with only consonants and 'y' in middle
+assert vowels_count("gym") == 0, "Basic test: 'y' in middle position doesn't count"
+
+
+# Edge Test Cases - Extreme or unusual conditions
+
+# Test empty string
+assert vowels_count("") == 0, "Edge test: empty string should return 0"
+
+# Test single character vowels
+assert vowels_count("a") == 1, "Edge test: single vowel 'a'"
+assert vowels_count("A") == 1, "Edge test: single uppercase vowel 'A'"
+
+# Test single character consonant
+assert vowels_count("b") == 0, "Edge test: single consonant"
+
+# Test single 'y' (at end since it's the only character)
+assert vowels_count("y") == 1, "Edge test: single 'y' counts as vowel when at end"
+assert vowels_count("Y") == 1, "Edge test: single uppercase 'Y' counts as vowel"
+
+# Test multiple 'y' characters
+assert vowels_count("yyyy") == 1, "Edge test: multiple 'y's, only last one counts"
+# assert vowels_count("yay") == 2, "Edge test: 'y' at start and end, only end 'y' counts plus 'a'"
+
+# Test string with all same vowel
+assert vowels_count("aaaa") == 4, "Edge test: repeated same vowel"
+
+# Test string with special characters/numbers (no vowels)
+assert vowels_count("123!@#") == 0, "Edge test: numbers and special characters"
+
+# Test very short strings with edge cases
+assert vowels_count("by") == 1, "Edge test: consonant + 'y' at end"
+# assert vowels_count("ye") == 2, "Edge test: 'y' at start + vowel at end"
+
+# Test strings ending with uppercase Y
+assert vowels_count("happY") == 2, "Edge test: uppercase 'Y' at end counts as vowel"
+
+# Test mixed special characters with vowels
+assert vowels_count("h3ll0!") == 0, "Edge test: numbers replacing vowels don't count"
+assert vowels_count("h@ey") == 2, "Edge test: special chars mixed with vowels, 'e' and 'y'"
+
+
+# Large Scale Test Cases - Performance and scalability
+
+# Test long string with many vowels
+long_vowel_string = "aeiou" * 1000  # 5000 characters, all vowels
+assert vowels_count(long_vowel_string) == 5000, "Large scale: very long string with all vowels"
+
+# Test long string with pattern including 'y' at end
+long_pattern = "hello" * 1000 + "y"  # Ends with 'y'
+expected_count = 2 * 1000 + 1  # 2 vowels per "hello" * 1000 + 1 for ending 'y'
+assert vowels_count(long_pattern) == expected_count, "Large scale: long string ending with 'y'"
+
+# Test long string with no vowels
+long_consonant_string = "bcdfg" * 1000  # 5000 characters, no vowels
+assert vowels_count(long_consonant_string) == 0, "Large scale: very long string with no vowels"
+
+# Test long string with 'y' in middle positions
+long_y_middle = "py" * 1000 + "thon"  # Multiple 'y's not at end
+assert vowels_count(long_y_middle) == 1, "Large scale: long string with many 'y's in middle, only 'o' counts"
+
+# Test alternating pattern
+alternating_pattern = "ay" * 1000  # Ends with 'y', has many 'a's
+expected_alternating = 1000 + 1  # 1000 'a's + 1 ending 'y'
+assert vowels_count(alternating_pattern) == expected_alternating, "Large scale: alternating vowel-y pattern"
+
+# Test mixed case large string
+mixed_case_large = ("AeIoU" * 500) + "Y"  # Mixed case with ending Y
+assert vowels_count(mixed_case_large) == 2501, "Large scale: mixed case with ending uppercase Y"
+
+# Test realistic large text simulation
+realistic_text = "The quick brown fox jumps over the lazy" * 100  # Realistic text pattern
+# Count manually: "The quick brown fox jumps over the lazy" has vowels: e,u,i,o,o,u,o,e,e,a,y = 11 vowels (y not at end)
+# assert vowels_count(realistic_text) == 1100, "Large scale: realistic text pattern repeated"
+```
