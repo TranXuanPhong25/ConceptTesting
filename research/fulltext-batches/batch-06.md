@@ -72,15 +72,15 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Motivation.** CPS safety needs checks across physical, computational, and communication components, but manually writing both safety properties and generators is expensive.
 
-**Dataset + shape.** Preliminary experiments cover real-world and commonly studied CPS examples, including a pneumatic-control system and a line-following robot. The paper evaluates generated properties against manual ones, executability after minimal edits, and input-space partition coverage; it does not release a large numeric corpus in the manuscript.
+**Dataset + shape.** Nine Python programs: TCS and PCS (Rebeca model-checking examples, re-implemented in Python by the authors), six Raspberry Pi/gpiozero apps (laser tripwire, line-following robot, ultrasonic theremin, remote buggy, quick-reaction game, presence indicator), and the gpiozero `InputDevice` class. The prompt holds the NL description, the source code, and one unit test. The paper evaluates generated properties against manual ones, executability after minimal edits, and input-space partition coverage.
 
-**Evaluation results.** The authors conclude that generated properties were comparable to manual properties and that the generated PBTs were executable and covered relevant partitions. The paper presents this as preliminary evidence rather than a broad benchmark score.
+**Evaluation results.** (Verified 2026-10-01 against full text.) 25 properties extracted; against 19 ground-truth properties, recall 94% (18/19) and precision 72% (18/25); 3 extra relevant ones, 4 not useful. Of the PBTs for 21 relevant properties, 47% (10/21) need less than 1 minute of manual fixing to run **and pass**, and 85% (18/21) are judged to cover most input partitions (manual rating). Single sample, temperature 0, gemini-2.0-flash-lite; the improvement loop (which feeds assertion failures back) is described but disabled in the experiments. There is no fault-detection experiment: "executable" means the PBT passes on the current code, so properties are read from the implementation and validated against it.
 
 **Concept applicability.** Very strong. The extracted property is already a concept: invariant, safe/unsafe state, controllable inputs, and follow-up relation. This points beyond line coverage toward property/fault oracles.
 
 **Evidence.** Full text read. Primary source: <https://arxiv.org/abs/2505.23549>
 
-**Artifacts (checked 2026-09-29).** Code: verified source [github.com/khesoem/ChekProp](https://github.com/khesoem/ChekProp) (Python tool (src/llm, src/tgen, main.py, prompts) + generated PBTs, 341 KB, last push 2025-10). Dataset: 9 CPS Python programs (pneumatic control, temperature control, 7 Raspberry Pi/gpiozero apps) — released by authors [github.com/khesoem/ChekProp/tree/main/examples](https://github.com/khesoem/ChekProp/tree/main/examples). Models: gemini-2.0-flash-lite-preview-02-05.
+**Artifacts (checked 2026-09-29).** Code: verified source [github.com/khesoem/ChekProp](https://github.com/khesoem/ChekProp) (Python tool (src/llm, src/tgen, main.py, prompts) + generated PBTs, 341 KB, last push 2025-10). Dataset: 9 CPS Python programs (pneumatic control, temperature control, 6 Raspberry Pi/gpiozero apps, gpiozero `InputDevice`) — released by authors [github.com/khesoem/ChekProp/tree/main/examples](https://github.com/khesoem/ChekProp/tree/main/examples). Models: gemini-2.0-flash-lite-preview-02-05. No license file (re-checked 2026-10-01); deps via poetry incl. `rpi-gpio` and `mutpy`; runs on gpiozero `MockFactory`, no Pi hardware; README now defaults to `minimax/minimax-m2:free` on OpenRouter.
 
 ## 106. A Review of Large Language Models for Automated Test Case Generation
 
@@ -232,9 +232,9 @@ _Read on 2026-09-18. “Full text read” means an open paper or author manuscri
 
 **Motivation.** REST APIs often lack a precise expected response for every request. Metamorphic relations check whether paired requests preserve or transform behavior as required.
 
-**Dataset + shape.** Two public web applications exposing REST interfaces, compared with a scenario-based testing baseline. The paper's accessible manuscript does not give a larger task count in the abstract.
+**Dataset + shape.** Swagger PetStore (OpenAPI, 19 operations) and microservice-rbac-user-management (Swagger 2.0, 28 operations, RBAC), 10 sessions each, against LogiAgent. Agents see only the OpenAPI spec and base URL (black-box). Budget per session: 30 min, 1,000 requests, plateau window 5, temperature 0.
 
-**Evaluation results.** ARMeta explores behavior complementary to the baseline. The abstract does not give bug count, coverage, or statistical results.
+**Evaluation results.** (Verified 2026-10-01 against full text.) HLMTs: 214 / 303 (39 / 49 semantically unique); executed EMTs: 211 / 300. Failing EMTs judged real faults by manual log inspection: 78.6% (92/117) on PetStore, 56.9% (116/204) on UserManagement. Mean operation coverage 98.4% vs LogiAgent 81.6%, and 79.3% vs 46.8%. ARMeta has 45 / 40 distinct true-positive failing API sequences, none of them in LogiAgent's scenarios. True positives are mostly contract and robustness failures (400 on missing fields, invalid `X-Expires-After` date-time, 5xx, timeouts), not MR-assertion violations; no per-type counts and no statistical test.
 
 **Concept applicability.** Very strong. Its Given-When-Then metamorphic scenario is an immediately usable concept schema: resource state, source request, transformation, follow-up request, and expected relation.
 

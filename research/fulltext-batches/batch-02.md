@@ -218,13 +218,15 @@ _Read on 2026-09-18. “Full text” means an official open PDF, author-accepted
 
 **Motivation.** Example tests tend to miss large input spaces; properties explore broadly but can miss particular boundary patterns.
 
-**Dataset + shape.** 16 HumanEval problems whose standard solutions fail extended tests. The model generates roughly three to five PBTs or 10 to 20 EBT cases per problem.
+**Dataset + shape.** 16 HumanEval problems whose standard solutions fail extended tests. The model generates roughly three to five PBTs or 10 to 20 EBT cases per problem. (Verified 2026-10-01 against full text + Zenodo package.) The "bugs" are HumanEval canonical solutions: 21 of 164 fail HumanEval+, 16 kept (boundary, performance/timeout, or input-structure faults). The prompt holds only the HumanEval prompt (signature + docstring), not the solution body, so the oracle is spec-derived. One generation per problem, Claude Sonnet 4 via OpenRouter, default parameters.
 
-**Evaluation results.** PBT and EBT each detect bugs in 68.75% of the 16 problems; combining them reaches 81.25%. PBT catches performance and broad input-space issues, while EBT catches specific boundaries and special patterns.
+**Evaluation results.** PBT and EBT each detect bugs in 68.75% (11/16) of the problems; combining them reaches 81.25% (13/16). PBT-only: HumanEval/55, 95; EBT-only: 140, 150; both miss: 49, 123, 127. McNemar p = 1.00. Detection = assertion failure or 15 s timeout. Invalid tests were removed by hand before scoring (PBT 7/146 in 5 tasks, EBT 48/468 in 12 tasks), so the rates assume a human oracle filter. PBT catches performance and broad input-space issues, while EBT catches specific boundaries and special patterns.
 
 **Concept applicability.** Very high. A concept can generate both a property and a minimal boundary witness. Run both because they expose different failures.
 
 **Evidence.** Full text. Primary source: https://arxiv.org/abs/2510.25297
+
+**Artifacts (checked 2026-10-01).** Code + generated tests: [Zenodo 10.5281/zenodo.16434613](https://doi.org/10.5281/zenodo.16434613) (`ebt_pbt_test.zip`, 160 KB, CC-BY-4.0; Python ≥3.13, uv, `pbteval` CLI, prompts, outputs for Claude Sonnet 4 with hand-excluded tests commented out). Dataset: HumanEval + HumanEval+ (public benchmark only). Models: Claude Sonnet 4 (OpenRouter).
 
 ## 37. Mutant-Driven Test Generation for Ethereum Smart Contracts via LLMs
 
