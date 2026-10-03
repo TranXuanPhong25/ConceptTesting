@@ -1,0 +1,8 @@
+# Pilot tooling on top of dfuzz:arm64 (native arm64). Separate venv so the TF/torch venvs stay untouched.
+#   docker build -t dfuzz-pilot:arm64 -f DFUZZ/run/Dockerfile.pilot DFUZZ/run
+FROM dfuzz:arm64
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates gdb && rm -rf /var/lib/apt/lists/*
+# gdb: top native frame of memory-safety crashes (dedup). openai 0.27 + cachetools + networkx: import DFUZZ's own modules unmodified; google-genai: Vertex; tree-sitter: gap extractor
+RUN uv venv -p 3.11 /opt/pilot && uv pip install -p /opt/pilot google-genai openai==0.27.10 cachetools networkx \
+    tree-sitter tree-sitter-cpp pyyaml
+RUN /opt/pilot/bin/python -c "import google.genai, openai, tree_sitter_cpp, tree_sitter; print(openai.version.VERSION)"

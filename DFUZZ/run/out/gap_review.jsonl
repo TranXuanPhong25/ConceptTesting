@@ -1,0 +1,28 @@
+{"api": "tf.raw_ops.All", "kind": 1, "param": "reduction_indices", "verdict": "TP-benign", "evidence": "kernel flattens axes (SimplifyHelper uses flat/NumElements); rank<=1 only in shape fn"}
+{"api": "tf.raw_ops.Any", "kind": 1, "param": "reduction_indices", "verdict": "TP-benign", "evidence": "same kernel as All"}
+{"api": "tf.raw_ops.Min", "kind": 1, "param": "reduction_indices", "verdict": "TP-benign", "evidence": "same ReductionOp kernel"}
+{"api": "tf.raw_ops.ReduceJoin", "kind": 1, "param": "reduction_indices", "verdict": "TP-benign", "evidence": "reduce_join_op.cc:131 flat<int32>() without rank check"}
+{"api": "tf.raw_ops.DenseToDenseSetOperation", "kind": 3, "param": "set1", "verdict": "FP", "evidence": "GroupShapeFromInputs->GroupShape checks rank>=2 first (set_kernels.cc:55); helper not followed"}
+{"api": "tf.raw_ops.DrawBoundingBoxes", "kind": 3, "param": "images", "verdict": "TP-crash", "evidence": "draw_bounding_box_op.cc:61 dim_size(3) before rank check at :63 (known bug)"}
+{"api": "tf.raw_ops.DrawBoundingBoxesV2", "kind": 3, "param": "images", "verdict": "TP-crash", "evidence": "same kernel class (known bug)"}
+{"api": "tf.raw_ops.EnsureShape", "kind": 1, "param": "input", "verdict": "FP", "evidence": "shape_ops.cc:481 IsCompatibleWith(full shape) via GetShape(ctx,0); index-passing helper not followed"}
+{"api": "tf.raw_ops.FakeQuantWithMinMaxVarsPerChannel", "kind": 3, "param": "inputs", "verdict": "TP-crash", "evidence": "fake_quant_ops.cc:357 dim_size(dims()-1) with no rank check (known bug)"}
+{"api": "tf.raw_ops.FusedPadConv2D", "kind": 3, "param": "input", "verdict": "TP-crash", "evidence": "conv_ops_fused_image_transform.cc:661 else-branch dim_size(0..3), only numel>0 checked (known bug)"}
+{"api": "tf.raw_ops.MatrixDiagPartV2", "kind": 1, "param": "padding_value", "verdict": "TP-benign", "evidence": "kernel checks NumElements()==1, not rank 0 (matrix_diag_op.cc:93)"}
+{"api": "tf.raw_ops.MatrixDiagPartV3", "kind": 1, "param": "padding_value", "verdict": "TP-benign", "evidence": "same kernel"}
+{"api": "tf.raw_ops.OneHot", "kind": 3, "param": "indices", "verdict": "FP", "evidence": "dim_size(i) loop bounded by validated axis (output_dims = indices_dims+1); evidence line mis-located"}
+{"api": "tf.raw_ops.QuantizeAndDequantizeV2", "kind": 3, "param": "input_min", "verdict": "TP-crash", "evidence": "quantize_and_dequantize_op.cc:93 scalar<T>() when axis==-1, no shape check; oracle: strict crash tensor.cc:852 (run/out/qdqv2_gap_check.py)"}
+{"api": "tf.raw_ops.QuantizeAndDequantizeV2", "kind": 3, "param": "input_max", "verdict": "TP-crash", "evidence": "line 94, same"}
+{"api": "tf.raw_ops.QuantizeAndDequantizeV2", "kind": 1, "param": "input", "verdict": "FP", "evidence": "merge checked via input_min.dim_size(0)==depth (depth from input.dim_size(axis), ternary not tracked)"}
+{"api": "tf.raw_ops.QuantizeAndDequantizeV4", "kind": 3, "param": "input_min", "verdict": "TP-crash", "evidence": "same kernel class as V2"}
+{"api": "tf.raw_ops.QuantizeAndDequantizeV4", "kind": 3, "param": "input_max", "verdict": "TP-crash", "evidence": "same kernel class as V2"}
+{"api": "tf.raw_ops.QuantizeAndDequantizeV4", "kind": 1, "param": "input", "verdict": "FP", "evidence": "as V2"}
+{"api": "tf.raw_ops.QuantizeV2", "kind": 1, "param": "input", "verdict": "FP", "evidence": "quantize_op.cc:129 min_range.dim_size(0)==num_slices (num_slices from input.dim_size(axis))"}
+{"api": "tf.raw_ops.SparseSegmentSqrtNGrad", "kind": 1, "param": "grad", "verdict": "TP-benign", "evidence": "no rank check on grad; set_dim goes through SetDimWithStatus (graceful)"}
+{"api": "tf.raw_ops.UnicodeEncode", "kind": 3, "param": "input_splits", "verdict": "TP-crash", "evidence": "unicode_ops.cc:553 dim_size(0); only NumElements()>0 checked (scalar splits reach it)"}
+{"api": "tf.raw_ops.UnicodeEncode", "kind": 1, "param": "input_values", "verdict": "TP-benign", "evidence": "flat<int32>() only"}
+{"api": "tf.raw_ops.UnicodeEncode", "kind": 1, "param": "input_splits", "verdict": "TP-crash", "evidence": "same read as the kind-3 gap"}
+{"api": "torch.abs", "kind": 2, "param": "self", "verdict": "FP", "evidence": "abs_ checks !is_complex only because in-place abs of complex is unsupported (UnaryOps.cpp:553)"}
+{"api": "torch.max", "kind": 2, "param": "self", "verdict": "FP", "evidence": "max.unary_out canCast(self, out) is an out-tensor check (ReduceAllOps.cpp:60)"}
+{"api": "torch.logsumexp", "kind": 2, "param": "self", "verdict": "FP", "evidence": "logsumexp.out checks result dtype (ReduceOps.cpp:1412); functional promotes itself"}
+{"api": "torch.histc", "kind": 2, "param": "self", "verdict": "FP", "evidence": "functional calls histogram_histc_out directly (Histogram.cpp:413); inlining-depth artefact"}

@@ -1,0 +1,31 @@
+tf.raw_ops.All                                   seed=clean      target_call=True p0+v0b x0b+v0b
+tf.raw_ops.Any                                   seed=clean      target_call=True p0+v0b x0b+v0b
+tf.raw_ops.DenseToDenseSetOperation              seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+tf.raw_ops.EnsureShape                           seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+tf.raw_ops.ExperimentalMatchingFilesDataset      seed=clean      target_call=True x0b+released x0b+v0b
+tf.raw_ops.MatchingFilesDataset                  seed=clean      target_call=True x0b+released x0b+v0b
+tf.raw_ops.MatrixDiagPartV2                      seed=clean      target_call=True p0+v0b x0b+v0b
+tf.raw_ops.MatrixDiagPartV3                      seed=clean      target_call=True p0+v0b x0b+v0b
+tf.raw_ops.Min                                   seed=clean      target_call=True p0+v0b x0b+v0b
+tf.raw_ops.OneHot                                seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+tf.raw_ops.QuantizeV2                            seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+tf.raw_ops.RandomShuffle                         seed=clean      target_call=True x0b+released x0b+v0b
+tf.raw_ops.ReduceJoin                            seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+tf.raw_ops.SparseSegmentSqrtNGrad                seed=exception  target_call=True p0+released p0+v0b x0b+released x0b+v0b
+torch.Tensor.abs                                 seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+torch.Tensor.cross                               seed=clean      target_call=True x0b+released x0b+v0b
+torch.Tensor.index_put                           seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+torch.abs                                        seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+torch.cross                                      seed=clean      target_call=True x0b+released x0b+v0b
+torch.float_power                                seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+torch.histc                                      seed=clean      target_call=True p0+released p0+v0b
+torch.logsumexp                                  seed=clean      target_call=True p0+released p0+v0b
+torch.max                                        seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+torch.min                                        seed=clean      target_call=True p0+released p0+v0b x0b+released x0b+v0b
+torch.normal                                     seed=clean      target_call=True x0b+released x0b+v0b
+
+p0+released    candidates= 14 frame= 13
+p0+v0b         candidates= 19 frame= 18
+x0b+released   candidates= 18 frame= 17
+x0b+v0b        candidates= 23 frame= 22
+go rule: frame(x0b+v0b)=22 >= 40 ? False; unseeded candidates=8; regenerate seeds only if 22 < 40 <= 30: False

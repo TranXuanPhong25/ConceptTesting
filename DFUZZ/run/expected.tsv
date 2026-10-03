@@ -1,0 +1,38 @@
+dir	library	api	issue	expected	needs_cuda	expected_detail
+torch/torch.Tensor.to-confirmed	torch	torch.Tensor.to	pytorch/pytorch#121226	cpu_gpu_inconsistency	1	NaN->int32: CPU tensor([-2147483648]) vs GPU tensor([0])
+torch/torch.all-confirmed	torch	torch.all	pytorch/pytorch#120875	cpu_gpu_inconsistency	1	complex input: CPU tensor(False) vs GPU tensor(True)
+torch/torch.conj_physical-reported	torch	torch.conj_physical	pytorch/pytorch#120989	runtime_error	0	INTERNAL ASSERT FAILED
+torch/torch.fake_quantize_per_channel_affine-confirmed	torch	torch.fake_quantize_per_channel_affine	pytorch/pytorch#120903	runtime_error	0	INTERNAL ASSERT FAILED
+torch/torch.fft.fft-confirmed	torch	torch.fft.fft	pytorch/pytorch#120902	runtime_error	1	cuFFT error
+torch/torch.fft.fft2-confirmed	torch	torch.fft.fft2	pytorch/pytorch#120986	runtime_error	0	MKL FFT error
+torch/torch.fft.rfftfreq-confirmed	torch	torch.fft.rfftfreq	pytorch/pytorch#120988	runtime_error	0	a leaf Variable that requires grad is being used in an in-place operation
+torch/torch.lu_unpack-confirmed	torch	torch.lu_unpack	pytorch/pytorch#121584	segfault	0	Segmentation fault (core dumped)
+torch/torch.quantized_max_pool1d-confirmed	torch	torch.quantized_max_pool1d	pytorch/pytorch#121585	segfault	0	Segmentation fault (core dumped)
+torch/torch.where-confirmed	torch	torch.where	pytorch/pytorch#121397	runtime_error	0	INTERNAL ASSERT FAILED
+tf/tf.audio.decode_wav-reported	tf	tf.audio.decode_wav	tensorflow/tensorflow#63687	abort	0	Aborted (core dumped)
+tf/tf.experimental.numpy.cos-confirmed	tf	tf.experimental.numpy.cos (code exercises tf.quantization.fake_quant_with_min_max_args)	tensorflow/tensorflow#63271	cpu_gpu_inconsistency	1	fake_quant_with_min_max_args CPU vs GPU outputs differ
+tf/tf.image.draw_bounding_boxes-reported	tf	tf.image.draw_bounding_boxes	tensorflow/tensorflow#63688	abort	0	Check failed: d < dims() (3 vs. 3)
+tf/tf.io.TFRecordOptions-confirmed	tf	tf.io.TFRecordOptions	tensorflow/tensorflow#63337	abort	0	Aborted (core dumped) (compression_strategy=-2)
+tf/tf.linalg.solve-reported	tf	tf.linalg.solve	tensorflow/tensorflow#63339	abort	0	Check failed: d < dims() (1 vs. 1)
+tf/tf.quantization.fake_quant_with_min_max_vars_per_channel-confirmed	tf	tf.quantization.fake_quant_with_min_max_vars_per_channel	tensorflow/tensorflow#63351	abort	0	Check failed: d >= 0 (0 vs. -1)
+tf/tf.raw_ops.AudioSpectrogram-confirmed	tf	tf.raw_ops.AudioSpectrogram	tensorflow/tensorflow#63352	segfault	0	Segmentation fault (core dumped)
+tf/tf.raw_ops.AvgPoolGrad-confirmed	tf	tf.raw_ops.AvgPoolGrad	tensorflow/tensorflow#63353	abort	0	Aborted (core dumped)
+tf/tf.raw_ops.DatasetToTFRecord-reported	tf	tf.raw_ops.DatasetToTFRecord	tensorflow/tensorflow#63689	abort	0	Check failed: 1 == NumElements() (1 vs. 2)
+tf/tf.raw_ops.Dilation2DBackpropFilter-known	tf	tf.raw_ops.Dilation2DBackpropFilter	none (known bug)	abort	0	no issue; abort inferred from paper Table VI (TF: 24 abort, 2 segfault, 1 inconsistent)
+tf/tf.raw_ops.DrawBoundingBoxes-known	tf	tf.raw_ops.DrawBoundingBoxes	tensorflow/tensorflow#63354	abort	0	Check failed: d < dims() (3 vs. 3)
+tf/tf.raw_ops.DrawBoundingBoxesV2-known	tf	tf.raw_ops.DrawBoundingBoxesV2	tensorflow/tensorflow#63354	abort	0	Check failed: d < dims() (3 vs. 3)
+tf/tf.raw_ops.ExperimentalDatasetToTFRecord-reported	tf	tf.raw_ops.ExperimentalDatasetToTFRecord	tensorflow/tensorflow#63691	abort	0	Check failed: 1 == NumElements() (1 vs. 2)
+tf/tf.raw_ops.FakeQuantWithMinMaxVarsPerChannel-confirmed	tf	tf.raw_ops.FakeQuantWithMinMaxVarsPerChannel	tensorflow/tensorflow#63355	abort	0	Check failed: d >= 0 (0 vs. -1)
+tf/tf.raw_ops.FusedPadConv2D-confirmed	tf	tf.raw_ops.FusedPadConv2D	tensorflow/tensorflow#63376	abort	0	Check failed: d < dims() (3 vs. 3)
+tf/tf.raw_ops.QuantizeAndDequantizeV3-reported	tf	tf.raw_ops.QuantizeAndDequantizeV3	tensorflow/tensorflow#63693	abort	0	Check failed: 1 == NumElements() (1 vs. 2)
+tf/tf.raw_ops.ResourceApplyGradientDescent-reported	tf	tf.raw_ops.ResourceApplyGradientDescent	tensorflow/tensorflow#63695	abort	0	Check failed: dtype() == expected_dtype (8 vs. 1)
+tf/tf.raw_ops.ResourceApplyMomentum-reported	tf	tf.raw_ops.ResourceApplyMomentum	tensorflow/tensorflow#63696	abort	0	Check failed: dtype() == expected_dtype (8 vs. 1)
+tf/tf.raw_ops.ResourceApplyProximalAdagrad-confirmed	tf	tf.raw_ops.ResourceApplyProximalAdagrad	tensorflow/tensorflow#63697	abort	0	Check failed: dtype() == expected_dtype (1 vs. 2)
+tf/tf.raw_ops.ResourceGather-known	tf	tf.raw_ops.ResourceGather	none (known bug)	abort	0	no issue; abort inferred from paper Table VI; script pins the variable to GPU:0 (soft placement falls back to CPU)
+tf/tf.raw_ops.ResourceSparseApplyKerasMomentum-reported	tf	tf.raw_ops.ResourceSparseApplyKerasMomentum	tensorflow/tensorflow#63720	abort	0	Check failed: dtype() == expected_dtype (8 vs. 1)
+tf/tf.raw_ops.StatefulPartitionedCall-reported	tf	tf.raw_ops.StatefulPartitionedCall	tensorflow/tensorflow#63721	abort	0	Check failed: index < outputs_.size() (0 vs. 0)
+tf/tf.raw_ops.TensorListConcat-reported	tf	tf.raw_ops.TensorListConcat	tensorflow/tensorflow#63722	abort	0	flaky per issue: malloc_consolidate(): invalid chunk size, Aborted
+tf/tf.raw_ops.TensorScatterSub-confirmed	tf	tf.raw_ops.TensorScatterSub	tensorflow/tensorflow#63378	abort	0	Check failed: d < dims() (1 vs. 1)
+tf/tf.raw_ops.UnicodeEncode-confirmed	tf	tf.raw_ops.UnicodeEncode	tensorflow/tensorflow#63379	segfault	0	Segmentation fault (core dumped)
+tf/tf.tensor_scatter_nd_add-reported	tf	tf.tensor_scatter_nd_add	tensorflow/tensorflow#63380	abort	0	Check failed: d < dims() (1 vs. 1)
+tf/tf.tensor_scatter_nd_update-reported	tf	tf.tensor_scatter_nd_update	tensorflow/tensorflow#63375	abort	0	Check failed: d < dims() (1 vs. 1)
