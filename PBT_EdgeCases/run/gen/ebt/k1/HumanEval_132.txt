@@ -1,0 +1,32 @@
+```python
+# Basic Test Cases
+assert is_nested('[[]]') == True, "Basic Test Case 1: Simple nested brackets"
+assert is_nested('[[][]]') == True, "Basic Test Case 2: Nested brackets with inner non-nested"
+assert is_nested('[][][]') == False, "Basic Test Case 3: Multiple non-nested pairs"
+assert is_nested('[]') == False, "Basic Test Case 4: Single non-nested pair"
+assert is_nested('') == False, "Basic Test Case 5: Empty string"
+assert is_nested('[[][]]') == True, "Basic Test Case 6: Nested with multiple inner pairs"
+
+
+# Edge Test Cases
+assert is_nested('[') == False, "Edge Test Case 1: Single opening bracket"
+assert is_nested(']') == False, "Edge Test Case 2: Single closing bracket"
+assert is_nested('[[') == False, "Edge Test Case 3: Multiple opening brackets"
+assert is_nested(']]') == False, "Edge Test Case 4: Multiple closing brackets"
+assert is_nested('[]]]]]]][[[[[]') == False, "Edge Test Case 5: Many unbalanced brackets, no valid nested"
+assert is_nested('[[[[[]]]]]') == True, "Edge Test Case 6: Deeply nested, but still a valid subsequence"
+assert is_nested('][') == False, "Edge Test Case 7: Mismatched brackets in wrong order"
+assert is_nested('[[]][[') == True, "Edge Test Case 8: Nested followed by open brackets"
+assert is_nested(']][[]') == True, "Edge Test Case 9: Closing brackets followed by nested"
+assert is_nested('[[[]]]') == True, "Edge Test Case 10: Triple nested brackets"
+
+
+# Large Scale Test Cases
+# Generating a string with 1000 pairs of '[]' - should be False
+assert is_nested('[' * 1000 + ']' * 1000) == True, "Large Scale Test Case 1: 1000 nested pairs (True)"
+assert is_nested('[]' * 500) == False, "Large Scale Test Case 2: 500 non-nested pairs"
+assert is_nested('[' * 500 + ']' * 500) == True, "Large Scale Test Case 3: 500 deeply nested pairs"
+assert is_nested('[]]]]]]][[[[[]' * 100) == False, "Large Scale Test Case 4: Long string of unbalanced, no nested"
+assert is_nested('[[' * 250 + ']]' * 250) == True, "Large Scale Test Case 5: 250 nested pairs formed by two brackets"
+assert is_nested('[[[]]]' * 100) == True, "Large Scale Test Case 6: 100 instances of nested brackets"
+```

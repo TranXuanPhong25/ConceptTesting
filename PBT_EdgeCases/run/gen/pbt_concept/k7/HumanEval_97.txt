@@ -1,0 +1,88 @@
+```python
+from hypothesis import given, strategies as st
+
+def multiply(a, b):
+    """Complete the function that takes two integers and returns 
+    the product of their unit digits.
+    Assume the input is always valid.
+    Examples:
+    multiply(148, 412) should return 16.
+    multiply(19, 28) should return 72.
+    multiply(2020, 1851) should return 0.
+    multiply(14,-15) should return 20.
+    """
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    return unit_a * unit_b
+
+@given(st.integers(min_value=-1000000, max_value=1000000), 
+       st.integers(min_value=-1000000, max_value=1000000))
+@example(a=148, b=412)
+@example(a=19, b=28)
+@example(a=2020, b=1851)
+@example(a=14, b=-15)
+@example(a=0, b=0)
+@example(a=1, b=1)
+@example(a=10000, b=10000)
+@example(a=123456789, b=987654321) # Large numbers
+@example(a=-123456789, b=-987654321) # Large negative numbers
+@example(a=10, b=20) # Zero unit digits
+@example(a=17, b=1) # One as a unit digit
+def test_multiply_unit_digits_product(a, b):
+    # Property: The result should be the product of the absolute unit digits of a and b.
+    result = multiply(a, b)
+    
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    expected_result = unit_a * unit_b
+    
+    assert result == expected_result, f"For a={a}, b={b}, expected {expected_result}, but got {result}"
+
+@given(st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_with_zero_unit_digit_is_zero(num):
+    # Property: If one of the numbers has a unit digit of 0, the product should be 0.
+    # Test for 'a' having a unit digit of 0
+    num_a_with_zero_unit = num * 10
+    result_a = multiply(num_a_with_zero_unit, st.integers().example())
+    assert result_a == 0, f"Multiplying with {num_a_with_zero_unit} (unit digit 0) should result in 0"
+
+    # Test for 'b' having a unit digit of 0
+    num_b_with_zero_unit = num * 10
+    result_b = multiply(st.integers().example(), num_b_with_zero_unit)
+    assert result_b == 0, f"Multiplying with {num_b_with_zero_unit} (unit digit 0) should result in 0"
+
+@given(st.integers(min_value=-1000000, max_value=1000000), 
+       st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_result_range(a, b):
+    # Property: The result should always be between 0 and 81 (inclusive),
+    # as unit digits are between 0 and 9, and 9*9 = 81.
+    result = multiply(a, b)
+    assert 0 <= result <= 81, f"Result {result} for a={a}, b={b} is out of expected range [0, 81]"
+
+@given(st.integers(min_value=-1000000, max_value=1000000), 
+       st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_sign_invariance(a, b):
+    # Property: The result should be the same whether inputs are positive or negative,
+    # as it only considers the absolute unit digit.
+    result_positive_a_positive_b = multiply(abs(a), abs(b))
+    result_negative_a_positive_b = multiply(-abs(a), abs(b))
+    result_positive_a_negative_b = multiply(abs(a), -abs(b))
+    result_negative_a_negative_b = multiply(-abs(a), -abs(b))
+
+    # Ensure all results are the same
+    assert result_positive_a_positive_b == result_negative_a_positive_b, \
+        f"Sign of 'a' should not change the result: {result_positive_a_positive_b} vs {result_negative_a_positive_b}"
+    assert result_positive_a_positive_b == result_positive_a_negative_b, \
+        f"Sign of 'b' should not change the result: {result_positive_a_positive_b} vs {result_positive_a_negative_b}"
+    assert result_positive_a_positive_b == result_negative_a_negative_b, \
+        f"Signs of 'a' and 'b' should not change the result: {result_positive_a_positive_b} vs {result_negative_a_negative_b}"
+
+@given(st.integers(min_value=-1000000, max_value=1000000), 
+       st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_commutativity(a, b):
+    # Property: The order of inputs should not affect the result (commutativity).
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, f"Multiply should be commutative: multiply({a}, {b})={result1}, multiply({b}, {a})={result2}"
+
+```

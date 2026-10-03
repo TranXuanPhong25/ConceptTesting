@@ -1,0 +1,20 @@
+```python
+# Basic Test Cases
+assert fib(0) == 0, "Basic Test Case 1: n = 0"
+assert fib(1) == 1, "Basic Test Case 2: n = 1"
+assert fib(2) == 1, "Basic Test Case 3: n = 2"
+assert fib(3) == 2, "Basic Test Case 4: n = 3"
+assert fib(10) == 55, "Basic Test Case 5: n = 10"
+assert fib(8) == 21, "Basic Test Case 6: n = 8"
+
+# Edge Test Cases
+assert fib(-1) == None, "Edge Test Case 1: Negative input (should ideally raise an error or return None/NaN)"
+assert fib(None) == None, "Edge Test Case 2: None input (should ideally raise an error or return None/NaN)"
+# (Note: The current implementation might produce an error for negative or None inputs.
+# The expected behavior for such cases should be defined based on requirements.)
+
+# Large Scale Test Cases
+assert fib(20) == 6765, "Large Scale Test Case 1: n = 20"
+assert fib(30) == 832040, "Large Scale Test Case 2: n = 30"
+assert fib(35) == 9227465, "Large Scale Test Case 3: n = 35 (Testing for larger inputs where recursion might become slow)"
+```

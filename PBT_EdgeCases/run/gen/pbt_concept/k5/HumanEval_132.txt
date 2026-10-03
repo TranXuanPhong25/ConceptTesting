@@ -1,0 +1,149 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_basic_properties(s):
+    result = is_nested(s)
+
+    # Property 1: If the string is empty or contains only '[]', it should not be nested
+    if s == '' or s == '[]' or s == '[][][]' or s == '[]][[]': # Examples of non-nested
+        if not any(s[i] == '[' and s[j] == ']' and i < j and s[i+1:j].count('[') > 0 and s[i+1:j].count(']') > 0 for i in range(len(s)) for j in range(i+1, len(s))):
+            assert result is False, f"Expected False for '{s}' as no true nesting, but got True"
+
+    # Property 2: If '[]' is present, it's not necessarily nested.
+    # We need to explicitly check for a '[[...]]' pattern or similar.
+    # This property checks if there's an opening bracket followed by another opening bracket
+    # and then a closing bracket, within which the second opening bracket is enclosed.
+    if result:
+        # If is_nested returns True, there must exist a subsequence '[[...]]'
+        # This is a bit tricky to assert directly as a simple property.
+        # Let's consider a simpler invariant:
+        # If the string contains '[[', it *might* be nested.
+        # If it contains '[]', it *might* not be.
+        # If it contains no brackets, it should be False.
+        if '[' not in s or ']' not in s:
+            assert result is False, f"Expected False for '{s}' as it contains no brackets, but got True"
+
+    # Property 3: If there are no two opening brackets or no two closing brackets, it cannot be nested in the strict sense
+    # A simplified check: if '[[', ']]' are not present, it's less likely to be nested.
+    if ']]' not in s and '[[' not in s:
+        # If no explicit double brackets, it's unlikely to be nested unless it's like '][[]'
+        # However, the definition allows subsequences.
+        # A clearer property: if we can't find '[[...]]' as a subsequence, it's false.
+        has_subsequence_nesting = False
+        open_brackets = []
+        for char in s:
+            if char == '[':
+                open_brackets.append(char)
+            elif char == ']':
+                if len(open_brackets) >= 2: # At least two open brackets before this closing one
+                    has_subsequence_nesting = True
+                    break
+                if open_brackets:
+                    open_brackets.pop() # Match a single bracket
+        
+        if not has_subsequence_nesting:
+            assert result is False, f"Expected False for '{s}' as no valid nested subsequence, but got True"
+
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_symmetry_with_reversal(s):
+    # This property is based on the idea that nesting is about opening and closing pairs.
+    # Reversing the string and flipping brackets should maintain the 'nesting' property.
+    # However, this is not entirely true for the specific definition of "nested subsequence".
+    # For example, `[[]]` is nested. Its reverse with flipped brackets `][][` is not.
+    # This property is more about balanced parentheses, not necessarily 'nested subsequence'.
+    # Let's skip this one as it doesn't align with the problem's definition.
+    pass
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_always_false_for_no_double_open_or_close(s):
+    # If there are no two consecutive open brackets or two consecutive closing brackets
+    # in the original string, it means we can't form a simple `[[...]]` pattern directly.
+    # But the problem states "valid subsequence of brackets where at least one bracket in the subsequence is nested."
+    # For example, `[[]][[`, `is_nested('[[]][[')` is `True`. Here we have `[[` but also `][`.
+    
+    # Property: If there is no '[[', it can still be nested if there's a pattern like '[...[...]]'
+    # Example: '[[[]]]' is True. '[]][[]' is False.
+    # A true nested subsequence must have at least one '[' followed by another '[' before a ']' closes the first.
+    
+    # If the string does not contain '[[', then it implies that any opening bracket is immediately
+    # followed by a ']' or end of string, unless it's a completely open bracket sequence.
+    
+    # A more precise property: A string is nested if and only if there exists an `i < j` such that `s[i] == '['`, `s[j] == ']'`,
+    # and there exists a `k` such that `i < k < j` and `s[k] == '['`.
+    
+    result = is_nested(s)
+    
+    # Manual check for the specific nested subsequence condition
+    expected_nested = False
+    
+    for i in range(len(s)):
+        if s[i] == '[':
+            for j in range(i + 1, len(s)):
+                if s[j] == ']':
+                    for k in range(i + 1, j):
+                        if s[k] == '[':
+                            expected_nested = True
+                            break
+                    if expected_nested:
+                        break
+            if expected_nested:
+                break
+                
+    assert result == expected_nested, f"For input '{s}', expected {expected_nested} but got {result}"
+
+@given(st.just(''))
+def test_is_nested_empty_string(s):
+    result = is_nested(s)
+    assert result is False, "Empty string should not be nested"
+
+@given(st.just('[]'))
+def test_is_nested_single_pair(s):
+    result = is_nested(s)
+    assert result is False, "'[]' should not be nested"
+
+@given(st.just('[][]'))
+def test_is_nested_multiple_non_nested_pairs(s):
+    result = is_nested(s)
+    assert result is False, "'[][]' should not be nested"
+
+@given(st.just('[[]]'))
+def test_is_nested_simple_nested(s):
+    result = is_nested(s)
+    assert result is True, "'[[]]' should be nested"
+
+@given(st.just('[[][]]'))
+def test_is_nested_complex_nested(s):
+    result = is_nested(s)
+    assert result is True, "'[[][]]' should be nested"
+
+@given(st.just('[]]]]]]][[[[[]'))
+def test_is_nested_unbalanced_but_not_nested(s):
+    result = is_nested(s)
+    assert result is False, "'[]]]]]]][[[[[]' should not be nested by the specific definition"
+
+@given(st.text(alphabet='[]', min_size=1, max_size=100))
+def test_is_nested_no_open_brackets_is_false(s):
+    if '[' not in s:
+        result = is_nested(s)
+        assert result is False, f"String '{s}' with no open brackets cannot be nested"
+
+@given(st.text(alphabet='[]', min_size=1, max_size=100))
+def test_is_nested_no_close_brackets_is_false(s):
+    if ']' not in s:
+        result = is_nested(s)
+        assert result is False, f"String '{s}' with no close brackets cannot be nested"
+
+@given(st.text(alphabet='[', min_size=2, max_size=100))
+def test_is_nested_only_open_brackets(s):
+    result = is_nested(s)
+    assert result is False, f"String '{s}' with only open brackets cannot be nested"
+
+@given(st.text(alphabet=']', min_size=2, max_size=100))
+def test_is_nested_only_close_brackets(s):
+    result = is_nested(s)
+    assert result is False, f"String '{s}' with only close brackets cannot be nested"
+
+
+```

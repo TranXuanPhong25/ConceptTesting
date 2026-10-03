@@ -1,0 +1,33 @@
+```python
+# Basic Test Cases
+assert multiply(148, 412) == 16, "Basic Test Case 1: Positive integers"
+assert multiply(19, 28) == 72, "Basic Test Case 2: Positive integers"
+assert multiply(2020, 1851) == 0, "Basic Test Case 3: One unit digit is zero"
+assert multiply(10, 20) == 0, "Basic Test Case 4: Both unit digits are zero"
+assert multiply(5, 7) == 35, "Basic Test Case 5: Single digit numbers"
+
+# Edge Test Cases
+assert multiply(1, 1) == 1, "Edge Test Case 1: Smallest positive single digit"
+assert multiply(9, 9) == 81, "Edge Test Case 2: Largest positive single digit"
+assert multiply(14, -15) == 20, "Edge Test Case 3: One negative number"
+assert multiply(-14, 15) == 20, "Edge Test Case 4: Another negative number"
+assert multiply(-14, -15) == 20, "Edge Test Case 5: Both negative numbers"
+assert multiply(0, 5) == 0, "Edge Test Case 6: One input is zero"
+assert multiply(5, 0) == 0, "Edge Test Case 7: Another input is zero"
+assert multiply(0, 0) == 0, "Edge Test Case 8: Both inputs are zero"
+assert multiply(123456789, 987654321) == 9, "Edge Test Case 9: Large numbers with simple unit digits"
+assert multiply(1000000000, 1) == 0, "Edge Test Case 10: Very large number with zero unit digit"
+assert multiply(1, 1000000000) == 0, "Edge Test Case 11: Very large number with zero unit digit (reversed)"
+assert multiply(-1, -1) == 1, "Edge Test Case 12: Negative single digit numbers"
+assert multiply(1, -1) == 1, "Edge Test Case 13: Positive and negative single digit"
+
+# Large Scale Test Cases (Focus on correct unit digit extraction, as performance is trivial)
+# The function's logic only depends on the unit digits, so large numbers don't affect performance
+# differently than smaller numbers with the same unit digits.
+# These tests ensure that the unit digit extraction handles large numbers correctly.
+assert multiply(123456789123456789, 987654321987654321) == 81, "Large Scale Test Case 1: Very large numbers"
+assert multiply(123456789012345678, 987654321098765432) == 16, "Large Scale Test Case 2: Very large numbers with different unit digits"
+assert multiply(999999999999999999, 111111111111111111) == 9, "Large Scale Test Case 3: Large numbers ending in 9 and 1"
+assert multiply(1000000000000000000, 5) == 0, "Large Scale Test Case 4: Extremely large number with zero unit digit"
+assert multiply(-123456789123456789, -987654321987654321) == 81, "Large Scale Test Case 5: Very large negative numbers"
+```

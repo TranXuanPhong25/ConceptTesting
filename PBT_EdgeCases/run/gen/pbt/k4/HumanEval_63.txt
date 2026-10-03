@@ -1,0 +1,35 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fibfib_non_negative_input(n):
+    result = fibfib(n)
+    assert result >= 0, f"fibfib({n}) should be non-negative, but got {result}"
+
+@given(st.integers(min_value=3, max_value=20))
+def test_fibfib_recursive_property(n):
+    result = fibfib(n)
+    expected = fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3)
+    assert result == expected, f"fibfib({n}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=2))
+def test_fibfib_base_cases(n):
+    if n == 0:
+        assert fibfib(0) == 0, "fibfib(0) should be 0"
+    elif n == 1:
+        assert fibfib(1) == 0, "fibfib(1) should be 0"
+    elif n == 2:
+        assert fibfib(2) == 1, "fibfib(2) should be 1"
+
+@given(st.integers(min_value=0, max_value=50))
+def test_fibfib_monotonic_for_large_n(n):
+    if n >= 3:
+        # After n=2, the sequence is always non-decreasing
+        assert fibfib(n) >= fibfib(n-1), f"fibfib({n}) should be >= fibfib({n-1})"
+
+@given(st.integers(min_value=0, max_value=30))
+def test_fibfib_type_is_integer(n):
+    result = fibfib(n)
+    assert isinstance(result, int), f"fibfib({n}) should return an integer, but got type {type(result)}"
+
+```

@@ -1,0 +1,48 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=20))  # Limiting n to avoid very large numbers
+def test_fib_positive_input_invariance(n):
+    """
+    Test the fundamental property that fib(n) should be the sum of fib(n-1) and fib(n-2) for n > 2.
+    """
+    if n > 2:
+        result = fib(n)
+        assert result == fib(n - 1) + fib(n - 2), f"fib({n}) should be fib({n-1}) + fib({n-2})"
+
+@given(st.integers(min_value=1, max_value=30))
+def test_fib_growth_property(n):
+    """
+    Test that for n >= 2, fib(n) is greater than fib(n-1). The Fibonacci sequence is strictly increasing
+    for n >= 2.
+    """
+    if n >= 2:
+        assert fib(n) > fib(n - 1), f"fib({n}) should be greater than fib({n-1})"
+
+@given(st.integers(min_value=1, max_value=2))
+def test_fib_base_cases(n):
+    """
+    Test the base cases of the Fibonacci sequence: fib(1) = 1 and fib(2) = 1.
+    """
+    if n == 1:
+        assert fib(n) == 1, f"fib(1) should be 1"
+    elif n == 2:
+        assert fib(n) == 1, f"fib(2) should be 1"
+
+@given(st.integers(min_value=1, max_value=20))
+def test_fib_non_negativity(n):
+    """
+    Test that the Fibonacci numbers for positive inputs are always non-negative.
+    """
+    result = fib(n)
+    assert result >= 0, f"fib({n}) should be non-negative"
+
+@given(st.integers(min_value=1, max_value=10))
+def test_fib_known_values(n):
+    """
+    Test against a few known Fibonacci values to ensure correctness.
+    This acts as a sanity check.
+    """
+    known_values = {1: 1, 2: 1, 3: 2, 4: 3, 5: 5, 6: 8, 7: 13, 8: 21, 9: 34, 10: 55}
+    assert fib(n) == known_values[n], f"fib({n}) should be {known_values[n]}"
+```

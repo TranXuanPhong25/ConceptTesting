@@ -1,0 +1,75 @@
+```python
+import math
+from hypothesis import given, strategies as st, example
+
+def x_or_y(n, x, y):
+    """A simple program which should return the value of x if n is 
+    a prime number and should return the value of y otherwise.
+
+    Examples:
+    for x_or_y(7, 34, 12) == 34
+    for x_or_y(15, 8, 5) == 5
+    
+    """
+    if n <= 1:
+        is_prime = False
+    else:
+        is_prime = True
+        for i in range(2, int(math.sqrt(n)) + 1):
+            if n % i == 0:
+                is_prime = False
+                break
+    
+    if is_prime:
+        return x
+    else:
+        return y
+
+@given(n=st.integers(min_value=2, max_value=1000), x=st.integers(), y=st.integers())
+@example(n=7, x=34, y=12)
+def test_x_if_prime(n, x, y):
+    # Check if n is prime
+    is_prime = True
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            is_prime = False
+            break
+
+    if is_prime:
+        result = x_or_y(n, x, y)
+        assert result == x, f"For prime n={n}, x_or_y should return x={x}"
+
+@given(n=st.integers(min_value=0, max_value=1000).filter(lambda num: num <= 1 or not any(num % i == 0 for i in range(2, int(math.sqrt(num)) + 1))), x=st.integers(), y=st.integers())
+@example(n=15, x=8, y=5)
+@example(n=0, x=10, y=20)
+@example(n=1, x=10, y=20)
+@example(n=4, x=10, y=20)
+def test_y_if_not_prime(n, x, y):
+    # Check if n is not prime (including 0 and 1)
+    is_prime = True
+    if n <= 1:
+        is_prime = False
+    else:
+        for i in range(2, int(math.sqrt(n)) + 1):
+            if n % i == 0:
+                is_prime = False
+                break
+    
+    if not is_prime:
+        result = x_or_y(n, x, y)
+        assert result == y, f"For non-prime n={n}, x_or_y should return y={y}"
+
+@given(n=st.integers(min_value=-100, max_value=1), x=st.integers(), y=st.integers())
+@example(n=-5, x=10, y=20)
+def test_non_positive_n_returns_y(n, x, y):
+    # According to the prime definition used (n > 1), non-positive numbers are not prime.
+    result = x_or_y(n, x, y)
+    assert result == y, f"For non-positive n={n}, x_or_y should return y={y}"
+
+@given(n=st.integers(min_value=0, max_value=1000), x=st.integers(), y=st.integers())
+def test_determinism(n, x, y):
+    # The function should be deterministic; calling it multiple times with the same input should yield the same result.
+    result1 = x_or_y(n, x, y)
+    result2 = x_or_y(n, x, y)
+    assert result1 == result2, "The function should be deterministic"
+```

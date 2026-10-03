@@ -1,0 +1,64 @@
+```python
+from hypothesis import given, strategies as st
+
+def change_base(x: int, base: int):
+    """Change numerical base of input number x to base.
+    return string representation after the conversion.
+    base numbers are less than 10.
+    >>> change_base(8, 3)
+    '22'
+    >>> change_base(8, 2)
+    '1000'
+    >>> change_base(7, 2)
+    '111'
+    """
+    if x == 0:
+        return "0"
+    
+    res = ""
+    while x > 0:
+        res = str(x % base) + res
+        x //= base
+    return res
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_correctness(x, base):
+    result = change_base(x, base)
+
+    # Property: The result should only contain digits from 0 to base-1
+    for digit_char in result:
+        digit = int(digit_char)
+        assert 0 <= digit < base, f"Digit {digit} in result '{result}' is out of range for base {base}"
+
+    # Property: Converting back to base 10 should yield the original number
+    if x == 0:
+        assert result == "0", "0 should convert to '0'"
+    else:
+        reconstructed_x = 0
+        power = 0
+        for digit_char in reversed(result):
+            reconstructed_x += int(digit_char) * (base ** power)
+            power += 1
+        assert reconstructed_x == x, f"Reconstructing {result} in base {base} should yield {x}, but got {reconstructed_x}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_zero_input(x, base):
+    if x == 0:
+        result = change_base(x, base)
+        assert result == "0", "Converting 0 to any base should result in '0'"
+
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=2, max_value=9))
+def test_change_base_single_digit_output(x, base):
+    result = change_base(x, base)
+    if x < base:
+        assert result == str(x), f"For x={x} and base={base}, result should be '{x}', but got '{result}'"
+    elif x == base:
+        assert result == "10", f"For x={x} and base={base}, result should be '10', but got '{result}'"
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_non_empty_result_for_positive_x(x, base):
+    if x > 0:
+        result = change_base(x, base)
+        assert len(result) > 0, f"Result for positive x={x} and base={base} should not be empty"
+
+```

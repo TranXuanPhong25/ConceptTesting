@@ -1,0 +1,101 @@
+```python
+from hypothesis import given, strategies as st
+
+def multiply(a, b):
+    """Complete the function that takes two integers and returns 
+    the product of their unit digits.
+    Assume the input is always valid.
+    Examples:
+    multiply(148, 412) should return 16.
+    multiply(19, 28) should return 72.
+    multiply(2020, 1851) should return 0.
+    multiply(14,-15) should return 20.
+    """
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    return unit_a * unit_b
+
+@given(a=st.integers(), b=st.integers())
+@example(a=148, b=412)
+@example(a=19, b=28)
+@example(a=2020, b=1851)
+@example(a=14, b=-15)
+@example(a=0, b=0)
+@example(a=1, b=1)
+@example(a=10000, b=10000)
+def test_multiply_unit_digits_product(a, b):
+    """
+    Property: The function should return the product of the unit digits of the two input integers.
+    The unit digit is always non-negative, regardless of the sign of the input number.
+    """
+    # Calculate the unit digit for 'a'
+    unit_a = abs(a) % 10
+    # Calculate the unit digit for 'b'
+    unit_b = abs(b) % 10
+    
+    # The expected result is the product of these unit digits
+    expected_result = unit_a * unit_b
+    
+    result = multiply(a, b)
+    
+    assert result == expected_result, \
+        f"For a={a}, b={b}, expected {expected_result}, but got {result}"
+
+@given(a=st.integers(), b=st.integers())
+def test_multiply_result_non_negative(a, b):
+    """
+    Property: The result of the multiplication should always be non-negative.
+    This is because the unit digits (abs(n) % 10) are always non-negative,
+    and the product of two non-negative numbers is non-negative.
+    """
+    result = multiply(a, b)
+    assert result >= 0, f"For a={a}, b={b}, result {result} should be non-negative"
+
+@given(a=st.integers(), b=st.integers(min_value=-1000, max_value=1000).filter(lambda x: x != 0))
+def test_multiply_unit_digit_invariance_for_zeros(a, b):
+    """
+    Property: If one of the numbers has a unit digit of 0, the result should be 0.
+    """
+    unit_a_is_zero = (abs(a) % 10 == 0)
+    unit_b_is_zero = (abs(b) % 10 == 0)
+    
+    result = multiply(a, b)
+    
+    if unit_a_is_zero or unit_b_is_zero:
+        assert result == 0, f"For a={a}, b={b}, if a unit digit is 0, result should be 0, but got {result}"
+    else:
+        # If neither unit digit is zero, the result should not be zero.
+        assert result != 0, f"For a={a}, b={b}, if no unit digit is 0, result should not be 0, but got {result}"
+
+@given(a=st.integers(), b=st.integers())
+def test_multiply_commutative(a, b):
+    """
+    Property: The function should be commutative, meaning multiply(a, b) == multiply(b, a).
+    The unit digits are extracted independently, so their order of multiplication shouldn't matter.
+    """
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, f"Commutativity failed for a={a}, b={b}: {result1} != {result2}"
+
+@given(
+    a=st.integers(), 
+    b=st.integers()
+)
+def test_multiply_identity_for_unit_digit_one(a, b):
+    """
+    Property: If the unit digit of one number is 1, the result should be the unit digit of the other number.
+    e.g., multiply(X1, Y) == abs(Y) % 10
+    """
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+
+    result = multiply(a, b)
+
+    if unit_a == 1:
+        assert result == unit_b, \
+            f"For a={a} (unit digit 1), b={b}, expected result to be {unit_b}, but got {result}"
+    if unit_b == 1:
+        assert result == unit_a, \
+            f"For a={a}, b={b} (unit digit 1), expected result to be {unit_a}, but got {result}"
+
+```

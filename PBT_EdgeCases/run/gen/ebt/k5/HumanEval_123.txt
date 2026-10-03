@@ -1,0 +1,54 @@
+```python
+# Basic Test Cases
+assert get_odd_collatz(1) == [1], "Test Case 1: n = 1, expected [1]"
+assert get_odd_collatz(2) == [1], "Test Case 2: n = 2, expected [1]"
+assert get_odd_collatz(3) == [1, 3], "Test Case 3: n = 3, expected [1, 3]"
+assert get_odd_collatz(5) == [1, 5], "Test Case 4: n = 5, expected [1, 5]"
+assert get_odd_collatz(7) == [1, 7], "Test Case 5: n = 7, expected [1, 7]"
+assert get_odd_collatz(6) == [1, 3], "Test Case 6: n = 6, expected [1, 3]"
+
+# Edge Test Cases
+assert get_odd_collatz(0) == [], "Test Case 7: n = 0, expected empty list (invalid input based on problem statement 'positive integer n')" # Although problem states positive integer, handling 0 might be an edge.
+assert get_odd_collatz(10) == [1, 5], "Test Case 8: n = 10, expected [1, 5]" # Sequence: 10, 5, 16, 8, 4, 2, 1
+assert get_odd_collatz(13) == [1, 5, 13], "Test Case 9: n = 13, expected [1, 5, 13]" # Sequence: 13, 40, 20, 10, 5, 16, 8, 4, 2, 1
+assert get_odd_collatz(15) == [1, 5, 15], "Test Case 10: n = 15, expected [1, 5, 15]" # Sequence: 15, 46, 23, 70, 35, 106, 53, 160, 80, 40, 20, 10, 5, 16, 8, 4, 2, 1 (Odd numbers: 15, 23, 35, 53, 5, 1) - wait, it should be [1, 5, 15, 23, 35, 53] sorted - Ah, I see, the example output for 5 is just [1, 5], meaning only the initial and final odd number that *are* odd. Let's re-evaluate based on the example.
+# Re-evaluating Test Case 10 based on example: "The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5."
+# This implies that we are looking for all *odd numbers that appear in the sequence*, not just the first and last.
+# Let's adjust Test Case 10 to reflect the actual logic based on the example for n=5
+assert get_odd_collatz(15) == [1, 5, 15, 23, 35, 53], "Test Case 10 (Revised): n = 15, expected all odd numbers in sequence sorted"
+assert get_odd_collatz(27) == [1, 27, 5, 107, 43, 85, 171, 341, 683, 1365, 2731, 5461, 10923], "Test Case 11: n = 27, known to have a long Collatz sequence with many odd numbers, expected sorted list of all odd numbers" # This is a famous case for Collatz.
+
+# Large Scale Test Cases
+# Note: For very large 'n', the Collatz sequence can be extremely long.
+# Python's recursion limit or simple iterative approach might hit performance limits.
+# These tests aim to check if the solution handles moderately large numbers.
+assert get_odd_collatz(100) == [1, 3, 5, 25], "Test Case 12: n = 100, expected [1, 3, 5, 25]" # Sequence: 100, 50, 25, 76, 38, 19, 58, 29, 88, 44, 22, 11, 34, 17, 52, 26, 13, 40, 20, 10, 5, 16, 8, 4, 2, 1 (Odd: 1, 3, 5, 11, 13, 17, 19, 25, 29) -> sorted [1, 3, 5, 11, 13, 17, 19, 25, 29]. Wait, the previous logic was for `get_odd_collatz(5) returns [1, 5]`. This means only *the starting number* and *1* if starting number is odd. This is confusing. Let's stick to the interpretation of "odd numbers in Collatz sequence" meaning *all* odd numbers encountered. My current `get_odd_collatz(100)` test is based on that.
+# Let's re-read "get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5."
+# This example is critical and indicates that the *only* odd numbers considered are the initial 'n' (if odd) and '1'.
+# My previous interpretation for 15 and 100 was wrong. Let's adjust all tests based on this strict interpretation.
+
+# Revised Test Cases based on precise interpretation of "odd numbers are only 1, and 5" for n=5
+
+# Basic Test Cases (Revised)
+assert get_odd_collatz(1) == [1], "Revised Test Case 1: n = 1, expected [1]"
+assert get_odd_collatz(2) == [1], "Revised Test Case 2: n = 2, expected [1]"
+assert get_odd_collatz(3) == [1, 3], "Revised Test Case 3: n = 3, expected [1, 3]"
+assert get_odd_collatz(5) == [1, 5], "Revised Test Case 4: n = 5, expected [1, 5]"
+assert get_odd_collatz(7) == [1, 7], "Revised Test Case 5: n = 7, expected [1, 7]"
+assert get_odd_collatz(6) == [1], "Revised Test Case 6: n = 6, expected [1] (6 is even, only 1 is odd)"
+
+# Edge Test Cases (Revised)
+# Assuming n must be positive based on "start with any positive integer n"
+assert get_odd_collatz(0) == [], "Revised Test Case 7: n = 0 (invalid input), expected empty list or error (empty list if graceful)"
+assert get_odd_collatz(10) == [1], "Revised Test Case 8: n = 10, expected [1] (10 is even)"
+assert get_odd_collatz(13) == [1, 13], "Revised Test Case 9: n = 13, expected [1, 13] (13 is odd)"
+assert get_odd_collatz(15) == [1, 15], "Revised Test Case 10: n = 15, expected [1, 15] (15 is odd)"
+assert get_odd_collatz(27) == [1, 27], "Revised Test Case 11: n = 27, expected [1, 27] (27 is odd)"
+
+# Large Scale Test Cases (Revised)
+# The interpretation drastically simplifies this, as we only check 'n' and '1'.
+assert get_odd_collatz(100) == [1], "Revised Test Case 12: n = 100, expected [1] (100 is even)"
+assert get_odd_collatz(999999999999999999) == [1, 999999999999999999], "Revised Test Case 13: Large odd n, expected [1, n]" # Checks handling of large integers
+assert get_odd_collatz(1000000000000000000) == [1], "Revised Test Case 14: Large even n, expected [1]" # Checks handling of large integers
+
+```

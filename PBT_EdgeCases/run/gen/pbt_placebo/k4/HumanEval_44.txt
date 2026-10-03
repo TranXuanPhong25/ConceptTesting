@@ -1,0 +1,44 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_correctness(x, base):
+    result = change_base(x, base)
+
+    # Property 1: The result should be a string
+    assert isinstance(result, str), "The result of change_base should always be a string."
+
+    # Property 2: Converting back to base 10 should yield the original number
+    # This checks the correctness of the conversion.
+    decimal_value = 0
+    power = 0
+    for digit in reversed(result):
+        # Ensure digits are valid for the given base
+        assert '0' <= digit <= str(base - 1), f"Digit '{digit}' is invalid for base {base}"
+        decimal_value += int(digit) * (base ** power)
+        power += 1
+    assert decimal_value == x, f"Converting back to base 10 did not yield original number. x={x}, base={base}, result='{result}', decimal_value={decimal_value}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_for_zero(x, base):
+    # Property 3: If x is 0, the result should always be '0' regardless of the base
+    if x == 0:
+        result = change_base(x, base)
+        assert result == '0', f"For x=0, the result should be '0', but got '{result}' for base {base}"
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_non_empty_for_positive_x(x, base):
+    # Property 4: For positive x, the result should not be an empty string
+    if x > 0:
+        result = change_base(x, base)
+        assert result != '', f"For positive x={x}, the result should not be empty for base {base}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_only_digits_in_base_range(x, base):
+    # Property 5: All characters in the result string must be valid digits for the given base.
+    result = change_base(x, base)
+    for char in result:
+        assert char.isdigit() and int(char) < base, \
+            f"Result '{result}' contains invalid character '{char}' for base {base} (x={x})"
+
+```

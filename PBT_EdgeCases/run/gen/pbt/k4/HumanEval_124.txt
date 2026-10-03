@@ -1,0 +1,241 @@
+```python
+from hypothesis import given, strategies as st
+from datetime import datetime
+
+# Helper function to generate valid month, day, year combinations
+@st.composite
+def valid_date_parts(draw):
+    month = draw(st.integers(min_value=1, max_value=12))
+    year = draw(st.integers(min_value=1, max_value=9999))
+
+    if month in [1, 3, 5, 7, 8, 10, 12]:
+        day = draw(st.integers(min_value=1, max_value=31))
+    elif month in [4, 6, 9, 11]:
+        day = draw(st.integers(min_value=1, max_value=30))
+    else:  # February
+        if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):  # Leap year
+            day = draw(st.integers(min_value=1, max_value=29))
+        else:
+            day = draw(st.integers(min_value=1, max_value=28))
+    
+    return f"{month:02d}-{day:02d}-{year:04d}"
+
+# Helper function to generate invalid date strings
+@st.composite
+def invalid_date_strings(draw):
+    strategy_choices = [
+        # Empty string
+        st.just(""),
+        # Incorrect format (e.g., / instead of -)
+        st.builds(lambda m, d, y: f"{m:02d}/{d:02d}/{y:04d}",
+                  st.integers(1, 12), st.integers(1, 28), st.integers(1, 9999)),
+        # Incorrect format (e.g., missing parts)
+        st.builds(lambda m, d: f"{m:02d}-{d:02d}",
+                  st.integers(1, 12), st.integers(1, 28)),
+        st.builds(lambda m, y: f"{m:02d}--{y:04d}",
+                  st.integers(1, 12), st.integers(1, 9999)),
+        # Invalid month
+        st.builds(lambda m, d, y: f"{m:02d}-{d:02d}-{y:04d}",
+                  st.integers(13, 99) | st.integers(-99, 0), st.integers(1, 28), st.integers(1, 9999)),
+        # Invalid day for month (too many days)
+        st.builds(lambda m, y: f"{m:02d}-32-{y:04d}",
+                  st.just(1), st.integers(1, 9999)),
+        st.builds(lambda m, y: f"{m:02d}-31-{y:04d}",
+                  st.just(4), st.integers(1, 9999)),
+        # Invalid day for February (non-leap year, 29th day)
+        st.builds(lambda y: f"02-29-{y:04d}",
+                  st.integers(min_value=1).filter(lambda yr: not ((yr % 4 == 0 and yr % 100 != 0) or (yr % 400 == 0)))),
+        # Invalid day for February (any year, 30th day)
+        st.builds(lambda y: f"02-30-{y:04d}", st.integers(1, 9999)),
+        # Invalid day (too few days)
+        st.builds(lambda m, y: f"{m:02d}-00-{y:04d}",
+                  st.integers(1, 12), st.integers(1, 9999)),
+        # Non-numeric characters
+        st.builds(lambda m, d, y: f"{m:02d}a{d:02d}-{y:04d}",
+                  st.integers(1, 12), st.integers(1, 28), st.integers(1, 9999)),
+        st.text(min_size=1, max_size=20, alphabet=st.characters(min_codepoint=1, max_codepoint=127).filter(lambda x: x not in '0123456789-')), # Completely random non-date string
+        st.builds(lambda s: s + " extra", valid_date_parts()) # Valid date with extra characters
+    ]
+    return draw(st.one_of(*strategy_choices))
+
+
+@given(valid_date_parts())
+def test_valid_date_returns_true_for_valid_inputs(date_str):
+    """
+    Property: For any syntactically and semantically valid date string, `valid_date` should return True.
+    This test uses a custom strategy to generate dates that are guaranteed to be valid according to the rules.
+    """
+    result = valid_date(date_str)
+    assert result is True, f"Expected True for valid date: {date_str}"
+
+@given(invalid_date_strings())
+def test_valid_date_returns_false_for_invalid_inputs(date_str):
+    """
+    Property: For any date string that violates the format or rules, `valid_date` should return False.
+    This test uses a custom strategy to generate dates that are guaranteed to be invalid.
+    """
+    result = valid_date(date_str)
+    assert result is False, f"Expected False for invalid date: {date_str}"
+
+@given(st.text(min_size=0, max_size=50))
+def test_valid_date_is_deterministic(date_str):
+    """
+    Property: The function should be deterministic; calling it multiple times with the same input should yield the same result.
+    """
+    result1 = valid_date(date_str)
+    result2 = valid_date(date_str)
+    assert result1 == result2, "Function should be deterministic"
+
+@given(st.integers(min_value=1, max_value=12),
+       st.integers(min_value=1, max_value=31),
+       st.integers(min_value=1, max_value=9999))
+def test_format_rule_enforcement(month, day, year):
+    """
+    Property: Dates not in 'mm-dd-yyyy' format should return False.
+    This test specifically checks for common format deviations like '/' or single-digit month/day without padding.
+    """
+    # Test with '/' instead of '-'
+    date_str_slash = f"{month:02d}/{day:02d}/{year:04d}"
+    assert valid_date(date_str_slash) is False, f"Expected False for format '{date_str_slash}'"
+
+    # Test with single digit month/day without padding
+    date_str_no_padding_month = f"{month}-{day:02d}-{year:04d}"
+    if month < 10: # Only if month is single digit, check unpadded version
+        assert valid_date(f"{month}-{day:02d}-{year:04d}") is False, \
+            f"Expected False for unpadded month '{month}-{day:02d}-{year:04d}'"
+    
+    date_str_no_padding_day = f"{month:02d}-{day}-{year:04d}"
+    if day < 10: # Only if day is single digit, check unpadded version
+        assert valid_date(f"{month:02d}-{day}-{year:04d}") is False, \
+            f"Expected False for unpadded day '{month:02d}-{day}-{year:04d}'"
+
+    # Test with incorrect year length
+    date_str_short_year = f"{month:02d}-{day:02d}-{year:03d}"
+    assert valid_date(date_str_short_year) is False, f"Expected False for short year '{date_str_short_year}'"
+    date_str_long_year = f"{month:02d}-{day:02d}-{year:05d}"
+    assert valid_date(date_str_long_year) is False, f"Expected False for long year '{date_str_long_year}'"
+
+@given(st.integers(min_value=1, max_value=12),
+       st.integers(min_value=1, max_value=31),
+       st.integers(min_value=1, max_value=9999))
+def test_empty_string_returns_false(month, day, year):
+    """
+    Property: An empty string should always return False.
+    """
+    assert valid_date('') is False, "Empty string should return False"
+
+@given(st.integers(min_value=1, max_value=12),
+       st.integers(min_value=1, max_value=31),
+       st.integers(min_value=1, max_value=9999),
+       st.text(min_size=1, max_size=10))
+def test_non_date_string_returns_false(month, day, year, random_text):
+    """
+    Property: Completely irrelevant strings should return False.
+    """
+    assert valid_date(random_text) is False, f"Random text '{random_text}' should return False"
+    
+    # Test with random characters mixed in
+    date_with_noise = f"{month:02d}-{random_text[0] if random_text else 'x'}-{day:02d}-{year:04d}"
+    assert valid_date(date_with_noise) is False, f"Date with noise '{date_with_noise}' should return False"
+
+
+@given(st.integers(min_value=1, max_value=12),
+       st.integers(min_value=1, max_value=31),
+       st.integers(min_value=1, max_value=9999))
+def test_month_and_day_range_enforcement(month, day, year):
+    """
+    Property: Months outside the 1-12 range should result in False. Days outside the valid range for a given month/year should result in False.
+    """
+    # Test invalid month (e.g., 00, 13)
+    invalid_month_low_str = f"00-{day:02d}-{year:04d}"
+    assert valid_date(invalid_month_low_str) is False, f"Expected False for month 00: {invalid_month_low_str}"
+
+    invalid_month_high_str = f"13-{day:02d}-{year:04d}"
+    assert valid_date(invalid_month_high_str) is False, f"Expected False for month 13: {invalid_month_high_str}"
+
+    # Test invalid day (e.g., 00, or too high for specific month)
+    invalid_day_low_str = f"{month:02d}-00-{year:04d}"
+    assert valid_date(invalid_day_low_str) is False, f"Expected False for day 00: {invalid_day_low_str}"
+
+    # Generate dates with too many days for their month
+    if month in [4, 6, 9, 11]: # Months with 30 days
+        date_str_31_day = f"{month:02d}-31-{year:04d}"
+        assert valid_date(date_str_31_day) is False, f"Expected False for 31 days in month {month}: {date_str_31_day}"
+    elif month == 2: # February
+        # Test 30th day in February
+        date_str_30_feb = f"02-30-{year:04d}"
+        assert valid_date(date_str_30_feb) is False, f"Expected False for Feb 30: {date_str_30_feb}"
+
+        # Test 29th day in non-leap year February
+        # Find a non-leap year
+        non_leap_year = year
+        while (non_leap_year % 4 == 0 and non_leap_year % 100 != 0) or (non_leap_year % 400 == 0):
+            non_leap_year += 1
+        date_str_29_feb_non_leap = f"02-29-{non_leap_year:04d}"
+        assert valid_date(date_str_29_feb_non_leap) is False, f"Expected False for Feb 29 in non-leap year {non_leap_year}: {date_str_29_feb_non_leap}"
+
+    
+# Assuming `valid_date` is defined elsewhere in the same scope or imported.
+# For the purpose of running tests, we'll include a dummy implementation.
+# In a real scenario, this would be the actual function under test.
+
+def valid_date(date):
+    """You have to write a function which validates a given date string and
+    returns True if the date is valid otherwise False.
+    The date is valid if all of the following rules are satisfied:
+    1. The date string is not empty.
+    2. The number of days is not less than 1 or higher than 31 days for months 1,3,5,7,8,10,12. And the number of days is not less than 1 or higher than 30 days for months 4,6,9,11. And, the number of days is not less than 1 or higher than 29 for the month 2.
+    3. The months should not be less than 1 or higher than 12.
+    4. The date should be in the format: mm-dd-yyyy
+
+    for example: 
+    valid_date('03-11-2000') => True
+
+    valid_date('15-01-2012') => False
+
+    valid_date('04-0-2040') => False
+
+    valid_date('06-04-2020') => True
+
+    valid_date('06/04/2020') => False
+    """
+    if not date:
+        return False
+
+    parts = date.split('-')
+    if len(parts) != 3:
+        return False
+
+    try:
+        month = int(parts[0])
+        day = int(parts[1])
+        year = int(parts[2])
+    except ValueError:
+        return False
+
+    if not (1 <= month <= 12):
+        return False
+
+    if not (1 <= day <= 31):
+        return False
+
+    if month in [1, 3, 5, 7, 8, 10, 12]:
+        if not (1 <= day <= 31):
+            return False
+    elif month in [4, 6, 9, 11]:
+        if not (1 <= day <= 30):
+            return False
+    elif month == 2:
+        if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+            if not (1 <= day <= 29):
+                return False
+        else:
+            if not (1 <= day <= 28):
+                return False
+    
+    # Check for leading zeros in month/day if they are single digits and the input is not '0X'
+    if len(parts[0]) != 2 or len(parts[1]) != 2 or len(parts[2]) != 4:
+         return False
+    
+    return True
+```

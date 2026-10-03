@@ -1,0 +1,344 @@
+{
+ "mode": "r1",
+ "arms": {
+  "ebt": {
+   "K_min_max": [
+    8,
+    8
+   ],
+   "files": 128,
+   "majority_detected": 9,
+   "any_of_K_detected": 14,
+   "mean_task_rate": 0.625,
+   "vendored_runner_majority": 16,
+   "vendored_runner_mean_rate": 0.945,
+   "raw_any_fail_mean_rate": 0.938,
+   "files_without_runnable_tests": 4,
+   "unit_validity": 0.869,
+   "files_repaired": 7,
+   "detecting_units_by_buggy_outcome": {
+    "fail": 233,
+    "timeout": 27
+   },
+   "files_using_@example": null
+  },
+  "pbt": {
+   "K_min_max": [
+    10,
+    10
+   ],
+   "files": 160,
+   "majority_detected": 7,
+   "any_of_K_detected": 14,
+   "mean_task_rate": 0.506,
+   "vendored_runner_majority": 12,
+   "vendored_runner_mean_rate": 0.812,
+   "raw_any_fail_mean_rate": 0.744,
+   "files_without_runnable_tests": 12,
+   "unit_validity": 0.81,
+   "files_repaired": 0,
+   "detecting_units_by_buggy_outcome": {
+    "fail": 141,
+    "timeout": 17
+   },
+   "files_using_@example": 0
+  },
+  "pbt_concept": {
+   "K_min_max": [
+    10,
+    10
+   ],
+   "files": 160,
+   "majority_detected": 10,
+   "any_of_K_detected": 14,
+   "mean_task_rate": 0.662,
+   "vendored_runner_majority": 16,
+   "vendored_runner_mean_rate": 0.988,
+   "raw_any_fail_mean_rate": 0.881,
+   "files_without_runnable_tests": 7,
+   "unit_validity": 0.843,
+   "files_repaired": 0,
+   "detecting_units_by_buggy_outcome": {
+    "fail": 210,
+    "timeout": 67
+   },
+   "files_using_@example": 55
+  },
+  "pbt_placebo": {
+   "K_min_max": [
+    10,
+    10
+   ],
+   "files": 160,
+   "majority_detected": 9,
+   "any_of_K_detected": 14,
+   "mean_task_rate": 0.581,
+   "vendored_runner_majority": 14,
+   "vendored_runner_mean_rate": 0.881,
+   "raw_any_fail_mean_rate": 0.781,
+   "files_without_runnable_tests": 14,
+   "unit_validity": 0.822,
+   "files_repaired": 0,
+   "detecting_units_by_buggy_outcome": {
+    "fail": 162,
+    "timeout": 31
+   },
+   "files_using_@example": 13
+  }
+ },
+ "tests": [
+  {
+   "a": "pbt_concept",
+   "b": "pbt_placebo",
+   "mean_rate_a": 0.662,
+   "mean_rate_b": 0.581,
+   "mean_diff": 0.081,
+   "boot95": [
+    -0.012,
+    0.181
+   ],
+   "majority_a": 10,
+   "majority_b": 9,
+   "mcnemar_b_c": [
+    1,
+    0
+   ],
+   "mcnemar_exact_p": 1.0,
+   "sign_pos_neg": [
+    6,
+    2
+   ],
+   "sign_p": 0.2891,
+   "perm_p": 0.1797
+  },
+  {
+   "a": "pbt_concept",
+   "b": "pbt",
+   "mean_rate_a": 0.662,
+   "mean_rate_b": 0.506,
+   "mean_diff": 0.156,
+   "boot95": [
+    0.037,
+    0.294
+   ],
+   "majority_a": 10,
+   "majority_b": 7,
+   "mcnemar_b_c": [
+    3,
+    0
+   ],
+   "mcnemar_exact_p": 0.25,
+   "sign_pos_neg": [
+    9,
+    3
+   ],
+   "sign_p": 0.146,
+   "perm_p": 0.0503
+  },
+  {
+   "a": "pbt_placebo",
+   "b": "pbt",
+   "mean_rate_a": 0.581,
+   "mean_rate_b": 0.506,
+   "mean_diff": 0.075,
+   "boot95": [
+    -0.05,
+    0.2
+   ],
+   "majority_a": 9,
+   "majority_b": 7,
+   "mcnemar_b_c": [
+    3,
+    1
+   ],
+   "mcnemar_exact_p": 0.625,
+   "sign_pos_neg": [
+    8,
+    5
+   ],
+   "sign_p": 0.5811,
+   "perm_p": 0.324
+  },
+  {
+   "a": "ebt",
+   "b": "pbt",
+   "mean_rate_a": 0.625,
+   "mean_rate_b": 0.506,
+   "mean_diff": 0.119,
+   "boot95": [
+    -0.077,
+    0.295
+   ],
+   "majority_a": 9,
+   "majority_b": 7,
+   "mcnemar_b_c": [
+    4,
+    2
+   ],
+   "mcnemar_exact_p": 0.6875,
+   "sign_pos_neg": [
+    11,
+    2
+   ],
+   "sign_p": 0.0225,
+   "perm_p": 0.2529
+  }
+ ],
+ "paper_vs_ours_pbt": {
+  "paper": [
+   22,
+   44,
+   55,
+   63,
+   64,
+   76,
+   95,
+   97,
+   122,
+   124,
+   132
+  ],
+  "ours_majority": [
+   22,
+   44,
+   63,
+   64,
+   97,
+   122,
+   124
+  ],
+  "agree_tasks": 12
+ },
+ "paper_vs_ours_ebt": {
+  "paper": [
+   22,
+   44,
+   63,
+   64,
+   76,
+   97,
+   122,
+   124,
+   132,
+   140,
+   150
+  ],
+  "ours_majority": [
+   22,
+   44,
+   49,
+   64,
+   95,
+   97,
+   124,
+   132,
+   150
+  ],
+  "agree_tasks": 10
+ },
+ "authors_claude_pbt": {
+  "filtered": [
+   22,
+   44,
+   55,
+   63,
+   64,
+   95,
+   97,
+   122,
+   124,
+   132
+  ],
+  "raw": [
+   22,
+   44,
+   55,
+   63,
+   64,
+   76,
+   95,
+   97,
+   122,
+   124,
+   132
+  ],
+  "paper": [
+   22,
+   44,
+   55,
+   63,
+   64,
+   76,
+   95,
+   97,
+   122,
+   124,
+   132
+  ],
+  "filtered_minus_paper": [
+   76
+  ]
+ },
+ "authors_claude_ebt": {
+  "filtered": [
+   22,
+   44,
+   63,
+   64,
+   97,
+   122,
+   124,
+   132,
+   140,
+   150
+  ],
+  "raw": [
+   22,
+   44,
+   63,
+   64,
+   76,
+   97,
+   122,
+   124,
+   132,
+   140,
+   150
+  ],
+  "paper": [
+   22,
+   44,
+   63,
+   64,
+   76,
+   97,
+   122,
+   124,
+   132,
+   140,
+   150
+  ],
+  "filtered_minus_paper": [
+   76
+  ]
+ }
+}
+
+per-task detection rate (filtered)  |  vendored-runner rate
+task          ebt          pbt  pbt_concept  pbt_placebo  |         ebt          pbt  pbt_concept  pbt_placebo  paper(P/E)
+22           0.88         0.60         1.00         0.80  |        1.00         1.00         1.00         1.00  PE
+44           1.00         1.00         1.00         0.90  |        1.00         1.00         1.00         1.00  PE
+49           1.00         0.40         0.90         0.90  |        1.00         0.50         1.00         0.90  --
+55           0.50         0.40         1.00         1.00  |        1.00         0.50         1.00         1.00  P-
+63           0.12         0.90         1.00         0.40  |        1.00         0.90         1.00         0.50  PE
+64           1.00         0.90         1.00         1.00  |        1.00         1.00         1.00         1.00  PE
+76           0.25         0.20         0.30         0.30  |        0.75         0.60         1.00         1.00  PE
+95           0.75         0.30         0.50         0.20  |        1.00         1.00         1.00         1.00  P-
+97           1.00         0.90         1.00         1.00  |        1.00         1.00         1.00         1.00  PE
+122          0.38         1.00         0.80         1.00  |        0.62         1.00         1.00         1.00  PE
+123          0.00         0.00         0.00         0.00  |        1.00         0.10         0.90         0.30  --
+124          1.00         0.80         0.80         0.70  |        1.00         1.00         1.00         1.00  PE
+127          0.00         0.00         0.00         0.00  |        1.00         1.00         1.00         0.70  --
+132          0.75         0.30         0.20         0.20  |        0.88         1.00         0.90         1.00  PE
+140          0.38         0.20         0.10         0.30  |        1.00         1.00         1.00         1.00  -E
+150          1.00         0.20         1.00         0.60  |        0.88         0.40         1.00         0.70  -E

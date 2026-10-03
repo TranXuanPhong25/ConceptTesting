@@ -1,0 +1,48 @@
+```python
+import math
+from hypothesis import given, strategies as st, example
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(math.sqrt(num)) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+@given(
+    n=st.integers(min_value=1, max_value=1000),
+    x=st.integers(),
+    y=st.integers()
+)
+@example(n=7, x=34, y=12)
+@example(n=15, x=8, y=5)
+@example(n=2, x=10, y=20)  # Edge case: smallest prime
+@example(n=4, x=10, y=20)  # Edge case: smallest non-prime
+@example(n=1, x=10, y=20)  # Edge case: 1 is not prime
+@example(n=997, x=100, y=200) # Large prime
+@example(n=999, x=100, y=200) # Large non-prime
+def test_x_or_y_property(n, x, y):
+    """
+    Test that the function returns x if n is prime, and y otherwise.
+    """
+    result = x_or_y(n, x, y)
+    
+    if is_prime(n):
+        assert result == x, f"For n={n} (prime), expected {x}, got {result}"
+    else:
+        assert result == y, f"For n={n} (not prime), expected {y}, got {result}"
+
+@given(
+    n=st.integers(min_value=1, max_value=1000),
+    x=st.integers(),
+    y=st.integers()
+)
+def test_x_or_y_determinism(n, x, y):
+    """
+    Test that the function is deterministic for the same inputs.
+    """
+    result1 = x_or_y(n, x, y)
+    result2 = x_or_y(n, x, y)
+    assert result1 == result2, "The function should be deterministic"
+```

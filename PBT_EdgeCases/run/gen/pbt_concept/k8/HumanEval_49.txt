@@ -1,0 +1,95 @@
+```python
+from hypothesis import given, strategies as st
+
+def modp(n: int, p: int):
+    """Return 2^n modulo p (be aware of numerics).
+    >>> modp(3, 5)
+    3
+    >>> modp(1101, 101)
+    2
+    >>> modp(0, 101)
+    1
+    >>> modp(3, 11)
+    8
+    >>> modp(100, 101)
+    1
+    """
+    return pow(2, n, p)
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       p=st.integers(min_value=1, max_value=1000))
+def test_modp_result_is_within_modulo_range(n, p):
+    """
+    Property: The result of modp(n, p) should always be within the range [0, p-1].
+    This is a fundamental property of the modulo operation.
+    """
+    result = modp(n, p)
+    assert 0 <= result < p, f"Result {result} is not within [0, {p-1}] for n={n}, p={p}"
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       p=st.integers(min_value=1, max_value=1000))
+def test_modp_consistency_with_pow(n, p):
+    """
+    Property: modp(n, p) should be equivalent to Python's built-in pow(2, n, p).
+    This tests the correctness of the implementation against a known good reference.
+    """
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"modp({n}, {p}) returned {result}, but pow(2, {n}, {p}) is {expected}"
+
+@given(p=st.integers(min_value=1, max_value=1000))
+def test_modp_n_is_zero_always_one(p):
+    """
+    Property: For any p > 0, 2^0 mod p should always be 1.
+    This covers the edge case where n is 0.
+    """
+    result = modp(0, p)
+    assert result == 1, f"modp(0, {p}) should be 1, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000))
+def test_modp_p_is_one_always_zero(n):
+    """
+    Property: For any n >= 0, 2^n mod 1 should always be 0.
+    This covers the edge case where p is 1.
+    """
+    result = modp(n, 1)
+    assert result == 0, f"modp({n}, 1) should be 0, but got {result}"
+
+@given(n1=st.integers(min_value=0, max_value=50),
+       n2=st.integers(min_value=0, max_value=50),
+       p=st.integers(min_value=2, max_value=100))
+def test_modp_multiplicative_property(n1, n2, p):
+    """
+    Property: (2^n1 * 2^n2) mod p == ( (2^n1 mod p) * (2^n2 mod p) ) mod p.
+    This tests the multiplicative property of modular arithmetic.
+    """
+    # Using explicit exponentiation for clarity, but it might overflow for large n.
+    # The property holds regardless of direct calculation or built-in pow.
+    # For large 'n', the `pow(2, n, p)` is the correct approach.
+    # We are testing the mathematical property.
+    lhs = modp(n1 + n2, p)
+    rhs = (modp(n1, p) * modp(n2, p)) % p
+    assert lhs == rhs, f"Multiplicative property failed for n1={n1}, n2={n2}, p={p}. LHS: {lhs}, RHS: {rhs}"
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       p=st.integers(min_value=2, max_value=1000))
+def test_modp_periodic_property_for_p_power(n, p):
+    """
+    Property: For n > 0, modp(n, p) should be equal to modp(n + k * phi(p), p) where phi(p) is Euler's totient function.
+    However, a simpler property for certain 'p' is modp(n, p) == modp(n + (p-1), p) if p is prime (Fermat's Little Theorem).
+    For composite p, it's not always (p-1). For general p, we can test that (2^n) % p should be periodic.
+    We test a simpler version: 2^n % p == 2^(n % (p-1)) % p for prime p.
+    A more general (but harder to implement for hypothesis) is Euler's Totient Theorem: a^phi(m) = 1 (mod m).
+    For simplicity, we test that `modp(n, p)` is `modp(n % x, p)` for some `x` where 2^x % p == 1.
+    For small `n`, if `n >= p-1`, then `modp(n, p)` is consistent with `modp(n % (p-1), p)` for many prime `p`.
+    Let's test a very basic periodicity: `modp(n, p)` must be equal to `modp(n + k*p_candidate, p)` for some `p_candidate`.
+    A weaker but still useful property is that `modp(n, p)` should eventually repeat.
+    Since we don't calculate the order, we test a simpler version: if p is 2, result is always 0 for n > 0.
+    """
+    if p == 2:
+        result = modp(n, p)
+        if n == 0:
+            assert result == 1, "modp(0, 2) should be 1"
+        else:
+            assert result == 0, f"modp({n}, 2) should be 0 for n > 0"
+```

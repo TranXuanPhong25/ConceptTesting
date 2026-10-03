@@ -1,0 +1,86 @@
+```python
+from hypothesis import given, strategies as st
+
+def fib(n: int):
+    """Return n-th Fibonacci number.
+    >>> fib(10)
+    55
+    >>> fib(1)
+    1
+    >>> fib(8)
+    21
+    """
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        a, b = 0, 1
+        for _ in range(2, n + 1):
+            a, b = b, a + b
+        return b
+
+@given(st.integers(min_value=0, max_value=90)) # Max value limited due to potential for large numbers
+@example(n=0)
+@example(n=1)
+@example(n=2)
+@example(n=10)
+@example(n=8)
+def test_fib_non_negativity(n):
+    """
+    Property: Fibonacci numbers should always be non-negative for non-negative inputs.
+    """
+    result = fib(n)
+    assert result >= 0, f"Fibonacci number for n={n} should be non-negative, but got {result}"
+
+@given(st.integers(min_value=2, max_value=90))
+@example(n=2)
+@example(n=3)
+@example(n=10)
+def test_fib_recursive_property(n):
+    """
+    Property: fib(n) should be equal to fib(n-1) + fib(n-2) for n >= 2.
+    """
+    result = fib(n)
+    assert result == fib(n - 1) + fib(n - 2), \
+        f"fib({n}) should be fib({n-1}) + fib({n-2}), but {result} != {fib(n-1)} + {fib(n-2)}"
+
+@given(st.integers(min_value=1, max_value=90))
+@example(n=1)
+@example(n=2)
+@example(n=3)
+def test_fib_growth_property(n):
+    """
+    Property: For n >= 1, fib(n) should be greater than or equal to fib(n-1).
+    """
+    result_n = fib(n)
+    if n > 0:
+        result_n_minus_1 = fib(n - 1)
+        assert result_n >= result_n_minus_1, \
+            f"fib({n}) ({result_n}) should be greater than or equal to fib({n-1}) ({result_n_minus_1})"
+
+@given(st.integers(min_value=0, max_value=1))
+@example(n=0)
+@example(n=1)
+def test_fib_base_cases(n):
+    """
+    Property: Check the base cases fib(0) = 0 and fib(1) = 1.
+    """
+    result = fib(n)
+    if n == 0:
+        assert result == 0, f"fib(0) should be 0, but got {result}"
+    else: # n == 1
+        assert result == 1, f"fib(1) should be 1, but got {result}"
+
+@given(st.integers(min_value=0, max_value=75)) # Limiting for a different property that relates to powers of two
+def test_fib_parity_pattern(n):
+    """
+    Property: The parity of Fibonacci numbers follows a pattern: Even, Odd, Odd, Even, Odd, Odd...
+    Specifically, fib(n) is even if n is a multiple of 3.
+    """
+    result = fib(n)
+    if n % 3 == 0:
+        assert result % 2 == 0, f"fib({n}) should be even, but got {result}"
+    else:
+        assert result % 2 != 0, f"fib({n}) should be odd, but got {result}"
+```

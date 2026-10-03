@@ -1,0 +1,138 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(x=st.integers(min_value=1, max_value=10**6), 
+       n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_true_cases(x, n):
+    # Property: If x is a simple power of n, then the function should return True.
+    # We construct x such that it is guaranteed to be a simple power of n.
+    
+    # Generate a random exponent
+    exponent = st.integers(min_value=0, max_value=10).example()
+    
+    # Calculate x as n raised to the power of exponent
+    x_power = n**exponent
+    
+    result = is_simple_power(x_power, n)
+    assert result is True, f"Expected {x_power} to be a simple power of {n} (exponent {exponent}), but got False"
+
+@given(x=st.integers(min_value=1, max_value=10**6), 
+       n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_false_cases(x, n):
+    # Property: If x is not a simple power of n, then the function should return False.
+    # We specifically avoid cases where x is a power of n.
+    
+    # Ensure n is not 1, as 1^any_int is always 1.
+    st_n = st.integers(min_value=2, max_value=10**6)
+
+    # Generate x and n such that x is unlikely to be an integer power of n
+    # One way to do this is to ensure that log_n(x) is not an integer.
+    # We can also generate x directly and then verify if it's a power of n.
+    
+    if n <= 1: # Handle edge cases for n where the definition might be tricky
+        result = is_simple_power(x, n)
+        assert result is False, f"Expected {x} to not be a simple power of {n} when n <= 1"
+        return
+
+    # Check if x is indeed a power of n
+    is_power = False
+    if x == 1: # 1 is n^0 for any n (except n=0)
+        is_power = True
+    elif x > 0:
+        temp_x = x
+        while temp_x > 1 and temp_x % n == 0:
+            temp_x //= n
+        if temp_x == 1:
+            is_power = True
+
+    if not is_power:
+        result = is_simple_power(x, n)
+        assert result is False, f"Expected {x} not to be a simple power of {n}, but got True"
+
+@given(x=st.integers(min_value=1, max_value=10**6), 
+       exponent=st.integers(min_value=0, max_value=10))
+def test_is_simple_power_generated_true_cases(x, exponent):
+    # Property: For any n >= 2, n^exponent should be a simple power of n.
+    n_val = st.integers(min_value=2, max_value=100).example() # Keep n smaller to avoid overflow for x
+    x_val = n_val**exponent
+
+    result = is_simple_power(x_val, n_val)
+    assert result is True, f"Expected {x_val} (which is {n_val}^{exponent}) to be a simple power of {n_val}"
+
+@given(x=st.integers(min_value=1, max_value=10**6), n=st.just(1))
+def test_is_simple_power_n_is_one(x, n):
+    # Property: If n is 1, only x=1 should be considered a simple power (1^0 = 1).
+    result = is_simple_power(x, n)
+    if x == 1:
+        assert result is True, f"Expected {x} to be a simple power of {n}, but got False"
+    else:
+        assert result is False, f"Expected {x} not to be a simple power of {n}, but got True"
+
+@given(x=st.just(1), n=st.integers(min_value=0, max_value=10**6))
+def test_is_simple_power_x_is_one(x, n):
+    # Property: If x is 1, it should be a simple power of any n >= 1 (n^0 = 1).
+    # If n=0, 0^0 is usually undefined or 1, but based on problem context, n >= 1 is implied for base.
+    result = is_simple_power(x, n)
+    if n >= 1:
+        assert result is True, f"Expected {x} to be a simple power of {n}, but got False"
+    else: # n is 0, 0^k where k > 0 is 0. 0^0 is ambiguous, but for this problem context, usually false.
+        assert result is False, f"Expected {x} not to be a simple power of {n}, but got True for n=0"
+
+@given(x=st.integers(min_value=0, max_value=10**6), n=st.just(0))
+def test_is_simple_power_n_is_zero(x, n):
+    # Property: If n is 0, only x=0 (0^positive_int) or x=1 (0^0, if defined as 1) could potentially be.
+    # In context of this problem, 0^positive_int = 0.
+    result = is_simple_power(x, n)
+    if x == 0:
+        assert result is True, f"Expected {x} to be a simple power of {n}, but got False"
+    elif x == 1: # 0^0 is often considered 1, but often excluded in simple power definitions.
+        assert result is True, f"Expected {x} to be a simple power of {n} (as 0^0), but got False"
+    else:
+        assert result is False, f"Expected {x} not to be a simple power of {n}, but got True"
+
+@given(x=st.integers(min_value=2, max_value=1000), 
+       n=st.integers(min_value=2, max_value=1000))
+def test_is_simple_power_logarithm_property(x, n):
+    # Property: If is_simple_power(x, n) is True, then log_n(x) must be an integer.
+    # Conversely, if log_n(x) is an integer, then is_simple_power(x, n) should be True.
+    # This also acts as an alternative implementation check.
+
+    import math
+
+    if x <= 0 or n <= 1: # Constraints for log base n of x
+        # The function handles these cases separately or implicitly returns False
+        # as the definition n**int=x implies n >= 1.
+        # We've covered n=0 and n=1 in separate tests.
+        # If x=0, and n>=1, then only 0^k=0 for k>=1, so x must be 0.
+        # If x > 0 and n=0, then it's only 0^0=1
+        if n == 0:
+            if x == 0:
+                assert is_simple_power(x,n) is True
+            elif x == 1:
+                assert is_simple_power(x,n) is True
+            else:
+                assert is_simple_power(x,n) is False
+        elif n == 1:
+            if x == 1:
+                assert is_simple_power(x,n) is True
+            else:
+                assert is_simple_power(x,n) is False
+        elif x == 0: # n > 1
+             assert is_simple_power(x,n) is False
+        return
+
+    result = is_simple_power(x, n)
+
+    try:
+        log_val = math.log(x, n)
+        # Check if log_val is very close to an integer
+        is_integer_log = abs(log_val - round(log_val)) < 1e-9 # Tolerance for float precision
+        
+        if is_integer_log:
+            assert result is True, f"Expected {x} to be a simple power of {n} because log({x}, {n}) is {log_val}, but got False"
+        else:
+            assert result is False, f"Expected {x} not to be a simple power of {n} because log({x}, {n}) is {log_val}, but got True"
+    except ValueError: # math.log(x, n) might raise ValueError if x <= 0 or n <= 0 or n=1
+        # These cases should have been handled by earlier checks or implicitly by the function
+        assert result is False, f"Expected False for x={x}, n={n} (logarithm error)"
+```

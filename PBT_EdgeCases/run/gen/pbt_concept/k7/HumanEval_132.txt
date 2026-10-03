@@ -1,0 +1,72 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_1(string):
+    """
+    Test the fundamental property of nesting: if a string contains '[[', it should be considered nested.
+    This property holds true even if the brackets are not perfectly balanced overall.
+    """
+    result = is_nested(string)
+    if '[[' in string:
+        assert result is True, f"Expected True for string with '[[': {string}"
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_2(string):
+    """
+    Test that if there is a '][' pattern, it doesn't automatically imply nesting.
+    A simple '[]' or '][', without '[[', should not be considered nested.
+    """
+    result = is_nested(string)
+    if ']]' not in string and '[[' not in string and result:
+        # If result is True, but there's no '[[' or ']]', it must be ']['
+        # This covers cases like '[]' or '[[', ']]'
+        assert False, f"Expected False for string without '[[', but got True: {string}"
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_3(string):
+    """
+    Test that if the string has no ']' before a '[' after it, it is not nested.
+    Essentially, for a valid subsequence with nesting, there must be at least one pair of '[]'
+    that encloses another '[]' (or part of it).
+    A simplified property is that if there's no '[[', it must be false.
+    """
+    result = is_nested(string)
+    if '[[' not in string and result:
+        assert False, f"String '{string}' without '[[' should return False, but returned True."
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_4(string):
+    """
+    A string with only '[]' repeated should not be considered nested,
+    as no bracket encloses another.
+    """
+    if all(string[i:i+2] == '[]' for i in range(0, len(string), 2)) and len(string) % 2 == 0:
+        assert is_nested(string) is False, f"Expected False for non-nested repeating '[]': {string}"
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_5(string):
+    """
+    Test that if a string only contains opening brackets '[' or closing brackets ']', it cannot be nested.
+    """
+    if all(char == '[' for char in string) or all(char == ']' for char in string):
+        assert is_nested(string) is False, f"Expected False for string with only one type of bracket: {string}"
+
+@given(st.lists(st.text(alphabet='[]', min_size=0, max_size=5), max_size=10))
+def test_is_nested_concatenated_property(parts):
+    """
+    If any individual part is nested, then the concatenated string should also be nested.
+    This property implies that nesting is "propagated" through concatenation.
+    """
+    string = "".join(parts)
+    # Check if any part is individually nested
+    any_part_nested = any(is_nested(part) for part in parts)
+
+    # If any part contains '[[', the entire string should be nested
+    if '[[' in string:
+        assert is_nested(string) is True, f"Expected True for '{string}' due to '[[', but got False."
+    # If the whole string is nested, but no part was, then the nesting must span across parts
+    elif any_part_nested:
+        assert is_nested(string) is True, f"Expected True for '{string}' because a sub-part was nested."
+
+```

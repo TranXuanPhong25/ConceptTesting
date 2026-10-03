@@ -1,0 +1,57 @@
+```python
+
+# Basic Test Cases
+# Test with all keys in lowercase
+assert check_dict_case({"a": "apple", "b": "banana"}) == True, "Basic Test Case 1: All lowercase"
+# Test with all keys in uppercase
+assert check_dict_case({"STATE": "NC", "ZIP": "12345"}) == True, "Basic Test Case 2: All uppercase"
+# Test with mixed case keys (should be False)
+assert check_dict_case({"Name": "John", "Age": "36", "City": "Houston"}) == False, "Basic Test Case 3: Mixed case"
+# Test with a single lowercase key
+assert check_dict_case({"key": "value"}) == True, "Basic Test Case 4: Single lowercase key"
+# Test with a single uppercase key
+assert check_dict_case({"KEY": "value"}) == True, "Basic Test Case 5: Single uppercase key"
+
+# Edge Test Cases
+# Test with an empty dictionary
+assert check_dict_case({}) == False, "Edge Test Case 1: Empty dictionary"
+# Test with keys that are not strings (should be False)
+assert check_dict_case({"a": "apple", 8: "banana", "c": "carrot"}) == False, "Edge Test Case 2: Non-string keys"
+# Test with keys that are not strings and mixed case
+assert check_dict_case({"A": "apple", 123: "banana"}) == False, "Edge Test Case 3: Non-string and mixed case"
+# Test with keys that are a mix of lowercase and uppercase (explicitly False)
+assert check_dict_case({"a": "apple", "A": "banana"}) == False, "Edge Test Case 4: Mixed lowercase and uppercase keys"
+# Test with keys that are numbers represented as strings (should pass if all are lowercase or uppercase numbers)
+assert check_dict_case({"1": "one", "2": "two"}) == True, "Edge Test Case 5: Numeric string keys (lowercase)"
+assert check_dict_case({"ONE": "1", "TWO": "2"}) == True, "Edge Test Case 6: Numeric string keys (uppercase)"
+assert check_dict_case({"one": "1", "TWO": "2"}) == False, "Edge Test Case 7: Mixed numeric string keys"
+# Test with keys containing spaces (should be considered as part of the case)
+assert check_dict_case({"my key": "value"}) == True, "Edge Test Case 8: Key with space (lowercase)"
+assert check_dict_case({"MY KEY": "value"}) == True, "Edge Test Case 9: Key with space (uppercase)"
+assert check_dict_case({"My Key": "value"}) == False, "Edge Test Case 10: Key with space (mixed case)"
+# Test with keys containing special characters (case should still apply)
+assert check_dict_case({"@test": "value"}) == True, "Edge Test Case 11: Key with special char (lowercase)"
+assert check_dict_case({"@TEST": "value"}) == True, "Edge Test Case 12: Key with special char (uppercase)"
+assert check_dict_case({"@Test": "value"}) == False, "Edge Test Case 13: Key with special char (mixed case)"
+
+# Large Scale Test Cases
+# Test with a large number of lowercase keys
+large_lowercase_dict = {f"key{i}": i for i in range(1000)}
+assert check_dict_case(large_lowercase_dict) == True, "Large Scale Test Case 1: 1000 lowercase keys"
+# Test with a large number of uppercase keys
+large_uppercase_dict = {f"KEY{i}": i for i in range(1000)}
+assert check_dict_case(large_uppercase_dict) == True, "Large Scale Test Case 2: 1000 uppercase keys"
+# Test with a large number of mixed case keys (should be False)
+large_mixed_dict = {f"key{i}" if i % 2 == 0 else f"KEY{i}": i for i in range(1000)}
+assert check_dict_case(large_mixed_dict) == False, "Large Scale Test Case 3: 1000 mixed case keys"
+# Test with a very large number of lowercase keys
+very_large_lowercase_dict = {f"key{i}": i for i in range(10000)}
+assert check_dict_case(very_large_lowercase_dict) == True, "Large Scale Test Case 4: 10000 lowercase keys"
+# Test with a very large number of uppercase keys
+very_large_uppercase_dict = {f"KEY{i}": i for i in range(10000)}
+assert check_dict_case(very_large_uppercase_dict) == True, "Large Scale Test Case 5: 10000 uppercase keys"
+# Test with a very large number of mixed case keys (should be False)
+very_large_mixed_dict = {f"key{i}" if i % 2 == 0 else f"KEY{i}": i for i in range(10000)}
+assert check_dict_case(very_large_mixed_dict) == False, "Large Scale Test Case 6: 10000 mixed case keys"
+
+```

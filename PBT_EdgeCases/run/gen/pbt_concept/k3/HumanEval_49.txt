@@ -1,0 +1,74 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def modp(n: int, p: int):
+    """Return 2^n modulo p (be aware of numerics).
+    >>> modp(3, 5)
+    3
+    >>> modp(1101, 101)
+    2
+    >>> modp(0, 101)
+    1
+    >>> modp(3, 11)
+    8
+    >>> modp(100, 101)
+    1
+    """
+    return pow(2, n, p)
+
+@given(n=st.integers(min_value=0, max_value=1000000), p=st.integers(min_value=1, max_value=1000000))
+@example(n=0, p=1)
+@example(n=1, p=2)
+@example(n=10000, p=10000)
+def test_modp_result_is_within_modulo_range(n, p):
+    result = modp(n, p)
+    assert 0 <= result < p, "The result of modulo operation must be in the range [0, p-1]"
+
+@given(n=st.integers(min_value=0, max_value=100), p=st.integers(min_value=1, max_value=100))
+def test_modp_with_known_pow_function(n, p):
+    # For small n, we can compare with Python's built-in pow function for consistency
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"For n={n}, p={p}, modp({n},{p}) should be {expected}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=100000), p=st.integers(min_value=1, max_value=100000))
+def test_modp_zero_exponent(n, p):
+    # Property: 2^0 mod p should always be 1, for any p > 0
+    result = modp(0, p)
+    assert result == 1, "2^0 mod p should always be 1"
+
+@given(n=st.integers(min_value=1, max_value=10000), p=st.integers(min_value=2, max_value=10000))
+def test_modp_periodicity(n, p):
+    # Property: (2^n * 2^m) mod p == ( (2^n mod p) * (2^m mod p) ) mod p
+    # We can test (2^n * 2^1) mod p == ( (2^n mod p) * (2^1 mod p) ) mod p
+    # Or, a simpler version: 2^(n+1) mod p should be equivalent to (2^n mod p * 2) mod p
+    # This might fail for very large n due to internal implementation details of pow, but
+    # for typical integer sizes, it should hold.
+    if n + 1 < 1000000: # Limit n+1 to avoid excessively large powers
+        result_n_plus_1 = modp(n + 1, p)
+        result_n_times_2 = (modp(n, p) * 2) % p
+        assert result_n_plus_1 == result_n_times_2, \
+            f"Modp periodicity broken: modp({n+1},{p})={result_n_plus_1}, but (modp({n},{p}) * 2) % {p} = {result_n_times_2}"
+
+@given(n=st.integers(min_value=0, max_value=100000), p=st.integers(min_value=1, max_value=100000))
+def test_modp_commutative_property_of_modulo_base(n, p):
+    # This property refers to (a * b) % m == ((a % m) * (b % m)) % m.
+    # While not directly applicable to 2^n, we can test that for n >= 1,
+    # modp(n, p) is the same as modp(n - 1, p) * 2 % p.
+    # This is a variant of the periodicity property.
+    if n > 0:
+        result_n = modp(n, p)
+        result_prev_times_2 = (modp(n - 1, p) * 2) % p
+        assert result_n == result_prev_times_2, \
+            "modp(n,p) should be equivalent to (modp(n-1,p) * 2) % p"
+    else: # n == 0
+        assert modp(0, p) == 1, "2^0 mod p should be 1"
+
+@given(n=st.integers(min_value=0, max_value=100), p=st.just(1))
+def test_modp_modulo_one(n, p):
+    # Property: Any number modulo 1 is always 0
+    result = modp(n, 1)
+    assert result == 0, "Any number mod 1 should be 0"
+
+```

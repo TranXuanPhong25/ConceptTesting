@@ -1,0 +1,53 @@
+```python
+
+# Basic Test Cases
+assert fix_spaces("Example") == "Example", "Basic Test Case 1: No spaces"
+assert fix_spaces("Example 1") == "Example_1", "Basic Test Case 2: Single space"
+assert fix_spaces(" Example 2") == "_Example_2", "Basic Test Case 3: Leading single space"
+assert fix_spaces("Example 3 ") == "Example_3_", "Basic Test Case 4: Trailing single space"
+assert fix_spaces("Example   3") == "Example-3", "Basic Test Case 5: Three consecutive spaces in middle"
+assert fix_spaces("   Example 4") == "-Example_4", "Basic Test Case 6: Three consecutive leading spaces"
+assert fix_spaces("Example 5   ") == "Example_5-", "Basic Test Case 7: Three consecutive trailing spaces"
+assert fix_spaces("One Two Three") == "One_Two_Three", "Basic Test Case 8: Multiple single spaces"
+assert fix_spaces("One  Two   Three") == "One_Two-Three", "Basic Test Case 9: Mix of single and multiple spaces"
+assert fix_spaces("Two  Spaces") == "Two_Spaces", "Basic Test Case 10: Two consecutive spaces" # Should be treated as single spaces for replacement, then check consecutive
+
+# Edge Test Cases
+assert fix_spaces("") == "", "Edge Test Case 1: Empty string"
+assert fix_spaces(" ") == "_", "Edge Test Case 2: Single space string"
+assert fix_spaces("  ") == "__", "Edge Test Case 3: Two spaces string"
+assert fix_spaces("   ") == "-", "Edge Test Case 4: Three spaces string"
+assert fix_spaces("    ") == "-", "Edge Test Case 5: Four spaces string (more than 2 consecutive)"
+assert fix_spaces("a") == "a", "Edge Test Case 6: Single character string, no space"
+assert fix_spaces(" a") == "_a", "Edge Test Case 7: Single character with leading space"
+assert fix_spaces("a ") == "a_", "Edge Test Case 8: Single character with trailing space"
+assert fix_spaces("  a  ") == "__a__", "Edge Test Case 9: Two leading and two trailing spaces"
+assert fix_spaces("   a   ") == "-a-", "Edge Test Case 10: Three leading and three trailing spaces"
+assert fix_spaces("a b c d e f g") == "a_b_c_d_e_f_g", "Edge Test Case 11: Many single spaces"
+assert fix_spaces("a   b   c") == "a-b-c", "Edge Test Case 12: Many groups of three spaces"
+assert fix_spaces(" a b c ") == "_a_b_c_", "Edge Test Case 13: Leading/trailing and internal single spaces"
+assert fix_spaces("   a   b   c   ") == "-a-b-c-", "Edge Test Case 14: Leading/trailing and internal three spaces"
+assert fix_spaces("  ") == "__", "Edge Test Case 15: Exactly two spaces should be underscores"
+
+# Large Scale Test Cases
+long_string_single_spaces = "a " * 1000 + "a"
+assert fix_spaces(long_string_single_spaces) == ("a_" * 1000 + "a"), "Large Scale Test Case 1: Long string with single spaces"
+
+long_string_three_spaces = "a   " * 500 + "a"
+assert fix_spaces(long_string_three_spaces) == ("a-" * 500 + "a"), "Large Scale Test Case 2: Long string with three consecutive spaces"
+
+long_string_mixed_spaces = "a " + "b  " + "c   " + "d"
+expected_mixed = "a_b__c-d" # This is a tricky one. "b  " should be "b__", not "b-".
+assert fix_spaces(long_string_mixed_spaces * 100) == (expected_mixed * 100), "Large Scale Test Case 3: Long string with mixed spaces"
+
+long_string_no_spaces = "abcdefghijklmnopqrstuvwxyz" * 1000
+assert fix_spaces(long_string_no_spaces) == long_string_no_spaces, "Large Scale Test Case 4: Long string with no spaces"
+
+long_string_all_spaces = " " * 5000
+# For a string of 5000 spaces, it should be a single '-' because 5000 > 2.
+assert fix_spaces(long_string_all_spaces) == "-", "Large Scale Test Case 5: Very long string of only spaces"
+
+long_string_two_spaces_consecutive = "a  b  c  " * 100 + "a"
+assert fix_spaces(long_string_two_spaces_consecutive) == ("a__b__c__" * 100 + "a"), "Large Scale Test Case 6: Long string with exactly two consecutive spaces"
+
+```

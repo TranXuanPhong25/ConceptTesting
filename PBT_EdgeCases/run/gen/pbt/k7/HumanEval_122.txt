@@ -1,0 +1,118 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    arr=st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    k=st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_sum_property(arr, k):
+    # Ensure k is within valid bounds based on the generated array length
+    if k > len(arr):
+        k = len(arr)
+
+    result = add_elements(arr, k)
+
+    # Property 1: The sum should only include elements from the first k elements.
+    # Property 2: The sum should only include elements with at most two digits.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"The sum should be {expected_sum} for arr={arr[:k]} and k={k}"
+
+@given(
+    arr=st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    k=st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_empty_k_list_property(arr, k):
+    # Ensure k is within valid bounds based on the generated array length
+    if k > len(arr):
+        k = len(arr)
+
+    # Property: If the first k elements contain no numbers with at most two digits, the sum should be 0.
+    all_large_numbers = True
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            all_large_numbers = False
+            break
+
+    if all_large_numbers:
+        result = add_elements(arr, k)
+        assert result == 0, "If no elements with at most two digits are found, the sum should be 0."
+
+@given(
+    arr=st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    k=st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_small_numbers_property(arr, k):
+    # Ensure k is within valid bounds based on the generated array length
+    if k > len(arr):
+        k = len(arr)
+
+    result = add_elements(arr, k)
+
+    # Property: If all elements in the first k are within the two-digit range,
+    # the sum should be the sum of those first k elements.
+    expected_sum = sum(arr[:min(k, len(arr))])
+    assert result == expected_sum, "If all elements are small, the sum should be the sum of the first k elements."
+
+@given(
+    arr=st.lists(st.integers(min_value=100, max_value=10000), min_size=1, max_size=100),
+    k=st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_large_positive_numbers_property(arr, k):
+    # Ensure k is within valid bounds based on the generated array length
+    if k > len(arr):
+        k = len(arr)
+
+    result = add_elements(arr, k)
+    # Property: If all elements in the first k are positive and have more than two digits, the sum should be 0.
+    assert result == 0, "If all first k elements are large positive, the sum should be 0."
+
+@given(
+    arr=st.lists(st.integers(min_value=-10000, max_value=-100), min_size=1, max_size=100),
+    k=st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_large_negative_numbers_property(arr, k):
+    # Ensure k is within valid bounds based on the generated array length
+    if k > len(arr):
+        k = len(arr)
+
+    result = add_elements(arr, k)
+    # Property: If all elements in the first k are negative and have more than two digits, the sum should be 0.
+    assert result == 0, "If all first k elements are large negative, the sum should be 0."
+
+@given(
+    arr=st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=1),
+    k=st.just(1)
+)
+def test_add_elements_single_element_array(arr, k):
+    result = add_elements(arr, k)
+    # Property: For a single-element array where the element is a two-digit number, the result should be that element.
+    assert result == arr[0], "For a single-element two-digit array, the result should be the element itself."
+
+@given(
+    arr=st.lists(st.integers(min_value=100, max_value=10000), min_size=1, max_size=1),
+    k=st.just(1)
+)
+def test_add_elements_single_large_element_array(arr, k):
+    result = add_elements(arr, k)
+    # Property: For a single-element array where the element is a multi-digit number, the result should be 0.
+    assert result == 0, "For a single-element multi-digit array, the result should be 0."
+
+@given(
+    arr=st.lists(st.integers(min_value=-10000, max_value=10000), min_size=100, max_size=100),
+    k=st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_max_size_array_property(arr, k):
+    result = add_elements(arr, k)
+    
+    expected_sum = 0
+    for i in range(k):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+            
+    assert result == expected_sum, f"Should correctly sum for a max-size array with k={k}"
+
+```

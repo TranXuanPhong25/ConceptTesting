@@ -1,0 +1,73 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=90)) # Max value limited to avoid overflow with standard integers
+def test_fib_positive_input(n):
+    result = fib(n)
+
+    # Property 1: Fibonacci numbers are non-negative for positive input
+    assert result >= 0, "Fibonacci numbers for positive n should be non-negative"
+
+    # Property 2: fib(1) should be 1
+    if n == 1:
+        assert result == 1, "fib(1) should be 1"
+    # Property 3: fib(2) should be 1
+    elif n == 2:
+        assert result == 1, "fib(2) should be 1"
+    # Property 4: For n > 2, fib(n) should be the sum of fib(n-1) and fib(n-2)
+    elif n > 2:
+        # We need to compute fib(n-1) and fib(n-2) to verify this property
+        # This can be done by calling fib recursively or using a pre-calculated list
+        # For simplicity and to avoid re-implementing fib here, let's assume
+        # a known property of Fibonacci sequence for increasing values
+        # For small n, we can check known values
+        if n == 3:
+            assert result == 2, "fib(3) should be 2"
+        elif n == 4:
+            assert result == 3, "fib(4) should be 3"
+        elif n == 5:
+            assert result == 5, "fib(5) should be 5"
+        # More generally, we can check the growth property
+        assert result > fib(n - 1) if n > 1 else True, "Fibonacci sequence should be strictly increasing for n > 2"
+
+
+@given(st.integers(min_value=1, max_value=88)) # Max value limited to ensure n+2 is within reasonable bounds
+def test_fib_recursive_property(n):
+    # Property: fib(n) + fib(n+1) = fib(n+2)
+    # This property holds for n >= 1
+    # We need to compute fib(n), fib(n+1), and fib(n+2)
+    # Using the function itself to compute these values
+    fib_n = fib(n)
+    fib_n_plus_1 = fib(n + 1)
+    fib_n_plus_2 = fib(n + 2)
+
+    assert fib_n + fib_n_plus_1 == fib_n_plus_2, "The sum of two consecutive Fibonacci numbers should be the next one"
+
+@given(st.integers(min_value=1, max_value=90))
+def test_fib_is_integer(n):
+    result = fib(n)
+    # Property: The result should always be an integer
+    assert isinstance(result, int), "The Fibonacci number should always be an integer"
+
+@given(st.integers(min_value=1, max_value=90))
+def test_fib_monotonicity(n):
+    # Property: Fibonacci sequence is monotonically non-decreasing
+    # fib(n) >= fib(n-1) for n > 1
+    if n > 1:
+        assert fib(n) >= fib(n - 1), "Fibonacci sequence should be monotonically non-decreasing"
+
+@given(st.integers(min_value=1, max_value=90), st.integers(min_value=1, max_value=90))
+def test_fib_commutative_growth_bound(n1, n2):
+    # Property: Fibonacci numbers grow rapidly.
+    # While not a strict equality, we can test growth bounds.
+    # For example, fib(n) grows exponentially.
+    # A simple property: fib(n) * fib(m) should be related to fib(n+m) but this is complex.
+    # Let's test something simpler: fib(n+1) should be approximately 1.618 * fib(n) for large n.
+    # For property-based testing, we can check a simpler upper bound or lower bound.
+    # For n > 2, fib(n) < 2 * fib(n-1)
+    if n > 2:
+        assert fib(n) < 2 * fib(n-1), "fib(n) should be less than twice fib(n-1) for n > 2"
+    # And fib(n) > fib(n-1) for n > 2
+    if n > 2:
+        assert fib(n) > fib(n-1), "fib(n) should be greater than fib(n-1) for n > 2"
+```

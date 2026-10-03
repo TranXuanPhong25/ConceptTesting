@@ -1,0 +1,101 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1), st.integers(min_value=2))
+def test_simple_power_basic_property(x, n):
+    # Property: If x is a simple power of n, then x must be greater than or equal to n (unless x is 1).
+    # If x is 1, it's a simple power of any n (n**0 = 1).
+    result = is_simple_power(x, n)
+    if result and x > 1:
+        assert x >= n, f"If {x} is a simple power of {n}, then {x} should be >= {n}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_simple_power_n_pow_k(n, k):
+    # Property: n**k should always return True for is_simple_power(n**k, n)
+    x = n**k
+    result = is_simple_power(x, n)
+    assert result is True, f"{x} (which is {n}**{k}) should be a simple power of {n}"
+
+@given(st.integers(min_value=2, max_value=100), st.integers(min_value=2, max_value=100))
+def test_simple_power_non_power(x, n):
+    # Property: If x is not a power of n (and x > 1), it should return False.
+    # This is a bit tricky to guarantee non-power directly, so we check the inverse.
+    # If n raised to any integer power equals x, it should be true.
+    # Otherwise, it should be false.
+    result = is_simple_power(x, n)
+
+    if result:
+        # If it claims to be a simple power, verify it directly.
+        # This acts as a double-check for the function's correctness.
+        if x == 1: # 1 is n**0 for any n
+            assert True
+        else:
+            if n <= 1: # n must be > 1 for log to be meaningful
+                assert False, "If result is True, n should be > 1"
+            
+            try:
+                log_base_n_of_x = math.log(x, n)
+                assert log_base_n_of_x == int(log_base_n_of_x), f"If {x} is a simple power of {n}, then log base {n} of {x} must be an integer, got {log_base_n_of_x}"
+                assert n ** int(log_base_n_of_x) == x, f"If {x} is a simple power of {n}, then {n} raised to its integer log should be {x}"
+            except ValueError: # log(x, n) might raise if x <= 0 or n <= 0
+                assert False, f"Expected {x} to be a power of {n}, but log failed for x={x}, n={n}"
+    else:
+        # If it claims not to be a simple power, verify that no integer power works.
+        if n > 1 and x > 0:
+            power = 0
+            current_val = 1
+            while current_val < x:
+                power += 1
+                current_val *= n
+            assert current_val != x, f"If {x} is not a simple power of {n}, then {n}**{power} should not equal {x}"
+        elif x == 1: # 1 is always n**0
+            assert True # This specific case should always be True, so if result is False, this test implies an error.
+            # However, the strategy (x > 1 for this branch) avoids this conflict for x=1.
+
+
+@given(st.integers(min_value=1), st.integers(min_value=1))
+def test_simple_power_one_case(x, n):
+    # Property: Any number x = 1 is a simple power of any n (n**0 = 1).
+    # Except if n itself is 0, then 0**0 is undefined or 1 depending on context.
+    # The problem statement example has n=1 as false, implies n must be > 1.
+    result = is_simple_power(1, n)
+    if n > 1:
+        assert result is True, f"1 should always be a simple power of {n} (1 = {n}**0)"
+    else: # n=1
+        assert result is False, f"1 should not be a simple power of {n}=1 as per example (3,1) => false"
+
+
+@given(st.integers(min_value=2, max_value=100))
+def test_simple_power_x_equals_n(n):
+    # Property: If x == n, it should be a simple power (n**1 = n).
+    result = is_simple_power(n, n)
+    assert result is True, f"{n} should be a simple power of {n} ({n}**1)"
+
+@given(st.integers(min_value=2, max_value=100), st.integers(min_value=2, max_value=100))
+def test_simple_power_logarithmic_inverse(x, n):
+    # Property: If is_simple_power(x, n) is true, then x must be n raised to some integer power.
+    # This acts as a strong invariant check for the function's internal logic.
+    result = is_simple_power(x, n)
+    if result:
+        if x == 1:
+            # 1 is n**0 for any n > 0.
+            assert True
+        else:
+            if n <= 1:
+                # If the function returns True for n <= 1 and x > 1, it's an error.
+                # Per example, (3,1) => false, so n must be > 1 for a power greater than 0.
+                assert False, f"If result is True for x={x}, n={n}, then n should be > 1"
+            
+            # Using log to find the power.
+            # Handle potential floating point inaccuracies by checking closeness to integer.
+            power_float = math.log(x, n)
+            assert abs(power_float - round(power_float)) < 1e-9, \
+                f"If {x} is a simple power of {n}, log base {n} of {x} ({power_float}) must be an integer"
+            
+            # Reconstruct and compare to original x
+            reconstructed_x = n ** round(power_float)
+            assert reconstructed_x == x, \
+                f"If {x} is a simple power of {n}, then {n}**{round(power_float)} should equal {x}"
+
+```

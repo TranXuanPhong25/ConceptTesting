@@ -1,0 +1,84 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda t: (min(t), max(t))
+    ),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda t: (min(t), max(t))
+    )
+)
+def test_intersection_property(interval1, interval2):
+    result = intersection(interval1, interval2)
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start > intersection_end:
+        # No intersection
+        assert result == "NO", "If there is no intersection, the result should be 'NO'."
+    else:
+        # Calculate intersection length
+        intersection_length = intersection_end - intersection_start + 1
+        
+        # Check if the length is prime
+        expected_result = "YES" if is_prime(intersection_length) else "NO"
+        
+        assert result == expected_result, f"The result should be '{expected_result}' for intersection length {intersection_length}."
+
+@given(
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(
+        lambda t: (min(t), max(t))
+    ),
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(
+        lambda t: (min(t), max(t))
+    )
+)
+def test_intersection_no_overlap(interval1, interval2):
+    # Ensure intervals don't overlap by a significant margin
+    if interval1[1] + 5 < interval2[0] or interval2[1] + 5 < interval1[0]:
+        result = intersection(interval1, interval2)
+        assert result == "NO", "If intervals are far apart, there should be no intersection and result should be 'NO'."
+
+@given(
+    st.tuples(st.integers(min_value=-5, max_value=5), st.integers(min_value=-5, max_value=5)).map(
+        lambda t: (min(t), max(t))
+    ),
+    st.tuples(st.integers(min_value=-5, max_value=5), st.integers(min_value=-5, max_value=5)).map(
+        lambda t: (min(t), max(t))
+    )
+)
+def test_intersection_symmetric(interval1, interval2):
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, "The intersection function should be symmetric with respect to interval order."
+
+@given(
+    st.integers(min_value=-10, max_value=10),
+    st.integers(min_value=-10, max_value=10)
+)
+def test_intersection_self_overlap(start, end):
+    # Ensure start <= end for a valid interval
+    start, end = min(start, end), max(start, end)
+    interval = (start, end)
+    
+    result = intersection(interval, interval)
+    
+    length = end - start + 1
+    expected_result = "YES" if is_prime(length) else "NO"
+
+    assert result == expected_result, f"Self-intersection should return '{expected_result}' for length {length}."
+
+```

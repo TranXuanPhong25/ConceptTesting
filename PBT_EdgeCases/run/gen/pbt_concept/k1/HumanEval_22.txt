@@ -1,0 +1,58 @@
+```python
+from typing import List, Any
+from hypothesis import given, strategies as st
+
+def filter_integers(values: List[Any]) -> List[int]:
+    """ Filter given list of any python values only for integers
+    >>> filter_integers(['a', 3.14, 5])
+    [5]
+    >>> filter_integers([1, 2, 3, 'abc', {}, []])
+    [1, 2, 3]
+    """
+    return [value for value in values if isinstance(value, int) and not isinstance(value, bool)]
+
+@given(st.lists(st.one_of(st.integers(), st.floats(allow_nan=False), st.text(), st.booleans(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers())), min_size=0, max_size=100))
+def test_filter_integers_only_returns_integers(values):
+    result = filter_integers(values)
+    for item in result:
+        assert isinstance(item, int) and not isinstance(item, bool), "All elements in the result should be integers and not booleans."
+
+@given(st.lists(st.one_of(st.integers(), st.floats(allow_nan=False), st.text(), st.booleans(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers())), min_size=0, max_size=100))
+def test_filter_integers_preserves_order(values):
+    original_integers = [value for value in values if isinstance(value, int) and not isinstance(value, bool)]
+    result = filter_integers(values)
+    assert result == original_integers, "The order of integers in the filtered list should be preserved."
+
+@given(st.lists(st.one_of(st.floats(allow_nan=False), st.text(), st.booleans(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers())), min_size=0, max_size=100))
+def test_filter_integers_no_integers(values):
+    # This strategy ensures no actual integers are in the input, only other types
+    result = filter_integers(values)
+    assert result == [], "If no integers are in the input, the result should be an empty list."
+
+@given(st.lists(st.integers(), min_size=0, max_size=100))
+def test_filter_integers_all_integers(values):
+    # This strategy ensures all inputs are integers
+    result = filter_integers(values)
+    assert result == values, "If all inputs are integers, the result should be the same as the input."
+
+@given(st.lists(st.one_of(st.integers(), st.booleans()), min_size=0, max_size=100))
+def test_filter_integers_handles_booleans(values):
+    # Booleans are technically integers (True=1, False=0), but often need to be filtered out
+    result = filter_integers(values)
+    # The original implementation considers `bool` as `int`, so `isinstance(value, int) and not isinstance(value, bool)`
+    # The expected behavior from the docstring examples implies booleans should be filtered out.
+    # For example, filter_integers([True, 1, False]) should yield [1].
+    expected = [value for value in values if isinstance(value, int) and not isinstance(value, bool)]
+    assert result == expected, "Booleans should be filtered out, even though they are technically integers."
+
+@given(st.lists(st.one_of(st.integers(min_value=-1000, max_value=1000), st.text(max_size=10), st.floats(allow_nan=False, min_value=-1000.0, max_value=1000.0)), max_size=1000))
+def test_filter_integers_with_large_inputs(values):
+    result = filter_integers(values)
+    # Check that all elements are integers and none are booleans
+    assert all(isinstance(x, int) and not isinstance(x, bool) for x in result), "Large inputs should still yield only integers."
+    # Check that no non-integer (or boolean) made it through
+    for val in values:
+        if not (isinstance(val, int) and not isinstance(val, bool)):
+            assert val not in result, "No non-integer (or boolean) should be in the result of large inputs."
+
+```

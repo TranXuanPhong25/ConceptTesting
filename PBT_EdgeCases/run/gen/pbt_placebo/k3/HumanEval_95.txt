@@ -1,0 +1,46 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.dictionaries(st.text(), st.just("value"), max_size=10))
+def test_check_dict_case_empty_dict(d):
+    if not d:
+        assert check_dict_case(d) is False, "Empty dictionary should return False"
+
+@given(st.dictionaries(st.text(alphabet=st.ascii_lowercase), st.just("value"), min_size=1))
+def test_check_dict_case_all_lowercase(d):
+    assert check_dict_case(d) is True, "Dictionary with all lowercase keys should return True"
+
+@given(st.dictionaries(st.text(alphabet=st.ascii_uppercase), st.just("value"), min_size=1))
+def test_check_dict_case_all_uppercase(d):
+    assert check_dict_case(d) is True, "Dictionary with all uppercase keys should return True"
+
+@given(st.dictionaries(st.one_of(st.text(alphabet=st.ascii_lowercase), st.text(alphabet=st.ascii_uppercase)), st.just("value"), min_size=2)
+          .filter(lambda d: any(k.islower() for k in d.keys()) and any(k.isupper() for k in d.keys())))
+def test_check_dict_case_mixed_case(d):
+    assert check_dict_case(d) is False, "Dictionary with mixed case keys should return False"
+
+@given(st.dictionaries(st.one_of(st.text(), st.integers(), st.floats()), st.just("value"), min_size=1)
+          .filter(lambda d: any(not isinstance(k, str) for k in d.keys())))
+def test_check_dict_case_non_string_keys(d):
+    assert check_dict_case(d) is False, "Dictionary with non-string keys should return False"
+
+@given(st.dictionaries(st.text(), st.just("value"), min_size=1)
+          .filter(lambda d: all(k.islower() or not k.isalpha() for k in d.keys()) and any(not k.isalpha() for k in d.keys())))
+def test_check_dict_case_non_alphabetic_lowercase_like(d):
+    # This case checks if non-alphabetic characters mess up the check, but only alongside lowercase
+    # Example: {"a":"apple", "1":"number"}
+    result = check_dict_case(d)
+    expected = all(k.islower() for k in d.keys() if isinstance(k, str) and k.isalpha()) or \
+               all(k.isupper() for k in d.keys() if isinstance(k, str) and k.isalpha())
+    assert result == expected, "Should handle non-alphabetic keys correctly when considering case"
+
+@given(st.dictionaries(st.text(), st.just("value"), min_size=1)
+          .filter(lambda d: all(k.isupper() or not k.isalpha() for k in d.keys()) and any(not k.isalpha() for k in d.keys())))
+def test_check_dict_case_non_alphabetic_uppercase_like(d):
+    # This case checks if non-alphabetic characters mess up the check, but only alongside uppercase
+    # Example: {"A":"APPLE", "$":"dollar"}
+    result = check_dict_case(d)
+    expected = all(k.islower() for k in d.keys() if isinstance(k, str) and k.isalpha()) or \
+               all(k.isupper() for k in d.keys() if isinstance(k, str) and k.isalpha())
+    assert result == expected, "Should handle non-alphabetic keys correctly when considering case"
+```

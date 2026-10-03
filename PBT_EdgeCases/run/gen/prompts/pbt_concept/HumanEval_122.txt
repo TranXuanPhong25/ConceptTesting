@@ -1,0 +1,122 @@
+
+**Role**: As a tester, create property-based test cases for the given function using Hypothesis to automatically generate diverse inputs and verify function properties.
+
+**Instructions**:
+- Use Hypothesis library with appropriate strategies for input generation
+- Focus on properties and invariants the function should satisfy
+- Document each test property with clear comments
+- Handle edge cases and large-scale inputs
+
+- The format of test cases should be:
+```python
+from hypothesis import given, strategies as st
+
+@given(strategy_for_input)
+def test_property_name(input_params):
+    result = function_name(input_params)
+    assert property_condition, "Property description"
+```
+
+# For example:
+
+## Prompt 1:
+```python
+from typing import List
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """ Check if in given list of numbers, are any two numbers closer to each other than
+    given threshold.
+    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+    False
+    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+    True
+    """
+```
+
+## Completion 1:
+```python
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.floats(-100, 100), max_size=10), st.floats(0, 200))
+def test_has_close_elements(numbers, threshold):
+    result = has_close_elements(numbers, threshold)
+    expected = (len(numbers) > 1 and 
+                min(abs(numbers[i] - numbers[j]) 
+                    for i in range(len(numbers)) 
+                    for j in range(i+1, len(numbers))) < threshold)
+    
+    assert result == expected, "The result should be True if there are two or more elements and the minimum distance is less than the threshold"
+```
+
+## Prompt 2:
+```python
+from typing import List
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """ Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+    separate those group into separate strings and return the list of those.
+    Separate groups are balanced (each open brace is properly closed) and not nested within each other
+    Ignore any spaces in the input string.
+    >>> separate_paren_groups('( ) (( )) (( )( ))')
+    ['()', '(())', '(()())']
+    """
+```
+
+## Completion 2:
+```python
+import random
+from hypothesis import given, strategies as st
+
+def balanced_group():
+    return st.recursive(
+        st.just("()"),
+        lambda x: st.builds(lambda inner: f"({inner})", x)
+    )
+
+@given(st.lists(balanced_group(), max_size=10))
+def test_separate_paren_groups(groups):
+    concatenated = ''.join(groups)
+    paren_string = ''.join(char + (' ' if random.choice([True, False]) else '') 
+                          for char in concatenated)
+
+    result = separate_paren_groups(paren_string)
+
+    assert result == groups, "Should separate into original groups"
+```
+
+
+**Input Code Snippet**
+```python
+
+def add_elements(arr, k):
+    """
+    Given a non-empty array of integers arr and an integer k, return
+    the sum of the elements with at most two digits from the first k elements of arr.
+
+    Example:
+
+        Input: arr = [111,21,3,4000,5,6,7,8,9], k = 4
+        Output: 24 # sum of 21 + 3
+
+    Constraints:
+        1. 1 <= len(arr) <= 100
+        2. 1 <= k <= len(arr)
+    """
+
+```
+
+**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
+- param `arr`: list[int] (type from docstring examples)
+- edges `arr`: [x], duplicates, all equal, sorted / reversed, negative and zero elements, length 100
+- strategy `arr`: st.lists(st.integers(), min_size=1, max_size=100)
+- param `k`: int (type from docstring examples)
+- domain `k`: [1, +inf] (examples cover 4..4; lower bound from docstring/examples)
+- edges `k`: 1, 2, len(arr) - 1, len(arr) (lower bound, just above it, large; values beyond the largest example)
+- strategy `k`: st.integers(min_value=1, max_value=len(arr)) drawn after `arr` (st.data() or flatmap)
+- docstring constraint: 1 <= len(arr) <= 100
+- docstring constraint: 1 <= k <= len(arr)
+- docstring constraint: arr non-empty
+- docstring constraint: k <= len(arr) (draw it from the other argument)
+- witness: @example(arr=[0], k=1)
+- witness: @example(arr=[-1, 0, 0, 100], k=2)
+- witness: @example(arr=[0] * 100, k=100)

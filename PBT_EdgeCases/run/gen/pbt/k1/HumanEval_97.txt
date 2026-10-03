@@ -1,0 +1,74 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract the unit digits correctly, handling negative numbers
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    expected_product = unit_digit_a * unit_digit_b
+    
+    assert result == expected_product, "The result should be the product of the unit digits of the two input integers."
+
+@given(st.integers(min_value=-1000, max_value=1000), 
+       st.integers(min_value=-1000, max_value=1000))
+def test_multiply_non_negative_unit_digits(a, b):
+    # Property: The result should always be non-negative, as unit digits are non-negative.
+    result = multiply(a, b)
+    assert result >= 0, "The product of unit digits should always be non-negative."
+
+@given(st.integers(), st.integers())
+def test_multiply_order_invariance(a, b):
+    # Property: The order of arguments should not affect the result.
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, "The order of arguments should not change the product of unit digits."
+
+@given(st.integers(), st.integers())
+def test_multiply_identity_property_with_one(a, b):
+    # Property: If one of the unit digits is 1, the result should be the other unit digit.
+    # This checks that the unit digit extraction and multiplication are correct for 1.
+    result = multiply(a, b)
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    
+    if unit_a == 1:
+        assert result == unit_b, "If unit digit of 'a' is 1, result should be unit digit of 'b'."
+    if unit_b == 1:
+        assert result == unit_a, "If unit digit of 'b' is 1, result should be unit digit of 'a'."
+
+@given(st.integers(), st.integers())
+def test_multiply_zero_property(a, b):
+    # Property: If either unit digit is 0, the result should be 0.
+    result = multiply(a, b)
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    
+    if unit_a == 0 or unit_b == 0:
+        assert result == 0, "If any unit digit is 0, the product should be 0."
+
+@given(st.integers(), st.integers())
+def test_multiply_equivalence_with_absolute_values_of_unit_digits(a, b):
+    # Property: The function should essentially be equivalent to multiplying the absolute unit digits.
+    # This reinforces the core logic.
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    result = multiply(a, b)
+    expected_result = unit_digit_a * unit_digit_b
+    
+    assert result == expected_result, "The function result should match the product of the absolute unit digits."
+
+@given(st.integers(), st.integers(min_value=-10, max_value=10)) # Small b to check specific unit digits
+def test_multiply_specific_unit_digits(a, b_small):
+    # Property: Test with specific unit digits for 'b' to ensure correctness.
+    result = multiply(a, b_small)
+    unit_a = abs(a) % 10
+    unit_b = abs(b_small) % 10
+    
+    assert result == unit_a * unit_b, f"For a={a}, b={b_small}, expected {unit_a} * {unit_b} = {unit_a * unit_b}, got {result}."
+
+```

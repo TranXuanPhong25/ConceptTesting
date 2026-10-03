@@ -1,0 +1,28 @@
+```python
+
+# Basic Test Cases
+assert change_base(8, 3) == '22', "Basic Test Case 1: Convert 8 to base 3"
+assert change_base(8, 2) == '1000', "Basic Test Case 2: Convert 8 to base 2"
+assert change_base(7, 2) == '111', "Basic Test Case 3: Convert 7 to base 2"
+assert change_base(10, 10) == '10', "Basic Test Case 4: Convert 10 to base 10"
+assert change_base(0, 2) == '0', "Basic Test Case 5: Convert 0 to base 2"
+assert change_base(15, 8) == '17', "Basic Test Case 6: Convert 15 to base 8"
+assert change_base(3, 4) == '3', "Basic Test Case 7: Convert 3 to base 4"
+
+# Edge Test Cases
+assert change_base(1, 2) == '1', "Edge Test Case 1: Convert 1 to base 2"
+assert change_base(1, 9) == '1', "Edge Test Case 2: Convert 1 to base 9"
+assert change_base(0, 9) == '0', "Edge Test Case 3: Convert 0 to base 9"
+assert change_base(9, 9) == '10', "Edge Test Case 4: Convert 9 to base 9"
+assert change_base(100, 2) == '1100100', "Edge Test Case 5: Convert 100 to base 2"
+assert change_base(999, 2) == '1111100111', "Edge Test Case 6: Convert 999 to base 2"
+assert change_base(999, 9) == '1330', "Edge Test Case 7: Convert 999 to base 9"
+
+# Large Scale Test Cases
+assert change_base(1023, 2) == '1111111111', "Large Scale Test Case 1: Convert 1023 to base 2 (all 1s)"
+assert change_base(100000, 2) == '11000011010100000', "Large Scale Test Case 2: Convert 100000 to base 2"
+assert change_base(987654321, 2) == '1110101101111001101000101010001', "Large Scale Test Case 3: Convert a large number to base 2"
+assert change_base(987654321, 9) == '3171328000', "Large Scale Test Case 4: Convert a large number to base 9"
+assert change_base(123456789, 7) == '2545642056', "Large Scale Test Case 5: Convert a large number to base 7"
+
+```

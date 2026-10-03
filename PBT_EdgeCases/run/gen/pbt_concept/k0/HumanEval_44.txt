@@ -1,0 +1,72 @@
+```python
+from hypothesis import given, strategies as st
+
+def change_base(x: int, base: int):
+    """Change numerical base of input number x to base.
+    return string representation after the conversion.
+    base numbers are less than 10.
+    >>> change_base(8, 3)
+    '22'
+    >>> change_base(8, 2)
+    '1000'
+    >>> change_base(7, 2)
+    '111'
+    """
+    if x == 0:
+        return '0'
+    
+    res = ""
+    while x > 0:
+        res = str(x % base) + res
+        x //= base
+    return res
+
+
+@given(
+    st.integers(min_value=0, max_value=1000000),
+    st.integers(min_value=2, max_value=9)  # Base must be at least 2 for meaningful conversion
+)
+def test_change_base_correctness(x, base):
+    # Property: Converting back to base 10 should yield the original number
+    result_str = change_base(x, base)
+
+    # Convert the result string back to base 10 to check correctness
+    reconverted_x = 0
+    power = 0
+    for digit_char in reversed(result_str):
+        digit = int(digit_char)
+        reconverted_x += digit * (base ** power)
+        power += 1
+
+    assert reconverted_x == x, f"Converting {x} to base {base} resulted in '{result_str}', which reconverts to {reconverted_x}. Expected {x}."
+
+@given(
+    st.integers(min_value=0, max_value=1000000),
+    st.integers(min_value=2, max_value=9)
+)
+def test_change_base_digits_are_valid(x, base):
+    # Property: All digits in the result string must be less than the base
+    result_str = change_base(x, base)
+
+    for digit_char in result_str:
+        digit = int(digit_char)
+        assert 0 <= digit < base, f"Digit {digit} in '{result_str}' (base {base}) is not valid."
+
+@given(
+    st.integers(min_value=0, max_value=1000000),
+    st.integers(min_value=2, max_value=9)
+)
+def test_change_base_zero_input(x, base):
+    # Property: If x is 0, the result should always be '0'
+    if x == 0:
+        result_str = change_base(x, base)
+        assert result_str == '0', f"For x=0, change_base should return '0', but got '{result_str}'."
+
+@given(st.integers(min_value=0, max_value=1000000))
+@given(st.integers(min_value=2, max_value=9))
+def test_change_base_for_one_digit_numbers(x, base):
+    # Property: For numbers less than the base, the result should be their string representation
+    if 0 < x < base:
+        result_str = change_base(x, base)
+        assert result_str == str(x), f"For x={x} and base={base}, expected '{str(x)}', got '{result_str}'."
+```

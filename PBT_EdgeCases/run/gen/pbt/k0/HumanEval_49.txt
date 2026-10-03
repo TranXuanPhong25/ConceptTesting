@@ -1,0 +1,38 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=1000))
+def test_modp_definition(n, p):
+    result = modp(n, p)
+    # Property: modp(n, p) should be equivalent to (2**n) % p
+    assert result == (2**n) % p, "The function should correctly calculate 2^n modulo p"
+
+@given(st.integers(min_value=2, max_value=1000))
+def test_modp_n_is_zero(p):
+    result = modp(0, p)
+    # Property: 2^0 mod p should always be 1 for any p > 1
+    assert result == 1, "For n=0, modp(0, p) should always be 1"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=1000))
+def test_modp_result_in_range(n, p):
+    result = modp(n, p)
+    # Property: The result of modulo operation should always be between 0 and p-1 (inclusive)
+    assert 0 <= result < p, "The result of modp should always be in the range [0, p-1]"
+
+@given(st.integers(min_value=1, max_value=50), st.integers(min_value=2, max_value=1000))
+def test_modp_multiplicative_property(n1, p):
+    n2 = st.integers(min_value=1, max_value=50).example() # Pick another random n2
+    result_n1_plus_n2 = modp(n1 + n2, p)
+    result_n1 = modp(n1, p)
+    result_n2 = modp(n2, p)
+    # Property: 2^(n1+n2) mod p == ( (2^n1 mod p) * (2^n2 mod p) ) mod p
+    assert result_n1_plus_n2 == (result_n1 * result_n2) % p, \
+        "modp should satisfy the multiplicative property: modp(n1+n2, p) == (modp(n1, p) * modp(n2, p)) % p"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_modp_p_is_one(n):
+    # This test is for an edge case where p=1, though the function documentation implies p > 1.
+    # If p=1, the result of any number mod 1 is 0.
+    result = modp(n, 1)
+    assert result == 0, "If p is 1, modp(n, 1) should always be 0."
+```

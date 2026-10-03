@@ -1,0 +1,119 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(min_value=-100000, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_sum_of_two_digit_elements(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Calculate the expected sum: sum of elements with at most two digits
+    # from the first k elements of arr.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"The sum should only include two-digit numbers from the first k elements. Input: arr={arr[:k]}, k={k}, Expected: {expected_sum}, Got: {result}"
+
+@given(
+    st.lists(st.integers(min_value=-10, max_value=10), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_all_two_digits_within_k(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # If all numbers in the first k elements have at most two digits,
+    # the result should be the sum of those k elements.
+    expected_sum = sum(arr[:k])
+    
+    # This property only holds if all numbers in the first k are indeed two-digit
+    if all(-99 <= num <= 99 for num in arr[:k]):
+        assert result == expected_sum, "If all first k elements are two-digit, their sum should be returned."
+
+@given(
+    st.lists(st.integers(min_value=100, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_no_two_digit_numbers(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # If none of the first k elements have at most two digits (i.e., all are > 99 or < -99),
+    # the sum should be 0.
+    if all(abs(num) > 99 for num in arr[:k]):
+        assert result == 0, "If no two-digit numbers are present in the first k elements, the sum should be 0."
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_k_equals_one(arr, k_val):
+    # Test with k = 1 specifically
+    k = 1
+    result = add_elements(arr, k)
+    
+    expected_sum = 0
+    if -99 <= arr[0] <= 99:
+        expected_sum = arr[0]
+
+    assert result == expected_sum, "When k=1, result should be the first element if two-digit, else 0."
+
+@given(
+    st.lists(st.integers(min_value=-100000, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_order_invariance_for_non_two_digit_numbers(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+
+    # Original result
+    result_original = add_elements(arr, k)
+
+    # Modify arr such that elements outside the two-digit range in the first k
+    # are changed, but elements within the two-digit range are kept.
+    # Elements beyond k are also changed.
+    modified_arr = arr[:]
+    for i in range(len(modified_arr)):
+        if i < k:
+            if not (-99 <= modified_arr[i] <= 99):
+                # Change non-two-digit numbers in first k to other non-two-digit numbers
+                modified_arr[i] = st.integers(min_value=100, max_value=100000).example()
+        else:
+            # Change elements outside the first k to arbitrary numbers
+            modified_arr[i] = st.integers(min_value=-100000, max_value=100000).example()
+    
+    result_modified = add_elements(modified_arr, k)
+
+    assert result_original == result_modified, \
+        "Changing non-two-digit numbers within the first k, or any numbers outside the first k, should not change the sum."
+
+@given(
+    st.lists(st.integers(min_value=-100000, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_k_constraint_respected(arr, k_val):
+    # Test that the function only considers up to the k-th element.
+    # Make k a valid value.
+    k = min(k_val, len(arr))
+
+    # Calculate the expected sum considering only the first k elements
+    expected_sum = 0
+    for i in range(k):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    result = add_elements(arr, k)
+
+    assert result == expected_sum, "The function must only consider elements up to index k-1."
+
+```

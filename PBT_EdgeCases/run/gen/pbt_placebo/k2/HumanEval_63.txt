@@ -1,0 +1,42 @@
+```python
+from hypothesis import given, strategies as st
+
+
+@given(st.integers(min_value=0, max_value=10))
+def test_fibfib_non_negativity_for_small_n(n):
+    result = fibfib(n)
+    assert result >= 0, f"fibfib({n}) should be non-negative, but got {result}"
+
+
+@given(st.integers(min_value=3, max_value=20))
+def test_fibfib_recursive_property(n):
+    result = fibfib(n)
+    expected = fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3)
+    assert result == expected, f"fibfib({n}) should be {expected}, but got {result}"
+
+
+@given(st.integers(min_value=0, max_value=2))
+def test_fibfib_base_cases(n):
+    result = fibfib(n)
+    if n == 0:
+        assert result == 0, f"fibfib(0) should be 0, but got {result}"
+    elif n == 1:
+        assert result == 0, f"fibfib(1) should be 0, but got {result}"
+    elif n == 2:
+        assert result == 1, f"fibfib(2) should be 1, but got {result}"
+
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fibfib_increasing_for_n_greater_than_2(n):
+    if n >= 3:
+        result = fibfib(n)
+        previous_result = fibfib(n - 1)
+        assert result >= previous_result, f"fibfib({n}) should be greater than or equal to fibfib({n-1}), but {result} < {previous_result}"
+
+
+@given(st.integers(min_value=0, max_value=50))
+def test_fibfib_output_type(n):
+    result = fibfib(n)
+    assert isinstance(result, int), f"fibfib({n}) should return an integer, but got {type(result)}"
+
+```

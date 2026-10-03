@@ -1,0 +1,46 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract the unit digits
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    expected = unit_digit_a * unit_digit_b
+    
+    assert result == expected, f"For a={a}, b={b}, expected {expected}, but got {result}"
+
+@given(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_non_negativity_of_unit_digit_product(a, b):
+    result = multiply(a, b)
+    # The product of two unit digits (which are non-negative) should always be non-negative.
+    assert result >= 0, "The product of unit digits should always be non-negative."
+
+@given(st.integers(), st.integers().filter(lambda x: abs(x) % 10 == 0))
+def test_multiply_with_zero_unit_digit(a, b):
+    result = multiply(a, b)
+    # If one of the numbers has a unit digit of 0, the product should be 0.
+    assert result == 0, "If one number has a unit digit of 0, the result should be 0."
+
+@given(st.integers().filter(lambda x: abs(x) % 10 == 1), st.integers())
+def test_multiply_with_one_unit_digit(a, b):
+    result = multiply(a, b)
+    unit_digit_b = abs(b) % 10
+    # If one number has a unit digit of 1, the result should be the unit digit of the other number.
+    assert result == unit_digit_b, f"If one unit digit is 1, the result should be the other unit digit. For a={a}, b={b}, expected {unit_digit_b}, got {result}"
+
+@given(st.integers(min_value=-100000, max_value=100000), st.integers(min_value=-100000, max_value=100000))
+def test_multiply_invariance_to_tens_place_and_beyond(a, b):
+    # This property checks that only the unit digits matter.
+    # We add multiples of 10 to a and b, which shouldn't change their unit digits.
+    a_prime = a + st.integers(min_value=1, max_value=100).example() * 10
+    b_prime = b + st.integers(min_value=1, max_value=100).example() * 10
+    
+    result_original = multiply(a, b)
+    result_modified = multiply(a_prime, b_prime)
+    
+    assert result_original == result_modified, "Changing only the tens place or higher should not affect the result."
+```

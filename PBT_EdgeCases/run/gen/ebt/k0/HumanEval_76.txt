@@ -1,0 +1,39 @@
+```python
+# Basic Test Cases
+assert is_simple_power(1, 4) == True, "Basic Test Case 1: x=1, n=4 (n^0 = 1)"
+assert is_simple_power(2, 2) == True, "Basic Test Case 2: x=2, n=2 (n^1 = 2)"
+assert is_simple_power(8, 2) == True, "Basic Test Case 3: x=8, n=2 (n^3 = 8)"
+assert is_simple_power(3, 2) == False, "Basic Test Case 4: x=3, n=2 (not a power)"
+assert is_simple_power(3, 1) == False, "Basic Test Case 5: x=3, n=1 (1^int is always 1)"
+assert is_simple_power(5, 3) == False, "Basic Test Case 6: x=5, n=3 (not a power)"
+assert is_simple_power(100, 10) == True, "Basic Test Case 7: x=100, n=10 (n^2 = 100)"
+assert is_simple_power(27, 3) == True, "Basic Test Case 8: x=27, n=3 (n^3 = 27)"
+assert is_simple_power(64, 4) == True, "Basic Test Case 9: x=64, n=4 (n^3 = 64)"
+assert is_simple_power(16, 2) == True, "Basic Test Case 10: x=16, n=2 (n^4 = 16)"
+
+
+# Edge Test Cases
+assert is_simple_power(1, 1) == True, "Edge Test Case 1: x=1, n=1 (1^int = 1)"
+assert is_simple_power(0, 5) == False, "Edge Test Case 2: x=0 (not a simple power of positive n)"
+assert is_simple_power(1, 0) == False, "Edge Test Case 3: x=1, n=0 (0^0 is undefined or 1, but generally n must be positive)" # Assumes n > 0
+assert is_simple_power(4, 1) == False, "Edge Test Case 4: x=4, n=1 (1^int is always 1)"
+assert is_simple_power(10, 10) == True, "Edge Test Case 5: x=10, n=10 (n^1 = 10)"
+assert is_simple_power(1, 1000) == True, "Edge Test Case 6: x=1, n=1000 (n^0 = 1)"
+assert is_simple_power(2, 1) == False, "Edge Test Case 7: x=2, n=1 (1^int is always 1)"
+assert is_simple_power(100, 1) == False, "Edge Test Case 8: x=100, n=1 (1^int is always 1)"
+assert is_simple_power(7, 7) == True, "Edge Test Case 9: x=7, n=7 (n^1 = 7)"
+assert is_simple_power(6, 6) == True, "Edge Test Case 10: x=6, n=6 (n^1 = 6)"
+
+
+# Large Scale Test Cases
+assert is_simple_power(10**10, 10) == True, "Large Scale Test Case 1: x=10^10, n=10"
+assert is_simple_power(2**30, 2) == True, "Large Scale Test Case 2: x=2^30, n=2"
+assert is_simple_power(3**20, 3) == True, "Large Scale Test Case 3: x=3^20, n=3"
+assert is_simple_power(10**10 + 1, 10) == False, "Large Scale Test Case 4: x=10^10+1, n=10 (not a power)"
+assert is_simple_power(2**60, 2) == True, "Large Scale Test Case 5: x=2^60, n=2 (very large exponent)"
+assert is_simple_power(1_000_000_000_000_000_000, 10) == True, "Large Scale Test Case 6: x=10^18, n=10"
+assert is_simple_power(2_000_000_000_000_000_000, 2) == False, "Large Scale Test Case 7: x=2e18, n=2 (large number not power of 2)" # Note: 2e18 is not an integer power of 2
+assert is_simple_power(9**15, 9) == True, "Large Scale Test Case 8: x=9^15, n=9"
+assert is_simple_power(7**12, 7) == True, "Large Scale Test Case 9: x=7^12, n=7"
+assert is_simple_power(123456789 * 123456789, 123456789) == True, "Large Scale Test Case 10: x=big_num^2, n=big_num"
+```

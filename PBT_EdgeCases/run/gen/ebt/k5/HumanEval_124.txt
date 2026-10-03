@@ -1,0 +1,86 @@
+```python
+
+# Basic Test Cases
+assert valid_date('03-11-2000') == True, "Basic Test Case 1: Valid date"
+assert valid_date('06-04-2020') == True, "Basic Test Case 2: Valid date"
+assert valid_date('12-31-1999') == True, "Basic Test Case 3: Last day of the year"
+assert valid_date('01-01-2023') == True, "Basic Test Case 4: First day of the year"
+
+# Edge Test Cases
+assert valid_date('') == False, "Edge Test Case 1: Empty string"
+assert valid_date('15-01-2012') == False, "Edge Test Case 2: Invalid day format (day > 31)"
+assert valid_date('04-0-2040') == False, "Edge Test Case 3: Invalid day format (day = 0)"
+assert valid_date('06/04/2020') == False, "Edge Test Case 4: Invalid date format (wrong separator)"
+assert valid_date('02-29-2020') == True, "Edge Test Case 5: Valid leap year day for February"
+assert valid_date('02-29-2019') == False, "Edge Test Case 6: Invalid leap year day for February (non-leap year)"
+assert valid_date('02-30-2020') == False, "Edge Test Case 7: February with too many days"
+assert valid_date('04-31-2023') == False, "Edge Test Case 8: April with too many days"
+assert valid_date('01-32-2023') == False, "Edge Test Case 9: January with too many days"
+assert valid_date('13-01-2023') == False, "Edge Test Case 10: Invalid month (month > 12)"
+assert valid_date('00-01-2023') == False, "Edge Test Case 11: Invalid month (month = 0)"
+assert valid_date('03-11-200') == False, "Edge Test Case 12: Invalid year format (too few digits)"
+assert valid_date('03-11-20000') == False, "Edge Test Case 13: Invalid year format (too many digits)"
+assert valid_date('03-11-') == False, "Edge Test Case 14: Incomplete date string"
+assert valid_date('-01-2023') == False, "Edge Test Case 15: Missing month"
+assert valid_date('01--2023') == False, "Edge Test Case 16: Missing day"
+assert valid_date('01-01-') == False, "Edge Test Case 17: Missing year"
+assert valid_date('00-00-0000') == False, "Edge Test Case 18: All zero components"
+assert valid_date('11-30-2023') == True, "Edge Test Case 19: Month with 30 days"
+assert valid_date('07-31-2023') == True, "Edge Test Case 20: Month with 31 days (July)"
+assert valid_date('08-31-2023') == True, "Edge Test Case 21: Month with 31 days (August)"
+assert valid_date('02-01-2023') == True, "Edge Test Case 22: February with valid day 1"
+assert valid_date('02-28-2023') == True, "Edge Test Case 23: February with valid day 28 (non-leap)"
+assert valid_date('02-28-2020') == True, "Edge Test Case 24: February with valid day 28 (leap)"
+assert valid_date('01-00-2023') == False, "Edge Test Case 25: Day is 0"
+assert valid_date('01-32-2023') == False, "Edge Test Case 26: Day is 32"
+assert valid_date('abc-def-ghij') == False, "Edge Test Case 27: Non-numeric input"
+assert valid_date('1-1-2000') == False, "Edge Test Case 28: Single digit month and day"
+assert valid_date('01-1-2000') == False, "Edge Test Case 29: Single digit day"
+assert valid_date('1-01-2000') == False, "Edge Test Case 30: Single digit month"
+
+# Large Scale Test Cases
+# These tests are more about ensuring the function handles various valid and invalid dates without crashing,
+# rather than strict performance benchmarking which would require timing.
+# We simulate "large scale" by including a good variety.
+
+# A range of valid dates
+for year in range(1900, 2100, 10):
+    for month in range(1, 13):
+        # Choose a day that is valid for most months to ensure general validity
+        day = 15
+        if month == 2:
+            if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+                day = min(day, 29)
+            else:
+                day = min(day, 28)
+        elif month in [4, 6, 9, 11]:
+            day = min(day, 30)
+        
+        date_str = f"{month:02d}-{day:02d}-{year}"
+        assert valid_date(date_str) == True, f"Large Scale Test 1.1: Valid date {date_str}"
+
+# A range of invalid dates (e.g., non-existent days)
+for year in range(1900, 2100, 25):
+    # Invalid day for February (always > 29)
+    date_str_feb_invalid = f"02-30-{year}"
+    assert valid_date(date_str_feb_invalid) == False, f"Large Scale Test 1.2: Invalid Feb date {date_str_feb_invalid}"
+    
+    # Invalid day for 30-day months
+    date_str_apr_invalid = f"04-31-{year}"
+    assert valid_date(date_str_apr_invalid) == False, f"Large Scale Test 1.3: Invalid Apr date {date_str_apr_invalid}"
+    
+    # Invalid month
+    date_str_month_invalid = f"13-01-{year}"
+    assert valid_date(date_str_month_invalid) == False, f"Large Scale Test 1.4: Invalid month {date_str_month_invalid}"
+
+# Test many malformed strings
+malformed_dates = [
+    "01-01-", "01--2000", "-01-2000", "01/01/2000", "2000-01-01",
+    "01-01-200", "01-01-20000", "abc-def-ghij", "1-1-2000", "01-1-2000",
+    "1-01-2000", "01-01-2000 ", " 01-01-2000", "01-01-2000 extra",
+    "01-01-", "01-01", "01", "", " "
+]
+for md in malformed_dates:
+    assert valid_date(md) == False, f"Large Scale Test 1.5: Malformed string '{md}'"
+
+```

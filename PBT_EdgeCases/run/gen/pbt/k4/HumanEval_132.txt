@@ -1,0 +1,138 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_nested(string):
+    '''
+    Create a function that takes a string as input which contains only square brackets.
+    The function should return True if and only if there is a valid subsequence of brackets 
+    where at least one bracket in the subsequence is nested.
+
+    is_nested('[[]]') ➞ True
+    is_nested('[]]]]]]][[[[[]') ➞ False
+    is_nested('[][]') ➞ False
+    is_nested('[]') ➞ False
+    is_nested('[[][]]') ➞ True
+    is_nested('[[]][[') ➞ True
+    '''
+    
+    # Check for a nested subsequence
+    stack = []
+    has_nested = False
+    for char in string:
+        if char == '[':
+            stack.append(char)
+        elif char == ']':
+            if len(stack) > 0:
+                stack.pop()
+                # If we pop and the stack is not empty, it means there was an open bracket
+                # that was not yet closed before this current pair, implying nesting.
+                if len(stack) > 0:
+                    has_nested = True
+            else:
+                # Unmatched closing bracket, treat as not contributing to nesting for now
+                pass 
+    
+    # We also need to check for a valid subsequence of brackets.
+    # A valid subsequence implies that there is at least one pair of '[]' that can be formed.
+    # The simplest way to check for a valid subsequence is to count open and close brackets.
+    # If a valid nested subsequence exists, then 'is_nested' should be True.
+    # The original examples imply that a nested subsequence is '[[]]' or '[[][]]'.
+    # This means an opening bracket is encountered, then another opening bracket, then a closing bracket.
+
+    # A simpler approach to identify nesting:
+    # A nested structure implies finding '[]' where the '[' is still "active"
+    # (i.e., not closed yet) when the inner '[' is encountered.
+
+    balance = 0
+    max_balance = 0
+    for char in string:
+        if char == '[':
+            balance += 1
+            max_balance = max(max_balance, balance)
+        elif char == ']':
+            balance -= 1
+            # Ensure balance doesn't go below zero for valid bracket checking
+            balance = max(0, balance) 
+    
+    # If the maximum balance ever reached is 2 or more, it means there were at least two
+    # opening brackets before any closing bracket, which implies nesting.
+    # For example, in '[[]]', balance goes 1 -> 2 -> 1 -> 0. max_balance = 2.
+    # In '[[][]]', balance goes 1 -> 2 -> 1 -> 2 -> 1 -> 0. max_balance = 2.
+    # In '[]', balance goes 1 -> 0. max_balance = 1.
+    # In '][', balance goes 0 -> 1. max_balance = 1.
+    
+    return max_balance >= 2
+
+
+@given(st.text(st.just('[]'), min_size=0, max_size=100))
+def test_is_nested_no_nesting(s):
+    """
+    Property: If the string contains only balanced non-nested pairs (e.g., '[]' or '[][]'),
+    the function should return False.
+    """
+    if '[]' in s and len(s) == s.count('[') * 2 and s.count('[') == s.count(']'):
+        # This checks for perfectly balanced, non-nested cases like '[]' or '[][]'
+        # It's a heuristic. A more robust way would be to ensure max_depth is 1.
+        # But this strategy is generating simple balanced strings.
+        assert not is_nested(s), "Should be False for simple non-nested balanced brackets"
+
+@given(st.text(st.just('[]'), min_size=0, max_size=50).map(lambda s: f"[{s}]"))
+def test_is_nested_single_level_nesting(s):
+    """
+    Property: If the string has a single outer pair containing any number of non-nested pairs,
+    it should be considered nested. (e.g., '[[]]', '[[][]]')
+    """
+    assert is_nested(s), "Should be True for single-level nested brackets"
+
+@given(st.text(st.sampled_from('[]'), min_size=0, max_size=100))
+def test_is_nested_max_balance_property(s):
+    """
+    Property: The function should return True if and only if the maximum bracket
+    depth (balance) encountered is 2 or more.
+    """
+    balance = 0
+    max_balance = 0
+    for char in s:
+        if char == '[':
+            balance += 1
+            max_balance = max(max_balance, balance)
+        elif char == ']':
+            balance -= 1
+            balance = max(0, balance) # Balance shouldn't go negative conceptually for valid depth
+
+    result = is_nested(s)
+    expected = (max_balance >= 2)
+    
+    assert result == expected, f"Expected {expected} for string '{s}' (max_balance={max_balance})"
+
+@given(st.lists(st.just('['), min_size=0, max_size=50).map(lambda x: ''.join(x) + ']]'))
+def test_is_nested_only_opening_then_closing_nested(s):
+    """
+    Property: If the string starts with multiple opening brackets followed by two closing brackets,
+    it should be True if there are at least two opening brackets.
+    e.g., '[[ ]]', '[[[ ]]]' -> True
+    """
+    if s.count('[') >= 2:
+        assert is_nested(s), f"Expected True for '{s}' as it has clear nesting"
+    else:
+        assert not is_nested(s), f"Expected False for '{s}' as no sufficient opening brackets for nesting"
+
+
+@given(st.text(st.just(']'), min_size=1, max_size=50) + st.text(st.just('['), min_size=1, max_size=50))
+def test_is_nested_unbalanced_no_nesting(s):
+    """
+    Property: Strings like ']][[[' should always return False, as there's no way
+    to form a nested pair. The maximum balance will always be 1 or 0.
+    """
+    assert not is_nested(s), f"Expected False for '{s}' with unmatchable brackets"
+
+@given(st.text(st.sampled_from('[]'), min_size=0, max_size=100))
+def test_is_nested_idempotence_and_stability(s):
+    """
+    Property: Calling the function multiple times with the same input should yield
+    the same result. (A basic check for pure function behavior).
+    """
+    result1 = is_nested(s)
+    result2 = is_nested(s)
+    assert result1 == result2, "Function should be idempotent"
+```

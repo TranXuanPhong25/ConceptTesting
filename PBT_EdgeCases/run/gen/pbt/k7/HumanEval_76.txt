@@ -1,0 +1,83 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+@given(x=st.integers(min_value=1, max_value=10**9), n=st.integers(min_value=1, max_value=10**9))
+def test_is_simple_power_identity_and_base_one(x, n):
+    """
+    Property: If x is 1, it should be a simple power of any n (n**0 = 1).
+              If n is 1, then x can only be 1 to be a simple power (1**k = 1).
+    """
+    if x == 1:
+        assert is_simple_power(x, n) is True, f"1 should be a simple power of {n}"
+    elif n == 1:
+        assert is_simple_power(x, n) == (x == 1), f"If n is 1, x must be 1 to be a simple power"
+
+@given(base=st.integers(min_value=2, max_value=100),
+       exponent=st.integers(min_value=1, max_value=10))
+def test_is_simple_power_valid_powers(base, exponent):
+    """
+    Property: A number x that is explicitly generated as base**exponent should return True.
+    """
+    x = base ** exponent
+    assert is_simple_power(x, base) is True, f"{x} should be a simple power of {base}"
+
+@given(x=st.integers(min_value=2, max_value=10**9), n=st.integers(min_value=2, max_value=100))
+def test_is_simple_power_not_a_power(x, n):
+    """
+    Property: If x is not an exact power of n, it should return False.
+    This is checked by taking the log and verifying it's not an integer.
+    Handles potential floating point inaccuracies by checking proximity to an integer.
+    """
+    if n == 1: # Handled by another test
+        return
+
+    # Calculate log base n of x
+    try:
+        log_val = math.log(x, n)
+    except ValueError: # x < 0 or n <= 0, which are handled by min_value constraints
+        assert is_simple_power(x,n) is False, f"Logarithm failed for x={x}, n={n}, should be False"
+        return
+
+    # Check if log_val is very close to an integer
+    is_close_to_integer = abs(log_val - round(log_val)) < 1e-9
+
+    if not is_close_to_integer:
+        assert is_simple_power(x, n) is False, f"{x} should not be a simple power of {n} as log is not integer"
+    else:
+        # If it is close to an integer, it *should* be a simple power.
+        # This part of the test acts as a confirmation for the is_simple_power function itself.
+        assert is_simple_power(x, n) is True, f"{x} should be a simple power of {n} as log is an integer"
+
+
+@given(x=st.integers(min_value=2, max_value=10**9), n=st.integers(min_value=2, max_value=10**9))
+def test_is_simple_power_false_for_non_perfect_powers(x, n):
+    """
+    Property: If x is not a perfect power of n (i.e., n**k != x for any integer k),
+    the function should return False.
+    This test strategy specifically generates x and n that are unlikely to be related.
+    """
+    # Exclude cases where x is genuinely a power of n
+    # This is a heuristic to try and find non-power relationships
+    try:
+        # Check if x is a perfect power of n by checking if n^round(log_n(x)) == x
+        if n == 1:
+            if x == 1:
+                assert is_simple_power(x, n) is True
+            else:
+                assert is_simple_power(x, n) is False
+            return
+
+        k_float = math.log(x, n)
+        if abs(k_float - round(k_float)) < 1e-9: # If it's a true power, skip this test
+            return
+    except (ValueError, ZeroDivisionError):
+        # Handles cases like log(1,1), log(0,n) or log(x,1) which might arise from strategies
+        # (though min_value=1 for n should prevent log(x,1) value error directly for log base)
+        pass # Let the function handle these edge cases, or they are covered by other tests
+
+    result = is_simple_power(x, n)
+    # The property here is that if we've filtered out true powers, the result should be False.
+    assert result is False, f"Expected {x} to not be a simple power of {n}"
+
+```

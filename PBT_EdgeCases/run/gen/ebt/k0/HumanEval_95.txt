@@ -1,0 +1,54 @@
+```python
+# Basic Test Cases
+assert check_dict_case({"a": "apple", "b": "banana"}) == True, "Basic Case 1: All lowercase keys"
+assert check_dict_case({"STATE": "NC", "ZIP": "12345"}) == True, "Basic Case 2: All uppercase keys"
+assert check_dict_case({"a": "apple", "A": "banana", "B": "banana"}) == False, "Basic Case 3: Mixed case keys"
+assert check_dict_case({"Name": "John", "Age": "36", "City": "Houston"}) == False, "Basic Case 4: Mixed case and non-string keys"
+assert check_dict_case({"a": 1, "b": 2, "c": 3}) == True, "Basic Case 5: Lowercase keys with integer values"
+assert check_dict_case({"A": "val1", "B": "val2"}) == True, "Basic Case 6: Uppercase keys with string values"
+
+# Edge Test Cases
+assert check_dict_case({}) == False, "Edge Case 1: Empty dictionary"
+assert check_dict_case({"a": "apple"}) == True, "Edge Case 2: Single lowercase key"
+assert check_dict_case({"A": "apple"}) == True, "Edge Case 3: Single uppercase key"
+assert check_dict_case({1: "one", 2: "two"}) == False, "Edge Case 4: All non-string keys"
+assert check_dict_case({"a": "apple", 8: "banana"}) == False, "Edge Case 5: Mixed string and non-string keys"
+assert check_dict_case({" ": "space"}) == True, "Edge Case 6: Key is a space (lowercase)"
+assert check_dict_case({"TEST ": "space"}) == False, "Edge Case 7: Key with trailing space (mixed case intent)"
+assert check_dict_case({"UPPER": "case", "lower": "case"}) == False, "Edge Case 8: Explicitly mixed case"
+assert check_dict_case({"UPPER_CASE": "val", "ANOTHER_UPPER_CASE": "val2"}) == True, "Edge Case 9: Uppercase with underscores"
+assert check_dict_case({"lower_case": "val", "another_lower_case": "val2"}) == True, "Edge Case 10: Lowercase with underscores"
+assert check_dict_case({"": "empty_string"}) == True, "Edge Case 11: Empty string key (considered lowercase)"
+
+# Large Scale Test Cases
+# Note: For efficiency, these tests don't create extremely large dicts in memory
+# but simulate scenarios that would challenge the logic with many keys.
+# Python's dictionary iteration is generally efficient, so the focus is on the logic holding for many items.
+
+# Large Scale 1: Many lowercase keys
+large_dict_lower = {f"key_{i}": i for i in range(1000)}
+assert check_dict_case(large_dict_lower) == True, "Large Scale 1: 1000 lowercase keys"
+
+# Large Scale 2: Many uppercase keys
+large_dict_upper = {f"KEY_{i}": i for i in range(1000)}
+assert check_dict_case(large_dict_upper) == True, "Large Scale 2: 1000 uppercase keys"
+
+# Large Scale 3: Many mixed keys
+large_dict_mixed = {f"key_{i}": i for i in range(500)}
+large_dict_mixed.update({f"KEY_{i+500}": i+500 for i in range(500)})
+assert check_dict_case(large_dict_mixed) == False, "Large Scale 3: 1000 mixed lowercase and uppercase keys"
+
+# Large Scale 4: Many non-string keys
+large_dict_non_string = {i: f"value_{i}" for i in range(1000)}
+assert check_dict_case(large_dict_non_string) == False, "Large Scale 4: 1000 non-string keys"
+
+# Large Scale 5: Many lowercase keys with one uppercase
+large_dict_one_upper = {f"key_{i}": i for i in range(999)}
+large_dict_one_upper["LAST_KEY"] = 1000
+assert check_dict_case(large_dict_one_upper) == False, "Large Scale 5: 999 lowercase, 1 uppercase"
+
+# Large Scale 6: Many uppercase keys with one lowercase
+large_dict_one_lower = {f"KEY_{i}": i for i in range(999)}
+large_dict_one_lower["first_key"] = 1000
+assert check_dict_case(large_dict_one_lower) == False, "Large Scale 6: 999 uppercase, 1 lowercase"
+```

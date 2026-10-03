@@ -1,0 +1,49 @@
+```python
+from hypothesis import given, strategies as st
+from typing import List, Any
+
+@given(st.lists(st.one_of(st.integers(), st.text(), st.floats(), st.booleans(), st.lists(st.integers())), min_size=0, max_size=100))
+def test_filter_integers_only_returns_integers(values):
+    result = filter_integers(values)
+    for item in result:
+        assert isinstance(item, int), "All elements in the result should be integers."
+
+@given(st.lists(st.one_of(st.integers(), st.text(), st.floats(), st.booleans(), st.lists(st.integers())), min_size=0, max_size=100))
+def test_filter_integers_preserves_order(values):
+    original_integers = [item for item in values if isinstance(item, int)]
+    result = filter_integers(values)
+    assert result == original_integers, "The order of integers should be preserved."
+
+@given(st.lists(st.one_of(st.text(), st.floats(), st.booleans(), st.lists(st.integers())), min_size=0, max_size=100))
+def test_filter_integers_empty_if_no_integers(values):
+    result = filter_integers(values)
+    assert not result, "If there are no integers in the input, the result should be an empty list."
+
+@given(st.lists(st.integers(min_value=-1000, max_value=1000), min_size=0, max_size=100))
+def test_filter_integers_all_integers(values):
+    result = filter_integers(values)
+    assert result == values, "If all elements are integers, the result should be the same as the input list."
+
+@given(st.lists(st.one_of(st.integers(), st.text(), st.floats()), min_size=0, max_size=100))
+def test_filter_integers_no_side_effects(values):
+    original_values_copy = list(values)
+    filter_integers(values)
+    assert values == original_values_copy, "The function should not modify the original input list."
+
+@given(st.lists(st.integers(min_value=-10**9, max_value=10**9), min_size=0, max_size=1000))
+def test_filter_integers_large_scale_inputs(values):
+    result = filter_integers(values)
+    assert all(isinstance(item, int) for item in result), "Large integer inputs should still produce only integers."
+    assert len(result) == len(values), "All integers should be kept for large scale inputs."
+
+@given(st.lists(st.just("not_an_int"), min_size=0, max_size=100))
+def test_filter_integers_empty_list_for_non_integers(values):
+    result = filter_integers(values)
+    assert result == [], "If the list contains only non-integer types, the result should be an empty list."
+
+@given(st.just([]))
+def test_filter_integers_empty_input(values):
+    result = filter_integers(values)
+    assert result == [], "An empty input list should result in an empty list."
+
+```

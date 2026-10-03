@@ -1,0 +1,111 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple)
+)
+def test_intersection_property(interval1, interval2):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Calculate the expected intersection
+    inter_start = max(start1, start2)
+    inter_end = min(end1, end2)
+
+    result = intersection(interval1, interval2)
+
+    if inter_start > inter_end:
+        # No intersection
+        assert result == "NO", "If there is no intersection, the result should be 'NO'"
+    else:
+        # Calculate intersection length
+        length = inter_end - inter_start + 1
+        
+        # Check if length is prime
+        expected_prime = is_prime(length)
+        expected_result = "YES" if expected_prime else "NO"
+
+        assert result == expected_result, f"Intervals: {interval1}, {interval2}. Expected intersection length {length} is prime: {expected_prime}. Result should be {expected_result}."
+
+@given(
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple)
+)
+def test_intersection_length_non_negative(interval1, interval2):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    inter_start = max(start1, start2)
+    inter_end = min(end1, end2)
+
+    if inter_start <= inter_end:
+        length = inter_end - inter_start + 1
+        assert length >= 0, "Intersection length must be non-negative when intervals intersect"
+
+@given(
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple)
+)
+def test_commutative_property(interval1, interval2):
+    """
+    The intersection of two intervals should be commutative.
+    """
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, "Intersection function should be commutative"
+
+@given(
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(sorted).map(tuple)
+)
+def test_no_intersection_return_no(interval1, interval2):
+    """
+    If the two intervals don't intersect, the function should return "NO".
+    """
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Condition for no intersection
+    if end1 < start2 or end2 < start1:
+        result = intersection(interval1, interval2)
+        assert result == "NO", f"Expected 'NO' for non-intersecting intervals {interval1}, {interval2}"
+
+@given(
+    st.tuples(st.integers(min_value=0, max_value=100), st.integers(min_value=0, max_value=100)).map(sorted).map(tuple)
+)
+def test_self_intersection(interval):
+    """
+    Tests the intersection of an interval with itself.
+    The length should be (end - start + 1).
+    """
+    start, end = interval
+    length = end - start + 1
+    
+    expected_result = "YES" if is_prime(length) else "NO"
+    result = intersection(interval, interval)
+    assert result == expected_result, f"Self-intersection of {interval}. Expected length {length}. Prime: {is_prime(length)}. Result: {expected_result}"
+
+@given(
+    st.tuples(st.integers(min_value=0, max_value=10), st.integers(min_value=0, max_value=10)).map(sorted).map(tuple)
+)
+def test_identity_element_intersection_with_single_point(interval):
+    """
+    If an interval is a single point (start, start), its intersection with itself
+    should have length 1, which is not prime. So it should always be "NO".
+    """
+    start, end = interval
+    if start == end:
+        result = intersection(interval, interval)
+        assert result == "NO", f"Intersection of single point interval {interval} with itself should be 'NO'"
+
+```

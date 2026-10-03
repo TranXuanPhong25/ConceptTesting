@@ -1,0 +1,76 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=1))
+def test_vowels_count_property_non_negative(s):
+    result = vowels_count(s)
+    assert result >= 0, "The count of vowels should always be non-negative."
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=1))
+def test_vowels_count_property_max_count(s):
+    result = vowels_count(s)
+    assert result <= len(s), "The count of vowels cannot exceed the length of the string."
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=1, max_size=100).map(lambda s: s.lower()))
+def test_vowels_count_property_case_insensitivity(s):
+    # Test with lowercase string
+    result_lower = vowels_count(s)
+    # Test with uppercase string
+    result_upper = vowels_count(s.upper())
+    assert result_lower == result_upper, "Vowel counting should be case-insensitive."
+
+@given(st.text(st.characters(max_codepoint=127, whitelist_categories=('L',)), min_size=1, max_size=100))
+def test_vowels_count_property_no_vowels(s):
+    # Generate a string that is guaranteed not to have vowels (a, e, i, o, u, y at end)
+    # This strategy will filter out strings that contain any of the primary vowels
+    vowels = {'a', 'e', 'i', 'o', 'u'}
+    non_vowel_s = "".join(c for c in s if c.lower() not in vowels and c.lower() != 'y')
+    if non_vowel_s: # Ensure we don't pass an empty string after filtering
+        result = vowels_count(non_vowel_s)
+        assert result == 0, f"String '{non_vowel_s}' should have 0 vowels if it contains no primary vowels or 'y' at end."
+
+@given(st.text(st.from_regex(r'[aeiouAEIOU]+'), min_size=1, max_size=100))
+def test_vowels_count_property_all_vowels(s):
+    # This strategy generates strings composed entirely of primary vowels (excluding 'y' for simplicity here)
+    result = vowels_count(s)
+    # The 'y' rule only applies at the end. For strings of only 'aeiou', each char is a vowel.
+    expected_count = len(s)
+    assert result == expected_count, f"String '{s}' composed of only primary vowels should have count equal to its length."
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=1))
+def test_vowels_count_property_immutable_input(s):
+    original_s = s
+    vowels_count(s)
+    assert s == original_s, "The input string should not be modified by the function."
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=1))
+def test_vowels_count_property_y_at_end(s):
+    # Test cases where 'y' is at the end vs. not at the end
+    s_with_y_end = s[:-1] + 'y' if len(s) > 1 else 'y' # Ensure 'y' is at the end
+    s_without_y_end = s + 'z' # Ensure 'y' is not at the end (or not present)
+
+    count_with_y = vowels_count(s_with_y_end)
+    # Calculate expected count excluding the last 'y' then add 1 if 'y' was indeed at the end
+    expected_without_y = sum(1 for char in s_with_y_end[:-1] if char.lower() in 'aeiou')
+    expected_count_with_y = expected_without_y + 1
+
+    assert count_with_y == expected_count_with_y, \
+        f"For '{s_with_y_end}', 'y' at the end should be counted as a vowel."
+
+    # Now test a similar string where 'y' is not at the end (or not present)
+    # We create a new string to avoid issues with modification
+    s_no_y_at_end = s.replace('y', 'z') + ('a' if not s.endswith('a') else 'e')
+    # If the last character was a 'y' and now it's not, its count might change.
+    # We are testing the specific property of 'y' only at the end.
+    # The simpler check is that 'y' in the middle is NOT counted.
+    
+    # Construct a string with 'y' in the middle, but not at the end
+    s_middle_y = s + 'y' + s
+    if s_middle_y.endswith('y'):
+        s_middle_y += 'x' # Ensure 'y' is not at the very end
+    
+    expected_middle_y_count = sum(1 for char in s_middle_y[:-1] if char.lower() in 'aeiou') + \
+                              (1 if s_middle_y.lower().endswith('y') else 0)
+    assert vowels_count(s_middle_y) == expected_middle_y_count, \
+        f"For '{s_middle_y}', 'y' in the middle should not be counted as a vowel."
+```

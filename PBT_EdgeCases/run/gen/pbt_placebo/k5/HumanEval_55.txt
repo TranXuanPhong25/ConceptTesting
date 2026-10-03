@@ -1,0 +1,62 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fib_non_negative_output(n: int):
+    """
+    Property: The Fibonacci number for a non-negative input 'n' should always be non-negative.
+    """
+    result = fib(n)
+    assert result >= 0, f"fib({n}) should be non-negative, but got {result}"
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fib_monotonic_increase(n: int):
+    """
+    Property: For n >= 2, fib(n) should be greater than fib(n-1).
+    """
+    if n >= 2:
+        fib_n = fib(n)
+        fib_n_minus_1 = fib(n - 1)
+        assert fib_n > fib_n_minus_1, f"fib({n})={fib_n} should be greater than fib({n-1})={fib_n_minus_1}"
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fib_recursive_property(n: int):
+    """
+    Property: For n >= 2, fib(n) should be equal to fib(n-1) + fib(n-2).
+    """
+    if n >= 2:
+        result = fib(n)
+        expected = fib(n - 1) + fib(n - 2)
+        assert result == expected, f"fib({n}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=1))
+def test_fib_base_cases(n: int):
+    """
+    Property: Test the base cases for fib(0) and fib(1).
+    According to common definitions, fib(0) = 0 and fib(1) = 1.
+    (Note: The provided docstring examples imply fib(1)=1. For n=0, we assume fib(0)=0 as standard).
+    """
+    result = fib(n)
+    if n == 0:
+        assert result == 0, f"fib(0) should be 0, but got {result}"
+    elif n == 1:
+        assert result == 1, f"fib(1) should be 1, but got {result}"
+
+@given(st.integers(min_value=0, max_value=5000))
+def test_fib_type_consistency(n: int):
+    """
+    Property: The output of fib(n) should always be an integer.
+    """
+    result = fib(n)
+    assert isinstance(result, int), f"fib({n}) should return an integer, but got {type(result)}"
+
+@given(st.integers(min_value=1, max_value=5000))
+def test_fib_positive_input_positive_output(n: int):
+    """
+    Property: For any positive integer input n, the Fibonacci number should also be positive.
+    (Assuming fib(0)=0 is handled by test_fib_base_cases)
+    """
+    result = fib(n)
+    assert result > 0, f"fib({n}) should be positive, but got {result}"
+
+```

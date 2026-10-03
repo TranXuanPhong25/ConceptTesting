@@ -1,0 +1,114 @@
+```python
+from hypothesis import given, strategies as st
+from typing import List
+
+def get_odd_collatz(n):
+    """
+    Given a positive integer n, return a sorted list that has the odd numbers in collatz sequence.
+
+    The Collatz conjecture is a conjecture in mathematics that concerns a sequence defined
+    as follows: start with any positive integer n. Then each term is obtained from the 
+    previous term as follows: if the previous term is even, the next term is one half of 
+    the previous term. If the previous term is odd, the next term is 3 times the previous
+    term plus 1. The conjecture is that no matter what value of n, the sequence will always reach 1.
+
+    Note: 
+        1. Collatz(1) is [1].
+        2. returned list sorted in increasing order.
+
+    For example:
+    get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5.
+    """
+    if n == 1:
+        return [1]
+    
+    result = set()
+    current = n
+    while current != 1:
+        if current % 2 != 0:
+            result.add(current)
+        if current % 2 == 0:
+            current //= 2
+        else:
+            current = 3 * current + 1
+    result.add(1)
+    return sorted(list(result))
+
+
+@given(st.integers(min_value=1, max_value=10000))
+def test_contains_one_and_is_sorted(n):
+    """
+    Property: The returned list should always contain 1 and be sorted in increasing order.
+    """
+    result = get_odd_collatz(n)
+    
+    assert 1 in result, "The list must contain 1 as per Collatz conjecture."
+    assert all(result[i] <= result[i+1] for i in range(len(result) - 1)), \
+        "The returned list must be sorted in increasing order."
+
+@given(st.integers(min_value=1, max_value=10000))
+def test_all_elements_are_odd_and_part_of_collatz(n):
+    """
+    Property: All elements in the returned list must be odd numbers and belong to the Collatz sequence for n.
+    """
+    result = get_odd_collatz(n)
+    
+    # Check if all elements are odd
+    assert all(x % 2 != 0 for x in result), "All elements in the list must be odd."
+
+    # Verify that all elements are part of the Collatz sequence for n
+    collatz_sequence = []
+    current = n
+    while current != 1:
+        collatz_sequence.append(current)
+        if current % 2 == 0:
+            current //= 2
+        else:
+            current = 3 * current + 1
+    collatz_sequence.append(1)
+
+    odd_collatz_numbers = {x for x in collatz_sequence if x % 2 != 0}
+    
+    assert set(result).issubset(odd_collatz_numbers), \
+        "All elements in the result must be odd numbers from the Collatz sequence of n."
+
+@given(st.integers(min_value=1, max_value=10000))
+def test_no_missing_odd_elements(n):
+    """
+    Property: The returned list should contain all odd numbers present in the Collatz sequence for n.
+    """
+    result = get_odd_collatz(n)
+    
+    collatz_sequence = []
+    current = n
+    while current != 1:
+        collatz_sequence.append(current)
+        if current % 2 == 0:
+            current //= 2
+        else:
+            current = 3 * current + 1
+    collatz_sequence.append(1)
+
+    expected_odd_numbers = sorted(list({x for x in collatz_sequence if x % 2 != 0}))
+    
+    assert result == expected_odd_numbers, \
+        "The list should contain all odd numbers from the Collatz sequence, and no more."
+
+@given(st.integers(min_value=1, max_value=10000))
+def test_uniqueness_of_elements(n):
+    """
+    Property: All elements in the returned list must be unique.
+    """
+    result = get_odd_collatz(n)
+    assert len(result) == len(set(result)), "All elements in the list must be unique."
+
+@given(st.integers(min_value=1, max_value=10000))
+def test_collatz_of_one(n):
+    """
+    Property: For n=1, the result should be [1].
+    """
+    if n == 1:
+        result = get_odd_collatz(n)
+        assert result == [1], "Collatz(1) should return [1]."
+
+```

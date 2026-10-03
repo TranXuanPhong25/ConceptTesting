@@ -1,0 +1,86 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_correctness(x, base):
+    result = change_base(x, base)
+
+    # Property 1: The result should be a string
+    assert isinstance(result, str), "The result of change_base should always be a string."
+
+    # Property 2: Converting back to base 10 should yield the original number
+    # This checks if the conversion itself is correct.
+    # We need a function to convert from the new base string back to base 10.
+    def convert_from_base(s: str, b: int) -> int:
+        res = 0
+        power = 0
+        for digit_char in reversed(s):
+            digit = int(digit_char)
+            res += digit * (b ** power)
+            power += 1
+        return res
+
+    if x == 0:
+        assert result == '0', "0 in any base (>=2) should be '0'."
+    else:
+        assert convert_from_base(result, base) == x, \
+            f"Converting {x} to base {base} and back should result in {x}."
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_digits_are_valid(x, base):
+    result = change_base(x, base)
+
+    # Property 3: All digits in the result string must be less than the base
+    for digit_char in result:
+        digit = int(digit_char)
+        assert digit < base, f"Digit {digit} in base {base} representation should be less than {base}."
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_no_leading_zeros(x, base):
+    result = change_base(x, base)
+
+    # Property 4: The result should not have leading zeros unless the number itself is 0
+    if x != 0:
+        assert not result.startswith('0'), "Result should not have leading zeros for non-zero numbers."
+    else:
+        assert result == '0', "If x is 0, the result should be '0'."
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_uniqueness_for_same_inputs(x, base):
+    # Property 5: For the same inputs, the output should always be the same (determinism)
+    result1 = change_base(x, base)
+    result2 = change_base(x, base)
+    assert result1 == result2, "Calling change_base with the same inputs should produce the same output."
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=9))
+def test_change_base_monotonicity_for_x(x, base):
+    # Property 6: For a fixed base, increasing x should generally increase the length of the result string
+    # or the lexicographical value. This is a weaker property for strings but can be useful.
+    # More concretely, if x1 < x2, then the base representation of x1 should not be lexicographically greater than x2.
+    # A stronger property is that convert_from_base(change_base(x, base), base) == x.
+    # This specific property for string length is better for larger inputs.
+
+    if x > 0:
+        result_x = change_base(x, base)
+        result_x_minus_1 = change_base(x - 1, base)
+
+        # The length of the string representation should be non-decreasing
+        # when x increases, or at least the converted value should be greater.
+        assert len(result_x) >= len(result_x_minus_1) or \
+               (len(result_x) < len(result_x_minus_1) and int(result_x, base) > int(result_x_minus_1, base)), \
+            f"Increasing x from {x-1} to {x} should not decrease string length (unless a smaller, larger value is formed) or value."
+
+@given(x=st.integers(min_value=0, max_value=1000))
+def test_change_base_base_10(x):
+    # Property 7: When base is 10, the result should be the string representation of x
+    result = change_base(x, 10)
+    assert result == str(x), "Converting to base 10 should yield the string representation of the number."
+
+@given(x=st.integers(min_value=0, max_value=100))
+def test_change_base_edge_case_zero(x):
+    # Property 8: The base representation of 0 should always be "0"
+    for base in range(2, 10):
+        result = change_base(0, base)
+        assert result == '0', f"change_base(0, {base}) should be '0'."
+
+```

@@ -1,0 +1,63 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=10**6), 
+       st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_positive_base_exponent(x, n):
+    result = is_simple_power(x, n)
+    
+    # Property: If x is a power of n, then x should be divisible by n (if n > 1)
+    if result:
+        assert x % n == 0, f"If x is a simple power of n, then x must be divisible by n. x={x}, n={n}"
+    
+    # Property: If x is a simple power of n, then repeatedly dividing x by n should eventually lead to 1
+    if result and n > 1: # Added condition n > 1 for division
+        temp_x = x
+        while temp_x % n == 0 and temp_x > 1:
+            temp_x //= n
+        assert temp_x == 1, f"If x is a simple power of n, repeated division by n should yield 1. x={x}, n={n}"
+
+@given(st.integers(min_value=1, max_value=10**6), 
+       st.integers(min_value=1, max_value=1)) # n can only be 1
+def test_is_simple_power_n_is_one(x, n):
+    result = is_simple_power(x, n)
+    # Property: If n is 1, then x can only be a simple power of n if x is also 1 (1**any_int = 1)
+    assert result == (x == 1), f"If n is 1, x should be 1 to be a simple power. x={x}, n={n}"
+
+@given(st.integers(min_value=0, max_value=0), # x can only be 0
+       st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_x_is_zero(x, n):
+    result = is_simple_power(x, n)
+    # Property: If x is 0, it can only be a simple power if n is also 0 (0**pos_int = 0, but 0**0 is undefined or 1)
+    # Based on the common interpretation, 0 is not a simple power of any n > 0.
+    assert result == False, f"If x is 0, it should not be a simple power of n > 0. x={x}, n={n}"
+
+@given(st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_x_equals_n(x):
+    result = is_simple_power(x, x)
+    # Property: If x == n, then it should always be true (x = x**1)
+    assert result == True, f"If x equals n, it should be a simple power. x={x}, n={x}"
+
+@given(st.integers(min_value=1, max_value=100), 
+       st.integers(min_value=2, max_value=10))
+def test_is_simple_power_inverse_check(x, n):
+    # This test case checks the inverse property: if x is NOT a simple power,
+    # then raising n to any integer power should not equal x.
+    if not is_simple_power(x, n):
+        is_power = False
+        if n == 1:
+            is_power = (x == 1)
+        elif x == 1:
+            is_power = True # Any non-zero n raised to power 0 is 1
+        elif n == 0:
+            is_power = (x == 0) # 0^positive_integer = 0
+        elif x > 0 and n > 0:
+            val = n
+            power = 1
+            while val < x and val > 0: # val > 0 to prevent infinite loop for n=0
+                val *= n
+                power += 1
+            is_power = (val == x)
+        
+        assert not is_power, f"If is_simple_power returns False, then x should not be n**k for any integer k. x={x}, n={n}"
+```

@@ -1,0 +1,55 @@
+```python
+
+# Basic Test Cases
+assert is_simple_power(1, 4) == True, "Basic Test Case 1: x=1, n=4 (n^0)"
+assert is_simple_power(2, 2) == True, "Basic Test Case 2: x=2, n=2 (n^1)"
+assert is_simple_power(8, 2) == True, "Basic Test Case 3: x=8, n=2 (n^3)"
+assert is_simple_power(3, 2) == False, "Basic Test Case 4: x=3, n=2 (not a power)"
+assert is_simple_power(3, 1) == False, "Basic Test Case 5: x=3, n=1 (n^int is always 1)"
+assert is_simple_power(5, 3) == False, "Basic Test Case 6: x=5, n=3 (not a power)"
+assert is_simple_power(4, 2) == True, "Basic Test Case 7: x=4, n=2 (n^2)"
+assert is_simple_power(27, 3) == True, "Basic Test Case 8: x=27, n=3 (n^3)"
+assert is_simple_power(125, 5) == True, "Basic Test Case 9: x=125, n=5 (n^3)"
+assert is_simple_power(16, 4) == True, "Basic Test Case 10: x=16, n=4 (n^2)"
+
+# Edge Test Cases
+assert is_simple_power(1, 1) == True, "Edge Test Case 1: x=1, n=1 (1^int is always 1)"
+assert is_simple_power(0, 1) == False, "Edge Test Case 2: x=0, n=1 (0 is not 1^int)"
+assert is_simple_power(0, 2) == False, "Edge Test Case 3: x=0, n=2 (0 is not 2^int)"
+assert is_simple_power(1, 100) == True, "Edge Test Case 4: x=1, n=100 (100^0)"
+assert is_simple_power(100, 10) == True, "Edge Test Case 5: x=100, n=10 (10^2)"
+assert is_simple_power(10, 10) == True, "Edge Test Case 6: x=10, n=10 (10^1)"
+assert is_simple_power(2, 1) == False, "Edge Test Case 7: x=2, n=1 (1^int != 2)"
+assert is_simple_power(-1, 1) == False, "Edge Test Case 8: x=-1, n=1 (negative x)"
+assert is_simple_power(-8, 2) == False, "Edge Test Case 9: x=-8, n=2 (negative x)"
+assert is_simple_power(1, -2) == True, "Edge Test Case 10: x=1, n=-2 (negative base, -2^0 = 1)"
+assert is_simple_power(4, -2) == True, "Edge Test Case 11: x=4, n=-2 (negative base, -2^2 = 4)"
+assert is_simple_power(8, -2) == False, "Edge Test Case 12: x=8, n=-2 (negative base, odd power gives negative result)"
+assert is_simple_power(-8, -2) == False, "Edge Test Case 13: x=-8, n=-2 (negative x and negative n)"
+assert is_simple_power(1.0, 2) == True, "Edge Test Case 14: x is float, should treat as int"
+assert is_simple_power(4.0, 2) == True, "Edge Test Case 15: x is float, should treat as int"
+assert is_simple_power(16, 2.0) == True, "Edge Test Case 16: n is float, should treat as int"
+assert is_simple_power(16, 2.1) == False, "Edge Test Case 17: n is non-integer float"
+assert is_simple_power(7, 7) == True, "Edge Test Case 18: x == n"
+
+# Large Scale Test Cases
+# These tests focus on potential performance issues with large numbers or loops
+# Assuming standard integer limits. Python handles large integers automatically.
+
+# Test with very large x, small n
+assert is_simple_power(10**18, 10) == True, "Large Scale Test Case 1: x is very large, n is small"
+assert is_simple_power(10**18 + 1, 10) == False, "Large Scale Test Case 2: x is very large, not a power"
+
+# Test with large n
+# Finding the required power for large n could be slow if not optimized
+assert is_simple_power(1024, 2) == True, "Large Scale Test Case 3: x = 2^10"
+assert is_simple_power(2**30, 2) == True, "Large Scale Test Case 4: x = 2^30 (large power)"
+assert is_simple_power(3**20, 3) == True, "Large Scale Test Case 5: x = 3^20 (large power)"
+assert is_simple_power(3**20 + 1, 3) == False, "Large Scale Test Case 6: x = 3^20 + 1 (large power, not a power)"
+
+# Test where x is extremely large and n is moderately large (e.g., finding if 10^100 is 5^k)
+# The loop in the function needs to handle this efficiently without excessive iterations or floating point issues.
+assert is_simple_power(pow(5, 50), 5) == True, "Large Scale Test Case 7: x = 5^50, n=5"
+assert is_simple_power(pow(5, 50) + 1, 5) == False, "Large Scale Test Case 8: x = 5^50 + 1, n=5"
+
+```

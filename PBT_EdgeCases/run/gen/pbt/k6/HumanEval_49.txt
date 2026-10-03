@@ -1,0 +1,67 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=1, max_value=100))
+def test_modp_definition(n, p):
+    """
+    Test that modp(n, p) returns (2^n) % p.
+    This directly checks the definition of the function.
+    """
+    result = modp(n, p)
+    expected = pow(2, n, p)  # Python's built-in pow(base, exp, mod) is efficient and correct
+    assert result == expected, f"For n={n}, p={p}, expected {expected} but got {result}"
+
+@given(st.integers(min_value=0, max_value=50), st.integers(min_value=1, max_value=50))
+def test_modp_associativity(n, p):
+    """
+    Test the property: modp(n+m, p) == (modp(n, p) * modp(m, p)) % p.
+    This is based on the property of modular exponentiation: (a^(n+m)) % p == ((a^n % p) * (a^m % p)) % p
+    """
+    m = st.integers(min_value=0, max_value=50).example()
+    result_left = modp(n + m, p)
+    result_right = (modp(n, p) * modp(m, p)) % p
+    assert result_left == result_right, f"For n={n}, m={m}, p={p}, associativity failed: {result_left} != {result_right}"
+
+@given(st.integers(min_value=1, max_value=100))
+def test_modp_n_zero(p):
+    """
+    Test the base case where n = 0.
+    Any number to the power of 0 is 1. So 2^0 % p should be 1 % p, which is 1.
+    """
+    result = modp(0, p)
+    assert result == 1, f"For n=0, p={p}, expected 1 but got {result}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=1, max_value=100))
+def test_modp_result_range(n, p):
+    """
+    Test that the result is always within the range [0, p-1].
+    This is a fundamental property of the modulo operation.
+    """
+    result = modp(n, p)
+    assert 0 <= result < p, f"For n={n}, p={p}, result {result} is not in range [0, {p-1}]"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_large_n_vs_small_n(n, p):
+    """
+    Test that modp(n, p) is equivalent to modp(n % (phi(p)), p) if p is prime,
+    or more generally, modp(n, p) is equivalent to modp(n % (p-1), p) if p is prime, by Fermat's Little Theorem.
+    For non-prime p, this might not hold. But for a specific case: 2^n % p == 2^(n + k*(p-1)) % p for prime p.
+    A simpler property for any p: 2^n % p == (2 * (2^(n-1) % p)) % p
+    Let's test 2^n % p against (2 * (2^(n-1) % p)) % p
+    """
+    if n > 0:
+        result_n = modp(n, p)
+        result_n_minus_1 = modp(n - 1, p)
+        expected_n = (2 * result_n_minus_1) % p
+        assert result_n == expected_n, f"For n={n}, p={p}, expected {expected_n} but got {result_n}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=1, max_value=100))
+def test_modp_identity_p_is_one(n, p):
+    """
+    Test that if p is 1, the result should always be 0.
+    (2^n) % 1 is always 0 for any n >= 0.
+    """
+    result = modp(n, 1)
+    assert result == 0, f"For n={n}, p=1, expected 0 but got {result}"
+
+```

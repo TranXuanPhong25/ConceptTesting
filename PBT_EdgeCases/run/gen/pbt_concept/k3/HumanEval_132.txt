@@ -1,0 +1,36 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property(s):
+    # Property: If the string is empty, it should not be nested.
+    if not s:
+        assert not is_nested(s), "An empty string cannot be nested."
+
+    # Property: If the string has only a single pair of brackets, it's not nested.
+    if s == '[]':
+        assert not is_nested(s), "'[]' is not nested."
+
+    # Property: If the string contains '[[', then it should be nested.
+    # This covers cases like '[[]]', '[[][]]', '[[]][['
+    if '[[' in s:
+        assert is_nested(s), "Strings containing '[[' should be considered nested."
+
+    # Property: If a string is nested, it must contain at least one opening bracket and one closing bracket.
+    if is_nested(s):
+        assert '[' in s and ']' in s, "A nested string must contain both '[' and ']'."
+
+    # Property: If the string is formed by concatenating non-nested valid bracket pairs,
+    # it should not be considered nested.
+    if all(s[i:i+2] == '[]' for i in range(0, len(s), 2)) and len(s) % 2 == 0:
+        assert not is_nested(s), "Concatenated non-nested pairs like '[]', '[][]' are not nested."
+
+    # Property: If the string consists only of opening or closing brackets, it cannot be nested.
+    if all(char == '[' for char in s) or all(char == ']' for char in s):
+        assert not is_nested(s), "Strings with only '[' or ']' cannot be nested."
+
+    # Property: The result should be deterministic for a given input.
+    result1 = is_nested(s)
+    result2 = is_nested(s)
+    assert result1 == result2, "The function should return the same result for the same input."
+```

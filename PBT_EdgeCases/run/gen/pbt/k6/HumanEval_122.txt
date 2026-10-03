@@ -1,0 +1,82 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_sum_of_two_digit_numbers(arr, k):
+    # Adjust k to be within the valid range of the generated array
+    k_adjusted = min(k, len(arr))
+
+    # Calculate the expected sum manually
+    expected_sum = 0
+    for i in range(k_adjusted):
+        if -99 <= arr[i] <= 99:  # Check for numbers with at most two digits
+            expected_sum += arr[i]
+
+    # Call the function under test
+    result = add_elements(arr, k_adjusted)
+
+    # Property: The result should be equal to the sum of elements with at most two digits
+    # from the first k elements of the array.
+    assert result == expected_sum, f"For arr={arr[:k_adjusted]}, k={k_adjusted}, expected {expected_sum}, but got {result}"
+
+@given(
+    st.lists(st.integers(min_value=100, max_value=1000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_no_two_digit_numbers(arr, k):
+    # Adjust k to be within the valid range of the generated array
+    k_adjusted = min(k, len(arr))
+
+    # Property: If all numbers in the first k elements have more than two digits, the sum should be 0.
+    result = add_elements(arr, k_adjusted)
+    assert result == 0, f"For arr={arr[:k_adjusted]}, k={k_adjusted}, expected 0, but got {result} when all numbers have more than two digits"
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_all_two_digit_numbers(arr, k):
+    # Adjust k to be within the valid range of the generated array
+    k_adjusted = min(k, len(arr))
+
+    # Property: If all numbers in the first k elements have at most two digits, the sum should be
+    # the sum of the first k elements.
+    expected_sum = sum(arr[:k_adjusted])
+    result = add_elements(arr, k_adjusted)
+    assert result == expected_sum, f"For arr={arr[:k_adjusted]}, k={k_adjusted}, expected {expected_sum}, but got {result} when all numbers have at most two digits"
+
+@given(
+    st.lists(st.integers(), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_k_equals_one(arr, k):
+    # Set k to 1 to test the single-element case
+    k_val = 1
+    
+    # Calculate expected sum
+    expected_sum = arr[0] if -99 <= arr[0] <= 99 else 0
+    
+    result = add_elements(arr, k_val)
+    
+    assert result == expected_sum, f"For arr={arr}, k=1, expected {expected_sum}, but got {result}"
+
+@given(
+    st.lists(st.integers(), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_property_k_equals_len_arr(arr, k):
+    # Set k to len(arr) to test processing the entire array
+    k_val = len(arr)
+    
+    expected_sum = 0
+    for x in arr:
+        if -99 <= x <= 99:
+            expected_sum += x
+            
+    result = add_elements(arr, k_val)
+    
+    assert result == expected_sum, f"For arr={arr}, k={k_val}, expected {expected_sum}, but got {result}"
+```

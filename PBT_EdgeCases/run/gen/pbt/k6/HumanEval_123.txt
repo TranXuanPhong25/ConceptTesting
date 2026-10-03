@@ -1,0 +1,67 @@
+```python
+from hypothesis import given, strategies as st
+
+# Helper function to generate the Collatz sequence (including 1)
+def collatz_sequence(n):
+    sequence = [n]
+    while n != 1:
+        if n % 2 == 0:
+            n //= 2
+        else:
+            n = 3 * n + 1
+        sequence.append(n)
+    return sequence
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_odd_numbers_only(n):
+    """
+    Property: All numbers in the returned list must be odd.
+    """
+    result = get_odd_collatz(n)
+    assert all(num % 2 != 0 for num in result), "All numbers in the result should be odd."
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_list_is_sorted(n):
+    """
+    Property: The returned list should be sorted in increasing order.
+    """
+    result = get_odd_collatz(n)
+    assert all(result[i] <= result[i+1] for i in range(len(result) - 1)), "The list should be sorted in increasing order."
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_contains_one_and_initial_odd_number(n):
+    """
+    Property: If the input 'n' is odd, the result should contain 'n'. The result should always contain 1.
+    """
+    result = get_odd_collatz(n)
+    assert 1 in result, "The number 1 must always be in the list."
+    if n % 2 != 0:
+        assert n in result, f"If n is odd, it should be in the list. n={n}, result={result}"
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_correctness_against_reference_collatz(n):
+    """
+    Property: The returned list should contain exactly all odd numbers present in the full Collatz sequence of n.
+    """
+    full_sequence = collatz_sequence(n)
+    expected_odd_numbers = sorted(list(set(x for x in full_sequence if x % 2 != 0)))
+    result = get_odd_collatz(n)
+    assert result == expected_odd_numbers, f"The result should contain all odd numbers from the Collatz sequence. For n={n}, expected={expected_odd_numbers}, got={result}"
+
+@given(st.integers(min_value=1, max_value=1))
+def test_collatz_of_one(n):
+    """
+    Property: For n=1, the function should return [1].
+    """
+    result = get_odd_collatz(n)
+    assert result == [1], f"For n=1, the result should be [1], but got {result}"
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_no_duplicate_elements(n):
+    """
+    Property: The returned list should not contain any duplicate elements.
+    """
+    result = get_odd_collatz(n)
+    assert len(result) == len(set(result)), "The returned list should not have duplicate elements."
+
+```

@@ -1,0 +1,149 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(x=st.integers(min_value=1, max_value=10**6), n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_true_for_powers(x, n):
+    # Property: If x is a power of n, then is_simple_power(x, n) should be true.
+    # We construct x as a power of n and then check the function.
+    power = st.integers(min_value=0, max_value=int(x**0.5)+1).example() # limit power to avoid overflow
+    x_as_power = n ** power
+    if x_as_power == x: # Check if the generated x is indeed a power of n
+        assert is_simple_power(x_as_power, n) is True, f"{x_as_power} should be a simple power of {n}"
+
+@given(x=st.integers(min_value=1, max_value=10**6), n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_false_for_non_powers(x, n):
+    # Property: If x is not a power of n, then is_simple_power(x, n) should be false.
+    # This test randomly picks x and n and assumes most will not be perfect powers.
+    # It also handles the case where it *is* a power of n and asserts True if it's true.
+    
+    # We want to primarily test for false cases, so let's try to generate non-powers
+    # and then confirm.
+    
+    if n == 1: # n=1 case is special, x will always be 1 or not a simple power if x != 1
+        if x == 1:
+            assert is_simple_power(x, n) is True
+        else:
+            assert is_simple_power(x, n) is False
+        return
+
+    # To avoid overflow, check if x can even be a power of n
+    if n > x and x != 1:
+        assert is_simple_power(x, n) is False, f"{x} cannot be a simple power of {n} if {n} > {x} and {x} != 1"
+        return
+
+    if x == 1: # 1 is always a simple power of any n (n^0 = 1)
+        assert is_simple_power(x, n) is True, f"1 should be a simple power of {n}"
+        return
+
+    # Calculate integer logarithm to check if x is a power of n
+    if n > 0 and x > 0:
+        power = 0
+        temp_x = x
+        while temp_x > 1 and temp_x % n == 0:
+            temp_x //= n
+            power += 1
+        
+        if temp_x == 1: # x is a perfect power of n
+            assert is_simple_power(x, n) is True, f"{x} is a simple power of {n}"
+        else: # x is not a perfect power of n
+            assert is_simple_power(x, n) is False, f"{x} is not a simple power of {n}"
+    else: # Handle cases where n or x are <= 0, which are typically false by definition of simple power
+        assert is_simple_power(x, n) is False, f"{x} and {n} values should be handled: {is_simple_power(x, n)}"
+
+@given(x=st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_is_one(x):
+    # Property: If n is 1, then x should be 1 for it to be a simple power.
+    # Any other x with n=1 is not a simple power (1^int = 1).
+    n = 1
+    result = is_simple_power(x, n)
+    if x == 1:
+        assert result is True, f"1 is a simple power of 1"
+    else:
+        assert result is False, f"{x} is not a simple power of 1 when {x} != 1"
+
+@given(n=st.integers(min_value=0, max_value=10**6))
+def test_is_simple_power_x_is_one(n):
+    # Property: If x is 1, it's a simple power of any n (n^0 = 1).
+    x = 1
+    if n >= 1: # For n >= 1, n^0 = 1 is valid
+        assert is_simple_power(x, n) is True, f"1 should be a simple power of {n}"
+    else: # n=0 case: 0^0 is undefined or 1 depending on context, but problem implies positive integers for n
+        # Based on example is_simple_power(3,1) => false, implies n should be >= 2 for the 'power' to 'matter'
+        # Or, the definition of simple power implies positive integer powers.
+        # However, for 1, any n (including 0 if 0^0=1) should return True.
+        # The function likely doesn't handle n=0, so we'll test based on its actual behavior.
+        # If n=0, 0^anything > 0 is 0, 0^0 is 1. If 0^int=x, then x must be 0 or 1.
+        # This property mainly focuses on positive n.
+        pass # Let other tests cover the n=0 edge case.
+
+@given(x=st.integers(min_value=1, max_value=10**6), n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_invariance_with_power(x, n):
+    # Property: If is_simple_power(x, n) is True, then x must be equal to n raised to some non-negative integer power.
+    # This is a direct check of the definition.
+    if is_simple_power(x, n):
+        is_power = False
+        if n == 1: # Special case: 1^k = 1. So if x=1, it's a power. Otherwise, not.
+            if x == 1:
+                is_power = True
+            else:
+                is_power = False
+        elif n == 0: # 0^k = 0 for k > 0, 0^0 = 1 (often).
+            if x == 0: # for k > 0
+                is_power = True
+            elif x == 1: # for k = 0
+                is_power = True
+            else:
+                is_power = False
+        elif x == 1: # Any n (>=2) to the power of 0 is 1
+             is_power = True
+        else: # General case for n >= 2, x >= 2
+            temp_x = x
+            power = 0
+            while temp_x > 0 and temp_x % n == 0:
+                temp_x //= n
+                power += 1
+            if temp_x == 1:
+                is_power = True
+        
+        assert is_power is True, f"If {x} is a simple power of {n}, it must satisfy x == n^k for some integer k >= 0."
+
+@given(n=st.integers(min_value=0, max_value=100))
+def test_is_simple_power_x_is_zero(n):
+    # Property: If x is 0, it can only be a simple power of n if n is also 0 (and only for power > 0)
+    # The definition "n**int=x" implies int >= 0.
+    x = 0
+    result = is_simple_power(x, n)
+    if n == 0:
+        # 0^k = 0 for k > 0. 0^0 = 1.
+        # If the problem considers k > 0, then True. If also k=0 is allowed, then 0^0 != 0, so False.
+        # Let's assume 'int' can be any non-negative integer. Then 0^1 = 0, so True.
+        assert result is True, f"0 should be a simple power of 0 (0^1=0)"
+    else: # For n > 0, n^k is never 0 (unless n=0)
+        assert result is False, f"0 cannot be a simple power of {n} if {n} > 0"
+
+
+# Example tests from the prompt, adapted for property-based testing context if needed, or as explicit examples
+@given(x=st.just(1), n=st.just(4))
+def test_example_1(x, n):
+    assert is_simple_power(x, n) is True, f"Example test failed for x={x}, n={n}"
+
+@given(x=st.just(2), n=st.just(2))
+def test_example_2(x, n):
+    assert is_simple_power(x, n) is True, f"Example test failed for x={x}, n={n}"
+
+@given(x=st.just(8), n=st.just(2))
+def test_example_3(x, n):
+    assert is_simple_power(x, n) is True, f"Example test failed for x={x}, n={n}"
+
+@given(x=st.just(3), n=st.just(2))
+def test_example_4(x, n):
+    assert is_simple_power(x, n) is False, f"Example test failed for x={x}, n={n}"
+
+@given(x=st.just(3), n=st.just(1))
+def test_example_5(x, n):
+    assert is_simple_power(x, n) is False, f"Example test failed for x={x}, n={n}"
+
+@given(x=st.just(5), n=st.just(3))
+def test_example_6(x, n):
+    assert is_simple_power(x, n) is False, f"Example test failed for x={x}, n={n}"
+```

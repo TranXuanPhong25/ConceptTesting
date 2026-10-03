@@ -1,0 +1,95 @@
+```python
+from hypothesis import given, strategies as st
+
+def change_base(x: int, base: int):
+    """Change numerical base of input number x to base.
+    return string representation after the conversion.
+    base numbers are less than 10.
+    >>> change_base(8, 3)
+    '22'
+    >>> change_base(8, 2)
+    '1000'
+    >>> change_base(7, 2)
+    '111'
+    """
+    if x == 0:
+        return '0'
+    res = ''
+    while x > 0:
+        res = str(x % base) + res
+        x //= base
+    return res
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_inversion(x, base):
+    """
+    Property: Converting a number to a base and then back to base 10 should yield the original number.
+    This tests the correctness of the conversion.
+    """
+    if x == 0:
+        assert change_base(x, base) == '0'
+        return
+
+    base_x_str = change_base(x, base)
+    
+    # Convert the base string back to an integer in base 10
+    reconverted_x = 0
+    power = 0
+    for digit in reversed(base_x_str):
+        reconverted_x += int(digit) * (base ** power)
+        power += 1
+        
+    assert reconverted_x == x, f"Converting {x} to base {base} gives '{base_x_str}', reconverting gives {reconverted_x}, but should be {x}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_digits_valid(x, base):
+    """
+    Property: All digits in the resulting string representation should be less than the base.
+    """
+    result = change_base(x, base)
+    for digit_char in result:
+        digit = int(digit_char)
+        assert 0 <= digit < base, f"Digit {digit} in '{result}' for {x} base {base} is not less than {base}"
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_leading_zero(x, base):
+    """
+    Property: For any non-zero number, the string representation should not have a leading zero (unless the number itself is 0, which is handled in another test).
+    """
+    result = change_base(x, base)
+    assert result[0] != '0' or result == '0', f"Result '{result}' for {x} base {base} has a leading zero"
+
+@given(st.integers(min_value=0, max_value=0), st.integers(min_value=2, max_value=9))
+def test_change_base_zero(x, base):
+    """
+    Property: The number 0 should always convert to '0' in any base.
+    """
+    result = change_base(0, base)
+    assert result == '0', f"Converting 0 to base {base} should be '0', but got '{result}'"
+
+@given(st.integers(min_value=2, max_value=9))
+def test_change_base_base_itself(base):
+    """
+    Property: Converting the base number itself to that base should result in '10'.
+    """
+    result = change_base(base, base)
+    assert result == '10', f"Converting {base} to base {base} should be '10', but got '{result}'"
+
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=2, max_value=9))
+def test_change_base_length_monotonically_decreasing(x, base):
+    """
+    Property: For a fixed number x > 0, as the base increases, the length of the base representation should generally decrease or stay the same.
+    (This is not a strict mathematical property for all cases, but holds for many, especially when comparing adjacent bases).
+    This property is a bit weak but can catch gross errors if the conversion logic is completely off.
+    """
+    if x <= 1: # x=0 is '0', x=1 is '1', length is constant
+        return
+
+    result_smaller_base = change_base(x, base)
+    if base + 1 <= 9: # Only test if base + 1 is still a valid base
+        result_larger_base = change_base(x, base + 1)
+        assert len(result_larger_base) <= len(result_smaller_base), \
+            f"For x={x}, base={base}: '{result_smaller_base}' (len {len(result_smaller_base)}); " \
+            f"base={base+1}: '{result_larger_base}' (len {len(result_larger_base)}). Length should not increase."
+
+```

@@ -1,0 +1,34 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=10))
+def test_fibfib_base_cases(n):
+    if n == 0:
+        assert fibfib(n) == 0, "fibfib(0) should be 0"
+    elif n == 1:
+        assert fibfib(n) == 0, "fibfib(1) should be 0"
+    elif n == 2:
+        assert fibfib(n) == 1, "fibfib(2) should be 1"
+
+@given(st.integers(min_value=3, max_value=15))
+def test_fibfib_recursive_property(n):
+    # Check if the recursive definition holds for n >= 3
+    result = fibfib(n)
+    expected = fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3)
+    assert result == expected, f"fibfib({n}) should be fibfib({n-1}) + fibfib({n-2}) + fibfib({n-3})"
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fibfib_non_negativity(n):
+    # For n >= 0, fibfib(n) should always be non-negative
+    result = fibfib(n)
+    assert result >= 0, "FibFib numbers should be non-negative for n >= 0"
+
+@given(st.integers(min_value=0, max_value=10))
+def test_fibfib_monotonicity_for_n_greater_than_2(n):
+    # For n >= 2, fibfib(n) should be monotonically increasing (not strictly, but non-decreasing)
+    # The sequence goes 0, 0, 1, 1, 2, 4, 7, 13, 24, 44...
+    if n >= 3:
+        assert fibfib(n) >= fibfib(n-1), "fibfib(n) should be greater than or equal to fibfib(n-1) for n >= 3"
+    elif n == 2:
+        assert fibfib(2) >= fibfib(1)
+```

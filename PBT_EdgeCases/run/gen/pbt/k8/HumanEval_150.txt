@@ -1,0 +1,48 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_prime_returns_x(n, x, y):
+    if is_prime(n):
+        result = x_or_y(n, x, y)
+        assert result == x, f"For prime n={n}, x_or_y should return x={x}"
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_composite_returns_y(n, x, y):
+    if not is_prime(n):
+        result = x_or_y(n, x, y)
+        assert result == y, f"For composite n={n}, x_or_y should return y={y}"
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_consistency(n, x, y):
+    # This property ensures that the function's behavior is consistent
+    # based on whether 'n' is prime or not.
+    expected_value = x if is_prime(n) else y
+    result = x_or_y(n, x, y)
+    assert result == expected_value, \
+        f"For n={n}, x={x}, y={y}: Expected {expected_value}, got {result}"
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_identity_for_equal_inputs(n, x, y):
+    # If x and y are the same, the output should always be that value, 
+    # regardless of whether n is prime.
+    if x == y:
+        result = x_or_y(n, x, x)
+        assert result == x, "If x and y are equal, the result should be that value."
+```

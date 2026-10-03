@@ -1,0 +1,90 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=10**6), 
+       st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_true_for_actual_powers(x, n):
+    power = 1
+    exponent = 0
+    # Find an integer exponent such that n**exponent == power
+    while power < x:
+        power *= n
+        exponent += 1
+    
+    # If x is a simple power of n, then is_simple_power(x, n) should be True
+    # when n**exponent == x
+    if power == x:
+        assert is_simple_power(x, n) is True, f"Expected {x} to be a simple power of {n}"
+    # If x is not a simple power of n, then is_simple_power(x, n) should be False
+    else:
+        assert is_simple_power(x, n) is False, f"Expected {x} not to be a simple power of {n}"
+
+@given(st.integers(min_value=1, max_value=10**6), 
+       st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_false_for_non_powers(x, n):
+    # This property focuses on cases where x is not a power of n
+    # We will generate x and n, and if x is clearly not a power of n, the function should return False.
+    # To ensure it's not a power, we can take the log and check if it's an integer.
+    # However, float precision issues can arise. A simpler approach is to build it.
+    
+    # Check numbers between powers of n
+    if n > 1:
+        power = 1
+        while power < x:
+            power *= n
+        
+        if power > x: # x falls between n**(exp-1) and n**exp
+            assert is_simple_power(x, n) is False, f"Expected {x} not to be a simple power of {n}"
+        elif power == x: # x is exactly a power, this test case is for non-powers
+            pass # Skip this case, it's covered by test_is_simple_power_true_for_actual_powers
+
+@given(st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_is_1(x):
+    # If n is 1, then 1**any_integer is always 1.
+    # So, is_simple_power(x, 1) should be true only if x is 1.
+    result = is_simple_power(x, 1)
+    if x == 1:
+        assert result is True, "1 should be a simple power of 1"
+    else:
+        assert result is False, f"{x} should not be a simple power of 1 if x != 1"
+
+@given(st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_x_is_1(n):
+    # If x is 1, then n**0 = 1 for any n > 0.
+    # So, is_simple_power(1, n) should be true for any n > 0.
+    result = is_simple_power(1, n)
+    assert result is True, f"1 should always be a simple power of {n}"
+
+@given(st.integers(min_value=0, max_value=0), st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_x_is_0(x, n):
+    # If x is 0, and n is positive, n**integer can never be 0.
+    # The only exception is 0**positive_integer, which is 0. But n is the base.
+    # The problem implies positive x and n from examples, so 0 for x should be false.
+    # This is an edge case beyond the examples.
+    assert is_simple_power(x, n) is False, "0 cannot be a simple power of a positive n"
+
+@given(st.integers(min_value=1, max_value=10**6), st.just(0))
+def test_is_simple_power_n_is_0(x, n):
+    # If n is 0:
+    # 0**0 is undefined or 1 (depending on context, usually 1 in math, often error in programming).
+    # 0**positive_integer is 0.
+    # If x is 0, is_simple_power(0,0) could be true.
+    # If x is positive, is_simple_power(x,0) should be false.
+    
+    if x == 0: # This case is covered by test_is_simple_power_x_is_0 and test_is_simple_power_n_is_0(x=0)
+        # Assuming is_simple_power(0,0) should be true if it considers 0**exponent=0 valid for some exponent>0
+        # Given the examples and common interpretations, n is likely assumed to be > 1.
+        # Let's assume for n=0, if x=0, it's True (0^1=0). If x>0, it's False.
+        # However, the problem statement doesn't specify behavior for n=0 or x=0, and examples start from 1.
+        # Based on the typical interpretation of "simple power", n should be at least 2.
+        # If n=0, and x=0, it could be true (0^1 = 0). For x > 0, it should be false.
+        # Let's assume that if n=0, only x=0 is a simple power.
+        pass # The current function would likely loop infinitely if x > 0 and n = 0, or not handle 0^0 correctly.
+             # The provided 'concept hints' for n suggest min_value=0, but examples start with 1, 2, 4.
+             # Let's align with the hints and ensure this case is handled.
+        # If n is 0, and x is not 0, it cannot be a simple power.
+        # If x is 0, 0**positive_integer = 0, so it could be True.
+        assert is_simple_power(x, n) is (x == 0), "For n=0, x is a simple power only if x is 0"
+    else:
+        assert is_simple_power(x, n) is False, f"{x} cannot be a simple power of 0 if {x} is not 0"
+```

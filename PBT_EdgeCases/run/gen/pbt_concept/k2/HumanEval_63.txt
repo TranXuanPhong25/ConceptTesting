@@ -1,0 +1,40 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100))
+def test_fibfib_non_negativity(n):
+    result = fibfib(n)
+    assert result >= 0, "FibFib numbers should always be non-negative for n >= 0"
+
+@given(st.integers(min_value=3, max_value=100))
+def test_fibfib_recursive_property(n):
+    result = fibfib(n)
+    expected_sum = fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3)
+    assert result == expected_sum, f"fibfib({n}) should be the sum of fibfib({n-1}), fibfib({n-2}), and fibfib({n-3})"
+
+@given(st.integers(min_value=0, max_value=2))
+def test_fibfib_base_cases(n):
+    result = fibfib(n)
+    if n == 0:
+        assert result == 0, "fibfib(0) should be 0"
+    elif n == 1:
+        assert result == 0, "fibfib(1) should be 0"
+    elif n == 2:
+        assert result == 1, "fibfib(2) should be 1"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_fibfib_monotonicity_for_n_greater_than_2(n):
+    if n > 2:
+        assert fibfib(n) >= fibfib(n-1), "FibFib sequence should be monotonically increasing for n > 2"
+    elif n == 2:
+        assert fibfib(n) > fibfib(n-1), "fibfib(2) should be greater than fibfib(1)"
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fibfib_sequence_consistency(n):
+    # This property checks the sequence against known values (up to a certain point)
+    # and ensures that a small increase in n does not cause a drastic, unexpected change.
+    known_sequence = [0, 0, 1, 1, 2, 4, 7, 13, 24, 44, 81, 149, 274, 504, 927, 1705, 3136, 5768, 10609, 19513, 35889]
+    if n < len(known_sequence):
+        assert fibfib(n) == known_sequence[n], f"fibfib({n}) should match the known sequence value"
+
+```

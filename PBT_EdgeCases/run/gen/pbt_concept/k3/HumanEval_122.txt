@@ -1,0 +1,138 @@
+```python
+from hypothesis import given, strategies as st
+import math
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_sum_property(arr, data):
+    k = data.draw(st.integers(min_value=1, max_value=len(arr)))
+    result = add_elements(arr, k)
+
+    # Property: The result should be the sum of elements with at most two digits
+    # from the first k elements of arr.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"Expected sum {expected_sum}, but got {result}"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_non_negative_input(arr, data):
+    k = data.draw(st.integers(min_value=1, max_value=len(arr)))
+    # Create an array with only non-negative numbers
+    non_negative_arr = [abs(x) for x in arr]
+    result = add_elements(non_negative_arr, k)
+
+    # Property: The result should be non-negative if all relevant inputs are non-negative.
+    # This is true if all elements considered have at most two digits and are non-negative.
+    expected_sum = 0
+    for i in range(min(k, len(non_negative_arr))):
+        if 0 <= non_negative_arr[i] <= 99:
+            expected_sum += non_negative_arr[i]
+
+    assert result >= 0, "The sum of non-negative elements (within criteria) should be non-negative."
+    assert result == expected_sum, "Sum should be correct for non-negative inputs."
+
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_k_equals_one(arr, data):
+    k = 1
+    result = add_elements(arr, k)
+
+    # Property: If k=1, the result is the first element if it has at most two digits, else 0.
+    expected = arr[0] if -99 <= arr[0] <= 99 else 0
+    assert result == expected, f"For k=1, expected {expected}, got {result}"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_k_equals_len_arr(arr, data):
+    k = len(arr)
+    result = add_elements(arr, k)
+
+    # Property: If k equals len(arr), the result is the sum of all elements with at most two digits.
+    expected_sum = sum(x for x in arr if -99 <= x <= 99)
+    assert result == expected_sum, f"For k=len(arr), expected {expected_sum}, got {result}"
+
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100).filter(lambda x: all(abs(e) > 99 for e in x)),
+    st.data()
+)
+def test_add_elements_all_large_numbers(arr, data):
+    k = data.draw(st.integers(min_value=1, max_value=len(arr)))
+    result = add_elements(arr, k)
+
+    # Property: If all numbers in the first k elements have more than two digits, the sum should be 0.
+    assert result == 0, "If all relevant numbers have more than two digits, the sum should be 0."
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_all_small_numbers(arr, data):
+    k = data.draw(st.integers(min_value=1, max_value=len(arr)))
+    result = add_elements(arr, k)
+
+    # Property: If all numbers in the first k elements have at most two digits, the sum should be their direct sum.
+    expected_sum = sum(arr[:k])
+    assert result == expected_sum, "If all relevant numbers have at most two digits, the sum should be their direct sum."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_order_invariance_for_same_elements(arr, data):
+    k = data.draw(st.integers(min_value=1, max_value=len(arr)))
+
+    # Compute result for the original array
+    result_original = add_elements(arr, k)
+
+    # Create a shuffled version of the first k elements
+    first_k_elements = arr[:k]
+    remaining_elements = arr[k:]
+    shuffled_first_k = data.draw(st.permutations(first_k_elements))
+    shuffled_arr = shuffled_first_k + remaining_elements
+
+    # Compute result for the shuffled array
+    result_shuffled = add_elements(shuffled_arr, k)
+
+    # Property: The sum of the first k elements (filtered by digit count) should be independent of their order.
+    # This is true because summation is commutative.
+    expected_sum_original = sum(x for x in arr[:k] if -99 <= x <= 99)
+    expected_sum_shuffled = sum(x for x in shuffled_arr[:k] if -99 <= x <= 99)
+
+    assert result_original == expected_sum_original, "Original calculation mismatch"
+    assert result_shuffled == expected_sum_shuffled, "Shuffled calculation mismatch"
+    assert result_original == result_shuffled, "The sum of selected elements should be invariant to their order within the first k elements."
+
+@given(arr=st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+       k=st.integers(min_value=1, max_value=100))
+def test_add_elements_k_upper_bound_check(arr, k):
+    # Ensure k does not exceed len(arr) for actual testing
+    if k > len(arr):
+        k = len(arr)
+
+    result = add_elements(arr, k)
+
+    # Property: The function should correctly handle k up to len(arr)
+    # The actual property is covered by test_add_elements_sum_property,
+    # this just ensures we test with max k.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"Expected sum {expected_sum} for max k, but got {result}"
+
+```

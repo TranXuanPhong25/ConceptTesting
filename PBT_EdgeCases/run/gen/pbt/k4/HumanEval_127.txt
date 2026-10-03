@@ -1,0 +1,127 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda x: (min(x), max(x))
+    ),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_intersection_property(interval1, interval2):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Calculate the expected intersection
+    inter_start = max(start1, start2)
+    inter_end = min(end1, end2)
+
+    expected_result = "NO"
+    if inter_start <= inter_end:
+        length = inter_end - inter_start + 1
+        if is_prime(length):
+            expected_result = "YES"
+        else:
+            expected_result = "NO"
+    else:
+        expected_result = "NO"
+
+    actual_result = intersection(interval1, interval2)
+
+    assert actual_result == expected_result, \
+        f"For intervals {interval1} and {interval2}, expected {expected_result} but got {actual_result}"
+
+@given(
+    st.tuples(st.integers(min_value=0, max_value=10), st.integers(min_value=0, max_value=10)).map(
+        lambda x: (min(x), max(x))
+    ),
+    st.tuples(st.integers(min_value=0, max_value=10), st.integers(min_value=0, max_value=10)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_intersection_with_known_primes_and_non_primes(interval1, interval2):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Calculate the intersection
+    inter_start = max(start1, start2)
+    inter_end = min(end1, end2)
+
+    # Check the actual function output
+    actual_output = intersection(interval1, interval2)
+
+    # Check for non-overlapping cases
+    if inter_start > inter_end:
+        assert actual_output == "NO", \
+            f"Non-overlapping intervals {interval1}, {interval2} should return 'NO'"
+        return
+
+    # Check for overlapping cases
+    length = inter_end - inter_start + 1
+    if is_prime(length):
+        assert actual_output == "YES", \
+            f"Intersection length {length} (prime) for {interval1}, {interval2} should return 'YES'"
+    else:
+        assert actual_output == "NO", \
+            f"Intersection length {length} (not prime) for {interval1}, {interval2} should return 'NO'"
+
+@given(
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_intersection_with_self(interval):
+    # The intersection of an interval with itself should always be the interval itself.
+    # The length should be end - start + 1.
+    start, end = interval
+    length = end - start + 1
+
+    actual_output = intersection(interval, interval)
+
+    if is_prime(length):
+        assert actual_output == "YES", \
+            f"Intersection with self {interval} should have length {length} (prime) and return 'YES'"
+    else:
+        assert actual_output == "NO", \
+            f"Intersection with self {interval} should have length {length} (not prime) and return 'NO'"
+
+@given(
+    st.integers(min_value=-100, max_value=100),
+    st.integers(min_value=-100, max_value=100)
+)
+def test_single_point_intersection(point1, point2):
+    # Test cases where intervals are single points or intersect at a single point
+    # (x, x) and (y, y)
+    # (x, y) and (y, z) where y is the intersection point
+    interval1 = (point1, point1)
+    interval2 = (point2, point2)
+
+    expected_result = "NO"
+    if point1 == point2:
+        # Length of (point1, point1) is 1, which is not prime
+        expected_result = "NO"
+    else:
+        expected_result = "NO" # No intersection or single point intersection, length 1
+
+    actual_result = intersection(interval1, interval2)
+    assert actual_result == expected_result, \
+        f"For single point intervals {interval1} and {interval2}, expected {expected_result} but got {actual_result}"
+
+    # Test cases where two intervals meet at an endpoint, e.g., (1,2) and (2,3)
+    interval_a = (point1, point1 + 1)
+    interval_b = (point1 + 1, point1 + 2)
+    actual_result_meet = intersection(interval_a, interval_b)
+    # Intersection is (point1 + 1, point1 + 1), length 1, not prime
+    assert actual_result_meet == "NO", \
+        f"Intervals meeting at endpoint {interval_a} and {interval_b} should have length 1 and return 'NO'"
+
+```

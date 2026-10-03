@@ -1,0 +1,131 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=0, max_size=100))
+def test_vowels_count_non_negative(s):
+    # Property: The count of vowels should always be non-negative.
+    result = vowels_count(s)
+    assert result >= 0, "Vowel count cannot be negative"
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=0, max_size=100))
+def test_vowels_count_upper_bound(s):
+    # Property: The count of vowels should not exceed the length of the string.
+    result = vowels_count(s)
+    assert result <= len(s), "Vowel count cannot exceed string length"
+
+@given(st.text(st.sampled_from('aeiouAEIOU'), min_size=0, max_size=50))
+def test_vowels_count_all_vowels(s):
+    # Property: If a string consists only of standard vowels, the count should be its length.
+    result = vowels_count(s)
+    assert result == len(s), "String with only standard vowels should have count equal to its length"
+
+@given(st.text(st.sampled_from('bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ'), min_size=0, max_size=50))
+def test_vowels_count_no_vowels(s):
+    # Property: If a string consists only of consonants (and no 'y'), the count should be zero.
+    result = vowels_count(s)
+    assert result == 0, "String with only consonants should have a vowel count of zero"
+
+@given(st.text(st.sampled_from('aeiouAEIOU'), min_size=0, max_size=50))
+def test_vowels_count_case_insensitivity_standard_vowels(s):
+    # Property: Vowel counting should be case-insensitive for standard vowels.
+    s_lower = s.lower()
+    s_upper = s.upper()
+    assert vowels_count(s_lower) == len(s_lower), "Lowercase standard vowels should be counted correctly"
+    assert vowels_count(s_upper) == len(s_upper), "Uppercase standard vowels should be counted correctly"
+    assert vowels_count(s_lower) == vowels_count(s_upper), "Case should not affect standard vowel count"
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=1, max_size=100))
+def test_vowels_count_y_at_end(s):
+    # Property: 'y' is a vowel only when it is at the end of the word.
+    # We test this by comparing with a version of the string where 'y' is removed from the end.
+    if s.endswith('y') or s.endswith('Y'):
+        s_without_y = s[:-1]
+        result_with_y = vowels_count(s)
+        result_without_y = vowels_count(s_without_y)
+
+        # If the string without the last 'y' has the same vowel count, it means the 'y' was counted.
+        # This is a bit tricky, let's make it more direct.
+        # The difference should be 1 if the last char was 'y' and it's the only one.
+        # This property is better tested by checking if adding 'y' to the end increases the count by 1.
+        if len(s_without_y) > 0: # Ensure we don't compare 'y' with ''
+            # Check the actual definition of 'y'
+            expected_count = 0
+            for char in s_without_y:
+                if char.lower() in 'aeiou':
+                    expected_count += 1
+            expected_count += 1 # for the 'y' at the end
+            assert result_with_y == expected_count, f"Expected 'y' at the end of '{s}' to be counted"
+    else:
+        # If 'y' is not at the end, it should not be counted as a vowel.
+        # Compare with a version where all 'y's are removed.
+        s_without_all_y = s.replace('y', '').replace('Y', '')
+        result_with_y = vowels_count(s)
+        result_without_all_y = vowels_count(s_without_all_y)
+
+        # This is not a strong property as removing 'y' might change other counts.
+        # Let's verify by individual char contribution.
+        expected_count = 0
+        for i, char in enumerate(s):
+            if char.lower() in 'aeiou':
+                expected_count += 1
+            elif (char.lower() == 'y' and i == len(s) - 1):
+                expected_count += 1
+        assert result_with_y == expected_count, f"Specific 'y' rule violated for '{s}'"
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=0, max_size=100))
+def test_vowels_count_idempotence(s):
+    # Property: Calling the function twice with the same input should yield the same result.
+    result1 = vowels_count(s)
+    result2 = vowels_count(s)
+    assert result1 == result2, "Function should be idempotent"
+
+@given(
+    st.text(st.characters(blacklist_characters=' '), min_size=0, max_size=50).map(lambda s: s + random.choice(['y', 'Y']) if len(s) > 0 else random.choice(['y', 'Y'])),
+    st.text(st.characters(blacklist_characters=' '), min_size=0, max_size=50)
+)
+def test_vowels_count_y_end_specific(s_with_y_end, s_no_y_end):
+    # Property: A 'y' at the end should add 1 to the count, while a 'y' not at the end should add 0.
+    # This test focuses on the specific rule for 'y'.
+    
+    # Test case for 'y' at the end
+    result_y_end = vowels_count(s_with_y_end)
+    expected_y_end = 0
+    for i, char in enumerate(s_with_y_end):
+        if char.lower() in 'aeiou':
+            expected_y_end += 1
+        elif char.lower() == 'y' and i == len(s_with_y_end) - 1:
+            expected_y_end += 1
+    assert result_y_end == expected_y_end, f"Failed for 'y' at end: '{s_with_y_end}'"
+
+    # Test case for 'y' not at the end (by construction or replacement)
+    s_no_y_end_transformed = s_no_y_end
+    # Ensure any 'y's are not at the end for the comparison
+    if s_no_y_end_transformed.endswith('y') or s_no_y_end_transformed.endswith('Y'):
+        s_no_y_end_transformed = 'x' + s_no_y_end_transformed # Prepend a char to shift 'y' from end
+    
+    result_no_y_end = vowels_count(s_no_y_end_transformed)
+    expected_no_y_end = 0
+    for i, char in enumerate(s_no_y_end_transformed):
+        if char.lower() in 'aeiou':
+            expected_no_y_end += 1
+        elif char.lower() == 'y' and i == len(s_no_y_end_transformed) - 1:
+            expected_no_y_end += 1
+    assert result_no_y_end == expected_no_y_end, f"Failed for 'y' not at end: '{s_no_y_end_transformed}'"
+
+
+@given(st.text(st.characters(blacklist_characters=' '), min_size=1, max_size=100))
+def test_vowels_count_appending_consonant(s):
+    # Property: Appending a consonant (not 'y') should not change the vowel count from the original string's count
+    # unless the original string ended with 'y' and the consonant replaced it.
+    original_count = vowels_count(s)
+    consonant = st.sampled_from('bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ').example()
+    s_appended = s + consonant
+    appended_count = vowels_count(s_appended)
+
+    # If the original string ended with 'y', and we appended a consonant,
+    # the 'y' is no longer at the end, so its count should decrease by 1.
+    if (s.endswith('y') or s.endswith('Y')) and len(s) > 0:
+        assert appended_count == original_count - 1, f"Appending consonant broke 'y' rule for '{s}'"
+    else:
+        assert appended_count == original_count, f"Appending consonant changed count for '{s}'"
+```

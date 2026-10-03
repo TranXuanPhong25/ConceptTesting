@@ -1,0 +1,25 @@
+```python
+
+# Basic Test Cases
+assert fib(0) == 0, "Basic Test Case 1: n = 0"
+assert fib(1) == 1, "Basic Test Case 2: n = 1"
+assert fib(2) == 1, "Basic Test Case 3: n = 2"
+assert fib(3) == 2, "Basic Test Case 4: n = 3"
+assert fib(5) == 5, "Basic Test Case 5: n = 5"
+assert fib(10) == 55, "Basic Test Case 6: n = 10"
+
+# Edge Test Cases
+assert fib(-1) == None, "Edge Test Case 1: Negative input" # Assuming function should handle negative input by returning None or raising an error
+assert fib(0) == 0, "Edge Test Case 2: Zero input"
+assert fib(1) == 1, "Edge Test Case 3: Smallest positive input"
+
+# Large Scale Test Cases
+assert fib(20) == 6765, "Large Scale Test Case 1: n = 20"
+assert fib(30) == 832040, "Large Scale Test Case 2: n = 30"
+assert fib(40) == 102334155, "Large Scale Test Case 3: n = 40"
+assert fib(45) == 1134903170, "Large Scale Test Case 4: n = 45"
+# Note: For very large 'n', the iterative solution is preferred to avoid recursion depth limits and performance issues.
+# If the function is implemented recursively without memoization, n=45 might already be slow.
+# If the function is implemented with memoization or iteratively, it should handle larger numbers efficiently.
+
+```

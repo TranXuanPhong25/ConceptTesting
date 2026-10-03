@@ -1,0 +1,134 @@
+```python
+from hypothesis import given, strategies as st
+import math
+
+def add_elements(arr, k):
+    """
+    Given a non-empty array of integers arr and an integer k, return
+    the sum of the elements with at most two digits from the first k elements of arr.
+
+    Example:
+
+        Input: arr = [111,21,3,4000,5,6,7,8,9], k = 4
+        Output: 24 # sum of 21 + 3
+
+    Constraints:
+        1. 1 <= len(arr) <= 100
+        2. 1 <= k <= len(arr)
+    """
+    total_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:  # Check if the number has at most two digits (including negative)
+            total_sum += arr[i]
+    return total_sum
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_basic_property(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k_valid = min(k, len(arr))
+    result = add_elements(arr, k_valid)
+
+    # Property: The result should be a sum of elements that satisfy the conditions.
+    # We can verify this by manually calculating the expected sum.
+    expected_sum = 0
+    for i in range(k_valid):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"Expected sum {expected_sum}, but got {result}"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_no_two_digit_numbers(arr, k):
+    # Property: If there are no two-digit numbers in the first k elements, the sum should be 0.
+    k_valid = min(k, len(arr))
+    
+    # Filter the input array to only include numbers that are NOT two-digit
+    arr_no_two_digit = [
+        num if not (-99 <= num <= 99) else num * 1000 # Make sure they are not two-digit
+        for num in arr
+    ]
+    
+    result = add_elements(arr_no_two_digit, k_valid)
+    
+    # Check if any element in the first k_valid elements is actually two-digit
+    has_two_digit_in_k = False
+    for i in range(k_valid):
+        if -99 <= arr_no_two_digit[i] <= 99:
+            has_two_digit_in_k = True
+            break
+            
+    if not has_two_digit_in_k:
+        assert result == 0, "If no two-digit numbers in first k elements, sum should be 0"
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_two_digit_numbers(arr, k):
+    # Property: If all numbers in the first k elements have at most two digits,
+    # the sum should be the sum of those elements.
+    k_valid = min(k, len(arr))
+    result = add_elements(arr, k_valid)
+    expected_sum = sum(arr[:k_valid])
+    assert result == expected_sum, "If all numbers are two-digit, sum should be their total"
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=100), min_size=1, max_size=100), # k is small
+    st.integers(min_value=1, max_value=1) # k is always 1
+)
+def test_add_elements_k_is_one(arr, k):
+    # Property: When k is 1, the result should be the first element if it's two digits, else 0.
+    result = add_elements(arr, k)
+    if -99 <= arr[0] <= 99:
+        assert result == arr[0], "If k is 1 and first element is two-digit, result is first element"
+    else:
+        assert result == 0, "If k is 1 and first element is not two-digit, result is 0"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_k_equals_len_arr(arr, k_val):
+    # Property: When k is equal to len(arr), it should consider all elements.
+    # We fix k to be the length of the array here.
+    k = len(arr)
+    result = add_elements(arr, k)
+    expected_sum = 0
+    for num in arr:
+        if -99 <= num <= 99:
+            expected_sum += num
+    assert result == expected_sum, "When k equals len(arr), all appropriate elements should be summed"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_large_k_same_as_len_arr(arr, k_large):
+    # Property: If k is greater than or equal to the length of the array,
+    # it should behave the same as if k was exactly len(arr).
+    k_valid = max(len(arr), k_large) # Ensure k_valid is at least len(arr)
+    result = add_elements(arr, k_valid)
+
+    expected_sum = 0
+    for num in arr:
+        if -99 <= num <= 99:
+            expected_sum += num
+    assert result == expected_sum, "If k >= len(arr), it should sum all appropriate elements"
+
+@given(
+    st.lists(st.integers(min_value=100, max_value=1000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_large_numbers(arr, k):
+    # Property: If all numbers in the first k elements are not two digits, the sum should be 0.
+    k_valid = min(k, len(arr))
+    result = add_elements(arr, k_valid)
+    assert result == 0, "If all numbers in the first k elements are > 99, sum should be 0"
+
+```

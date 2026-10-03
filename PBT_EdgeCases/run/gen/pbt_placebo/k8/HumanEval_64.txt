@@ -1,0 +1,125 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(st.characters(blacklist_categories=('Cs',)), min_size=0, max_size=100))
+def test_vowels_count_non_negative(s):
+    # Property: The count of vowels should always be non-negative.
+    result = vowels_count(s)
+    assert result >= 0, "Vowel count should always be non-negative"
+
+@given(st.text(st.characters(blacklist_categories=('Cs',)), min_size=0, max_size=100))
+def test_vowels_count_length_bound(s):
+    # Property: The number of vowels cannot exceed the length of the string.
+    result = vowels_count(s)
+    assert result <= len(s), "Vowel count cannot exceed string length"
+
+@given(st.text(st.characters(blacklist_categories=('Cs',)), min_size=0, max_size=100))
+def test_vowels_count_case_insensitivity(s):
+    # Property: The vowel count should be the same for the original string and its lowercase version.
+    # This assumes that the implementation handles both cases internally or treats them similarly.
+    # However, the example "ACEDY" suggests case-insensitivity.
+    result_original = vowels_count(s)
+    result_lower = vowels_count(s.lower())
+    assert result_original == result_lower, "Vowel count should be case-insensitive"
+
+@given(st.text(st.characters(blacklist_categories=('Cs',)), min_size=0, max_size=100),
+       st.text(st.characters(blacklist_categories=('Cs',)), min_size=0, max_size=100))
+def test_vowels_count_concatenation(s1, s2):
+    # Property: The vowel count of a concatenated string is not necessarily the sum of individual counts
+    # due to the 'y' rule. However, we can check a simple property related to it.
+    # If neither s1 nor s2 ends with 'y', then the sum of individual counts should be approximately the count of the combined string.
+    # This is a weak property but better than nothing for 'y' handling.
+
+    # Calculate actual vowel counts for individual strings
+    vowels_s1 = sum(1 for char in s1.lower() if char in 'aeiou')
+    if s1 and s1[-1].lower() == 'y':
+        vowels_s1 += 1
+
+    vowels_s2 = sum(1 for char in s2.lower() if char in 'aeiou')
+    if s2 and s2[-1].lower() == 'y':
+        vowels_s2 += 1
+
+    # Calculate actual vowel count for combined string
+    vowels_combined = sum(1 for char in (s1 + s2).lower() if char in 'aeiou')
+    if (s1 + s2) and (s1 + s2)[-1].lower() == 'y':
+        vowels_combined += 1
+
+    # Check a relationship: the sum of individual counts should be at least the combined count
+    # minus 1 (if 'y' at end of s1 makes it a vowel, but it's no longer at the end of s1+s2)
+    # This property is tricky due to 'y' at the end rule.
+    # A more robust property: If neither s1 nor s2 end with 'y', and the concatenated string doesn't end with 'y',
+    # then the sum should be equal.
+    
+    # Simpler property: Adding a non-'y' vowel at the end should increase the count by at least 1.
+    original_count = vowels_count(s1)
+    if 'a' not in s1.lower() or 'e' not in s1.lower() or 'i' not in s1.lower() or 'o' not in s1.lower() or 'u' not in s1.lower():
+        # If original string does not contain all basic vowels, adding one should increase the count.
+        # This is a loose property due to 'y' rule but captures some behavior.
+        pass # This property is hard to formulate cleanly with the 'y' rule
+
+    # Let's try a different angle for concatenation:
+    # If neither s1 nor s2 ends with 'y', and the concatenated string doesn't end with 'y',
+    # then the total vowel count should be the sum of individual vowel counts.
+    if (not s1 or s1[-1].lower() != 'y') and \
+       (not s2 or s2[-1].lower() != 'y') and \
+       (not (s1 + s2) or (s1 + s2)[-1].lower() != 'y'):
+        assert vowels_count(s1 + s2) == vowels_count(s1) + vowels_count(s2), \
+            "Vowel count of concatenation should be sum if no 'y' edge cases"
+
+@given(st.text(st.characters(blacklist_categories=('Cs', 'Ll', 'Lu', 'P', 'N', 'Z', 'S')), min_size=0, max_size=100))
+def test_vowels_count_non_vowel_chars(s):
+    # Property: Strings composed only of non-vowel characters (excluding 'y' at the end) should have 0 vowels.
+    # This test specifically targets characters that are definitively not vowels.
+    # We need to be careful with 'y' at the end.
+    
+    # Create a string that only has non-vowel consonants and potentially numbers/symbols.
+    # Ensure 'y' is not at the end unless it's the only character.
+    
+    # If the string ends with 'y', it could be a vowel.
+    # This property is for strings that *should* have zero vowels, regardless of length.
+    
+    # Let's consider strings that are guaranteed to have 0 vowels if not ending in 'y'
+    non_vowel_chars = [c for c in s.lower() if c not in 'aeiou']
+    test_string = "".join(non_vowel_chars)
+    
+    if not test_string or test_string[-1] != 'y':
+        assert vowels_count(test_string) == 0, \
+            "String with only non-vowels (and not ending in 'y') should have 0 vowels"
+
+@given(st.text(st.sampled_from('bcdfghjklmnpqrstvwxz'), min_size=1, max_size=100).map(lambda s: s + 'y'))
+def test_vowels_count_ends_with_y(s):
+    # Property: If a string ends with 'y', and contains no other 'aeiou' vowels, its count should be 1.
+    # This specifically tests the 'y' at the end rule.
+    # Create a string composed of only consonants, then append 'y'.
+    
+    # Ensure the string does not contain 'a', 'e', 'i', 'o', 'u'
+    assert all(char not in 'aeiou' for char in s[:-1].lower()), "Precondition failed: string should only contain consonants before 'y'"
+    
+    assert vowels_count(s) == 1, "String ending in 'y' with no other vowels should have 1 vowel"
+
+@given(st.text(st.sampled_from('aeiouAEIOU'), min_size=1, max_size=100))
+def test_vowels_count_only_basic_vowels(s):
+    # Property: For a string composed only of 'aeiou' (case-insensitive), the vowel count should be its length.
+    result = vowels_count(s)
+    assert result == len(s), "String with only basic vowels should have count equal to its length"
+
+@given(st.text(st.characters(min_codepoint=1, max_codepoint=127, blacklist_categories=('Cs',)), min_size=0, max_size=100))
+def test_vowels_count_idempotence(s):
+    # Property: Calling the function multiple times with the same input should yield the same result.
+    result1 = vowels_count(s)
+    result2 = vowels_count(s)
+    assert result1 == result2, "Function should be idempotent"
+
+@given(st.text(st.from_regex(r'[a-z]*y', fullmatch=True), min_size=1, max_size=100))
+def test_vowels_count_only_y_at_end(s):
+    # Property: For strings where 'y' is the only potential vowel, and it's at the end, count should be 1.
+    # If no 'y' at end, and no 'aeiou', count is 0.
+    has_basic_vowels = any(char in 'aeiou' for char in s[:-1].lower())
+    
+    if s[-1].lower() == 'y' and not has_basic_vowels:
+        assert vowels_count(s) == 1, "String with 'y' at end and no other vowels should count 'y'"
+    elif s[-1].lower() != 'y' and not has_basic_vowels:
+        assert vowels_count(s) == 0, "String with no 'y' at end and no other vowels should count 0"
+    # Note: This strategy specifically generates strings ending in 'y'.
+    # We are testing the 'y' rule specifically here.
+```

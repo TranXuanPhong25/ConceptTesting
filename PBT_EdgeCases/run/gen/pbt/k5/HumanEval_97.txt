@@ -1,0 +1,61 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract unit digits for a and b, handling negative numbers correctly
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    expected_product = unit_digit_a * unit_digit_b
+    
+    assert result == expected_product, (
+        f"For a={a}, b={b}: "
+        f"Unit digit of a is {unit_digit_a}, unit digit of b is {unit_digit_b}. "
+        f"Expected product of unit digits is {expected_product}, but got {result}."
+    )
+
+@given(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_range(a, b):
+    result = multiply(a, b)
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    assert result == unit_digit_a * unit_digit_b, "Should return the product of unit digits for various integer ranges."
+
+@given(st.integers().filter(lambda x: x % 10 == 0), st.integers())
+def test_multiply_with_zero_unit_digit(a, b):
+    result = multiply(a, b)
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    assert result == 0, f"If one unit digit is 0 (a={a}), the product should be 0, but got {result}."
+    assert result == unit_digit_a * unit_digit_b, "Property should hold even with zero unit digit."
+
+@given(st.integers(min_value=-100, max_value=-1), st.integers(min_value=-100, max_value=-1))
+def test_multiply_negative_inputs(a, b):
+    result = multiply(a, b)
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    assert result == unit_digit_a * unit_digit_b, "Should correctly handle negative inputs by taking the absolute value of unit digits."
+
+@given(st.integers(min_value=0, max_value=9), st.integers(min_value=0, max_value=9))
+def test_multiply_single_digit_numbers(a, b):
+    result = multiply(a, b)
+    assert result == a * b, f"For single-digit numbers, the result should be their direct product, but got {result} for {a}*{b}."
+    assert result == (abs(a) % 10) * (abs(b) % 10), "Property should hold for single-digit numbers."
+
+@given(st.integers(), st.just(0))
+def test_multiply_with_zero_second_arg(a, b):
+    result = multiply(a, b)
+    unit_digit_a = abs(a) % 10
+    assert result == 0, f"Multiplying by 0 should result in 0 when unit digit of b is 0, but got {result}."
+    assert result == unit_digit_a * (abs(b) % 10), "Property should hold when one argument is 0."
+
+@given(st.just(0), st.integers())
+def test_multiply_with_zero_first_arg(a, b):
+    result = multiply(a, b)
+    unit_digit_b = abs(b) % 10
+    assert result == 0, f"Multiplying by 0 should result in 0 when unit digit of a is 0, but got {result}."
+    assert result == (abs(a) % 10) * unit_digit_b, "Property should hold when one argument is 0."
+```

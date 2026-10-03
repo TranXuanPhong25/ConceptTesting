@@ -1,0 +1,7 @@
+**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
+- param `s`: str (type from docstring examples)
+- edges `s`: '', docstring characters a e i o u y at start, middle, end, upper case, single char, ' ', leading/trailing spaces, 2 and 3+ consecutive spaces, mixed case, non-ASCII 'é', length 10**4
+- strategy `s`: st.text(alphabet='aeiouyAEIOUY', min_size=0, max_size=200)
+- witness: @example(s='')
+- witness: @example(s='aeae')
+- witness: @example(s='YYY')

@@ -1,0 +1,31 @@
+```python
+
+# Basic Test Cases
+assert fibfib(0) == 0, "Basic Test Case 1: n = 0"
+assert fibfib(1) == 0, "Basic Test Case 2: n = 1"
+assert fibfib(2) == 1, "Basic Test Case 3: n = 2"
+assert fibfib(3) == 1, "Basic Test Case 4: n = 3 (0 + 0 + 1)"
+assert fibfib(4) == 2, "Basic Test Case 5: n = 4 (0 + 1 + 1)"
+assert fibfib(5) == 4, "Basic Test Case 6: n = 5 (1 + 1 + 2)"
+assert fibfib(6) == 7, "Basic Test Case 7: n = 6 (1 + 2 + 4)"
+assert fibfib(7) == 13, "Basic Test Case 8: n = 7 (2 + 4 + 7)"
+assert fibfib(8) == 24, "Basic Test Case 9: n = 8 (4 + 7 + 13)"
+
+# Edge Test Cases
+# Assuming n will always be a non-negative integer based on the problem definition.
+# If negative inputs were possible, additional checks would be needed.
+# For this problem, the smallest valid inputs are 0, 1, 2 which are covered in basic tests.
+
+# Large Scale Test Cases (Focus on efficiency)
+# These tests ensure the function can handle larger inputs without excessive computation time.
+# The `fibfib` function's recursive nature without memoization would be very slow for large N.
+# An efficient implementation (like dynamic programming or memoization) is expected for these.
+assert fibfib(20) == 2281, "Large Scale Test Case 1: n = 20"
+assert fibfib(30) == 183490, "Large Scale Test Case 2: n = 30"
+assert fibfib(35) == 1805561, "Large Scale Test Case 3: n = 35"
+# Adding a significantly larger test case to stress the implementation.
+# The expected value for fibfib(40) is a large number.
+# If the function is not optimized, this test will likely time out.
+assert fibfib(40) == 17740467, "Large Scale Test Case 4: n = 40"
+
+```

@@ -1,0 +1,152 @@
+```python
+import re
+from hypothesis import given, strategies as st
+
+@given(st.text())
+def test_no_spaces_means_no_underscores_or_dashes(text):
+    # Property: If the input string contains no spaces, the output should be identical to the input.
+    if ' ' not in text:
+        result = fix_spaces(text)
+        assert result == text, f"If no spaces, output should be identical. Input: '{text}', Output: '{result}'"
+
+@given(st.text(alphabet=st.characters(blacklist_characters=' ')), st.integers(0, 10))
+def test_all_spaces_replaced_by_underscore_or_dash(base_text, num_spaces_to_add):
+    # Property: All original space characters should be replaced by either '_' or '-'.
+    # This test primarily focuses on the characters themselves, not their position or count initially.
+    text_with_spaces = base_text + ' ' * num_spaces_to_add
+    result = fix_spaces(text_with_spaces)
+    assert ' ' not in result, f"No spaces should remain in the output. Input: '{text_with_spaces}', Output: '{result}'"
+    for char in result:
+        if char == '_' or char == '-':
+            pass # These are allowed replacements
+        elif char in base_text: # Other characters must be from the original base_text
+            pass
+        else:
+            assert False, f"Unexpected character '{char}' in output. Input: '{text_with_spaces}', Output: '{result}'"
+
+
+@given(st.text(min_size=0, max_size=200))
+def test_single_space_becomes_underscore(text):
+    # Property: Any sequence of exactly one space should be replaced by a single underscore.
+    # We use regex to check for single spaces in the original and verify the replacement.
+    if '  ' not in text: # Only test cases without consecutive spaces > 1
+        result = fix_spaces(text)
+        assert re.fullmatch(text.replace(' ', '_'), result), \
+            f"Single spaces should become underscores. Input: '{text}', Output: '{result}'"
+
+@given(st.text(min_size=0, max_size=200))
+def test_two_consecutive_spaces_become_underscore(text):
+    # Property: Any sequence of exactly two consecutive spaces should be replaced by a single underscore.
+    # This is a nuance from the docstring: "if a string has more than 2 consecutive spaces, then replace all consecutive spaces with -"
+    # This implies 2 consecutive spaces should be treated like single spaces, i.e., replaced by '_'.
+    # Example: "a  b" should become "a_b"
+    if '   ' not in text: # Ensure no more than 2 consecutive spaces
+        expected = re.sub(r' {2}', '_', re.sub(r' {1}', '_', text))
+        result = fix_spaces(text)
+        assert result == expected, f"Two consecutive spaces should become one underscore. Input: '{text}', Output: '{result}'"
+
+@given(st.text(min_size=0, max_size=200))
+def test_more_than_two_consecutive_spaces_become_dash(text):
+    # Property: Any sequence of three or more consecutive spaces should be replaced by a single dash.
+    if '   ' in text: # Only test cases with at least three consecutive spaces
+        result = fix_spaces(text)
+        # Check if any original '   ' (or more) sequence resulted in a '-'
+        assert re.search(r'---', text) is None or re.search(r'-', result), \
+            f"More than two consecutive spaces should become a dash. Input: '{text}', Output: '{result}'"
+        assert '   ' not in result, f"Original triple spaces should not remain. Input: '{text}', Output: '{result}'"
+        # More precise check: any group of 3+ spaces should be a single '-'
+        # This requires careful construction of the expected output.
+        expected_output_parts = []
+        last_idx = 0
+        for match in re.finditer(r' {3,}', text):
+            # Add text before the group of 3+ spaces, with single spaces replaced by '_'
+            expected_output_parts.append(text[last_idx:match.start()].replace(' ', '_'))
+            expected_output_parts.append('-') # Replace the group of 3+ spaces with a single dash
+            last_idx = match.end()
+        expected_output_parts.append(text[last_idx:].replace(' ', '_')) # Add remaining text
+        expected = "".join(expected_output_parts)
+        assert result == expected, f"More than two consecutive spaces should be replaced by a single dash. Input: '{text}', Output: '{result}', Expected: '{expected}'"
+
+
+@given(st.text(min_size=0, max_size=200))
+def test_no_double_underscores_or_double_dashes(text):
+    # Property: The output should not contain "__" or "--" sequences.
+    # This means each replacement (single space -> '_', multiple spaces -> '-') should be isolated.
+    result = fix_spaces(text)
+    assert '__' not in result, f"Output should not contain '__'. Input: '{text}', Output: '{result}'"
+    assert '--' not in result, f"Output should not contain '--'. Input: '{text}', Output: '{result}'"
+
+@given(st.text(min_size=0, max_size=200))
+def test_output_length_is_less_than_or_equal_to_input_length(text):
+    # Property: The length of the output string should always be less than or equal to the input string.
+    # This is because spaces are replaced by single characters ('_' or '-') or reduced from multiple to one.
+    result = fix_spaces(text)
+    assert len(result) <= len(text), \
+        f"Output length should be less than or equal to input length. Input: '{text}' ({len(text)}), Output: '{result}' ({len(result)})"
+
+@given(st.text(min_size=0, max_size=200))
+def test_non_space_characters_remain_unchanged_and_in_order(text):
+    # Property: All non-space characters from the input should appear in the output, in the same order.
+    # Extract non-space characters from input and output and compare them.
+    original_non_spaces = [char for char in text if char != ' ']
+    result_non_spaces = [char for char in fix_spaces(text) if char != '_' and char != '-']
+    assert original_non_spaces == result_non_spaces, \
+        f"Non-space characters should remain unchanged and in order. Input: '{text}', Output: '{fix_spaces(text)}'"
+
+@given(
+    text=st.text(
+        st.just(' ') | st.characters(min_codepoint=1, max_codepoint=127, blacklist_characters=' '),
+        min_size=0, max_size=100
+    )
+)
+@example(text='')
+@example(text='a a ')
+@example(text='bbb')
+@example(text='Example')
+@example(text='Example 1')
+@example(text=' Example 2')
+@example(text=' Example   3')
+@example(text='  leading spaces')
+@example(text='trailing spaces  ')
+@example(text='  both  sides  ')
+@example(text='one  two   three    four')
+@example(text='no_spaces_at_all')
+@example(text='only spaces     ')
+def test_fix_spaces_against_reference_implementation(text):
+    # A comprehensive test comparing the function's output to a reference implementation that
+    # directly follows the stated rules. This acts as an invariant across all valid inputs.
+    def reference_fix_spaces(input_text):
+        # Step 1: Replace groups of 3 or more spaces with '-'
+        s1 = re.sub(r' {3,}', '-', input_text)
+        # Step 2: Replace remaining single or double spaces with '_'
+        # Note: The problem statement says "if a string has more than 2 consecutive spaces, then replace all consecutive spaces with -"
+        # This implies that 1 or 2 consecutive spaces should be treated as single space replacements.
+        # So, after handling 3+ spaces, we are left with sequences of 1 or 2 spaces which become '_'.
+        # However, the examples clarify: " Example   3" -> "_Example-3"
+        # This means the *original* sequence length matters.
+        
+        # A more robust interpretation that aligns with examples:
+        # First, handle 3+ consecutive spaces, replacing them with a single '-'
+        temp_text = []
+        i = 0
+        while i < len(input_text):
+            if input_text[i] == ' ':
+                j = i
+                while j < len(input_text) and input_text[j] == ' ':
+                    j += 1
+                num_spaces = j - i
+                if num_spaces > 2:
+                    temp_text.append('-')
+                else: # num_spaces is 1 or 2
+                    temp_text.append('_')
+                i = j
+            else:
+                temp_text.append(input_text[i])
+                i += 1
+        return "".join(temp_text)
+
+    expected = reference_fix_spaces(text)
+    result = fix_spaces(text)
+    assert result == expected, f"Input: '{text}', Expected: '{expected}', Got: '{result}'"
+
+```

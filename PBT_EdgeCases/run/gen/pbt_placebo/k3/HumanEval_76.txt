@@ -1,0 +1,78 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=10**6), st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_true_case(n_base, exponent):
+    x = n_base ** exponent
+    result = is_simple_power(x, n_base)
+    assert result is True, f"For x={x}, n={n_base}, should be True as {n_base}^{exponent}={x}"
+
+@given(st.integers(min_value=1, max_value=10**6), st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_false_case_not_power(x_val, n_base):
+    # Ensure x_val is not a simple power of n_base
+    if n_base > 1:
+        if x_val == 1: # 1 is a power of any n > 1 (n^0 = 1)
+            return
+
+        # Check if x_val is a perfect power of n_base
+        is_perfect_power = False
+        if x_val > 0:
+            power = 0
+            temp_x = x_val
+            while temp_x >= n_base:
+                if temp_x % n_base != 0:
+                    break
+                temp_x //= n_base
+                power += 1
+            if temp_x == 1:
+                is_perfect_power = True
+
+        if not is_perfect_power:
+            result = is_simple_power(x_val, n_base)
+            assert result is False, f"For x={x_val}, n={n_base}, should be False as {x_val} is not a power of {n_base}"
+
+@given(st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_is_one_or_zero(x):
+    # If n is 1, only x=1 should return true
+    result_n_is_1 = is_simple_power(x, 1)
+    assert result_n_is_1 == (x == 1), f"For x={x}, n=1, result should be {x == 1}"
+
+    # If n is 0, only x=0 should return true (0^positive = 0, 0^0 is usually 1, but for this context implies only 0^pos)
+    # The problem implies n^int=x, where int >= 0. For n=0, 0^0 = 1, 0^positive_int = 0.
+    # The current implementation of is_simple_power often treats n=0 as false unless x=0.
+    # Let's consider 0^k where k > 0.
+    result_n_is_0 = is_simple_power(x, 0)
+    assert result_n_is_0 == (x == 0), f"For x={x}, n=0, result should be {x == 0}"
+
+
+@given(st.integers(min_value=0, max_value=10**6), st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_property_x_n_are_non_negative(x, n):
+    # If x is 0, it should only be a simple power if n is also 0 (0^k=0 for k>0) or n=1 (1^k=1 no)
+    # Based on the examples, is_simple_power(1,4) => true, is_simple_power(8,2) => true
+    # So if x is 0, only 0^k = 0 applies, so n must be 0.
+    if x == 0:
+        result = is_simple_power(x, n)
+        assert result == (n == 0), f"For x=0, n={n}, result should be {n == 0}"
+
+    # If x is 1, it should be a simple power of any n >= 2 (as n^0 = 1)
+    if x == 1 and n >= 2:
+        result = is_simple_power(x, n)
+        assert result is True, f"For x=1, n={n}, result should be True"
+
+@given(st.integers(min_value=2, max_value=100), st.integers(min_value=0, max_value=10))
+def test_is_simple_power_with_exponent(n, exponent):
+    x = n ** exponent
+    result = is_simple_power(x, n)
+    assert result is True, f"x={x}, n={n}, result should be True as {n}^{exponent}={x}"
+
+@given(st.integers(min_value=2, max_value=100), st.integers(min_value=2, max_value=100))
+def test_is_simple_power_false_when_n_is_larger_than_x(x, n):
+    assume(n > x)
+    if n > 1: # 1^k = 1, so if x=1, n=1 it's true. But n > x and n > 1 implies x must be 0 or 1.
+        # If n > x and n > 1, the only case where it could be true is if x=1 (n^0=1)
+        # So for x > 1 and n > x, it should always be false.
+        if x > 1:
+            result = is_simple_power(x, n)
+            assert result is False, f"For x={x}, n={n} (n > x), should be False"
+
+```

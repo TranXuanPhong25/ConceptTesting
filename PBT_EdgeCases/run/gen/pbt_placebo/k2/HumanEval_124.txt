@@ -1,0 +1,134 @@
+```python
+from hypothesis import given, strategies as st
+import datetime
+
+@given(st.datetimes(min_value=datetime.datetime(1, 1, 1), max_value=datetime.datetime(9999, 12, 31)))
+def test_valid_date_format(date_obj):
+    # Property: A date formatted as 'mm-dd-yyyy' should be considered valid by the function
+    formatted_date = date_obj.strftime('%m-%d-%Y')
+    result = valid_date(formatted_date)
+    assert result is True, f"Date {formatted_date} should be valid if correctly formatted and a real date."
+
+@given(st.text(min_size=1, max_size=15).filter(lambda x: not x.startswith(('0','1','2','3','4','5','6','7','8','9')) or not x.endswith(('0','1','2','3','4','5','6','7','8','9')) or '-' not in x))
+def test_invalid_date_format_string(date_string):
+    # Property: Any string not matching the 'mm-dd-yyyy' format should be invalid
+    # This strategy generates strings that are unlikely to be in the correct format
+    result = valid_date(date_string)
+    assert result is False, f"Date string '{date_string}' should be invalid due to incorrect format."
+
+@given(st.integers(min_value=13, max_value=99), st.integers(min_value=1, max_value=31), st.integers(min_value=1, max_value=9999))
+def test_invalid_month_range(month, day, year):
+    # Property: Months outside the 1-12 range should always result in False
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    result = valid_date(date_str)
+    assert result is False, f"Date {date_str} should be invalid due to month {month} being out of range."
+
+@given(st.integers(min_value=1, max_value=12), st.integers(min_value=32, max_value=99), st.integers(min_value=1, max_value=9999))
+def test_invalid_day_range(month, day, year):
+    # Property: Days outside the 1-31 range (or specific month ranges) should always result in False
+    # This test specifically targets days > 31. More specific tests for month-day combinations are harder with this approach.
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    result = valid_date(date_str)
+    assert result is False, f"Date {date_str} should be invalid due to day {day} being out of range."
+
+@given(st.text(min_size=0, max_size=0))
+def test_empty_date_string(empty_string):
+    # Property: An empty date string should always be invalid
+    result = valid_date(empty_string)
+    assert result is False, "An empty string should be an invalid date."
+
+@given(st.from_regex(r'(\d{2}-\d{2}-\d{4}[^\d-].*)', fullmatch=False))
+def test_extra_characters_in_date_string(malformed_string):
+    # Property: Date strings with extra characters beyond the expected 'mm-dd-yyyy' should be invalid
+    result = valid_date(malformed_string)
+    assert result is False, f"Date string '{malformed_string}' should be invalid due to extra characters."
+
+@given(
+    st.one_of(
+        st.tuples(st.just(2), st.integers(min_value=30, max_value=99)),  # February with too many days
+        st.tuples(st.just(4), st.integers(min_value=31, max_value=99)),  # April with too many days
+        st.tuples(st.just(6), st.integers(min_value=31, max_value=99)),  # June with too many days
+        st.tuples(st.just(9), st.integers(min_value=31, max_value=99)),  # September with too many days
+        st.tuples(st.just(11), st.integers(min_value=31, max_value=99)) # November with too many days
+    ),
+    st.integers(min_value=1, max_value=9999)
+)
+def test_invalid_day_for_specific_month(month_day_tuple, year):
+    month, day = month_day_tuple
+    # Property: Check day limits for specific months (Feb max 29, Apr/Jun/Sep/Nov max 30)
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    result = valid_date(date_str)
+    assert result is False, f"Date {date_str} should be invalid due to day {day} exceeding limit for month {month}."
+
+@given(
+    st.integers(min_value=1, max_value=12).filter(lambda m: m not in [2, 4, 6, 9, 11]),
+    st.integers(min_value=1, max_value=31),
+    st.integers(min_value=1, max_value=9999)
+)
+def test_valid_day_for_31_day_months(month, day, year):
+    # Property: Months with 31 days should correctly validate days 1-31
+    # This test focuses on the months that *do* have 31 days to ensure they pass
+    if day > 31:  # This filter is for safety, st.integers should handle it
+        return
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    
+    # We need to manually check for edge cases that valid_date might not handle,
+    # specifically for 0 days or values < 1 or values > max_days_in_month.
+    # The `valid_date` function should catch these.
+    
+    # For now, this property assumes that if the month allows 31 days, and day is <= 31,
+    # it should be considered valid (ignoring other potential format issues covered elsewhere)
+    # The `valid_date` implementation should be robust enough to handle the full validation.
+    
+    # For the purpose of this specific property test, let's make sure that if a date string is
+    # syntactically correct and within valid day/month ranges for 31-day months, it's True.
+    # If the `valid_date` function has other errors, other tests should catch them.
+    
+    # A more precise way to test this would be to ensure it matches Python's datetime parsing.
+    try:
+        datetime.datetime.strptime(date_str, '%m-%d-%Y')
+        expected = True
+    except ValueError:
+        expected = False
+        
+    result = valid_date(date_str)
+    assert result == expected, f"Date {date_str} validation mismatch."
+
+@given(
+    st.integers(min_value=1, max_value=12),
+    st.integers(min_value=1, max_value=29), # Days always valid for Feb (non-leap)
+    st.integers(min_value=1, max_value=9999)
+)
+def test_valid_days_for_february_and_general_ranges(month, day, year):
+    # Property: Test general valid day ranges, particularly for February (max 29)
+    # This also indirectly tests the 30-day months and 31-day months up to day 29.
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    try:
+        # Check if the date is valid by Python's standard library
+        datetime.datetime.strptime(date_str, '%m-%d-%Y')
+        expected = True
+    except ValueError:
+        expected = False
+    
+    result = valid_date(date_str)
+    assert result == expected, f"Date {date_str} validation mismatch (month: {month}, day: {day}, year: {year})."
+
+@given(st.integers(min_value=1, max_value=12), st.integers(min_value=1, max_value=31), st.integers(min_value=1, max_value=9999))
+def test_valid_date_matches_python_datetime(month, day, year):
+    # Property: The valid_date function should align with Python's standard datetime parsing for correctly formatted dates.
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    
+    try:
+        # Attempt to parse the date with Python's datetime. This will handle leap years and correct day limits for months.
+        datetime.datetime.strptime(date_str, '%m-%d-%Y')
+        python_is_valid = True
+    except ValueError:
+        python_is_valid = False
+
+    function_is_valid = valid_date(date_str)
+
+    assert function_is_valid == python_is_valid, \
+        f"Mismatch for date '{date_str}': function returned {function_is_valid}, " \
+        f"but Python datetime says {python_is_valid}. (Month: {month}, Day: {day}, Year: {year})"
+
+```

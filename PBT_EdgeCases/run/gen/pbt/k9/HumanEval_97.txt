@@ -1,0 +1,48 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract the unit digits correctly, handling negative numbers
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    expected_product = unit_digit_a * unit_digit_b
+    
+    assert result == expected_product, "The function should return the product of the absolute unit digits of the two input integers."
+
+@given(st.integers(), st.integers())
+def test_multiply_commutative(a, b):
+    # Property: Multiplication of unit digits should be commutative
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, "The order of inputs should not affect the result (commutativity)."
+
+@given(st.integers(min_value=0, max_value=9), st.integers(min_value=0, max_value=9))
+def test_multiply_single_digit(a, b):
+    # Property: For single-digit non-negative numbers, the function should return their product directly.
+    result = multiply(a, b)
+    assert result == a * b, "For single-digit non-negative inputs, the result should be their direct product."
+
+@given(st.integers(min_value=-9, max_value=-1), st.integers(min_value=-9, max_value=-1))
+def test_multiply_single_negative_digit(a, b):
+    # Property: For single-digit negative numbers, the function should return the product of their absolute values.
+    result = multiply(a, b)
+    assert result == abs(a) * abs(b), "For single-digit negative inputs, the result should be the product of their absolute values."
+
+@given(st.integers(min_value=-1000, max_value=1000), 
+       st.integers(min_value=-1000, max_value=1000))
+def test_multiply_with_zero_unit_digit(a, b):
+    # Property: If either unit digit is 0, the result should be 0.
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    result = multiply(a, b)
+    
+    if unit_digit_a == 0 or unit_digit_b == 0:
+        assert result == 0, "If at least one unit digit is 0, the product should be 0."
+    else:
+        assert result != 0, "If neither unit digit is 0, the product should not be 0."
+```

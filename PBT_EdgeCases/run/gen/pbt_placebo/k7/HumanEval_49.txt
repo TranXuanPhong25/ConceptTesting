@@ -1,0 +1,46 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_definition(n, p):
+    result = modp(n, p)
+    # Property: modp(n, p) should be equivalent to (2**n) % p
+    assert result == (2**n) % p, "The result should be 2^n modulo p"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_range(n, p):
+    result = modp(n, p)
+    # Property: The result should always be within the range [0, p-1]
+    assert 0 <= result < p, "The result must be between 0 and p-1 (inclusive)"
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_modp_n_zero(p):
+    result = modp(0, p)
+    # Property: 2^0 modulo p is always 1 (for p >= 1)
+    assert result == 1, "2^0 mod p should always be 1"
+
+@given(st.integers(min_value=0, max_value=1000))
+def test_modp_p_one(n):
+    result = modp(n, 1)
+    # Property: Any number modulo 1 is always 0
+    assert result == 0, "Any number mod 1 should always be 0"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_iterative_property(n, p):
+    # Property: modp(n+1, p) should be (modp(n, p) * 2) % p
+    # This property allows us to test the correctness of the iterative calculation
+    if n > 0:
+        result_n = modp(n, p)
+        result_n_plus_1 = modp(n + 1, p)
+        assert result_n_plus_1 == (result_n * 2) % p, "modp(n+1, p) should follow the recurrence relation"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_same_modulo_as_python_pow(n, p):
+    # Property: The result should be the same as Python's built-in pow function for large numbers
+    # This checks for numerical stability and correctness for large inputs
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, "Result should match Python's pow(base, exp, mod) for large inputs"
+
+```

@@ -1,0 +1,71 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Calculate the unit digits
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    # The property is that the result should be the product of these unit digits
+    expected_product = unit_digit_a * unit_digit_b
+    
+    assert result == expected_product, (
+        f"For a={a}, b={b}: "
+        f"Unit digits are {unit_digit_a} and {unit_digit_b}. "
+        f"Expected product {expected_product}, but got {result}."
+    )
+
+@given(st.integers(min_value=0, max_value=9), st.integers(min_value=0, max_value=9))
+def test_multiply_single_digit(a, b):
+    # Property: If numbers are single digits, the result is their direct product
+    result = multiply(a, b)
+    assert result == a * b, "For single-digit numbers, the result should be their direct product."
+
+@given(st.integers(min_value=10, max_value=1000), st.integers(min_value=10, max_value=1000))
+def test_multiply_positive_large_numbers(a, b):
+    result = multiply(a, b)
+    # The property remains the same: product of unit digits
+    expected = (a % 10) * (b % 10)
+    assert result == expected, "Should correctly calculate product of unit digits for positive large numbers."
+
+@given(st.integers(min_value=-1000, max_value=-10), st.integers(min_value=-1000, max_value=-10))
+def test_multiply_negative_large_numbers(a, b):
+    result = multiply(a, b)
+    # The unit digit is always positive regardless of the sign of the original number
+    expected = (abs(a) % 10) * (abs(b) % 10)
+    assert result == expected, "Should correctly calculate product of unit digits for negative large numbers."
+
+@given(st.integers(), st.integers())
+def test_multiply_zero_unit_digit(a, b):
+    # If either number's unit digit is 0, the product of unit digits should be 0.
+    result = multiply(a, b)
+    if abs(a) % 10 == 0 or abs(b) % 10 == 0:
+        assert result == 0, "If any unit digit is zero, the product of unit digits should be zero."
+
+@given(st.integers(), st.integers())
+def test_multiply_commutativity(a, b):
+    # Property: The order of arguments should not affect the result.
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, "Multiplication of unit digits should be commutative."
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digit_invariance(a, b):
+    # Property: Adding a multiple of 10 to a number should not change its unit digit.
+    # Therefore, multiply(a, b) should be equal to multiply(a + 10k, b) and multiply(a, b + 10k).
+    k1 = st.integers(min_value=-10, max_value=10).example()
+    k2 = st.integers(min_value=-10, max_value=10).example()
+
+    result_original = multiply(a, b)
+    result_modified_a = multiply(a + 10 * k1, b)
+    result_modified_b = multiply(a, b + 10 * k2)
+    result_modified_both = multiply(a + 10 * k1, b + 10 * k2)
+
+    assert result_original == result_modified_a, "Adding a multiple of 10 to 'a' should not change the result."
+    assert result_original == result_modified_b, "Adding a multiple of 10 to 'b' should not change the result."
+    assert result_original == result_modified_both, "Adding multiples of 10 to both 'a' and 'b' should not change the result."
+
+```

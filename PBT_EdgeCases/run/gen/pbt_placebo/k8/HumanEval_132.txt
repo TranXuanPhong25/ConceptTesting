@@ -1,0 +1,131 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_nested(string):
+    stack = []
+    nested_found = False
+    for char in string:
+        if char == '[':
+            stack.append(char)
+        elif char == ']':
+            if stack:
+                stack.pop()
+                if stack:  # If stack is not empty after popping, it means there was an opening bracket
+                           # before the current closing bracket, implying nesting.
+                    nested_found = True
+            else:
+                # Mismatched closing bracket, but we still need to check for nesting later
+                pass
+    return nested_found
+
+@given(st.text(st.just('[]'), min_size=0, max_size=100))
+def test_no_nesting_if_only_valid_sequence(s):
+    # This strategy generates strings like "[]", "[][]", "[]][[]" etc.
+    # We want to ensure that if there are no '[[', then it's not nested.
+    if '[[' not in s and '][' not in s: # If there's no opening bracket immediately followed by another, it cannot be nested
+        result = is_nested(s)
+        assert result is False, f"Expected False for {s} (no explicit nesting)"
+
+@given(st.lists(st.just('[') | st.just(']'), min_size=0, max_size=100).map(''.join))
+def test_nested_property(s):
+    # Property: If the function returns True, it means there is at least one nested bracket.
+    # This implies that we should find a subsequence '[[...]]' somewhere.
+    # While directly proving '[[...]]' subsequence is hard, we can use a simpler invariant:
+    # If is_nested returns True, then there must be a point where the 'balance' of brackets
+    # (number of open minus number of closed) is at least 2 at some point before a close bracket.
+    
+    balance = 0
+    max_balance = 0
+    found_nested = False
+    for char in s:
+        if char == '[':
+            balance += 1
+            max_balance = max(max_balance, balance)
+        elif char == ']':
+            if balance > 0: # Only decrease balance if there's an opening bracket to match
+                balance -= 1
+            if max_balance >= 2 and balance >= 1: # If max balance reached 2 and we are still within a balanced sequence,
+                                                 # it implies a nested structure.
+                found_nested = True
+                break # We can stop early if we found it.
+    
+    result = is_nested(s)
+    
+    if result is True:
+        # If is_nested says True, our internal logic should also indicate nesting.
+        assert found_nested is True, f"is_nested returned True for {s}, but internal check found no nesting."
+    
+    # If our internal logic found nesting, then is_nested should also return True.
+    # This is a stronger check and helps validate the function's implementation.
+    # However, the problem statement defines 'nested' more strictly than just 'balance >= 2'.
+    # It requires a *valid subsequence* with nesting.
+    # A simpler way to test this: if '[[', is_nested is often True.
+    if '[[' in s:
+        # This is not a strict property, as '[[]][[' is True, but '[[]' is also True.
+        # However, a '[[...]]' structure implies True.
+        # Let's focus on simple examples to catch errors.
+        pass # This property is hard to formulate generally.
+
+@given(st.lists(st.just('[') | st.just(']'), min_size=0, max_size=100).map(''.join))
+def test_false_for_empty_or_single_bracket(s):
+    if not s or len(s) == 1:
+        assert is_nested(s) is False, f"Empty or single bracket string '{s}' should not be nested."
+
+@given(st.lists(st.just('[') | st.just(']'), min_size=0, max_size=100).map(''.join))
+def test_no_nesting_in_simple_balanced_sequence(s):
+    # This tests the property that simple non-nested balanced sequences return False.
+    # This is true for patterns like '[]', '[][]', '[[][]]' (which has nesting but 'is_nested'
+    # should be True for it).
+    
+    # This property is tricky because '[[][]]' is considered nested by the function.
+    # Let's rephrase: if there's no '[[', it's not nested.
+    if '[[' not in s:
+        assert is_nested(s) is False, f"String '{s}' without '[[' should not be nested."
+
+@given(st.lists(st.just('[') | st.just(']'), min_size=0, max_size=100).map(''.join))
+def test_nesting_with_specific_pattern(s):
+    # If a string contains "[[...]]" where '...' can be empty or contain other brackets,
+    # it should be considered nested.
+    
+    # This is hard to guarantee with the current 'is_nested' definition.
+    # The docstring example '[[]][[', suggests that nesting can happen even if the
+    # overall string isn't balanced.
+
+    # Let's verify against known examples where output is True.
+    if '[[ ]]' in s.replace(' ','') or '[[' in s and ']]' in s[s.find('[[')+2:]:
+        # This is a heuristic.
+        # The function should be true for '[[]]', '[[][]]', '[[]][['
+        # Let's test for specific patterns that *should* yield True.
+        
+        # Test case: if '[[', then is_nested should be True, unless it's immediately closed
+        # without any 'inner' content.
+        if '[[' in s and (']]' in s[s.find('[[')+2:] or '[' in s[s.find('[[')+2:]):
+             # This is still not a strong guarantee.
+             # Better to test against canonical nested forms.
+            pass
+
+@given(st.just('[[]]'))
+def test_nested_example_one(s):
+    assert is_nested(s) is True, f"Expected True for '{s}'"
+
+@given(st.just('[]]]]]]][[[[[]'))
+def test_nested_example_two(s):
+    assert is_nested(s) is False, f"Expected False for '{s}'"
+
+@given(st.just('[][]'))
+def test_nested_example_three(s):
+    assert is_nested(s) is False, f"Expected False for '{s}'"
+
+@given(st.just('[]'))
+def test_nested_example_four(s):
+    assert is_nested(s) is False, f"Expected False for '{s}'"
+
+@given(st.just('[[][]]'))
+def test_nested_example_five(s):
+    assert is_nested(s) is True, f"Expected True for '{s}'"
+
+@given(st.just('[[]][['))
+def test_nested_example_six(s):
+    assert is_nested(s) is True, f"Expected True for '{s}'"
+
+```

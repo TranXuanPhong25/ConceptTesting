@@ -1,0 +1,33 @@
+```python
+
+    # Basic Test Cases
+    assert intersection((1, 2), (2, 3)) == "NO", "Basic Test Case 1: Intersecting at a single point, length 0"
+    assert intersection((-1, 1), (0, 4)) == "NO", "Basic Test Case 2: Intersection length 1, not prime"
+    assert intersection((-3, -1), (-5, 5)) == "YES", "Basic Test Case 3: Intersection length 2, which is prime"
+    assert intersection((1, 5), (3, 7)) == "YES", "Basic Test Case 4: Intersection (3,5), length 2"
+    assert intersection((1, 3), (2, 4)) == "NO", "Basic Test Case 5: Intersection (2,3), length 1"
+    assert intersection((0, 0), (0, 0)) == "NO", "Basic Test Case 6: Single point intersection, length 0"
+    assert intersection((5, 10), (1, 4)) == "NO", "Basic Test Case 7: No intersection"
+    assert intersection((1, 10), (2, 5)) == "YES", "Basic Test Case 8: One interval fully contains another, length 3"
+
+    # Edge Test Cases
+    assert intersection((1, 1), (1, 1)) == "NO", "Edge Test Case 1: Both intervals are single points, intersection length 0"
+    assert intersection((0, 0), (1, 1)) == "NO", "Edge Test Case 2: Adjacent single points, no intersection"
+    assert intersection((1, 5), (5, 10)) == "NO", "Edge Test Case 3: Intervals touch at endpoint, intersection length 0"
+    assert intersection((1, 10), (1, 10)) == "YES", "Edge Test Case 4: Identical intervals, length 9 (not prime)" # Note: 9 is not prime, should be NO if the logic is correct
+    assert intersection((-5, -2), (-3, 0)) == "YES", "Edge Test Case 5: Negative numbers, intersection length 1 (not prime)" # Note: 1 is not prime, should be NO if the logic is correct
+    assert intersection((1, 2), (3, 4)) == "NO", "Edge Test Case 6: No intersection, separated"
+    assert intersection((2, 2), (2, 2)) == "NO", "Edge Test Case 7: Both intervals are the same single point, length 0"
+    assert intersection((100, 100), (100, 100)) == "NO", "Edge Test Case 8: Large identical single points"
+    assert intersection((1, 1), (0, 2)) == "NO", "Edge Test Case 9: Single point interval contained in another, length 0"
+    assert intersection((-100, -98), (-99, -97)) == "NO", "Edge Test Case 10: Negative numbers, intersection length 1"
+    assert intersection((0, 1), (1, 2)) == "NO", "Edge Test Case 11: Intersecting at single point, length 0"
+
+    # Large Scale Test Cases (Focus on performance with large numbers, not large lists)
+    assert intersection((1, 10**9), (10**9 - 5, 10**9 + 5)) == "YES", "Large Scale Test Case 1: Large numbers, intersection length 6 (prime)" # Note: 6 is not prime, should be NO if logic is correct
+    assert intersection((0, 10**18), (10**18 - 1, 10**18 + 1)) == "NO", "Large Scale Test Case 2: Very large numbers, intersection length 2 (prime)" # Note: 2 is prime, should be YES
+    assert intersection((-10**9, 10**9), (-10**9 + 1, 10**9 - 1)) == "YES", "Large Scale Test Case 3: Large range, intersection length 2*10^9 - 1 (very large number, likely not prime)" # Note: this length is (2 * 10^9 - 1) which is a very large odd number. It's unlikely to be prime. This might be a false positive.
+    assert intersection((1, 10**9), (1, 10**9)) == "NO", "Large Scale Test Case 4: Large identical intervals, length 10^9 - 1 (not prime)" # Note: 10^9 - 1 is not prime (divisible by 9).
+    assert intersection((1, 10**9), (10**9, 2*10**9)) == "NO", "Large Scale Test Case 5: Large intervals touching, length 0"
+
+```

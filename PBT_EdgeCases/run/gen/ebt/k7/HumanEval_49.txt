@@ -1,0 +1,29 @@
+```python
+# Basic Test Cases
+assert modp(3, 5) == 3, "Basic Test Case 1: n=3, p=5"
+assert modp(1101, 101) == 2, "Basic Test Case 2: n=1101, p=101"
+assert modp(0, 101) == 1, "Basic Test Case 3: n=0, p=101"
+assert modp(3, 11) == 8, "Basic Test Case 4: n=3, p=11"
+assert modp(100, 101) == 1, "Basic Test Case 5: n=100, p=101"
+assert modp(1, 2) == 0, "Basic Test Case 6: n=1, p=2 (2^1 mod 2 = 0)"
+assert modp(2, 3) == 1, "Basic Test Case 7: n=2, p=3 (2^2 mod 3 = 1)"
+assert modp(4, 7) == 2, "Basic Test Case 8: n=4, p=7 (2^4 mod 7 = 16 mod 7 = 2)"
+
+# Edge Test Cases
+assert modp(0, 2) == 1, "Edge Test Case 1: n=0, p=2 (smallest prime modulus)"
+assert modp(1, 1000000007) == 2, "Edge Test Case 2: n=1, large prime modulus"
+assert modp(0, 1000000007) == 1, "Edge Test Case 3: n=0, large prime modulus"
+assert modp(64, 2) == 0, "Edge Test Case 4: n > p, p=2"
+assert modp(64, 1) == 0, "Edge Test Case 5: p=1 (Any number mod 1 is 0)"
+assert modp(5, 5) == 2, "Edge Test Case 6: p is 5, n is 5 (2^5 mod 5 = 32 mod 5 = 2)"
+assert modp(10, 2) == 0, "Edge Test Case 7: n is an even number, p=2"
+assert modp(9, 2) == 0, "Edge Test Case 8: n is an odd number > 0, p=2"
+
+
+# Large Scale Test Cases
+assert modp(100000, 101) == 1, "Large Scale Test Case 1: Large n, small p"
+assert modp(1000000, 1000000007) == 145025979, "Large Scale Test Case 2: Large n, large prime p"
+assert modp(2000000, 999999937) == 956891696, "Large Scale Test Case 3: Very Large n, very large prime p"
+assert modp(5000000, 7) == 1, "Large Scale Test Case 4: Very Large n, small prime p"
+assert modp(10**9, 100) == 76, "Large Scale Test Case 5: Extremely Large n, moderate p"
+```

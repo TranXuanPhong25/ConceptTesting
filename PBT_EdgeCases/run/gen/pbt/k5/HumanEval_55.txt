@@ -1,0 +1,61 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=20)) # Limiting max_value to avoid excessively large numbers
+def test_fib_positive_input_produces_positive_output(n):
+    result = fib(n)
+    assert result >= 0, "Fibonacci numbers for positive n should be non-negative"
+
+@given(st.integers(min_value=1, max_value=20))
+def test_fib_recursive_property(n):
+    # This property tests the fundamental recursive definition of Fibonacci numbers.
+    # For n > 2, fib(n) should be fib(n-1) + fib(n-2).
+    # For n=1, fib(1) is 1.
+    # For n=2, fib(2) is fib(1) + fib(0) which depends on definition of fib(0).
+    # Standard definition: F(0)=0, F(1)=1, F(n)=F(n-1)+F(n-2) for n>1.
+    # The given function's examples suggest F(1)=1, F(2)=1 (based on F(10)=55, F(8)=21).
+    # So we'll use the F(1)=1, F(2)=1 base.
+    if n > 2:
+        assert fib(n) == fib(n - 1) + fib(n - 2), "Fibonacci sequence should follow the recursive definition"
+    elif n == 1:
+        assert fib(n) == 1, "fib(1) should be 1"
+    elif n == 2:
+        assert fib(n) == 1, "fib(2) should be 1 (based on examples)" # Assuming fib(2) = 1 as per common sequence F(1)=1, F(2)=1, F(3)=2, ...
+
+@given(st.integers(min_value=1, max_value=20))
+def test_fib_monotonic_increasing(n):
+    # For n >= 2, the Fibonacci sequence should be strictly increasing.
+    if n >= 2:
+        assert fib(n) >= fib(n - 1), "Fibonacci sequence should be monotonically increasing for n >= 2"
+
+@given(st.integers(min_value=1, max_value=2)) # Test small, fixed inputs
+def test_fib_known_small_values(n):
+    if n == 1:
+        assert fib(n) == 1, "fib(1) should be 1"
+    elif n == 2:
+        assert fib(n) == 1, "fib(2) should be 1"
+
+@given(st.integers(min_value=3, max_value=20))
+def test_fib_sum_of_squares_identity(n):
+    # This property tests the identity F_n^2 + F_{n-1}^2 = F_{2n-1}
+    # This is a bit complex to implement perfectly due to potential index shifts and definition variations.
+    # A simpler identity to test is F_n * L_n = F_{2n} (where L_n is Lucas number), but Lucas numbers are not in the function.
+    # Let's consider a simpler identity or a less strict version.
+    # For example, an approximation: fib(n) grows exponentially.
+    # The ratio fib(n) / fib(n-1) approaches the golden ratio (phi).
+    if n > 2:
+        golden_ratio = (1 + 5**0.5) / 2
+        ratio = fib(n) / fib(n - 1)
+        assert abs(ratio - golden_ratio) < 0.2, "Ratio of consecutive Fibonacci numbers should approach golden ratio"
+
+@given(st.integers(min_value=1, max_value=20))
+def test_fib_grows_roughly_exponentially(n):
+    # Fibonacci numbers grow roughly exponentially with the golden ratio.
+    # F_n is approximately (phi^n) / sqrt(5)
+    # We can check that F_n is greater than some lower bound that grows exponentially.
+    # This is a loose property, but checks for gross errors.
+    phi = (1 + 5**0.5) / 2
+    lower_bound = (phi**(n-2)) / (5**0.5) # Using n-2 to be more conservative
+    if n > 2: # For n=1,2 this bound isn't necessarily tight.
+        assert fib(n) >= int(lower_bound), "Fibonacci numbers should grow at least exponentially"
+```

@@ -1,0 +1,36 @@
+== whoami: uid=0(root) gid=0(root) groups=0(root)
+== env names matching cred/key/token/google/vertex:
+GPG_KEY
+== /gcloud exists?
+ls: cannot access '/gcloud': No such file or directory
+== mounts (non-overlay):
+/mac/Documents/py-toy/PBT_EdgeCases/vendor/ebt_pbt_test /vendor ro,nosuid,nodev,relatime
+/mac/Documents/py-toy/PBT_EdgeCases/run /work ro,nosuid,nodev,relatime
+/mac/Documents/py-toy/PBT_EdgeCases/run/results /work/results rw,nosuid,nodev,relatime
+== network:
+no network: [Errno 101] Network is unreachable
+no DNS: [Errno -3] Temporary failure in name resolution
+Inter-|   Receive   
+ face |bytes    pack
+    lo:       0     
+ tunl0:       0     
+  gre0:       0     
+gretap0:       0    
+erspan0:       0    
+ip_vti0:       0    
+ip6_vti0:       0   
+  sit0:       0     
+ip6tnl0:       0    
+ip6gre0:       0    
+
+/serene_shamir net=none mem=4294967296 pids=512 mounts=[~/Documents/py-toy/PBT_EdgeCases/vendor/ebt_pbt_test -> /vendor rw=false] [~/Documents/py-toy/PBT_EdgeCases/run -> /work rw=false] [~/Documents/py-toy/PBT_EdgeCases/run/results -> /work/results rw=true]  env=WORKERS ONLY REPAIR PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305 PYTHON_VERSION=3.13.16 PYTHON_SHA256=f4b1bfb3c79b5bb11b8d228a12504163b4c0dab4d679828d8f5f26b6cb6ab35d PYTHONPATH=/vendor/src PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 
+/angry_beaver net=none mem=4294967296 pids=512 mounts=[~/Documents/py-toy/PBT_EdgeCases/vendor/ebt_pbt_test -> /vendor rw=false] [~/Documents/py-toy/PBT_EdgeCases/run -> /work rw=false] [~/Documents/py-toy/PBT_EdgeCases/run/results -> /work/results rw=true]  env=WORKERS ONLY REPAIR PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305 PYTHON_VERSION=3.13.16 PYTHON_SHA256=f4b1bfb3c79b5bb11b8d228a12504163b4c0dab4d679828d8f5f26b6cb6ab35d PYTHONPATH=/vendor/src PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 
+/xenodochial_mendeleev net=bridge mem=4294967296 pids=512 mounts=[~/Documents/py-toy/PBT_EdgeCases/vendor/ebt_pbt_test -> /vendor rw=false] [~/Documents/py-toy/PBT_EdgeCases/run -> /work rw=true] [~/.config/gcloud -> /gcloud rw=false]  env=GOOGLE_APPLICATION_CREDENTIALS=/gcloud/application_default_credentials.json VERTEX_PROJECT=<redacted> VERTEX_LOCATION=<redacted> BUDGET_CAP K=8 ARMS ONLY PATH=/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305 PYTHON_VERSION=3.13.16 PYTHON_SHA256=f4b1bfb3c79b5bb11b8d228a12504163b4c0dab4d679828d8f5f26b6cb6ab35d PYTHONPATH=/vendor/src PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 
+
+== re-check after moving results to /out (non-nested), 2026-10-02T08:24:15Z
+cred-like env names: none
+ls: cannot access '/gcloud': No such file or directory
+/mac/Documents/py-toy/PBT_EdgeCases/run /work ro,nosuid,nodev,relatime
+/mac/Documents/py-toy/PBT_EdgeCases/run/results /out rw,nosuid,nodev,relatime
+/mac/Documents/py-toy/PBT_EdgeCases/vendor/ebt_pbt_test /vendor ro,nosuid,nodev,relatime
+no network: [Errno 101] Network is unreachable

@@ -1,0 +1,102 @@
+```python
+from hypothesis import given, strategies as st
+import datetime
+
+@given(
+    month=st.integers(min_value=1, max_value=12),
+    day=st.integers(min_value=1, max_value=31),
+    year=st.integers(min_value=1, max_value=9999)
+)
+def test_valid_date_property_valid_format_and_values(month, day, year):
+    # Construct a date string in the expected format mm-dd-yyyy
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+
+    # Use Python's datetime to check if the date is actually valid
+    is_valid_python = True
+    try:
+        datetime.datetime(year, month, day)
+    except ValueError:
+        is_valid_python = False
+
+    result = valid_date(date_str)
+
+    # The function's result should match Python's datetime validity check
+    assert result == is_valid_python, \
+        f"For date '{date_str}', expected {is_valid_python} but got {result}"
+
+@given(
+    st.text(min_size=0, max_size=15, alphabet='0123456789-/ ')
+)
+def test_valid_date_property_invalid_format(date_str):
+    # Generate strings that are likely not in mm-dd-yyyy format
+    if not (len(date_str) == 10 and date_str[2] == '-' and date_str[5] == '-'):
+        result = valid_date(date_str)
+        # If the format is clearly wrong, the function should return False
+        assert not result, f"Expected False for invalid format '{date_str}', but got True"
+
+@given(
+    month=st.integers(min_value=1, max_value=12),
+    day=st.integers(min_value=0, max_value=40),  # Introduce invalid day values
+    year=st.integers(min_value=1, max_value=9999)
+)
+def test_valid_date_property_day_out_of_range(month, day, year):
+    # This test specifically focuses on cases where the day might be invalid
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    
+    is_valid_python = True
+    try:
+        datetime.datetime(year, month, day)
+    except ValueError:
+        is_valid_python = False
+
+    result = valid_date(date_str)
+    assert result == is_valid_python, \
+        f"For date '{date_str}', expected {is_valid_python} but got {result}"
+
+@given(
+    month=st.integers(min_value=-5, max_value=18), # Introduce invalid month values
+    day=st.integers(min_value=1, max_value=31),
+    year=st.integers(min_value=1, max_value=9999)
+)
+def test_valid_date_property_month_out_of_range(month, day, year):
+    # This test focuses on cases where the month might be invalid
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+
+    is_valid_python = True
+    try:
+        datetime.datetime(year, month, day)
+    except ValueError:
+        is_valid_python = False
+
+    result = valid_date(date_str)
+    assert result == is_valid_python, \
+        f"For date '{date_str}', expected {is_valid_python} but got {result}"
+
+@given(
+    st.just('')
+)
+def test_valid_date_property_empty_string(date_str):
+    # An empty string should always return False
+    result = valid_date(date_str)
+    assert not result, "Empty string should return False"
+
+@given(
+    month=st.integers(min_value=1, max_value=12),
+    day=st.integers(min_value=1, max_value=31),
+    year=st.integers(min_value=1, max_value=9999)
+)
+def test_valid_date_property_consistency_with_known_valid_formats(month, day, year):
+    # This test ensures that if a date is valid according to datetime,
+    # and in the correct format, our function also returns True.
+    try:
+        # Only test for truly valid dates to avoid issues with date_str formatting
+        # when the month or day itself is out of bounds for datetime.
+        datetime.datetime(year, month, day)
+        date_str = f"{month:02d}-{day:02d}-{year:04d}"
+        result = valid_date(date_str)
+        assert result, f"Expected True for known valid date '{date_str}', but got False"
+    except ValueError:
+        # If datetime itself considers it invalid (e.g., Feb 30), our function should too.
+        # This case is handled by `test_valid_date_property_valid_format_and_values`
+        pass
+```

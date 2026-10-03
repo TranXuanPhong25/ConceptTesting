@@ -1,0 +1,40 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.dictionaries(st.text(), st.text()))
+def test_empty_dict_returns_false(d):
+    if not d:
+        assert check_dict_case(d) is False, "Empty dictionary should return False"
+
+@given(st.dictionaries(st.text(alphabet=st.characters(blacklist_characters="ABCDEFGHIJKLMNOPQRSTUVWXYZ")), st.text()))
+def test_all_lower_case_keys_returns_true(d):
+    if d:
+        assert check_dict_case(d) is True, "Dictionary with all lower case keys should return True"
+
+@given(st.dictionaries(st.text(alphabet=st.characters(blacklist_characters="abcdefghijklmnopqrstuvwxyz")), st.text()))
+def test_all_upper_case_keys_returns_true(d):
+    if d:
+        assert check_dict_case(d) is True, "Dictionary with all upper case keys should return True"
+
+@given(st.dictionaries(st.one_of(st.text(min_size=1).map(lambda s: s.lower()), 
+                                  st.text(min_size=1).map(lambda s: s.upper())), 
+                       st.text()).filter(lambda d: d and not all(k.islower() for k in d) and not all(k.isupper() for k in d)))
+def test_mixed_case_keys_returns_false(d):
+    assert check_dict_case(d) is False, "Dictionary with mixed case keys should return False"
+
+@given(st.dictionaries(st.one_of(st.text(), st.integers()), st.text()))
+def test_non_string_keys_returns_false(d):
+    if any(not isinstance(key, str) for key in d.keys()):
+        assert check_dict_case(d) is False, "Dictionary with non-string keys should return False"
+
+@given(st.dictionaries(st.text().filter(lambda s: not s.islower() and not s.isupper()), st.text()))
+def test_keys_with_non_alphabetic_chars_returns_false(d):
+    # This strategy will generate keys that are neither all lowercase nor all uppercase.
+    # For instance, "Key1", "key_with_spaces", "123"
+    # The function implicitly assumes keys are alphabetic for case checking.
+    # If keys contain mixed case or non-alphabetic characters, it should return False.
+    if d:
+        if any(not isinstance(k, str) or (not k.islower() and not k.isupper()) for k in d.keys()):
+            assert check_dict_case(d) is False, "Dictionary with keys that are not strictly all lower or all upper case should return False"
+
+```

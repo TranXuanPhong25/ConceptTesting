@@ -1,0 +1,190 @@
+```python
+import re
+from hypothesis import given, strategies as st
+
+# Original function to be tested
+def fix_spaces(text):
+    """
+    Given a string text, replace all spaces in it with underscores, 
+    and if a string has more than 2 consecutive spaces, 
+    then replace all consecutive spaces with - 
+    
+    fix_spaces("Example") == "Example"
+    fix_spaces("Example 1") == "Example_1"
+    fix_spaces(" Example 2") == "_Example_2"
+    fix_spaces(" Example   3") == "_Example-3"
+    """
+    new_text = ""
+    i = 0
+    while i < len(text):
+        if text[i] == ' ':
+            count = 0
+            while i < len(text) and text[i] == ' ':
+                count += 1
+                i += 1
+            if count > 2:
+                new_text += "-"
+            else:
+                new_text += "_" * count
+        else:
+            new_text += text[i]
+            i += 1
+    return new_text
+
+
+@given(st.text(st.characters(blacklist_characters='-'), min_size=0, max_size=100))
+def test_no_hyphens_with_less_than_three_spaces(text):
+    """
+    Property: If the input string contains no sequences of three or more consecutive spaces,
+    the output string should not contain any hyphens.
+    """
+    # Create a version of the text guaranteed to have no more than 2 consecutive spaces
+    # by replacing "   " with "__" before passing it to the function.
+    # This ensures we're testing the 'no hyphen' condition specifically.
+    text_without_long_spaces = re.sub(r' {3,}', '__', text) 
+    
+    result = fix_spaces(text_without_long_spaces)
+    assert '-' not in result, f"Result should not contain hyphens if no long spaces in input: {result}"
+
+
+@given(st.text(st.characters(max_codepoint=127), min_size=0, max_size=100))
+def test_all_spaces_are_replaced(text):
+    """
+    Property: The output string should not contain any spaces.
+    All original spaces must be replaced by either '_' or '-'.
+    """
+    result = fix_spaces(text)
+    assert ' ' not in result, f"Result should not contain any spaces: {result}"
+
+
+@given(st.text(st.characters(blacklist_characters=[' ', '-', '_']), min_size=0, max_size=100))
+def test_no_change_for_no_spaces(text):
+    """
+    Property: If the input string contains no spaces, the output string should be identical to the input.
+    """
+    result = fix_spaces(text)
+    assert result == text, f"String with no spaces should remain unchanged: {result}"
+
+
+@given(st.text(st.characters(blacklist_characters=[' ']), min_size=0, max_size=100))
+def test_length_invariance_for_single_char_spaces(text_without_spaces):
+    """
+    Property: If the input string only contains single spaces (no sequences of 2 or more),
+    the length of the output string should be the same as the input string.
+    This is because each space is replaced by a single underscore.
+    """
+    # Construct an input string where all spaces are single
+    spaced_text = ""
+    for char in text_without_spaces:
+        spaced_text += char
+        if st.booleans().example(): # Randomly add single spaces
+            spaced_text += ' '
+    
+    result = fix_spaces(spaced_text)
+    assert len(result) == len(spaced_text), f"Length should be invariant for single spaces: {result}"
+
+
+@given(st.lists(st.text(st.characters(blacklist_characters=[' ', '-', '_']), min_size=0, max_size=10), min_size=1, max_size=5))
+def test_separator_consistency(parts):
+    """
+    Property: If we join parts with different numbers of spaces and fix them,
+    the separated parts should retain their identity (excluding the separators).
+    This test focuses on how separators ('_' or '-') are consistently applied.
+    """
+    # Create an input string with varying space sequences
+    text_with_spaces = ""
+    for part in parts:
+        text_with_spaces += part
+        num_spaces = st.integers(0, 5).example() # 0 to 5 spaces
+        text_with_spaces += ' ' * num_spaces
+
+    # Remove trailing spaces if any
+    text_with_spaces = text_with_spaces.rstrip(' ')
+
+    result = fix_spaces(text_with_spaces)
+
+    # Reconstruct the expected output based on the rule
+    expected_result_parts = []
+    current_index = 0
+    for part in parts:
+        expected_result_parts.append(part)
+        current_index += len(part)
+        
+        # Determine the separator based on the number of spaces that followed this part in the original text
+        # This is a bit complex to derive deterministically from `parts` alone, 
+        # so we'll re-evaluate the original `text_with_spaces`
+        
+        # Find how many spaces followed this part in the generated text_with_spaces
+        start_of_spaces = len(''.join(expected_result_parts))
+        
+        if start_of_spaces < len(text_with_spaces) and text_with_spaces[start_of_spaces] == ' ':
+            space_count = 0
+            temp_idx = start_of_spaces
+            while temp_idx < len(text_with_spaces) and text_with_spaces[temp_idx] == ' ':
+                space_count += 1
+                temp_idx += 1
+            
+            if space_count > 0: # Only add separator if there were spaces
+                if space_count > 2:
+                    expected_result_parts.append('-')
+                else:
+                    expected_result_parts.append('_' * space_count)
+
+    expected_result = "".join(expected_result_parts)
+    # The above reconstruction is tricky due to intermediate 'rstrip'. 
+    # A more robust check might be to check the *count* of '-' and '_' vs the space groups.
+
+    # Simpler check: The original `fix_spaces` logic is robust. Let's just check the character types.
+    # We want to ensure that no part of the original non-space string was altered.
+    
+    # Remove all separators from the result and all spaces from the input to compare content
+    cleaned_result = re.sub(r'[-_]', '', result)
+    cleaned_input = re.sub(r' ', '', text_with_spaces)
+
+    assert cleaned_result == cleaned_input, f"Non-space characters should be preserved. Input: '{text_with_spaces}', Result: '{result}'"
+    
+    # Also check that the separators themselves are correct
+    # This is more of an implementation detail, but good for property testing.
+    # Iterate through the input text and build the expected output step by step for verification.
+    
+    expected_manual = ""
+    i = 0
+    while i < len(text_with_spaces):
+        if text_with_spaces[i] == ' ':
+            count = 0
+            while i < len(text_with_spaces) and text_with_spaces[i] == ' ':
+                count += 1
+                i += 1
+            if count > 2:
+                expected_manual += "-"
+            else:
+                expected_manual += "_" * count
+        else:
+            expected_manual += text_with_spaces[i]
+            i += 1
+            
+    assert result == expected_manual, f"Manual reconstruction of result should match. Input: '{text_with_spaces}', Expected: '{expected_manual}', Got: '{result}'"
+
+
+@given(st.text(st.characters(max_codepoint=127), min_size=0, max_size=100))
+def test_idempotence_of_non_space_characters(text):
+    """
+    Property: Applying fix_spaces to a string that is already "fixed" (i.e., contains no spaces
+    and uses '_' or '-' as separators) should not change the string.
+    This property is generally good, but the current `fix_spaces` might not be strictly idempotent
+    if it replaces '_' with '-' or vice-versa, which it shouldn't for already valid separators.
+    The current implementation only targets ' ' characters.
+    """
+    # First, fix a random string
+    fixed_text = fix_spaces(text)
+    
+    # Then, apply fix_spaces again to the already fixed string
+    result_after_second_fix = fix_spaces(fixed_text)
+    
+    # Since fix_spaces only looks for ' ', an already fixed string (with '_' or '-')
+    # should remain unchanged.
+    assert result_after_second_fix == fixed_text, \
+        f"Applying fix_spaces to an already fixed string should yield the same string. " \
+        f"Original: '{text}', First fix: '{fixed_text}', Second fix: '{result_after_second_fix}'"
+
+```

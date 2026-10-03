@@ -1,0 +1,47 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.from_type(type(None)) | st.integers() | st.text() | st.floats() | st.booleans() | st.lists(st.integers()), max_size=100))
+def test_filter_integers_only_returns_integers(values):
+    result = filter_integers(values)
+    assert all(isinstance(x, int) for x in result), "All elements in the result should be integers."
+
+@given(st.lists(st.from_type(type(None)) | st.integers() | st.text() | st.floats() | st.booleans() | st.lists(st.integers()), max_size=100))
+def test_filter_integers_no_non_integers_are_returned(values):
+    result = filter_integers(values)
+    # Check that no non-integers from the original list are present in the result
+    original_non_integers = [v for v in values if not isinstance(v, int)]
+    assert all(v not in result for v in original_non_integers), "No non-integer elements from the input should be present in the output."
+
+@given(st.lists(st.integers(), max_size=100))
+def test_filter_integers_with_only_integers(values):
+    result = filter_integers(values)
+    assert result == values, "If the input list contains only integers, the output should be identical."
+
+@given(st.lists(st.text() | st.floats() | st.booleans() | st.from_type(type(None)) | st.lists(st.integers()), max_size=100))
+def test_filter_integers_with_no_integers(values):
+    result = filter_integers(values)
+    assert result == [], "If the input list contains no integers, the output should be an empty list."
+
+@given(st.lists(st.integers(), min_size=1, max_size=100))
+def test_filter_integers_order_preserved(values):
+    mixed_list = []
+    expected_integers = []
+    for i, val in enumerate(values):
+        mixed_list.append(val)
+        expected_integers.append(val)
+        # Randomly insert a non-integer to mix it up
+        if i % 3 == 0:
+            mixed_list.append(st.text().example())
+        elif i % 3 == 1:
+            mixed_list.append(st.floats().example())
+        else:
+            mixed_list.append(None)
+    
+    # Shuffle the mixed list to ensure various positions for non-integers
+    st.lists(st.permutations(mixed_list), min_size=1, max_size=1).example()
+    random_mixed_list = st.permutations(mixed_list).example()
+
+    result = filter_integers(random_mixed_list)
+    assert result == [val for val in random_mixed_list if isinstance(val, int)], "The order of integers should be preserved."
+```

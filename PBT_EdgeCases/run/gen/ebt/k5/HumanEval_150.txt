@@ -1,0 +1,39 @@
+```python
+
+    # Basic Test Cases
+    assert x_or_y(7, 34, 12) == 34, "Basic Test Case 1: n is a prime number"
+    assert x_or_y(15, 8, 5) == 5, "Basic Test Case 2: n is not a prime number"
+    assert x_or_y(2, 10, 20) == 10, "Basic Test Case 3: Smallest prime number"
+    assert x_or_y(4, 1, 0) == 0, "Basic Test Case 4: Smallest composite number"
+    assert x_or_y(1, 5, 6) == 6, "Basic Test Case 5: n=1, not prime"
+    assert x_or_y(13, 'hello', 'world') == 'hello', "Basic Test Case 6: x and y are strings, n is prime"
+    assert x_or_y(9, [1, 2], [3, 4]) == [3, 4], "Basic Test Case 7: x and y are lists, n is not prime"
+
+    # Edge Test Cases
+    assert x_or_y(0, 100, 200) == 200, "Edge Test Case 1: n is 0, not prime"
+    assert x_or_y(-5, 10, 20) == 20, "Edge Test Case 2: n is a negative number, not prime"
+    assert x_or_y(1, 10, 20) == 20, "Edge Test Case 3: n is 1, not prime"
+    assert x_or_y(997, 50, 60) == 50, "Edge Test Case 4: Large prime number" # 997 is prime
+    assert x_or_y(999, 50, 60) == 60, "Edge Test Case 5: Large composite number" # 999 = 27 * 37
+    assert x_or_y(3, 0, 1) == 0, "Edge Test Case 6: x or y can be 0"
+    assert x_or_y(6, None, "value") == "value", "Edge Test Case 7: x or y can be None"
+    assert x_or_y(5, True, False) == True, "Edge Test Case 8: x or y can be booleans"
+
+    # Large Scale Test Cases
+    # For large n, the performance depends on the primality test algorithm.
+    # We assume a reasonably efficient primality test for this function.
+
+    # Large prime number (for demonstration, actual large primes would be much larger)
+    assert x_or_y(104729, 1000, 2000) == 1000, "Large Scale Test Case 1: n is a large prime" # 104729 is the 10000th prime
+    # Large composite number (n * (n+1) for some large n)
+    assert x_or_y(1000000, 1000, 2000) == 2000, "Large Scale Test Case 2: n is a large composite"
+    # Even larger prime (this test might be slow depending on the internal primality test)
+    # 7919 is a prime number
+    assert x_or_y(7919, 5, 10) == 5, "Large Scale Test Case 3: Moderately large prime"
+    # Even larger composite number
+    assert x_or_y(7920, 5, 10) == 10, "Large Scale Test Case 4: Moderately large composite"
+    # Test with identical x and y
+    assert x_or_y(17, 10, 10) == 10, "Large Scale Test Case 5: x and y are identical, n is prime"
+    assert x_or_y(25, 10, 10) == 10, "Large Scale Test Case 6: x and y are identical, n is not prime"
+
+```

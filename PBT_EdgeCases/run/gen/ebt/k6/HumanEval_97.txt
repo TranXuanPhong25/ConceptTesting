@@ -1,0 +1,42 @@
+```python
+# Basic Test Cases
+assert multiply(148, 412) == 16, "Basic Test Case 1: Positive integers"
+assert multiply(19, 28) == 72, "Basic Test Case 2: Positive integers"
+assert multiply(2020, 1851) == 0, "Basic Test Case 3: One unit digit is zero"
+assert multiply(5, 7) == 35, "Basic Test Case 4: Single digit integers"
+assert multiply(10, 20) == 0, "Basic Test Case 5: Both unit digits are zero"
+
+# Edge Test Cases
+assert multiply(14, -15) == 20, "Edge Test Case 1: Negative second integer"
+assert multiply(-14, 15) == 20, "Edge Test Case 2: Negative first integer"
+assert multiply(-14, -15) == 20, "Edge Test Case 3: Both negative integers"
+assert multiply(0, 5) == 0, "Edge Test Case 4: First number is zero"
+assert multiply(5, 0) == 0, "Edge Test Case 5: Second number is zero"
+assert multiply(1, 1) == 1, "Edge Test Case 6: Unit digits are one"
+assert multiply(-1, -1) == 1, "Edge Test Case 7: Both -1"
+assert multiply(9, 9) == 81, "Edge Test Case 8: Largest single unit digits"
+assert multiply(99, 99) == 81, "Edge Test Case 9: Large numbers with largest unit digits"
+assert multiply(10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000, 1) == 0, "Edge Test Case 10: Very large number with unit digit 0"
+
+# Large Scale Test Cases (Focus on varied inputs rather than extremely large numbers, as the function only considers unit digits)
+# The nature of this function (only unit digits) means "large scale"
+# doesn't truly apply in terms of processing large number values themselves.
+# Instead, we focus on a variety of different combinations of unit digits across large inputs.
+
+# Test with various combinations of unit digits to ensure correctness for all 100 possibilities (0-9 for each)
+for i in range(10):
+    for j in range(10):
+        # Create numbers that end with i and j
+        num1 = 100000 * 10 + i # A large number ending with i
+        num2 = 200000 * 10 + j # Another large number ending with j
+        assert multiply(num1, num2) == (i * j) % 100, f"Large Scale Test Case: {num1}, {num2} -> Expected {(i*j)%100}"
+
+        # Test with negative large numbers
+        num1_neg = -(100000 * 10 + i)
+        num2_neg = -(200000 * 10 + j)
+        expected_unit_product = (abs(i) * abs(j)) % 100
+        assert multiply(num1_neg, num2) == expected_unit_product, f"Large Scale Test Case (neg, pos): {num1_neg}, {num2} -> Expected {expected_unit_product}"
+        assert multiply(num1, num2_neg) == expected_unit_product, f"Large Scale Test Case (pos, neg): {num1}, {num2_neg} -> Expected {expected_unit_product}"
+        assert multiply(num1_neg, num2_neg) == expected_unit_product, f"Large Scale Test Case (neg, neg): {num1_neg}, {num2_neg} -> Expected {expected_unit_product}"
+
+```

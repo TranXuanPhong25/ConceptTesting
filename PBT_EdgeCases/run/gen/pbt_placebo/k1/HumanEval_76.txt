@@ -1,0 +1,88 @@
+```python
+from hypothesis import given, strategies as st
+import math
+
+@given(st.integers(min_value=1, max_value=10**6), 
+       st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_true_if_perfect_power(x_base, n):
+    power = st.integers(min_value=1, max_value=10).example()
+    x = n ** power
+    result = is_simple_power(x, n)
+    assert result == True, f"If x is n to the power of {power}, it should be a simple power."
+
+@given(st.integers(min_value=1, max_value=10**6), 
+       st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_false_if_not_perfect_power(x, n):
+    # This test aims to catch cases where x is not a perfect power of n
+    # We generate x such that it's unlikely to be a perfect power.
+    # We need to be careful not to accidentally generate a perfect power.
+    if is_simple_power(x, n):  # Skip if Hypothesis accidentally generates a perfect power
+        return
+    result = is_simple_power(x, n)
+    assert result == False, f"If x is not a perfect power of n, it should return False. x={x}, n={n}"
+
+@given(st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_is_1_false(x):
+    result = is_simple_power(x, 1)
+    # n=1 should always return False as per the example is_simple_power(3, 1) => false
+    assert result == False, "If n is 1, it should always return False unless x is 1 (1**any=1)"
+
+@given(st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_x_is_1_true(n):
+    # Any n raised to the power of 0 is 1. If n is 1, 1**any=1.
+    # The problem implies n is the base, and int is the exponent.
+    # 1 is a simple power of any n (n**0 = 1).
+    # The docstring example `is_simple_power(1, 4) => true` confirms this.
+    if n > 0: # n must be positive for n**0 to be 1 in a typical context
+        result = is_simple_power(1, n)
+        assert result == True, f"If x is 1, it should be a simple power of n ({n})."
+
+@given(st.integers(min_value=2, max_value=10**6), 
+       st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_logarithm_property(x, n):
+    result = is_simple_power(x, n)
+    # Property: if x is a simple power of n, then log_n(x) must be an integer.
+    if result:
+        # Avoid math domain error for log if x <= 0 or n <= 1, handled by min_value in strategy
+        log_val = math.log(x, n)
+        assert abs(log_val - round(log_val)) < 1e-9, f"If result is True, log_n(x) should be an integer. x={x}, n={n}, log_val={log_val}"
+
+@given(st.integers(min_value=2, max_value=10**6), 
+       st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_inverse_property(x_base, n_base):
+    # Test that if x = n**k, then is_simple_power(x, n) is true, and for other values it's false
+    k = st.integers(min_value=1, max_value=5).example()
+    
+    # Test when x is a simple power
+    x_power = n_base ** k
+    if x_power <= 10**6: # Ensure x_power stays within reasonable bounds for testing
+        assert is_simple_power(x_power, n_base) == True, \
+            f"Expected True for {x_power} as a power of {n_base} (to power {k})"
+    
+    # Test when x is NOT a simple power (by picking a value between powers)
+    # This is tricky because we need to ensure x is truly not a power.
+    # One way is to check the boundaries: (n**k) < x < (n**(k+1))
+    # This might generate a lot of values for x that aren't powers of n
+    # The 'false_if_not_perfect_power' test already handles this more broadly.
+    # For this specific test, we can try to explicitly construct a non-power.
+    if k > 0 and n_base > 1:
+        x_not_power = n_base ** k + 1
+        # Ensure x_not_power is not itself a power by chance, or too large
+        if x_not_power <= 10**6 and not is_simple_power(x_not_power, n_base):
+            assert is_simple_power(x_not_power, n_base) == False, \
+                f"Expected False for {x_not_power} which is not a power of {n_base}"
+
+
+@given(st.integers(min_value=0, max_value=0), st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_x_is_0_false(x, n):
+    # x=0 can never be a simple power of n if n > 0. n**int can't be 0.
+    result = is_simple_power(0, n)
+    assert result == False, "If x is 0, it should always return False (for n > 0)."
+
+@given(st.integers(min_value=1, max_value=10**6), st.integers(min_value=0, max_value=0))
+def test_is_simple_power_n_is_0_false(x, n):
+    # n=0. If x=0, 0**int could be 0, but x=0 is handled above.
+    # If x > 0, 0**int cannot be x. So for x > 0, it should be False.
+    result = is_simple_power(x, 0)
+    assert result == False, "If n is 0 and x > 0, it should return False."
+```

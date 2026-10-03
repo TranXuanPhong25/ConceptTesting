@@ -1,0 +1,22 @@
+```python
+
+# Basic Test Cases
+assert fib(0) == 0, "Basic Test Case 1: n = 0"
+assert fib(1) == 1, "Basic Test Case 2: n = 1"
+assert fib(2) == 1, "Basic Test Case 3: n = 2"
+assert fib(3) == 2, "Basic Test Case 4: n = 3"
+assert fib(5) == 5, "Basic Test Case 5: n = 5"
+assert fib(10) == 55, "Basic Test Case 6: n = 10"
+
+# Edge Test Cases
+assert fib(-1) == None, "Edge Test Case 1: Negative input (undefined)" # Assuming a negative input should return None or raise an error
+assert fib(None) == None, "Edge Test Case 2: None input" # Assuming None input should return None or raise an error
+assert fib(0.5) == None, "Edge Test Case 3: Float input" # Assuming float input should return None or raise an error
+assert fib("a") == None, "Edge Test Case 4: String input" # Assuming string input should return None or raise an error
+
+# Large Scale Test Cases
+assert fib(30) == 832040, "Large Scale Test Case 1: n = 30"
+assert fib(40) == 102334155, "Large Scale Test Case 2: n = 40"
+assert fib(50) == 12586269025, "Large Scale Test Case 3: n = 50"
+
+```

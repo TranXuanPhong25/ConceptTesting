@@ -1,0 +1,53 @@
+```python
+from typing import List, Any
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.one_of(st.integers(), st.floats(), st.text(), st.booleans(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers()))))
+def test_filter_integers_only_returns_integers(values):
+    result = filter_integers(values)
+    for item in result:
+        assert isinstance(item, int), "All elements in the result should be integers"
+
+@given(st.lists(st.integers()))
+def test_filter_integers_with_only_integers(values):
+    result = filter_integers(values)
+    assert result == values, "If the input list contains only integers, the output should be identical"
+
+@given(st.lists(st.one_of(st.floats(), st.text(), st.booleans(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers()))))
+def test_filter_integers_with_no_integers(values):
+    result = filter_integers(values)
+    assert result == [], "If the input list contains no integers, the output should be an empty list"
+
+@given(st.lists(st.one_of(st.integers(min_value=-1000, max_value=1000), 
+                           st.floats(allow_nan=False, allow_infinity=False), 
+                           st.text(min_size=1), 
+                           st.booleans())))
+def test_filter_integers_preserves_order(values):
+    result = filter_integers(values)
+    original_integers = [item for item in values if isinstance(item, int)]
+    assert result == original_integers, "The order of integers in the output should be preserved from the input"
+
+@given(st.lists(st.one_of(st.integers(min_value=-10**9, max_value=10**9),
+                           st.text(),
+                           st.floats()),
+                min_size=0, max_size=1000))
+def test_filter_integers_with_diverse_types_and_sizes(values):
+    result = filter_integers(values)
+    for x in result:
+        assert isinstance(x, int)
+    
+    # Check that every integer from the original list is in the result, and nothing else
+    expected_integers = [x for x in values if isinstance(x, int)]
+    assert result == expected_integers, "Should correctly filter integers regardless of list size and diversity"
+
+@given(st.lists(st.just(None)))
+def test_filter_integers_with_none_values(values):
+    result = filter_integers(values)
+    assert result == [], "None values should not be treated as integers"
+
+@given(st.lists(st.integers(min_value=0, max_value=0)))
+def test_filter_integers_with_zero(values):
+    result = filter_integers(values)
+    assert all(item == 0 for item in result)
+    assert len(result) == len(values)
+```

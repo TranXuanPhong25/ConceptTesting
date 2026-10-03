@@ -1,0 +1,77 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(x=st.integers(min_value=1, max_value=10**6), 
+       n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_basic_property(x, n):
+    result = is_simple_power(x, n)
+    # Property: If is_simple_power(x, n) is True, then x must be a power of n
+    if result:
+        power = 0
+        temp_x = x
+        while temp_x % n == 0 and temp_x > 1:
+            temp_x //= n
+            power += 1
+        assert n**power == x, f"If true, x ({x}) should be {n} to some power ({power})"
+
+@given(x=st.integers(min_value=1, max_value=10**6), 
+       n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_inverse_property(x, n):
+    result = is_simple_power(x, n)
+    # Property: If x is a power of n, then is_simple_power(x, n) should be True
+    is_actual_power = False
+    if n > 1: # n=1 case is handled in other tests. n=0 means x must be 0 for it to be a power.
+        temp_x = x
+        power = 0
+        if temp_x == 1: # 1 is n^0 for any n (except n=0)
+            is_actual_power = True
+        else:
+            while temp_x % n == 0 and temp_x > 1:
+                temp_x //= n
+                power += 1
+            if temp_x == 1:
+                is_actual_power = True
+
+    assert result == is_actual_power, f"For x={x}, n={n}: Expected {is_actual_power}, got {result}"
+
+
+@given(x=st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_equals_1(x):
+    # Property: If n is 1, only x=1 can be a power of 1 (1^int = 1)
+    result = is_simple_power(x, 1)
+    assert result == (x == 1), f"For n=1, only x=1 should be a simple power. Got {result} for x={x}"
+
+@given(x=st.integers(min_value=0, max_value=10**6))
+def test_is_simple_power_n_equals_0(x):
+    # Property: If n is 0, only x=0 can be a power of 0 (0^positive_int = 0), and 0^0 is usually 1
+    # According to the problem statement, 0^0 is 1.
+    result = is_simple_power(x, 0)
+    assert result == (x == 0 or x == 1), f"For n=0, x=0 or x=1 should be true. Got {result} for x={x}"
+
+@given(base=st.integers(min_value=2, max_value=100), 
+       exponent=st.integers(min_value=0, max_value=10))
+def test_is_simple_power_known_powers(base, exponent):
+    x = base ** exponent
+    result = is_simple_power(x, base)
+    assert result is True, f"For x={x} (which is {base}^{exponent}) and n={base}, result should be True"
+
+@given(x=st.integers(min_value=2, max_value=10**6), 
+       n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_non_power_invariance(x, n):
+    # Property: If x is not a power of n, the function should return False
+    # This checks that it correctly identifies non-powers.
+    if n > x and x != 1: # if n is greater than x, and x is not 1, it cannot be a power
+        assert is_simple_power(x, n) is False, f"x={x} cannot be a power of n={n} because n > x"
+    elif n == x:
+        assert is_simple_power(x, n) is True, f"x={x} is a power of n={n} because x==n"
+    elif x % n != 0 and x != 1: # if x is not divisible by n (and not 1), it cannot be a power
+        assert is_simple_power(x, n) is False, f"x={x} is not a power of n={n} because x % n != 0"
+
+@given(x=st.integers(min_value=1, max_value=10**6),
+       n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_x_is_1(x, n):
+    # Property: If x is 1, it is a simple power of any n (except 0) because n^0 = 1
+    # Assuming n is positive.
+    if x == 1 and n > 0:
+        assert is_simple_power(x, n) is True, f"x=1 should be a simple power of any n>0. Got False for n={n}"
+```

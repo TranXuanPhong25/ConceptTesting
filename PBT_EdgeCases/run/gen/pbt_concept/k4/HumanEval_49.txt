@@ -1,0 +1,58 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_property_0(n, p):
+    # Property: The result should always be less than p
+    result = modp(n, p)
+    assert 0 <= result < p, "The result of modulo operation should be within [0, p-1]"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_property_1(n, p):
+    # Property: modp(n, p) should be equivalent to (2**n) % p
+    result = modp(n, p)
+    expected = (2**n) % p
+    assert result == expected, f"modp({n}, {p}) should be (2^{n}) % {p}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_property_2(n, p):
+    # Property: modp(0, p) should always be 1 for any p > 1
+    result = modp(0, p)
+    assert result == 1, "modp(0, p) should always be 1"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_modp_property_3(n):
+    # Property: modp(n, 1) should always be 0 (since anything mod 1 is 0)
+    result = modp(n, 1)
+    assert result == 0, "modp(n, 1) should always be 0"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_modp_property_4(n):
+    # Property: modp(n, 2) should be 0 if n >= 1, and 1 if n = 0
+    result = modp(n, 2)
+    expected = 0 if n >= 1 else 1
+    assert result == expected, "modp(n, 2) should be 0 for n >= 1, and 1 for n = 0"
+
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_multiplicative_property(n1, p):
+    # Property: 2^(n1+n2) mod p == (2^n1 mod p * 2^n2 mod p) mod p
+    # We test with n2=1 for simplicity.
+    result_n_plus_1 = modp(n1 + 1, p)
+    result_n_times_2 = (modp(n1, p) * modp(1, p)) % p
+    assert result_n_plus_1 == result_n_times_2, "modp(n+1, p) should be (modp(n, p) * 2) % p"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_large_inputs_consistency(n, p):
+    # Property: For larger inputs, the result should still be consistent with the direct calculation
+    result = modp(n, p)
+    expected = pow(2, n, p) # Python's built-in pow(base, exp, mod) is efficient for this
+    assert result == expected, "modp should be consistent with pow(2, n, p) for large inputs"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_consecutive_n_property(n, p):
+    # Property: modp(n+1, p) should be (modp(n, p) * 2) % p
+    if n > 0: # This property applies for n >= 0, but for n=0, modp(0,p) * 2 might be > p and then %p is needed
+        result_n_plus_1 = modp(n + 1, p)
+        result_from_n = (modp(n, p) * 2) % p
+        assert result_n_plus_1 == result_from_n, "modp(n+1, p) should be (modp(n, p) * 2) % p"
+```

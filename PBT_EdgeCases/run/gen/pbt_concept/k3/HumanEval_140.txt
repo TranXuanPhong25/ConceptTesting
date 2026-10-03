@@ -1,0 +1,72 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(text=st.text())
+def test_no_double_underscore_after_fix(text):
+    result = fix_spaces(text)
+    assert "__" not in result, "Result should not contain double underscores"
+
+@given(text=st.text())
+def test_no_triple_hyphen_after_fix(text):
+    result = fix_spaces(text)
+    assert "---" not in result, "Result should not contain triple hyphens"
+
+@given(text=st.text(min_size=1).map(lambda s: s.replace(' ', '')))
+def test_no_spaces_if_no_spaces_originally(text):
+    # If the original text has no spaces, the result should be identical
+    result = fix_spaces(text)
+    assert result == text, "Text without spaces should remain unchanged"
+
+@given(text=st.text())
+def test_output_contains_only_valid_characters(text):
+    result = fix_spaces(text)
+    # The output should only contain characters from the original text, underscores, and hyphens.
+    allowed_chars = set(text) | set(['_', '-'])
+    assert all(c in allowed_chars for c in result), "Output should only contain original characters, underscores, or hyphens"
+
+@given(text=st.text())
+def test_fix_spaces_idempotent(text):
+    # Applying fix_spaces twice should yield the same result as applying it once.
+    first_pass = fix_spaces(text)
+    second_pass = fix_spaces(first_pass)
+    assert first_pass == second_pass, "Applying fix_spaces twice should be idempotent"
+
+@given(text=st.text())
+def test_spaces_are_replaced(text):
+    result = fix_spaces(text)
+    # Check that no spaces remain in the output
+    assert " " not in result, "No spaces should remain in the output string"
+
+@given(text=st.text(min_size=0, max_size=200).filter(lambda s: "   " in s))
+def test_three_or_more_spaces_become_hyphen(text):
+    result = fix_spaces(text)
+    # If the original string had 3 or more consecutive spaces, they should be replaced by a single hyphen
+    # This is a bit tricky to assert directly on the result without reimplementing the logic,
+    # so we'll check the absence of other patterns and presence of hyphens where expected.
+    assert "   " not in text or "-" in result, "Triple spaces should lead to a hyphen in the result"
+    # This test is more about ensuring the transformation occurs than about its exact placement,
+    # which is covered by comparing against a reference implementation in other tests.
+
+@given(text=st.text(min_size=0, max_size=200))
+def test_specific_space_patterns(text):
+    # Property: spaces are replaced by '_' unless there are 3 or more consecutive, then '-'
+    # This test aims to verify the core logic for different space counts.
+    # It constructs a string with various space patterns and checks the output.
+    modified_text = text.replace(' ', '') # remove existing spaces to control space patterns
+    
+    # Insert specific space patterns
+    test_cases = [
+        ("Example", "Example"),
+        ("Example 1", "Example_1"),
+        (" Example 2", "_Example_2"),
+        (" Example   3", "_Example-3"), # 3 spaces
+        ("Four    Spaces", "Four-Spaces"), # 4 spaces
+        ("Two  Spaces", "Two__Spaces"), # 2 spaces (should be two underscores, not a hyphen)
+        ("A B C", "A_B_C"),
+        ("  D  E   F", "__D__E-F")
+    ]
+    
+    for input_str, expected_str in test_cases:
+        actual_result = fix_spaces(input_str)
+        assert actual_result == expected_str, f"Input: '{input_str}', Expected: '{expected_str}', Got: '{actual_result}'"
+```

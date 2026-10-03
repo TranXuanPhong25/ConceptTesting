@@ -1,0 +1,101 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_property_sum_of_two_digit_elements(arr, data):
+    k = data.draw(st.integers(min_value=1, max_value=len(arr)))
+
+    result = add_elements(arr, k)
+
+    # Property: The result should be the sum of elements with at most two digits
+    # from the first k elements of arr.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):  # Ensure we don't go out of bounds if k is very large (though constraints prevent this)
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"Expected sum {expected_sum}, but got {result} for arr={arr[:k]} and k={k}"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_property_empty_result_if_no_two_digit_numbers(arr, data):
+    k = data.draw(st.integers(min_value=1, max_value=len(arr)))
+
+    # Modify arr so that the first k elements have no two-digit numbers
+    modified_arr = []
+    for i in range(len(arr)):
+        if i < k:
+            if -99 <= arr[i] <= 99:
+                modified_arr.append(arr[i] * 1000) # Make it > 2 digits
+            else:
+                modified_arr.append(arr[i])
+        else:
+            modified_arr.append(arr[i])
+
+    result = add_elements(modified_arr, k)
+
+    # Property: If none of the first k elements have at most two digits, the sum should be 0.
+    two_digit_found = False
+    for i in range(k):
+        if -99 <= modified_arr[i] <= 99:
+            two_digit_found = True
+            break
+
+    if not two_digit_found:
+        assert result == 0, f"Expected 0 when no two-digit numbers in first k elements. Got {result} for arr={modified_arr[:k]} and k={k}"
+    else:
+        # This case implies my modification logic might have failed for some edge cases,
+        # or it's not a strong enough property if there *are* two-digit numbers.
+        # The primary test_add_elements_property_sum_of_two_digit_elements covers this better.
+        pass
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_property_all_elements_two_digits(arr, data):
+    k = data.draw(st.integers(min_value=1, max_value=len(arr)))
+
+    result = add_elements(arr, k)
+
+    # Property: If all elements in the first k are two-digit numbers, the result is their sum.
+    expected_sum = sum(arr[:k])
+
+    assert result == expected_sum, f"Expected sum {expected_sum}, but got {result} for arr={arr[:k]} and k={k} when all are two-digit"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_property_k_equals_one(arr, data):
+    k = 1
+    result = add_elements(arr, k)
+
+    # Property: If k=1, the result is the first element if it has at most two digits, otherwise 0.
+    expected_sum = 0
+    if -99 <= arr[0] <= 99:
+        expected_sum = arr[0]
+
+    assert result == expected_sum, f"Expected sum {expected_sum}, but got {result} for arr={arr} and k={k}"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.data()
+)
+def test_add_elements_property_k_equals_len_arr(arr, data):
+    k = len(arr)
+    result = add_elements(arr, k)
+
+    # Property: If k is the length of the array, the result is the sum of all two-digit numbers in the array.
+    expected_sum = 0
+    for x in arr:
+        if -99 <= x <= 99:
+            expected_sum += x
+
+    assert result == expected_sum, f"Expected sum {expected_sum}, but got {result} for arr={arr} and k={k}"
+```

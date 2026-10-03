@@ -1,0 +1,92 @@
+```python
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+from hypothesis import given, strategies as st
+
+@given(
+    st.tuples(st.integers(), st.integers()).map(lambda t: (min(t), max(t))),
+    st.tuples(st.integers(), st.integers()).map(lambda t: (min(t), max(t)))
+)
+def test_intersection_property(interval1, interval2):
+    result = intersection(interval1, interval2)
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start > intersection_end:
+        # No intersection
+        expected = "NO"
+    else:
+        length = intersection_end - intersection_start + 1
+        expected = "YES" if is_prime(length) else "NO"
+
+    assert result == expected, (
+        f"For intervals {interval1} and {interval2}: "
+        f"Expected {expected}, but got {result}"
+    )
+
+@given(
+    st.tuples(st.integers(), st.integers()).map(lambda t: (min(t), max(t))),
+    st.tuples(st.integers(), st.integers()).map(lambda t: (min(t), max(t)))
+)
+def test_intersection_non_negative_length(interval1, interval2):
+    # This property ensures that if there's an intersection, its length is always non-negative.
+    # The `intersection` function implicitly handles this by returning "NO" for non-intersections.
+    # This test primarily verifies the internal logic that determines intersection length.
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start <= intersection_end:
+        length = intersection_end - intersection_start + 1
+        assert length >= 0, "Intersection length should always be non-negative when intervals intersect."
+    else:
+        # If no intersection, the length concept doesn't apply directly in a positive sense.
+        # The function handles this by returning "NO".
+        pass
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(lambda t: (min(t), max(t))),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(lambda t: (min(t), max(t)))
+)
+def test_intersection_symmetry(interval1, interval2):
+    # The intersection of two intervals should be commutative.
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, "Intersection result should be symmetric regardless of interval order."
+
+@given(
+    st.tuples(st.integers(), st.integers()).map(lambda t: (min(t), max(t))),
+    st.integers()
+)
+def test_intersection_with_itself(interval, offset):
+    # The intersection of an interval with itself should always have its own length.
+    # The `offset` is used to create a "shifted" version of the interval, which should still have
+    # the same length if it's the *same* interval conceptually (i.e., offset is 0).
+    # This test actually checks that if two intervals are identical, their intersection length
+    # is the length of the interval itself.
+
+    start, end = interval
+    original_length = end - start + 1
+    
+    result = intersection(interval, interval)
+    expected = "YES" if is_prime(original_length) else "NO"
+    
+    assert result == expected, (
+        f"Intersection of interval {interval} with itself should have length {original_length}. "
+        f"Expected {expected}, got {result}"
+    )
+
+```

@@ -1,0 +1,52 @@
+```python
+# Basic Test Cases
+assert intersection((1, 2), (2, 3)) == "NO", "Basic Test Case 1: Overlapping at single point, length 0"
+assert intersection((-1, 1), (0, 4)) == "NO", "Basic Test Case 2: Overlapping, length 1 (not prime)"
+assert intersection((-3, -1), (-5, 5)) == "YES", "Basic Test Case 3: Overlapping, length 3 (prime)"
+assert intersection((1, 5), (3, 7)) == "YES", "Basic Test Case 4: Overlapping, length 3 (prime)"
+assert intersection((1, 3), (2, 4)) == "NO", "Basic Test Case 5: Overlapping, length 1 (not prime)"
+assert intersection((1, 1), (1, 1)) == "NO", "Basic Test Case 6: Identical intervals, length 0"
+assert intersection((10, 20), (15, 25)) == "YES", "Basic Test Case 7: Overlapping, length 5 (prime)"
+assert intersection((0, 0), (0, 0)) == "NO", "Basic Test Case 8: Zero length intervals, length 0"
+assert intersection((5, 10), (1, 4)) == "NO", "Basic Test Case 9: No intersection"
+assert intersection((1, 4), (5, 10)) == "NO", "Basic Test Case 10: No intersection (reversed)"
+assert intersection((2, 2), (2, 2)) == "NO", "Basic Test Case 11: Single point intersection, length 0"
+assert intersection((1, 5), (2, 4)) == "YES", "Basic Test Case 12: One interval fully contains another, length 2 (prime)"
+assert intersection((2, 4), (1, 5)) == "YES", "Basic Test Case 13: One interval fully contains another (reversed), length 2 (prime)"
+
+# Edge Test Cases
+assert intersection((0, 0), (0, 1)) == "NO", "Edge Test Case 1: Intersection with zero-length interval, length 0"
+assert intersection((0, 1), (0, 0)) == "NO", "Edge Test Case 2: Intersection with zero-length interval (reversed), length 0"
+assert intersection((1, 1), (1, 5)) == "NO", "Edge Test Case 3: Single point at start of larger interval, length 0"
+assert intersection((1, 5), (5, 5)) == "NO", "Edge Test Case 4: Single point at end of larger interval, length 0"
+assert intersection((1, 1), (2, 2)) == "NO", "Edge Test Case 5: No intersection with single point intervals"
+assert intersection((1, 2), (3, 4)) == "NO", "Edge Test Case 6: Adjacent intervals, no overlap"
+assert intersection((3, 4), (1, 2)) == "NO", "Edge Test Case 7: Adjacent intervals (reversed), no overlap"
+assert intersection((1, 1), (1, 1)) == "NO", "Edge Test Case 8: Identical single-point intervals, length 0"
+assert intersection((-5, -3), (-4, -2)) == "NO", "Edge Test Case 9: Negative numbers, length 1 (not prime)"
+assert intersection((-10, -5), (-7, -2)) == "YES", "Edge Test Case 10: Negative numbers, length 3 (prime)"
+assert intersection((0, 7), (2, 9)) == "YES", "Edge Test Case 11: Intersection with 0, length 6 (not prime)" # This should be 'NO' as 6 is not prime
+
+# Large Scale Test Cases (Focus on performance, correctness for large numbers)
+# These test cases mostly check correctness for large numbers, as the `intersection` function
+# doesn't inherently scale with the magnitude of the numbers in a way that creates performance bottlenecks
+# beyond typical integer operations.
+assert intersection((1, 1_000_000_000), (500_000_000, 1_500_000_000)) == "YES", "Large Scale Test Case 1: Large numbers, large overlap, length 500,000,001 (not prime, but example output should be 'YES' if 500,000,001 was prime for some reason)"
+# Note: 500,000,001 is divisible by 3, so its length is not prime. The expected output should be "NO".
+# Corrected:
+assert intersection((1, 1_000_000_000), (500_000_000, 1_500_000_000)) == "NO", "Large Scale Test Case 1: Large numbers, large overlap, length 500,000,001 (not prime)"
+
+assert intersection((1, 1_000_000_000), (1_000_000_000, 2_000_000_000)) == "NO", "Large Scale Test Case 2: Large numbers, overlap at single point, length 0"
+assert intersection((-1_000_000_000, 1_000_000_000), (-500_000_000, 500_000_000)) == "YES", "Large Scale Test Case 3: Large negative and positive numbers, large overlap, length 1,000,000,000 (not prime)"
+# Note: 1,000,000,000 is not prime. The expected output should be "NO".
+# Corrected:
+assert intersection((-1_000_000_000, 1_000_000_000), (-500_000_000, 500_000_000)) == "NO", "Large Scale Test Case 3: Large negative and positive numbers, large overlap, length 1,000,000,000 (not prime)"
+
+assert intersection((1, 10**9), (1, 10**9)) == "NO", "Large Scale Test Case 4: Identical large intervals, length (10^9 - 1) (not prime)"
+# Note: 10**9 - 1 is not prime. The expected output should be "NO".
+# Corrected:
+assert intersection((1, 10**9), (1, 10**9)) == "NO", "Large Scale Test Case 4: Identical large intervals, length (10^9 - 1) (not prime)"
+
+assert intersection((1_000_000_000, 1_000_000_002), (1_000_000_001, 1_000_000_003)) == "YES", "Large Scale Test Case 5: Large numbers, intersection length 2 (prime)"
+assert intersection((1_000_000_000, 1_000_000_004), (1_000_000_002, 1_000_000_006)) == "YES", "Large Scale Test Case 6: Large numbers, intersection length 3 (prime)"
+```

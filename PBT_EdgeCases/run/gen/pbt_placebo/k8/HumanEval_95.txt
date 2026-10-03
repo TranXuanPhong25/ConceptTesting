@@ -1,0 +1,31 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.dictionaries(st.text(), st.just("value")))
+def test_empty_dict_returns_false(d):
+    if not d:
+        assert check_dict_case(d) is False, "Empty dictionary should return False"
+
+@given(st.dictionaries(st.text(alphabet=st.ascii_lowercase), st.just("value"), min_size=1))
+def test_all_lowercase_keys_returns_true(d):
+    assert check_dict_case(d) is True, "Dictionary with all lowercase keys should return True"
+
+@given(st.dictionaries(st.text(alphabet=st.ascii_uppercase), st.just("value"), min_size=1))
+def test_all_uppercase_keys_returns_true(d):
+    assert check_dict_case(d) is True, "Dictionary with all uppercase keys should return True"
+
+@given(st.dictionaries(st.text(alphabet=st.ascii_lowercase + st.ascii_uppercase), st.just("value"), min_size=1)
+       .filter(lambda d: not (all(key.islower() for key in d) or all(key.isupper() for key in d))))
+def test_mixed_case_keys_returns_false(d):
+    assert check_dict_case(d) is False, "Dictionary with mixed case keys should return False"
+
+@given(st.dictionaries(st.one_of(st.text(), st.integers()), st.just("value"), min_size=1)
+       .filter(lambda d: any(not isinstance(key, str) for key in d)))
+def test_non_string_keys_returns_false(d):
+    assert check_dict_case(d) is False, "Dictionary with non-string keys should return False"
+
+@given(st.dictionaries(st.text(min_size=1), st.just("value"), min_size=1))
+def test_return_type_is_boolean(d):
+    result = check_dict_case(d)
+    assert isinstance(result, bool), "The function should always return a boolean"
+```

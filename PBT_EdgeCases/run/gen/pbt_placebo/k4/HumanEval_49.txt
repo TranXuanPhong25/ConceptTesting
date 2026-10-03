@@ -1,0 +1,41 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_result_range(n, p):
+    result = modp(n, p)
+    assert 0 <= result < p, "The result of modulo operation must be within [0, p-1]"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_exponentiation_property(n, p):
+    # This property tests that (a * b) % p == ((a % p) * (b % p)) % p
+    # Specifically, 2^n % p should be consistent with (2^(n-1) * 2) % p
+    if n > 0:
+        result = modp(n, p)
+        # Calculate 2^n using Python's built-in pow with modulo for comparison
+        expected = pow(2, n, p)
+        assert result == expected, f"modp({n}, {p}) should be equivalent to pow(2, {n}, {p})"
+    else: # n = 0
+        result = modp(0, p)
+        assert result == 1, "2^0 mod p should always be 1 for any p > 0"
+
+@given(st.integers(min_value=0, max_value=1000), st.just(1))
+def test_modp_p_is_one(n, p):
+    result = modp(n, p)
+    assert result == 0, "Any number modulo 1 should be 0"
+
+@given(st.integers(min_value=0, max_value=1000))
+def test_modp_n_is_zero(n):
+    # For n=0, 2^0 = 1. So 1 % p should be 1 if p > 1, and 0 if p=1
+    # We use a strategy where p is always > 1 for this test, as p=1 is covered above.
+    p = st.integers(min_value=2, max_value=1000).example()
+    result = modp(0, p)
+    assert result == 1, "2^0 mod p should always be 1 when p > 1"
+
+@given(st.integers(min_value=0, max_value=10), st.integers(min_value=2, max_value=100))
+def test_modp_small_values_against_bruteforce(n, p):
+    # For small n, directly calculate 2^n and then take modulo
+    result = modp(n, p)
+    expected = (2**n) % p
+    assert result == expected, "Result should match direct calculation for small n"
+```

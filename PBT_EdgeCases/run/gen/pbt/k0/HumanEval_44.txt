@@ -1,0 +1,75 @@
+```python
+from hypothesis import given, strategies as st
+
+def change_base(x: int, base: int):
+    """Change numerical base of input number x to base.
+    return string representation after the conversion.
+    base numbers are less than 10.
+    >>> change_base(8, 3)
+    '22'
+    >>> change_base(8, 2)
+    '1000'
+    >>> change_base(7, 2)
+    '111'
+    """
+    if x == 0:
+        return "0"
+    res = ""
+    while x > 0:
+        res = str(x % base) + res
+        x //= base
+    return res
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_inversion(x, base):
+    """
+    Property: Converting a number to a different base and then converting it back should yield the original number.
+    This checks if the conversion is invertible and accurate.
+    """
+    result_str = change_base(x, base)
+    
+    # Convert the base string back to an integer
+    reverted_x = 0
+    power = 0
+    for digit_char in reversed(result_str):
+        reverted_x += int(digit_char) * (base ** power)
+        power += 1
+
+    assert reverted_x == x, f"Conversion from {x} to base {base} gives '{result_str}', converting back gives {reverted_x}. Expected {x}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_digits_are_valid(x, base):
+    """
+    Property: All digits in the resulting base string should be less than the base.
+    """
+    result_str = change_base(x, base)
+    for digit_char in result_str:
+        digit = int(digit_char)
+        assert 0 <= digit < base, f"Digit {digit} in '{result_str}' for base {base} is not valid."
+
+@given(st.integers(min_value=0, max_value=1000), st.just(10))
+def test_change_base_base_10_identity(x, base):
+    """
+    Property: Changing a number to base 10 should result in its string representation.
+    """
+    result_str = change_base(x, base)
+    assert result_str == str(x), f"Converting {x} to base 10 should be '{x}', but got '{result_str}'."
+
+@given(st.integers(min_value=0, max_value=1), st.integers(min_value=2, max_value=9))
+def test_change_base_zero_and_one(x, base):
+    """
+    Property: 0 in any base is "0" and 1 in any base is "1".
+    """
+    result_str = change_base(x, base)
+    assert result_str == str(x), f"Converting {x} to base {base} should be '{x}', but got '{result_str}'."
+
+@given(st.integers(min_value=2, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_leading_digit_not_zero_for_non_zero_x(x, base):
+    """
+    Property: For any non-zero input number, the first digit of its base representation should not be '0'.
+    (Unless the number itself is 0, which is handled by a separate test).
+    """
+    result_str = change_base(x, base)
+    if x != 0:
+        assert result_str[0] != '0', f"For non-zero {x}, base {base} representation '{result_str}' should not start with '0'."
+```

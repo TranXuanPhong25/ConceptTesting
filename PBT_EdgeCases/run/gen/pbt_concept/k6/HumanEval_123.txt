@@ -1,0 +1,133 @@
+```python
+from hypothesis import given, strategies as st
+from typing import List
+
+def get_odd_collatz(n):
+    """
+    Given a positive integer n, return a sorted list that has the odd numbers in collatz sequence.
+
+    The Collatz conjecture is a conjecture in mathematics that concerns a sequence defined
+    as follows: start with any positive integer n. Then each term is obtained from the 
+    previous term as follows: if the previous term is even, the next term is one half of 
+    the previous term. If the previous term is odd, the next term is 3 times the previous
+    term plus 1. The conjecture is that no matter what value of n, the sequence will always reach 1.
+
+    Note: 
+        1. Collatz(1) is [1].
+        2. returned list sorted in increasing order.
+
+    For example:
+    get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5.
+    """
+    
+    sequence = [n]
+    while n != 1:
+        if n % 2 == 0:
+            n = n // 2
+        else:
+            n = 3 * n + 1
+        sequence.append(n)
+    
+    odd_numbers = sorted(list(set(x for x in sequence if x % 2 != 0)))
+    return odd_numbers
+
+@given(st.integers(min_value=1, max_value=10000))
+@example(n=1)
+@example(n=2)
+@example(n=10000)
+def test_odd_numbers_are_in_collatz_sequence(n):
+    """
+    Property: All numbers in the returned list must be odd and part of the Collatz sequence for n.
+    """
+    result = get_odd_collatz(n)
+
+    # All numbers in the result should be odd
+    assert all(num % 2 != 0 for num in result), "All numbers in the result must be odd."
+
+    # All numbers in the result should be part of the Collatz sequence
+    collatz_sequence = []
+    current = n
+    while current != 1:
+        collatz_sequence.append(current)
+        if current % 2 == 0:
+            current //= 2
+        else:
+            current = 3 * current + 1
+    collatz_sequence.append(1)
+
+    for num in result:
+        assert num in collatz_sequence, f"Number {num} is in result but not in the Collatz sequence for {n}."
+
+@given(st.integers(min_value=1, max_value=10000))
+@example(n=1)
+@example(n=2)
+@example(n=10000)
+def test_result_is_sorted_and_unique(n):
+    """
+    Property: The returned list must be sorted in increasing order and contain only unique elements.
+    """
+    result = get_odd_collatz(n)
+
+    # Check if the list is sorted
+    assert all(result[i] <= result[i+1] for i in range(len(result) - 1)), "The returned list must be sorted in increasing order."
+
+    # Check for uniqueness (implicitly handled by using set in the function, but good to verify)
+    assert len(result) == len(set(result)), "The returned list should contain only unique elements."
+
+@given(st.integers(min_value=1, max_value=10000))
+@example(n=1)
+@example(n=5)
+def test_one_is_always_in_result_for_n_greater_than_zero(n):
+    """
+    Property: For any positive integer n, 1 should always be present in the returned list.
+    This is because the Collatz sequence always reaches 1.
+    """
+    result = get_odd_collatz(n)
+    assert 1 in result, "The number 1 must always be in the result for any positive n."
+
+@given(st.integers(min_value=1, max_value=10000))
+@example(n=1)
+@example(n=2)
+@example(n=3) # Sequence: 3, 10, 5, 16, 8, 4, 2, 1. Odd: [1, 3, 5]
+@example(n=4) # Sequence: 4, 2, 1. Odd: [1]
+@example(n=5) # Sequence: 5, 16, 8, 4, 2, 1. Odd: [1, 5]
+def test_all_odd_collatz_numbers_are_included(n):
+    """
+    Property: The returned list should contain all odd numbers present in the Collatz sequence for n.
+    """
+    result = get_odd_collatz(n)
+
+    collatz_sequence_full = []
+    current = n
+    while current != 1:
+        collatz_sequence_full.append(current)
+        if current % 2 == 0:
+            current //= 2
+        else:
+            current = 3 * current + 1
+    collatz_sequence_full.append(1)
+
+    expected_odd_numbers = sorted(list(set(x for x in collatz_sequence_full if x % 2 != 0)))
+    
+    assert result == expected_odd_numbers, "The result should include all odd numbers from the Collatz sequence and be sorted."
+
+@given(st.integers(min_value=1, max_value=10000))
+@example(n=1)
+def test_n_is_in_result_if_n_is_odd(n):
+    """
+    Property: If the input n is odd, then n itself must be in the returned list.
+    """
+    result = get_odd_collatz(n)
+    if n % 2 != 0:
+        assert n in result, f"If n ({n}) is odd, it should be present in the result."
+
+@given(st.integers(min_value=1, max_value=1000000)) # Larger range for stress testing
+def test_collatz_conjecture_termination_for_large_n(n):
+    """
+    Property: For any positive n, the Collatz sequence must eventually reach 1, 
+    and thus 1 must always be in the result. This indirectly checks the Collatz conjecture's termination 
+    for the tested range by ensuring 1 is always found.
+    """
+    result = get_odd_collatz(n)
+    assert 1 in result, f"Collatz sequence for {n} should always contain 1."
+```

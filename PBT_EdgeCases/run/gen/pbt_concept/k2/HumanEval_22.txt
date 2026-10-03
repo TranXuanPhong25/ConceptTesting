@@ -1,0 +1,88 @@
+```python
+from hypothesis import given, strategies as st
+from typing import List, Any
+
+@given(st.lists(st.one_of(st.integers(), st.floats(), st.text(), st.booleans(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers()))))
+def test_filter_integers_only_returns_integers(values: List[Any]):
+    """
+    Property: The function should only return elements that are integers.
+    """
+    result = filter_integers(values)
+    for item in result:
+        assert isinstance(item, int), f"Returned item {item} is not an integer."
+
+@given(st.lists(st.one_of(st.integers(), st.floats(), st.text(), st.booleans(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers()))))
+def test_filter_integers_all_integers_are_present(values: List[Any]):
+    """
+    Property: All integers present in the input list should be present in the output list,
+    in their original order.
+    """
+    result = filter_integers(values)
+    expected_integers = [item for item in values if isinstance(item, int)]
+    assert result == expected_integers, "Not all integers were returned, or their order was changed."
+
+@given(st.lists(st.one_of(st.floats(), st.text(), st.booleans(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers()))))
+def test_filter_integers_empty_if_no_integers(values: List[Any]):
+    """
+    Property: If the input list contains no integers, the output list should be empty.
+    """
+    result = filter_integers(values)
+    assert not result, "The result should be empty if no integers are in the input."
+
+@given(st.lists(st.integers()))
+def test_filter_integers_identity_for_all_integers(values: List[Any]):
+    """
+    Property: If the input list contains only integers, the output should be identical to the input.
+    """
+    result = filter_integers(values)
+    assert result == values, "The function should return the original list if all elements are integers."
+
+@given(st.lists(st.booleans()))
+def test_filter_integers_handles_booleans(values: List[Any]):
+    """
+    Property: Booleans are considered integers in Python (subclass of int), so they should be filtered.
+    """
+    result = filter_integers(values)
+    expected = [int(b) for b in values if isinstance(b, bool)]
+    assert result == expected, "Booleans should be treated as integers (0 for False, 1 for True)."
+
+@given(st.lists(st.integers(-1000, 1000), min_size=0, max_size=100))
+def test_filter_integers_preserves_order_and_values(integers: List[int]):
+    """
+    Property: If the list contains only integers, the function should return the list itself without modification.
+    This also implicitly tests order preservation.
+    """
+    result = filter_integers(integers)
+    assert result == integers, "Filtering a list of only integers should return the identical list."
+
+@given(st.lists(st.one_of(st.integers(), st.floats(), st.text()), min_size=0, max_size=100))
+def test_filter_integers_length_invariant(values: List[Any]):
+    """
+    Property: The length of the output list should be less than or equal to the length of the input list.
+    """
+    result = filter_integers(values)
+    assert len(result) <= len(values), "The length of the output list should not exceed the input list."
+
+@given(st.lists(st.one_of(st.integers(min_value=-10**9, max_value=10**9),
+                           st.text(min_size=1, max_size=10),
+                           st.floats(min_value=-1e9, max_value=1e9, allow_nan=False, allow_infinity=False)),
+                min_size=0, max_size=1000))
+def test_filter_integers_large_scale_and_mixed_types(values: List[Any]):
+    """
+    Property: Tests the function with a large list of mixed types including large integers and floats.
+    Ensures it correctly filters out only integers and preserves their order.
+    """
+    result = filter_integers(values)
+    expected_integers = [item for item in values if isinstance(item, int)]
+    assert result == expected_integers, "Large scale mixed input should be filtered correctly."
+
+@given(st.lists(st.sampled_from([None, [], {}, ()]), min_size=0, max_size=100))
+def test_filter_integers_complex_non_integers(values: List[Any]):
+    """
+    Property: If the input list contains only non-integer complex types (e.g., None, empty lists/dicts/tuples),
+    the output list should be empty.
+    """
+    result = filter_integers(values)
+    assert not result, "Should return an empty list when complex non-integer types are provided."
+
+```

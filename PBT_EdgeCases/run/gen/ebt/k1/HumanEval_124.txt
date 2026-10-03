@@ -1,0 +1,100 @@
+```python
+# Basic Test Cases
+# Test with a valid date string
+assert valid_date('01-01-2000') == True, "Basic Test Case 1: Valid date"
+# Test with another valid date
+assert valid_date('12-31-2023') == True, "Basic Test Case 2: Valid date at month end"
+# Test with a valid date in February (non-leap year)
+assert valid_date('02-28-2023') == True, "Basic Test Case 3: Valid February date (non-leap)"
+# Test with a valid date in February (leap year)
+assert valid_date('02-29-2024') == True, "Basic Test Case 4: Valid February date (leap)"
+# Test with a month having 30 days
+assert valid_date('04-30-2023') == True, "Basic Test Case 5: Valid date for 30-day month"
+# Test with a single digit month and day
+assert valid_date('01-01-2000') == True, "Basic Test Case 6: Single digit month and day"
+
+
+# Edge Test Cases
+# Test with an empty string
+assert valid_date('') == False, "Edge Test Case 1: Empty string"
+# Test with an invalid format (slash instead of hyphen)
+assert valid_date('06/04/2020') == False, "Edge Test Case 2: Invalid format - slashes"
+# Test with an invalid format (missing hyphen)
+assert valid_date('06042020') == False, "Edge Test Case 3: Invalid format - no hyphens"
+# Test with an invalid format (too many hyphens)
+assert valid_date('06-04-2020-extra') == False, "Edge Test Case 4: Invalid format - too many hyphens"
+# Test with non-numeric characters
+assert valid_date('ab-cd-efgh') == False, "Edge Test Case 5: Non-numeric characters"
+# Test with month 0
+assert valid_date('00-15-2023') == False, "Edge Test Case 6: Month 0"
+# Test with month 13
+assert valid_date('13-15-2023') == False, "Edge Test Case 7: Month 13"
+# Test with day 0
+assert valid_date('01-00-2023') == False, "Edge Test Case 8: Day 0"
+# Test with day 32 for a 31-day month
+assert valid_date('01-32-2023') == False, "Edge Test Case 9: Day 32 for 31-day month"
+# Test with day 31 for a 30-day month
+assert valid_date('04-31-2023') == False, "Edge Test Case 10: Day 31 for 30-day month"
+# Test with day 30 for February (non-leap year)
+assert valid_date('02-30-2023') == False, "Edge Test Case 11: Day 30 for February (non-leap)"
+# Test with day 29 for February (non-leap year)
+assert valid_date('02-29-2023') == False, "Edge Test Case 12: Day 29 for February (non-leap)"
+# Test with day 29 for February (leap year)
+assert valid_date('02-29-2020') == True, "Edge Test Case 13: Day 29 for February (leap)"
+# Test with day 29 for February (another leap year)
+assert valid_date('02-29-2000') == True, "Edge Test Case 14: Day 29 for February (another leap year)"
+# Test with day 29 for February (not a leap year, divisble by 100 but not 400)
+assert valid_date('02-29-1900') == False, "Edge Test Case 15: Day 29 for February (not leap, divisible by 100)"
+# Test with month and day having leading zeros
+assert valid_date('03-01-2023') == True, "Edge Test Case 16: Leading zeros for month and day"
+# Test with only year
+assert valid_date('2023') == False, "Edge Test Case 17: Only year"
+# Test with malformed year (too short)
+assert valid_date('01-01-23') == False, "Edge Test Case 18: Malformed year (too short)"
+# Test with malformed year (too long)
+assert valid_date('01-01-20234') == False, "Edge Test Case 19: Malformed year (too long)"
+# Test with day with a single digit, no leading zero
+assert valid_date('04-1-2023') == False, "Edge Test Case 20: Single digit day without leading zero"
+# Test with month with a single digit, no leading zero
+assert valid_date('4-01-2023') == False, "Edge Test Case 21: Single digit month without leading zero"
+# Test with an invalid character in the middle
+assert valid_date('01-1x-2023') == False, "Edge Test Case 22: Invalid character in day"
+assert valid_date('01-11-202x') == False, "Edge Test Case 23: Invalid character in year"
+assert valid_date('0x-11-2023') == False, "Edge Test Case 24: Invalid character in month"
+# Test with a date where all parts are 0
+assert valid_date('00-00-0000') == False, "Edge Test Case 25: All zeros"
+# Test with valid month and day, but year is 0000
+assert valid_date('01-01-0000') == True, "Edge Test Case 26: Valid month and day, year 0000 (assuming it's valid)"
+
+
+# Large Scale Test Cases
+# Note: For this function, "large scale" typically refers to complex logic combinations rather than massive data volume,
+# as it processes a single string input. However, we can simulate some scale by using various valid and invalid dates.
+
+# A large number of valid dates
+for i in range(1, 13):
+    month = str(i).zfill(2)
+    for j in range(1, 28): # Days 1-27 are valid for all months
+        day = str(j).zfill(2)
+        year = '2000'
+        assert valid_date(f'{month}-{day}-{year}') == True, f"Large Scale Test Case 1.{i}.{j}: Valid date loop"
+
+# A large number of invalid dates due to day exceeding month limit
+assert valid_date('04-31-2023') == False, "Large Scale Test Case 2.1: Invalid day for April"
+assert valid_date('06-31-2023') == False, "Large Scale Test Case 2.2: Invalid day for June"
+assert valid_date('09-31-2023') == False, "Large Scale Test Case 2.3: Invalid day for September"
+assert valid_date('11-31-2023') == False, "Large Scale Test Case 2.4: Invalid day for November"
+
+# A large number of invalid dates due to February rules
+assert valid_date('02-30-2023') == False, "Large Scale Test Case 3.1: Invalid Feb day (non-leap)"
+assert valid_date('02-30-2024') == False, "Large Scale Test Case 3.2: Invalid Feb day (leap)"
+assert valid_date('02-29-2023') == False, "Large Scale Test Case 3.3: Invalid Feb day (non-leap, day 29)"
+
+# A large number of invalid formats
+assert valid_date('1-1-2000') == False, "Large Scale Test Case 4.1: Invalid format (single digit month/day)"
+assert valid_date('01-01-200') == False, "Large Scale Test Case 4.2: Invalid format (short year)"
+assert valid_date('01-01-20000') == False, "Large Scale Test Case 4.3: Invalid format (long year)"
+assert valid_date('01 01 2000') == False, "Large Scale Test Case 4.4: Invalid format (spaces)"
+assert valid_date('01.01.2000') == False, "Large Scale Test Case 4.5: Invalid format (dots)"
+assert valid_date('01--01-2000') == False, "Large Scale Test Case 4.6: Invalid format (double hyphen)"
+```

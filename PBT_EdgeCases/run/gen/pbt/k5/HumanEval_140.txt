@@ -1,0 +1,60 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_no_change_without_spaces(text):
+    if ' ' not in text:
+        assert fix_spaces(text) == text, "String without spaces should remain unchanged."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_single_space_replacement(text):
+    if ' ' in text and '  ' not in text: # Ensure only single spaces
+        expected = text.replace(' ', '_')
+        assert fix_spaces(text) == expected, "Single spaces should be replaced by underscores."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_consecutive_spaces_replacement(text):
+    # This is a bit tricky as Hypothesis doesn't directly give us "more than 2 consecutive spaces" easily.
+    # We will check the output property instead.
+    result = fix_spaces(text)
+    assert "--" not in result, "There should be no double hyphens as per the rule"
+    assert "_-" not in result and "-_" not in result, "Underscores and hyphens should not directly touch"
+    assert result.count('-') == len([i for i in range(len(text) - 2) if text[i:i+3] == '   ']), "Hyphens should correspond to groups of 3+ spaces"
+    assert "  " not in result, "No consecutive spaces should remain in the result."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_idempotence(text):
+    # Applying the function twice should yield the same result as applying it once.
+    first_result = fix_spaces(text)
+    second_result = fix_spaces(first_result)
+    assert first_result == second_result, "Applying fix_spaces twice should yield the same result."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_no_spaces_left(text):
+    result = fix_spaces(text)
+    assert ' ' not in result, "The resulting string should contain no spaces."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_output_contains_only_allowed_chars(text):
+    result = fix_spaces(text)
+    for char in result:
+        assert char != ' ', "The output should not contain any space characters."
+        if char == '_' or char == '-':
+            continue
+        assert char in text, "Characters that are not spaces should remain."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_transformation_length_invariant(text):
+    # The length of the string after transformation might change, but not drastically.
+    # It should not be absurdly different. This is a weak property.
+    result = fix_spaces(text)
+    # The number of non-space characters remains the same.
+    # Each block of spaces is replaced by either '_' or '-'.
+    # A single space -> '_' (length same)
+    # Two spaces -> '__' (length same)
+    # Three spaces -> '-' (length reduction by 2)
+    # Four spaces -> '--' (length reduction by 2)
+    # So the length can only shrink or stay the same.
+    assert len(result) <= len(text), "The length of the output string should not be greater than the input string."
+
+```

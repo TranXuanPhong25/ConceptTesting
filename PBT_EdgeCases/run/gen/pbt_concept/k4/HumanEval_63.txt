@@ -1,0 +1,57 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(n=st.integers(min_value=0, max_value=20))
+def test_fibfib_non_negativity_for_small_n(n):
+    """
+    Property: For small non-negative n, fibfib(n) should be non-negative.
+    This property holds as the base cases are non-negative and the recurrence relation involves summing non-negative terms.
+    """
+    result = fibfib(n)
+    assert result >= 0, f"fibfib({n}) should be non-negative, but got {result}"
+
+@given(n=st.integers(min_value=3, max_value=20))
+def test_fibfib_recurrence_relation(n):
+    """
+    Property: For n >= 3, fibfib(n) should satisfy the recurrence relation: fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).
+    """
+    result = fibfib(n)
+    expected = fibfib(n-1) + fibfib(n-2) + fibfib(n-3)
+    assert result == expected, f"fibfib({n}) should be {expected}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=2))
+def test_fibfib_base_cases(n):
+    """
+    Property: The base cases for fibfib should be correctly handled.
+    fibfib(0) == 0
+    fibfib(1) == 0
+    fibfib(2) == 1
+    """
+    result = fibfib(n)
+    if n == 0:
+        assert result == 0, f"fibfib(0) should be 0, but got {result}"
+    elif n == 1:
+        assert result == 0, f"fibfib(1) should be 0, but got {result}"
+    elif n == 2:
+        assert result == 1, f"fibfib(2) should be 1, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=100))
+def test_fibfib_increasing_for_n_greater_than_2(n):
+    """
+    Property: For n > 2, fibfib(n) should be greater than fibfib(n-1).
+    This implies the sequence is generally increasing after the initial base cases.
+    """
+    if n > 2:
+        result_n = fibfib(n)
+        result_n_minus_1 = fibfib(n - 1)
+        assert result_n >= result_n_minus_1, f"fibfib({n}) should be greater than or equal to fibfib({n-1}), but {result_n} <= {result_n_minus_1}"
+
+@given(n=st.integers(min_value=0, max_value=100))
+def test_fibfib_type_is_integer(n):
+    """
+    Property: The result of fibfib(n) should always be an integer.
+    """
+    result = fibfib(n)
+    assert isinstance(result, int), f"fibfib({n}) should return an integer, but got type {type(result)}"
+
+```

@@ -1,0 +1,20 @@
+```python
+# Basic Test Cases
+assert fib(0) == 0, "Basic Test Case 1: n = 0"
+assert fib(1) == 1, "Basic Test Case 2: n = 1"
+assert fib(2) == 1, "Basic Test Case 3: n = 2"
+assert fib(3) == 2, "Basic Test Case 4: n = 3"
+assert fib(5) == 5, "Basic Test Case 5: n = 5"
+
+# Edge Test Cases
+assert fib(-1) == 0, "Edge Test Case 1: Negative input (should return 0 or raise error depending on spec)" # Assuming 0 for negative input
+assert fib(-5) == 0, "Edge Test Case 2: Another negative input" # Assuming 0 for negative input
+assert fib(1) == 1, "Edge Test Case 3: n = 1 (boundary for sequence start)"
+assert fib(0) == 0, "Edge Test Case 4: n = 0 (boundary for sequence start)"
+
+# Large Scale Test Cases
+assert fib(20) == 6765, "Large Scale Test Case 1: n = 20"
+assert fib(30) == 832040, "Large Scale Test Case 2: n = 30"
+assert fib(35) == 9227465, "Large Scale Test Case 3: n = 35"
+assert fib(40) == 102334155, "Large Scale Test Case 4: n = 40"
+```

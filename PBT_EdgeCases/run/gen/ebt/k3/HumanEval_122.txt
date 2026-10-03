@@ -1,0 +1,69 @@
+```python
+
+    # Basic Test Cases
+    # Test case 1: Basic scenario with some two-digit numbers within the first k elements
+    assert add_elements([111, 21, 3, 4000, 5, 6, 7, 8, 9], 4) == 24, "Basic Test Case 1"
+    # Test case 2: No two-digit numbers in the first k elements
+    assert add_elements([1000, 2000, 3000], 3) == 0, "Basic Test Case 2"
+    # Test case 3: All numbers are two-digits or less in the first k elements
+    assert add_elements([1, 2, 3, 4, 5], 5) == 15, "Basic Test Case 3"
+    # Test case 4: k is 1
+    assert add_elements([12, 100], 1) == 12, "Basic Test Case 4"
+    # Test case 5: k is equal to the length of the array
+    assert add_elements([10, 20, 30], 3) == 60, "Basic Test Case 5"
+    # Test case 6: Mix of one-digit and two-digit numbers
+    assert add_elements([1, 10, 2, 20], 4) == 33, "Basic Test Case 6"
+    # Test case 7: Negative numbers (within two-digit range)
+    assert add_elements([-1, -10, 100, 10], 4) == -1 + -10 + 10, "Basic Test Case 7"
+    # Test case 8: Zero
+    assert add_elements([0, 10, 100, 20], 4) == 0 + 10 + 20, "Basic Test Case 8"
+
+    # Edge Test Cases
+    # Test case 9: Array with single element, k=1, two-digit
+    assert add_elements([99], 1) == 99, "Edge Test Case 9: Single element, two-digit"
+    # Test case 10: Array with single element, k=1, one-digit
+    assert add_elements([5], 1) == 5, "Edge Test Case 10: Single element, one-digit"
+    # Test case 11: Array with single element, k=1, three-digit
+    assert add_elements([100], 1) == 0, "Edge Test Case 11: Single element, three-digit"
+    # Test case 12: k is at its minimum (1), first element is a two-digit number
+    assert add_elements([25, 100, 1000], 1) == 25, "Edge Test Case 12: k=1, first is two-digit"
+    # Test case 13: k is at its minimum (1), first element is a one-digit number
+    assert add_elements([7, 100, 1000], 1) == 7, "Edge Test Case 13: k=1, first is one-digit"
+    # Test case 14: k is at its minimum (1), first element is a three-digit number
+    assert add_elements([123, 45, 67], 1) == 0, "Edge Test Case 14: k=1, first is three-digit"
+    # Test case 15: k is equal to len(arr), all elements are two-digits
+    assert add_elements([10, 11, 12, 13, 14], 5) == 60, "Edge Test Case 15: k=len(arr), all two-digits"
+    # Test case 16: k is equal to len(arr), all elements are one-digits
+    assert add_elements([1, 2, 3, 4, 5], 5) == 15, "Edge Test Case 16: k=len(arr), all one-digits"
+    # Test case 17: k is equal to len(arr), all elements are three-digits
+    assert add_elements([100, 200, 300, 400], 4) == 0, "Edge Test Case 17: k=len(arr), all three-digits"
+    # Test case 18: Largest possible two-digit numbers (99 and -99)
+    assert add_elements([99, -99, 100, 1, -100], 5) == 99 + (-99) + 1, "Edge Test Case 18: Largest two-digit numbers"
+    # Test case 19: Smallest k and largest len(arr)
+    assert add_elements([1, 1000] * 50, 1) == 1, "Edge Test Case 19: Smallest k, large array"
+    # Test case 20: Largest k and largest len(arr), with only a few two-digit numbers at the beginning
+    assert add_elements([10, 20] + [1000] * 98, 100) == 30, "Edge Test Case 20: Largest k, few two-digits"
+
+    # Large Scale Test Cases
+    # Test case 21: Large array with all two-digit numbers
+    large_arr_all_two_digit = [i % 90 + 10 for i in range(100)] # Generates numbers from 10 to 99
+    assert add_elements(large_arr_all_two_digit, 100) == sum(large_arr_all_two_digit), "Large Scale Test Case 21: All two-digits"
+    # Test case 22: Large array with no two-digit numbers
+    large_arr_no_two_digit = [1000 + i for i in range(100)]
+    assert add_elements(large_arr_no_two_digit, 100) == 0, "Large Scale Test Case 22: No two-digits"
+    # Test case 23: Large array with mixed numbers, k covers all elements
+    large_arr_mixed_all_k = [1, 10, 100, 2, 20, 200] * 16 + [3, 30, 300, 4] # Total 100 elements
+    expected_sum_mixed_all_k = sum([x for x in large_arr_mixed_all_k if -99 <= x <= 99])
+    assert add_elements(large_arr_mixed_all_k, 100) == expected_sum_mixed_all_k, "Large Scale Test Case 23: Mixed numbers, k=len(arr)"
+    # Test case 24: Large array with mixed numbers, k is small (e.g., 50)
+    large_arr_mixed_small_k = [1, 10, 100, 2, 20, 200] * 16 + [3, 30, 300, 4] # Total 100 elements
+    expected_sum_mixed_small_k = sum([x for x in large_arr_mixed_small_k[:50] if -99 <= x <= 99])
+    assert add_elements(large_arr_mixed_small_k, 50) == expected_sum_mixed_small_k, "Large Scale Test Case 24: Mixed numbers, k is smaller"
+    # Test case 25: Large array where only the first few are two-digit, k is large
+    large_arr_start_two_digit = [10, 20, 30] + [1000] * 97
+    assert add_elements(large_arr_start_two_digit, 100) == 60, "Large Scale Test Case 25: Only first few are two-digit"
+    # Test case 26: Large array where the two-digit numbers are near the k limit
+    large_arr_end_k_two_digit = [1000] * 97 + [10, 20, 30]
+    assert add_elements(large_arr_end_k_two_digit, 100) == 60, "Large Scale Test Case 26: Two-digits near k limit"
+
+```

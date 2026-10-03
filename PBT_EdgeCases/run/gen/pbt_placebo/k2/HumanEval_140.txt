@@ -1,0 +1,155 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text())
+def test_no_double_underscore_unless_from_multiple_spaces(text):
+    result = fix_spaces(text)
+    # This property ensures that '__' only appears if it originated from '   ' or more spaces,
+    # which would then be replaced by '-'. So, '__' should never appear in the output.
+    assert '__' not in result, "Double underscores should not appear in the output."
+
+@given(st.text())
+def test_no_space_in_output(text):
+    result = fix_spaces(text)
+    assert ' ' not in result, "Output string should not contain any spaces."
+
+@given(st.text())
+def test_single_space_becomes_underscore(text):
+    # If the input string has only single spaces, they should all be replaced by underscores.
+    # This property focuses on inputs where no '---' or more than two consecutive spaces exist.
+    if '   ' not in text: # Only test cases without 3 or more consecutive spaces
+        expected = text.replace(' ', '_')
+        result = fix_spaces(text)
+        assert result.replace('-', '   ') == expected.replace('-', '   '), "Single spaces should be replaced by underscores."
+
+
+@given(st.text(alphabet=st.characters(blacklist_characters=[' ']), min_size=1) + st.just("   ") + st.text(alphabet=st.characters(blacklist_characters=[' '])))
+def test_three_or_more_spaces_become_dash(text):
+    # This property checks that any sequence of three or more spaces is replaced by a single dash.
+    # We create inputs that are guaranteed to have at least three consecutive spaces.
+    result = fix_spaces(text)
+    
+    # We can't directly check '== text.replace("   ", "-")', because there might be other
+    # single spaces that become underscores.
+    # Instead, we check if there are no '   ' in the result and that '-' exists if '   ' was present.
+    
+    # Check if a dash is present if there were three or more spaces
+    if '   ' in text:
+        assert '-' in result, "A dash should be present if there were three or more consecutive spaces."
+    
+    # More robust check: after fixing, there should not be any original sequence of '   '
+    # and any sequence of multiple spaces should be condensed.
+    # This is a bit tricky to assert perfectly without reimplementing the logic.
+    # A simpler approach is to check if any original '   ' was transformed into '-'.
+    
+    # Let's verify that after replacement, any sequence of three or more spaces is no longer there
+    # and that the replacement character is a dash.
+    
+    # If we replace single spaces with an arbitrary unique character (e.g., '#') first
+    # and then apply the rule for 3+ spaces, we can approximate the expected behavior.
+    
+    # This is more of an integration test for the rule:
+    # Any "   " in the original string should lead to a "-" in the output,
+    # and any other spaces (single or double) should be handled as per rules.
+
+    # Check that there are no '   ' substrings left in the result
+    assert '   ' not in result, "No three or more consecutive spaces should remain."
+
+    # Check for the correct transformation of '   ' to '-'
+    # This test is tricky because `st.text()` can generate complex strings.
+    # Let's simplify and make a more direct assertion for the specific pattern.
+    
+    # Count original '   ' instances and check against '-' in the result.
+    # This isn't perfect for all complex cases but helps verify the core property.
+    
+    # A better approach for this property:
+    # 1. replace all single spaces with '_'
+    # 2. replace all '  ' with '_'
+    # 3. replace all '   ' with '-'
+    # This is effectively what the function does.
+    
+    # Let's consider a scenario where we have multiple groups of spaces
+    # Example: "a  b   c    d" -> "a_b-c-d"
+    
+    # This property is harder to test without re-implementing the core logic
+    # or making assumptions about other replacements.
+    # Let's focus on a simpler invariant related to the '---' rule.
+    
+    # If a substring of '   ' was replaced by '-', there should be no other way
+    # to form a '-' in the output.
+    
+    # Let's re-think the property. If we have a sequence of k spaces:
+    # k=1 -> '_'
+    # k=2 -> '_' (this is actually wrong according to the problem description,
+    #           "if a string has more than 2 consecutive spaces, then replace all consecutive spaces with - "
+    #           This implies 2 spaces also become '_'. Only 3+ become '-'.
+    #           The problem description is slightly ambiguous here.
+    #           "if a string has more than 2 consecutive spaces" means 3, 4, ...
+    #           So '  ' should be '__'. Let's clarify this interpretation based on examples.
+    #           " Example   3" -> "_Example-3"  (3 spaces -> '-')
+    #           "Example 1" -> "Example_1" (1 space -> '_')
+    #           What about "Example  1"? Based on "more than 2", this should be "Example__1".
+    #           The example " Example   3" implies a greedy replacement for 3+ spaces.
+    #           Let's assume "more than 2 consecutive spaces" means 3 or more.
+    #           And 1 or 2 consecutive spaces become underscores.
+    #           This means '  ' should become '__'.
+
+    # Let's refine the interpretation:
+    # ' ' -> '_'
+    # '  ' -> '__'
+    # '   ' -> '-'
+    # '    ' -> '-'
+    
+    # Based on this refined interpretation:
+    # The output should never contain '___' (because '   ' becomes '-' and '____' becomes '-').
+    assert '___' not in result, "No three consecutive underscores should appear in the output."
+
+    # If a dash is present in the output, it must have originated from at least three spaces.
+    # This is hard to assert without knowing the original context.
+    # A simpler property: if the output contains '-', the original must have contained at least '   '.
+    if '-' in result:
+        # This is a bit of a re-implementation, but it verifies a strong link.
+        # Check if there was any sequence of 3 or more spaces in the input that could lead to this.
+        assert '   ' in text, "If '-' is in the result, there must have been at least three spaces in the input."
+
+
+@given(st.text())
+def test_length_invariance_for_non_multi_space_changes(text):
+    result = fix_spaces(text)
+    # If there are no sequences of 3 or more spaces, the length should be preserved.
+    # This is a weaker property because '-' replaces multiple chars.
+    
+    # Let's count how many groups of 3+ spaces there are
+    num_three_plus_space_groups = 0
+    i = 0
+    while i < len(text):
+        if text[i] == ' ':
+            j = i
+            while j < len(text) and text[j] == ' ':
+                j += 1
+            num_spaces = j - i
+            if num_spaces >= 3:
+                num_three_plus_space_groups += 1
+            i = j
+        else:
+            i += 1
+            
+    # Calculate expected length if no '---' replacements
+    expected_length_without_dash = len(text)
+    if num_three_plus_space_groups == 0:
+        assert len(result) == expected_length_without_dash, "Length should be preserved if no '---' replacements."
+    else:
+        # If there are '---' replacements, the length will change.
+        # This property is hard to formulate simply without re-implementing logic.
+        pass # This property is too complex for a simple assertion without re-implementing.
+
+
+@given(st.text())
+def test_idempotence(text):
+    # Applying the function twice should yield the same result as applying it once.
+    # This is a strong property for transformation functions.
+    result1 = fix_spaces(text)
+    result2 = fix_spaces(result1)
+    assert result1 == result2, "Applying the function twice should yield the same result (idempotence)."
+
+```

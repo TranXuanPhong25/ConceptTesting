@@ -1,0 +1,134 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(s=st.text(alphabet=st.characters(blacklist_categories=('Cs', 'Cc')), min_size=0, max_size=200))
+def test_vowels_count_non_negative(s):
+    """
+    Property: The count of vowels should always be a non-negative integer.
+    """
+    result = vowels_count(s)
+    assert result >= 0, "Vowel count should be non-negative"
+
+@given(s=st.text(alphabet='aeiouAEIOU', min_size=0, max_size=200))
+def test_vowels_count_only_vowels(s):
+    """
+    Property: If the string contains only 'a', 'e', 'i', 'o', 'u' (case-insensitive),
+    and no 'y', then the count should be the length of the string.
+    """
+    result = vowels_count(s)
+    assert result == len(s), "All characters should be counted as vowels if only aeiou are present"
+
+@given(s=st.text(alphabet='bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ', min_size=0, max_size=200))
+def test_vowels_count_only_consonants(s):
+    """
+    Property: If the string contains only consonants (excluding 'y'), the vowel count should be 0.
+    """
+    result = vowels_count(s)
+    assert result == 0, "No vowels should be counted if only consonants are present"
+
+@given(s=st.text(min_size=1, max_size=200).filter(lambda x: x[-1].lower() == 'y'))
+def test_vowels_count_y_at_end(s):
+    """
+    Property: If 'y' is at the end of the word, it should be counted as a vowel.
+    We check by comparing with a simple count that treats all 'y's as vowels.
+    """
+    result = vowels_count(s)
+    
+    # Calculate expected count if all 'y's were vowels and standard vowels
+    expected_count = 0
+    for char in s[:-1]:
+        if char.lower() in 'aeiou':
+            expected_count += 1
+    # Add 1 for the 'y' at the end
+    expected_count += 1 if s[-1].lower() == 'y' else 0
+
+    assert result == expected_count, "The 'y' at the end should be counted as a vowel"
+
+@given(s=st.text(min_size=2, max_size=200).filter(lambda x: x[0].lower() == 'y' and x[-1].lower() != 'y'))
+def test_vowels_count_y_not_at_end(s):
+    """
+    Property: If 'y' is not at the end of the word, it should not be counted as a vowel.
+    We check by comparing with a simple count that treats only 'y's at the end as vowels.
+    """
+    result = vowels_count(s)
+
+    expected_count = 0
+    for i, char in enumerate(s):
+        if char.lower() in 'aeiou':
+            expected_count += 1
+        elif char.lower() == 'y' and i == len(s) - 1:
+            expected_count += 1
+
+    assert result == expected_count, "Only 'y' at the end should be counted as a vowel"
+
+@given(s=st.text(alphabet='aeiouyAEIOUY', min_size=0, max_size=200))
+def test_vowels_count_case_insensitivity(s):
+    """
+    Property: The function should be case-insensitive for 'a', 'e', 'i', 'o', 'u', and 'y'.
+    This means 'A' should be counted like 'a', and 'Y' at the end like 'y'.
+    """
+    
+    # Calculate expected count manually, treating all letters as lowercase
+    expected_count = 0
+    if len(s) > 0:
+        for i, char in enumerate(s):
+            if char.lower() in 'aeiou':
+                expected_count += 1
+            elif char.lower() == 'y' and i == len(s) - 1:
+                expected_count += 1
+    
+    result = vowels_count(s)
+    assert result == expected_count, "Vowel counting should be case-insensitive"
+
+@given(s=st.text(min_size=0, max_size=200).map(lambda x: ''.join(random.sample(x, len(x))) if len(x) > 0 else x))
+def test_vowels_count_permutation_invariance(s):
+    """
+    Property: If the last character is not 'y', permuting the inner characters should not change the count.
+    If the last character is 'y', permuting the characters (keeping 'y' at the end) should also preserve the count.
+    This is a weaker property due to the 'y' rule, so we test specific cases.
+    """
+    
+    original_vowel_count = vowels_count(s)
+    
+    if len(s) > 0 and s[-1].lower() != 'y':
+        # Permute all characters if 'y' is not at the end
+        shuffled_s_list = list(s)
+        random.shuffle(shuffled_s_list)
+        shuffled_s = "".join(shuffled_s_list)
+        assert vowels_count(shuffled_s) == original_vowel_count, \
+            "Permuting string (without 'y' at end) should not change vowel count"
+    elif len(s) > 0 and s[-1].lower() == 'y':
+        # If 'y' is at the end, permute only the characters before it
+        prefix = list(s[:-1])
+        random.shuffle(prefix)
+        shuffled_s = "".join(prefix) + s[-1]
+        assert vowels_count(shuffled_s) == original_vowel_count, \
+            "Permuting prefix (with 'y' at end) should not change vowel count"
+    elif len(s) == 0:
+        assert vowels_count("") == 0, "Empty string should have 0 vowels"
+
+@given(s=st.text(min_size=0, max_size=200))
+def test_vowels_count_empty_string(s):
+    """
+    Property: An empty string should always return 0 vowels.
+    """
+    assert vowels_count("") == 0, "Empty string should have 0 vowels"
+
+@given(s=st.text(alphabet='aeiouyAEIOUYbcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ', min_size=0, max_size=200))
+def test_vowels_count_definition_adherence(s):
+    """
+    Property: The function should strictly adhere to the definition of vowels:
+    'a', 'e', 'i', 'o', 'u' always; 'y' only at the end.
+    """
+    expected_count = 0
+    if len(s) > 0:
+        for i, char in enumerate(s):
+            if char.lower() in 'aeiou':
+                expected_count += 1
+            elif char.lower() == 'y' and i == len(s) - 1:
+                expected_count += 1
+    
+    result = vowels_count(s)
+    assert result == expected_count, "The count should strictly follow the vowel definition"
+
+```

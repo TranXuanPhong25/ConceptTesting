@@ -1,0 +1,102 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_1(string):
+    """
+    Test that if '[]' is not a substring of the input, the function returns False.
+    This covers cases like '[[[[' or ']]]]', or '][][][', where no nesting is possible.
+    """
+    result = is_nested(string)
+    if '[]' not in string:
+        assert not result, f"Expected False for '{string}' as no '[]' pair exists"
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_2(string):
+    """
+    Test that if there is a '[]' substring, and it's surrounded by other brackets,
+    it should return True. This checks for simple nesting.
+    """
+    if '[]' in string:
+        idx = string.find('[]')
+        # Check for simple nesting like `[[]]` or `[[][]]`
+        if idx > 0 and idx + 2 < len(string) and string[idx-1] == '[' and string[idx+2] == ']':
+            assert is_nested(string), f"Expected True for '{string}' due to obvious nesting"
+        # Check for cases like `[[][]]` where there's an outer bracket
+        elif idx > 0 and string[idx-1] == '[' and len(string) > 2:
+            # We are looking for a pattern like `[...[ ]...]`
+            # This is a bit more complex to verify directly from the string,
+            # so we focus on the cases where an outer bracket definitely exists.
+            # A more robust property might involve checking the balance if True is returned.
+            pass
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_3_nested_implied_by_presence_and_balance(string):
+    """
+    Test that if the function returns True, there must be at least one opening bracket followed
+    by a closing bracket where there's at least one more opening bracket before it and a closing
+    bracket after it, implying a nested structure.
+    This property is about the necessary condition for a True return.
+    """
+    result = is_nested(string)
+    if result:
+        # If it's nested, there must be a state where an '[' is seen, then another '['
+        # before the first one is closed, and then a ']' to close the inner one,
+        # and then a ']' to close the outer one.
+        # This is hard to assert directly on the string, so we will assert based on the definition of nesting.
+        # A simpler check: if it's nested, it must contain at least two '[' and two ']'
+        # because a simple '[]' is not nested.
+        assert string.count('[') >= 2 and string.count(']') >= 2, \
+            f"If nested, must have at least two '[' and two ']' for '{string}'"
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_4_empty_string_is_false(string):
+    """
+    Test that an empty string always returns False, as it cannot contain any brackets, let alone nested ones.
+    """
+    if not string:
+        assert not is_nested(string), "Empty string should not be considered nested."
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_5_simple_unopened_brackets_is_false(string):
+    """
+    Test that strings consisting only of closing brackets (e.g., ']]]') return False,
+    as they cannot contain any valid subsequence.
+    """
+    if '[' not in string:
+        assert not is_nested(string), f"String with only closing brackets '{string}' should return False."
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_6_simple_unclosed_brackets_is_false(string):
+    """
+    Test that strings consisting only of opening brackets (e.g., '[[[') return False,
+    as they cannot contain any valid subsequence.
+    """
+    if ']' not in string:
+        assert not is_nested(string), f"String with only opening brackets '{string}' should return False."
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_7_non_nested_balanced_strings(string):
+    """
+    Test that explicitly non-nested but balanced bracket strings like '[]' or '[][]' return False.
+    """
+    # This property requires a bit more logic to define "non-nested balanced string"
+    # A simple approach: if a string has a valid bracket sequence and no nesting, it should be False.
+    # We can check if all brackets form "flat" pairs.
+    balance = 0
+    max_balance = 0
+    for char in string:
+        if char == '[':
+            balance += 1
+        elif char == ']':
+            balance -= 1
+        max_balance = max(max_balance, balance)
+        if balance < 0: # Malformed, will likely be False anyway
+            break
+    
+    # If the max balance is 1, and the final balance is 0, it means it's like '[]' or '[][]'
+    # without deeper nesting.
+    if max_balance <= 1 and balance == 0 and string.count('[') > 0:
+        assert not is_nested(string), f"Expected False for '{string}' as it's balanced but not nested."
+
+```

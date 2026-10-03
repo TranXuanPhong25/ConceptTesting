@@ -1,0 +1,106 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_sum_at_most_two_digits(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Property: The result should be the sum of elements with at most two digits
+    # from the first k elements of arr.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:  # Check for at most two digits (including negative numbers)
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"For arr={arr}, k={k}, expected {expected_sum}, but got {result}"
+
+@given(
+    st.lists(st.integers(min_value=100, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_no_two_digit_numbers(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Property: If there are no numbers with at most two digits in the first k elements,
+    # the sum should be 0.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, "If no two-digit numbers, sum should be 0"
+    assert result == 0, "If all numbers are more than two digits, the sum should be 0"
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_two_digit_numbers(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Property: If all numbers in the first k elements have at most two digits,
+    # the sum should be the sum of those first k elements.
+    expected_sum = sum(arr[:min(k, len(arr))])
+
+    assert result == expected_sum, "If all numbers are two digits, sum should be all elements up to k"
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.just(1)
+)
+def test_add_elements_k_is_one(arr, k):
+    result = add_elements(arr, k)
+
+    # Property: When k=1, the result should be the first element if it has at most two digits,
+    # otherwise 0.
+    expected_sum = arr[0] if -99 <= arr[0] <= 99 else 0
+
+    assert result == expected_sum, "When k=1, only the first element is considered"
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.just(100)
+)
+def test_add_elements_k_is_max_length(arr, k):
+    # Ensure k does not exceed the array length. Here we set k to be the length of the generated array.
+    k = len(arr)
+
+    result = add_elements(arr, k)
+
+    # Property: When k is greater than or equal to the array length, all elements are considered.
+    expected_sum = 0
+    for num in arr:
+        if -99 <= num <= 99:
+            expected_sum += num
+
+    assert result == expected_sum, "When k is max length, all elements with at most two digits should be summed"
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_empty_list_of_eligible_elements(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+
+    # This test focuses on the case where no elements in the first k
+    # satisfy the two-digit condition.
+    # While Hypothesis can generate these, explicitly checking this scenario.
+    numbers_to_sum = [x for x in arr[:k] if -99 <= x <= 99]
+    if not numbers_to_sum:
+        result = add_elements(arr, k)
+        assert result == 0, "If no eligible elements, sum should be 0"
+
+```

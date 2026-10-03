@@ -1,0 +1,37 @@
+```python
+
+# Basic Test Cases
+assert vowels_count("abcde") == 2, "Basic Test Case 1: Simple word with some vowels"
+assert vowels_count("AEIOU") == 5, "Basic Test Case 2: All uppercase vowels"
+assert vowels_count("hello") == 2, "Basic Test Case 3: Mixed case word"
+assert vowels_count("rhythm") == 1, "Basic Test Case 4: 'y' as a vowel at the end"
+assert vowels_count("sky") == 1, "Basic Test Case 5: Short word with 'y' at the end"
+assert vowels_count("vowel") == 2, "Basic Test Case 6: Word containing 'vowel'"
+assert vowels_count("apple") == 2, "Basic Test Case 7: Word starting and ending with vowels"
+
+# Edge Test Cases
+assert vowels_count("") == 0, "Edge Test Case 1: Empty string"
+assert vowels_count("bcdfgh") == 0, "Edge Test Case 2: No vowels"
+assert vowels_count("y") == 1, "Edge Test Case 3: Single 'y' character"
+assert vowels_count("a") == 1, "Edge Test Case 4: Single vowel character"
+assert vowels_count("b") == 0, "Edge Test Case 5: Single consonant character"
+assert vowels_count("Y") == 1, "Edge Test Case 6: Single uppercase 'Y' character"
+assert vowels_count("banana") == 3, "Edge Test Case 7: Repeated vowels"
+assert vowels_count("myth") == 1, "Edge Test Case 8: 'y' not at the end"
+assert vowels_count("MYTH") == 1, "Edge Test Case 9: Uppercase 'Y' not at the end"
+assert vowels_count("fly") == 1, "Edge Test Case 10: Short word with 'y' at the end"
+assert vowels_count("why") == 1, "Edge Test Case 11: Another short word with 'y' at the end"
+assert vowels_count("crypt") == 0, "Edge Test Case 12: No vowels, even with 'y' not at the end"
+assert vowels_count("aeiouy") == 6, "Edge Test Case 13: All standard vowels and 'y' at the end"
+assert vowels_count("AEIOUY") == 6, "Edge Test Case 14: All uppercase standard vowels and 'Y' at the end"
+
+# Large Scale Test Cases
+assert vowels_count("abcdefghijklmnopqrstuvwxyz" * 1000) == 5000 + 1000, "Large Scale Test Case 1: Long string with all letters" # 5 vowels per cycle + 1 'y' at the very end
+assert vowels_count("a" * 100000) == 100000, "Large Scale Test Case 2: Very long string of only 'a'"
+assert vowels_count("b" * 100000) == 0, "Large Scale Test Case 3: Very long string of only 'b'"
+assert vowels_count("aeiou" * 20000 + "y") == (5 * 20000) + 1, "Large Scale Test Case 4: Long string with repeating vowels and 'y' at the end"
+assert vowels_count("aeiou" * 20000 + "x") == (5 * 20000), "Large Scale Test Case 5: Long string with repeating vowels and no 'y' at the end"
+assert vowels_count("rhythms" * 10000) == 0, "Large Scale Test Case 6: Long string with 'y' not at end"
+assert vowels_count("rhythmy" * 10000) == 10000, "Large Scale Test Case 7: Long string with 'y' at end of each repeated word"
+
+```

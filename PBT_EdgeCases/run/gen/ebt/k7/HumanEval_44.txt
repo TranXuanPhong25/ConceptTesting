@@ -1,0 +1,36 @@
+```python
+# Basic Test Cases
+assert change_base(8, 3) == '22', "Basic Test Case 1: Convert 8 to base 3"
+assert change_base(8, 2) == '1000', "Basic Test Case 2: Convert 8 to base 2"
+assert change_base(7, 2) == '111', "Basic Test Case 3: Convert 7 to base 2"
+assert change_base(10, 10) == '10', "Basic Test Case 4: Convert 10 to base 10"
+assert change_base(5, 5) == '10', "Basic Test Case 5: Convert 5 to base 5"
+assert change_base(15, 2) == '1111', "Basic Test Case 6: Convert 15 to base 2"
+assert change_base(16, 2) == '10000', "Basic Test Case 7: Convert 16 to base 2"
+assert change_base(9, 3) == '100', "Basic Test Case 8: Convert 9 to base 3"
+assert change_base(27, 3) == '1000', "Basic Test Case 9: Convert 27 to base 3"
+
+
+# Edge Test Cases
+assert change_base(0, 2) == '0', "Edge Test Case 1: Convert 0 to base 2"
+assert change_base(0, 7) == '0', "Edge Test Case 2: Convert 0 to base 7"
+assert change_base(1, 2) == '1', "Edge Test Case 3: Convert 1 to base 2"
+assert change_base(1, 9) == '1', "Edge Test Case 4: Convert 1 to base 9"
+assert change_base(9, 9) == '10', "Edge Test Case 5: Convert 9 to base 9"
+assert change_base(2, 2) == '10', "Edge Test Case 6: Convert 2 to base 2"
+assert change_base(7, 8) == '7', "Edge Test Case 7: Convert number less than base"
+assert change_base(8, 9) == '8', "Edge Test Case 8: Convert number less than base, close to base"
+assert change_base(9, 2) == '1001', "Edge Test Case 9: Convert 9 to base 2 (just above max single digit for binary)"
+
+
+# Large Scale Test Cases
+assert change_base(100, 2) == '1100100', "Large Scale Test Case 1: Convert 100 to base 2"
+assert change_base(100, 3) == '10201', "Large Scale Test Case 2: Convert 100 to base 3"
+assert change_base(100, 7) == '202', "Large Scale Test Case 3: Convert 100 to base 7"
+assert change_base(999, 2) == '1111100111', "Large Scale Test Case 4: Convert 999 to base 2"
+assert change_base(999, 9) == '1330', "Large Scale Test Case 5: Convert 999 to base 9"
+assert change_base(511, 2) == '111111111', "Large Scale Test Case 6: Convert 511 (2^9-1) to base 2"
+assert change_base(512, 2) == '1000000000', "Large Scale Test Case 7: Convert 512 (2^9) to base 2"
+assert change_base(728, 9) == '888', "Large Scale Test Case 8: Convert 728 to base 9"
+assert change_base(729, 9) == '1000', "Large Scale Test Case 9: Convert 729 (9^3) to base 9"
+```

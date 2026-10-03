@@ -1,0 +1,43 @@
+```python
+
+# Basic Test Cases
+assert fix_spaces("Example") == "Example", "Basic Test Case 1: No spaces"
+assert fix_spaces("Example 1") == "Example_1", "Basic Test Case 2: Single space"
+assert fix_spaces(" Example 2") == "_Example_2", "Basic Test Case 3: Leading single space"
+assert fix_spaces("Example 3 ") == "Example_3_", "Basic Test Case 4: Trailing single space"
+assert fix_spaces("Multiple words with spaces") == "Multiple_words_with_spaces", "Basic Test Case 5: Multiple single spaces"
+
+# Edge Test Cases
+assert fix_spaces("") == "", "Edge Test Case 1: Empty string"
+assert fix_spaces("   ") == "-", "Edge Test Case 2: Only three consecutive spaces"
+assert fix_spaces("    ") == "-", "Edge Test Case 3: Only four consecutive spaces"
+assert fix_spaces("   Example") == "-Example", "Edge Test Case 4: Leading three consecutive spaces"
+assert fix_spaces("Example   ") == "Example-", "Edge Test Case 5: Trailing three consecutive spaces"
+assert fix_spaces("Example  1") == "Example_1", "Edge Test Case 6: Two consecutive spaces (should be underscore)"
+assert fix_spaces("Example   1") == "Example-1", "Edge Test Case 7: Three consecutive spaces"
+assert fix_spaces("Example    1") == "Example-1", "Edge Test Case 8: Four consecutive spaces"
+assert fix_spaces("   Example   text   with   multiple   consecutive   spaces   ") == "-Example-text-with-multiple-consecutive-spaces-", "Edge Test Case 9: String with multiple sets of consecutive spaces"
+assert fix_spaces("One Two Three") == "One_Two_Three", "Edge Test Case 10: Multiple single spaces, no consecutive"
+assert fix_spaces("  a  b  c  ") == "_a_b_c_", "Edge Test Case 11: Two consecutive spaces between characters"
+assert fix_spaces("   a   b   c   ") == "-a-b-c-", "Edge Test Case 12: Three consecutive spaces between characters"
+assert fix_spaces("a    b") == "a-b", "Edge Test Case 13: Four consecutive spaces in the middle"
+assert fix_spaces("   a b   c d   ") == "-a_b-c_d-", "Edge Test Case 14: Mix of single and consecutive spaces"
+
+# Large Scale Test Cases
+long_string_single_spaces = "a " * 1000 + "a"
+assert fix_spaces(long_string_single_spaces) == ("a_" * 1000 + "a"), "Large Scale Test Case 1: Long string with single spaces"
+
+long_string_consecutive_spaces_3 = "a   " * 500 + "a"
+assert fix_spaces(long_string_consecutive_spaces_3) == ("a-" * 500 + "a"), "Large Scale Test Case 2: Long string with three consecutive spaces"
+
+long_string_consecutive_spaces_4 = "b    " * 500 + "b"
+assert fix_spaces(long_string_consecutive_spaces_4) == ("b-" * 500 + "b"), "Large Scale Test Case 3: Long string with four consecutive spaces"
+
+long_string_mixed_spaces = "a b  c   d    e " * 200 + "f"
+expected_long_string_mixed_spaces = "a_b_c-d-e_" * 200 + "f"
+assert fix_spaces(long_string_mixed_spaces) == expected_long_string_mixed_spaces, "Large Scale Test Case 4: Long string with mixed single and consecutive spaces"
+
+very_long_string_only_spaces = " " * 5000
+assert fix_spaces(very_long_string_only_spaces) == "-", "Large Scale Test Case 5: Very long string with only spaces (more than 2 consecutive)"
+
+```

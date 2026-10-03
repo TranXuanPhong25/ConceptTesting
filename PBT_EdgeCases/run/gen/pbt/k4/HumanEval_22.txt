@@ -1,0 +1,32 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.from_type(type(None)) | st.integers() | st.floats() | st.text() | st.booleans() | st.lists(st.integers()), max_size=100))
+def test_filter_integers_only_returns_integers(values):
+    result = filter_integers(values)
+    assert all(isinstance(x, int) for x in result), "All elements in the result should be integers."
+
+@given(st.lists(st.from_type(type(None)) | st.integers() | st.floats() | st.text() | st.booleans() | st.lists(st.integers()), max_size=100))
+def test_filter_integers_contains_all_original_integers_in_order(values):
+    result = filter_integers(values)
+    original_integers = [x for x in values if isinstance(x, int)]
+    assert result == original_integers, "The result should contain all original integers in their original order."
+
+@given(st.lists(st.from_type(type(None)) | st.floats() | st.text() | st.booleans() | st.lists(st.integers()), max_size=100))
+def test_filter_integers_no_integers_in_input(values):
+    # Ensure the input list does not contain any integers
+    assert not any(isinstance(x, int) for x in values)
+    result = filter_integers(values)
+    assert result == [], "If no integers are in the input, the result should be an empty list."
+
+@given(st.lists(st.integers(), max_size=100))
+def test_filter_integers_all_integers_in_input(values):
+    result = filter_integers(values)
+    assert result == values, "If all elements are integers, the result should be identical to the input."
+
+@given(st.lists(st.integers(min_value=-10**9, max_value=10**9) | st.text(max_size=100), max_size=1000))
+def test_filter_integers_large_and_mixed_input(values):
+    result = filter_integers(values)
+    expected = [x for x in values if isinstance(x, int)]
+    assert result == expected, "Should correctly filter integers from a large mixed list."
+```

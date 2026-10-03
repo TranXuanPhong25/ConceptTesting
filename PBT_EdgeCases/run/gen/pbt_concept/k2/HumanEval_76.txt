@@ -1,0 +1,92 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(x=st.integers(min_value=1, max_value=10**6), 
+       n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_true_cases(x, n):
+    # Property: If x is a perfect power of n, the function should return True.
+    # We generate a true case by creating x as n**k for some k.
+    k = st.integers(min_value=0, max_value=20).example() # Small k to avoid overflow
+    test_x = n ** k
+    if test_x == x: # Only test if x happens to be n**k, otherwise it's a false case
+        result = is_simple_power(test_x, n)
+        assert result == True, f"Expected True for x={test_x}, n={n} (since {n}^{k}={test_x})"
+
+@given(x=st.integers(min_value=1, max_value=10**6), 
+       n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_false_cases(x, n):
+    # Property: If x is not a perfect power of n, the function should return False.
+    # We ensure x is not a perfect power by checking if its log base n is an integer.
+    if n == 1: # n=1 case is special, 1^k = 1.
+        if x == 1:
+            assert is_simple_power(x, n) == True
+        else:
+            assert is_simple_power(x, n) == False
+        return
+
+    import math
+    if x > 0 and n > 0:
+        try:
+            log_val = math.log(x, n)
+            if not (abs(log_val - round(log_val)) < 1e-9): # Check if log is not an integer
+                result = is_simple_power(x, n)
+                assert result == False, f"Expected False for x={x}, n={n} (since {x} is not {n}**k)"
+        except ValueError: # math.log can raise ValueError for non-positive x or n
+            pass # The function should handle these cases, but this test focuses on positive numbers
+
+@given(x=st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_is_one(x):
+    # Property: If n is 1, x is a simple power of n only if x is 1.
+    result = is_simple_power(x, 1)
+    if x == 1:
+        assert result == True, f"Expected True for x={x}, n=1"
+    else:
+        assert result == False, f"Expected False for x={x}, n=1"
+
+@given(x=st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_equals_x(x):
+    # Property: If n equals x, and x > 1, then x is a simple power of n (x^1 = x).
+    if x > 1:
+        result = is_simple_power(x, x)
+        assert result == True, f"Expected True for x={x}, n={x}"
+
+@given(n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_x_is_one(n):
+    # Property: If x is 1, it is a simple power of any n (n^0 = 1).
+    result = is_simple_power(1, n)
+    assert result == True, f"Expected True for x=1, n={n}"
+
+@given(x=st.integers(max_value=0), n=st.integers())
+def test_is_simple_power_x_non_positive(x, n):
+    # Property: If x is non-positive, it cannot be a simple power of n (since n^int is always positive for n > 1).
+    # The function implicitly assumes x >= 1 based on example and problem description.
+    # If the function is robust, it should return False for x <= 0.
+    result = is_simple_power(x, n)
+    assert result == False, f"Expected False for non-positive x={x}"
+
+@given(x=st.integers(min_value=1, max_value=10**6), n=st.integers(max_value=0))
+def test_is_simple_power_n_non_positive(x, n):
+    # Property: If n is non-positive, x cannot be a simple power of n (n^int is undefined or not x for n <= 0).
+    # The function implicitly assumes n >= 1 based on example and problem description.
+    # If the function is robust, it should return False for n <= 0.
+    result = is_simple_power(x, n)
+    assert result == False, f"Expected False for n={n}"
+
+@given(k=st.integers(min_value=0, max_value=10), n=st.integers(min_value=2, max_value=100))
+def test_is_simple_power_explicit_powers(k, n):
+    # Property: If x is explicitly generated as n**k, it should return True.
+    # This directly tests the core definition.
+    x = n**k
+    result = is_simple_power(x, n)
+    assert result == True, f"Expected True for x={x} ({n}^{k}), n={n}"
+
+@given(base=st.integers(min_value=2, max_value=100), exponent=st.integers(min_value=0, max_value=10))
+def test_is_simple_power_power_plus_one(base, exponent):
+    # Property: x = n**k + 1 should almost always be false.
+    # Edge case: If base**exponent + 1 happens to be a power of another base, this test could fail.
+    # We are testing that a slight deviation makes it false.
+    x = base**exponent + 1
+    if x > 1 and x != base**exponent: # Ensure x is not the exact power
+        result = is_simple_power(x, base)
+        assert result == False, f"Expected False for x={x} (not {base}**k), n={base}"
+```

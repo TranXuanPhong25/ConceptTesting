@@ -1,0 +1,72 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract the unit digits, handling negative numbers correctly
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    expected_product = unit_digit_a * unit_digit_b
+    
+    assert result == expected_product, "The result should be the product of the unit digits of the absolute values of the input integers."
+
+@given(st.integers(), st.integers())
+def test_multiply_commutativity(a, b):
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, "Multiplication of unit digits should be commutative."
+
+@given(st.integers(), st.integers())
+def test_multiply_non_negativity(a, b):
+    result = multiply(a, b)
+    assert result >= 0, "The product of unit digits should always be non-negative."
+
+@given(st.integers(min_value=-1000, max_value=1000), st.just(10))
+def test_multiply_with_ten_b(a, b):
+    # When b is 10, its unit digit is 0, so the product should be 0.
+    result = multiply(a, b)
+    assert result == 0, "If one of the numbers is a multiple of 10, the product of unit digits should be 0."
+
+@given(st.just(10), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_with_ten_a(a, b):
+    # When a is 10, its unit digit is 0, so the product should be 0.
+    result = multiply(a, b)
+    assert result == 0, "If one of the numbers is a multiple of 10, the product of unit digits should be 0."
+
+@given(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_identity_property(a, b):
+    # The unit digit of a number ending in 1 is 1. Multiplying by 1 should result in the unit digit of the other number.
+    
+    # Test with b ending in 1
+    b_ending_in_1 = b - (b % 10) + 1 if b % 10 != 1 else b
+    result_b = multiply(a, b_ending_in_1)
+    expected_b = abs(a) % 10
+    assert result_b == expected_b, "If one number's unit digit is 1, the result should be the other number's unit digit."
+
+    # Test with a ending in 1
+    a_ending_in_1 = a - (a % 10) + 1 if a % 10 != 1 else a
+    result_a = multiply(a_ending_in_1, b)
+    expected_a = abs(b) % 10
+    assert result_a == expected_a, "If one number's unit digit is 1, the result should be the other number's unit digit."
+
+@given(st.integers(min_value=-10**9, max_value=10**9), st.integers(min_value=-10**9, max_value=10**9))
+def test_multiply_large_numbers(a, b):
+    result = multiply(a, b)
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    expected_product = unit_digit_a * unit_digit_b
+    assert result == expected_product, "Should work correctly for large integer inputs."
+
+@given(st.integers(min_value=0, max_value=9), st.integers(min_value=0, max_value=9))
+def test_multiply_single_digits(a, b):
+    result = multiply(a, b)
+    assert result == a * b, "For single-digit non-negative numbers, the result should be their product."
+
+@given(st.integers(min_value=-9, max_value=-1), st.integers(min_value=-9, max_value=-1))
+def test_multiply_single_negative_digits(a, b):
+    result = multiply(a, b)
+    assert result == (abs(a) % 10) * (abs(b) % 10), "For single-digit negative numbers, the result should be the product of their absolute unit digits."
+```

@@ -1,0 +1,204 @@
+```python
+from hypothesis import given, strategies as st
+
+# Helper function (provided by the problem)
+def is_nested(string):
+    '''
+    Create a function that takes a string as input which contains only square brackets.
+    The function should return True if and only if there is a valid subsequence of brackets
+    where at least one bracket in the subsequence is nested.
+
+    is_nested('[[]]') ➞ True
+    is_nested('[]]]]]]][[[[[]') ➞ False
+    is_nested('[][]') ➞ False
+    is_nested('[]') ➞ False
+    is_nested('[[][]]') ➞ True
+    is_nested('[[]][[') ➞ True
+    '''
+    opening_brackets = 0
+    for char in string:
+        if char == '[':
+            opening_brackets += 1
+        else: # char == ']'
+            if opening_brackets > 0:
+                opening_brackets -= 1
+            # If we encounter a closing bracket without an opening one,
+            # it cannot form a nested pair with existing open brackets.
+            # However, for the purpose of 'is_nested', we care about
+            # *any* valid subsequence with nesting.
+            # The key is to find if there was ever a point where we had
+            # two or more open brackets that could be closed.
+            # This logic needs to be a bit more subtle than simple balance checking.
+
+    # A more robust approach for 'is_nested' as per the examples:
+    # A nested pair means an opening bracket, then another opening bracket,
+    # then a closing bracket, then another closing bracket.
+    # e.g., `[[ ] ]` or `[ [ ] ]`
+    # This implies that at some point, the count of open brackets was >= 2
+    # and then we managed to close them in a way that suggests nesting.
+
+    # Let's re-evaluate the condition based on the examples and definition:
+    # "there is a valid subsequence of brackets where at least one bracket in the subsequence is nested."
+    # A "nested" bracket implies `[...[...]]`. This means at least two open brackets
+    # must be active simultaneously before any are closed.
+    
+    stack = []
+    max_depth = 0
+    current_depth = 0
+    for char in string:
+        if char == '[':
+            current_depth += 1
+            max_depth = max(max_depth, current_depth)
+        elif char == ']':
+            if current_depth > 0:
+                current_depth -= 1
+            # else: an unmatched closing bracket, which doesn't contribute to nesting depth
+
+    # If max_depth is 2 or more, it means we had at least two open brackets
+    # before closing any. This is a strong indicator of potential nesting.
+    # However, the problem also requires a *valid subsequence*.
+    # Consider "[[][]]" -> True (max_depth=2, then closes, then re-opens)
+    # Consider "[[]][[ " -> True (max_depth=2, then closes, then re-opens)
+    # Consider "[[]]" -> True (max_depth=2)
+    # Consider "[][]" -> False (max_depth=1)
+
+    # The original implementation often uses a stack to find valid nesting.
+    # Let's try that to be more aligned with "valid subsequence".
+    # We need to ensure that the brackets *can* form a valid nested structure.
+    
+    # A simpler interpretation of "at least one bracket in the subsequence is nested":
+    # This means there is a `[` followed by another `[` before the first `[` is closed by a `]`.
+    # i.e., at some point, the count of currently open, unclosed brackets reaches 2 or more.
+    # And critically, these must form a valid subsequence.
+
+    # Re-implementing based on the typical interpretation of "nested brackets"
+    # for a string containing only square brackets.
+    # This means finding a pattern like `[...[` ... `]...]` or similar where
+    # the inner bracket is contained within the outer one.
+    # The most straightforward way to detect this is to check if the
+    # maximum depth of properly matched brackets is at least 2.
+
+    # Let's re-check the problem definition and examples carefully.
+    # `is_nested('[[]]')` -> True (depth 2)
+    # `is_nested('[]]]]]]][[[[[]')` -> False (max depth is 1 for any valid subsequence. E.g., `[]`, `[[]` is not valid)
+    # `is_nested('[][]')` -> False (max depth 1)
+    # `is_nested('[]')` -> False (max depth 1)
+    # `is_nested('[[][]]')` -> True (depth 2 because of `[[...]]`)
+    # `is_nested('[[]][[')` -> True (depth 2 because of `[[]]`)
+
+    # It seems the `max_depth` approach is correct if we correctly calculate `max_depth`.
+    # A simple counter for open brackets that increments for '[' and decrements for ']'
+    # (but not below zero) and tracks the maximum value seen for this counter.
+    
+    current_open_brackets = 0
+    max_possible_depth = 0
+    for char in string:
+        if char == '[':
+            current_open_brackets += 1
+            max_possible_depth = max(max_possible_depth, current_open_brackets)
+        elif char == ']':
+            # Only decrement if there's an open bracket to close.
+            # This ensures we're tracking *potential* depth.
+            if current_open_brackets > 0:
+                current_open_brackets -= 1
+    
+    return max_possible_depth >= 2
+
+
+# Strategy for generating strings with only square brackets
+# We can include empty strings as they are valid input to the function,
+# though the docstring hints at non-empty strings.
+square_bracket_strings = st.text(st.just('[') | st.just(']'), min_size=0, max_size=100)
+
+@given(square_bracket_strings)
+def test_is_nested_single_bracket_depth(s):
+    # Property: A string with only one opening bracket followed by one closing bracket
+    # (or vice-versa, or just one type) should never be considered nested.
+    # This covers cases like "[]", "[", "]", "[[", "]]", "[]][[]" where
+    # the maximum *sequential* depth is 1.
+    
+    # Check if the string can form a single-level valid bracket pair, e.g., "[]"
+    # or if the max depth of opening brackets never exceeds 1.
+    
+    current_open = 0
+    max_open_count = 0
+    for char in s:
+        if char == '[':
+            current_open += 1
+            max_open_count = max(max_open_count, current_open)
+        elif char == ']':
+            if current_open > 0:
+                current_open -= 1
+    
+    # If the function returns True, it implies a max depth of at least 2.
+    # So, if max_open_count is less than 2, is_nested should be False.
+    if max_open_count < 2:
+        assert not is_nested(s), f"String '{s}' should not be nested if max_open_count is < 2"
+
+@given(st.lists(st.just('[') | st.just(']'), min_size=0, max_size=50).map(lambda x: ''.join(x)))
+@given(square_bracket_strings)
+@st.example(s='[[]]')
+@st.example(s='[]]]]]]][[[[[]')
+@st.example(s='[][]')
+@st.example(s='[]')
+@st.example(s='[[][]]')
+@st.example(s='[[]][[')
+@st.example(s='') # Edge case: empty string
+@st.example(s='[') # Edge case: single open
+@st.example(s=']') # Edge case: single close
+@st.example(s='[[') # Edge case: two open
+@st.example(s=']]') # Edge case: two close
+@st.example(s='[][[]][]') # Example with mixed nested and non-nested
+def test_is_nested_max_depth_property(s):
+    # Property: The function should return True if and only if there's a point
+    # in traversing the string where the count of currently open brackets is >= 2.
+    # This directly maps to the `max_possible_depth` logic in the function.
+
+    current_open_count = 0
+    max_depth_achieved = 0
+    for char in s:
+        if char == '[':
+            current_open_count += 1
+            max_depth_achieved = max(max_depth_achieved, current_open_count)
+        elif char == ']':
+            # Only decrement if there's an open bracket to close.
+            # This reflects the idea of potential depth for nesting.
+            if current_open_count > 0:
+                current_open_count -= 1
+
+    expected_result = (max_depth_achieved >= 2)
+    actual_result = is_nested(s)
+
+    assert actual_result == expected_result, \
+        f"For string '{s}', expected {expected_result} but got {actual_result}. Max depth achieved: {max_depth_achieved}"
+
+@given(st.text(st.just('['), min_size=2, max_size=50))
+def test_is_nested_only_opening_brackets(s):
+    # Property: A string consisting only of two or more opening brackets
+    # should be considered nested, e.g., "[[", "[[[".
+    # This is because the maximum depth will be at least 2.
+    assert is_nested(s) is True, f"'{s}' should be nested as it has multiple open brackets."
+
+@given(st.text(st.just(']'), min_size=0, max_size=50))
+def test_is_nested_only_closing_brackets(s):
+    # Property: A string consisting only of closing brackets should never be nested.
+    # The maximum depth achieved will always be 0.
+    assert is_nested(s) is False, f"'{s}' should not be nested as it has no opening brackets."
+
+@given(st.lists(st.just('[]'), min_size=0, max_size=25).map(lambda x: ''.join(x)))
+def test_is_nested_only_non_nested_pairs(s):
+    # Property: A string consisting of only `[]` pairs concatenated
+    # should never be nested. E.g., "[]", "[][]", "[][][]".
+    # The maximum depth achieved will always be 1.
+    assert is_nested(s) is False, f"'{s}' should not be nested as it's a sequence of non-nested pairs."
+
+@given(st.integers(min_value=1, max_value=25))
+def test_is_nested_deeply_nested(n):
+    # Property: A string of `n` deeply nested brackets, like `[[...]]` (n times)
+    # should always return True if n >= 2.
+    s = '[' * n + ']' * n
+    if n >= 2:
+        assert is_nested(s) is True, f"'{s}' should be nested (n={n})"
+    else: # n == 1 for "[]"
+        assert is_nested(s) is False, f"'{s}' should not be nested (n={n})"
+```

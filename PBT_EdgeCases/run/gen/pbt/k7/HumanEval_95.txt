@@ -1,0 +1,71 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.dictionaries(st.text(min_size=1, alphabet=st.ascii_letters), st.just("value")))
+def test_all_lower_or_all_upper(d):
+    # Property: If all keys are lowercase or all keys are uppercase, the function should return True.
+    all_lower = all(key.islower() for key in d.keys())
+    all_upper = all(key.isupper() for key in d.keys())
+    result = check_dict_case(d)
+    if all_lower or all_upper:
+        assert result is True, f"Expected True for dict with all lower or all upper keys: {d}"
+    # This test doesn't cover the False cases, so a separate test is needed for that.
+
+@given(st.dictionaries(st.text(min_size=1, alphabet=st.ascii_letters), st.just("value")))
+def test_mixed_case_keys(d):
+    # Property: If keys are a mix of lowercase and uppercase, the function should return False.
+    has_lower = any(key.islower() for key in d.keys())
+    has_upper = any(key.isupper() for key in d.keys())
+    # Ensure there's a mix for this specific test case
+    if has_lower and has_upper and not (all(key.islower() for key in d.keys()) or all(key.isupper() for key in d.keys())):
+        result = check_dict_case(d)
+        assert result is False, f"Expected False for dict with mixed case keys: {d}"
+
+@given(st.dictionaries(st.one_of(st.text(min_size=1, alphabet=st.ascii_letters), st.integers()), st.just("value")))
+def test_non_string_keys(d):
+    # Property: If any key is not a string, the function should return False.
+    if any(not isinstance(key, str) for key in d.keys()):
+        result = check_dict_case(d)
+        assert result is False, f"Expected False for dict with non-string keys: {d}"
+
+@given(st.just({}))
+def test_empty_dict(d):
+    # Property: An empty dictionary should return False.
+    result = check_dict_case(d)
+    assert result is False, f"Expected False for an empty dictionary: {d}"
+
+@given(st.dictionaries(st.text(alphabet=st.digits), st.just("value")))
+def test_digit_keys(d):
+    # Property: If keys are digits, they are considered non-alphabetic and should result in False
+    # since islower() and isupper() would both return False for digit-only strings.
+    if d: # Only check if dictionary is not empty, empty dict is covered by another test
+        result = check_dict_case(d)
+        assert result is False, f"Expected False for dict with digit-only keys: {d}"
+
+@given(st.dictionaries(st.text(min_size=1, alphabet=st.ascii_letters), st.just("value")))
+def test_idempotence_with_valid_cases(d):
+    # Property: Calling the function multiple times with the same valid input should yield the same result.
+    all_lower = all(key.islower() for key in d.keys())
+    all_upper = all(key.isupper() for key in d.keys())
+
+    if d and (all_lower or all_upper): # Ensure it's a "valid" case for idempotence check
+        result1 = check_dict_case(d)
+        result2 = check_dict_case(d)
+        assert result1 == result2, f"Idempotence failed for {d}: {result1} != {result2}"
+
+@given(st.dictionaries(st.text(min_size=1, alphabet=st.ascii_letters), st.just("value"), min_size=1))
+def test_case_invariance_for_all_same_case(d):
+    # Property: If all keys are already the same case, check_dict_case should be True.
+    # We explicitly build dictionaries where all keys are either lower or upper.
+    if all(key.islower() for key in d.keys()) or all(key.isupper() for key in d.keys()):
+        assert check_dict_case(d) is True, f"Expected True for {d} as all keys are same case"
+
+@given(st.dictionaries(st.text(min_size=1, alphabet=st.ascii_letters), st.just("value"), min_size=2))
+def test_case_invariance_for_mixed_case(d):
+    # Property: If there's at least one lowercase and one uppercase key, check_dict_case should be False.
+    # This might overlap with test_mixed_case_keys, but focuses on the presence of both cases.
+    has_lower = any(key.islower() for key in d.keys())
+    has_upper = any(key.isupper() for key in d.keys())
+    if has_lower and has_upper:
+        assert check_dict_case(d) is False, f"Expected False for {d} as it has mixed case keys"
+```

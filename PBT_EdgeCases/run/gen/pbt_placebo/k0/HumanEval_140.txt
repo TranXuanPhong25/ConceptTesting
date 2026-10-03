@@ -1,0 +1,97 @@
+```python
+from hypothesis import given, strategies as st
+
+def fix_spaces(text):
+    """
+    Given a string text, replace all spaces in it with underscores, 
+    and if a string has more than 2 consecutive spaces, 
+    then replace all consecutive spaces with - 
+    
+    fix_spaces("Example") == "Example"
+    fix_spaces("Example 1") == "Example_1"
+    fix_spaces(" Example 2") == "_Example_2"
+    fix_spaces(" Example   3") == "_Example-3"
+    """
+    new_text = ""
+    i = 0
+    while i < len(text):
+        if text[i] == ' ':
+            count = 0
+            while i < len(text) and text[i] == ' ':
+                count += 1
+                i += 1
+            if count > 2:
+                new_text += '-'
+            else:
+                new_text += '_' * count
+        else:
+            new_text += text[i]
+            i += 1
+    return new_text
+
+
+@given(st.text())
+def test_no_spaces_means_no_change(text):
+    """
+    Property: If the input string contains no spaces, the output should be identical to the input.
+    """
+    if ' ' not in text:
+        assert fix_spaces(text) == text, "String with no spaces should remain unchanged."
+
+@given(st.text(alphabet=st.characters(blacklist_characters=' ')), st.integers(min_value=1, max_value=20))
+def test_single_spaces_become_underscores(non_space_prefix, num_spaces):
+    """
+    Property: Single spaces or groups of two spaces should always be replaced by underscores.
+    """
+    if num_spaces == 1 or num_spaces == 2:
+        input_string = non_space_prefix + ' ' * num_spaces + non_space_prefix
+        expected_output = non_space_prefix + '_' * num_spaces + non_space_prefix
+        assert fix_spaces(input_string) == expected_output, f"Input: '{input_string}', Expected: '{expected_output}', Got: '{fix_spaces(input_string)}'"
+
+@given(st.text(alphabet=st.characters(blacklist_characters=' ')), st.integers(min_value=3, max_value=20))
+def test_multiple_spaces_become_hyphen(non_space_prefix, num_spaces):
+    """
+    Property: Three or more consecutive spaces should be replaced by a single hyphen.
+    """
+    if num_spaces >= 3:
+        input_string = non_space_prefix + ' ' * num_spaces + non_space_prefix
+        expected_output = non_space_prefix + '-' + non_space_prefix
+        assert fix_spaces(input_string) == expected_output, f"Input: '{input_string}', Expected: '{expected_output}', Got: '{fix_spaces(input_string)}'"
+
+@given(st.text(min_size=0, max_size=100))
+def test_output_contains_only_valid_chars(text):
+    """
+    Property: The output string should only contain characters from the original string, underscores, or hyphens.
+    """
+    result = fix_spaces(text)
+    for char in result:
+        if char != '_' and char != '-' and char not in text:
+            assert False, f"Output contains invalid character: '{char}' in '{result}' from input '{text}'"
+    assert all(c in text or c == '_' or c == '-' for c in result), "Output contains unexpected characters."
+
+@given(st.text())
+def test_idempotence_of_hyphen_replacement(text):
+    """
+    Property: Applying the function a second time to a string that already has hyphens from three+ spaces
+    should not change those hyphens.
+    """
+    processed_once = fix_spaces(text)
+    # Now, if we apply it again, hyphens should not change further
+    # This implicitly tests that '-' is not treated as a space
+    processed_twice = fix_spaces(processed_once)
+    assert processed_once == processed_twice, "Applying fix_spaces twice should not change existing hyphens from space replacement."
+
+@given(st.text())
+def test_no_consecutive_underscores_or_hyphens_with_spaces_in_between(text):
+    """
+    Property: The output should not contain patterns like "__" (if original was "_ _" from single spaces)
+    or "--" (if original was "   ---   " from triple spaces) or "_-" or "-_".
+    Basically, all space sequences should be resolved to single underscore or single hyphen.
+    """
+    result = fix_spaces(text)
+    # Check for consecutive underscores, consecutive hyphens, or combinations
+    assert "__" not in result, "Result should not contain '__'"
+    assert "--" not in result, "Result should not contain '--'"
+    assert "_-" not in result, "Result should not contain '_-'"
+    assert "-_" not in result, "Result should not contain '-_'"
+```

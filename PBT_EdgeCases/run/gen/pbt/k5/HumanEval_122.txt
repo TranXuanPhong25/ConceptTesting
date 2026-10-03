@@ -1,0 +1,135 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_basic(arr, k):
+    # Ensure k is within valid bounds for the generated arr
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Property: The sum should only include elements from the first k elements
+    # and those elements should have at most two digits.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, "The function should correctly sum elements with at most two digits from the first k elements."
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_two_digits(arr, k):
+    # Ensure k is within valid bounds for the generated arr
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Property: If all first k elements have at most two digits, their sum should be returned.
+    expected_sum = sum(arr[:k])
+
+    assert result == expected_sum, "If all first k elements have at most two digits, their sum should be returned."
+
+@given(
+    st.lists(st.integers(min_value=100, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_no_two_digits(arr, k):
+    # Ensure k is within valid bounds for the generated arr
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Property: If none of the first k elements have at most two digits, the sum should be 0.
+    assert result == 0, "If none of the first k elements have at most two digits, the sum should be 0."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_k_equals_one(arr, k_val):
+    # Fix k to 1 to test the edge case of only considering the first element
+    k = 1
+
+    result = add_elements(arr, k)
+
+    # Property: If k is 1, the result should be the first element if it has at most two digits, else 0.
+    if -99 <= arr[0] <= 99:
+        assert result == arr[0], "If k is 1, result should be the first element if it has at most two digits."
+    else:
+        assert result == 0, "If k is 1, result should be 0 if the first element has more than two digits."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_k_equals_len_arr(arr, k_val): # k_val is unused, just for the strategy
+    # Set k to the length of the array to consider all elements
+    k = len(arr)
+
+    result = add_elements(arr, k)
+
+    # Property: When k equals len(arr), the function should sum all two-digit elements in the array.
+    expected_sum = 0
+    for num in arr:
+        if -99 <= num <= 99:
+            expected_sum += num
+    
+    assert result == expected_sum, "When k equals len(arr), the function should sum all two-digit elements."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_result_type(arr, k):
+    # Ensure k is within valid bounds for the generated arr
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Property: The result should always be an integer.
+    assert isinstance(result, int), "The result should always be an integer."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_non_negative_numbers_only(arr, k):
+    # Ensure k is within valid bounds for the generated arr
+    k = min(k, len(arr))
+
+    # Filter arr to only contain non-negative numbers for this specific test
+    arr_filtered = [abs(x) for x in arr] # Ensure non-negative and potentially two-digit
+    
+    result = add_elements(arr_filtered, k)
+
+    expected_sum = 0
+    for i in range(min(k, len(arr_filtered))):
+        if 0 <= arr_filtered[i] <= 99:
+            expected_sum += arr_filtered[i]
+            
+    assert result == expected_sum, "Should work correctly with only non-negative numbers."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_negative_two_digits(arr, k):
+    # Ensure k is within valid bounds for the generated arr
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        # Explicitly check for negative two-digit numbers
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+            
+    assert result == expected_sum, "Should correctly include negative two-digit numbers."
+```

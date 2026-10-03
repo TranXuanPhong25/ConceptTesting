@@ -1,0 +1,151 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def intersection(interval1, interval2):
+    """You are given two intervals,
+    where each interval is a pair of integers. For example, interval = (start, end) = (1, 2).
+    The given intervals are closed which means that the interval (start, end)
+    includes both start and end.
+    For each given interval, it is assumed that its start is less or equal its end.
+    Your task is to determine whether the length of intersection of these two 
+    intervals is a prime number.
+    Example, the intersection of the intervals (1, 3), (2, 4) is (2, 3)
+    which its length is 1, which not a prime number.
+    If the length of the intersection is a prime number, return "YES",
+    otherwise, return "NO".
+    If the two intervals don't intersect, return "NO".
+
+
+    [input/output] samples:
+    intersection((1, 2), (2, 3)) ==> "NO"
+    intersection((-1, 1), (0, 4)) ==> "NO"
+    intersection((-3, -1), (-5, 5)) ==> "YES"
+    """
+    def is_prime(n):
+        if n < 2:
+            return False
+        for i in range(2, int(math.sqrt(n)) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersect_start = max(start1, start2)
+    intersect_end = min(end1, end2)
+
+    if intersect_start > intersect_end:
+        return "NO"  # No intersection
+
+    length = intersect_end - intersect_start
+
+    if is_prime(length):
+        return "YES"
+    else:
+        return "NO"
+
+# Strategy for generating intervals (start, end) where start <= end
+interval_strategy = st.tuples(st.integers(min_value=-1000, max_value=1000), 
+                              st.integers(min_value=-1000, max_value=1000)).map(
+    lambda x: (min(x), max(x))
+)
+
+@given(interval_strategy, interval_strategy)
+def test_intersection_non_negative_length(interval1, interval2):
+    """
+    Property: The length of the intersection, if it exists, should always be non-negative.
+    """
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersect_start = max(start1, start2)
+    intersect_end = min(end1, end2)
+
+    if intersect_start <= intersect_end:
+        length = intersect_end - intersect_start
+        assert length >= 0, "Intersection length must be non-negative if intersection exists"
+    else:
+        # No intersection, length is effectively 0 or negative for computation, but result is "NO"
+        # This test focuses on the calculated length when an intersection *would* be considered.
+        pass
+
+@given(interval_strategy, interval_strategy)
+def test_intersection_symmetric(interval1, interval2):
+    """
+    Property: The result should be the same regardless of the order of the input intervals.
+    """
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, "Intersection should be symmetric"
+
+@given(st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(lambda x: (min(x), max(x))))
+def test_intersection_self_with_self(interval):
+    """
+    Property: The intersection of an interval with itself should have a length equal to its own length.
+    If this length is prime, it should return "YES", otherwise "NO".
+    """
+    start, end = interval
+    original_length = end - start
+    
+    def is_prime_helper(n):
+        if n < 2:
+            return False
+        for i in range(2, int(math.sqrt(n)) + 1):
+            if n % i == 0:
+                return False
+        return True
+
+    expected = "YES" if is_prime_helper(original_length) else "NO"
+    result = intersection(interval, interval)
+    assert result == expected, "Intersection of an interval with itself should yield its own length's primality"
+
+@given(interval_strategy, interval_strategy)
+def test_intersection_disjoint_intervals(interval1, interval2):
+    """
+    Property: If two intervals are clearly disjoint (one entirely before the other with a gap),
+    their intersection length should be considered 0, and thus the function should return "NO".
+    """
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Case 1: interval1 is entirely before interval2 with a gap
+    if end1 < start2 - 1: # -1 to ensure a gap of at least 1 unit
+        result = intersection(interval1, interval2)
+        assert result == "NO", "Disjoint intervals with gap should return 'NO'"
+    # Case 2: interval2 is entirely before interval1 with a gap
+    elif end2 < start1 - 1:
+        result = intersection(interval1, interval2)
+        assert result == "NO", "Disjoint intervals with gap should return 'NO'"
+    # Case 3: Intervals meet at a single point (length 0) - e.g. (1,2) and (2,3) length 0 is not prime, so NO
+    elif end1 == start2 or end2 == start1:
+        result = intersection(interval1, interval2)
+        assert result == "NO", "Intervals meeting at a point (length 0) should return 'NO'"
+
+
+@given(interval_strategy, interval_strategy)
+def test_intersection_contains_known_prime_or_non_prime(interval1, interval2):
+    """
+    Property: Verify specific outcomes based on the calculated intersection length.
+    If the intersection length is known to be prime (e.g., 2, 3, 5, 7), it should be "YES".
+    If the intersection length is known to be non-prime (e.g., 0, 1, 4, 6), it should be "NO".
+    This tests the `is_prime` logic indirectly by validating the final output.
+    """
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersect_start = max(start1, start2)
+    intersect_end = min(end1, end2)
+
+    if intersect_start <= intersect_end:
+        length = intersect_end - intersect_start
+        if length == 2 or length == 3 or length == 5 or length == 7: # Small primes
+            assert intersection(interval1, interval2) == "YES", f"Length {length} should be YES"
+        elif length == 0 or length == 1 or length == 4 or length == 6: # Small non-primes
+            assert intersection(interval1, interval2) == "NO", f"Length {length} should be NO"
+    else:
+        # If no intersection, result should be "NO"
+        assert intersection(interval1, interval2) == "NO", "No intersection should result in 'NO'"
+
+```

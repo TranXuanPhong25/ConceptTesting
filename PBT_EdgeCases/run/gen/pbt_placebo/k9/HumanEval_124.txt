@@ -1,0 +1,128 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(date=st.dates(min_value=st.date.min, max_value=st.date.max))
+def test_valid_date_format_and_parsing(date):
+    # Property: A date string formatted as 'mm-dd-yyyy' that represents a valid date
+    # should return True. Any deviation in format or invalid date components
+    # should return False.
+
+    # Generate a correctly formatted date string
+    month_str = f"{date.month:02d}"
+    day_str = f"{date.day:02d}"
+    year_str = f"{date.year:04d}"
+    valid_date_str = f"{month_str}-{day_str}-{year_str}"
+    assert valid_date(valid_date_str) is True, f"Correctly formatted valid date {valid_date_str} should be True"
+
+    # Test with incorrect format: using '/' instead of '-'
+    incorrect_separator_date_str = f"{month_str}/{day_str}/{year_str}"
+    assert valid_date(incorrect_separator_date_str) is False, f"Date {incorrect_separator_date_str} with incorrect separator should be False"
+
+    # Test with missing leading zeros for month or day
+    if date.month < 10:
+        no_leading_zero_month_str = f"{date.month}-{day_str}-{year_str}"
+        assert valid_date(no_leading_zero_month_str) is False, f"Date {no_leading_zero_month_str} with single-digit month should be False"
+    if date.day < 10:
+        no_leading_zero_day_str = f"{month_str}-{date.day}-{year_str}"
+        assert valid_date(no_leading_zero_day_str) is False, f"Date {no_leading_zero_day_str} with single-digit day should be False"
+
+    # Test with too many digits for year (Hypothesis date strategy generates valid years)
+    long_year_str = f"{month_str}-{day_str}-{year_str}0"
+    assert valid_date(long_year_str) is False, f"Date {long_year_str} with too many year digits should be False"
+
+    # Test with empty string
+    assert valid_date('') is False, "Empty string should return False"
+
+@given(
+    month=st.integers(min_value=1, max_value=12),
+    day=st.integers(min_value=1, max_value=31),
+    year=st.integers(min_value=1, max_value=9999)
+)
+def test_valid_date_properties(month, day, year):
+    # Property: The function should correctly validate dates based on month, day, and year rules.
+
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+
+    # Determine expected validity based on rules
+    is_valid_month = 1 <= month <= 12
+    is_valid_day = False
+    
+    if month in [1, 3, 5, 7, 8, 10, 12]:
+        is_valid_day = 1 <= day <= 31
+    elif month in [4, 6, 9, 11]:
+        is_valid_day = 1 <= day <= 30
+    elif month == 2:
+        is_leap_year = (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+        max_feb_days = 29 if is_leap_year else 28
+        is_valid_day = 1 <= day <= max_feb_days
+    
+    expected = is_valid_month and is_valid_day
+
+    result = valid_date(date_str)
+    assert result == expected, f"For date {date_str}, expected {expected} but got {result}. Month: {month}, Day: {day}, Year: {year}"
+
+@given(
+    st.text(alphabet=st.characters(min_codepoint=0, max_codepoint=127), min_size=1, max_size=20).filter(lambda x: '-' not in x or x.count('-') != 2)
+)
+def test_valid_date_invalid_formats(random_string):
+    # Property: Any string not conforming to the 'mm-dd-yyyy' format should be invalid.
+    # This specifically tests strings that might have some numbers but incorrect separators or structure.
+    
+    # Exclude strings that happen to have two hyphens, as they might accidentally pass partial checks
+    # The filter makes sure we focus on clearly malformed strings for this test.
+    assert valid_date(random_string) is False, f"Random string '{random_string}' in incorrect format should be False"
+
+@given(
+    month=st.integers(min_value=1, max_value=12),
+    day=st.integers(min_value=1, max_value=31),
+    year=st.integers(min_value=1, max_value=9999),
+    extra_chars=st.text(alphabet=st.just(' '), min_size=1, max_size=5)
+)
+def test_valid_date_with_spaces(month, day, year, extra_chars):
+    # Property: The function should not implicitly handle spaces or extra characters.
+    # A date with leading/trailing spaces or spaces within should be invalid.
+    
+    base_date_str = f"{month:02d}-{day:02d}-{year:04d}"
+
+    # Test with leading/trailing spaces
+    assert valid_date(extra_chars + base_date_str) is False, f"Date '{extra_chars + base_date_str}' with leading spaces should be False"
+    assert valid_date(base_date_str + extra_chars) is False, f"Date '{base_date_str + extra_chars}' with trailing spaces should be False"
+
+    # Test with spaces within the string (e.g., '01 -01-2000')
+    if len(base_date_str) > 5: # Ensure there's a place to insert a space without breaking the format too obviously
+        spaced_date_str = base_date_str[:5] + extra_chars + base_date_str[5:]
+        assert valid_date(spaced_date_str) is False, f"Date '{spaced_date_str}' with internal spaces should be False"
+
+@given(
+    month=st.integers(min_value=1, max_value=12),
+    day=st.integers(min_value=1, max_value=31),
+    year=st.integers(min_value=1, max_value=9999)
+)
+def test_valid_date_invalid_component_lengths(month, day, year):
+    # Property: Each component (month, day, year) must have the correct number of digits.
+
+    # Test month with incorrect length (e.g., '1-01-2000' or '001-01-2000')
+    single_digit_month_str = f"{month}-{day:02d}-{year:04d}"
+    if month < 10: # Only relevant if month is single digit
+        assert valid_date(single_digit_month_str) is False, f"Date '{single_digit_month_str}' with single digit month should be False"
+    
+    three_digit_month_str = f"{month:03d}-{day:02d}-{year:04d}"
+    assert valid_date(three_digit_month_str) is False, f"Date '{three_digit_month_str}' with three digit month should be False"
+
+    # Test day with incorrect length
+    single_digit_day_str = f"{month:02d}-{day}-{year:04d}"
+    if day < 10: # Only relevant if day is single digit
+        assert valid_date(single_digit_day_str) is False, f"Date '{single_digit_day_str}' with single digit day should be False"
+    
+    three_digit_day_str = f"{month:02d}-{day:03d}-{year:04d}"
+    assert valid_date(three_digit_day_str) is False, f"Date '{three_digit_day_str}' with three digit day should be False"
+
+    # Test year with incorrect length (excluding valid 4-digit years)
+    three_digit_year_str = f"{month:02d}-{day:02d}-{year:03d}"
+    if year >= 1000: # Only relevant if year is 4 digits or more normally
+        assert valid_date(three_digit_year_str) is False, f"Date '{three_digit_year_str}' with three digit year should be False"
+    
+    five_digit_year_str = f"{month:02d}-{day:02d}-{year:05d}"
+    assert valid_date(five_digit_year_str) is False, f"Date '{five_digit_year_str}' with five digit year should be False"
+
+```

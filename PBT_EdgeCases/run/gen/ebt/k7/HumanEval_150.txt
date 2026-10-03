@@ -1,0 +1,29 @@
+```python
+# Basic Test Cases
+assert x_or_y(7, 34, 12) == 34, "Basic Test Case 1: n is a prime number"
+assert x_or_y(15, 8, 5) == 5, "Basic Test Case 2: n is a composite number"
+assert x_or_y(2, 10, 20) == 10, "Basic Test Case 3: n is the smallest prime number (2)"
+assert x_or_y(4, 10, 20) == 20, "Basic Test Case 4: n is the smallest composite number (4)"
+assert x_or_y(11, 100, 200) == 100, "Basic Test Case 5: n is another prime number"
+assert x_or_y(9, 100, 200) == 200, "Basic Test Case 6: n is another composite number"
+
+# Edge Test Cases
+assert x_or_y(1, 5, 10) == 10, "Edge Test Case 1: n is 1 (not prime)"
+assert x_or_y(0, 5, 10) == 10, "Edge Test Case 2: n is 0 (not prime)"
+assert x_or_y(-5, 5, 10) == 10, "Edge Test Case 3: n is a negative number (not prime)"
+assert x_or_y(2, 0, 1) == 0, "Edge Test Case 4: x and y can be 0 or 1"
+assert x_or_y(3, -5, -10) == -5, "Edge Test Case 5: x and y can be negative"
+assert x_or_y(6, 1.5, 2.5) == 2.5, "Edge Test Case 6: x and y can be floats"
+assert x_or_y(13, 1000000000, 1) == 1000000000, "Edge Test Case 7: Large x, prime n"
+assert x_or_y(14, 1, 1000000000) == 1000000000, "Edge Test Case 8: Large y, composite n"
+assert x_or_y(29, 'hello', 'world') == 'hello', "Edge Test Case 9: x and y can be strings, prime n"
+assert x_or_y(30, 'hello', 'world') == 'world', "Edge Test Case 10: x and y can be strings, composite n"
+
+# Large Scale Test Cases
+# These test cases assume the function handles large numbers efficiently.
+# The primality test implementation within x_or_y would be the bottleneck here.
+assert x_or_y(999999937, 1, 0) == 1, "Large Scale Test Case 1: Large prime number (999,999,937 is prime)"
+assert x_or_y(999999999, 1, 0) == 0, "Large Scale Test Case 2: Large composite number (999,999,999 = 3^2 * 7 * 11 * 13 * 37)"
+assert x_or_y(1000000007, 100, 200) == 100, "Large Scale Test Case 3: Another large prime (1,000,000,007 is prime)"
+assert x_or_y(1000000000, 100, 200) == 200, "Large Scale Test Case 4: Another large composite (1,000,000,000 = 10^9)"
+```

@@ -1,0 +1,44 @@
+```python
+# Basic Test Cases
+assert x_or_y(7, 34, 12) == 34, "Basic Test Case: Prime n, should return x"
+assert x_or_y(15, 8, 5) == 5, "Basic Test Case: Non-prime n, should return y"
+assert x_or_y(2, 10, 20) == 10, "Basic Test Case: Smallest prime n (2), should return x"
+assert x_or_y(4, 100, 200) == 200, "Basic Test Case: Smallest non-prime n (4), should return y"
+assert x_or_y(11, -5, 5) == -5, "Basic Test Case: Prime n with negative x, should return x"
+assert x_or_y(9, 0, 1) == 1, "Basic Test Case: Non-prime n with x=0, should return y"
+
+# Edge Test Cases
+assert x_or_y(1, 10, 20) == 20, "Edge Test Case: n = 1 (not prime), should return y"
+assert x_or_y(0, 10, 20) == 20, "Edge Test Case: n = 0 (not prime), should return y"
+assert x_or_y(-5, 10, 20) == 20, "Edge Test Case: n = negative (not prime), should return y"
+assert x_or_y(23, 1, 0) == 1, "Edge Test Case: Prime n with x=1, y=0"
+assert x_or_y(25, 1, 0) == 0, "Edge Test Case: Non-prime n with x=1, y=0"
+assert x_or_y(2, -100, -200) == -100, "Edge Test Case: Prime n with negative x and y"
+assert x_or_y(6, -100, -200) == -200, "Edge Test Case: Non-prime n with negative x and y"
+assert x_or_y(97, 12345, 67890) == 12345, "Edge Test Case: Large prime n, should return x"
+assert x_or_y(99, 12345, 67890) == 67890, "Edge Test Case: Large non-prime n, should return y"
+assert x_or_y(2.0, 10, 20) == 10, "Edge Test Case: n as float representing prime, should handle correctly"
+assert x_or_y(4.0, 10, 20) == 20, "Edge Test Case: n as float representing non-prime, should handle correctly"
+
+
+# Large Scale Test Cases
+# Assuming a practical limit for 'n' for this function, as very large 'n' would require a more optimized primality test.
+# For the purpose of typical interview-style problems, n up to a few thousands or tens of thousands is usually sufficient for 'large scale'.
+
+# Test with a moderately large prime number
+assert x_or_y(997, 500, 1000) == 500, "Large Scale Test Case: Moderately large prime n"
+# Test with a moderately large non-prime number
+assert x_or_y(1000, 500, 1000) == 1000, "Large Scale Test Case: Moderately large non-prime n"
+# Test with a prime number just under a common threshold (e.g., for efficiency of primality test)
+assert x_or_y(1999, 10, 20) == 10, "Large Scale Test Case: Large prime n close to efficiency boundary"
+# Test with a non-prime number just under a common threshold
+assert x_or_y(2000, 10, 20) == 20, "Large Scale Test Case: Large non-prime n close to efficiency boundary"
+
+# Test with a composite number formed by two primes
+assert x_or_y(961, 1, 0) == 0, "Large Scale Test Case: n = 31*31, should return y" # 31 * 31 = 961
+assert x_or_y(1001, 1, 0) == 0, "Large Scale Test Case: n = 7*11*13, should return y" # 7 * 11 * 13 = 1001
+
+# Test with n as a large number where x and y are also large
+assert x_or_y(9973, 999999999, 111111111) == 999999999, "Large Scale Test Case: Large prime n with large x, y"
+assert x_or_y(9975, 999999999, 111111111) == 111111111, "Large Scale Test Case: Large non-prime n with large x, y"
+```

@@ -1,0 +1,77 @@
+```python
+from hypothesis import given, strategies as st
+
+def change_base(x: int, base: int):
+    """Change numerical base of input number x to base.
+    return string representation after the conversion.
+    base numbers are less than 10.
+    >>> change_base(8, 3)
+    '22'
+    >>> change_base(8, 2)
+    '1000'
+    >>> change_base(7, 2)
+    '111'
+    """
+    if x == 0:
+        return "0"
+    res = ""
+    while x > 0:
+        res = str(x % base) + res
+        x //= base
+    return res
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_inversion(x, base):
+    """
+    Property: Converting to a base and then converting back should yield the original number.
+    This test verifies that the `change_base` function is invertible.
+    """
+    converted_str = change_base(x, base)
+
+    # Convert the string representation back to base 10
+    reconverted_num = 0
+    power = 0
+    for digit_char in reversed(converted_str):
+        digit = int(digit_char)
+        reconverted_num += digit * (base ** power)
+        power += 1
+
+    assert reconverted_num == x, f"Converting {x} to base {base} gave '{converted_str}', but converting back gave {reconverted_num}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_digits_valid(x, base):
+    """
+    Property: All digits in the resulting string representation must be less than the base.
+    This ensures that the output is a valid representation in the given base.
+    """
+    result_str = change_base(x, base)
+    for digit_char in result_str:
+        digit = int(digit_char)
+        assert 0 <= digit < base, f"Digit {digit} in '{result_str}' is not less than base {base} for input {x}"
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_leading_zero(x, base):
+    """
+    Property: For any positive number, the converted string should not have leading zeros.
+    The only exception is if the number itself is 0, in which case it should be "0".
+    """
+    result_str = change_base(x, base)
+    assert result_str[0] != '0', f"Result '{result_str}' for {x} in base {base} has a leading zero."
+
+@given(st.just(0), st.integers(min_value=2, max_value=9))
+def test_change_base_zero(x, base):
+    """
+    Property: Converting 0 to any base should result in the string "0".
+    """
+    result_str = change_base(x, base)
+    assert result_str == "0", f"Converting 0 to base {base} should be '0', but got '{result_str}'"
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_non_empty(x, base):
+    """
+    Property: For any non-negative number, the result string should not be empty.
+    """
+    result_str = change_base(x, base)
+    assert len(result_str) > 0, f"Result for {x} in base {base} is an empty string."
+
+```

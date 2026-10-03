@@ -1,0 +1,60 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=1000))
+def test_modp_property_1(n, p):
+    """
+    Property 1: The result of modp(n, p) should be equivalent to (2**n) % p.
+    This is the fundamental definition of the function.
+    """
+    result = modp(n, p)
+    expected = (2**n) % p
+    assert result == expected, f"modp({n}, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=2, max_value=1000))
+def test_modp_property_0_exponent(p):
+    """
+    Property 2: For any valid p, modp(0, p) should always return 1.
+    This is because 2^0 is 1, and 1 % p is 1 for p > 1.
+    """
+    result = modp(0, p)
+    assert result == 1, f"modp(0, {p}) should always be 1"
+
+@given(st.integers(min_value=0, max_value=50), st.integers(min_value=2, max_value=1000))
+def test_modp_property_range(n, p):
+    """
+    Property 3: The result of modp(n, p) must always be less than p and non-negative.
+    This is a characteristic of the modulo operation.
+    """
+    result = modp(n, p)
+    assert 0 <= result < p, f"Result {result} for modp({n}, {p}) should be between 0 and {p-1}"
+
+@given(st.integers(min_value=0, max_value=50), st.integers(min_value=2, max_value=1000))
+def test_modp_property_multiplicative(n, p):
+    """
+    Property 4: (2^(n+1)) % p == ( (2^n % p) * (2^1 % p) ) % p.
+    This property checks the multiplicative nature of modular exponentiation.
+    """
+    result_n_plus_1 = modp(n + 1, p)
+    result_n = modp(n, p)
+    result_1 = modp(1, p) # Which is just 2 % p
+    
+    expected_via_multiplication = (result_n * result_1) % p
+    
+    assert result_n_plus_1 == expected_via_multiplication, \
+        f"modp({n+1}, {p}) ({result_n_plus_1}) should be equivalent to ({result_n} * {result_1}) % {p} ({expected_via_multiplication})"
+
+@given(st.integers(min_value=0, max_value=50), st.integers(min_value=2, max_value=1000))
+def test_modp_property_large_n_vs_small_n(n, p):
+    """
+    Property 5: If n % (p-1) == n_prime, then 2^n % p should be equal to 2^n_prime % p,
+    by Fermat's Little Theorem, when p is prime.
+    However, the `modp` function doesn't assume p is prime.
+    A more general property is that (2^n) % p should be equivalent to `pow(2, n, p)`.
+    This tests correctness against Python's built-in modular exponentiation.
+    """
+    result = modp(n, p)
+    expected_pow = pow(2, n, p)
+    assert result == expected_pow, f"modp({n}, {p}) should match pow(2, {n}, {p})"
+
+```

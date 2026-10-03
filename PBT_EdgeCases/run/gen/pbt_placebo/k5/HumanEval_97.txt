@@ -1,0 +1,55 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract the unit digits correctly, handling negative numbers
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    expected_product = unit_digit_a * unit_digit_b
+    
+    assert result == expected_product, "The result should be the product of the unit digits of the absolute values of the inputs."
+
+@given(st.integers(), st.integers())
+def test_multiply_commutative(a, b):
+    # Property: Multiplication of unit digits should be commutative.
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, "The order of inputs should not affect the result."
+
+@given(st.integers(), st.integers())
+def test_multiply_non_negative_result(a, b):
+    # Property: The product of unit digits will always be non-negative.
+    result = multiply(a, b)
+    assert result >= 0, "The product of unit digits should always be non-negative."
+
+@given(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_small_inputs(a, b):
+    # Test with small integers, including negative ones, to ensure correct unit digit extraction.
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    expected_product = unit_digit_a * unit_digit_b
+    assert multiply(a, b) == expected_product, "Small integer inputs should produce the correct product of unit digits."
+
+@given(st.integers(min_value=-10**9, max_value=10**9), st.integers(min_value=-10**9, max_value=10**9))
+def test_multiply_large_inputs(a, b):
+    # Test with large integers to ensure unit digit extraction works for large numbers.
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    expected_product = unit_digit_a * unit_digit_b
+    assert multiply(a, b) == expected_product, "Large integer inputs should produce the correct product of unit digits."
+
+@given(st.integers(min_value=-100, max_value=100))
+def test_multiply_by_zero_unit_digit(a):
+    # Property: If one number's unit digit is 0, the result should be 0.
+    # We create 'b' such that its unit digit is 0.
+    b_with_zero_unit = st.integers().map(lambda x: x * 10).example() # Ensures unit digit is 0
+    if b_with_zero_unit == 0: # Ensure b is not always 0
+        b_with_zero_unit = 10 
+    
+    result = multiply(a, b_with_zero_unit)
+    assert result == 0, "If one input's unit digit is 0, the product should be 0."
+
+```

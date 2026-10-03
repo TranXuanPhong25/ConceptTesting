@@ -1,0 +1,98 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def get_odd_collatz(n):
+    """
+    Given a positive integer n, return a sorted list that has the odd numbers in collatz sequence.
+
+    The Collatz conjecture is a conjecture in mathematics that concerns a sequence defined
+    as follows: start with any positive integer n. Then each term is obtained from the 
+    previous term as follows: if the previous term is even, the next term is one half of 
+    the previous term. If the previous term is odd, the next term is 3 times the previous
+    term plus 1. The conjecture is that no matter what value of n, the sequence will always reach 1.
+
+    Note: 
+        1. Collatz(1) is [1].
+        2. returned list sorted in increasing order.
+
+    For example:
+    get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5.
+    """
+    if n == 1:
+        return [1]
+    
+    collatz_sequence = []
+    current_num = n
+    
+    while current_num != 1:
+        if current_num % 2 != 0:
+            collatz_sequence.append(current_num)
+        
+        if current_num % 2 == 0:
+            current_num //= 2
+        else:
+            current_num = 3 * current_num + 1
+    
+    collatz_sequence.append(1) # Always add 1 at the end
+    
+    return sorted(list(set(collatz_sequence)))
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_contains_one(n):
+    """
+    Property: The returned list of odd Collatz numbers must always contain 1.
+    This is because the Collatz sequence always eventually reaches 1, and 1 is an odd number.
+    """
+    result = get_odd_collatz(n)
+    assert 1 in result, f"For n={n}, the result {result} should contain 1."
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_is_sorted_and_unique(n):
+    """
+    Property: The returned list must be sorted in increasing order and contain only unique elements.
+    The function specification explicitly states that the list should be sorted and, by nature of sets, unique.
+    """
+    result = get_odd_collatz(n)
+    assert all(result[i] <= result[i+1] for i in range(len(result) - 1)), \
+        f"For n={n}, the result {result} is not sorted."
+    assert len(result) == len(set(result)), \
+        f"For n={n}, the result {result} contains duplicate elements."
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_only_odd_numbers(n):
+    """
+    Property: All numbers in the returned list must be odd.
+    The function's purpose is to return only the odd numbers from the Collatz sequence.
+    """
+    result = get_odd_collatz(n)
+    assert all(x % 2 != 0 for x in result), \
+        f"For n={n}, the result {result} contains even numbers."
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_contains_n_if_odd(n):
+    """
+    Property: If the input n is an odd number, it must be present in the returned list.
+    The Collatz sequence starts with n, so if n is odd, it should be included.
+    """
+    if n % 2 != 0:
+        result = get_odd_collatz(n)
+        assert n in result, f"For odd n={n}, the result {result} should contain n."
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_consistency_with_known_sequences(n):
+    """
+    Property: The function should produce expected results for specific known inputs.
+    This acts as a regression test for some basic cases.
+    """
+    if n == 1:
+        assert get_odd_collatz(1) == [1]
+    elif n == 2:
+        assert get_odd_collatz(2) == [1] # Sequence: [2, 1]
+    elif n == 3:
+        assert get_odd_collatz(3) == [1, 3] # Sequence: [3, 10, 5, 16, 8, 4, 2, 1] - odd: 3, 5, 1. Sorted unique: [1, 3, 5]
+    elif n == 5:
+        assert get_odd_collatz(5) == [1, 5] # Sequence: [5, 16, 8, 4, 2, 1] - odd: 5, 1. Sorted unique: [1, 5]
+    elif n == 6:
+        assert get_odd_collatz(6) == [1, 3] # Sequence: [6, 3, 10, 5, 16, 8, 4, 2, 1] - odd: 3, 5, 1. Sorted unique: [1, 3, 5]
+```

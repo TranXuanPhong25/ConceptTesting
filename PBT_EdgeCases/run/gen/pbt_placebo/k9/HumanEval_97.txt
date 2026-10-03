@@ -1,0 +1,70 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract the unit digits
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    
+    # The property is that the result should be the product of the unit digits
+    assert result == unit_a * unit_b, f"The product of the unit digits of {a} and {b} should be {unit_a * unit_b}, but got {result}"
+
+@given(st.integers(), st.integers())
+def test_multiply_commutativity(a, b):
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    
+    # The order of the arguments should not affect the result
+    assert result1 == result2, "The function should be commutative for its inputs"
+
+@given(st.integers(), st.integers())
+def test_multiply_non_negativity_of_result(a, b):
+    result = multiply(a, b)
+    
+    # The product of two unit digits (which are always non-negative) should always be non-negative
+    assert result >= 0, "The result of multiplying unit digits should always be non-negative"
+
+@given(st.integers(min_value=-100000, max_value=100000), 
+       st.integers(min_value=-100000, max_value=100000))
+def test_multiply_large_numbers(a, b):
+    result = multiply(a, b)
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    assert result == unit_a * unit_b, "Should work correctly for large positive and negative numbers"
+
+@given(st.integers(), st.integers(min_value=-10, max_value=10))
+def test_multiply_with_small_numbers(a, b):
+    result = multiply(a, b)
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    assert result == unit_a * unit_b, "Should work correctly when one of the numbers is small"
+
+@given(st.integers(min_value=0, max_value=9))
+def test_multiply_with_single_digit_numbers(a):
+    b = st.integers(min_value=0, max_value=9).example()
+    result = multiply(a, b)
+    assert result == a * b, "Should work correctly for single digit positive numbers"
+
+@given(st.integers(min_value=-9, max_value=-1))
+def test_multiply_with_single_negative_digit_numbers(a):
+    b = st.integers(min_value=-9, max_value=-1).example()
+    result = multiply(a, b)
+    assert result == (abs(a) % 10) * (abs(b) % 10), "Should work correctly for single digit negative numbers"
+
+@given(st.integers())
+def test_multiply_with_zero_unit_digit(a):
+    # Test cases where one of the numbers has 0 as its unit digit
+    b_with_zero_unit = st.integers().map(lambda x: x * 10 + 0).example()
+    result = multiply(a, b_with_zero_unit)
+    assert result == 0, "If one number has a unit digit of 0, the result should be 0"
+
+@given(st.integers().map(lambda x: x * 10 + 0), st.integers().map(lambda x: x * 10 + 0))
+def test_multiply_both_zero_unit_digit(a, b):
+    # Test case where both numbers have 0 as their unit digit
+    result = multiply(a, b)
+    assert result == 0, "If both numbers have a unit digit of 0, the result should be 0"
+
+```

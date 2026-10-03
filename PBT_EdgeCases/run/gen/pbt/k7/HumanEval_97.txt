@@ -1,0 +1,50 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract the unit digits
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    # The property is that the result should be the product of the unit digits
+    expected_result = unit_digit_a * unit_digit_b
+    
+    assert result == expected_result, f"For a={a}, b={b}, expected {expected_result}, but got {result}"
+
+@given(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_commutativity_of_unit_digits(a, b):
+    # Property: The order of arguments should not affect the result.
+    # This is a property of multiplication, which applies to the unit digits.
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    
+    assert result1 == result2, f"For a={a}, b={b}, multiply(a,b)={result1} but multiply(b,a)={result2}"
+
+@given(st.integers(min_value=-100, max_value=100))
+def test_multiply_with_zero_unit_digit(num):
+    # Property: If one number has a unit digit of 0, the product of unit digits should be 0.
+    result_with_zero = multiply(num * 10, st.integers().example()) # Ensures unit digit is 0 for first number
+    result_other_zero = multiply(st.integers().example(), num * 10) # Ensures unit digit is 0 for second number
+
+    assert result_with_zero == 0, f"Multiplying with a number ending in 0 should yield 0 for unit digit product. Got {result_with_zero}"
+    assert result_other_zero == 0, f"Multiplying with a number ending in 0 should yield 0 for unit digit product. Got {result_other_zero}"
+
+@given(st.integers(min_value=0, max_value=9))
+def test_multiply_with_single_digit_numbers(a, b=st.integers(min_value=0, max_value=9).example()):
+    # Property: For single-digit non-negative numbers, the function should return their product directly.
+    # This tests a simplified case where the numbers themselves are their unit digits.
+    result = multiply(a, b)
+    assert result == a * b, f"For single digit numbers a={a}, b={b}, expected {a*b}, got {result}"
+
+@given(st.integers())
+def test_multiply_with_large_numbers(a, b):
+    # Property: The result should always be between 0 and 81 (9*9) inclusive, 
+    # regardless of how large or small the input integers are.
+    # This checks the constraint that only unit digits matter.
+    result = multiply(a, b)
+    assert 0 <= result <= 81, f"Result {result} for a={a}, b={b} is out of expected range [0, 81]"
+
+```

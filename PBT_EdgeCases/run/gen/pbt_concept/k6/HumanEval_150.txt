@@ -1,0 +1,54 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       x=st.integers(min_value=-1000, max_value=1000), 
+       y=st.integers(min_value=-1000, max_value=1000))
+@example(n=7, x=34, y=12)
+@example(n=15, x=8, y=5)
+@example(n=0, x=10, y=20)
+@example(n=1, x=10, y=20)
+@example(n=2, x=10, y=20)
+@example(n=4, x=10, y=20)
+def test_x_or_y_property(n, x, y):
+    result = x_or_y(n, x, y)
+    
+    if is_prime(n):
+        assert result == x, f"For prime n={n}, x_or_y should return x={x}, but got {result}"
+    else:
+        assert result == y, f"For non-prime n={n}, x_or_y should return y={y}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000))
+def test_x_or_y_determinism(n):
+    # Property: For the same n, x, and y, the function should always return the same result.
+    # We test this by calling the function with fixed x and y.
+    x_val = 100
+    y_val = 200
+    result1 = x_or_y(n, x_val, y_val)
+    result2 = x_or_y(n, x_val, y_val)
+    assert result1 == result2, "x_or_y function should be deterministic"
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       x=st.integers(min_value=-1000, max_value=1000), 
+       y=st.integers(min_value=-1000, max_value=1000))
+def test_x_or_y_value_range(n, x, y):
+    # Property: The result should always be either x or y.
+    result = x_or_y(n, x, y)
+    assert result in (x, y), f"Result must be either x ({x}) or y ({y}), but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000))
+def test_x_or_y_with_x_equals_y(n):
+    # Property: If x and y are the same, the function should return that value regardless of n.
+    equal_value = st.integers(min_value=-1000, max_value=1000).example()
+    result = x_or_y(n, equal_value, equal_value)
+    assert result == equal_value, f"If x and y are equal, the result should be {equal_value}"
+
+```

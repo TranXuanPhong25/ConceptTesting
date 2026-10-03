@@ -1,0 +1,92 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+@given(x=st.integers(min_value=1, max_value=10**10),
+       n=st.integers(min_value=2, max_value=10**5))
+@example(x=1, n=4)
+@example(x=2, n=2)
+@example(x=8, n=2)
+@example(x=3, n=2)
+@example(x=3, n=1) # Although n=1 is generally excluded by min_value, good to have explicit example
+@example(x=5, n=3)
+def test_is_simple_power_true_cases(x, n):
+    if n == 1: # Handle the specific case where n is 1, as n**int is always 1 for any int power
+        assert not is_simple_power(x, n), "If n is 1, x must be 1 to be a simple power (n^k = 1 for any k). For x > 1, it should be false."
+        return
+
+    # Property: If the function returns True, then x must be an exact power of n.
+    if is_simple_power(x, n):
+        # Calculate the log base n of x
+        log_val = math.log(x, n)
+        # Check if it's an integer within a small tolerance due to float precision
+        assert abs(log_val - round(log_val)) < 1e-9, f"If is_simple_power is True, log_n(x) must be an integer. x={x}, n={n}"
+        assert n ** round(log_val) == x, f"If is_simple_power is True, n to the power of the integer log should equal x. x={x}, n={n}"
+    else:
+        # Property: If the function returns False, then x is not an exact power of n
+        # This property is harder to check directly without re-implementing the function logic.
+        # Instead, we rely on the above property for True cases and will add a specific property for false cases
+        # focusing on values that should definitely be false.
+        pass
+
+
+@given(x=st.integers(min_value=1, max_value=10**10),
+       n=st.integers(min_value=2, max_value=10**5))
+def test_is_simple_power_false_when_not_exact(x, n):
+    if n == 1:
+        # Special case where n=1: only x=1 is a simple power
+        assert is_simple_power(x, n) == (x == 1), f"If n is 1, x must be 1 for it to be a simple power. x={x}, n={n}"
+        return
+
+    # This test focuses on cases where x is clearly not a power of n
+    # We construct inputs where log_n(x) is definitely not an integer
+    log_val = math.log(x, n)
+
+    if not (abs(log_val - round(log_val)) < 1e-9 and n**round(log_val) == x):
+        # If x is not an exact power of n, then is_simple_power should return False
+        assert not is_simple_power(x, n), f"If x is not an exact power of n, is_simple_power should be False. x={x}, n={n}"
+
+
+@given(x=st.integers(min_value=1, max_value=10**10),
+       n=st.integers(min_value=2, max_value=10**5))
+def test_is_simple_power_consistency_with_pow(x, n):
+    if n == 1: # Handle n=1 explicitly as it often has special behavior
+        assert is_simple_power(x, n) == (x == 1), f"With n=1, is_simple_power should be True only if x=1. x={x}, n={n}"
+        return
+
+    # Check if x can be represented as n raised to some integer power
+    is_power_of_n = False
+    if x > 0: # n^k can't be 0 for n >= 2
+        try:
+            power = round(math.log(x, n))
+            if power >= 0 and n**power == x:
+                is_power_of_n = True
+        except ValueError: # math.log(x, n) can raise ValueError if x <= 0 or n <= 1
+            pass # We're already handling n <= 1, and x is >= 1.
+        except OverflowError: # For very large numbers
+            # If x is extremely large, log might be calculated, but n**power might overflow.
+            # In such cases, if it was indeed a simple power, our function should handle it or fail gracefully.
+            # For this test, we assume the inputs are within typical calculation ranges.
+            pass
+
+    assert is_simple_power(x, n) == is_power_of_n, \
+        f"Function result should match direct calculation of x being an integer power of n. x={x}, n={n}"
+
+
+@given(x=st.integers(min_value=1, max_value=10**10),
+       n=st.just(1)) # n=1 is a special case: n**k = 1 for any k.
+def test_is_simple_power_n_is_one(x, n):
+    # Property: If n is 1, then x must be 1 for it to be a simple power.
+    assert is_simple_power(x, n) == (x == 1), \
+        f"If n is 1, x should be 1 to be a simple power. x={x}, n={n}"
+
+
+@given(x=st.integers(min_value=1, max_value=10**10),
+       n=st.integers(min_value=2, max_value=10**5))
+def test_is_simple_power_x_is_one(x, n):
+    if x == 1:
+        # Property: If x is 1, and n >= 2, then n^0 = 1, so it should always be true.
+        assert is_simple_power(x, n) == True, \
+            f"If x is 1 and n >= 2, it should be a simple power (n^0). x={x}, n={n}"
+
+```

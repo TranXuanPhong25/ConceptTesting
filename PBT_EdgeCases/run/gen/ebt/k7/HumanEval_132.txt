@@ -1,0 +1,62 @@
+```python
+
+# Basic Test Cases
+assert is_nested('[[]]') == True, "Basic Test Case 1: Simple nested brackets"
+assert is_nested('[[][]]') == True, "Basic Test Case 2: Nested brackets with inner non-nested"
+assert is_nested('[[][][]]') == True, "Basic Test Case 3: Multiple nested levels"
+assert is_nested('[]') == False, "Basic Test Case 4: Single non-nested pair"
+assert is_nested('[][]') == False, "Basic Test Case 5: Multiple non-nested pairs"
+assert is_nested('') == False, "Basic Test Case 6: Empty string"
+assert is_nested('[[[]]]') == True, "Basic Test Case 7: Deeper nesting"
+
+# Edge Test Cases
+assert is_nested('[') == False, "Edge Test Case 1: Single opening bracket"
+assert is_nested(']') == False, "Edge Test Case 2: Single closing bracket"
+assert is_nested('[[') == False, "Edge Test Case 3: Multiple opening brackets"
+assert is_nested(']]') == False, "Edge Test Case 4: Multiple closing brackets"
+assert is_nested('][') == False, "Edge Test Case 5: Mismatched brackets"
+assert is_nested('[[][') == True, "Edge Test Case 6: Nested with unclosed outer"
+assert is_nested('[][]]') == True, "Edge Test Case 7: Nested with unopened outer"
+assert is_nested('[[[[[[[[[]]]]]]]]]') == True, "Edge Test Case 8: Very deep nesting"
+assert is_nested('[][][][][][][][][]') == False, "Edge Test Case 9: Many non-nested pairs"
+assert is_nested('[[[[[') == False, "Edge Test Case 10: Only opening brackets"
+assert is_nested(']]]]]') == False, "Edge Test Case 11: Only closing brackets"
+assert is_nested('[]]]]]]][[[[[]') == False, "Edge Test Case 12: Complex sequence with no nested valid subsequence"
+
+# Large Scale Test Cases
+# Note: For large scale, the performance might be a concern depending on the implementation.
+# The `is_nested` function typically would involve iterating through the string, so O(N) complexity is expected.
+
+# Test with a very long string of non-nested brackets
+long_non_nested_string = '[]' * 50000
+assert is_nested(long_non_nested_string) == False, "Large Scale Test Case 1: 100,000 non-nested brackets"
+
+# Test with a very long string of deeply nested brackets
+long_nested_string = '[' * 50000 + ']' * 50000
+assert is_nested(long_nested_string) == True, "Large Scale Test Case 2: 100,000 deeply nested brackets"
+
+# Test with a mix of nested and non-nested, leaning towards nested
+long_mixed_nested = '[[]]' * 20000 + '[[[]]]' * 10000
+assert is_nested(long_mixed_nested) == True, "Large Scale Test Case 3: Large mixed string with nested"
+
+# Test with a mix of non-nested and some nested in the middle
+long_mixed_non_nested_with_inner_nested = '[]' * 25000 + '[[]]' + '[]' * 25000
+assert is_nested(long_mixed_non_nested_with_inner_nested) == True, "Large Scale Test Case 4: Large non-nested with one nested block"
+
+# Test with a large string that looks nested but isn't a valid subsequence
+# (e.g., all opening, then all closing, no valid '[[...]]' where inner brackets exist)
+long_unstructured = '[' * 50000 + ']' * 50000 # This specific case would be considered nested by the logic
+assert is_nested(long_unstructured) == True, "Large Scale Test Case 5: Massive valid nesting"
+
+# Test with a large string that starts and ends nested, but has non-nested in between
+large_nested_start_end = '[[]]' + '[]' * 49998 + '[[]]'
+assert is_nested(large_nested_start_end) == True, "Large Scale Test Case 6: Large string with nested at start and end"
+
+# Test with a very long string of only opening brackets
+long_only_opening = '[' * 100000
+assert is_nested(long_only_opening) == False, "Large Scale Test Case 7: Only opening brackets"
+
+# Test with a very long string of only closing brackets
+long_only_closing = ']' * 100000
+assert is_nested(long_only_closing) == False, "Large Scale Test Case 8: Only closing brackets"
+```

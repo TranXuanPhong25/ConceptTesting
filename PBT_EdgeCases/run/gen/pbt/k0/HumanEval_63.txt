@@ -1,0 +1,59 @@
+```python
+from hypothesis import given, strategies as st
+
+# Test cases for fibfib
+@given(st.integers(min_value=0, max_value=20))
+def test_fibfib_non_decreasing(n):
+    """
+    Property: The fibfib sequence should generally be non-decreasing for non-negative inputs,
+    after the initial few terms.
+    """
+    if n >= 2:
+        assert fibfib(n) >= fibfib(n-1), "fibfib(n) should be greater than or equal to fibfib(n-1) for n >= 2"
+
+@given(st.integers(min_value=3, max_value=20))
+def test_fibfib_recursive_property(n):
+    """
+    Property: For n >= 3, fibfib(n) should be equal to the sum of the previous three terms.
+    """
+    result = fibfib(n)
+    expected = fibfib(n-1) + fibfib(n-2) + fibfib(n-3)
+    assert result == expected, f"fibfib({n}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=2))
+def test_fibfib_base_cases(n):
+    """
+    Property: Test the defined base cases for n=0, 1, 2.
+    """
+    if n == 0:
+        assert fibfib(n) == 0, f"fibfib(0) should be 0, but got {fibfib(n)}"
+    elif n == 1:
+        assert fibfib(n) == 0, f"fibfib(1) should be 0, but got {fibfib(n)}"
+    elif n == 2:
+        assert fibfib(n) == 1, f"fibfib(2) should be 1, but got {fibfib(n)}"
+
+@given(st.integers(min_value=0, max_value=50))
+def test_fibfib_sum_of_previous_terms_is_non_negative(n):
+    """
+    Property: For any non-negative n, fibfib(n) should be a non-negative integer.
+    """
+    result = fibfib(n)
+    assert result >= 0, f"fibfib({n}) should be non-negative, but got {result}"
+    assert isinstance(result, int), f"fibfib({n}) should return an integer, but got {type(result)}"
+
+@given(st.integers(min_value=0, max_value=10))
+def test_fibfib_monotonicity_for_small_n(n):
+    """
+    Property: For small values of n (0 to 2), the sequence is 0, 0, 1. For n >= 2, it is non-decreasing.
+    This test combines the monotonicity idea for small values.
+    """
+    if n == 0:
+        assert fibfib(n) == 0
+    elif n == 1:
+        assert fibfib(n) == 0
+    elif n == 2:
+        assert fibfib(n) == 1
+    else: # n >= 3
+        assert fibfib(n) >= fibfib(n-1)
+
+```

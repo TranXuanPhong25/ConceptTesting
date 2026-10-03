@@ -1,0 +1,60 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_property_n_equals_zero(p):
+    """
+    Property: When n is 0, modp(0, p) should always return 1, as 2^0 is 1.
+    This holds for any valid p (p > 0).
+    """
+    result = modp(0, p)
+    assert result == 1, f"modp(0, {p}) should be 1, but got {result}"
+
+@given(st.integers(min_value=0, max_value=60), st.integers(min_value=1, max_value=1000))
+def test_modp_property_modulo_p_always_less_than_p(n, p):
+    """
+    Property: The result of modulo operation should always be less than the modulus (p).
+    """
+    result = modp(n, p)
+    assert 0 <= result < p, f"modp({n}, {p}) result {result} should be between 0 and {p-1}"
+
+@given(st.integers(min_value=0, max_value=10), st.integers(min_value=1, max_value=100))
+def test_modp_property_consistency_with_pow_operator(n, p):
+    """
+    Property: For small n, modp(n, p) should be consistent with the built-in pow(2, n, p) function.
+    """
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"modp({n}, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_property_n_plus_p(n, p):
+    """
+    Property: 2^(n+p) mod p should be equal to 2^n mod p. (This is related to Fermat's Little Theorem
+    if p is prime, but generally holds if the exponent is large enough and p is the modulus).
+    More simply, (a^b) % p == (a^(b % (p-1))) % p for prime p.
+    A more general property is (2^n) % p should be consistent with 2^(n % cycle_length) % p.
+    For simplicity, we check a specific identity here: (2^n * 2^p) % p == (2^n * (2^p % p)) % p
+    Let's use the property that 2^n mod p is periodic.
+    """
+    result_n = modp(n, p)
+    result_n_plus_p = modp(n + p, p)
+    # This property is more complex. Let's simplify.
+    # The property to test should be (a*b)%m == ((a%m)*(b%m))%m
+    # We can check (2^n * 2^k) % p == (modp(n, p) * modp(k, p)) % p
+    # For now, let's use the direct formula.
+    assert (result_n * pow(2, p, p)) % p == result_n_plus_p, \
+        f"modp({n} + {p}, {p}) should be consistent with modp({n}, {p}) * pow(2, {p}, {p})"
+
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=1, max_value=100))
+def test_modp_property_power_of_two_identity(n, p):
+    """
+    Property: 2^(n * m) mod p is equal to ( (2^n mod p)^m ) mod p.
+    Let's test (2^n)^2 mod p == (modp(n, p) * modp(n, p)) % p
+    """
+    result_n = modp(n, p)
+    result_2n = modp(2 * n, p)
+    assert result_2n == (result_n * result_n) % p, \
+        f"modp({2*n}, {p}) should be ({result_n} * {result_n}) % {p}, but got {result_2n}"
+
+```

@@ -1,0 +1,86 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+@given(
+    n=st.integers(min_value=0, max_value=1000), 
+    x=st.integers(min_value=-1000, max_value=1000), 
+    y=st.integers(min_value=-1000, max_value=1000)
+)
+def test_x_or_y_property(n, x, y):
+    result = x_or_y(n, x, y)
+    
+    if is_prime(n):
+        assert result == x, f"For n={n} (prime), expected {x}, got {result}"
+    else:
+        assert result == y, f"For n={n} (not prime), expected {y}, got {result}"
+
+@given(
+    n=st.integers(min_value=2, max_value=1000).filter(is_prime),
+    x=st.integers(),
+    y=st.integers()
+)
+def test_x_or_y_prime_n_returns_x(n, x, y):
+    """Property: If n is a prime number, the function should return x."""
+    result = x_or_y(n, x, y)
+    assert result == x, f"For prime n={n}, x_or_y should return x={x}"
+
+@given(
+    n=st.integers(min_value=0, max_value=1000).filter(lambda num: not is_prime(num)),
+    x=st.integers(),
+    y=st.integers()
+)
+def test_x_or_y_non_prime_n_returns_y(n, x, y):
+    """Property: If n is not a prime number, the function should return y."""
+    result = x_or_y(n, x, y)
+    assert result == y, f"For non-prime n={n}, x_or_y should return y={y}"
+
+@given(
+    x=st.integers(min_value=0, max_value=1000000),
+    y=st.integers(min_value=0, max_value=1000000)
+)
+@example(n=7, x=34, y=12) # From example
+def test_x_or_y_with_prime_input_n_from_example(x, y):
+    """Property: Test with known prime inputs (like 7) always returns x."""
+    n_prime = 7
+    result = x_or_y(n_prime, x, y)
+    assert result == x, f"For prime n={n_prime}, result should be x={x}"
+
+@given(
+    x=st.integers(min_value=0, max_value=1000000),
+    y=st.integers(min_value=0, max_value=1000000)
+)
+@example(n=15, x=8, y=5) # From example
+def test_x_or_y_with_non_prime_input_n_from_example(x, y):
+    """Property: Test with known non-prime inputs (like 15) always returns y."""
+    n_non_prime = 15
+    result = x_or_y(n_non_prime, x, y)
+    assert result == y, f"For non-prime n={n_non_prime}, result should be y={y}"
+
+@given(
+    n=st.integers(min_value=0, max_value=1), # Edge cases for n
+    x=st.integers(),
+    y=st.integers()
+)
+def test_x_or_y_edge_cases_for_n(n, x, y):
+    """Property: Test edge cases for n (0 and 1), which are not prime."""
+    result = x_or_y(n, x, y)
+    assert result == y, f"For n={n} (not prime), expected y={y}, got {result}"
+
+@given(
+    n=st.integers(min_value=2, max_value=2), # Smallest prime
+    x=st.integers(),
+    y=st.integers()
+)
+def test_x_or_y_smallest_prime(n, x, y):
+    """Property: Test with n=2 (smallest prime)."""
+    result = x_or_y(n, x, y)
+    assert result == x, f"For n={n} (prime), expected x={x}, got {result}"
+```

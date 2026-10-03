@@ -1,0 +1,122 @@
+
+**Role**: As a tester, create property-based test cases for the given function using Hypothesis to automatically generate diverse inputs and verify function properties.
+
+**Instructions**:
+- Use Hypothesis library with appropriate strategies for input generation
+- Focus on properties and invariants the function should satisfy
+- Document each test property with clear comments
+- Handle edge cases and large-scale inputs
+
+- The format of test cases should be:
+```python
+from hypothesis import given, strategies as st
+
+@given(strategy_for_input)
+def test_property_name(input_params):
+    result = function_name(input_params)
+    assert property_condition, "Property description"
+```
+
+# For example:
+
+## Prompt 1:
+```python
+from typing import List
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """ Check if in given list of numbers, are any two numbers closer to each other than
+    given threshold.
+    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+    False
+    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+    True
+    """
+```
+
+## Completion 1:
+```python
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.floats(-100, 100), max_size=10), st.floats(0, 200))
+def test_has_close_elements(numbers, threshold):
+    result = has_close_elements(numbers, threshold)
+    expected = (len(numbers) > 1 and 
+                min(abs(numbers[i] - numbers[j]) 
+                    for i in range(len(numbers)) 
+                    for j in range(i+1, len(numbers))) < threshold)
+    
+    assert result == expected, "The result should be True if there are two or more elements and the minimum distance is less than the threshold"
+```
+
+## Prompt 2:
+```python
+from typing import List
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """ Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+    separate those group into separate strings and return the list of those.
+    Separate groups are balanced (each open brace is properly closed) and not nested within each other
+    Ignore any spaces in the input string.
+    >>> separate_paren_groups('( ) (( )) (( )( ))')
+    ['()', '(())', '(()())']
+    """
+```
+
+## Completion 2:
+```python
+import random
+from hypothesis import given, strategies as st
+
+def balanced_group():
+    return st.recursive(
+        st.just("()"),
+        lambda x: st.builds(lambda inner: f"({inner})", x)
+    )
+
+@given(st.lists(balanced_group(), max_size=10))
+def test_separate_paren_groups(groups):
+    concatenated = ''.join(groups)
+    paren_string = ''.join(char + (' ' if random.choice([True, False]) else '') 
+                          for char in concatenated)
+
+    result = separate_paren_groups(paren_string)
+
+    assert result == groups, "Should separate into original groups"
+```
+
+
+**Input Code Snippet**
+```python
+
+def add_elements(arr, k):
+    """
+    Given a non-empty array of integers arr and an integer k, return
+    the sum of the elements with at most two digits from the first k elements of arr.
+
+    Example:
+
+        Input: arr = [111,21,3,4000,5,6,7,8,9], k = 4
+        Output: 24 # sum of 21 + 3
+
+    Constraints:
+        1. 1 <= len(arr) <= 100
+        2. 1 <= k <= len(arr)
+    """
+
+```
+
+**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
+- param `arr`: dict (type from docstring examples)
+- edges `arr`: {}, one key, lower/UPPER/Mixed-case str keys, non-str keys (int) in first and in later positions, more than 2 keys
+- strategy `arr`: st.dictionaries(st.one_of(st.text(), st.integers()), st.text(), max_size=10)
+- param `k`: int (type from docstring examples)
+- domain `k`: [-inf, +inf] (examples cover -15..1851; negatives appear in examples)
+- edges `k`: 0, 1, 2, -1, 10000, 2**53 + 1 (lower bound, just above it, large; values beyond the largest example)
+- strategy `k`: st.integers(min_value=None, max_value=1000000)
+- docstring constraint: arr positive
+- docstring constraint: format mm-dd-yyyy
+- docstring constraint: alphabet only []
+- docstring constraint: k < 10
+- witness: @example(arr={}, k={})
+- witness: @example(arr={'a': 'x', 'b': 'y', 5: 'z'}, k={'a': 'x', 'b': 'y', 5: 'z'})
+- witness: @example(arr={'A': 'x', 'B': 'y', 'c': 'z'}, k={'A': 'x', 'B': 'y', 'c': 'z'})

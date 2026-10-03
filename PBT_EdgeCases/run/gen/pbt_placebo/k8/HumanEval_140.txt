@@ -1,0 +1,110 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text())
+def test_no_double_underscore_or_hyphen(text):
+    result = fix_spaces(text)
+    assert "__" not in result and "--" not in result, "Result should not contain double underscores or hyphens"
+
+@given(st.text())
+def test_all_spaces_replaced(text):
+    result = fix_spaces(text)
+    assert " " not in result, "All spaces should be replaced"
+
+@given(st.text())
+def test_single_space_becomes_underscore(text):
+    # This property checks that a single space is replaced by an underscore
+    # We construct a string with single spaces only
+    text_with_single_spaces = text.replace("   ", " ").replace("  ", " ")
+    result = fix_spaces(text_with_single_spaces)
+    assert "_" * text_with_single_spaces.count(" ") == "".join(["_" if char == ' ' else '' for char in text_with_single_spaces]), \
+        "Single spaces should be replaced by underscores"
+
+@given(st.text(min_size=1, max_size=100).map(lambda s: s.replace(' ', '') + '   ' + s.replace(' ', '') + '  ' + s.replace(' ', '')))
+def test_multiple_consecutive_spaces_become_hyphen(text_with_multi_spaces):
+    # This property checks that 3 or more consecutive spaces become a hyphen
+    # We specifically inject sequences of 3 or more spaces
+    result = fix_spaces(text_with_multi_spaces)
+    
+    # We expect any sequence of 3 or more spaces to become a single hyphen
+    # and any sequence of 2 spaces to become two underscores.
+    # This property is harder to assert directly due to the mix.
+    # Instead, we'll check if a hyphen exists where we expect more than 2 spaces.
+    
+    # Simple check: if original had '   ', result should have '-'
+    if '   ' in text_with_multi_spaces:
+        assert '-' in result, "More than 2 consecutive spaces should result in a hyphen"
+
+@given(st.text())
+def test_length_change_on_spaces(text):
+    # This property checks how the length changes based on space replacement
+    result = fix_spaces(text)
+    
+    # Count original spaces
+    original_spaces = text.count(' ')
+    
+    # Approximate expected length. This is tricky because `---` can replace many spaces.
+    # Let's count sequences of spaces for a more precise check.
+    
+    # Helper to count sequences of spaces
+    def count_space_sequences(s):
+        sequences = []
+        in_space_sequence = False
+        current_sequence_length = 0
+        for char in s:
+            if char == ' ':
+                in_space_sequence = True
+                current_sequence_length += 1
+            else:
+                if in_space_sequence:
+                    sequences.append(current_sequence_length)
+                    in_space_sequence = False
+                current_sequence_length = 0
+        if in_space_sequence:
+            sequences.append(current_sequence_length)
+        return sequences
+
+    original_sequences = count_space_sequences(text)
+    expected_length_change = 0
+    for seq_len in original_sequences:
+        if seq_len == 1:
+            expected_length_change += 0 # ' ' -> '_' (length remains 1)
+        elif seq_len == 2:
+            expected_length_change += 0 # '  ' -> '__' (length remains 2)
+        elif seq_len >= 3:
+            expected_length_change += (1 - seq_len) # '   ' -> '-' (length goes from seq_len to 1)
+
+    expected_len = len(text) + expected_length_change
+    assert len(result) == expected_len, "Length of the string should change predictably based on space replacements"
+
+@given(st.text())
+def test_non_space_characters_remain_unchanged(text):
+    result = fix_spaces(text)
+    # Remove all spaces from original and the generated replacement characters from result
+    original_without_spaces = text.replace(' ', '')
+    result_without_replacements = result.replace('_', '').replace('-', '')
+    assert original_without_spaces == result_without_replacements, "Non-space characters should remain unchanged"
+
+@given(st.just("Example"))
+def test_example_1(text):
+    assert fix_spaces(text) == "Example"
+
+@given(st.just("Example 1"))
+def test_example_2(text):
+    assert fix_spaces(text) == "Example_1"
+
+@given(st.just(" Example 2"))
+def test_example_3(text):
+    assert fix_spaces(text) == "_Example_2"
+
+@given(st.just(" Example   3"))
+def test_example_4(text):
+    assert fix_spaces(text) == "_Example-3"
+
+@given(st.text(min_size=0, max_size=1000))
+def test_idempotence_of_non_space_strings(text):
+    # If a string contains no spaces, fix_spaces should return the same string.
+    text_no_spaces = text.replace(' ', '')
+    assert fix_spaces(text_no_spaces) == text_no_spaces, "Strings without spaces should be returned unchanged"
+
+```

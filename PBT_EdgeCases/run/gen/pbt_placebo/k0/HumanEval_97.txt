@@ -1,0 +1,65 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    # Extract the unit digits
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+
+    # Calculate the expected product of unit digits
+    expected_product = unit_digit_a * unit_digit_b
+
+    # Call the function under test
+    result = multiply(a, b)
+
+    # Property: The function should return the product of the unit digits of the two input integers.
+    assert result == expected_product, f"For inputs a={a}, b={b}, expected {expected_product}, but got {result}"
+
+@given(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_non_negative_result(a, b):
+    # Property: The result should always be non-negative, as it's a product of absolute unit digits.
+    result = multiply(a, b)
+    assert result >= 0, "The product of unit digits should always be non-negative."
+
+@given(st.integers(), st.integers())
+def test_multiply_order_invariance(a, b):
+    # Property: The order of the arguments should not affect the result.
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, "The function should be commutative."
+
+@given(st.integers(max_value=-1), st.integers(max_value=-1))
+def test_multiply_negative_inputs(a, b):
+    # Test with entirely negative inputs
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    expected_product = unit_digit_a * unit_digit_b
+    result = multiply(a, b)
+    assert result == expected_product, f"Failed for negative inputs: a={a}, b={b}"
+
+@given(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_identity_property_with_one_as_unit_digit(a, b_with_unit_digit_1):
+    # Property: If one of the numbers has a unit digit of 1, the result should be the unit digit of the other number.
+    # We need to construct b such that its unit digit is 1.
+    b = (b_with_unit_digit_1 // 10) * 10 + 1 if b_with_unit_digit_1 % 10 != 1 else b_with_unit_digit_1
+    
+    # Ensure b's unit digit is 1 or -1 (which also has an abs unit digit of 1)
+    # For this specific property, let's make sure it's 1 or -1
+    b_unit_digit_one = st.integers().map(lambda x: (x // 10) * 10 + 1 if x % 10 != 1 else x).example()
+    if b_unit_digit_one < 0:
+        b_unit_digit_one = -b_unit_digit_one # Ensure absolute unit digit is 1
+
+    unit_digit_a = abs(a) % 10
+    
+    result = multiply(a, b_unit_digit_one)
+    assert result == unit_digit_a, f"When b's unit digit is 1, result should be unit_digit_a. a={a}, b={b_unit_digit_one}, expected {unit_digit_a}, got {result}"
+
+@given(st.integers(min_value=-1000, max_value=1000), 
+       st.integers(min_value=0, max_value=0)) # Force b to have unit digit 0
+def test_multiply_zero_unit_digit(a, b):
+    # Property: If one of the numbers has a unit digit of 0, the product should be 0.
+    result = multiply(a, b)
+    assert result == 0, f"If one input's unit digit is 0, the result should be 0. a={a}, b={b}, got {result}"
+
+```

@@ -1,0 +1,71 @@
+```python
+from hypothesis import given, strategies as st
+
+def modp(n: int, p: int):
+    """Return 2^n modulo p (be aware of numerics).
+    >>> modp(3, 5)
+    3
+    >>> modp(1101, 101)
+    2
+    >>> modp(0, 101)
+    1
+    >>> modp(3, 11)
+    8
+    >>> modp(100, 101)
+    1
+    """
+    return pow(2, n, p)
+
+@given(st.integers(min_value=0, max_value=1000000), st.integers(min_value=1, max_value=1000000))
+@example(n=0, p=1)
+@example(n=1, p=2)
+@example(n=10000, p=10000)
+def test_modp_range(n, p):
+    result = modp(n, p)
+    # Property: The result should always be non-negative and less than p.
+    assert 0 <= result < p, "The result of modulo operation should be within [0, p-1]"
+
+@given(st.integers(min_value=0, max_value=100000), st.integers(min_value=1, max_value=100000))
+def test_modp_zero_exponent(n, p):
+    # Property: 2^0 mod p should always be 1, for any p > 0.
+    assert modp(0, p) == 1, "2^0 mod p should be 1"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_known_values(n, p):
+    # Property: The result should match the direct calculation of (2**n) % p.
+    # This acts as an oracle for smaller, manageable inputs.
+    expected = (2**n) % p
+    assert modp(n, p) == expected, "Result should match direct calculation for small inputs"
+
+@given(st.integers(min_value=0, max_value=1000000), st.integers(min_value=1, max_value=1000000))
+def test_modp_identity_property(n, p):
+    # Property: If 2^n is less than p, then 2^n mod p should be 2^n.
+    # This requires checking the condition first, as 2^n can grow very large.
+    # We can test this for n values where 2^n doesn't overflow Python's default int or become too large.
+    # For large n, we cannot compute 2**n directly.
+    # For this property, we will restrict n to smaller values.
+    if n < 60:  # 2^60 is already a large number, but manageable for direct comparison
+        if (2**n) < p:
+            assert modp(n, p) == (2**n), "If 2^n < p, then 2^n mod p should be 2^n"
+
+@given(st.integers(min_value=0, max_value=1000000), st.integers(min_value=2, max_value=1000000))
+def test_modp_p_is_2(n, p):
+    # Property: If p is 2, then 2^n mod 2 should be 0 for n > 0 and 1 for n = 0.
+    if p == 2:
+        if n == 0:
+            assert modp(n, p) == 1
+        else:
+            assert modp(n, p) == 0, "2^n mod 2 should be 0 for n > 0"
+
+@given(st.integers(min_value=0, max_value=1000000), st.integers(min_value=1, max_value=1000000))
+def test_modp_modulo_arithmetic_property(n, p):
+    # Property: (A * B) % P = ((A % P) * (B % P)) % P
+    # For modp(n, p), we are essentially calculating (2 * 2 * ... * 2) % p (n times)
+    # We can test (2^n % p) == ((2^(n-1) % p) * (2 % p)) % p for n > 0
+    if n > 0:
+        result_n = modp(n, p)
+        result_n_minus_1 = modp(n - 1, p)
+        two_mod_p = 2 % p
+        expected_recursive = (result_n_minus_1 * two_mod_p) % p
+        assert result_n == expected_recursive, "Modulo arithmetic property should hold for n > 0"
+```

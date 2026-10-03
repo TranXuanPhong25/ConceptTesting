@@ -1,0 +1,36 @@
+```python
+
+# Basic Test Cases
+assert x_or_y(7, 34, 12) == 34, "Basic Test Case 1: n is a prime number"
+assert x_or_y(15, 8, 5) == 5, "Basic Test Case 2: n is not a prime number"
+assert x_or_y(2, 10, 20) == 10, "Basic Test Case 3: Smallest prime number (2)"
+assert x_or_y(4, 10, 20) == 20, "Basic Test Case 4: Smallest composite number (4)"
+assert x_or_y(11, -5, 10) == -5, "Basic Test Case 5: Prime with negative x"
+assert x_or_y(10, 5, -10) == -10, "Basic Test Case 6: Composite with negative y"
+assert x_or_y(3, 0, 1) == 0, "Basic Test Case 7: Prime with zero x"
+assert x_or_y(6, 1, 0) == 0, "Basic Test Case 8: Composite with zero y"
+
+# Edge Test Cases
+assert x_or_y(1, 100, 200) == 200, "Edge Test Case 1: n = 1 (not prime)"
+assert x_or_y(0, 5, 10) == 10, "Edge Test Case 2: n = 0 (not prime)"
+assert x_or_y(-5, 10, 20) == 20, "Edge Test Case 3: n is a negative number (not prime)"
+assert x_or_y(23, 123456789, 987654321) == 123456789, "Edge Test Case 4: Large prime"
+assert x_or_y(999999999, 1, 2) == 2, "Edge Test Case 5: Large composite"
+assert x_or_y(29, 3.14, 2.71) == 3.14, "Edge Test Case 6: x and y are floats (prime)"
+assert x_or_y(30, 3.14, 2.71) == 2.71, "Edge Test Case 7: x and y are floats (composite)"
+assert x_or_y(5, None, "Hello") == None, "Edge Test Case 8: x is None"
+assert x_or_y(8, "World", None) == None, "Edge Test Case 9: y is None"
+assert x_or_y(7, "prime", "composite") == "prime", "Edge Test Case 10: x and y are strings (prime)"
+assert x_or_y(9, "prime", "composite") == "composite", "Edge Test Case 11: x and y are strings (composite)"
+
+
+# Large Scale Test Cases (Focus on performance with large numbers, but keep 'n' within a reasonable range for primality testing)
+# Note: Python's default integer size handles large numbers well, and the primality test determines performance here.
+assert x_or_y(999999937, 1, 0) == 1, "Large Scale Test Case 1: A very large prime number" # 999999937 is a prime number
+assert x_or_y(999999999, 1, 0) == 0, "Large Scale Test Case 2: A very large composite number" # 999999999 is divisible by 3 and 9
+assert x_or_y(1000000007, 50, 100) == 50, "Large Scale Test Case 3: Another very large prime" # 1000000007 is a prime
+assert x_or_y(1000000000, 50, 100) == 100, "Large Scale Test Case 4: Another very large composite"
+assert x_or_y(2147483647, 1, 2) == 1, "Large Scale Test Case 5: Max 32-bit signed integer (prime)" # Max 32-bit signed int is a prime
+assert x_or_y(2147483646, 1, 2) == 2, "Large Scale Test Case 6: Max 32-bit signed integer - 1 (composite)"
+
+```

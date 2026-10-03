@@ -1,0 +1,79 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_1(string):
+    result = is_nested(string)
+    
+    # Property: If the string contains '[[', then it must be nested.
+    if '[[' in string:
+        assert result is True, f"String '{string}' contains '[[' and should be considered nested."
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_2(string):
+    result = is_nested(string)
+    
+    # Property: If the string is '[]', it should not be considered nested.
+    if string == '[]':
+        assert result is False, f"String '{string}' is '[]' and should not be considered nested."
+    
+    # Property: If the string is '[][]', it should not be considered nested.
+    if string == '[][]':
+        assert result is False, f"String '{string}' is '[][]' and should not be considered nested."
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_3(string):
+    result = is_nested(string)
+
+    # Property: If the string has an opening bracket without a corresponding closing bracket 
+    # to form a nested structure, it should be false, unless there's another nested part.
+    # This property is a bit tricky to formulate generally without reimplementing the logic.
+    # Let's focus on cases that explicitly lack nesting.
+    if '[]' in string and '[[' not in string and ']]' not in string and string.count('[') == string.count(']'):
+        # This covers cases like '[]', '[][]', but excludes '[[...]]'
+        # A simple non-nested balanced string
+        pass
+    else:
+        # A more direct approach to check for explicit non-nesting
+        stack = []
+        is_truly_nested = False
+        for char in string:
+            if char == '[':
+                if stack: # If there's an open bracket already, and we see another, it's nested
+                    is_truly_nested = True
+                    break
+                stack.append(char)
+            elif char == ']':
+                if stack:
+                    stack.pop()
+        
+        if is_truly_nested:
+            assert result is True, f"String '{string}' contains a nested bracket sequence."
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_4_empty_or_single_bracket(string):
+    result = is_nested(string)
+    
+    # Property: An empty string or a string with only one bracket cannot be nested.
+    if len(string) < 2:
+        assert result is False, f"String '{string}' has length < 2 and cannot be nested."
+    
+    # Property: If the string consists of only opening or only closing brackets, it cannot be nested.
+    if all(char == '[' for char in string) or all(char == ']' for char in string):
+        assert result is False, f"String '{string}' consists of only one type of bracket and cannot be nested."
+
+@given(st.text(alphabet='[]', min_size=0, max_size=100))
+def test_is_nested_property_5_balance_does_not_imply_nesting(string):
+    result = is_nested(string)
+    
+    # Property: A string can be balanced (equal number of '[' and ']') but not nested.
+    if string.count('[') == string.count(']'):
+        # Check for explicit non-nested cases based on examples
+        if string == '[]' or string == '[][]':
+            assert result is False, f"String '{string}' is balanced but explicitly not nested."
+    
+    # Property: A string can be unbalanced and still be nested.
+    if string == '[[]][[':
+        assert result is True, f"String '{string}' is unbalanced but contains nesting."
+
+```

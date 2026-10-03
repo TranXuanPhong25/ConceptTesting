@@ -1,0 +1,73 @@
+```python
+from hypothesis import given, strategies as st
+
+def fib(n: int):
+    """Return n-th Fibonacci number.
+    >>> fib(10)
+    55
+    >>> fib(1)
+    1
+    >>> fib(8)
+    21
+    """
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        a, b = 0, 1
+        for _ in range(n - 1):
+            a, b = b, a + b
+        return b
+
+@given(st.integers(min_value=0, max_value=100))
+def test_fib_non_negativity(n):
+    """Property: Fibonacci numbers should always be non-negative for non-negative input."""
+    result = fib(n)
+    assert result >= 0, f"fib({n}) should be non-negative, but got {result}"
+
+@given(st.integers(min_value=2, max_value=100))
+def test_fib_recursive_property(n):
+    """Property: fib(n) should be equal to fib(n-1) + fib(n-2) for n >= 2."""
+    result = fib(n)
+    expected = fib(n - 1) + fib(n - 2)
+    assert result == expected, f"fib({n}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_fib_increasing_for_n_greater_than_2(n):
+    """Property: For n > 2, fib(n) should be greater than fib(n-1)."""
+    if n > 2:
+        result = fib(n)
+        previous_result = fib(n - 1)
+        assert result > previous_result, f"fib({n}) should be greater than fib({n-1}), but {result} <= {previous_result}"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_fib_zero_and_one_values(n):
+    """Property: fib(0) should be 0 and fib(1) should be 1."""
+    if n == 0:
+        assert fib(n) == 0, f"fib(0) should be 0, but got {fib(n)}"
+    elif n == 1:
+        assert fib(n) == 1, f"fib(1) should be 1, but got {fib(n)}"
+
+@given(st.integers(min_value=0, max_value=30))
+def test_fib_growth_rate(n):
+    """
+    Property: Fibonacci numbers grow exponentially. For n > 4, fib(n) should be greater than 2 * fib(n-2).
+    This property is a simplification of the golden ratio relationship and helps catch significantly incorrect growth.
+    We limit n to avoid overflow with large numbers for this specific check.
+    """
+    if n > 4:
+        result = fib(n)
+        expected_min = fib(n - 1) + fib(n - 2) # The definition of Fibonacci
+        # A rough approximation for exponential growth: fib(n) > 1.5 * fib(n-1) and fib(n) > 2 * fib(n-2)
+        # We use a slightly weaker condition to be robust.
+        assert result > fib(n - 2) * 1.5, f"fib({n})={result} does not show sufficient growth compared to fib({n-2})={fib(n-2)}"
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fib_known_values(n):
+    """Property: Test against a set of known Fibonacci values."""
+    known_fib_sequence = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584, 4181, 6765]
+    if n < len(known_fib_sequence):
+        assert fib(n) == known_fib_sequence[n], f"fib({n}) should be {known_fib_sequence[n]}, but got {fib(n)}"
+
+```

@@ -1,0 +1,44 @@
+```python
+from typing import List, Any
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.from_type(Any)))
+def test_filter_integers_only_returns_integers(values: List[Any]):
+    result = filter_integers(values)
+    for item in result:
+        assert isinstance(item, int), "All returned elements must be integers"
+
+@given(st.lists(st.from_type(Any)))
+def test_filter_integers_preserves_order(values: List[Any]):
+    result = filter_integers(values)
+    
+    # Get the original integers and their order
+    original_integers = [item for item in values if isinstance(item, int)]
+    
+    assert result == original_integers, "The order of integers should be preserved"
+
+@given(st.lists(st.integers()))
+def test_filter_integers_with_only_integers(values: List[int]):
+    result = filter_integers(values)
+    assert result == values, "If all inputs are integers, all should be returned"
+
+@given(st.lists(st.none() | st.booleans() | st.floats() | st.text()))
+def test_filter_integers_with_no_integers(values: List[Any]):
+    result = filter_integers(values)
+    assert result == [], "If no inputs are integers, an empty list should be returned"
+
+@given(st.lists(st.from_type(Any), min_size=1, max_size=100))
+def test_filter_integers_contains_only_integers_from_input(values: List[Any]):
+    result = filter_integers(values)
+    # Every integer in the result must have been present in the original input
+    for item in result:
+        assert item in values, "Every integer in the result must be from the original input list"
+
+@given(st.lists(st.integers() | st.text() | st.floats(allow_nan=False, allow_infinity=False), max_size=100))
+def test_filter_integers_correctly_identifies_non_integers(values: List[Any]):
+    result = filter_integers(values)
+    # Check that any non-integer in the original list is not in the result
+    for item in values:
+        if not isinstance(item, int):
+            assert item not in result, "Non-integer items should not be present in the result"
+```

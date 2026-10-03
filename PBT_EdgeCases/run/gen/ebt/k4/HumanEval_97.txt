@@ -1,0 +1,29 @@
+```python
+
+# Basic Test Cases
+assert multiply(148, 412) == 16, "Basic Test Case 1: Positive integers"
+assert multiply(19, 28) == 72, "Basic Test Case 2: Positive integers"
+assert multiply(2020, 1851) == 0, "Basic Test Case 3: One unit digit is zero"
+assert multiply(5, 7) == 35, "Basic Test Case 4: Single digit numbers"
+assert multiply(10, 20) == 0, "Basic Test Case 5: Both unit digits are zero"
+
+# Edge Test Cases
+assert multiply(14, -15) == 20, "Edge Test Case 1: Negative second integer"
+assert multiply(-14, 15) == 20, "Edge Test Case 2: Negative first integer"
+assert multiply(-14, -15) == 20, "Edge Test Case 3: Both negative integers"
+assert multiply(0, 5) == 0, "Edge Test Case 4: One input is zero"
+assert multiply(5, 0) == 0, "Edge Test Case 5: One input is zero"
+assert multiply(9, 9) == 81, "Edge Test Case 6: Largest single unit digits"
+assert multiply(1, 1) == 1, "Edge Test Case 7: Smallest single unit digits"
+assert multiply(100, 100) == 0, "Edge Test Case 8: Multiples of 100"
+assert multiply(1, 10) == 0, "Edge Test Case 9: One input is 10"
+assert multiply(10, 1) == 0, "Edge Test Case 10: One input is 10"
+
+# Large Scale Test Cases (Focus on correct digit extraction, not performance as inputs are small)
+assert multiply(123456789, 987654321) == 9, "Large Scale Test Case 1: Large positive integers"
+assert multiply(987654321, 123456789) == 9, "Large Scale Test Case 2: Large positive integers (swapped)"
+assert multiply(-123456789, 987654321) == 9, "Large Scale Test Case 3: Large negative and positive integers"
+assert multiply(1000000000, 2000000000) == 0, "Large Scale Test Case 4: Very large numbers ending in zero"
+assert multiply(1999999999, 2999999999) == 81, "Large Scale Test Case 5: Very large numbers ending in 9"
+
+```

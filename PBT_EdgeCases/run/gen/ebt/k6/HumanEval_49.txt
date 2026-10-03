@@ -1,0 +1,39 @@
+```python
+
+# Basic Test Cases
+assert modp(3, 5) == 3, "Basic Test Case 1: n=3, p=5"
+assert modp(1101, 101) == 2, "Basic Test Case 2: n=1101, p=101"
+assert modp(0, 101) == 1, "Basic Test Case 3: n=0, p=101 (2^0 = 1)"
+assert modp(3, 11) == 8, "Basic Test Case 4: n=3, p=11"
+assert modp(100, 101) == 1, "Basic Test Case 5: n=100, p=101"
+assert modp(1, 7) == 2, "Basic Test Case 6: n=1, p=7 (2^1 = 2)"
+assert modp(2, 3) == 1, "Basic Test Case 7: n=2, p=3 (2^2 = 4, 4 mod 3 = 1)"
+assert modp(4, 5) == 1, "Basic Test Case 8: n=4, p=5 (2^4 = 16, 16 mod 5 = 1)"
+
+# Edge Test Cases
+assert modp(0, 2) == 1, "Edge Test Case 1: n=0, p=2 (p is prime, 2^0 mod 2 = 1)"
+assert modp(1, 2) == 0, "Edge Test Case 2: n=1, p=2 (2^1 mod 2 = 0)"
+assert modp(10, 2) == 0, "Edge Test Case 3: n=10, p=2 (2^10 mod 2 = 0)"
+assert modp(0, 1) == 0, "Edge Test Case 4: n=0, p=1 (Any number mod 1 is 0, except when 2^0 = 1 and 1 mod 1 is 0)" # This case might depend on implementation details, but usually 1 % 1 == 0
+assert modp(5, 1) == 0, "Edge Test Case 5: n=5, p=1 (2^5 mod 1 = 0)"
+assert modp(1, 1) == 0, "Edge Test Case 6: n=1, p=1 (2^1 mod 1 = 0)"
+assert modp(0, 10**9 + 7) == 1, "Edge Test Case 7: n=0, very large prime p"
+assert modp(1, 10**9 + 7) == 2, "Edge Test Case 8: n=1, very large prime p"
+assert modp(2, 10**9 + 7) == 4, "Edge Test Case 9: n=2, very large prime p"
+assert modp(10, 10) == 4, "Edge Test Case 10: n=10, p=10 (2^10 = 1024, 1024 mod 10 = 4)" # p is not prime
+assert modp(1000, 2) == 0, "Edge Test Case 11: Large n, p=2"
+
+# Large Scale Test Cases
+# Note: For very large 'n', a naive iterative approach will be too slow.
+# The `modp` function implies an efficient modular exponentiation algorithm.
+# We test with larger 'n' values that would challenge a naive approach but be fast for a good implementation.
+assert modp(10**5, 7) == 4, "Large Scale Test Case 1: Large n, small p"
+assert modp(10**6, 13) == 9, "Large Scale Test Case 2: Larger n, small p"
+assert modp(10**7, 101) == 95, "Large Scale Test Case 3: Very large n, medium p"
+assert modp(10**9, 79) == 47, "Large Scale Test Case 4: Extremely large n, medium p"
+# Using a large prime for p to avoid issues with non-prime moduli if the implementation isn't robust for them
+assert modp(10**10, 10**9 + 7) == 204859846, "Large Scale Test Case 5: Extremely large n, very large prime p"
+assert modp(10**18, 10**9 + 7) == 545939257, "Large Scale Test Case 6: Astronomical n, very large prime p"
+assert modp(10**100, 10**9 + 7) == 14619717, "Large Scale Test Case 7: Extremely large n (string-like), very large prime p" # Assuming n can be this large and the implementation handles it
+
+```

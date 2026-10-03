@@ -1,0 +1,81 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(st.tuples(st.integers(), st.integers()).map(lambda x: tuple(sorted(x))),
+       st.tuples(st.integers(), st.integers()).map(lambda x: tuple(sorted(x))))
+def test_intersection_length_is_prime(interval1, interval2):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Calculate the expected intersection
+    inter_start = max(start1, start2)
+    inter_end = min(end1, end2)
+
+    if inter_start > inter_end:
+        # No intersection
+        expected_result = "NO"
+    else:
+        # Intersection exists, calculate its length
+        length = inter_end - inter_start + 1
+        if is_prime(length):
+            expected_result = "YES"
+        else:
+            expected_result = "NO"
+    
+    result = intersection(interval1, interval2)
+    assert result == expected_result, f"Intervals: {interval1}, {interval2}. Expected: {expected_result}, Got: {result}"
+
+@given(st.tuples(st.integers(), st.integers()).map(lambda x: tuple(sorted(x))),
+       st.tuples(st.integers(), st.integers()).map(lambda x: tuple(sorted(x))))
+def test_intersection_no_overlap_returns_no(interval1, interval2):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # If the intervals do not overlap, the result should always be "NO"
+    if end1 < start2 or end2 < start1:
+        result = intersection(interval1, interval2)
+        assert result == "NO", f"Non-overlapping intervals {interval1}, {interval2} should return 'NO'"
+
+@given(st.tuples(st.integers(), st.integers()).map(lambda x: tuple(sorted(x, reverse=False))),
+       st.integers(min_value=1, max_value=100))
+def test_intersection_with_single_point_overlap(interval, offset):
+    start, end = interval
+    
+    # Create an interval that overlaps at a single point
+    interval2_start = end
+    interval2_end = end + offset
+    
+    # Expected intersection length for (start, end) and (end, end + offset) is 1 (the point 'end')
+    # Length of 1 is not prime, so result should be "NO"
+    result = intersection(interval, (interval2_start, interval2_end))
+    assert result == "NO", f"Intervals: {interval}, ({interval2_start}, {interval2_end}). Expected: NO, Got: {result}"
+    
+    # Create an interval that overlaps at a single point (start, start)
+    interval3_start = start - offset
+    interval3_end = start
+    
+    # Expected intersection length for (start, end) and (start - offset, start) is 1 (the point 'start')
+    # Length of 1 is not prime, so result should be "NO"
+    result = intersection(interval, (interval3_start, interval3_end))
+    assert result == "NO", f"Intervals: {interval}, ({interval3_start}, {interval3_end}). Expected: NO, Got: {result}"
+
+@given(st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(lambda x: tuple(sorted(x))))
+def test_intersection_with_itself(interval):
+    # The intersection of an interval with itself is the interval itself.
+    # We check if its length is prime.
+    start, end = interval
+    length = end - start + 1
+    
+    expected_result = "YES" if is_prime(length) else "NO"
+    
+    result = intersection(interval, interval)
+    assert result == expected_result, f"Interval: {interval}, intersecting with itself. Expected: {expected_result}, Got: {result}"
+```

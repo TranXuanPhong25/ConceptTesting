@@ -1,0 +1,55 @@
+```python
+# Basic Test Cases
+assert fix_spaces("Example") == "Example", "Basic Test Case 1: No spaces"
+assert fix_spaces("Example 1") == "Example_1", "Basic Test Case 2: Single space"
+assert fix_spaces(" Example 2") == "_Example_2", "Basic Test Case 3: Leading single space"
+assert fix_spaces("Example 3 ") == "Example_3_", "Basic Test Case 4: Trailing single space"
+assert fix_spaces("Example   3") == "Example-3", "Basic Test Case 5: Three consecutive spaces in middle"
+assert fix_spaces(" Example   3") == "_Example-3", "Basic Test Case 6: Leading single space, then three consecutive"
+assert fix_spaces("Example   3 ") == "Example-3_", "Basic Test Case 7: Three consecutive spaces, then single trailing"
+assert fix_spaces(" Example   ") == "_Example-", "Basic Test Case 8: Leading single, then trailing three consecutive"
+assert fix_spaces("a b c") == "a_b_c", "Basic Test Case 9: Multiple single spaces"
+
+# Edge Test Cases
+assert fix_spaces("") == "", "Edge Test Case 1: Empty string"
+assert fix_spaces(" ") == "_", "Edge Test Case 2: Single space string"
+assert fix_spaces("  ") == "__", "Edge Test Case 3: Two consecutive spaces string"
+assert fix_spaces("   ") == "-", "Edge Test Case 4: Three consecutive spaces string"
+assert fix_spaces("    ") == "-", "Edge Test Case 5: Four consecutive spaces string"
+assert fix_spaces("     ") == "-", "Edge Test Case 6: Five consecutive spaces string"
+assert fix_spaces("Hello World") == "Hello_World", "Edge Test Case 7: String with standard spaces"
+assert fix_spaces("  Hello  World  ") == "__Hello__World__", "Edge Test Case 8: Leading/trailing and internal two spaces"
+assert fix_spaces("   Hello   World   ") == "-Hello-World-", "Edge Test Case 9: Leading/trailing and internal three spaces"
+assert fix_spaces("Hello    World") == "Hello-World", "Edge Test Case 10: Four consecutive spaces in middle"
+assert fix_spaces("   Hello World") == "-Hello_World", "Edge Test Case 11: Leading three spaces, then single"
+assert fix_spaces("Hello World   ") == "Hello_World-", "Edge Test Case 12: Trailing three spaces, then single"
+assert fix_spaces("   Hello   World   Test   ") == "-Hello-World-Test-", "Edge Test Case 13: Multiple groups of three or more spaces"
+assert fix_spaces("a") == "a", "Edge Test Case 14: Single character, no space"
+assert fix_spaces(" a ") == "_a_", "Edge Test Case 15: Single character with leading and trailing single space"
+
+# Large Scale Test Cases
+long_string_single_spaces = "a " * 1000 + "a"
+expected_long_string_single_spaces = "a_" * 1000 + "a"
+assert fix_spaces(long_string_single_spaces) == expected_long_string_single_spaces, "Large Scale Test Case 1: Long string with single spaces"
+
+long_string_three_spaces = "a   " * 500 + "a"
+expected_long_string_three_spaces = "a-" * 500 + "a"
+assert fix_spaces(long_string_three_spaces) == expected_long_string_three_spaces, "Large Scale Test Case 2: Long string with three consecutive spaces"
+
+long_string_mixed_spaces = "a b   c  d     e" * 100 + "f"
+expected_long_string_mixed_spaces = "a_b-c__d-e" * 100 + "f"
+assert fix_spaces(long_string_mixed_spaces) == expected_long_string_mixed_spaces, "Large Scale Test Case 3: Long string with mixed single and multiple spaces"
+
+long_string_no_spaces = "abcdefghijklmnopqrstuvwxyz" * 1000
+assert fix_spaces(long_string_no_spaces) == long_string_no_spaces, "Large Scale Test Case 4: Long string with no spaces"
+
+long_string_only_spaces = " " * 1000
+assert fix_spaces(long_string_only_spaces) == "-", "Large Scale Test Case 5: Long string with only more than 2 consecutive spaces"
+
+long_string_only_two_spaces = "  " * 500
+assert fix_spaces(long_string_only_two_spaces) == "__" * 500, "Large Scale Test Case 6: Long string with only two consecutive spaces"
+
+long_string_alternating_spaces = "a   b  c d" * 500
+expected_long_string_alternating_spaces = "a-b__c_d" * 500
+assert fix_spaces(long_string_alternating_spaces) == expected_long_string_alternating_spaces, "Large Scale Test Case 7: Long string with alternating space patterns"
+```

@@ -1,0 +1,72 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_contains_one_and_n_if_odd(n):
+    result = get_odd_collatz(n)
+
+    # Property 1: The number 1 should always be in the list for any positive n.
+    assert 1 in result, f"For n={n}, 1 should always be in the result."
+
+    # Property 2: If n itself is odd, it should be in the list.
+    if n % 2 != 0:
+        assert n in result, f"For odd n={n}, n should be in the result."
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_is_sorted_and_contains_only_odd_numbers(n):
+    result = get_odd_collatz(n)
+
+    # Property 3: The returned list should be sorted in increasing order.
+    assert all(result[i] <= result[i+1] for i in range(len(result) - 1)), \
+        f"For n={n}, the result list is not sorted: {result}"
+
+    # Property 4: All numbers in the result list should be odd.
+    assert all(x % 2 != 0 for x in result), \
+        f"For n={n}, the result list contains even numbers: {result}"
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_deterministic(n):
+    result1 = get_odd_collatz(n)
+    result2 = get_odd_collatz(n)
+
+    # Property 5: The function should be deterministic, producing the same output for the same input.
+    assert result1 == result2, f"For n={n}, the function is not deterministic."
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_all_elements_are_part_of_collatz_sequence(n):
+    result = get_odd_collatz(n)
+
+    # Property 6: All numbers in the result must be part of the actual Collatz sequence for n.
+    collatz_sequence_set = set()
+    current = n
+    while current != 1:
+        collatz_sequence_set.add(current)
+        if current % 2 == 0:
+            current //= 2
+        else:
+            current = 3 * current + 1
+    collatz_sequence_set.add(1)
+
+    for odd_num in result:
+        assert odd_num in collatz_sequence_set, \
+            f"For n={n}, number {odd_num} in result is not part of its Collatz sequence: {collatz_sequence_set}"
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_get_odd_collatz_no_missing_odd_elements_from_collatz_sequence(n):
+    result = set(get_odd_collatz(n))
+
+    # Property 7: All odd numbers from the actual Collatz sequence for n should be present in the result.
+    collatz_sequence_actual_odds = set()
+    current = n
+    while current != 1:
+        if current % 2 != 0:
+            collatz_sequence_actual_odds.add(current)
+        if current % 2 == 0:
+            current //= 2
+        else:
+            current = 3 * current + 1
+    collatz_sequence_actual_odds.add(1) # 1 is always odd and in the sequence
+
+    assert collatz_sequence_actual_odds == result, \
+        f"For n={n}, the result does not contain all odd numbers from its Collatz sequence. Missing/Extra: {collatz_sequence_actual_odds.symmetric_difference(result)}"
+```

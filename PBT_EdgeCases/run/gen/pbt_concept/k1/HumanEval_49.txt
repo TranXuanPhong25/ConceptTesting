@@ -1,0 +1,63 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_1(n, p):
+    """
+    Property 1: The result should always be less than p.
+    """
+    result = modp(n, p)
+    assert 0 <= result < p, f"Result {result} should be between 0 and {p-1}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_2(n, p):
+    """
+    Property 2: modp(n, p) should be equivalent to (2**n) % p.
+    This tests the core functionality against Python's built-in modulo operator.
+    """
+    result = modp(n, p)
+    expected = pow(2, n, p)  # pow(base, exp, mod) is efficient for modular exponentiation
+    assert result == expected, f"modp({n}, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=1000))
+def test_modp_property_3_p_is_1(n):
+    """
+    Property 3: If p is 1, the result should always be 0 (since x % 1 is always 0).
+    """
+    result = modp(n, 1)
+    assert result == 0, f"modp({n}, 1) should be 0, but got {result}"
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_4_cyclic_behavior(n, p):
+    """
+    Property 4: For a given p, the sequence of results modp(n, p) should eventually repeat.
+    Specifically, modp(n, p) * 2 % p should be equal to modp(n+1, p).
+    """
+    if n > 0: # n=0 is base case, so start from n=1 for this property
+        result_n = modp(n, p)
+        result_n_plus_1 = modp(n + 1, p)
+        assert (result_n * 2) % p == result_n_plus_1, \
+            f"Expected (modp({n}, {p}) * 2) % {p} to be modp({n+1}, {p})"
+
+@given(st.integers(min_value=0, max_value=1000))
+def test_modp_property_5_p_is_2(n):
+    """
+    Property 5: If p is 2, the result should be 0 if n >= 1, and 1 if n = 0.
+    2^n % 2 is 0 for n >= 1, and 2^0 % 2 is 1 % 2 = 1.
+    """
+    result = modp(n, 2)
+    expected = 0 if n >= 1 else 1
+    assert result == expected, f"modp({n}, 2) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_property_6_consistency_with_pow(n, p):
+    """
+    Property 6: The result should be consistent with the standard library's pow(base, exp, mod) function.
+    This is a strong consistency check.
+    """
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"modp({n}, {p}) expected {expected} but got {result}"
+
+```

@@ -1,0 +1,88 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)),
+       st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)))
+def test_intersection_property(interval1, interval2):
+    # Ensure interval starts are less than or equal to their ends
+    interval1 = tuple(sorted(interval1))
+    interval2 = tuple(sorted(interval2))
+
+    result = intersection(interval1, interval2)
+
+    # Calculate the actual intersection
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start > intersection_end:
+        # No intersection
+        expected_output = "NO"
+    else:
+        intersection_length = intersection_end - intersection_start + 1
+        if is_prime(intersection_length):
+            expected_output = "YES"
+        else:
+            expected_output = "NO"
+
+    assert result == expected_output, f"For intervals {interval1} and {interval2}, expected {expected_output}, got {result}"
+
+@given(st.integers(-100, 100), st.integers(-100, 100))
+def test_identity_intersection(start, end):
+    # Property: Intersection of an interval with itself should always be based on its length
+    if start > end: # Ensure valid interval
+        start, end = end, start
+    
+    interval = (start, end)
+    result = intersection(interval, interval)
+    
+    length = end - start + 1
+    expected = "YES" if is_prime(length) else "NO"
+    
+    assert result == expected, f"Intersection of {interval} with itself: Expected {expected}, got {result}"
+
+@given(st.tuples(st.integers(-100, 100), st.integers(-100, 100)),
+       st.tuples(st.integers(-100, 100), st.integers(-100, 100)))
+def test_commutative_property(interval1, interval2):
+    # Ensure interval starts are less than or equal to their ends
+    interval1 = tuple(sorted(interval1))
+    interval2 = tuple(sorted(interval2))
+
+    # Property: The order of intervals should not affect the result
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, "Intersection should be commutative"
+
+@given(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100))
+def test_no_intersection_property(val1, val2):
+    # Property: If intervals are clearly disjoint, result should be "NO"
+    # Ensure val1 < val2 to create a gap
+    if val1 >= val2:
+        val1, val2 = val2 - 1, val1 + 1 # Create a guaranteed gap
+
+    interval1 = (val1, val1)
+    interval2 = (val2, val2)
+
+    result = intersection(interval1, interval2)
+    assert result == "NO", f"Disjoint intervals {interval1}, {interval2} should result in 'NO'"
+
+@given(st.integers(min_value=-100, max_value=100))
+def test_single_point_intersection(point):
+    # Property: An intersection of a single point should have length 1, which is not prime
+    interval1 = (point, point)
+    interval2 = (point, point)
+    
+    result = intersection(interval1, interval2)
+    assert result == "NO", f"Single point intersection at {point} should have length 1, hence 'NO'"
+```

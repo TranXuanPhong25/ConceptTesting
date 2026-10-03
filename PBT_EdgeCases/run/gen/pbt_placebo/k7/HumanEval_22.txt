@@ -1,0 +1,66 @@
+```python
+from typing import List, Any
+from hypothesis import given, strategies as st
+
+@given(st.lists(st.one_of(st.integers(), st.floats(), st.text(), st.booleans(), st.dictionaries(st.text(), st.integers()), st.lists(st.integers()))))
+def test_filter_integers_only_returns_integers(values):
+    """
+    Property: The function should only return elements that are integers.
+    """
+    result = filter_integers(values)
+    assert all(isinstance(x, int) for x in result), "All elements in the result should be integers"
+
+@given(st.lists(st.one_of(st.integers(), st.floats(), st.text(), st.booleans(), st.dictionaries(st.text(), st.integers()), st.lists(st.integers()))))
+def test_filter_integers_preserves_order(values):
+    """
+    Property: The order of the integers in the original list should be preserved in the filtered list.
+    """
+    result = filter_integers(values)
+    original_integers = [x for x in values if isinstance(x, int)]
+    assert result == original_integers, "The order of integers should be preserved"
+
+@given(st.lists(st.integers()))
+def test_filter_integers_all_integers_list(values):
+    """
+    Property: If the input list contains only integers, the function should return the same list.
+    """
+    result = filter_integers(values)
+    assert result == values, "If the input list contains only integers, the function should return the same list"
+
+@given(st.lists(st.one_of(st.floats(), st.text(), st.booleans(), st.dictionaries(st.text(), st.integers()), st.lists(st.integers()))))
+def test_filter_integers_no_integers_list(values):
+    """
+    Property: If the input list contains no integers, the function should return an empty list.
+    """
+    result = filter_integers(values)
+    assert result == [], "If the input list contains no integers, the function should return an empty list"
+
+@given(st.lists(st.one_of(st.integers(min_value=-1000000, max_value=1000000), 
+                          st.floats(allow_nan=False, allow_infinity=False), 
+                          st.text(), 
+                          st.booleans()), max_size=1000))
+def test_filter_integers_completeness(values):
+    """
+    Property: Every integer from the input list should be present in the output list.
+    """
+    result = filter_integers(values)
+    expected_integers = [item for item in values if isinstance(item, int)]
+    assert sorted(result) == sorted(expected_integers), "All integers from the input should be present in the output"
+    assert len(result) == len(expected_integers), "The number of integers should match"
+
+@given(st.lists(st.just(None), min_size=1, max_size=100))
+def test_filter_integers_list_of_nones(values):
+    """
+    Property: A list of None values should result in an empty list.
+    """
+    result = filter_integers(values)
+    assert result == [], "A list of None values should result in an empty list"
+
+@given(st.lists(st.just(""), min_size=1, max_size=100))
+def test_filter_integers_list_of_empty_strings(values):
+    """
+    Property: A list of empty strings should result in an empty list.
+    """
+    result = filter_integers(values)
+    assert result == [], "A list of empty strings should result in an empty list"
+```

@@ -1,0 +1,134 @@
+```python
+import datetime
+from hypothesis import given, strategies as st
+
+@given(date_str=st.text(min_size=0, max_size=20))
+def test_valid_date_format(date_str):
+    if not date_str or len(date_str) != 10 or date_str[2] != '-' or date_str[5] != '-':
+        assert not valid_date(date_str), "Invalid format should return False"
+    else:
+        try:
+            month = int(date_str[0:2])
+            day = int(date_str[3:5])
+            year = int(date_str[6:10])
+
+            # Check if parsing to int is successful before further validation
+            if not (1 <= month <= 12):
+                assert not valid_date(date_str), "Invalid month should return False"
+            elif month in [1, 3, 5, 7, 8, 10, 12] and not (1 <= day <= 31):
+                assert not valid_date(date_str), f"Invalid day for month {month} should return False"
+            elif month in [4, 6, 9, 11] and not (1 <= day <= 30):
+                assert not valid_date(date_str), f"Invalid day for month {month} should return False"
+            elif month == 2:
+                # Basic leap year check for day 29, but not full validation
+                # The function itself handles the full day validation logic
+                if not (1 <= day <= 29):
+                    assert not valid_date(date_str), f"Invalid day for month {month} should return False"
+                
+                # Check for 30th or 31st February
+                if day > 29:
+                    assert not valid_date(date_str), "February cannot have more than 29 days"
+                elif day == 29: # If day is 29, check if it's a valid leap year
+                    if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0):
+                        assert valid_date(date_str) == True, "Valid February 29th in a leap year should return True"
+                    else:
+                        assert valid_date(date_str) == False, "Invalid February 29th in a non-leap year should return False"
+
+            elif valid_date(date_str): # If basic format and month/day checks pass, and valid_date returns True
+                # Construct a datetime object to verify correctness
+                datetime.date(year, month, day)
+                assert True, "Valid date string should return True"
+            else: # If valid_date returns False, it should indeed be invalid
+                 try: # Attempt to create a datetime object, if it fails, valid_date should also fail
+                    datetime.date(year, month, day)
+                    assert False, "valid_date returned False for what seems to be a valid date"
+                 except ValueError:
+                    assert True, "valid_date returned False for an invalid date (as expected by datetime)"
+
+        except ValueError:
+            assert not valid_date(date_str), "Non-integer parts in date string should return False"
+
+
+@given(month=st.integers(min_value=1, max_value=12),
+       day=st.integers(min_value=1, max_value=31),
+       year=st.integers(min_value=1, max_value=9999))
+def test_valid_date_consistency_with_datetime(month, day, year):
+    # This test focuses on the correctness of the day and month logic based on standard calendar
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+
+    try:
+        # Python's datetime library provides a ground truth for date validity
+        datetime.date(year, month, day)
+        expected_result = True
+    except ValueError:
+        expected_result = False
+
+    result = valid_date(date_str)
+    assert result == expected_result, f"For date '{date_str}', expected {expected_result}, but got {result}"
+
+@given(month=st.integers(min_value=1, max_value=12),
+       day=st.integers(min_value=1, max_value=31),
+       year=st.integers(min_value=1, max_value=9999))
+def test_valid_date_edge_cases_and_boundaries(month, day, year):
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+
+    # Property 1: Date string is not empty (already covered by generation)
+
+    # Property 2 & 3: Days and Months ranges
+    if not (1 <= month <= 12):
+        assert not valid_date(date_str), f"Month {month} out of range should be False"
+    elif month in [1, 3, 5, 7, 8, 10, 12] and not (1 <= day <= 31):
+        assert not valid_date(date_str), f"Day {day} for month {month} out of range should be False"
+    elif month in [4, 6, 9, 11] and not (1 <= day <= 30):
+        assert not valid_date(date_str), f"Day {day} for month {month} out of range should be False"
+    elif month == 2:
+        is_leap = (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)
+        max_feb_day = 29 if is_leap else 28
+        if not (1 <= day <= max_feb_day):
+            assert not valid_date(date_str), f"Day {day} for February {year} out of range (leap: {is_leap}) should be False"
+        else:
+            assert valid_date(date_str), f"Valid February date {date_str} should be True"
+    else: # If all numerical checks pass based on date rules, valid_date should return True
+        try:
+            datetime.date(year, month, day) # Verify with datetime as a sanity check
+            assert valid_date(date_str) == True, f"Valid date {date_str} should be True"
+        except ValueError:
+            assert valid_date(date_str) == False, f"Invalid date {date_str} (by datetime) should be False"
+
+
+@given(date_str=st.from_regex(r'^\d{2}[-/\.]\d{2}[-/\.]\d{4}$', fullmatch=True))
+def test_valid_date_separator(date_str):
+    # Test for correct separator 'mm-dd-yyyy'
+    if date_str[2] != '-' or date_str[5] != '-':
+        assert not valid_date(date_str), f"Date '{date_str}' with incorrect separator should return False"
+    # Note: If separators are correct, this test doesn't check validity of month/day/year,
+    # just that the separator rule is enforced. The other tests handle the values.
+
+
+@given(month=st.integers(min_value=-10, max_value=20),
+       day=st.integers(min_value=-10, max_value=40),
+       year=st.integers(min_value=-10, max_value=10000))
+def test_valid_date_out_of_range_components(month, day, year):
+    # Test for components outside standard ranges (e.g., month 0, 13; day 0, 32)
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+
+    # If valid_date returns True, ensure it's truly valid by datetime
+    if valid_date(date_str):
+        try:
+            datetime.date(year, month, day)
+            assert True, f"'{date_str}' is valid according to both function and datetime"
+        except ValueError:
+            assert False, f"'{date_str}' was considered valid by function but is invalid by datetime"
+    else:
+        # If valid_date returns False, ensure it's truly invalid or out of format
+        try:
+            datetime.date(year, month, day)
+            # If datetime.date succeeds, but valid_date fails, there's an inconsistency (e.g., format)
+            if not (1 <= month <= 12 and 1 <= day <= 31 and 1 <= year <= 9999) or len(f"{month:02d}-{day:02d}-{year:04d}") != 10:
+                assert True, f"'{date_str}' is invalid due to format or specific rules, correctly handled by function"
+            else:
+                assert False, f"'{date_str}' is valid by datetime but function returned False without clear reason"
+        except ValueError:
+            assert True, f"'{date_str}' is invalid by datetime, and function correctly returned False"
+
+```

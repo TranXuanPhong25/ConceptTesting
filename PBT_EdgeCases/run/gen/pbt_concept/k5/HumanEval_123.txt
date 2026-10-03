@@ -1,0 +1,70 @@
+```python
+from hypothesis import given, strategies as st
+from typing import List
+
+def get_odd_collatz(n):
+    """
+    Given a positive integer n, return a sorted list that has the odd numbers in collatz sequence.
+
+    The Collatz conjecture is a conjecture in mathematics that concerns a sequence defined
+    as follows: start with any positive integer n. Then each term is obtained from the 
+    previous term as follows: if the previous term is even, the next term is one half of 
+    the previous term. If the previous term is odd, the next term is 3 times the previous
+    term plus 1. The conjecture is that no matter what value of n, the sequence will always reach 1.
+
+    Note: 
+        1. Collatz(1) is [1].
+        2. returned list sorted in increasing order.
+
+    For example:
+    get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5.
+    """
+    sequence = set()
+    current = n
+    while current != 1:
+        if current % 2 == 1:
+            sequence.add(current)
+            current = 3 * current + 1
+        else:
+            current = current // 2
+    sequence.add(1)  # Always add 1 to the sequence
+    return sorted(list(sequence))
+
+@given(st.integers(min_value=1, max_value=100000))
+@example(n=1)
+@example(n=2)
+@example(n=3)
+@example(n=5)
+@example(n=10000)
+def test_odd_numbers_are_in_collatz_sequence(n):
+    result = get_odd_collatz(n)
+    
+    # Property 1: All numbers in the result list must be odd.
+    assert all(num % 2 == 1 for num in result), "All numbers in the result list must be odd."
+
+    # Property 2: The result list must be sorted in increasing order.
+    assert result == sorted(result), "The result list must be sorted in increasing order."
+
+    # Property 3: 1 must always be present in the result list for any positive n.
+    assert 1 in result, "1 must always be present in the result list."
+
+    # Property 4: If n is odd, n itself should be in the result.
+    if n % 2 == 1:
+        assert n in result, f"If n is odd ({n}), it should be in the result list."
+    
+    # Property 5: All elements in the result must be part of the Collatz sequence for n.
+    # We can reconstruct the actual Collatz sequence and check if odd elements match.
+    collatz_sequence_full = []
+    current_val = n
+    while current_val != 1:
+        collatz_sequence_full.append(current_val)
+        if current_val % 2 == 0:
+            current_val //= 2
+        else:
+            current_val = 3 * current_val + 1
+    collatz_sequence_full.append(1)
+
+    expected_odd = sorted(list(set(x for x in collatz_sequence_full if x % 2 == 1)))
+    assert result == expected_odd, f"The result should contain all odd numbers from the Collatz sequence of {n} and nothing else."
+
+```

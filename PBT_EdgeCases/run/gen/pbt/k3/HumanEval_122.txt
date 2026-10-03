@@ -1,0 +1,124 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_property_sum_two_digit(data):
+    arr, k = data
+    result = add_elements(arr, k)
+
+    expected_sum = 0
+    for i in range(min(k, len(arr))):  # Iterate up to k elements, or end of array
+        num_str = str(abs(arr[i]))
+        if len(num_str) <= 2:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, "The sum should only include elements with at most two digits from the first k elements."
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_property_all_two_digit(data):
+    arr, k = data
+    result = add_elements(arr, k)
+
+    # If all numbers in the first k elements have at most two digits,
+    # the result should be the sum of those k elements.
+    expected_sum = sum(arr[:k])
+
+    assert result == expected_sum, "If all numbers in the first k elements have at most two digits, the result should be their sum."
+
+@given(
+    st.lists(st.integers(min_value=100, max_value=10000), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_property_no_two_digit(data):
+    arr, k = data
+    result = add_elements(arr, k)
+
+    # If no number in the first k elements has at most two digits,
+    # the result should be 0.
+    assert result == 0, "If no number in the first k elements has at most two digits, the result should be 0."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_property_k_equals_one(data):
+    arr, _ = data
+    k = 1
+    result = add_elements(arr, k)
+
+    expected_sum = 0
+    num_str = str(abs(arr[0]))
+    if len(num_str) <= 2:
+        expected_sum = arr[0]
+
+    assert result == expected_sum, "When k=1, the result should be the first element if it has at most two digits, otherwise 0."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.just(len(arr)))
+    )
+)
+def test_add_elements_property_k_equals_len_arr(data):
+    arr, k = data
+    result = add_elements(arr, k)
+
+    expected_sum = 0
+    for num in arr:
+        num_str = str(abs(num))
+        if len(num_str) <= 2:
+            expected_sum += num
+
+    assert result == expected_sum, "When k equals the length of the array, the result should be the sum of all two-digit elements in the array."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_property_sum_is_integer(data):
+    arr, k = data
+    result = add_elements(arr, k)
+
+    assert isinstance(result, int), "The returned sum must be an integer."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_property_sum_with_zeros(data):
+    arr, k = data
+    # Introduce some zeros within the first k elements, and beyond
+    original_arr = list(arr) # Make a copy to modify
+    for _ in range(min(k, 5)): # Add up to 5 zeros in the first k
+        if len(original_arr) > 0:
+            idx = st.integers(min_value=0, max_value=min(k-1, len(original_arr)-1)).example()
+            original_arr[idx] = 0
+    
+    # Add zeros beyond k as well, to ensure they don't affect the sum
+    for _ in range(min(len(original_arr) - k, 5)):
+        if len(original_arr) > k:
+            idx = st.integers(min_value=k, max_value=len(original_arr)-1).example()
+            original_arr[idx] = 0
+
+    result = add_elements(original_arr, k)
+
+    expected_sum = 0
+    for i in range(min(k, len(original_arr))):
+        num_str = str(abs(original_arr[i]))
+        if len(num_str) <= 2:
+            expected_sum += original_arr[i]
+
+    assert result == expected_sum, "The function should correctly handle zeros within the first k elements."
+
+```

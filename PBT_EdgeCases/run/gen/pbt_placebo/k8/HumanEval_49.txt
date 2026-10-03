@@ -1,0 +1,57 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=1, max_value=1000))
+def test_modp_result_range(n, p):
+    # Property: The result of modp(n, p) should always be in the range [0, p-1].
+    result = modp(n, p)
+    assert 0 <= result < p, f"Result {result} is not in the expected range [0, {p-1}]"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=1, max_value=1000))
+def test_modp_zero_n(n, p):
+    # Property: modp(0, p) should always return 1 for any p > 0.
+    # We test this specific case within the generated inputs.
+    if n == 0:
+        result = modp(n, p)
+        assert result == 1, f"modp(0, {p}) should be 1, but got {result}"
+
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=1, max_value=1000))
+def test_modp_vs_pow_operator(n, p):
+    # Property: modp(n, p) should be equivalent to (2**n) % p.
+    # This directly checks the core mathematical property.
+    result = modp(n, p)
+    expected = pow(2, n, p)  # Use built-in pow with three arguments for modular exponentiation
+    assert result == expected, f"modp({n}, {p}) got {result}, expected {expected}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=1, max_value=1000))
+def test_modp_p_is_one(n, p):
+    # Property: If p is 1, the result should always be 0, as any number modulo 1 is 0.
+    if p == 1:
+        result = modp(n, p)
+        assert result == 0, f"modp({n}, 1) should be 0, but got {result}"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_modp_n_is_one(n):
+    # Property: modp(n, 2) should alternate between 0 and 1 depending on n for n > 0.
+    # If n = 0, modp(0, 2) should be 1.
+    result = modp(n, 2)
+    if n == 0:
+        assert result == 1, f"modp(0, 2) should be 1, but got {result}"
+    else:
+        # 2^n mod 2 is 0 for n > 0
+        assert result == 0, f"modp({n}, 2) should be 0 for n > 0, but got {result}"
+
+@given(
+    st.integers(min_value=0, max_value=100),
+    st.integers(min_value=1, max_value=1000)
+)
+def test_modp_recursive_property(n, p):
+    # Property: modp(n+1, p) should be equivalent to (modp(n, p) * 2) % p
+    if n < 100:  # Avoid overflowing n for n+1 if max_value is 100
+        result_n_plus_1 = modp(n + 1, p)
+        result_n = modp(n, p)
+        expected_n_plus_1 = (result_n * 2) % p
+        assert result_n_plus_1 == expected_n_plus_1, \
+            f"modp({n+1}, {p}) should be ({result_n} * 2) % {p} which is {expected_n_plus_1}, but got {result_n_plus_1}"
+
+```

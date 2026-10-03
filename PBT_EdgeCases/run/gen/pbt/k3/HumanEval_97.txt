@@ -1,0 +1,64 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Extract the absolute unit digits
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    # The property is that the result should be the product of the unit digits
+    assert result == unit_digit_a * unit_digit_b, "The result should be the product of the unit digits of the input numbers."
+
+@given(st.integers(), st.integers())
+def test_multiply_commutative(a, b):
+    # Property: The order of arguments should not affect the result.
+    # This is a property of multiplication in general, and unit digit multiplication should follow it.
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, "The function should be commutative (order of arguments should not matter)."
+
+@given(st.integers(), st.integers(min_value=0, max_value=9))
+def test_multiply_with_single_digit(a, single_digit_b):
+    # Property: If one number is a single digit, the unit digit of the product should be consistent.
+    result = multiply(a, single_digit_b)
+    unit_digit_a = abs(a) % 10
+    assert result == unit_digit_a * single_digit_b, "Multiplying by a single digit should yield the product of its unit digit and the other's unit digit."
+
+@given(st.integers(min_value=-100000, max_value=100000), st.integers(min_value=-100000, max_value=100000))
+def test_multiply_large_numbers(a, b):
+    # Property: The function should correctly handle large numbers.
+    # The logic only cares about the unit digit, so large numbers should not break it.
+    result = multiply(a, b)
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    assert result == unit_digit_a * unit_digit_b, "The function should correctly handle large integer inputs."
+
+@given(st.integers(min_value=-100, max_value=100))
+def test_multiply_by_multiples_of_ten(a):
+    # Property: Multiplying by a multiple of 10 (e.g., 10, 20, -30) should result in 0.
+    result_by_10 = multiply(a, 10)
+    assert result_by_10 == 0, "Multiplying by 10 (or any multiple of 10) should result in 0."
+    
+    result_by_20 = multiply(a, 20)
+    assert result_by_20 == 0, "Multiplying by 20 (or any multiple of 10) should result in 0."
+    
+    result_by_neg_30 = multiply(a, -30)
+    assert result_by_neg_30 == 0, "Multiplying by -30 (or any multiple of 10) should result in 0."
+
+@given(st.integers(min_value=-100, max_value=100))
+def test_multiply_with_zero_unit_digit(a):
+    # Property: If one of the numbers has a unit digit of 0, the result should be 0.
+    # This specifically checks inputs like 10, 20, -30.
+    if abs(a) % 10 == 0:
+        b = st.integers().example() # pick any random integer for b
+        result = multiply(a, b)
+        assert result == 0, f"If {a} has a unit digit of 0, the product should be 0."
+    else:
+        # If 'a' does not have a unit digit of 0, pick a 'b' that does
+        b_with_zero_unit_digit = st.sampled_from([10, 20, -40, 100]).example()
+        result = multiply(a, b_with_zero_unit_digit)
+        assert result == 0, f"If {b_with_zero_unit_digit} has a unit digit of 0, the product should be 0."
+```

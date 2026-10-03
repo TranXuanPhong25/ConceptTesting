@@ -1,0 +1,63 @@
+```python
+# Basic Test Cases
+# Test with small n and p, where 2^n < p
+assert modp(3, 5) == 3, "Basic Test Case 1: n=3, p=5 (2^3 = 8, 8 % 5 = 3)"
+assert modp(4, 7) == 2, "Basic Test Case 2: n=4, p=7 (2^4 = 16, 16 % 7 = 2)"
+assert modp(2, 10) == 4, "Basic Test Case 3: n=2, p=10 (2^2 = 4, 4 % 10 = 4)"
+assert modp(1, 100) == 2, "Basic Test Case 4: n=1, p=100 (2^1 = 2, 2 % 100 = 2)"
+
+# Test with n=0
+assert modp(0, 101) == 1, "Basic Test Case 5: n=0, any p (2^0 = 1, 1 % p = 1)"
+assert modp(0, 5) == 1, "Basic Test Case 6: n=0, small p"
+
+# Test cases from the problem description
+assert modp(1101, 101) == 2, "Basic Test Case 7: Problem example n=1101, p=101"
+assert modp(3, 11) == 8, "Basic Test Case 8: Problem example n=3, p=11"
+assert modp(100, 101) == 1, "Basic Test Case 9: Problem example n=100, p=101 (Fermat's Little Theorem)"
+
+# Edge Test Cases
+# Test with p=1 (modulo 1 should always be 0, unless 2^n is 0 which is not possible)
+assert modp(5, 1) == 0, "Edge Test Case 1: p=1, any n > 0"
+assert modp(0, 1) == 0, "Edge Test Case 2: n=0, p=1 (2^0 = 1, 1 % 1 = 0)"
+
+# Test with p=2
+assert modp(1, 2) == 0, "Edge Test Case 3: n=1, p=2 (2^1 = 2, 2 % 2 = 0)"
+assert modp(2, 2) == 0, "Edge Test Case 4: n=2, p=2 (2^2 = 4, 4 % 2 = 0)"
+assert modp(10, 2) == 0, "Edge Test Case 5: n=10, p=2 (2^10 = 1024, 1024 % 2 = 0)"
+
+# Test with n very large, but p relatively small
+assert modp(1000000000, 3) == 1, "Edge Test Case 6: Large n, small p (2^N % 3 alternates 2, 1, 2, 1... for N>0, N=0 -> 1)"
+# 2^1 % 3 = 2, 2^2 % 3 = 1, 2^3 % 3 = 2, 2^4 % 3 = 1
+# So for even n > 0, result is 1. For odd n, result is 2. For n=0, result is 1.
+assert modp(999999999, 3) == 2, "Edge Test Case 7: Large odd n, small p"
+
+# Test with n=1
+assert modp(1, 5) == 2, "Edge Test Case 8: n=1, any p > 2"
+
+# Test where 2^n is exactly p or a multiple of p
+assert modp(3, 8) == 0, "Edge Test Case 9: 2^n is exactly p"
+assert modp(4, 8) == 0, "Edge Test Case 10: 2^n is a multiple of p"
+
+# Test with a prime number p where n is one less than p (Fermat's Little Theorem)
+assert modp(6, 7) == 1, "Edge Test Case 11: Fermat's Little Theorem (n = p-1)"
+
+# Large Scale Test Cases
+# Test with extremely large n and a moderately large prime p
+# The function should handle large n efficiently using modular exponentiation (binary exponentiation)
+assert modp(10**18, 997) == 639, "Large Scale Test Case 1: Very large n, large prime p"
+assert modp(1234567890123456789, 10007) == 1530, "Large Scale Test Case 2: Very large n, large prime p"
+
+# Test with large n and p such that 2^n is much larger than p
+assert modp(2000000000, 101) == 64, "Large Scale Test Case 3: Very large n, moderate p"
+
+# Test with large n and a relatively small p (ensuring efficiency even with many operations)
+assert modp(10**9, 23) == 14, "Large Scale Test Case 4: Very large n, small prime p"
+
+# Test with a very large n and a power of 2 for p
+assert modp(10**10, 2**10) == 0, "Large Scale Test Case 5: Very large n, p is a power of 2 (n >= log2(p))"
+assert modp(9, 2**10) == 512, "Large Scale Test Case 6: Large n, p is a power of 2 (n < log2(p))"
+
+# Test with large n, p is 1
+assert modp(10**20, 1) == 0, "Large Scale Test Case 7: Extremely large n, p=1"
+
+```

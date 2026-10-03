@@ -1,0 +1,130 @@
+```python
+from hypothesis import given, strategies as st
+
+def multiply(a, b):
+    """Complete the function that takes two integers and returns 
+    the product of their unit digits.
+    Assume the input is always valid.
+    Examples:
+    multiply(148, 412) should return 16.
+    multiply(19, 28) should return 72.
+    multiply(2020, 1851) should return 0.
+    multiply(14,-15) should return 20.
+    """
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    return unit_digit_a * unit_digit_b
+
+
+@given(a=st.integers(min_value=-1000000, max_value=1000000), 
+       b=st.integers(min_value=-1000000, max_value=1000000))
+@example(a=148, b=412)
+@example(a=19, b=28)
+@example(a=2020, b=1851)
+@example(a=14, b=-15)
+@example(a=0, b=0)
+@example(a=1, b=1)
+@example(a=10000, b=10000)
+@example(a=-1, b=-1)
+@example(a=10, b=10)
+@example(a=123456789, b=987654321)
+def test_multiply_property_unit_digit_product(a, b):
+    """
+    Property: The result should be the product of the absolute unit digits of the two input integers.
+    The unit digit of a number N is abs(N) % 10.
+    """
+    expected_unit_digit_a = abs(a) % 10
+    expected_unit_digit_b = abs(b) % 10
+    expected_result = expected_unit_digit_a * expected_unit_digit_b
+    
+    result = multiply(a, b)
+    
+    assert result == expected_result, \
+        f"For a={a}, b={b}, expected {expected_result} but got {result}. " \
+        f"Unit digits were {expected_unit_digit_a} and {expected_unit_digit_b}."
+
+@given(a=st.integers(min_value=-1000000, max_value=1000000), 
+       b=st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_property_result_range(a, b):
+    """
+    Property: The product of unit digits must always be between 0 and 81 (inclusive),
+    since the maximum unit digit is 9 (9 * 9 = 81) and the minimum is 0 (0 * X = 0).
+    """
+    result = multiply(a, b)
+    assert 0 <= result <= 81, \
+        f"The result {result} for a={a}, b={b} is out of the expected range [0, 81]."
+
+@given(a=st.integers(min_value=-1000000, max_value=1000000), 
+       b=st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_property_symmetry(a, b):
+    """
+    Property: The function should be symmetric with respect to its arguments, i.e., multiply(a, b) == multiply(b, a).
+    """
+    result_ab = multiply(a, b)
+    result_ba = multiply(b, a)
+    assert result_ab == result_ba, \
+        f"Symmetry property failed: multiply({a}, {b}) is {result_ab}, but multiply({b}, {a}) is {result_ba}."
+
+@given(a=st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_property_zero_unit_digit(a):
+    """
+    Property: If one of the numbers has a unit digit of 0 (e.g., is a multiple of 10), 
+    the result should be 0, regardless of the other number.
+    """
+    # Create a number 'b' with unit digit 0
+    b_with_zero_unit = st.integers(min_value=-100000, max_value=100000).map(lambda x: x * 10).example()
+    
+    result = multiply(a, b_with_zero_unit)
+    assert result == 0, \
+        f"If b ({b_with_zero_unit}) has unit digit 0, multiply({a}, {b_with_zero_unit}) should be 0, but got {result}."
+
+@given(a=st.integers(min_value=-1000000, max_value=1000000), 
+       b=st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_property_sign_invariance_of_unit_digits(a, b):
+    """
+    Property: The sign of the input numbers should not affect the unit digits used in the calculation.
+    I.e., multiply(a, b) should be the same as multiply(abs(a), abs(b)), multiply(-a, b), etc.
+    """
+    result_original = multiply(a, b)
+    result_abs_a_b = multiply(abs(a), b)
+    result_a_abs_b = multiply(a, abs(b))
+    result_abs_a_abs_b = multiply(abs(a), abs(b))
+    result_neg_a_b = multiply(-a, b)
+    result_a_neg_b = multiply(a, -b)
+    result_neg_a_neg_b = multiply(-a, -b)
+
+    assert result_original == result_abs_a_b, \
+        f"Sign invariance failed for abs(a): multiply({a}, {b})={result_original}, multiply(|{a}|, {b})={result_abs_a_b}"
+    assert result_original == result_a_abs_b, \
+        f"Sign invariance failed for abs(b): multiply({a}, {b})={result_original}, multiply({a}, |{b}|)={result_a_abs_b}"
+    assert result_original == result_abs_a_abs_b, \
+        f"Sign invariance failed for abs(a), abs(b): multiply({a}, {b})={result_original}, multiply(|{a}|, |{b}|)={result_abs_a_abs_b}"
+    assert result_original == result_neg_a_b, \
+        f"Sign invariance failed for -a: multiply({a}, {b})={result_original}, multiply({-a}, {b})={result_neg_a_b}"
+    assert result_original == result_a_neg_b, \
+        f"Sign invariance failed for -b: multiply({a}, {b})={result_original}, multiply({a}, {-b})={result_a_neg_b}"
+    assert result_original == result_neg_a_neg_b, \
+        f"Sign invariance failed for -a, -b: multiply({a}, {b})={result_original}, multiply({-a}, {-b})={result_neg_a_neg_b}"
+
+@given(a=st.integers(min_value=-1000000, max_value=1000000), 
+       b=st.integers(min_value=-1000000, max_value=1000000),
+       offset_a=st.integers(min_value=-100000, max_value=100000).map(lambda x: x * 10),
+       offset_b=st.integers(min_value=-100000, max_value=100000).map(lambda x: x * 10))
+def test_multiply_property_invariance_to_multiples_of_ten(a, b, offset_a, offset_b):
+    """
+    Property: Adding or subtracting multiples of 10 from the input numbers should not change their unit digits,
+    and therefore should not change the result of the function.
+    """
+    result_original = multiply(a, b)
+    result_offset_a = multiply(a + offset_a, b)
+    result_offset_b = multiply(a, b + offset_b)
+    result_offset_both = multiply(a + offset_a, b + offset_b)
+
+    assert result_original == result_offset_a, \
+        f"Invariance to multiples of ten (a) failed: multiply({a}, {b})={result_original}, multiply({a}+{offset_a}, {b})={result_offset_a}"
+    assert result_original == result_offset_b, \
+        f"Invariance to multiples of ten (b) failed: multiply({a}, {b})={result_original}, multiply({a}, {b}+{offset_b})={result_offset_b}"
+    assert result_original == result_offset_both, \
+        f"Invariance to multiples of ten (both) failed: multiply({a}, {b})={result_original}, multiply({a}+{offset_a}, {b}+{offset_b})={result_offset_both}"
+
+```

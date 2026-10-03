@@ -1,0 +1,143 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(st.characters(blacklist_categories=['Cs', 'Cc']), min_size=0, max_size=100))
+def test_vowels_count_non_negative(s):
+    """Property: The count of vowels should always be non-negative."""
+    result = vowels_count(s)
+    assert result >= 0, "Vowel count should never be negative."
+
+@given(st.text(st.characters(blacklist_categories=['Cs', 'Cc']), min_size=0, max_size=100))
+def test_vowels_count_upper_bound(s):
+    """Property: The count of vowels should not exceed the length of the string."""
+    result = vowels_count(s)
+    assert result <= len(s), "Vowel count cannot be greater than the string length."
+
+@given(st.text(st.characters(blacklist_categories=['Cs', 'Cc']), min_size=0, max_size=100))
+def test_vowels_count_invariance_case_insensitive(s):
+    """Property: Changing the case of letters that are not 'y' at the end should not change the vowel count."""
+    lower_s = s.lower()
+    upper_s = s.upper()
+
+    # The 'y' at the end is a special case, so we need to be careful
+    # For now, let's assume `y` is not at the end for this specific test
+    if s and s[-1].lower() == 'y':
+        # If 'y' is at the end, its vowel status depends on its position.
+        # This test is about case-insensitivity *excluding* the 'y' rule,
+        # so we'll skip direct comparison if the 'y' rule might be active.
+        pass
+    else:
+        result_lower = vowels_count(lower_s)
+        result_upper = vowels_count(upper_s)
+        assert result_lower == result_upper, \
+            f"Vowel count should be case-insensitive for non-ending 'y': {lower_s} vs {upper_s}"
+
+
+@given(st.text(st.characters(blacklist_categories=['Cs', 'Cc']), min_size=0, max_size=100))
+def test_vowels_count_only_vowels(s):
+    """Property: If a string contains only vowels (a,e,i,o,u, and 'y' at the end), its count should be its length."""
+    vowels = "aeiouAEIOU"
+    # Construct a string where every character is definitely a vowel by rule.
+    # For 'y', we need to check if it's at the end.
+    
+    # Filter for strings that would only be "vowels" according to the rules
+    # This is a bit tricky with 'y', so let's simplify for now.
+    # We will test strings composed solely of 'a', 'e', 'i', 'o', 'u'.
+    
+    only_vowels_no_y = ''.join([c for c in s if c.lower() in "aeiou"])
+    if len(only_vowels_no_y) == len(s): # If all original chars were aeiou
+        result = vowels_count(s)
+        
+        # Calculate expected, considering 'y' rule if it were present (but we filtered it out for now)
+        expected_count = 0
+        for i, char in enumerate(s):
+            if char.lower() in 'aeiou':
+                expected_count += 1
+            elif char.lower() == 'y' and i == len(s) - 1:
+                expected_count += 1
+        
+        assert result == expected_count, \
+            f"String '{s}' composed only of 'aeiou' should have count equal to its length (considering 'y' rule)."
+
+@given(st.text(st.characters(min_codepoint=ord('a'), max_codepoint=ord('z')), min_size=0, max_size=100))
+def test_vowels_count_no_vowels(s):
+    """Property: If a string contains no vowels (a,e,i,o,u) and 'y' is not at the end, the count should be zero."""
+    consonants = "bcdfghjklmnpqrstvwxz"
+    # Construct a string where no character is a vowel, and 'y' is not at the end.
+    no_vowel_s = ''.join([c for c in s if c in consonants])
+
+    if len(no_vowel_s) == len(s): # If all original chars were consonants
+        result = vowels_count(s)
+        assert result == 0, f"String '{s}' with no vowels should have a count of 0."
+
+@given(
+    s=st.text(st.characters(blacklist_categories=['Cs', 'Cc']), min_size=0, max_size=100)
+)
+def test_vowels_count_y_at_end(s):
+    """Property: Adding 'y' to the end of a string should increment the count by 1 if 'y' is not already a vowel."""
+    original_count = vowels_count(s)
+    
+    # Append 'y'
+    s_with_y = s + 'y'
+    count_with_y = vowels_count(s_with_y)
+
+    # Append 'Y'
+    s_with_Y = s + 'Y'
+    count_with_Y = vowels_count(s_with_Y)
+
+    # The 'y' rule only applies if 'y' is at the very end.
+    # If the original string `s` already ended with 'y' or 'Y', the rule
+    # applied to `s` itself. When we append another 'y', it shifts the old 'y'
+    # from the end, potentially changing its vowel status.
+    # So, we should test this property for strings that *don't* end with 'y' initially.
+    
+    if not s or s[-1].lower() != 'y': # Only apply if 'y' is not already at the end
+        assert count_with_y == original_count + 1, \
+            f"Adding 'y' to '{s}' (count {original_count}) should make count {original_count + 1} for '{s_with_y}'"
+        assert count_with_Y == original_count + 1, \
+            f"Adding 'Y' to '{s}' (count {original_count}) should make count {original_count + 1} for '{s_with_Y}'"
+
+@given(
+    st.text(st.characters(blacklist_categories=['Cs', 'Cc']), min_size=0, max_size=100).filter(lambda x: len(x) > 0)
+)
+def test_vowels_count_y_not_at_end(s):
+    """Property: 'y' should not be counted as a vowel if it's not at the end of the word."""
+    
+    # Insert 'y' at a non-end position
+    if len(s) > 0:
+        index = st.integers(min_value=0, max_value=len(s) - 1).example()
+        s_with_middle_y = s[:index] + 'y' + s[index:]
+
+        # Calculate expected for s_with_middle_y by explicitly not counting the middle 'y'
+        expected_count = 0
+        for i, char in enumerate(s_with_middle_y):
+            if char.lower() in 'aeiou':
+                expected_count += 1
+            elif char.lower() == 'y' and i == len(s_with_middle_y) - 1:
+                expected_count += 1
+
+        result = vowels_count(s_with_middle_y)
+        assert result == expected_count, \
+            f"Middle 'y' in '{s_with_middle_y}' should not be counted as a vowel. Expected {expected_count}, got {result}"
+
+@given(st.text(st.characters(blacklist_categories=['Cs', 'Cc']), min_size=0, max_size=100))
+def test_vowels_count_empty_string(s):
+    """Property: An empty string should have zero vowels."""
+    if not s: # Ensure we are testing an empty string
+        result = vowels_count(s)
+        assert result == 0, "Empty string should have 0 vowels."
+
+@given(st.text(st.characters(blacklist_categories=['Cs', 'Cc']), min_size=1, max_size=100))
+def test_vowels_count_single_char(s):
+    """Property: A single character string's vowel count should follow the rules."""
+    char = s[0] # Take the first character
+    
+    expected_count = 0
+    if char.lower() in 'aeiou':
+        expected_count = 1
+    elif char.lower() == 'y': # For a single character, 'y' is always at the end
+        expected_count = 1
+    
+    result = vowels_count(char)
+    assert result == expected_count, f"Single char '{char}' should have count {expected_count}, got {result}"
+```

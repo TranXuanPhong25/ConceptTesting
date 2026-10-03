@@ -1,0 +1,111 @@
+```python
+from hypothesis import given, strategies as st
+from typing import Tuple
+
+def is_prime(n: int) -> bool:
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple)
+)
+def test_intersection_length_is_prime(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    result = intersection(interval1, interval2)
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start > intersection_end:
+        # No intersection
+        expected_result = "NO"
+    else:
+        length = intersection_end - intersection_start + 1
+        expected_result = "YES" if is_prime(length) else "NO"
+    
+    assert result == expected_result, \
+        f"For intervals {interval1} and {interval2}, expected {expected_result}, but got {result}"
+
+@given(
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(sorted).map(tuple)
+)
+def test_no_intersection_returns_no(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Force non-overlapping intervals
+    if end1 < start2: # interval1 is completely before interval2
+        # Ensure there's a gap
+        if end1 + 1 < start2:
+            result = intersection(interval1, interval2)
+            assert result == "NO", f"Disjoint intervals {interval1} and {interval2} should return 'NO'"
+    elif end2 < start1: # interval2 is completely before interval1
+        # Ensure there's a gap
+        if end2 + 1 < start1:
+            result = intersection(interval1, interval2)
+            assert result == "NO", f"Disjoint intervals {interval1} and {interval2} should return 'NO'"
+
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(sorted).map(tuple)
+)
+def test_intersection_with_negative_endpoints(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    # This test primarily ensures the general logic handles negative numbers correctly.
+    # The `test_intersection_length_is_prime` already covers the core logic
+    # but this focuses on explicitly checking negative ranges.
+    
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start > intersection_end:
+        expected_result = "NO"
+    else:
+        length = intersection_end - intersection_start + 1
+        expected_result = "YES" if is_prime(length) else "NO"
+    
+    result = intersection(interval1, interval2)
+    assert result == expected_result, \
+        f"For negative-range intervals {interval1} and {interval2}, expected {expected_result}, but got {result}"
+
+@given(
+    st.integers(min_value=-100, max_value=100),
+    st.integers(min_value=-100, max_value=100)
+)
+def test_identical_intervals(start: int, end: int):
+    # Ensure start <= end for a valid interval
+    if start > end:
+        start, end = end, start
+    interval = (start, end)
+    
+    result = intersection(interval, interval)
+    length = end - start + 1
+    expected_result = "YES" if is_prime(length) else "NO"
+    
+    assert result == expected_result, \
+        f"For identical intervals {interval}, expected {expected_result}, but got {result}"
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(sorted).map(tuple)
+)
+def test_commutative_property(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    # The order of intervals should not affect the result
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, \
+        f"Intersection should be commutative: intersection({interval1}, {interval2}) = {result1}, " \
+        f"but intersection({interval2}, {interval1}) = {result2}"
+
+```

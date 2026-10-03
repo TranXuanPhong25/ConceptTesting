@@ -1,0 +1,112 @@
+```python
+import datetime
+from hypothesis import given, strategies as st
+
+@given(
+    month=st.integers(min_value=1, max_value=12),
+    day=st.integers(min_value=1, max_value=31),
+    year=st.integers(min_value=1, max_value=9999)
+)
+def test_valid_date_true_cases(month, day, year):
+    # Construct a date string in the expected format
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+
+    # Check if the date is valid using Python's datetime module
+    is_valid_datetime = True
+    try:
+        datetime.date(year, month, day)
+    except ValueError:
+        is_valid_datetime = False
+
+    result = valid_date(date_str)
+
+    # Property: If datetime.date considers it valid, our function should too, given the format is correct.
+    # We need to refine this for cases where datetime.date might be valid, but our rules impose stricter day limits (e.g., 31 days for Feb)
+    # However, for this test, we are generating inputs that datetime.date *can* parse,
+    # so we expect valid_date to agree if the day/month/year combination itself is valid.
+    if is_valid_datetime:
+        assert result is True, f"Expected {date_str} to be True (datetime valid), but got False"
+    else:
+        # If datetime.date considers it invalid, our function should also consider it invalid
+        assert result is False, f"Expected {date_str} to be False (datetime invalid), but got True"
+
+@given(st.text(min_size=0, max_size=20))
+def test_valid_date_invalid_format(date_str):
+    # Property: If the date string does not match the mm-dd-yyyy format, it should be invalid.
+    if not (len(date_str) == 10 and date_str[2] == '-' and date_str[5] == '-'):
+        assert valid_date(date_str) is False, f"Expected '{date_str}' to be False (invalid format), but got True"
+
+@given(
+    month=st.integers(min_value=-10, max_value=20),  # Generate out-of-range months
+    day=st.integers(min_value=-10, max_value=40),    # Generate out-of-range days
+    year=st.integers(min_value=-100, max_value=10000)
+)
+def test_valid_date_out_of_range_components(month, day, year):
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    result = valid_date(date_str)
+
+    # Property: Dates with months < 1 or > 12 should be invalid.
+    if not (1 <= month <= 12):
+        assert result is False, f"Expected {date_str} to be False (month out of range), but got True"
+    # Property: Dates with days < 1 should be invalid.
+    elif day < 1:
+        assert result is False, f"Expected {date_str} to be False (day less than 1), but got True"
+    # Property: Dates with days > max for month should be invalid.
+    elif month in [1, 3, 5, 7, 8, 10, 12] and day > 31:
+        assert result is False, f"Expected {date_str} to be False (day > 31 for month {month}), but got True"
+    elif month in [4, 6, 9, 11] and day > 30:
+        assert result is False, f"Expected {date_str} to be False (day > 30 for month {month}), but got True"
+    elif month == 2 and day > 29:
+        assert result is False, f"Expected {date_str} to be False (day > 29 for Feb), but got True"
+    # This test also covers cases where a correctly formatted string might represent an impossible date,
+    # and expects the function to catch it.
+    else:
+        # If it passes the basic out-of-range checks above, it should behave like the datetime check.
+        # This is a bit redundant with the first test but covers different generation strategy.
+        is_valid_datetime = True
+        try:
+            datetime.date(year, month, day)
+        except ValueError:
+            is_valid_datetime = False
+        assert result == is_valid_datetime, f"Expected {date_str} to be {is_valid_datetime} (datetime check), but got {result}"
+
+@given(st.just(''))
+def test_valid_date_empty_string(date_str):
+    # Property: An empty string should always be considered an invalid date.
+    assert valid_date(date_str) is False, "Expected empty string to be False, but got True"
+
+@given(st.integers(min_value=1, max_value=12), st.integers(min_value=1, max_value=29), st.integers(min_value=1, max_value=9999))
+def test_valid_date_always_valid_day_ranges(month, day, year):
+    # This test focuses on day ranges that are universally valid for all months (1-28)
+    date_str = f"{month:02d}-{day:02d}-{year:04d}"
+    
+    # We still need to verify with datetime for full validity (e.g., leap year Feb 29 for specific years)
+    is_valid_datetime = True
+    try:
+        datetime.date(year, month, day)
+    except ValueError:
+        is_valid_datetime = False
+
+    result = valid_date(date_str)
+    assert result == is_valid_datetime, f"Expected {date_str} to be {is_valid_datetime}, but got {result}"
+
+@given(
+    st.text(min_size=10, max_size=10, alphabet=st.characters(blacklist_characters='-')),
+    st.text(min_size=10, max_size=10, alphabet=st.characters(blacklist_characters='0123456789')),
+    st.text(min_size=10, max_size=10, alphabet='-'),
+    st.text(min_size=9, max_size=11, alphabet='0123456789-')
+)
+def test_valid_date_incorrect_separators_or_non_digit_chars(s1, s2, s3, s4):
+    # Property: Dates with incorrect separators or non-digit characters where digits are expected should be invalid.
+    # This test tries to generate strings that look like dates but have invalid characters or separators.
+
+    # Example: '01/01/2000'
+    assert valid_date(f"{s1[:2]}/{s1[3:5]}/{s1[6:]}") is False, "Expected '/' separator to be invalid"
+    # Example: '01.01.2000'
+    assert valid_date(f"{s1[:2]}.{s1[3:5]}.{s1[6:]}") is False, "Expected '.' separator to be invalid"
+    # Example: 'AB-CD-EFGH'
+    assert valid_date(f"{s2[:2]}-{s2[3:5]}-{s2[6:]}") is False, "Expected non-digit chars in date parts to be invalid"
+    # Example: '01--2000' (missing day) or '01-01--' (missing year)
+    assert valid_date(s4) is False, f"Expected {s4} to be invalid due to incorrect format or missing parts"
+
+```

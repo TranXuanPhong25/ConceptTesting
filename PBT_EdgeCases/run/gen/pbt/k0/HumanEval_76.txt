@@ -1,0 +1,98 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=1, max_value=10))
+def test_is_simple_power_property(x, n):
+    result = is_simple_power(x, n)
+
+    if n == 1:
+        # If n is 1, x must be 1 for it to be a simple power (1**any_int = 1)
+        assert result == (x == 1), f"For n=1, x={x}, result should be {x==1}"
+    elif x == 1:
+        # If x is 1, it's always a simple power of any n (n**0 = 1)
+        assert result == True, f"For x=1, n={n}, result should be True"
+    else:
+        # For general cases, if result is True, x must be a power of n
+        if result:
+            # Check if x is indeed a power of n
+            power = 0
+            temp_x = x
+            while temp_x > 1 and temp_x % n == 0:
+                temp_x //= n
+                power += 1
+            assert temp_x == 1, f"If is_simple_power is True, x={x} must be a power of n={n}"
+            assert n ** power == x, f"If is_simple_power is True, n**power should equal x"
+        else:
+            # If result is False, x should not be a perfect power of n
+            # We can't easily assert a negative, so we'll test a few specific conditions
+            # If x is less than n, it cannot be a power (unless x=1)
+            if x < n and x != 1:
+                assert result == False, f"If x < n and x != 1, it cannot be a simple power. x={x}, n={n}"
+            # If x is prime and not equal to n, it cannot be a power
+            if is_prime(x) and x != n:
+                 assert result == False, f"If x is prime and not equal to n, it cannot be a simple power. x={x}, n={n}"
+            # Test that it's not a power by repeatedly dividing
+            if x % n != 0 and x != 1: # If not divisible by n (and not 1), it can't be a power
+                 assert result == False, f"If x is not divisible by n and not 1, it cannot be a simple power. x={x}, n={n}"
+
+# Helper function for primality test (optional, for a stronger assertion in the else branch)
+def is_prime(k):
+    if k < 2:
+        return False
+    for i in range(2, int(k**0.5) + 1):
+        if k % i == 0:
+            return False
+    return True
+
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=2, max_value=5))
+def test_is_simple_power_x_is_power_of_n(n_power, n_base):
+    # Generate x as an actual power of n_base
+    power = st.integers(min_value=0, max_value=6).example() # Avoid excessively large numbers
+    x = n_base ** power
+    result = is_simple_power(x, n_base)
+    assert result == True, f"For x={x} (which is {n_base}^{power}), and n={n_base}, result should be True"
+
+@given(st.integers(min_value=2, max_value=100), st.integers(min_value=2, max_value=10))
+def test_is_simple_power_x_is_not_power_of_n(x, n):
+    # This test aims to generate cases where x is unlikely to be a power of n
+    # We explicitly exclude cases where x IS a power of n.
+    if x == 1:
+        assert is_simple_power(x, n) == True, f"x=1 is always a simple power of n={n}"
+        return
+
+    is_power = False
+    temp_x = x
+    while temp_x >= n and temp_x % n == 0:
+        temp_x //= n
+    if temp_x == 1:
+        is_power = True
+
+    # Only proceed with the assertion if x is NOT an actual power of n
+    if not is_power:
+        result = is_simple_power(x, n)
+        assert result == False, f"For x={x} and n={n}, x is not a power of n, so result should be False"
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_is_simple_power_x_is_one(x):
+    # Property: Any number n has 1 as a simple power (n^0 = 1)
+    result = is_simple_power(1, x)
+    assert result == True, f"1 should always be a simple power of any x={x}"
+
+@given(st.integers(min_value=2, max_value=1000))
+def test_is_simple_power_n_is_one(x):
+    # Property: If n is 1, only x=1 can be a simple power (1^k = 1)
+    result = is_simple_power(x, 1)
+    assert result == (x == 1), f"If n=1, x={x} should only be a simple power if x=1"
+
+@given(st.integers(min_value=2, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_is_simple_power_monotonic_power(x, n):
+    # Property: If x is a simple power of n, and k > x, then k is not a simple power of n
+    # unless k is also a larger power of n.
+    # This test focuses on generating a non-power just above a known power.
+    if is_simple_power(x, n):
+        # x is a power of n. Now check x+1.
+        if x + 1 > x and not is_simple_power(x + 1, n): # Avoid cases where x+1 is also a power (e.g., 2^0, 2^1)
+            assert is_simple_power(x + 1, n) == False, \
+                f"If x={x} is power of n={n}, and x+1 is not a power, it should return False"
+
+```

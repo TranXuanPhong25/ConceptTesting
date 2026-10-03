@@ -1,0 +1,77 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_1(n, p):
+    """
+    Test that modp(n, p) is always between 0 and p-1 (inclusive).
+    This is a fundamental property of the modulo operation.
+    """
+    result = modp(n, p)
+    assert 0 <= result < p, f"Result {result} should be in the range [0, {p-1}]"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_property_2(n, p):
+    """
+    Test that modp(n, p) can be computed using the built-in pow function for verification.
+    This helps ensure the correctness of the custom implementation.
+    """
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"modp({n}, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_3_multiplication_rule(n1, p):
+    """
+    Test the multiplicative property: modp(n1 + n2, p) == (modp(n1, p) * modp(n2, p)) % p
+    This property holds for modular exponentiation.
+    """
+    n2 = st.integers(min_value=0, max_value=1000).example() # Generate a second n for the sum
+    result_sum = modp(n1 + n2, p)
+    result_product = (modp(n1, p) * modp(n2, p)) % p
+    assert result_sum == result_product, \
+        f"modp({n1+n2}, {p}) != (modp({n1}, {p}) * modp({n2}, {p})) % {p}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_4_power_of_one(n, p):
+    """
+    Test that modp(n, 1) should always be 0, as any number modulo 1 is 0.
+    However, the function signature and examples imply p >= 2. Let's adjust to p >= 2.
+    For p=2, modp(n, 2) should alternate between 1 and 0.
+    """
+    result = modp(n, 2)
+    expected = 2**n % 2
+    assert result == expected, f"modp({n}, 2) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=1000000))
+def test_modp_large_n_small_p(n):
+    """
+    Test with large 'n' and small 'p' to check for overflow issues or performance.
+    """
+    p = st.integers(min_value=2, max_value=10).example()
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"modp({n}, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=10), st.integers(min_value=2, max_value=1000000))
+def test_modp_small_n_large_p(n, p):
+    """
+    Test with small 'n' and large 'p'.
+    """
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"modp({n}, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_fermats_little_theorem(n, p):
+    """
+    If p is a prime number, then for any integer a not divisible by p,
+    a^(p-1) % p = 1.
+    For a=2, if p is prime and p doesn't divide 2 (i.e., p > 2), then
+    modp(p-1, p) should be 1.
+    """
+    if p > 2 and all(p % i != 0 for i in range(2, int(math.sqrt(p)) + 1)):  # Check if p is prime
+        result = modp(p - 1, p)
+        assert result == 1, f"For prime p={p} > 2, modp({p-1}, {p}) should be 1, but got {result}"
+```

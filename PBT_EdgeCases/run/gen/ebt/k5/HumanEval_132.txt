@@ -1,0 +1,31 @@
+```python
+
+# Basic Test Cases
+assert is_nested('[[]]') == True, "Basic Test Case 1: Simple nested brackets"
+assert is_nested('[[][]]') == True, "Basic Test Case 2: Nested brackets with inner sequence"
+assert is_nested('[[]][[') == True, "Basic Test Case 3: Nested brackets with unclosed outer"
+assert is_nested('[]') == False, "Basic Test Case 4: No nested brackets"
+assert is_nested('[][]') == False, "Basic Test Case 5: Multiple non-nested brackets"
+
+# Edge Test Cases
+assert is_nested('') == False, "Edge Test Case 1: Empty string"
+assert is_nested('[') == False, "Edge Test Case 2: Single opening bracket"
+assert is_nested(']') == False, "Edge Test Case 3: Single closing bracket"
+assert is_nested('[[[') == False, "Edge Test Case 4: Only opening brackets"
+assert is_nested(']]]') == False, "Edge Test Case 5: Only closing brackets"
+assert is_nested('][') == False, "Edge Test Case 6: Mismatched brackets"
+assert is_nested('[[[[[[]]]]]]') == True, "Edge Test Case 7: Deeply nested brackets"
+assert is_nested('[][][][][') == False, "Edge Test Case 8: Many non-nested brackets"
+assert is_nested('[]]]]]]][[[[[]') == False, "Edge Test Case 9: Mixed and unbalanced brackets, no nesting"
+assert is_nested('[[[][]]][]') == True, "Edge Test Case 10: Nested and non-nested mix"
+
+# Large Scale Test Cases
+assert is_nested('[' * 1000 + ']' * 1000) == False, "Large Scale Test Case 1: Long non-nested sequence"
+assert is_nested('[' * 500 + '[' * 500 + ']' * 500 + ']' * 500) == True, "Large Scale Test Case 2: Long deeply nested sequence"
+assert is_nested('][' * 1000) == False, "Large Scale Test Case 3: Long sequence of mismatched brackets"
+assert is_nested('[]' * 500 + '[[]]' + '[]' * 500) == True, "Large Scale Test Case 4: Large string with one nested part"
+assert is_nested('[[' * 500 + ']]' * 500) == True, "Large Scale Test Case 5: Large string with many nested pairs"
+assert is_nested('[' * 1000 + ']' * 999) == False, "Large Scale Test Case 6: Long string, almost balanced, no nesting"
+assert is_nested(']' * 1000 + '[' * 1000) == False, "Large Scale Test Case 7: Long string, reverse order, no nesting"
+
+```

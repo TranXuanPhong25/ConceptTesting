@@ -1,0 +1,157 @@
+```python
+from hypothesis import given, strategies as st
+from typing import List
+
+# The function to be tested
+def add_elements(arr: List[int], k: int) -> int:
+    """
+    Given a non-empty array of integers arr and an integer k, return
+    the sum of the elements with at most two digits from the first k elements of arr.
+    """
+    total = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:  # Check if the number has at most two digits
+            total += arr[i]
+    return total
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_sum_of_two_digit_elements(arr, k):
+    """
+    Property: The function should correctly sum elements with at most two digits
+    from the first 'k' elements of the array.
+    """
+    # Ensure k is within the bounds of the array length
+    k = min(k, len(arr))
+    
+    expected_sum = 0
+    for i in range(k):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    result = add_elements(arr, k)
+    assert result == expected_sum, f"Expected {expected_sum}, but got {result} for arr={arr[:k]}, k={k}"
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_all_two_digit_numbers(arr, k):
+    """
+    Property: If all numbers in the first k elements have at most two digits,
+    the function should return the sum of those numbers.
+    """
+    k = min(k, len(arr))
+    expected_sum = sum(arr[:k])
+    result = add_elements(arr, k)
+    assert result == expected_sum, f"Expected {expected_sum}, but got {result} when all elements are two-digit for arr={arr[:k]}, k={k}"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=-100), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_no_two_digit_numbers(arr, k):
+    """
+    Property: If none of the numbers in the first k elements have at most two digits,
+    the function should return 0.
+    """
+    k = min(k, len(arr))
+    result = add_elements(arr, k)
+    assert result == 0, f"Expected 0, but got {result} when no elements are two-digit for arr={arr[:k]}, k={k}"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_k_equals_one(arr, k_val=1):
+    """
+    Property: When k is 1, the function should return the first element if it has at most two digits, otherwise 0.
+    """
+    if -99 <= arr[0] <= 99:
+        expected = arr[0]
+    else:
+        expected = 0
+    result = add_elements(arr, k_val)
+    assert result == expected, f"Expected {expected}, got {result} for arr={arr}, k=1"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_k_equals_len_arr(arr, k_val):
+    """
+    Property: When k is equal to the length of arr, the function should sum all two-digit elements in the array.
+    """
+    k_val = len(arr)
+    expected_sum = 0
+    for x in arr:
+        if -99 <= x <= 99:
+            expected_sum += x
+    result = add_elements(arr, k_val)
+    assert result == expected_sum, f"Expected {expected_sum}, got {result} for arr={arr}, k=len(arr)"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_k_larger_than_len_arr(arr, k):
+    """
+    Property: If k is larger than the length of the array, it should behave as if k equals len(arr).
+    """
+    k_large = len(arr) + k # Generate a k guaranteed to be larger than len(arr)
+    
+    expected_sum = 0
+    for x in arr:
+        if -99 <= x <= 99:
+            expected_sum += x
+            
+    result = add_elements(arr, k_large)
+    assert result == expected_sum, f"Expected {expected_sum}, got {result} for arr={arr}, k={k_large} (k > len(arr))"
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_non_negative_two_digit_numbers(arr, k):
+    """
+    Property: If all relevant two-digit numbers are non-negative, the sum should also be non-negative.
+    """
+    # Filter for non-negative two-digit numbers
+    non_negative_arr = [x for x in arr if x >= 0]
+    # If the filtered array is empty, generate a new one with guaranteed non-negative two-digit numbers
+    if not non_negative_arr:
+        non_negative_arr = st.lists(st.integers(min_value=0, max_value=99), min_size=1, max_size=100).example()
+    
+    # Ensure k is within bounds for the modified array
+    k_bounded = min(k, len(non_negative_arr))
+    
+    result = add_elements(non_negative_arr, k_bounded)
+    assert result >= 0, f"Expected non-negative sum, got {result} for arr={non_negative_arr[:k_bounded]}, k={k_bounded}"
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=-1), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_negative_two_digit_numbers(arr, k):
+    """
+    Property: If all relevant two-digit numbers are negative, the sum should also be negative (or zero if no such numbers).
+    """
+    # Filter for negative two-digit numbers
+    negative_arr = [x for x in arr if x < 0]
+    # If the filtered array is empty, generate a new one with guaranteed negative two-digit numbers
+    if not negative_arr:
+        negative_arr = st.lists(st.integers(min_value=-99, max_value=-1), min_size=1, max_size=100).example()
+
+    # Ensure k is within bounds for the modified array
+    k_bounded = min(k, len(negative_arr))
+    
+    result = add_elements(negative_arr, k_bounded)
+    # The sum should be negative if there are any elements, otherwise it would be 0
+    if negative_arr and k_bounded > 0:
+        assert result < 0, f"Expected negative sum, got {result} for arr={negative_arr[:k_bounded]}, k={k_bounded}"
+    else:
+        assert result == 0, f"Expected 0, got {result} for arr={negative_arr[:k_bounded]}, k={k_bounded}"
+
+```

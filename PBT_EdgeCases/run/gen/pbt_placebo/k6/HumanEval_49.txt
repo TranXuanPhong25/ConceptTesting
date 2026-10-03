@@ -1,0 +1,36 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=1000))
+def test_modp_result_is_within_modulo_range(n, p):
+    result = modp(n, p)
+    assert 0 <= result < p, "The result of modp(n, p) should always be between 0 (inclusive) and p (exclusive)."
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=1000))
+def test_modp_zero_exponent(n, p):
+    # Property: 2^0 mod p should always be 1 for p > 1
+    result = modp(0, p)
+    assert result == 1, "modp(0, p) should always return 1 for p > 1."
+
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=2, max_value=1000))
+def test_modp_against_pow_operator(n, p):
+    # Property: modp(n, p) should be equivalent to (2**n) % p
+    result = modp(n, p)
+    expected = (2**n) % p
+    assert result == expected, f"modp({n}, {p}) should be equal to (2**{n}) % {p}"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_modp_modulo_one(n):
+    # Property: 2^n mod 1 should always be 0 (as any number is divisible by 1)
+    result = modp(n, 1)
+    assert result == 0, "modp(n, 1) should always return 0."
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=1000))
+def test_modp_large_n_and_p(n, p):
+    # Test with potentially larger values for n and p
+    # The property remains the same: result within modulo range and matches pow operator
+    result = modp(n, p)
+    expected = (2**n) % p
+    assert result == expected, f"modp({n}, {p}) should be equal to (2**{n}) % {p} for large inputs."
+    assert 0 <= result < p, "The result should be within the modulo range for large inputs."
+```

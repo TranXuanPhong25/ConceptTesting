@@ -1,0 +1,114 @@
+```python
+from hypothesis import given, strategies as st
+import random
+
+def add_elements(arr, k):
+    """
+    Given a non-empty array of integers arr and an integer k, return
+    the sum of the elements with at most two digits from the first k elements of arr.
+
+    Example:
+
+        Input: arr = [111,21,3,4000,5,6,7,8,9], k = 4
+        Output: 24 # sum of 21 + 3
+
+    Constraints:
+        1. 1 <= len(arr) <= 100
+        2. 1 <= k <= len(arr)
+    """
+    total = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            total += arr[i]
+    return total
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_sum_correctness(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k_actual = min(k, len(arr))
+
+    result = add_elements(arr, k_actual)
+
+    # Calculate the expected sum manually
+    expected_sum = 0
+    for i in range(k_actual):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"For arr={arr[:k_actual]}, k={k_actual}, expected {expected_sum}, got {result}"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_no_three_digit_numbers_included(arr, k):
+    k_actual = min(k, len(arr))
+    result = add_elements(arr, k_actual)
+
+    # All numbers in the first k_actual elements that are 3 digits or more
+    # should not contribute to the sum.
+    # The sum should only consist of numbers with at most two digits.
+    sum_of_three_digit_or_more = 0
+    for i in range(k_actual):
+        if not (-99 <= arr[i] <= 99):
+            sum_of_three_digit_or_more += arr[i]
+
+    # If the original array only contained numbers of at most two digits
+    # in the first k elements, then the result should just be the sum of those.
+    # Otherwise, the sum of numbers with 3+ digits should not be included.
+    # This property is implicitly covered by test_add_elements_sum_correctness,
+    # but we can try to test a specific aspect.
+
+    # If all numbers in the first k elements have more than two digits, the sum should be 0.
+    if all(not (-99 <= arr[i] <= 99) for i in range(k_actual)):
+        assert result == 0, "If all numbers in the first k elements have more than two digits, the sum should be 0"
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_two_digit_numbers(arr, k):
+    # This test specifically generates arrays where all numbers are within the two-digit range.
+    k_actual = min(k, len(arr))
+    result = add_elements(arr, k_actual)
+
+    # The result should be simply the sum of the first k_actual elements.
+    expected_sum = sum(arr[:k_actual])
+
+    assert result == expected_sum, "If all numbers are at most two digits, the result should be their direct sum"
+
+@given(
+    st.lists(st.integers(min_value=100, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_no_two_digit_numbers(arr, k):
+    # This test specifically generates arrays where no numbers are within the two-digit range.
+    k_actual = min(k, len(arr))
+    result = add_elements(arr, k_actual)
+
+    # The result should always be 0 because no elements meet the criteria.
+    assert result == 0, "If no numbers are at most two digits, the sum should be 0"
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_non_negativity_of_criteria(arr, k):
+    k_actual = min(k, len(arr))
+    # This property checks that the sum does not include elements outside the first k
+    # and only includes those with at most two digits.
+    result = add_elements(arr, k_actual)
+
+    # An alternative way to compute the sum, ensuring no elements beyond k are considered
+    # and only those within the two-digit range are added.
+    alternative_sum = 0
+    for i in range(len(arr)): # Iterate through the whole array
+        if i < k_actual and -99 <= arr[i] <= 99: # Apply both conditions
+            alternative_sum += arr[i]
+
+    assert result == alternative_sum, "The sum should only include elements within the first k and with at most two digits"
+
+```

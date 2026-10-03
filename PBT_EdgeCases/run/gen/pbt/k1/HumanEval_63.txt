@@ -1,0 +1,39 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=10))
+def test_fibfib_base_cases(n):
+    if n == 0:
+        assert fibfib(n) == 0, "fibfib(0) should be 0"
+    elif n == 1:
+        assert fibfib(n) == 0, "fibfib(1) should be 0"
+    elif n == 2:
+        assert fibfib(n) == 1, "fibfib(2) should be 1"
+
+@given(st.integers(min_value=3, max_value=20))
+def test_fibfib_recursive_property(n):
+    result = fibfib(n)
+    expected = fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3)
+    assert result == expected, f"fibfib({n}) should be fibfib({n-1}) + fibfib({n-2}) + fibfib({n-3})"
+
+@given(st.integers(min_value=0, max_value=30))
+def test_fibfib_non_negative_for_non_negative_input(n):
+    result = fibfib(n)
+    assert result >= 0, "FibFib numbers should be non-negative for non-negative input"
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fibfib_monotonicity_for_certain_range(n):
+    if n >= 2:
+        assert fibfib(n) >= fibfib(n - 1), "fibfib(n) should be greater than or equal to fibfib(n-1) for n >= 2"
+
+@given(st.integers(min_value=0, max_value=25))
+def test_fibfib_growth_rate(n):
+    if n >= 3:
+        # A rough check that the numbers are growing as expected
+        # fibfib(n) should be approximately 2 * fibfib(n-1) for large n,
+        # but let's check against sum of previous three
+        # For small n, this might not hold perfectly, so let's check against the definition
+        assert fibfib(n) > fibfib(n-1) or fibfib(n) == 0, \
+            "FibFib numbers should generally increase (or stay 0 for base cases)"
+
+```

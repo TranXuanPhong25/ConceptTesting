@@ -1,0 +1,50 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100))
+def test_fibfib_recursion_property(n):
+    if n < 3:
+        # Base cases are defined, so no property to check directly from recursion
+        pass
+    else:
+        # Property: fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3)
+        result = fibfib(n)
+        expected_recursive_sum = fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3)
+        assert result == expected_recursive_sum, \
+            f"fibfib({n}) should be the sum of fibfib({n-1}), fibfib({n-2}), and fibfib({n-3})"
+
+@given(st.integers(min_value=0, max_value=1000))
+def test_fibfib_non_negativity(n):
+    # Property: For non-negative n, fibfib(n) should also be non-negative.
+    result = fibfib(n)
+    assert result >= 0, f"fibfib({n}) should be non-negative, but got {result}"
+
+@given(st.integers(min_value=0, max_value=10))
+def test_fibfib_small_values(n):
+    # Property: Test against known small values
+    known_values = {
+        0: 0,
+        1: 0,
+        2: 1,
+        3: 1,
+        4: 2,
+        5: 4,
+        6: 7,
+        7: 13,
+        8: 24,
+        9: 44,
+        10: 81
+    }
+    result = fibfib(n)
+    assert result == known_values[n], f"fibfib({n}) should be {known_values[n]}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fibfib_monotonicity_for_n_greater_than_2(n):
+    if n >= 3:
+        # Property: For n >= 3, fibfib(n) should be greater than fibfib(n-1)
+        result_n = fibfib(n)
+        result_n_minus_1 = fibfib(n - 1)
+        assert result_n > result_n_minus_1, \
+            f"fibfib({n}) should be greater than fibfib({n-1}) for n >= 3, but {result_n} <= {result_n_minus_1}"
+
+```

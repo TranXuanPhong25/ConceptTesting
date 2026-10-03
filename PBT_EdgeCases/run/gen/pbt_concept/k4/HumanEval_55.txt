@@ -1,0 +1,108 @@
+```python
+from hypothesis import given, strategies as st
+
+# Helper function to compute Fibonacci sequence iteratively for properties
+def fib_iterative(n: int) -> int:
+    if n <= 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        a, b = 0, 1
+        for _ in range(2, n + 1):
+            a, b = b, a + b
+        return b
+
+@given(n=st.integers(min_value=0, max_value=50))  # Max value chosen to avoid overflow for large n
+@example(n=0)
+@example(n=1)
+@example(n=2)
+@example(n=10)
+def test_fib_property_recursive_definition(n: int):
+    """
+    Property: fib(n) should follow the recursive definition:
+    fib(0) = 0
+    fib(1) = 1
+    fib(n) = fib(n-1) + fib(n-2) for n > 1
+    """
+    if n == 0:
+        assert fib(n) == 0, f"fib({n}) should be 0"
+    elif n == 1:
+        assert fib(n) == 1, f"fib({n}) should be 1"
+    else:
+        assert fib(n) == fib(n-1) + fib(n-2), f"fib({n}) should be fib({n-1}) + fib({n-2})"
+
+@given(n=st.integers(min_value=0, max_value=50))
+@example(n=0)
+@example(n=1)
+@example(n=10)
+def test_fib_property_non_negativity(n: int):
+    """
+    Property: Fibonacci numbers for non-negative n should always be non-negative.
+    """
+    result = fib(n)
+    assert result >= 0, f"fib({n}) should be non-negative, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=50))
+@example(n=0)
+@example(n=1)
+@example(n=2)
+@example(n=3)
+@example(n=10)
+def test_fib_property_monotonicity(n: int):
+    """
+    Property: For n > 1, fib(n) should be greater than fib(n-1).
+    (Note: fib(0)=0, fib(1)=1, fib(2)=1, so for n=2, fib(2) == fib(1). This property applies for n > 2 strictly, or n >= 1 for n > 0 cases)
+    """
+    if n >= 2:
+        assert fib(n) >= fib(n-1), f"fib({n}) should be greater than or equal to fib({n-1})"
+    elif n == 1:
+        assert fib(n) == 1
+    elif n == 0:
+        assert fib(n) == 0
+
+@given(n=st.integers(min_value=0, max_value=50))
+@example(n=0)
+@example(n=1)
+@example(n=10)
+@example(n=20)
+def test_fib_property_matches_iterative(n: int):
+    """
+    Property: The function's result should match an independently implemented iterative Fibonacci function.
+    This serves as a strong correctness check.
+    """
+    result = fib(n)
+    expected_result = fib_iterative(n)
+    assert result == expected_result, f"fib({n}) should be {expected_result}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=100)) # Larger range to test more values
+@example(n=0)
+@example(n=1)
+@example(n=50)
+@example(n=100)
+def test_fib_property_b_day_identity(n: int):
+    """
+    Property: Cassini's Identity (Binet's formula related property):
+    F_n-1 * F_n+1 - F_n^2 = (-1)^n for n >= 1
+    (or simpler, related check for larger numbers)
+    A simpler property for small N is F_n * F_m + F_n+1 * F_m+1 = F_n+m+1
+    Let's test F_n + F_n+1 = F_n+2
+    """
+    if n >= 0:
+        assert fib(n) + fib(n+1) == fib(n+2), f"Identity fib({n}) + fib({n+1}) == fib({n+2}) failed"
+
+@given(n=st.integers(min_value=0, max_value=20)) # Small range to avoid large numbers quickly
+@example(n=0)
+@example(n=1)
+@example(n=5)
+def test_fib_property_sum_of_first_n(n: int):
+    """
+    Property: The sum of the first n Fibonacci numbers is F(n+2) - 1.
+    Sum_{i=1 to n} F_i = F_{n+2} - 1
+    Note: Our fib(0) = 0, so sum from i=0 to n is F_{n+2} - 1.
+    """
+    if n >= 0:
+        sum_fib = sum(fib(i) for i in range(n + 1))
+        expected_sum = fib(n + 2) - 1
+        assert sum_fib == expected_sum, f"Sum of fib up to {n} should be {expected_sum}, got {sum_fib}"
+```

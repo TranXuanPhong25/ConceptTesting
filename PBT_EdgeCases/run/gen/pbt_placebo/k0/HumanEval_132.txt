@@ -1,0 +1,102 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(alphabet='[]', min_size=1, max_size=100))
+def test_is_nested_property(string):
+    result = is_nested(string)
+
+    # Property 1: If the string contains "[]" and it's nested, it should return True.
+    # A simple check for "[]" is not sufficient, as `[[][]]` is nested but contains `[]`.
+    # We need to check if there are at least two open brackets followed by at least two close brackets
+    # or an open bracket followed by another open bracket and then a close bracket.
+    has_double_open = '[[' in string
+    has_double_close = ']]' in string
+
+    # More robust check for nesting: if there's an opening bracket followed by another opening bracket
+    # at some later point, and a closing bracket at some point after that second opening bracket.
+    # This is a basic heuristic for one type of nesting.
+    is_potentially_nested_heuristic = False
+    open_count = 0
+    for char in string:
+        if char == '[':
+            open_count += 1
+            if open_count >= 2:
+                # If we have at least two open brackets, the potential for nesting exists.
+                # We can't definitively say without checking for closing brackets,
+                # but this is a step towards a property.
+                is_potentially_nested_heuristic = True
+        elif char == ']':
+            if open_count > 0:
+                open_count -= 1
+            if open_count >= 1 and is_potentially_nested_heuristic:
+                # If we have an open bracket that is still unmatched, and we've seen a double open
+                # or a nested structure forming, this could indicate nesting.
+                # This is still a heuristic, but better than just checking for '[['.
+                pass
+    
+    # A more concrete property: If the function returns True, there must be at least one pair of
+    # brackets where an opening bracket is followed by another opening bracket, and later by a closing bracket.
+    if result:
+        # Check if there is an open bracket, followed by another open bracket,
+        # and then a closing bracket somewhere after the second open bracket.
+        found_nested_structure = False
+        first_open_idx = -1
+        for i, char in enumerate(string):
+            if char == '[':
+                if first_open_idx == -1:
+                    first_open_idx = i
+                else:
+                    # Found a second open bracket. Now look for a closing bracket.
+                    for j in range(i + 1, len(string)):
+                        if string[j] == ']':
+                            found_nested_structure = True
+                            break
+                if found_nested_structure:
+                    break
+            elif char == ']' and first_open_idx != -1:
+                # If we encounter a closing bracket before a second open bracket,
+                # reset first_open_idx as it's not the start of a nested structure.
+                first_open_idx = -1
+
+        assert found_nested_structure, "If is_nested is True, there must be a valid subsequence indicating nesting."
+
+    # Property 2: If the string is empty or contains only '[]' or '][', it should return False.
+    if string == '[]' or '][' in string or string == '':
+        assert not result, "Empty string, '[]', or '][' should not be considered nested."
+
+    # Property 3: If the string contains no open brackets or no close brackets, it cannot be nested.
+    if '[' not in string or ']' not in string:
+        assert not result, "String with no open or no close brackets cannot be nested."
+
+    # Property 4: If the function returns False, it should not contain `[[...]]` where `...` is a valid bracket sequence.
+    # This is a harder property to verify without implementing the nesting logic again.
+    # Instead, let's test some known non-nested cases.
+    if string == '[]':
+        assert not result, "[] is not nested"
+    if string == '[][]':
+        assert not result, "[][] is not nested"
+    if string == ']][[':
+        assert not result, "]][[ is not nested"
+
+    # Property 5: If the string contains a '[[...]]' pattern, it should generally be nested.
+    # This isn't a strict mathematical property, but a strong indicator.
+    if '[[]]' in string:
+        assert result, "'[[]]' should be recognized as nested"
+    if '[[][]]' in string:
+        assert result, "'[[][]]' should be recognized as nested"
+
+    # Property 6: If the string contains an equal number of open and close brackets,
+    # and it returns True, then there must be some nesting.
+    # (This is more about the definition of nesting than a strict check)
+    if string.count('[') == string.count(']') and result:
+        # This property is hard to test without re-implementing the core logic
+        # as it requires identifying a *valid subsequence* that is nested.
+        # However, we can assert that if it's balanced and nested, there must be a '[[...]]' like structure.
+        pass
+
+    # Property 7: Flipping all brackets should preserve the nesting property for symmetric cases
+    # Example: '[[[]]]' is nested, ']]][[[' is also nested (conceptually, if looking for the reverse pattern).
+    # This is not directly applicable to the `is_nested` function as it checks for a specific "nested" pattern.
+    # A more relevant property: reversing the string should not change the answer for symmetric nesting.
+    # This is also tricky as '[[][]]' reversed is '][][[]]' which isn't directly comparable.
+```

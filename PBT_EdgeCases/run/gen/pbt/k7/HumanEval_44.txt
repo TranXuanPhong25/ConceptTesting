@@ -1,0 +1,65 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_correctness(x, base):
+    """
+    Property: The function should correctly convert an integer `x` to its string representation in a given `base`.
+    This is verified by converting the result back to base 10 and comparing it with the original `x`.
+    """
+    result_str = change_base(x, base)
+
+    # Convert the resulting string back to base 10
+    decimal_value = 0
+    power = 0
+    for digit_char in reversed(result_str):
+        digit = int(digit_char)
+        decimal_value += digit * (base ** power)
+        power += 1
+
+    assert decimal_value == x, f"Conversion from base {base} back to base 10 should yield the original number. Expected {x}, got {decimal_value} from '{result_str}'."
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_non_empty_result(x, base):
+    """
+    Property: The function should always return a non-empty string for non-negative inputs.
+    """
+    result = change_base(x, base)
+    assert isinstance(result, str) and len(result) > 0, "Result should be a non-empty string."
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_valid_digits(x, base):
+    """
+    Property: All digits in the resulting string representation should be less than the given base.
+    """
+    result_str = change_base(x, base)
+    for digit_char in result_str:
+        digit = int(digit_char)
+        assert digit < base, f"Digit {digit} in result '{result_str}' should be less than base {base}."
+
+@given(st.integers(min_value=0, max_value=1000), st.just(10))
+def test_change_base_base_10(x, base):
+    """
+    Property: When the base is 10, the function should return the string representation of the original number.
+    """
+    result = change_base(x, base)
+    assert result == str(x), f"For base 10, the result should be the string representation of the number. Expected {str(x)}, got {result}."
+
+@given(st.just(0), st.integers(min_value=2, max_value=9))
+def test_change_base_zero_input(x, base):
+    """
+    Property: When the input number is 0, the function should always return '0'.
+    """
+    result = change_base(x, base)
+    assert result == '0', f"For input 0, the result should be '0'. Expected '0', got {result}."
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_leading_zeros(x, base):
+    """
+    Property: The resulting string should not have leading zeros unless the number itself is 0.
+    """
+    result = change_base(x, base)
+    if x != 0:
+        assert result[0] != '0', f"Result '{result}' for {x} in base {base} should not have leading zeros."
+
+```

@@ -1,0 +1,93 @@
+```python
+from typing import List, Any
+from hypothesis import given, strategies as st
+
+# Original function (for context and testing)
+def filter_integers(values: List[Any]) -> List[int]:
+    """ Filter given list of any python values only for integers
+    >>> filter_integers(['a', 3.14, 5])
+    [5]
+    >>> filter_integers([1, 2, 3, 'abc', {}, []])
+    [1, 2, 3]
+    """
+    return [value for value in values if isinstance(value, int) and not isinstance(value, bool)]
+
+@given(st.lists(st.one_of(st.integers(), st.booleans(), st.floats(allow_nan=False), st.text(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers())), min_size=0, max_size=1000))
+@example(values=[])
+@example(values=[True, 1, 1.0])
+@example(values=[0] * 1000)
+def test_filter_integers_only_returns_integers(values):
+    """
+    Property: The function should only return elements that are integers.
+    This also implies that booleans (which are subclasses of int) should be filtered out
+    as per the implicit expectation from the example `[True, 1, 1.0]` yielding `[1]`.
+    """
+    result = filter_integers(values)
+    assert all(isinstance(x, int) and not isinstance(x, bool) for x in result), "All returned elements must be true integers (not booleans)."
+
+@given(st.lists(st.one_of(st.integers(), st.booleans(), st.floats(allow_nan=False), st.text(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers())), min_size=0, max_size=1000))
+@example(values=[])
+@example(values=[1, 2, 3])
+@example(values=['a', 'b', 'c'])
+def test_filter_integers_preserves_order(values):
+    """
+    Property: The order of integers in the input list should be preserved in the output list.
+    """
+    result = filter_integers(values)
+    original_integers = [x for x in values if isinstance(x, int) and not isinstance(x, bool)]
+    assert result == original_integers, "The order of integers in the output should match their order in the input."
+
+@given(st.lists(st.one_of(st.integers(), st.booleans(), st.floats(allow_nan=False), st.text(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers())), min_size=0, max_size=1000))
+@example(values=[])
+@example(values=['a', 3.14, 'b'])
+@example(values=[{'a':1}, [], None])
+def test_filter_integers_returns_empty_if_no_integers(values):
+    """
+    Property: If the input list contains no integers, the function should return an empty list.
+    """
+    # Create a version of the input `values` guaranteed to have no actual integers
+    non_integers = [
+        val for val in values
+        if not (isinstance(val, int) and not isinstance(val, bool))
+    ]
+    # Add some explicit non-integer types to ensure diversity
+    non_integers.extend([3.14, 'hello', [], {}, None, True, False])
+    st.permutations(non_integers).example() # Shuffle to diversify positions
+
+    result = filter_integers(non_integers)
+    assert result == [], "If no true integers are present, the result should be an empty list."
+
+@given(st.lists(st.integers(), min_size=0, max_size=1000))
+@example(values=[1, 2, 3, 4, 5])
+@example(values=[])
+@example(values=[0, -1, 1000000])
+def test_filter_integers_returns_all_if_all_are_integers(values):
+    """
+    Property: If the input list contains only integers (and no booleans),
+    the function should return the original list (or a copy with same elements and order).
+    """
+    result = filter_integers(values)
+    assert result == values, "If all elements are integers, the function should return the input list unchanged."
+
+@given(st.lists(st.booleans(), min_size=0, max_size=1000))
+@example(values=[True, False, True])
+@example(values=[])
+def test_filter_integers_filters_out_booleans(values):
+    """
+    Property: Booleans, despite being technically integers, should be filtered out.
+    """
+    result = filter_integers(values)
+    assert result == [], "Booleans should be filtered out, resulting in an empty list if only booleans are present."
+
+@given(st.lists(st.one_of(st.integers(-1000000, 1000000), st.floats(allow_nan=False), st.text(min_size=0, max_size=10), st.none()), min_size=0, max_size=1000))
+def test_filter_integers_size_and_content(values):
+    """
+    Property: The length of the output list should be equal to the count of actual integers in the input.
+    Each element in the output list must be an integer from the input and present in the same order.
+    """
+    result = filter_integers(values)
+    expected_integers = [x for x in values if isinstance(x, int) and not isinstance(x, bool)]
+    assert len(result) == len(expected_integers), "Length of result should match count of integers in input."
+    assert result == expected_integers, "Result should contain exactly the integers from input, in order."
+
+```

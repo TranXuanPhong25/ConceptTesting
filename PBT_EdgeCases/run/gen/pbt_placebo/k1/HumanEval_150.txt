@@ -1,0 +1,75 @@
+```python
+import math
+from hypothesis import given, strategies as st, example
+
+def x_or_y(n, x, y):
+    """A simple program which should return the value of x if n is 
+    a prime number and should return the value of y otherwise.
+
+    Examples:
+    for x_or_y(7, 34, 12) == 34
+    for x_or_y(15, 8, 5) == 5
+    
+    """
+    if n < 2:
+        return y
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return y
+    return x
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+@example(n=7, x=34, y=12)
+@example(n=15, x=8, y=5)
+@example(n=2, x=10, y=20) # Smallest prime
+@example(n=1, x=10, y=20) # Not prime
+@example(n=4, x=10, y=20) # Not prime
+def test_x_or_y_property(n, x, y):
+    result = x_or_y(n, x, y)
+    
+    if is_prime(n):
+        assert result == x, f"For n={n} (prime), should return x={x}"
+    else:
+        assert result == y, f"For n={n} (not prime), should return y={y}"
+
+@given(n=st.integers(min_value=0, max_value=1),
+       x=st.integers(),
+       y=st.integers())
+@example(n=0, x=100, y=200)
+@example(n=1, x=100, y=200)
+def test_x_or_y_edge_cases_small_n(n, x, y):
+    result = x_or_y(n, x, y)
+    assert result == y, f"For n={n} (not prime), should return y={y}"
+
+@given(n=st.integers(min_value=2, max_value=1000), 
+       val=st.integers())
+def test_x_or_y_consistency_x_equals_y(n, val):
+    result = x_or_y(n, val, val)
+    assert result == val, "If x and y are the same, the result should always be that value"
+
+@given(n=st.integers(min_value=2, max_value=1000),
+       x=st.integers(),
+       y=st.integers())
+def test_x_or_y_invariance_for_n_not_prime(n, x, y):
+    if not is_prime(n):
+        result = x_or_y(n, x, y)
+        assert result == y, f"For n={n} (not prime), the result should always be y={y}"
+
+@given(n=st.integers(min_value=2, max_value=1000),
+       x=st.integers(),
+       y=st.integers())
+def test_x_or_y_invariance_for_n_prime(n, x, y):
+    if is_prime(n):
+        result = x_or_y(n, x, y)
+        assert result == x, f"For n={n} (prime), the result should always be x={x}"
+```

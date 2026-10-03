@@ -1,0 +1,63 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_property_1(n, p):
+    # Property: The result should always be less than p.
+    # This is a fundamental property of the modulo operation.
+    result = modp(n, p)
+    assert 0 <= result < p, "Result should be within the range [0, p-1]"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_property_2(n, p):
+    # Property: modp(n, p) should be equivalent to pow(2, n, p) in Python.
+    # This checks if the function correctly implements the modular exponentiation.
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"modp({n}, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=1000))
+def test_modp_property_with_p_is_1(n):
+    # Property: If p is 1, the result should always be 0 (since x % 1 is always 0).
+    result = modp(n, 1)
+    assert result == 0, "When p is 1, the result of modulo should always be 0"
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_modp_property_with_n_is_0(p):
+    # Property: 2^0 modulo p should always be 1 modulo p (which is 1 for p > 1).
+    result = modp(0, p)
+    assert result == 1, "When n is 0, the result of 2^0 mod p should be 1"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_powers_of_2_cycle(n, p):
+    # Property: The sequence 2^0, 2^1, 2^2, ... mod p must eventually repeat.
+    # We check if 2^(n+phi(p)) mod p = 2^n mod p (Euler's totient theorem for coprime numbers).
+    # For simplicity, we check if 2^(n+k) mod p eventually equals 2^n mod p for some k related to p.
+    # This is a bit complex to test generally without knowing phi(p), so we test a simpler property:
+    # 2^(n+1) mod p = (2 * (2^n mod p)) mod p
+    if p > 1: # Euler's totient theorem applies when gcd(a, p) = 1.
+        result_n = modp(n, p)
+        result_n_plus_1 = modp(n + 1, p)
+        expected_n_plus_1 = (2 * result_n) % p
+        assert result_n_plus_1 == expected_n_plus_1, \
+            f"modp({n+1}, {p}) should be (2 * modp({n}, {p})) % {p}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=1, max_value=1000))
+def test_modp_property_congruence(n, p):
+    # Property: If n1 % (phi(p) if coprime) == n2 % (phi(p) if coprime), then 2^n1 mod p == 2^n2 mod p.
+    # A simpler version: 2^(n+k*p) mod p is not necessarily 2^n mod p, but if a is power of 2,
+    # (a * b) % p == ((a % p) * (b % p)) % p
+    # For sufficiently large n and m, 2^n mod p should be equal to 2^(n + m * order_of_2_mod_p) mod p
+    # A more basic property: If p divides 2^k - 1, then 2^k mod p = 1.
+    # This is hard to test directly without finding k.
+    # Instead, we verify that modp(n, p) is consistent with the definition of modular exponentiation.
+    # pow(base, exp, mod) is robust.
+    result = modp(n, p)
+    # Check if the result, when exponentiated again, follows the pattern
+    # 2^(n+1) mod p should be (2 * (2^n mod p)) % p
+    if n > 0:
+        prev_result = modp(n - 1, p)
+        assert result == (2 * prev_result) % p or p == 1, \
+            f"modp({n}, {p}) should be (2 * modp({n-1}, {p})) % {p}"
+
+```

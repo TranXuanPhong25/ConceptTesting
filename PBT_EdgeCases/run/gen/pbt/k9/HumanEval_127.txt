@@ -1,0 +1,109 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100))
+    .map(lambda x: tuple(sorted(x))),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100))
+    .map(lambda x: tuple(sorted(x)))
+)
+def test_intersection_length_property(interval1, interval2):
+    """
+    Test that the function correctly determines if the intersection length is prime.
+    This property checks the core logic by manually calculating the intersection length
+    and comparing the expected prime status with the function's output.
+    """
+    result = intersection(interval1, interval2)
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Calculate the intersection interval
+    intersect_start = max(start1, start2)
+    intersect_end = min(end1, end2)
+
+    # Calculate the length of the intersection
+    intersection_length = 0
+    if intersect_start <= intersect_end:
+        intersection_length = intersect_end - intersect_start + 1
+
+    # Determine if the length is prime
+    expected_is_prime = is_prime(intersection_length)
+
+    if expected_is_prime:
+        assert result == "YES", f"Expected 'YES' for intersection {intersection_length} (prime), but got '{result}' for intervals {interval1}, {interval2}"
+    else:
+        assert result == "NO", f"Expected 'NO' for intersection {intersection_length} (not prime), but got '{result}' for intervals {interval1}, {interval2}"
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100))
+    .map(lambda x: tuple(sorted(x))),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100))
+    .map(lambda x: tuple(sorted(x)))
+)
+def test_no_intersection_is_no(interval1, interval2):
+    """
+    Test that if the intervals do not intersect, the function always returns "NO".
+    This property ensures that the special case of no intersection is handled correctly,
+    regardless of what a hypothetical 'length' might be if they did intersect.
+    """
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Check if there is no intersection
+    if max(start1, start2) > min(end1, end2):
+        result = intersection(interval1, interval2)
+        assert result == "NO", f"Expected 'NO' for non-intersecting intervals {interval1}, {interval2}, but got '{result}'"
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100))
+    .map(lambda x: tuple(sorted(x)))
+)
+def test_self_intersection(interval):
+    """
+    Test the intersection of an interval with itself.
+    The length of the intersection should be the length of the interval itself.
+    This property helps verify consistency and correct calculation of lengths for non-empty intersections.
+    """
+    result = intersection(interval, interval)
+    start, end = interval
+    length = end - start + 1
+    expected = "YES" if is_prime(length) else "NO"
+    assert result == expected, f"Self-intersection of {interval}: Expected '{expected}' for length {length}, but got '{result}'"
+
+@given(
+    st.tuples(st.just(5), st.just(5)),
+    st.tuples(st.just(5), st.just(5))
+)
+def test_single_point_intersection(interval1, interval2):
+    """
+    Test the specific edge case where both intervals are single points and they intersect.
+    The length of intersection should be 1, which is not prime.
+    """
+    result = intersection(interval1, interval2)
+    assert result == "NO", f"Expected 'NO' for single point intersection (length 1), but got '{result}' for {interval1}, {interval2}"
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100))
+    .map(lambda x: tuple(sorted(x))),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100))
+    .map(lambda x: tuple(sorted(x)))
+)
+def test_commutative_property(interval1, interval2):
+    """
+    Test that the order of the input intervals does not affect the result.
+    intersection(A, B) should be the same as intersection(B, A).
+    """
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, f"Commutative property violated: intersection({interval1}, {interval2}) was {result1}, but intersection({interval2}, {interval1}) was {result2}"
+```

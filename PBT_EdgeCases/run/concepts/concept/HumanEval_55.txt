@@ -1,0 +1,8 @@
+**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
+- param `n`: int (type from annotation)
+- domain `n`: [0, +inf] (examples cover 1..10; lower bound from docstring/examples)
+- edges `n`: 0, 1, 2, 10000, 2**53 + 1 (lower bound, just above it, large; values beyond the largest example)
+- strategy `n`: st.integers(min_value=0, max_value=1000000)
+- witness: @example(n=0)
+- witness: @example(n=1)
+- witness: @example(n=10000)

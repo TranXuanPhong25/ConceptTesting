@@ -1,0 +1,82 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(st.integers(min_value=-100, max_value=100),
+       st.integers(min_value=-100, max_value=100),
+       st.integers(min_value=-100, max_value=100),
+       st.integers(min_value=-100, max_value=100))
+def test_intersection_property(s1, e1, s2, e2):
+    # Ensure s1 <= e1 and s2 <= e2 for valid intervals
+    interval1 = (min(s1, e1), max(s1, e1))
+    interval2 = (min(s2, e2), max(s2, e2))
+
+    result = intersection(interval1, interval2)
+
+    # Calculate the intersection manually
+    start_intersection = max(interval1[0], interval2[0])
+    end_intersection = min(interval1[1], interval2[1])
+
+    if start_intersection > end_intersection:
+        # No intersection
+        assert result == "NO", "If intervals don't intersect, result should be 'NO'"
+    else:
+        intersection_length = end_intersection - start_intersection
+        if is_prime(intersection_length):
+            assert result == "YES", "If intersection length is prime, result should be 'YES'"
+        else:
+            assert result == "NO", "If intersection length is not prime, result should be 'NO'"
+
+@given(st.integers(min_value=-100, max_value=100),
+       st.integers(min_value=-100, max_value=100))
+def test_intersection_with_no_overlap(val1, val2):
+    # Create intervals that definitely do not overlap
+    # interval1: [val1, val1 + 1]
+    # interval2: [val1 + 3, val1 + 4]
+    interval1 = (val1, val1 + 1)
+    interval2 = (val1 + 3 + abs(val2), val1 + 4 + abs(val2)) # Ensure separation
+
+    result = intersection(interval1, interval2)
+    assert result == "NO", "When intervals clearly don't overlap, result should be 'NO'"
+
+@given(st.integers(min_value=-100, max_value=100))
+def test_intersection_with_empty_overlap_due_to_touching(val):
+    # Intervals touch at a single point, length 0, which is not prime
+    interval1 = (val, val)
+    interval2 = (val, val)
+    result = intersection(interval1, interval2)
+    assert result == "NO", "Intersection of a point (length 0) should be 'NO'"
+
+    # Intervals where intersection is a single point, length 0
+    interval1 = (val, val)
+    interval2 = (val - 1, val)
+    result = intersection(interval1, interval2)
+    assert result == "NO", "Intersection of a point (length 0) should be 'NO'"
+
+    interval1 = (val, val + 1)
+    interval2 = (val + 1, val + 2)
+    result = intersection(interval1, interval2)
+    assert result == "NO", "Intersection of a single point (length 0) should be 'NO'"
+
+
+@given(st.integers(min_value=-10, max_value=10),
+       st.integers(min_value=-10, max_value=10))
+def test_intersection_symmetric_property(s1, e1):
+    # Ensure s1 <= e1
+    interval1 = (min(s1, e1), max(s1, e1))
+    interval2 = (min(s1, e1), max(s1, e1)) # Same interval
+
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1) # Swap order
+
+    assert result1 == result2, "The order of intervals should not affect the result"
+
+```

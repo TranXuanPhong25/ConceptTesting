@@ -1,0 +1,85 @@
+```python
+from hypothesis import given, strategies as st
+
+def fib(n: int):
+    """Return n-th Fibonacci number.
+    >>> fib(10)
+    55
+    >>> fib(1)
+    1
+    >>> fib(8)
+    21
+    """
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        a, b = 0, 1
+        for _ in range(2, n + 1):
+            a, b = b, a + b
+        return b
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fib_non_negativity(n):
+    """
+    Property: Fibonacci numbers for non-negative n should always be non-negative.
+    """
+    result = fib(n)
+    assert result >= 0, f"Fibonacci number for n={n} should be non-negative."
+
+@given(st.integers(min_value=2, max_value=20))
+def test_fib_recursive_property(n):
+    """
+    Property: For n >= 2, fib(n) should be equal to fib(n-1) + fib(n-2).
+    """
+    result = fib(n)
+    expected = fib(n - 1) + fib(n - 2)
+    assert result == expected, f"fib({n}) should be fib({n-1}) + fib({n-2})"
+
+@given(st.integers(min_value=0, max_value=1))
+def test_fib_base_cases(n):
+    """
+    Property: Test the base cases fib(0) and fib(1).
+    """
+    if n == 0:
+        assert fib(0) == 0, "fib(0) should be 0."
+    elif n == 1:
+        assert fib(1) == 1, "fib(1) should be 1."
+
+@given(st.integers(min_value=0, max_value=50))
+def test_fib_monotonicity(n):
+    """
+    Property: For n >= 0, fib(n+1) should be greater than or equal to fib(n).
+    """
+    if n < 50: # Avoid overflow for very large numbers
+        fib_n = fib(n)
+        fib_n_plus_1 = fib(n + 1)
+        assert fib_n_plus_1 >= fib_n, f"fib({n+1}) should be >= fib({n})"
+
+@given(st.integers(min_value=0, max_value=1000000))
+def test_fib_consistency_with_known_values(n):
+    """
+    Property: Test consistency with known Fibonacci values for specific inputs.
+    """
+    if n == 0:
+        assert fib(n) == 0
+    elif n == 1:
+        assert fib(n) == 1
+    elif n == 2:
+        assert fib(n) == 1
+    elif n == 3:
+        assert fib(n) == 2
+    elif n == 4:
+        assert fib(n) == 3
+    elif n == 5:
+        assert fib(n) == 5
+    # The property is about consistency with known values for *all* inputs within the strategy,
+    # but for large N, we don't have precomputed values.
+    # The main purpose of this test is to ensure it doesn't crash or return obviously wrong values
+    # for a wide range of inputs, especially when we add more sophisticated tests later.
+    # For very large N, we rely on other properties like the recursive relation.
+    
+    # Check for non-negative return value as a basic sanity check for large inputs
+    assert fib(n) >= 0, f"fib({n}) should be non-negative for large n"
+```

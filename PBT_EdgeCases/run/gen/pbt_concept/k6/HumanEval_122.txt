@@ -1,0 +1,79 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_within_bounds(arr, k):
+    # Ensure k is always within the valid range for the given arr
+    k = min(k, len(arr))
+    k = max(k, 1)
+
+    result = add_elements(arr, k)
+
+    # Property 1: The result must be an integer.
+    assert isinstance(result, int), "The result should be an integer."
+
+    # Property 2: The sum should only consider elements from the first k elements.
+    # Property 3: The sum should only consider elements with at most two digits.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        if -99 <= arr[i] <= 99:
+            expected_sum += arr[i]
+
+    assert result == expected_sum, "The sum should correctly include elements with at most two digits from the first k elements."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_invariance_on_irrelevant_elements(data):
+    arr, k = data
+    original_result = add_elements(arr, k)
+
+    # Modify elements beyond the first k or elements with more than two digits within the first k
+    modified_arr = list(arr)
+    for i in range(len(arr)):
+        if i >= k:
+            # Change elements outside the first k, should not affect the sum
+            modified_arr[i] += 100000
+        elif not (-99 <= arr[i] <= 99):
+            # Change elements with more than two digits within the first k, should not affect the sum
+            modified_arr[i] += 100000
+
+    modified_result = add_elements(modified_arr, k)
+
+    assert original_result == modified_result, "Modifying elements outside the first k or elements with more than two digits within the first k should not change the result."
+
+@given(
+    st.lists(st.integers(min_value=-10000, max_value=10000), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_empty_two_digit_elements(data):
+    arr, k = data
+    
+    # Create an array where the first k elements have no two-digit numbers
+    no_two_digit_arr = [val if abs(val) > 99 else val + 100 for val in arr[:k]] + arr[k:]
+    
+    result = add_elements(no_two_digit_arr, k)
+    assert result == 0, "If no elements with at most two digits are found in the first k, the sum should be 0."
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100).flatmap(
+        lambda arr: st.tuples(st.just(arr), st.integers(min_value=1, max_value=len(arr)))
+    )
+)
+def test_add_elements_all_two_digit_elements(data):
+    arr, k = data
+    
+    # All elements in the array are guaranteed to have at most two digits
+    result = add_elements(arr, k)
+    
+    # The sum should be the sum of the first k elements
+    expected_sum = sum(arr[:k])
+    assert result == expected_sum, "If all elements in the first k have at most two digits, the sum should be the sum of those elements."
+
+```

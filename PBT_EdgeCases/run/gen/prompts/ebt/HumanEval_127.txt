@@ -1,0 +1,99 @@
+
+**Role**: As a tester, your task is to create comprehensive test cases for the incomplete function. These test cases should encompass Basic, Edge, and Large Scale scenarios to ensure the code's robustness, reliability, and scalability.
+
+**1. Basic Test Cases**:
+- **Objective**: To verify the fundamental functionality of the `has_close_elements` function under normal conditions.
+
+**2. Edge Test Cases**:
+- **Objective**: To evaluate the function's behavior under extreme or unusual conditions.
+
+**3. Large Scale Test Cases**:
+- **Objective**: To assess the function’s performance and scalability with large data samples.
+
+**Instructions**:
+- Implement a comprehensive set of test cases following the guidelines above.
+- Ensure each test case is well-documented with comments explaining the scenario it covers.
+- Pay special attention to edge cases as they often reveal hidden bugs.
+- For large-scale tests, focus on the function's efficiency and performance under heavy loads.
+
+- The format of test cases should be:
+```python
+assert function_name(input) == expected_output, "Test Case Description"
+```
+
+
+# For example:
+
+## Prompt 1:
+```python
+from typing import List
+
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """ Check if in given list of numbers, are any two numbers closer to each other than
+    given threshold.
+    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+    False
+    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+    True
+    """
+
+```
+
+## Completion 1:
+```python
+
+assert has_close_elements([1.0, 2.0, 3.0], 0.5) == False
+assert has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)== True
+
+```
+
+## Prompt 2:
+```python
+from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """ Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+    separate those group into separate strings and return the list of those.
+    Separate groups are balanced (each open brace is properly closed) and not nested within each other
+    Ignore any spaces in the input string.
+    >>> separate_paren_groups('( ) (( )) (( )( ))')
+    ['()', '(())', '(()())']
+    """
+
+```
+
+## Completion 2:
+```python
+
+assert separate_paren_groups('( ) (( )) (( )( ))') == ['()', '(())', '(()())']
+
+```
+
+
+**Input Code Snippet**
+```python
+
+def intersection(interval1, interval2):
+    """You are given two intervals,
+    where each interval is a pair of integers. For example, interval = (start, end) = (1, 2).
+    The given intervals are closed which means that the interval (start, end)
+    includes both start and end.
+    For each given interval, it is assumed that its start is less or equal its end.
+    Your task is to determine whether the length of intersection of these two 
+    intervals is a prime number.
+    Example, the intersection of the intervals (1, 3), (2, 4) is (2, 3)
+    which its length is 1, which not a prime number.
+    If the length of the intersection is a prime number, return "YES",
+    otherwise, return "NO".
+    If the two intervals don't intersect, return "NO".
+
+
+    [input/output] samples:
+    intersection((1, 2), (2, 3)) ==> "NO"
+    intersection((-1, 1), (0, 4)) ==> "NO"
+    intersection((-3, -1), (-5, 5)) ==> "YES"
+    """
+
+```

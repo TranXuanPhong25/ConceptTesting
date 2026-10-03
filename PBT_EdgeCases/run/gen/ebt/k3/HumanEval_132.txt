@@ -1,0 +1,36 @@
+```python
+
+# Basic Test Cases
+assert is_nested('[[]]') == True, "Basic Test Case 1: Simple nested brackets"
+assert is_nested('[[][]]') == True, "Basic Test Case 2: Nested brackets with inner non-nested"
+assert is_nested('[[][][]]') == True, "Basic Test Case 3: Multiple nested levels"
+assert is_nested('[]') == False, "Basic Test Case 4: Single non-nested pair"
+assert is_nested('[][]') == False, "Basic Test Case 5: Multiple non-nested pairs"
+assert is_nested('[[][') == True, "Basic Test Case 6: Nested with unmatched opening"
+assert is_nested(']][[]') == True, "Basic Test Case 7: Nested with unmatched closing"
+assert is_nested('[][[]]') == True, "Basic Test Case 8: Nested within a sequence of non-nested"
+
+# Edge Test Cases
+assert is_nested('') == False, "Edge Test Case 1: Empty string"
+assert is_nested('[') == False, "Edge Test Case 2: Single opening bracket"
+assert is_nested(']') == False, "Edge Test Case 3: Single closing bracket"
+assert is_nested('[[') == False, "Edge Test Case 4: Two opening brackets, no closing"
+assert is_nested(']]') == False, "Edge Test Case 5: Two closing brackets, no opening"
+assert is_nested('[]]]]]]][[[[[]') == False, "Edge Test Case 6: Long string with no valid nested subsequence"
+assert is_nested('][') == False, "Edge Test Case 7: Mismatched, not nested"
+assert is_nested('[[[[[[[[[]]]]]]]]]') == True, "Edge Test Case 8: Deeply nested structure"
+assert is_nested('[]][[]') == True, "Edge Test Case 9: Nested after an invalid sequence"
+assert is_nested('[[[]') == True, "Edge Test Case 10: Nested with unmatched trailing opening"
+assert is_nested('[]]]') == False, "Edge Test Case 11: Non-nested followed by unmatched closing"
+
+# Large Scale Test Cases
+assert is_nested('[' * 1000 + ']' * 1000) == False, "Large Scale Test Case 1: 1000 non-nested pairs"
+assert is_nested('[' * 500 + '[]' + ']' * 500) == True, "Large Scale Test Case 2: Deeply nested single pair"
+assert is_nested('[]' * 5000) == False, "Large Scale Test Case 3: 5000 non-nested pairs"
+assert is_nested('[' * 2 + ']' * 2 + '[' * 2 + ']' * 2 + '[' * 2 + ']' * 2) == False, "Large Scale Test Case 4: Multiple non-nested groups"
+assert is_nested('[[' * 500 + ']]' * 500) == True, "Large Scale Test Case 5: 500 nested pairs"
+assert is_nested('[' * 10000 + ']' * 10000) == False, "Large Scale Test Case 6: Very long non-nested sequence"
+assert is_nested('[' * 1 + '[' * 9999 + ']' * 9999 + ']' * 1) == True, "Large Scale Test Case 7: Very long deeply nested sequence"
+assert is_nested('[[]]' * 2500) == True, "Large Scale Test Case 8: 2500 instances of simple nesting"
+
+```

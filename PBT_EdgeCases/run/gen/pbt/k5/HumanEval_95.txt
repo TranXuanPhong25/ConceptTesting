@@ -1,0 +1,113 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.dictionaries(st.text(min_size=1).map(lambda s: s.lower()), st.just("value"), min_size=1))
+def test_all_lower_case_keys(d):
+    """
+    Property: If all keys in the dictionary are non-empty lowercase strings,
+    the function should return True.
+    """
+    assert check_dict_case(d) is True, "Should return True for all lowercase keys"
+
+@given(st.dictionaries(st.text(min_size=1).map(lambda s: s.upper()), st.just("value"), min_size=1))
+def test_all_upper_case_keys(d):
+    """
+    Property: If all keys in the dictionary are non-empty uppercase strings,
+    the function should return True.
+    """
+    assert check_dict_case(d) is True, "Should return True for all uppercase keys"
+
+@given(st.dictionaries(st.text(min_size=1).map(lambda s: s.lower()), st.just("value"), min_size=0, max_size=0))
+def test_empty_dictionary(d):
+    """
+    Property: An empty dictionary should return False.
+    """
+    assert check_dict_case(d) is False, "Should return False for an empty dictionary"
+
+@given(
+    st.dictionaries(
+        st.one_of(
+            st.text(min_size=1).map(lambda s: s.lower()),
+            st.text(min_size=1).map(lambda s: s.upper())
+        ),
+        st.just("value"),
+        min_size=2
+    ).filter(
+        lambda d: not (all(isinstance(k, str) and k.islower() for k in d.keys()) or
+                       all(isinstance(k, str) and k.isupper() for k in d.keys()))
+    )
+)
+def test_mixed_case_keys(d):
+    """
+    Property: If keys are a mix of lowercase and uppercase strings,
+    or a mix of different cases that are not exclusively all lower or all upper,
+    the function should return False.
+    """
+    assert check_dict_case(d) is False, "Should return False for mixed case keys"
+
+@given(
+    st.dictionaries(
+        st.one_of(
+            st.integers(),
+            st.floats(),
+            st.text(min_size=1)
+        ),
+        st.just("value"),
+        min_size=1
+    ).filter(lambda d: not all(isinstance(k, str) for k in d.keys()))
+)
+def test_non_string_keys(d):
+    """
+    Property: If any key in the dictionary is not a string,
+    the function should return False.
+    """
+    assert check_dict_case(d) is False, "Should return False if any key is not a string"
+
+@given(
+    st.dictionaries(
+        st.text(min_size=1),  # Keys can be any string
+        st.just("value"),
+        min_size=1,
+        max_size=10
+    ).filter(
+        lambda d: not (all(isinstance(k, str) and k.islower() for k in d.keys()) or
+                       all(isinstance(k, str) and k.isupper() for k in d.keys()))
+    )
+)
+def test_comprehensive_false_cases(d):
+    """
+    Property: For various dictionaries that do not satisfy the 'all lower' or 'all upper'
+    string key condition (including mixed case, non-string keys, etc., as long as not empty),
+    the function should return False.
+    This test combines multiple conditions leading to False.
+    """
+    # Ensure it's not an empty dictionary
+    if not d:
+        assert check_dict_case(d) is False, "Empty dict should be False"
+        return
+
+    # Check if the generated dictionary *actually* falls into a False case
+    # This filter should already ensure that, but good to double check the logic
+    is_all_lower = True
+    is_all_upper = True
+    has_non_string = False
+
+    for k in d.keys():
+        if not isinstance(k, str):
+            has_non_string = True
+            is_all_lower = False
+            is_all_upper = False
+            break
+        if not k.islower():
+            is_all_lower = False
+        if not k.isupper():
+            is_all_upper = False
+
+    if has_non_string or (not is_all_lower and not is_all_upper):
+        assert check_dict_case(d) is False, "Should return False for dictionaries not exclusively all lower or all upper string keys"
+    elif is_all_lower or is_all_upper:
+        # This case should ideally be caught by other tests, but if the filter isn't perfect,
+        # we still assert the correct behavior.
+        assert check_dict_case(d) is True, "Unexpected: Filtered dictionary should be False, but is True"
+
+```

@@ -1,0 +1,123 @@
+```python
+import string
+from hypothesis import given, strategies as st
+
+@given(st.text(string.ascii_letters))
+def test_vowels_count_non_negative(s):
+    result = vowels_count(s)
+    assert result >= 0, "Vowel count should always be non-negative"
+
+@given(st.text(string.ascii_letters))
+def test_vowels_count_upper_lower_case_invariance(s):
+    result_lower = vowels_count(s.lower())
+    result_upper = vowels_count(s.upper())
+    # The 'y' rule only applies to the end of the word, so we need to
+    # adjust the expected count if 'y' is involved at the end.
+    # Otherwise, case should not matter for other vowels.
+    expected_diff = 0
+    if s and s[-1].lower() == 'y':
+        # If 'y' is at the end, it's counted. If it's not at the end, it's not.
+        # This rule applies regardless of case.
+        # So, the count should be the same for lower and upper case strings.
+        pass # No adjustment needed as the logic correctly handles 'y' at the end for both cases
+    
+    assert result_lower == result_upper, "Vowel count should be the same for lower and upper case inputs, considering 'y' rule."
+
+@given(st.text(string.ascii_letters))
+def test_vowels_count_add_non_vowel_no_change(s):
+    # Add a consonant (not 'y') to the beginning or middle, count should not change
+    # unless 'y' was at the end and is no longer.
+    non_vowel_char = st.just('b').example() # or any other consonant not 'y'
+    s_modified = non_vowel_char + s
+    
+    result_original = vowels_count(s)
+    result_modified = vowels_count(s_modified)
+
+    expected_change = 0
+    # If original string ended with 'y', and now it doesn't (because we added something to the beginning)
+    # this test case might not be perfectly invariant unless we add to the end of s_modified.
+    # A better approach is to check if adding a non-vowel to the beginning or middle changes the count.
+    # Let's refine this property: adding a non-vowel (not 'y') at a position other than the end
+    # should not change the count of existing vowels.
+    # This also needs to handle the 'y' at the end rule.
+    
+    # Let's test that adding a non-vowel character (excluding 'y') at the beginning or middle
+    # doesn't increase the vowel count, and if it decreases it, it must be because the original
+    # string ended with 'y' and the new one doesn't.
+    
+    # Property: Adding a non-vowel character (not 'y') that is not at the end of the word
+    # should not increase the vowel count. It might decrease if 'y' was at the end and is now not.
+    
+    # For a robust property, let's consider adding non-vowels at the beginning
+    # and compare the new count with the original.
+    
+    original_vowel_count = vowels_count(s)
+    
+    # Add 'z' to the beginning
+    s_with_z_prefix = 'z' + s
+    vowel_count_with_z_prefix = vowels_count(s_with_z_prefix)
+    
+    # If original string was empty, 'z's' count is 0.
+    # If original string ended with 'y', adding 'z' at the beginning doesn't change if 'y' is still at the end.
+    # Example: "apple" -> 2. "zapple" -> 2.
+    # Example: "day" -> 2. "zday" -> 2.
+    
+    # The count should be the same if 'y' rule doesn't change
+    assert vowel_count_with_z_prefix == original_vowel_count, \
+        "Adding a non-vowel ('z') to the beginning should not change the vowel count."
+
+@given(st.text(string.ascii_letters).map(lambda s: s + 'y')) # Ensures 'y' is at the end
+def test_vowels_count_y_at_end(s):
+    # Test that 'y' is counted when at the end
+    s_without_y = s[:-1]
+    expected_vowels_without_y = vowels_count(s_without_y)
+    result_with_y = vowels_count(s)
+    
+    assert result_with_y == expected_vowels_without_y + 1, \
+        f"The 'y' at the end of '{s}' should be counted as a vowel."
+
+@given(st.text(string.ascii_letters).map(lambda s: 'y' + s if s else 'y'),
+       st.text(string.ascii_letters, min_size=1)) # Ensures 'y' is not at the end
+def test_vowels_count_y_not_at_end(s_prefix, s_suffix):
+    # Test that 'y' is NOT counted when not at the end
+    s_with_y_in_middle = s_prefix + 'y' + s_suffix
+    
+    # Calculate expected count by treating 'y' as a consonant, then manually adding it if applicable.
+    expected_count = 0
+    for char in s_with_y_in_middle.lower():
+        if char in 'aeiou':
+            expected_count += 1
+    
+    # The function should not count the 'y' because it's not at the end
+    result = vowels_count(s_with_y_in_middle)
+    
+    # If the _actual_ last character of s_with_y_in_middle is 'y', then it should be counted.
+    # This scenario is explicitly excluded by s_suffix having min_size=1
+    
+    assert result == expected_count, \
+        f"The 'y' in the middle of '{s_with_y_in_middle}' should not be counted as a vowel."
+
+@given(st.text(string.ascii_letters, min_size=0, max_size=100))
+def test_vowels_count_length_property(s):
+    result = vowels_count(s)
+    assert result <= len(s), "Vowel count cannot exceed the string length"
+
+@given(st.text(string.ascii_letters, max_size=100))
+def test_vowels_count_empty_string(s):
+    if not s:
+        assert vowels_count(s) == 0, "Empty string should have 0 vowels"
+
+@given(st.text(string.ascii_lowercase, min_size=1, max_size=100))
+def test_vowels_count_consistency(s):
+    # This property checks that the count is consistent with a manual check,
+    # specifically for lowercase to simplify 'y' handling.
+    
+    expected_count = 0
+    for i, char in enumerate(s):
+        if char in 'aeiou':
+            expected_count += 1
+        elif char == 'y' and i == len(s) - 1:
+            expected_count += 1
+            
+    assert vowels_count(s) == expected_count, "Vowel count should match manual calculation for lowercase strings."
+```

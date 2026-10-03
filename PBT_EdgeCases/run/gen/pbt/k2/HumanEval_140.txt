@@ -1,0 +1,63 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_no_change_without_spaces(text):
+    if ' ' not in text:
+        assert fix_spaces(text) == text, "String without spaces should remain unchanged."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_all_spaces_replaced_by_underscore_or_dash(text):
+    result = fix_spaces(text)
+    assert ' ' not in result, "No spaces should remain in the result string."
+    assert all(c == '_' or c == '-' or c.isalnum() for c in result), \
+        "All original spaces should be replaced by '_' or '-'."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_single_space_replacement(text):
+    # Construct a string with single spaces
+    modified_text = text.replace(' ', '_')
+    assert fix_spaces(text) == modified_text, "Single spaces should be replaced by underscores."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_two_consecutive_spaces_replacement(text):
+    # Construct a string where only two consecutive spaces are present
+    if '  ' in text and '   ' not in text:
+        expected = text.replace('  ', '__')
+        assert fix_spaces(text) == expected, "Two consecutive spaces should be replaced by two underscores."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_multiple_consecutive_spaces_replacement(text):
+    # This property tests that any sequence of 3 or more spaces is replaced by a single dash
+    # We can't easily construct 'text' to ensure only 3+ spaces are present,
+    # so we test the resulting string's property.
+    result = fix_spaces(text)
+    assert '___' not in result, "Three consecutive underscores should not exist in the output."
+    assert '__' not in result, "Two consecutive underscores should not exist if they represent original 3+ spaces."
+    assert not ('-' in result and result.count('-') > 0 and len(text.split('-')) - 1 != text.count('   ') + text.count('    ') + text.count('     ')),\
+        "Each '-' in the output should correspond to 3 or more consecutive spaces in the input."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_idempotence(text):
+    # Applying the function twice should yield the same result as applying it once.
+    result_once = fix_spaces(text)
+    result_twice = fix_spaces(result_once)
+    assert result_once == result_twice, "The function should be idempotent."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_empty_string(text):
+    if text == "":
+        assert fix_spaces(text) == "", "Empty string should return an empty string."
+
+@given(st.text(st.characters(blacklist_characters='\n\r'), min_size=0, max_size=100))
+def test_only_spaces(text):
+    if all(c == ' ' for c in text):
+        if len(text) == 0:
+            assert fix_spaces(text) == "", "Empty string of spaces should be empty."
+        elif len(text) == 1:
+            assert fix_spaces(text) == "_", "Single space should become underscore."
+        elif len(text) == 2:
+            assert fix_spaces(text) == "__", "Two spaces should become two underscores."
+        else: # len(text) >= 3
+            assert fix_spaces(text) == "-", "Three or more spaces should become a dash."
+```

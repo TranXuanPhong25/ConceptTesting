@@ -1,0 +1,74 @@
+```python
+from hypothesis import given, strategies as st
+
+def change_base(x: int, base: int):
+    """Change numerical base of input number x to base.
+    return string representation after the conversion.
+    base numbers are less than 10.
+    >>> change_base(8, 3)
+    '22'
+    >>> change_base(8, 2)
+    '1000'
+    >>> change_base(7, 2)
+    '111'
+    """
+    if x == 0:
+        return '0'
+    res = ''
+    while x > 0:
+        res = str(x % base) + res
+        x //= base
+    return res
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_inversion(x, base):
+    """
+    Property: Converting a number to a base and then back to base 10 should yield the original number.
+    This tests the correctness of the conversion logic.
+    """
+    if x == 0:
+        assert change_base(x, base) == '0'
+        return
+
+    result_str = change_base(x, base)
+
+    # Convert back to base 10
+    converted_back = 0
+    for digit in result_str:
+        converted_back = converted_back * base + int(digit)
+
+    assert converted_back == x, f"Conversion failed for x={x}, base={base}. Expected {x}, got {converted_back}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_digits_valid(x, base):
+    """
+    Property: All digits in the resulting string representation should be less than the given base.
+    This ensures that the output is a valid representation in the specified base.
+    """
+    result_str = change_base(x, base)
+
+    for digit_char in result_str:
+        digit = int(digit_char)
+        assert 0 <= digit < base, f"Invalid digit {digit} found in base {base} for number {x}. Result: {result_str}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_positive_input_non_empty_output(x, base):
+    """
+    Property: For any non-negative input 'x', the output string should not be empty.
+    If x is 0, the output should be '0'.
+    """
+    result_str = change_base(x, base)
+
+    if x == 0:
+        assert result_str == '0', f"For x=0, expected '0', got '{result_str}'"
+    else:
+        assert len(result_str) > 0, f"For x={x}, base={base}, output string is empty"
+
+@given(st.integers(min_value=1, max_value=1000))
+def test_change_base_base_10_identity(x):
+    """
+    Property: Changing to base 10 should yield the string representation of the number itself.
+    """
+    result = change_base(x, 10)
+    assert result == str(x), f"Conversion to base 10 failed for x={x}. Expected '{str(x)}', got '{result}'"
+```

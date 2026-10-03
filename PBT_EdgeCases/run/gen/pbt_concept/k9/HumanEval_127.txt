@@ -1,0 +1,118 @@
+```python
+from hypothesis import given, strategies as st
+from typing import Tuple
+
+def is_prime(n: int) -> bool:
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple)
+)
+def test_intersection_property(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    result = intersection(interval1, interval2)
+
+    # Calculate the actual intersection
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Determine the intersection interval
+    intersect_start = max(start1, start2)
+    intersect_end = min(end1, end2)
+
+    if intersect_start > intersect_end:
+        # No intersection
+        expected = "NO"
+    else:
+        # Calculate the length of the intersection
+        intersection_length = intersect_end - intersect_start + 1
+        expected = "YES" if is_prime(intersection_length) else "NO"
+
+    assert result == expected, f"For intervals {interval1} and {interval2}, expected {expected} but got {result}"
+
+@given(
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(sorted).map(tuple)
+)
+def test_intersection_length_non_negative(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    """
+    Property: The length of the intersection, if it exists, must be non-negative.
+    """
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersect_start = max(start1, start2)
+    intersect_end = min(end1, end2)
+
+    if intersect_start <= intersect_end:
+        intersection_length = intersect_end - intersect_start + 1
+        assert intersection_length >= 0, "Intersection length must be non-negative if intersection exists"
+    else:
+        # If no intersection, the length concept doesn't apply directly,
+        # but the function should return "NO"
+        assert intersection(interval1, interval2) == "NO"
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(sorted).map(tuple).filter(lambda x: x[0] <= x[1]),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(sorted).map(tuple).filter(lambda x: x[0] <= x[1])
+)
+def test_intersection_symmetry(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    """
+    Property: The intersection of interval1 and interval2 should be the same as
+    the intersection of interval2 and interval1 (commutative property).
+    """
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, "Intersection should be commutative"
+
+@given(
+    st.integers(min_value=-100, max_value=100),
+    st.integers(min_value=-100, max_value=100),
+    st.integers(min_value=-100, max_value=100)
+)
+def test_single_point_intersection(a: int, b: int, c: int):
+    """
+    Property: Test cases where intervals touch at a single point, forming an intersection of length 1.
+    Length 1 is not prime, so should return "NO".
+    """
+    interval1 = (min(a, b), max(a, b))
+    interval2 = (max(a, b), max(a, b) + c) if c != 0 else (max(a, b), max(a, b))
+
+    # Create touching intervals
+    interval_touch1 = (a, b)
+    interval_touch2 = (b, b + abs(c)) if c != 0 else (b,b)
+    if interval_touch1[0] > interval_touch1[1]: interval_touch1 = (interval_touch1[1], interval_touch1[0])
+    if interval_touch2[0] > interval_touch2[1]: interval_touch2 = (interval_touch2[1], interval_touch2[0])
+
+
+    # Ensure they touch at 'b' and form an intersection of length 1
+    # Example: (1, 2) and (2, 3) -> intersection (2, 2), length 1
+    start = interval_touch1[1]
+    end = interval_touch2[0]
+
+    if start == end: # They touch at a single point
+        result = intersection(interval_touch1, interval_touch2)
+        assert result == "NO", f"Intersection of {interval_touch1} and {interval_touch2} (length 1) should be 'NO'"
+
+@given(
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple),
+    st.tuples(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000)).map(sorted).map(tuple)
+)
+def test_no_intersection_returns_no(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    """
+    Property: If the two intervals do not intersect, the function should return "NO".
+    """
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Check for non-intersection
+    if end1 < start2 or end2 < start1:
+        result = intersection(interval1, interval2)
+        assert result == "NO", f"For non-intersecting intervals {interval1} and {interval2}, result should be 'NO'"
+
+```

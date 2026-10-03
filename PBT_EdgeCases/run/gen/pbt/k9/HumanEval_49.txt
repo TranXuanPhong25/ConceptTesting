@@ -1,0 +1,43 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_definition(n, p):
+    # Property: The function should return (2^n) % p
+    result = modp(n, p)
+    expected = pow(2, n, p)  # Python's built-in pow(base, exp, mod) computes (base**exp) % mod
+    assert result == expected, f"For n={n}, p={p}: Expected {expected}, got {result}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_identity_p_is_1(n, p):
+    # Property: If p is 1, the result should always be 0 (except if n is 0 and p is 1, then pow(2,0,1) is 0)
+    # However, the problem states p is a prime number, so p >= 2
+    # This test is more for understanding properties than strict adherence to prime p,
+    # but let's stick to valid inputs for p.
+    pass # As p is guaranteed to be >= 2, this property for p=1 is not directly applicable.
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_n_is_zero(n_val, p):
+    # Property: When n is 0, 2^0 mod p should always be 1 mod p, which is 1 for p > 1.
+    result = modp(0, p)
+    assert result == 1, f"For n=0, p={p}: Expected 1, got {result}"
+
+@given(st.integers(min_value=1, max_value=50), st.integers(min_value=2, max_value=100))
+def test_modp_result_within_range(n, p):
+    # Property: The result should always be between 0 and p-1 (inclusive)
+    result = modp(n, p)
+    assert 0 <= result < p, f"For n={n}, p={p}: Result {result} is not within [0, {p-1}]"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_multiplicative_property(n1, p):
+    # Property: 2^(n1+1) mod p == (2^n1 * 2^1) mod p == (modp(n1, p) * 2) mod p
+    # This checks consistency for consecutive powers.
+    n2 = n1 + 1
+    if n2 <= 100: # Ensure n2 is also within a reasonable range for generation
+        result_n1 = modp(n1, p)
+        result_n2 = modp(n2, p)
+        expected_n2_from_n1 = (result_n1 * 2) % p
+        assert result_n2 == expected_n2_from_n1, \
+            f"For n1={n1}, n2={n2}, p={p}: Expected modp({n2},{p}) to be {expected_n2_from_n1}, got {result_n2}"
+
+```

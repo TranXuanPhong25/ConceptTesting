@@ -1,0 +1,59 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_correctness(x, base):
+    """
+    Property: The change_base function should correctly convert an integer `x` to its string
+    representation in the given `base`.
+
+    This is verified by comparing the output of `change_base` with a reference implementation.
+    The reference implementation iteratively calculates the remainder and quotient to build
+    the base-converted string.
+    """
+    result = change_base(x, base)
+
+    # Reference implementation for base conversion
+    if x == 0:
+        expected = '0'
+    else:
+        temp_x = x
+        digits = []
+        while temp_x > 0:
+            digits.append(str(temp_x % base))
+            temp_x //= base
+        expected = ''.join(reversed(digits))
+
+    assert result == expected, f"For x={x}, base={base}, expected '{expected}', but got '{result}'"
+
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_zero_input(x, base):
+    """
+    Property: If the input number `x` is 0, the output should always be "0", regardless of the base.
+    """
+    if x == 0:
+        result = change_base(x, base)
+        assert result == '0', f"For x=0, base={base}, expected '0', but got '{result}'"
+
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_non_empty_output(x, base):
+    """
+    Property: For any positive input number `x`, the output string should not be empty.
+    """
+    result = change_base(x, base)
+    assert len(result) > 0, f"For x={x}, base={base}, the result string should not be empty."
+
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=9))
+def test_change_base_digits_in_range(x, base):
+    """
+    Property: All digits in the resulting string representation should be less than the base.
+    """
+    result = change_base(x, base)
+    for digit_char in result:
+        digit = int(digit_char)
+        assert digit < base, f"For x={x}, base={base}, digit '{digit}' is not less than base '{base}'"
+
+```

@@ -1,0 +1,111 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(x=st.integers(min_value=1, max_value=10**6), n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_true_cases(x, n):
+    # Property: If x is a simple power of n, then the function should return True.
+    # We generate x as n**k for some integer k, then check if the function returns True.
+    k = st.integers(min_value=0, max_value=10).example()
+    if n**k == x:
+        assert is_simple_power(x, n) is True, f"For x={x}, n={n}, expected True but got False"
+
+@given(x=st.integers(min_value=1, max_value=10**6), n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_false_cases(x, n):
+    # Property: If x is not a simple power of n, then the function should return False.
+    # We check if log_n(x) is an integer. If not, the function should return False.
+    if x == 1: # Handle x=1 separately since n**0 = 1 for any n
+        if n == 1: # 1 is 1**k for any k, but the problem implies n is the base
+            # This case might be ambiguous, for this test, we consider it false unless n=1, then true for any x.
+            # However, the problem states n**int=x, implies n is the base.
+            # Let's assume n >= 2 for this property to avoid division by zero or log(1) issues.
+            pass
+        else:
+            assert is_simple_power(x, n) is True, f"For x={x}, n={n}, expected True but got False"
+    else:
+        # Check if x is a power of n
+        current_power = 1
+        while current_power < x:
+            current_power *= n
+        
+        if current_power != x:
+            assert is_simple_power(x, n) is False, f"For x={x}, n={n}, expected False but got True"
+
+@given(x=st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_is_1(x):
+    # Property: If n is 1, then x can only be a simple power of n if x is 1.
+    # (1**k = 1 for any k)
+    if x == 1:
+        assert is_simple_power(x, 1) is True, f"For x={x}, n=1, expected True"
+    else:
+        assert is_simple_power(x, 1) is False, f"For x={x}, n=1, expected False"
+
+@given(x=st.integers(min_value=1, max_value=10**6))
+def test_is_simple_power_n_is_x(x):
+    # Property: If n equals x, then x is a simple power of n (n**1 = x).
+    assert is_simple_power(x, x) is True, f"For x={x}, n={x}, expected True"
+
+@given(x=st.integers(min_value=1, max_value=10**6), 
+       n_base=st.integers(min_value=2, max_value=100))
+def test_is_simple_power_inverses(x, n_base):
+    # Property: If is_simple_power(x, n) is True, then x must be greater than or equal to n,
+    # unless x is 1 (in which case n could be anything that allows 1**0=1).
+    # If x is a power of n_base, say x = n_base**k, then for other n (where n != n_base), it should be false unless n is also a power of n_base, or n=1
+    k = st.integers(min_value=0, max_value=5).example()
+    x_power = n_base**k
+    
+    # Check that for the actual base, it's true
+    assert is_simple_power(x_power, n_base) is True, f"Expected True for x={x_power}, n={n_base}"
+
+    # Check for bases that are clearly not producing x_power
+    other_n = st.integers(min_value=n_base + 1, max_value=n_base + 10).example()
+    if other_n**k != x_power and (other_n != 1 or x_power != 1): # Exclude case where x_power=1 and other_n=1
+        if x_power == 1:
+            if other_n == 1:
+                assert is_simple_power(x_power, other_n) is True
+            else:
+                assert is_simple_power(x_power, other_n) is True # 1 is power of any non-zero base
+        else:
+            if not any(other_n**j == x_power for j in range(k + 2)): # Check up to k+1 just in case
+                assert is_simple_power(x_power, other_n) is False, f"Expected False for x={x_power}, n={other_n}"
+
+@given(n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_one_is_always_true_for_n_ge_2(n):
+    # Property: 1 is always a simple power of any base n >= 2 (1 = n**0).
+    assert is_simple_power(1, n) is True, f"For x=1, n={n}, expected True"
+
+@given(x=st.integers(min_value=1, max_value=10**6), n=st.integers(min_value=2, max_value=10**6))
+def test_is_simple_power_consistency_with_pow(x, n):
+    # Property: The result should be consistent with explicitly checking powers.
+    # This acts as a reference implementation check.
+    
+    # Handle base 1:
+    if n == 1:
+        assert is_simple_power(x, n) == (x == 1), f"For x={x}, n={n}, expected {x==1}"
+        return
+
+    # Handle x = 0 (if allowed, not in current strategies but good to consider for completeness)
+    # The problem description implies x > 0 based on examples.
+    if x == 0:
+        assert is_simple_power(0, n) is False, f"For x=0, n={n}, expected False" # 0 can't be n**k for n>1, k>=0
+        return
+
+    # For x > 0, n > 1
+    found_power = False
+    current_val = 1
+    exponent = 0
+    while current_val <= x:
+        if current_val == x:
+            found_power = True
+            break
+        if n > x // current_val and current_val != 0: # Avoid overflow if n is large and current_val is large
+            break # next power would exceed x
+        current_val *= n
+        exponent += 1
+        if current_val == 0 and n != 0: # Handle cases like n=0, but current_val starts at 1
+            break
+        if exponent > 60: # Avoid infinite loop for very large x, very small n (e.g. n=2)
+            break
+            
+    assert is_simple_power(x, n) == found_power, f"For x={x}, n={n}, expected {found_power}"
+
+```

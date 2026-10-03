@@ -1,0 +1,74 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       x=st.integers(min_value=-1000, max_value=1000), 
+       y=st.integers(min_value=-1000, max_value=1000))
+def test_x_or_y_correctness(n, x, y):
+    """
+    Property: The function should return x if n is prime, and y otherwise.
+    This directly tests the core logic of the function against a known prime checker.
+    """
+    result = x_or_y(n, x, y)
+    if is_prime(n):
+        assert result == x, f"Expected {x} for prime {n}, but got {result}"
+    else:
+        assert result == y, f"Expected {y} for non-prime {n}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000).filter(is_prime),
+       x=st.integers(min_value=-1000, max_value=1000),
+       y=st.integers(min_value=-1000, max_value=1000))
+def test_x_for_prime_n(n, x, y):
+    """
+    Property: If n is a prime number, the function must return x.
+    This test specifically focuses on the prime number case.
+    """
+    result = x_or_y(n, x, y)
+    assert result == x, f"For prime n={n}, x_or_y should return x={x}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000).filter(lambda num: not is_prime(num)),
+       x=st.integers(min_value=-1000, max_value=1000),
+       y=st.integers(min_value=-1000, max_value=1000))
+def test_y_for_non_prime_n(n, x, y):
+    """
+    Property: If n is not a prime number, the function must return y.
+    This test specifically focuses on the non-prime number case.
+    """
+    result = x_or_y(n, x, y)
+    assert result == y, f"For non-prime n={n}, x_or_y should return y={y}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000),
+       val=st.integers(min_value=-1000, max_value=1000))
+@example(n=7, x=34, y=12) # Example from docstring
+@example(n=15, x=8, y=5) # Example from docstring
+@example(n=0, x=10, y=20) # Edge case: n = 0 (not prime)
+@example(n=1, x=10, y=20) # Edge case: n = 1 (not prime)
+@example(n=2, x=10, y=20) # Edge case: n = 2 (prime)
+def test_x_or_y_return_value_is_x_or_y(n, val):
+    """
+    Property: The return value must always be either x or y, never anything else.
+    This verifies that the function doesn't produce an unexpected value.
+    We use `val` for both x and y to simplify the test, as the specific values of x and y don't affect this property.
+    """
+    result = x_or_y(n, val, val + 1)
+    assert result == val or result == (val + 1), "The result must be either x or y"
+
+@given(n=st.integers(min_value=0, max_value=1000),
+       x=st.integers(min_value=-1000, max_value=1000))
+def test_x_or_y_with_equal_x_y(n, x):
+    """
+    Property: If x and y are the same, the function should return that value regardless of n.
+    This is an identity property: x_or_y(n, k, k) == k.
+    """
+    result = x_or_y(n, x, x)
+    assert result == x, f"When x=y={x}, result should be {x}, but got {result}"
+
+```

@@ -1,0 +1,63 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(n=st.integers(min_value=0, max_value=100))
+def test_fibfib_non_negativity_for_small_n(n):
+    """
+    Property: For n >= 0, fibfib(n) should be non-negative.
+    This property is derived from the base cases and the recursive definition
+    which only involves additions of non-negative numbers.
+    """
+    result = fibfib(n)
+    assert result >= 0, f"fibfib({n}) should be non-negative, but got {result}"
+
+@given(n=st.integers(min_value=3, max_value=100))
+def test_fibfib_recursive_property(n):
+    """
+    Property: For n >= 3, fibfib(n) should satisfy the recursive definition:
+    fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).
+    This directly tests the core definition of the sequence.
+    """
+    result = fibfib(n)
+    expected = fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3)
+    assert result == expected, (
+        f"fibfib({n}) should be {expected} based on recursion, but got {result}"
+    )
+
+@given(n=st.integers(min_value=0, max_value=2))
+def test_fibfib_base_cases(n):
+    """
+    Property: The base cases for fibfib(0), fibfib(1), and fibfib(2) should be correct.
+    This directly verifies the explicitly defined initial values of the sequence.
+    """
+    expected_values = {0: 0, 1: 0, 2: 1}
+    result = fibfib(n)
+    assert result == expected_values[n], f"fibfib({n}) should be {expected_values[n]}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000))
+def test_fibfib_monotonicity_for_n_greater_than_2(n):
+    """
+    Property: For n >= 2, fibfib(n) should be greater than or equal to fibfib(n-1).
+    This implies that the sequence is non-decreasing after the initial terms.
+    fibfib(0)=0, fibfib(1)=0, fibfib(2)=1. From here, all terms are non-negative,
+    and additions make it non-decreasing.
+    """
+    if n >= 1: # Can't compare n with n-1 if n is 0
+        result_n = fibfib(n)
+        result_n_minus_1 = fibfib(n - 1)
+        assert result_n >= result_n_minus_1, \
+            f"fibfib({n})={result_n} should be >= fibfib({n-1})={result_n_minus_1}"
+
+@given(n=st.integers(min_value=0, max_value=20))
+def test_fibfib_identity_with_sum_of_previous_three_values(n):
+    """
+    Property: For n >= 3, fibfib(n) - fibfib(n-1) - fibfib(n-2) - fibfib(n-3) should be 0.
+    This is another way to express the recursive property, ensuring that the function's
+    result perfectly matches the sum of the three previous terms.
+    Using a relatively small max_value for n to avoid potential overflow for larger numbers if not handled by arbitrary precision.
+    """
+    if n >= 3:
+        assert fibfib(n) - fibfib(n-1) - fibfib(n-2) - fibfib(n-3) == 0, \
+            f"fibfib({n}) should satisfy the recursive definition, but it does not."
+
+```

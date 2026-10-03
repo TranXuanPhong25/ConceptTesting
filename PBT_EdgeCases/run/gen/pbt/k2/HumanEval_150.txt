@@ -1,0 +1,107 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(math.sqrt(num)) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_correctness(n, x, y):
+    """
+    Property: The function should return x if n is prime, and y otherwise.
+    This test directly verifies the core logic of the function.
+    """
+    result = x_or_y(n, x, y)
+    if is_prime(n):
+        assert result == x, f"Expected {x} for prime n={n}, got {result}"
+    else:
+        assert result == y, f"Expected {y} for non-prime n={n}, got {result}"
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_independence_of_x_if_not_prime(n, x, y):
+    """
+    Property: If n is not prime, the result should be independent of the value of x.
+    We verify this by changing x to a different value (x+1) and checking if the result remains y.
+    """
+    if not is_prime(n):
+        result1 = x_or_y(n, x, y)
+        result2 = x_or_y(n, x + 1, y)
+        assert result1 == y, f"For non-prime n={n}, expected {y}, got {result1}"
+        assert result2 == y, f"For non-prime n={n}, expected {y}, got {result2}"
+        assert result1 == result2, f"For non-prime n={n}, result should not depend on x. Got {result1} and {result2}"
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_independence_of_y_if_prime(n, x, y):
+    """
+    Property: If n is prime, the result should be independent of the value of y.
+    We verify this by changing y to a different value (y+1) and checking if the result remains x.
+    """
+    if is_prime(n):
+        result1 = x_or_y(n, x, y)
+        result2 = x_or_y(n, x, y + 1)
+        assert result1 == x, f"For prime n={n}, expected {x}, got {result1}"
+        assert result2 == x, f"For prime n={n}, expected {x}, got {result2}"
+        assert result1 == result2, f"For prime n={n}, result should not depend on y. Got {result1} and {result2}"
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_output_is_either_x_or_y(n, x, y):
+    """
+    Property: The output of the function must always be either x or y.
+    It should never return any other value.
+    """
+    result = x_or_y(n, x, y)
+    assert result == x or result == y, f"Result must be either x or y, got {result} for n={n}, x={x}, y={y}"
+
+@given(n=st.just(2), x=st.integers(), y=st.integers())
+def test_x_or_y_small_prime(n, x, y):
+    """
+    Edge Case: Test with the smallest prime number (2).
+    It should return x.
+    """
+    result = x_or_y(n, x, y)
+    assert result == x, f"For n=2 (prime), expected {x}, got {result}"
+
+@given(n=st.just(1), x=st.integers(), y=st.integers())
+def test_x_or_y_one_is_not_prime(n, x, y):
+    """
+    Edge Case: Test with n=1, which is not prime.
+    It should return y.
+    """
+    result = x_or_y(n, x, y)
+    assert result == y, f"For n=1 (not prime), expected {y}, got {result}"
+
+@given(n=st.just(4), x=st.integers(), y=st.integers())
+def test_x_or_y_small_non_prime(n, x, y):
+    """
+    Edge Case: Test with a small non-prime number (4).
+    It should return y.
+    """
+    result = x_or_y(n, x, y)
+    assert result == y, f"For n=4 (not prime), expected {y}, got {result}"
+
+@given(n=st.integers(min_value=2, max_value=100), 
+       x=st.integers(min_value=-1000, max_value=1000), 
+       y=st.integers(min_value=-1000, max_value=1000))
+def test_x_or_y_negative_x_y(n, x, y):
+    """
+    Property: The function should work correctly with negative values for x and y.
+    """
+    result = x_or_y(n, x, y)
+    if is_prime(n):
+        assert result == x, f"Expected {x} for prime n={n}, got {result}"
+    else:
+        assert result == y, f"Expected {y} for non-prime n={n}, got {result}"
+```

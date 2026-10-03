@@ -1,0 +1,27 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=1, max_value=20))
+def test_fib_positive_input_invariance(n):
+    result = fib(n)
+    # Property: Fibonacci numbers are always non-negative for positive input
+    assert result >= 0, "Fibonacci numbers for positive n should be non-negative"
+    
+    # Property: For n > 2, fib(n) = fib(n-1) + fib(n-2)
+    if n > 2:
+        assert result == fib(n - 1) + fib(n - 2), "Fibonacci sequence identity should hold for n > 2"
+
+@given(st.integers(min_value=1, max_value=20))
+def test_fib_monotonicity(n):
+    # Property: Fibonacci numbers are monotonically increasing for n >= 2
+    if n >= 2:
+        assert fib(n) >= fib(n - 1), "Fibonacci sequence should be monotonically increasing for n >= 2"
+
+@given(st.integers(min_value=1, max_value=30))
+def test_fib_edge_cases(n):
+    # Property: Check base cases
+    if n == 1:
+        assert fib(n) == 1, "fib(1) should be 1"
+    if n == 2:
+        assert fib(n) == 1, "fib(2) should be 1"
+```

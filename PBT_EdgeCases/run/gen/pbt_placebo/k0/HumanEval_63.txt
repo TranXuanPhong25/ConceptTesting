@@ -1,0 +1,51 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=10))
+def test_fibfib_recursive_property(n):
+    if n == 0:
+        assert fibfib(n) == 0, f"fibfib({n}) should be 0"
+    elif n == 1:
+        assert fibfib(n) == 0, f"fibfib({n}) should be 0"
+    elif n == 2:
+        assert fibfib(n) == 1, f"fibfib({n}) should be 1"
+    else:
+        # Check the recursive definition
+        result = fibfib(n)
+        expected = fibfib(n-1) + fibfib(n-2) + fibfib(n-3)
+        assert result == expected, f"fibfib({n}) should be fibfib({n-1}) + fibfib({n-2}) + fibfib({n-3})"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_fibfib_non_negative_for_non_negative_input(n):
+    result = fibfib(n)
+    assert result >= 0, f"fibfib({n}) should always be non-negative for non-negative n"
+
+@given(st.integers(min_value=3, max_value=20))
+def test_fibfib_monotonicity_for_n_greater_than_2(n):
+    # For n > 2, fibfib(n) should generally be increasing
+    # This property holds for a certain range, but not universally as numbers can grow quickly
+    # and the sum can lead to larger numbers.
+    # A more robust property would be to check that fibfib(n) is greater than fibfib(n-1)
+    # for n > 2. However, this is not strictly true for all cases due to the sum of three previous terms.
+    # Let's verify that the value is at least the previous value for n > 2.
+    # fibfib(3) = fibfib(2) + fibfib(1) + fibfib(0) = 1 + 0 + 0 = 1
+    # fibfib(4) = fibfib(3) + fibfib(2) + fibfib(1) = 1 + 1 + 0 = 2
+    # fibfib(5) = fibfib(4) + fibfib(3) + fibfib(2) = 2 + 1 + 1 = 4
+    # fibfib(6) = fibfib(5) + fibfib(4) + fibfib(3) = 4 + 2 + 1 = 7
+    # fibfib(n) is increasing for n > 2.
+    if n > 2:
+        assert fibfib(n) > fibfib(n - 1), f"fibfib({n}) should be greater than fibfib({n-1}) for n > 2"
+
+@given(st.integers(min_value=0, max_value=0))
+def test_fibfib_base_case_zero(n):
+    assert fibfib(0) == 0, "fibfib(0) should be 0"
+
+@given(st.integers(min_value=1, max_value=1))
+def test_fibfib_base_case_one(n):
+    assert fibfib(1) == 0, "fibfib(1) should be 0"
+
+@given(st.integers(min_value=2, max_value=2))
+def test_fibfib_base_case_two(n):
+    assert fibfib(2) == 1, "fibfib(2) should be 1"
+
+```

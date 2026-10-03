@@ -1,0 +1,29 @@
+```python
+
+# Basic Test Cases
+assert multiply(148, 412) == 16, "Basic Test Case 1: Positive numbers"
+assert multiply(19, 28) == 72, "Basic Test Case 2: Positive numbers"
+assert multiply(2020, 1851) == 0, "Basic Test Case 3: One unit digit is zero"
+assert multiply(1, 1) == 1, "Basic Test Case 4: Single digit numbers"
+assert multiply(10, 10) == 0, "Basic Test Case 5: Both unit digits are zero"
+
+# Edge Test Cases
+assert multiply(14, -15) == 20, "Edge Test Case 1: One negative number"
+assert multiply(-14, 15) == 20, "Edge Test Case 2: Another negative number"
+assert multiply(-14, -15) == 20, "Edge Test Case 3: Both negative numbers"
+assert multiply(0, 5) == 0, "Edge Test Case 4: One input is zero"
+assert multiply(5, 0) == 0, "Edge Test Case 5: Another input is zero"
+assert multiply(9, 9) == 81, "Edge Test Case 6: Largest single digit product"
+assert multiply(-9, -9) == 81, "Edge Test Case 7: Largest single digit product with negatives"
+assert multiply(123456789, 987654321) == 9, "Edge Test Case 8: Large numbers, small unit product"
+assert multiply(1000000000000000000, 1000000000000000000) == 0, "Edge Test Case 9: Very large numbers ending in 0"
+assert multiply(1, 10) == 0, "Edge Test Case 10: One single digit, one multiple digit ending in zero"
+
+# Large Scale Test Cases (Focus on correct extraction of unit digit)
+assert multiply(1234567890123456789, 9876543210987654321) == 81, "Large Scale Test Case 1: Very large numbers"
+assert multiply(1234567890123456780, 9876543210987654321) == 0, "Large Scale Test Case 2: One large number ends in zero"
+assert multiply(1234567890123456789, 9876543210987654320) == 0, "Large Scale Test Case 3: Another large number ends in zero"
+assert multiply(9999999999999999999, 9999999999999999999) == 81, "Large Scale Test Case 4: Max long integers ending in 9"
+assert multiply(-9999999999999999999, -9999999999999999999) == 81, "Large Scale Test Case 5: Max negative long integers ending in 9"
+
+```

@@ -1,0 +1,96 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(), st.integers()).map(lambda t: (min(t), max(t))),
+    st.tuples(st.integers(), st.integers()).map(lambda t: (min(t), max(t)))
+)
+def test_intersection_property(interval1, interval2):
+    result = intersection(interval1, interval2)
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start > intersection_end:
+        # No intersection
+        assert result == "NO", "If no intersection, result should be 'NO'"
+    else:
+        intersection_length = intersection_end - intersection_start + 1
+        expected_result = "YES" if is_prime(intersection_length) else "NO"
+        assert result == expected_result, f"For intersection length {intersection_length}, expected {expected_result}, got {result}"
+
+@given(
+    st.tuples(st.integers(-100, 100), st.integers(-100, 100)).map(lambda t: (min(t), max(t))),
+    st.tuples(st.integers(-100, 100), st.integers(-100, 100)).map(lambda t: (min(t), max(t)))
+)
+def test_intersection_with_no_overlap(interval1, interval2):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Ensure no overlap
+    if end1 < start2 - 1 or end2 < start1 - 1:
+        result = intersection(interval1, interval2)
+        assert result == "NO", "If intervals do not overlap, result should be 'NO'"
+
+@given(
+    st.integers(-100, 100),
+    st.integers(-100, 100),
+    st.integers(1, 10)
+)
+def test_intersection_with_known_length(start, length1, length2):
+    # Test cases where intersection length is known
+    end1 = start + length1 - 1
+    end2 = start + length2 - 1
+
+    interval1 = (start, end1)
+    interval2 = (start, end2)
+
+    result = intersection(interval1, interval2)
+
+    intersection_length = min(length1, length2)
+    expected_result = "YES" if is_prime(intersection_length) else "NO"
+
+    assert result == expected_result, f"For intersection length {intersection_length}, expected {expected_result}, got {result}"
+
+@given(
+    st.integers(-100, 100)
+)
+def test_intersection_single_point(x):
+    # Test cases where intersection is a single point (length 1)
+    interval1 = (x, x)
+    interval2 = (x, x)
+    result = intersection(interval1, interval2)
+    assert result == "NO", "Intersection of a single point has length 1, which is not prime."
+
+    interval1 = (x, x + 5)
+    interval2 = (x + 5, x + 10)
+    result = intersection(interval1, interval2)
+    assert result == "NO", "Intersection of a single point has length 1, which is not prime."
+
+@given(
+    st.integers(-100, 100)
+)
+def test_intersection_length_2_is_prime(x):
+    # Test cases where intersection length is 2 (prime)
+    interval1 = (x, x + 1)
+    interval2 = (x, x + 1)
+    result = intersection(interval1, interval2)
+    assert result == "YES", "Intersection length 2 is prime, so result should be 'YES'."
+
+    interval1 = (x, x + 5)
+    interval2 = (x + 1, x + 2)
+    result = intersection(interval1, interval2)
+    assert result == "YES", "Intersection length 2 is prime, so result should be 'YES'."
+```

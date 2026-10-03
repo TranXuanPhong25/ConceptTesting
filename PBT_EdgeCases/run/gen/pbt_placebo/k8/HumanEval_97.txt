@@ -1,0 +1,63 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    # Property 1: The result should always be a non-negative integer.
+    result = multiply(a, b)
+    assert isinstance(result, int), "Result should be an integer"
+    assert result >= 0, "Result should be non-negative"
+
+@given(st.integers(), st.integers())
+def test_multiply_commutative(a, b):
+    # Property 2: The order of arguments should not affect the result. (Commutative property)
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, "Multiplication of unit digits should be commutative"
+
+@given(st.integers(), st.integers())
+def test_multiply_zero_unit_digit(a, b):
+    # Property 3: If one of the numbers has a unit digit of 0, the result should be 0.
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    result = multiply(a, b)
+    if unit_a == 0 or unit_b == 0:
+        assert result == 0, "If a unit digit is 0, the product should be 0"
+    else:
+        assert result != 0, "If no unit digit is 0, the product should not be 0"
+
+@given(st.integers(), st.integers())
+def test_multiply_modulus_property(a, b):
+    # Property 4: The result should be the product of the absolute unit digits.
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    expected = unit_a * unit_b
+    result = multiply(a, b)
+    assert result == expected, "Result should be the product of the absolute unit digits"
+
+@given(st.integers(min_value=-100000, max_value=100000), st.integers(min_value=-100000, max_value=100000))
+def test_multiply_large_numbers(a, b):
+    # Property 5: The function should work correctly with large positive and negative numbers.
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    expected = unit_a * unit_b
+    result = multiply(a, b)
+    assert result == expected, f"Incorrect result for large numbers: {a}, {b}"
+
+@given(st.integers(min_value=-9, max_value=9), st.integers(min_value=-9, max_value=9))
+def test_multiply_single_digit_numbers(a, b):
+    # Property 6: For single-digit numbers, the result is simply the product of their absolute values.
+    unit_a = abs(a) % 10
+    unit_b = abs(b) % 10
+    expected = unit_a * unit_b
+    result = multiply(a, b)
+    assert result == expected, "Incorrect result for single-digit numbers"
+
+@given(st.integers(min_value=-1000, max_value=1000))
+def test_multiply_with_one(num):
+    # Property 7: Multiplying with a number whose unit digit is 1.
+    result = multiply(num, 1)
+    assert result == (abs(num) % 10) * 1, "Multiplying with 1 (unit digit) should return the other number's unit digit"
+    result = multiply(num, -1)
+    assert result == (abs(num) % 10) * 1, "Multiplying with -1 (unit digit) should return the other number's unit digit"
+```

@@ -1,0 +1,38 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=10000), st.integers(min_value=2, max_value=9))
+def test_change_base_to_decimal_conversion(x, base):
+    # Property: Converting the result back to base 10 should yield the original number.
+    result = change_base(x, base)
+    
+    decimal_conversion = 0
+    for i, digit_char in enumerate(reversed(result)):
+        digit = int(digit_char)
+        decimal_conversion += digit * (base ** i)
+    
+    assert decimal_conversion == x, f"Converting {x} to base {base} resulted in '{result}', but converting '{result}' back to base 10 gave {decimal_conversion} instead of {x}"
+
+@given(st.integers(min_value=0, max_value=1000000), st.integers(min_value=2, max_value=9))
+def test_change_base_non_negative_output(x, base):
+    # Property: The output string should only contain digits from 0 to base-1.
+    result = change_base(x, base)
+    
+    for digit_char in result:
+        digit = int(digit_char)
+        assert 0 <= digit < base, f"Digit {digit} in result '{result}' is not valid for base {base}"
+
+@given(st.integers(min_value=0, max_value=1000000), st.integers(min_value=2, max_value=9))
+def test_change_base_single_digit_for_small_x(x, base):
+    # Property: If x is less than base, the result should be a single digit string equal to x.
+    if x < base:
+        result = change_base(x, base)
+        assert result == str(x), f"For x={x} and base={base}, expected '{x}' but got '{result}'"
+
+@given(st.integers(min_value=0, max_value=1000000), st.integers(min_value=2, max_value=9))
+def test_change_base_x_is_zero(x, base):
+    # Property: If x is 0, the result should always be "0".
+    if x == 0:
+        result = change_base(x, base)
+        assert result == "0", f"For x=0, expected '0' but got '{result}'"
+```

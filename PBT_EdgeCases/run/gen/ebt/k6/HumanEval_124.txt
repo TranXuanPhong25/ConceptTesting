@@ -1,0 +1,77 @@
+```python
+
+# Basic Test Cases
+assert valid_date('03-11-2000') == True, "Basic Test Case 1: Valid date in March"
+assert valid_date('06-04-2020') == True, "Basic Test Case 2: Valid date in June"
+assert valid_date('12-31-1999') == True, "Basic Test Case 3: Last day of December"
+assert valid_date('01-01-2023') == True, "Basic Test Case 4: First day of January"
+assert valid_date('02-29-2024') == True, "Basic Test Case 5: Valid leap year February"
+assert valid_date('10-15-1800') == True, "Basic Test Case 6: Valid date in October (old year)"
+assert valid_date('07-07-2007') == True, "Basic Test Case 7: Valid date with matching month and day"
+
+# Edge Test Cases
+assert valid_date('') == False, "Edge Test Case 1: Empty string"
+assert valid_date('  ') == False, "Edge Test Case 2: String with only spaces"
+assert valid_date('00-01-2000') == False, "Edge Test Case 3: Invalid month (00)"
+assert valid_date('13-01-2000') == False, "Edge Test Case 4: Invalid month (13)"
+assert valid_date('01-00-2000') == False, "Edge Test Case 5: Invalid day (00)"
+assert valid_date('01-32-2000') == False, "Edge Test Case 6: Invalid day for 31-day month"
+assert valid_date('04-31-2000') == False, "Edge Test Case 7: Invalid day for 30-day month (April)"
+assert valid_date('02-30-2000') == False, "Edge Test Case 8: Invalid day for February (leap year)"
+assert valid_date('02-29-2023') == False, "Edge Test Case 9: Invalid day for February (non-leap year)"
+assert valid_date('02-29-1900') == False, "Edge Test Case 10: Invalid day for February (non-leap century year)"
+assert valid_date('02-28-2023') == True, "Edge Test Case 11: Valid Feb 28th non-leap year"
+assert valid_date('02-28-2024') == True, "Edge Test Case 12: Valid Feb 28th leap year"
+assert valid_date('03-11-0') == False, "Edge Test Case 13: Invalid year (0)"
+assert valid_date('03-11-1') == True, "Edge Test Case 14: Valid year (1)" # Assuming 1 is a valid year
+assert valid_date('03-11-999') == False, "Edge Test Case 15: Invalid year (3 digits)"
+assert valid_date('03-11-10000') == False, "Edge Test Case 16: Invalid year (5 digits)"
+assert valid_date('06/04/2020') == False, "Edge Test Case 17: Incorrect separator (/)"
+assert valid_date('06.04.2020') == False, "Edge Test Case 18: Incorrect separator (.)"
+assert valid_date('06-4-2020') == False, "Edge Test Case 19: Single digit day"
+assert valid_date('6-04-2020') == False, "Edge Test Case 20: Single digit month"
+assert valid_date('03-11-200') == False, "Edge Test Case 21: Three digit year"
+assert valid_date('01-01-2000 ') == False, "Edge Test Case 22: Trailing space"
+assert valid_date(' 01-01-2000') == False, "Edge Test Case 23: Leading space"
+assert valid_date('15-01-2012') == False, "Edge Test Case 24: Example from problem description (day too high for month 1)"
+assert valid_date('04-0-2040') == False, "Edge Test Case 25: Example from problem description (day 0)"
+assert valid_date('01-31-2000') == True, "Edge Test Case 26: Max day for 31-day month"
+assert valid_date('04-30-2000') == True, "Edge Test Case 27: Max day for 30-day month"
+assert valid_date('02-29-2000') == True, "Edge Test Case 28: Max day for February leap year"
+assert valid_date('02-28-1900') == True, "Edge Test Case 29: Max day for February non-leap century year"
+assert valid_date('02-28-2100') == True, "Edge Test Case 30: Max day for February non-leap century year (future)"
+assert valid_date('02-29-2400') == True, "Edge Test Case 31: Max day for February leap century year"
+
+# Large Scale Test Cases
+# Note: For this type of function, "large scale" typically means many iterations,
+# not necessarily a single very long string, as the input format is fixed.
+# We'll test with a few specific boundary conditions that might be more
+# susceptible to performance issues if the parsing logic isn't efficient,
+# though Python string operations are generally fast.
+
+# This section primarily validates correctness across a range of valid/invalid inputs rather than raw performance
+# as the function's complexity isn't high enough to warrant thousands of unique inputs for performance testing here.
+
+# Test many valid dates (simulate a long list of dates to process)
+dates_to_test_valid = [f'{m:02d}-{d:02d}-2020' for m in range(1, 13) for d in range(1, 29)] # Most common case
+for date_str in dates_to_test_valid:
+    assert valid_date(date_str) == True, f"Large Scale Test Case 1: Valid date '{date_str}'"
+
+# Test many invalid day dates (simulate common input errors)
+dates_to_test_invalid_day = [f'{m:02d}-32-2020' for m in range(1, 13)] # Day too high for any month
+for date_str in dates_to_test_invalid_day:
+    assert valid_date(date_str) == False, f"Large Scale Test Case 2: Invalid day '{date_str}'"
+
+# Test many invalid month dates
+dates_to_test_invalid_month = [f'00-01-2020', f'13-01-2020']
+for date_str in dates_to_test_invalid_month:
+    assert valid_date(date_str) == False, f"Large Scale Test Case 3: Invalid month '{date_str}'"
+
+# Test dates around century/leap year boundaries
+assert valid_date('02-29-1900') == False, "Large Scale Test Case 4: Feb 29 1900 (not leap)"
+assert valid_date('02-28-1900') == True, "Large Scale Test Case 5: Feb 28 1900 (not leap)"
+assert valid_date('02-29-2000') == True, "Large Scale Test Case 6: Feb 29 2000 (leap century)"
+assert valid_date('02-29-2100') == False, "Large Scale Test Case 7: Feb 29 2100 (not leap)"
+assert valid_date('02-29-2400') == True, "Large Scale Test Case 8: Feb 29 2400 (leap century)"
+
+```

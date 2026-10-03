@@ -1,0 +1,112 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda x: (min(x), max(x))
+    ),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_intersection_property(interval1, interval2):
+    result = intersection(interval1, interval2)
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start > intersection_end:
+        # No intersection
+        assert result == "NO", "If intervals do not intersect, the result should be 'NO'"
+    else:
+        # Calculate intersection length
+        intersection_length = intersection_end - intersection_start + 1
+        expected_result = "YES" if is_prime(intersection_length) else "NO"
+        assert result == expected_result, \
+            f"For intervals {interval1} and {interval2}, intersection length {intersection_length}. " \
+            f"Expected {expected_result}, got {result}"
+
+@given(
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(
+        lambda x: (min(x), max(x))
+    ),
+    st.tuples(st.integers(min_value=-10, max_value=10), st.integers(min_value=-10, max_value=10)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_intersection_no_intersection_edge_cases(interval1, interval2):
+    # Ensure start <= end for both intervals
+    interval1 = (min(interval1), max(interval1))
+    interval2 = (min(interval2), max(interval2))
+
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+
+    if intersection_start > intersection_end:
+        # This property specifically checks non-overlapping intervals
+        result = intersection(interval1, interval2)
+        assert result == "NO", "If intervals are disjoint, the result must be 'NO'."
+
+@given(
+    st.tuples(st.integers(min_value=-5, max_value=5), st.integers(min_value=-5, max_value=5)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_intersection_same_intervals(interval):
+    # Test property: intersection of an interval with itself should yield its own length
+    # and the primality of that length.
+    result = intersection(interval, interval)
+    start, end = interval
+    length = end - start + 1
+    expected_result = "YES" if is_prime(length) else "NO"
+    assert result == expected_result, \
+        f"Intersection of {interval} with itself should be determined by primality of its length {length}."
+
+@given(
+    st.tuples(st.integers(-10, 10), st.integers(-10, 10)).map(lambda x: (min(x), max(x))),
+    st.tuples(st.integers(-10, 10), st.integers(-10, 10)).map(lambda x: (min(x), max(x))),
+)
+def test_intersection_symmetric_property(interval1, interval2):
+    # Property: intersection(A, B) should be the same as intersection(B, A)
+    result1 = intersection(interval1, interval2)
+    result2 = intersection(interval2, interval1)
+    assert result1 == result2, \
+        f"Intersection should be symmetric: intersection({interval1}, {interval2}) " \
+        f"({result1}) should be same as intersection({interval2}, {interval1}) ({result2})."
+
+@given(
+    st.tuples(st.just(1), st.just(1)), # (1, 1)
+    st.tuples(st.just(1), st.just(1))  # (1, 1)
+)
+def test_single_point_intersection_prime(interval1, interval2):
+    # Property: Intersection of (1,1) and (1,1) is (1,1) with length 1. 1 is not prime.
+    result = intersection(interval1, interval2)
+    assert result == "NO", "Intersection of (1,1) with itself has length 1, which is not prime."
+
+@given(
+    st.tuples(st.integers(0, 10), st.integers(0, 10)).map(lambda x: (min(x), max(x))),
+    st.tuples(st.integers(0, 10), st.integers(0, 10)).map(lambda x: (min(x), max(x))),
+)
+def test_large_ranges(interval1, interval2):
+    # This test primarily ensures that the function handles a wide range of integer values
+    # without crashing or returning unexpected types. The correctness is covered by other tests.
+    try:
+        intersection(interval1, interval2)
+    except Exception as e:
+        assert False, f"Function failed with large range inputs {interval1}, {interval2}: {e}"
+
+```

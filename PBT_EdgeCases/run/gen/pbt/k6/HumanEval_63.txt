@@ -1,0 +1,44 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100))
+def test_fibfib_recursion(n):
+    if n == 0:
+        assert fibfib(n) == 0, f"fibfib({n}) should be 0"
+    elif n == 1:
+        assert fibfib(n) == 0, f"fibfib({n}) should be 0"
+    elif n == 2:
+        assert fibfib(n) == 1, f"fibfib({n}) should be 1"
+    else:
+        # Property: fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3)
+        result_n = fibfib(n)
+        result_n_minus_1 = fibfib(n - 1)
+        result_n_minus_2 = fibfib(n - 2)
+        result_n_minus_3 = fibfib(n - 3)
+        assert result_n == result_n_minus_1 + result_n_minus_2 + result_n_minus_3, \
+            f"fibfib({n}) should be the sum of the three previous terms"
+
+@given(st.integers(min_value=0, max_value=5))
+def test_fibfib_small_values(n):
+    expected_values = {
+        0: 0,
+        1: 0,
+        2: 1,
+        3: 1,
+        4: 2,
+        5: 4
+    }
+    assert fibfib(n) == expected_values[n], f"fibfib({n}) should match predefined small values"
+
+@given(st.integers(min_value=0, max_value=0))
+def test_fibfib_zero_input(n):
+    assert fibfib(n) == 0, "fibfib(0) should be 0"
+
+@given(st.integers(min_value=1, max_value=1))
+def test_fibfib_one_input(n):
+    assert fibfib(n) == 0, "fibfib(1) should be 0"
+
+@given(st.integers(min_value=2, max_value=2))
+def test_fibfib_two_input(n):
+    assert fibfib(n) == 1, "fibfib(2) should be 1"
+```

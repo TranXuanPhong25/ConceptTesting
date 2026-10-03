@@ -1,0 +1,91 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.dictionaries(st.text(), st.just("value")))
+def test_check_dict_case_empty_dict(d):
+    if not d:
+        assert check_dict_case(d) is False, "Empty dictionary should return False"
+
+@given(st.dictionaries(st.text(), st.just("value"), min_size=1))
+def test_check_dict_case_all_lowercase_keys(d):
+    # Construct a dictionary where all keys are lowercase
+    lowercase_dict = {key.lower(): value for key, value in d.items()}
+    assert check_dict_case(lowercase_dict) is all(isinstance(k, str) and k.islower() for k in lowercase_dict.keys()), "Should return True if all keys are lowercase strings"
+
+@given(st.dictionaries(st.text(), st.just("value"), min_size=1))
+def test_check_dict_case_all_uppercase_keys(d):
+    # Construct a dictionary where all keys are uppercase
+    uppercase_dict = {key.upper(): value for key, value in d.items()}
+    assert check_dict_case(uppercase_dict) is all(isinstance(k, str) and k.isupper() for k in uppercase_dict.keys()), "Should return True if all keys are uppercase strings"
+
+@given(
+    st.dictionaries(
+        st.one_of(st.text(alphabet=st.ascii_lowercase), st.text(alphabet=st.ascii_uppercase)),
+        st.just("value"),
+        min_size=1
+    ).filter(lambda d: any(k.islower() for k in d.keys()) and any(k.isupper() for k in d.keys()))
+)
+def test_check_dict_case_mixed_case_keys(d):
+    assert check_dict_case(d) is False, "Should return False if keys have mixed cases"
+
+@given(
+    st.dictionaries(
+        st.one_of(st.integers(), st.text(), st.booleans(), st.floats()),
+        st.just("value"),
+        min_size=1
+    ).filter(lambda d: any(not isinstance(k, str) for k in d.keys()))
+)
+def test_check_dict_case_non_string_keys(d):
+    assert check_dict_case(d) is False, "Should return False if any key is not a string"
+
+@given(
+    st.dictionaries(
+        st.one_of(st.text(alphabet=st.ascii_lowercase), st.integers()),
+        st.just("value"),
+        min_size=1
+    ).filter(lambda d: any(not isinstance(k, str) for k in d.keys()))
+)
+def test_check_dict_case_mixed_type_keys(d):
+    assert check_dict_case(d) is False, "Should return False if keys have mixed types (string and non-string)"
+
+@given(st.dictionaries(st.text(min_size=1, alphabet=st.ascii_lowercase), st.just("value")))
+@st.example(d={"a":"apple", "b":"banana"})
+def test_check_dict_case_all_lowercase_example(d):
+    # This property ensures that if all keys are lowercase strings, the function returns True.
+    if d:
+        assert check_dict_case(d) is True, "Should be True for all lowercase keys"
+    else:
+        assert check_dict_case(d) is False, "Should be False for an empty dictionary"
+
+@given(st.dictionaries(st.text(min_size=1, alphabet=st.ascii_uppercase), st.just("value")))
+@st.example(d={"STATE":"NC", "ZIP":"12345"})
+def test_check_dict_case_all_uppercase_example(d):
+    # This property ensures that if all keys are uppercase strings, the function returns True.
+    if d:
+        assert check_dict_case(d) is True, "Should be True for all uppercase keys"
+    else:
+        assert check_dict_case(d) is False, "Should be False for an empty dictionary"
+
+@given(
+    st.dictionaries(
+        st.one_of(st.text(min_size=1, alphabet=st.ascii_lowercase), st.text(min_size=1, alphabet=st.ascii_uppercase)),
+        st.just("value")
+    ).filter(lambda d: d and any(k.islower() for k in d.keys()) and any(k.isupper() for k in d.keys()))
+)
+@st.example(d={"a":"apple", "A":"banana", "B":"banana"})
+def test_check_dict_case_mixed_case_example(d):
+    # This property ensures that if there's a mix of lowercase and uppercase string keys, it returns False.
+    assert check_dict_case(d) is False, "Should be False for mixed case keys"
+
+@given(
+    st.dictionaries(
+        st.one_of(st.text(min_size=1, alphabet=st.ascii_lowercase), st.integers()),
+        st.just("value")
+    ).filter(lambda d: d and any(isinstance(k, int) for k in d.keys()))
+)
+@st.example(d={"a":"apple", 8:"banana"})
+def test_check_dict_case_non_string_key_example(d):
+    # This property ensures that if there are non-string keys, it returns False.
+    assert check_dict_case(d) is False, "Should be False for non-string keys"
+
+```

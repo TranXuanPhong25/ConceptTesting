@@ -1,0 +1,82 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       x=st.integers(min_value=-1000, max_value=1000), 
+       y=st.integers(min_value=-1000, max_value=1000))
+@example(n=7, x=34, y=12)
+@example(n=15, x=8, y=5)
+@example(n=0, x=0, y=0)
+@example(n=1, x=1, y=1)
+@example(n=2, x=10, y=20) # n is prime
+@example(n=4, x=10, y=20) # n is not prime
+def test_x_or_y_correctness(n, x, y):
+    """
+    Test that the function returns x if n is prime and y otherwise.
+    This property directly verifies the core logic of the function.
+    """
+    result = x_or_y(n, x, y)
+    
+    if is_prime(n):
+        assert result == x, f"Expected {x} for prime n={n}, but got {result}"
+    else:
+        assert result == y, f"Expected {y} for non-prime n={n}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       x=st.integers(min_value=-1000, max_value=1000), 
+       y=st.integers(min_value=-1000, max_value=1000))
+def test_x_or_y_independence_of_unselected_value(n, x, y):
+    """
+    Test that the result does not depend on the value that is not selected.
+    If n is prime, changing y should not change the result.
+    If n is not prime, changing x should not change the result.
+    """
+    result = x_or_y(n, x, y)
+    
+    if is_prime(n):
+        # Change y, x should still be returned
+        modified_y = y + 1 if y != 1000000 else y - 1
+        result_with_modified_y = x_or_y(n, x, modified_y)
+        assert result_with_modified_y == x, \
+            f"Result for prime n={n} should be {x} regardless of y, but got {result_with_modified_y} when y was {modified_y}"
+    else:
+        # Change x, y should still be returned
+        modified_x = x + 1 if x != 1000000 else x - 1
+        result_with_modified_x = x_or_y(n, modified_x, y)
+        assert result_with_modified_x == y, \
+            f"Result for non-prime n={n} should be {y} regardless of x, but got {result_with_modified_x} when x was {modified_x}"
+
+@given(n=st.integers(min_value=0, max_value=1000), 
+       val=st.integers(min_value=-1000, max_value=1000))
+def test_x_or_y_identical_values(n, val):
+    """
+    If x and y are the same, the function should always return that value.
+    This is a simple sanity check that the function returns one of its inputs.
+    """
+    result = x_or_y(n, val, val)
+    assert result == val, f"When x and y are identical ({val}), the result should be {val}, but got {result}"
+
+@given(n=st.integers(min_value=0, max_value=1000000), 
+       x=st.integers(min_value=-10**9, max_value=10**9), 
+       y=st.integers(min_value=-10**9, max_value=10**9))
+def test_x_or_y_large_inputs(n, x, y):
+    """
+    Test the function with large values for n, x, and y to ensure it handles them correctly.
+    The core logic should remain the same regardless of magnitude.
+    """
+    result = x_or_y(n, x, y)
+    
+    if is_prime(n):
+        assert result == x, f"Expected {x} for large prime n={n}, but got {result}"
+    else:
+        assert result == y, f"Expected {y} for large non-prime n={n}, but got {result}"
+
+```

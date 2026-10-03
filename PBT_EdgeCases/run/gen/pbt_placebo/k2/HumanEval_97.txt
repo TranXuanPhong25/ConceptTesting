@@ -1,0 +1,60 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(), st.integers())
+def test_multiply_unit_digits(a, b):
+    # Extract the unit digit of a
+    unit_digit_a = abs(a) % 10
+    # Extract the unit digit of b
+    unit_digit_b = abs(b) % 10
+
+    result = multiply(a, b)
+
+    # The property is that the result should be the product of the unit digits.
+    assert result == unit_digit_a * unit_digit_b, \
+        f"For a={a}, b={b}, the product of unit digits should be {unit_digit_a * unit_digit_b}, but got {result}"
+
+@given(st.integers(min_value=-1000, max_value=1000), st.integers(min_value=-1000, max_value=1000))
+def test_multiply_non_negative_input(a, b):
+    # The function description assumes positive inputs for unit digit extraction.
+    # The property should hold for absolute unit digits.
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    result = multiply(a, b)
+    
+    assert result >= 0, "The product of unit digits (absolute values) should always be non-negative."
+    assert result == unit_digit_a * unit_digit_b, \
+        f"For a={a}, b={b}, the product of absolute unit digits should be {unit_digit_a * unit_digit_b}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=0, max_value=100))
+def test_multiply_small_inputs_manual_check(a, b):
+    result = multiply(a, b)
+    expected_result = (a % 10) * (b % 10)
+    assert result == expected_result, "For small non-negative inputs, the result should be (a % 10) * (b % 10)"
+
+@given(st.integers(min_value=-1000000, max_value=1000000), st.integers(min_value=-1000000, max_value=1000000))
+def test_multiply_large_inputs(a, b):
+    # This tests with large integers, ensuring the modulo operation works correctly.
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    result = multiply(a, b)
+    
+    assert result == unit_digit_a * unit_digit_b, \
+        f"For large a={a}, b={b}, the product of absolute unit digits should be {unit_digit_a * unit_digit_b}, but got {result}"
+
+@given(st.integers(), st.integers().filter(lambda x: abs(x) % 10 == 0))
+def test_multiply_with_zero_unit_digit(a, b_with_zero_unit):
+    # If one of the unit digits is 0, the product should be 0.
+    result = multiply(a, b_with_zero_unit)
+    assert result == 0, "If one of the numbers has a unit digit of 0, the result should be 0."
+
+@given(st.integers().filter(lambda x: abs(x) % 10 == 1), st.integers())
+def test_multiply_with_one_unit_digit(a_with_one_unit, b):
+    # If one unit digit is 1, the result should be the other unit digit.
+    result = multiply(a_with_one_unit, b)
+    assert result == (abs(b) % 10), \
+        f"If one unit digit is 1, the result should be the other unit digit: {abs(b) % 10}, but got {result}"
+
+```

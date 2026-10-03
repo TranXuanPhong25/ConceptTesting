@@ -1,0 +1,126 @@
+```python
+import string
+from hypothesis import given, strategies as st
+
+@given(st.dictionaries(st.text(string.ascii_lowercase, min_size=1), st.just("value")))
+def test_all_lowercase_keys(d):
+    """
+    Property: If all keys are lowercase strings, the function should return True.
+    """
+    if d:  # Only test non-empty dictionaries
+        assert check_dict_case(d) is True, "Should return True for dictionaries with all lowercase string keys"
+
+@given(st.dictionaries(st.text(string.ascii_uppercase, min_size=1), st.just("value")))
+def test_all_uppercase_keys(d):
+    """
+    Property: If all keys are uppercase strings, the function should return True.
+    """
+    if d:  # Only test non-empty dictionaries
+        assert check_dict_case(d) is True, "Should return True for dictionaries with all uppercase string keys"
+
+@given(st.dictionaries(st.one_of(
+    st.text(string.ascii_lowercase, min_size=1),
+    st.text(string.ascii_uppercase, min_size=1)
+).filter(lambda s: not (s.islower() or s.isupper())), st.just("value")))
+def test_mixed_case_keys(d):
+    """
+    Property: If string keys are a mix of lowercase and uppercase, the function should return False.
+    """
+    if d:  # Only test non-empty dictionaries
+        # Ensure there's at least one key that is mixed case or a mix of lower/upper
+        has_lower = any(isinstance(k, str) and k.islower() for k in d.keys())
+        has_upper = any(isinstance(k, str) and k.isupper() for k in d.keys())
+        has_non_string_or_mixed = any(not isinstance(k, str) or not k.islower() and not k.isupper() for k in d.keys())
+
+        if has_lower and has_upper or has_non_string_or_mixed:
+            assert check_dict_case(d) is False, "Should return False for dictionaries with mixed case or non-string keys"
+
+@given(st.dictionaries(st.text(min_size=1), st.just("value")))
+def test_mixed_lower_upper_string_keys(d):
+    """
+    Property: If the dictionary contains both lowercase and uppercase string keys, it should return False.
+    This tests the specific case where keys are all strings, but a mix of cases.
+    """
+    if d:
+        has_lower = any(isinstance(k, str) and k.islower() for k in d.keys())
+        has_upper = any(isinstance(k, str) and k.isupper() for k in d.keys())
+        
+        # Ensure that all keys are strings for this specific test
+        if all(isinstance(k, str) for k in d.keys()):
+            if has_lower and has_upper:
+                assert check_dict_case(d) is False, "Should return False if both lower and upper case string keys are present"
+
+@given(st.dictionaries(st.one_of(st.integers(), st.floats(), st.booleans(), st.text()), st.just("value")))
+def test_non_string_keys(d):
+    """
+    Property: If any key is not a string, or if keys are a mix of string and non-string, it should return False.
+    """
+    if d:
+        if any(not isinstance(k, str) for k in d.keys()):
+            assert check_dict_case(d) is False, "Should return False if any key is not a string"
+
+@given(st.dictionaries(st.integers(), st.just("value")))
+def test_all_non_string_keys(d):
+    """
+    Property: If all keys are non-string, it should return False.
+    """
+    if d:
+        if all(not isinstance(k, str) for k in d.keys()):
+            assert check_dict_case(d) is False, "Should return False if all keys are non-string"
+
+@given(st.just({}))
+def test_empty_dictionary(d):
+    """
+    Property: An empty dictionary should return False.
+    """
+    assert check_dict_case(d) is False, "Should return False for an empty dictionary"
+
+@given(st.dictionaries(st.text(min_size=0, max_size=0), st.just("value")))
+def test_empty_string_keys(d):
+    """
+    Property: If keys are empty strings, they are technically lowercase, so should return True.
+    However, the prompt implies "lowercase" as containing actual characters. Let's assume empty strings are lowercase.
+    This test is based on string.islower() property which is True for empty strings.
+    """
+    # This might be an ambiguous case depending on the strict interpretation of "lowercase"
+    # For now, following string.islower() behavior
+    if d:
+        if all(k == "" for k in d.keys()):
+            assert check_dict_case(d) is True, "Should return True if all keys are empty strings (considered lowercase by islower())"
+
+@given(st.dictionaries(st.text(string.punctuation), st.just("value")))
+def test_punctuation_keys(d):
+    """
+    Property: Punctuation characters are neither upper nor lower.
+    If all keys are punctuation, it should return False unless they are considered lower/upper (which they are not by islower/isupper).
+    If a dict has only punctuation, all islower() and isupper() will be False.
+    """
+    if d:
+        # Check if all keys are strings and contain only punctuation and are neither lower nor upper
+        if all(isinstance(k, str) and all(c in string.punctuation for c in k) for k in d.keys()):
+            if not any(k.islower() for k in d.keys()) and not any(k.isupper() for k in d.keys()):
+                assert check_dict_case(d) is False, "Should return False if all string keys are punctuation and not strictly lower/upper"
+
+@given(st.dictionaries(st.text(string.whitespace), st.just("value")))
+def test_whitespace_keys(d):
+    """
+    Property: Whitespace characters are neither upper nor lower.
+    If all keys are whitespace, it should return False unless they are considered lower/upper.
+    """
+    if d:
+        if all(isinstance(k, str) and all(c in string.whitespace for c in k) for k in d.keys()):
+            if not any(k.islower() for k in d.keys()) and not any(k.isupper() for k in d.keys()):
+                assert check_dict_case(d) is False, "Should return False if all string keys are whitespace and not strictly lower/upper"
+
+@given(st.dictionaries(st.text(string.digits), st.just("value")))
+def test_digit_keys(d):
+    """
+    Property: Digit characters are neither upper nor lower.
+    If all keys are digits, it should return False unless they are considered lower/upper.
+    """
+    if d:
+        if all(isinstance(k, str) and k.isdigit() for k in d.keys()):
+            if not any(k.islower() for k in d.keys()) and not any(k.isupper() for k in d.keys()):
+                assert check_dict_case(d) is False, "Should return False if all string keys are digits and not strictly lower/upper"
+
+```

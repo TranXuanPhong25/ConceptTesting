@@ -1,0 +1,45 @@
+```python
+from hypothesis import given, strategies as st
+
+def is_prime(num):
+    if num < 2:
+        return False
+    for i in range(2, int(num**0.5) + 1):
+        if num % i == 0:
+            return False
+    return True
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_prime_returns_x(n, x, y):
+    if is_prime(n):
+        result = x_or_y(n, x, y)
+        assert result == x, f"If n ({n}) is prime, the function should return x ({x})"
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_not_prime_returns_y(n, x, y):
+    if not is_prime(n):
+        result = x_or_y(n, x, y)
+        assert result == y, f"If n ({n}) is not prime, the function should return y ({y})"
+
+@given(n=st.integers(min_value=-100, max_value=0), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_negative_n(n, x, y):
+    # According to the definition of prime numbers, they are positive integers.
+    # So, for n <= 0, it should be considered not prime.
+    result = x_or_y(n, x, y)
+    assert result == y, f"For n ({n}) less than or equal to 0, it is not prime, so should return y ({y})"
+
+@given(n=st.integers(min_value=1, max_value=1000), 
+       x=st.integers(), 
+       y=st.integers())
+def test_x_or_y_deterministic(n, x, y):
+    # The function should always return the same result for the same inputs.
+    result1 = x_or_y(n, x, y)
+    result2 = x_or_y(n, x, y)
+    assert result1 == result2, "The function should be deterministic"
+```

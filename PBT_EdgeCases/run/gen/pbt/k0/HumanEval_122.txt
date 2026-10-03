@@ -1,0 +1,98 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(min_value=-100000, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_basic_correctness(arr, k):
+    # Ensure k is within the valid range for the generated array
+    k = min(k, len(arr))
+    if k == 0:  # Handle the case where k might be 0 due to min(k, len(arr)) if len(arr) is 0, though min_size=1 prevents this
+        return
+
+    result = add_elements(arr, k)
+
+    # Property: The result should be the sum of elements with at most two digits
+    # from the first k elements of arr.
+    expected_sum = 0
+    for i in range(min(k, len(arr))):
+        num = arr[i]
+        if -99 <= num <= 99:  # Check for at most two digits (including negative numbers)
+            expected_sum += num
+
+    assert result == expected_sum, f"Expected sum {expected_sum} but got {result} for arr={arr[:k]}, k={k}"
+
+@given(
+    st.lists(st.integers(min_value=-99, max_value=99), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_two_digit_numbers(arr, k):
+    # If all numbers in the array are two-digit or less, the function should sum them all
+    k = min(k, len(arr))
+    if k == 0:
+        return
+
+    result = add_elements(arr, k)
+    expected_sum = sum(arr[:k])
+
+    assert result == expected_sum, "When all numbers are at most two digits, result should be sum of first k elements"
+
+@given(
+    st.lists(st.integers(min_value=100, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_no_two_digit_numbers(arr, k):
+    # If no numbers in the first k elements are two-digit or less, the sum should be 0
+    k = min(k, len(arr))
+    if k == 0:
+        return
+
+    result = add_elements(arr, k)
+    assert result == 0, "When no numbers in the first k elements are two digits, result should be 0"
+
+@given(
+    st.lists(st.integers(min_value=-100000, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_k_equals_len_arr(arr, k_val):
+    # Test case where k is exactly the length of the array
+    k = len(arr)
+    result = add_elements(arr, k)
+
+    expected_sum = 0
+    for num in arr:
+        if -99 <= num <= 99:
+            expected_sum += num
+
+    assert result == expected_sum, "When k is len(arr), it should sum all relevant elements in the array"
+
+@given(
+    st.lists(st.integers(min_value=-100000, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_k_is_one(arr, k_val):
+    # Test case where k is 1
+    k = 1
+    result = add_elements(arr, k)
+
+    expected_sum = 0
+    if -99 <= arr[0] <= 99:
+        expected_sum = arr[0]
+
+    assert result == expected_sum, "When k is 1, it should only consider the first element"
+
+@given(
+    st.lists(st.integers(min_value=-100000, max_value=100000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_result_type(arr, k):
+    # Ensure the return type is an integer
+    k = min(k, len(arr))
+    if k == 0:
+        return
+
+    result = add_elements(arr, k)
+    assert isinstance(result, int), "The function should return an integer"
+
+```

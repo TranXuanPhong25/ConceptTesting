@@ -1,0 +1,100 @@
+```python
+from hypothesis import given, strategies as st
+from typing import Tuple
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda x: (min(x), max(x))
+    ),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_intersection_length_is_prime(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # Calculate intersection
+    inter_start = max(start1, start2)
+    inter_end = min(end1, end2)
+
+    # Calculate the expected result based on the definition
+    if inter_start > inter_end:
+        expected_result = "NO"  # No intersection
+    else:
+        intersection_length = inter_end - inter_start + 1
+        if is_prime(intersection_length):
+            expected_result = "YES"
+        else:
+            expected_result = "NO"
+
+    result = intersection(interval1, interval2)
+
+    assert result == expected_result, \
+        f"For intervals {interval1} and {interval2}, expected {expected_result}, but got {result}"
+
+@given(
+    st.tuples(st.integers(min_value=0, max_value=5), st.integers(min_value=0, max_value=5)).map(
+        lambda x: (min(x), max(x))
+    ),
+    st.tuples(st.integers(min_value=0, max_value=5), st.integers(min_value=0, max_value=5)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_non_intersecting_intervals_return_no(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    # If the intervals are guaranteed not to intersect, the result should be "NO"
+    if end1 < start2 or end2 < start1:
+        result = intersection(interval1, interval2)
+        assert result == "NO", \
+            f"For non-intersecting intervals {interval1} and {interval2}, expected 'NO', but got {result}"
+
+@given(
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda x: (min(x), max(x))
+    ),
+    st.tuples(st.integers(min_value=-100, max_value=100), st.integers(min_value=-100, max_value=100)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_intersection_length_always_non_negative(interval1: Tuple[int, int], interval2: Tuple[int, int]):
+    start1, end1 = interval1
+    start2, end2 = interval2
+
+    inter_start = max(start1, start2)
+    inter_end = min(end1, end2)
+
+    if inter_start <= inter_end:
+        intersection_length = inter_end - inter_start + 1
+        assert intersection_length >= 1, "Intersection length must be at least 1 when intervals intersect"
+    # If no intersection, the function should return "NO", not a length.
+    # So this property focuses on cases where an intersection exists.
+
+@given(
+    st.tuples(st.integers(min_value=0, max_value=10), st.integers(min_value=0, max_value=10)).map(
+        lambda x: (min(x), max(x))
+    )
+)
+def test_identity_intersection(interval: Tuple[int, int]):
+    # The intersection of an interval with itself should have its own length
+    start, end = interval
+    expected_length = end - start + 1
+    
+    result = intersection(interval, interval)
+    
+    if is_prime(expected_length):
+        assert result == "YES", f"Interval {interval} with itself should be YES if length {expected_length} is prime"
+    else:
+        assert result == "NO", f"Interval {interval} with itself should be NO if length {expected_length} is not prime"
+
+```

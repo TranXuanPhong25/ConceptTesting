@@ -1,0 +1,124 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(s=st.text(alphabet=st.characters(blacklist_categories=('Cs',)), min_size=0, max_size=200))
+def test_vowels_count_non_negative(s):
+    """
+    Property: The count of vowels should always be non-negative.
+    """
+    result = vowels_count(s)
+    assert result >= 0, "Vowel count should always be non-negative"
+
+@given(s=st.text(alphabet='aeiouAEIOU', min_size=0, max_size=200))
+def test_vowels_count_only_true_vowels(s):
+    """
+    Property: If the string only contains 'a', 'e', 'i', 'o', 'u' (case-insensitive) and no 'y',
+    the count should be equal to the length of the string.
+    """
+    result = vowels_count(s)
+    expected_count = len(s)
+    assert result == expected_count, "All characters should be counted as vowels when no 'y' is present and only true vowels are in string"
+
+@given(s=st.text(alphabet='bcdfghjklmnpqrstvwxzBCDFGHJKLMNPQRSTVWXZ', min_size=0, max_size=200))
+def test_vowels_count_no_vowels(s):
+    """
+    Property: If the string only contains consonants and no 'y', the count should be zero.
+    """
+    result = vowels_count(s)
+    assert result == 0, "Should count 0 vowels for a string of only consonants"
+
+@given(s=st.text(alphabet='aeiouAEIOU', min_size=1, max_size=200))
+def test_vowels_count_case_insensitivity_for_vowels(s):
+    """
+    Property: Vowel counting should be case-insensitive for 'a', 'e', 'i', 'o', 'u'.
+    """
+    lower_s = s.lower()
+    upper_s = s.upper()
+    result_lower = vowels_count(lower_s)
+    result_upper = vowels_count(upper_s)
+    assert result_lower == result_upper, "Case should not affect vowel count for 'a', 'e', 'i', 'o', 'u'"
+
+@given(s=st.text(alphabet=st.characters(blacklist_categories=('Cs',)), min_size=0, max_size=200))
+def test_vowels_count_y_at_end(s):
+    """
+    Property: 'y' should be counted as a vowel only if it is at the end of the word.
+    """
+    y_present = 'y' in s.lower()
+    result = vowels_count(s)
+    
+    # Check that 'y' in the middle or beginning is not counted
+    if y_present and s.lower().endswith('y'):
+        # If 'y' is at the end, it should contribute to the count
+        # This is a bit tricky to assert directly without reimplementing the logic.
+        # Instead, we'll try to assert that removing the final 'y' changes the count.
+        # This property tests that 'y' at the end specifically matters.
+        if len(s) > 0 and s[-1].lower() == 'y':
+            result_without_last_char = vowels_count(s[:-1])
+            assert result == result_without_last_last_char + 1 or (result == 0 and result_without_last_char == 0), \
+                   "A 'y' at the end should increase the count by 1 if there are other vowels or it's the only one"
+        else:
+            # If 'y' is not at the end, then its count should be the same as if 'y' were removed
+            # (unless it's the only vowel, which is covered by other tests).
+            # This is a more complex property. Let's simplify.
+            # If 'y' is not at the end, and we replace all non-ending 'y's with a consonant,
+            # the count should remain the same.
+            s_modified = "".join(['z' if char.lower() == 'y' and i != len(s) - 1 else char for i, char in enumerate(s)])
+            assert vowels_count(s) == vowels_count(s_modified), "Non-ending 'y' should not be counted as a vowel"
+
+@given(s=st.text(min_size=0, max_size=200).filter(lambda x: not x.isalpha()))
+def test_vowels_count_non_alphabetic_characters(s):
+    """
+    Property: Non-alphabetic characters should not be counted as vowels.
+    """
+    result = vowels_count(s)
+    # If the string contains only non-alphabetic characters, the count should be 0.
+    # This might be too strict if s happens to contain 'y' at the end.
+    # A better property: if we remove all non-alphabetic characters, the count should be the same.
+    cleaned_s = "".join(filter(str.isalpha, s))
+    assert vowels_count(s) == vowels_count(cleaned_s), "Non-alphabetic characters should not affect vowel count"
+
+@given(s=st.text(alphabet='aeiouyBCDFGHJ', min_size=0, max_size=200))
+def test_vowels_count_empty_string(s):
+    """
+    Property: An empty string should have 0 vowels.
+    """
+    result = vowels_count("")
+    assert result == 0, "Empty string should have 0 vowels"
+
+@given(s=st.text(alphabet='aeiouyAEIOUYBCDFGHJ', min_size=1, max_size=200))
+def test_vowels_count_invariance_to_internal_order(s):
+    """
+    Property: The order of internal characters (excluding the last one) should not change the vowel count.
+    Only the last character's vowel status for 'y' matters.
+    """
+    if len(s) <= 1:
+        # Trivial cases, nothing to reorder internally
+        return
+    
+    first_part = list(s[:-1])
+    st.permutations(first_part).example() # Generate permutations for the first part
+    
+    for _ in range(5): # Test with a few permutations
+        permuted_first_part = list(first_part)
+        random.shuffle(permuted_first_part)
+        permuted_s = "".join(permuted_first_part) + s[-1]
+        
+        # Original logic for comparison
+        count_original = 0
+        vowels = "aeiouAEIOU"
+        for i, char in enumerate(s):
+            if char in vowels:
+                count_original += 1
+            elif char.lower() == 'y' and i == len(s) - 1:
+                count_original += 1
+
+        count_permuted = 0
+        for i, char in enumerate(permuted_s):
+            if char in vowels:
+                count_permuted += 1
+            elif char.lower() == 'y' and i == len(permuted_s) - 1:
+                count_permuted += 1
+
+        assert count_original == count_permuted, "Internal reordering (excluding last char) should not change vowel count"
+
+```

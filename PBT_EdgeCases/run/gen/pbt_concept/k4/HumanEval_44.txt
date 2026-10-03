@@ -1,0 +1,64 @@
+```python
+from hypothesis import given, strategies as st
+
+def change_base(x: int, base: int):
+    """Change numerical base of input number x to base.
+    return string representation after the conversion.
+    base numbers are less than 10.
+    >>> change_base(8, 3)
+    '22'
+    >>> change_base(8, 2)
+    '1000'
+    >>> change_base(7, 2)
+    '111'
+    """
+    if x == 0:
+        return '0'
+    
+    res = ""
+    while x > 0:
+        res = str(x % base) + res
+        x //= base
+    return res
+
+@given(x=st.integers(min_value=0, max_value=1000000), 
+       base=st.integers(min_value=2, max_value=9)) # base must be at least 2 for meaningful conversion
+@example(x=0, base=2)
+@example(x=1, base=2)
+@example(x=10, base=2)
+@example(x=100, base=10)
+def test_change_base_property(x, base):
+    result = change_base(x, base)
+
+    # Property 1: The result should be a string
+    assert isinstance(result, str), "The result should always be a string."
+
+    # Property 2: All characters in the result string should be digits less than the base
+    if x > 0:
+        for digit_char in result:
+            digit = int(digit_char)
+            assert 0 <= digit < base, f"Digit {digit} in result {result} is not valid for base {base}."
+    else: # if x is 0, the result should be '0'
+        assert result == '0', "If x is 0, the result should be '0'."
+
+    # Property 3: Invertibility (convert back to decimal and check if it matches original x)
+    # This property checks if the conversion is correct.
+    if x == 0:
+        assert result == '0', "0 in any valid base should be '0'."
+    else:
+        decimal_value = 0
+        power = 0
+        for digit_char in reversed(result):
+            decimal_value += int(digit_char) * (base ** power)
+            power += 1
+        assert decimal_value == x, f"Converting back from base {base} representation '{result}' to decimal should yield {x}, but got {decimal_value}."
+
+    # Property 4: For base 10, the string representation should be the same as str(x)
+    if base == 10:
+        assert result == str(x), f"For base 10, change_base({x}, 10) should be '{str(x)}', but got '{result}'."
+
+    # Property 5: The length of the result string for x > 0 should be at least 1
+    if x > 0:
+        assert len(result) >= 1, "The result string for x > 0 should not be empty."
+
+```

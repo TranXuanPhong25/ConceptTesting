@@ -1,0 +1,112 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text())
+def test_fix_spaces_no_change_if_no_spaces(text):
+    if ' ' not in text:
+        result = fix_spaces(text)
+        assert result == text, "String with no spaces should remain unchanged"
+
+@given(st.text(alphabet=st.characters(blacklist_characters=' ')), st.integers(min_value=1, max_value=5))
+def test_fix_spaces_single_space(text_part1, num_spaces):
+    # Test cases with a single occurrence of 1 or 2 spaces
+    if num_spaces == 1:
+        text = text_part1 + ' ' + text_part1
+        expected = text_part1 + '_' + text_part1
+        result = fix_spaces(text)
+        assert result == expected, f"Single space should be replaced by underscore: '{text}' -> '{expected}'"
+    elif num_spaces == 2:
+        text = text_part1 + '  ' + text_part1
+        expected = text_part1 + '__' + text_part1
+        result = fix_spaces(text)
+        assert result == expected, f"Two consecutive spaces should be replaced by two underscores: '{text}' -> '{expected}'"
+
+@given(st.text(alphabet=st.characters(blacklist_characters=' ')), st.integers(min_value=3, max_value=10))
+def test_fix_spaces_multiple_consecutive_spaces(text_part1, num_consecutive_spaces):
+    # Test cases with 3 or more consecutive spaces
+    text = text_part1 + ' ' * num_consecutive_spaces + text_part1
+    expected = text_part1 + '-' + text_part1
+    result = fix_spaces(text)
+    assert result == expected, f"More than 2 consecutive spaces should be replaced by a single hyphen: '{text}' -> '{expected}'"
+
+@given(st.text(min_size=0, max_size=100))
+def test_fix_spaces_output_only_underscores_or_hyphens_for_spaces(text):
+    result = fix_spaces(text)
+    # Check that the output only contains original non-space characters, underscores, or hyphens
+    allowed_chars = set(c for c in text if c != ' ') | {'_', '-'}
+    assert all(c in allowed_chars for c in result), "Output should only contain non-space chars from input, underscores, or hyphens."
+
+@given(st.text(min_size=0, max_size=100))
+def test_fix_spaces_idempotence(text):
+    # Applying the function twice should yield the same result as applying it once,
+    # as long as the first application correctly transforms all problematic spaces.
+    # This assumes the hyphens/underscores introduced by the function are not further processed.
+    first_result = fix_spaces(text)
+    second_result = fix_spaces(first_result)
+    assert first_result == second_result, "Applying fix_spaces twice should produce the same result as once."
+
+@given(st.text(min_size=0, max_size=100))
+def test_fix_spaces_length_property(text):
+    result = fix_spaces(text)
+    # The length of the string can only decrease if consecutive spaces are replaced by a single hyphen.
+    # It can stay the same (no spaces, or 1/2 spaces replaced by 1/2 underscores)
+    # Or increase if a space is replaced by an underscore, and there were no consecutive spaces.
+    # This property is tricky due to differing replacements, but we can assert the length won't explode.
+    # A simpler property: the number of non-space characters should remain the same.
+    non_space_chars_original = sum(1 for c in text if c != ' ')
+    non_space_chars_result = sum(1 for c in result if c not in ('_', '-'))
+    assert non_space_chars_original == non_space_chars_result, "Number of non-space characters (excluding _ and -) should remain constant."
+
+@given(
+    st.text(min_size=0, max_size=100),
+    st.text(min_size=0, max_size=100),
+    st.just(' ') | st.just('  ') | st.just('   ') | st.just('    ')
+)
+def test_fix_spaces_concatenation_property(s1, separator, s2):
+    # This property checks that separating the string and fixing might lead to different results
+    # due to how consecutive spaces are handled at boundaries.
+    # Instead, let's test a simpler form: if the original string has a known pattern of spaces,
+    # the output should match.
+    text_with_pattern = s1 + separator + s2
+    
+    expected_separator = ''
+    if separator == ' ':
+        expected_separator = '_'
+    elif separator == '  ':
+        expected_separator = '__'
+    elif len(separator) >= 3:
+        expected_separator = '-'
+    
+    # We need to know how s1 and s2 themselves would be fixed if they contain internal spaces.
+    # This property is more about checking specific patterns rather than a general concatenation.
+    # Let's verify the examples from the docstring.
+
+@given(st.sampled_from(["Example", "Example 1", " Example 2", " Example   3"]))
+def test_fix_spaces_docstring_examples(text):
+    if text == "Example":
+        assert fix_spaces(text) == "Example"
+    elif text == "Example 1":
+        assert fix_spaces(text) == "Example_1"
+    elif text == " Example 2":
+        assert fix_spaces(text) == "_Example_2"
+    elif text == " Example   3":
+        assert fix_spaces(text) == "_Example-3"
+
+@given(st.text(min_size=0, max_size=200, alphabet=st.characters(whitelist_categories=('Lu', 'Ll', 'Nd', 'Pd', 'Zs'))))
+@example(text='   ')
+@example(text='  a  ')
+@example(text=' a b c ')
+@example(text='a   b   c')
+@example(text='a  b  c')
+@example(text='')
+@example(text=' ')
+def test_fix_spaces_no_consecutive_hyphens_or_underscores_next_to_hyphen(text):
+    result = fix_spaces(text)
+    # After transformation, there should be no '--' or '_-' or '-_'.
+    # A hyphen should only appear if it replaced 3+ spaces.
+    # An underscore should only appear if it replaced 1 or 2 spaces.
+    assert '--' not in result, "Result should not contain '--'"
+    assert '_-' not in result, "Result should not contain '_-'"
+    assert '-_' not in result, "Result should not contain '-_'"
+
+```

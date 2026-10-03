@@ -1,0 +1,150 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_sum_property(arr, k):
+    # Ensure k is within the valid range for arr
+    k = min(k, len(arr))
+
+    result = add_elements(arr, k)
+
+    # Property 1: The result should be the sum of elements with at most two digits
+    # from the first k elements of arr.
+    expected_sum = 0
+    for i in range(k):
+        if -99 <= arr[i] <= 99:  # Check if the number has at most two digits
+            expected_sum += arr[i]
+
+    assert result == expected_sum, f"Expected sum {expected_sum}, but got {result}"
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_non_negative_numbers(arr, k):
+    # This test specifically checks a scenario where all relevant numbers are non-negative.
+    # The original problem statement and examples use non-negative numbers.
+    # While the `at most two digits` condition inherently handles negative numbers,
+    # ensuring positive numbers work as expected is a good property check given the examples.
+    
+    # Ensure k is within the valid range for arr
+    k = min(k, len(arr))
+    
+    result = add_elements(arr, k)
+
+    # Property: If all numbers in the first k elements are non-negative and have at most two digits,
+    # the sum should also be non-negative.
+    # This is a specific case of the sum property, but good for focus.
+    
+    # Calculate the expected sum with only non-negative, two-digit numbers
+    expected_sum = 0
+    for i in range(k):
+        if 0 <= arr[i] <= 99: # Only consider non-negative two-digit numbers
+            expected_sum += arr[i]
+            
+    # We can't directly assert `result >= 0` because `arr` can have negative numbers.
+    # Instead, we assert the sum is correct, which covers this indirectly if the input is positive.
+    # A more direct test for this property would require generating only positive numbers.
+    
+    # Let's refine this to check if, when elements considered are non-negative, the result is also non-negative.
+    # This is implicitly covered by the main sum property, but let's make it explicit for cases where
+    # all relevant numbers are indeed positive.
+    
+    # If all numbers with at most two digits in the first k elements are positive, then the sum should be positive.
+    all_relevant_positive = True
+    for i in range(k):
+        if -99 <= arr[i] <= 99 and arr[i] < 0:
+            all_relevant_positive = False
+            break
+
+    if all_relevant_positive:
+        # If all contributing elements are non-negative, the result must be non-negative.
+        # This is a weak property, but still valid.
+        assert result >= 0 or result == 0, "If all contributing elements are non-negative, the sum should be non-negative."
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_zero_threshold_effect(arr, k):
+    # Test cases where no elements meet the two-digit criteria.
+    # Example: all numbers are > 99.
+    
+    # Ensure k is within the valid range for arr
+    k = min(k, len(arr))
+
+    # Construct an array where all first k elements are greater than 99
+    large_numbers_arr = [n for n in arr] # Copy original list
+    for i in range(k):
+        if large_numbers_arr[i] <= 99:
+            large_numbers_arr[i] = st.integers(min_value=100, max_value=10000).example() # Replace with a large number
+
+    result = add_elements(large_numbers_arr, k)
+
+    # Property: If no elements in the first k elements have at most two digits, the sum should be 0.
+    expected_sum = 0
+    for i in range(k):
+        if -99 <= large_numbers_arr[i] <= 99:
+            expected_sum += large_numbers_arr[i]
+
+    assert result == expected_sum, "If no elements meet the two-digit criteria, the sum should be 0."
+    assert result == 0, "If all first k elements are outside the two-digit range, the sum should be 0."
+
+
+@given(
+    st.lists(st.integers(min_value=-50, max_value=50), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_all_two_digits(arr, k):
+    # Test cases where all first k elements are within the two-digit criteria.
+    
+    # Ensure k is within the valid range for arr
+    k = min(k, len(arr))
+    
+    result = add_elements(arr, k)
+
+    # Property: If all first k elements have at most two digits, the sum should be
+    # the sum of the first k elements.
+    expected_sum = sum(arr[:k])
+
+    assert result == expected_sum, "If all first k elements have at most two digits, the sum should be their total sum."
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_k_equals_one(arr, k):
+    # Test edge case where k is 1.
+    k_val = 1
+    
+    result = add_elements(arr, k_val)
+
+    # Property: If k is 1, the sum is the first element if it has at most two digits, otherwise 0.
+    expected_sum = 0
+    if -99 <= arr[0] <= 99:
+        expected_sum = arr[0]
+
+    assert result == expected_sum, "When k=1, the sum should be the first element if it's two-digit, else 0."
+
+@given(
+    st.lists(st.integers(min_value=1, max_value=10000), min_size=1, max_size=100),
+    st.integers(min_value=1, max_value=100)
+)
+def test_add_elements_k_equals_len_arr(arr, k):
+    # Test edge case where k is equal to the length of arr.
+    k_val = len(arr)
+    
+    result = add_elements(arr, k_val)
+
+    # Property: When k is len(arr), the sum is based on all elements meeting the criteria.
+    expected_sum = 0
+    for num in arr:
+        if -99 <= num <= 99:
+            expected_sum += num
+
+    assert result == expected_sum, "When k equals len(arr), the sum should include all two-digit elements."
+
+```

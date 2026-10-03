@@ -1,0 +1,67 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=10**6))
+def test_modp_result_range(n, p):
+    """
+    Property: The result of modp(n, p) should always be between 0 (inclusive) and p (exclusive).
+    This is a fundamental property of the modulo operation.
+    """
+    result = modp(n, p)
+    assert 0 <= result < p, f"Result {result} for n={n}, p={p} should be in range [0, {p-1}]"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_modp_with_p_is_one(n):
+    """
+    Property: When p is 1, the result of modp(n, 1) should always be 0, as any number modulo 1 is 0.
+    """
+    result = modp(n, 1)
+    assert result == 0, f"Result for n={n}, p=1 should be 0, but got {result}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=10**6))
+def test_modp_consistency_with_pow(n, p):
+    """
+    Property: modp(n, p) should be consistent with the built-in pow(2, n, p) for non-negative n.
+    This checks the core functionality against a known correct implementation.
+    """
+    result = modp(n, p)
+    expected = pow(2, n, p)
+    assert result == expected, f"Result {result} for n={n}, p={p} does not match pow(2, {n}, {p}) which is {expected}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=10**6))
+def test_modp_doubling_property(n, p):
+    """
+    Property: 2^(n+1) mod p should be equivalent to (2^n mod p * 2) mod p.
+    This tests the multiplicative property of modular arithmetic.
+    """
+    if n >= 0:
+        result_n_plus_1 = modp(n + 1, p)
+        result_n_times_2 = (modp(n, p) * 2) % p
+        assert result_n_plus_1 == result_n_times_2, \
+            f"Doubling property failed for n={n}, p={p}: modp({n+1}, {p})={result_n_plus_1}, " \
+            f"but (modp({n}, {p}) * 2) % {p} = {result_n_times_2}"
+
+@given(st.integers(min_value=0, max_value=100))
+def test_modp_n_is_zero(n):
+    """
+    Property: 2^0 mod p should always be 1 for any p > 1.
+    This covers the base case of the exponentiation.
+    """
+    p = st.integers(min_value=2, max_value=10**6).example() # Pick an arbitrary valid p
+    result = modp(0, p)
+    assert result == 1, f"Result for n=0, p={p} should be 1, but got {result}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=10**6))
+def test_modp_identity_p_is_power_of_2(n, p):
+    """
+    Property: If p is a power of 2, 2^n mod p should be 0 if n is large enough (i.e., 2^n is a multiple of p).
+    More specifically, if p = 2^k, and n >= k, then 2^n mod p should be 0.
+    For this test, we simplify by choosing p to be 2^k and n >= k.
+    """
+    k = st.integers(min_value=1, max_value=15).example() # Max k for p within int limit
+    p_power_of_2 = 2**k
+    n_large = st.integers(min_value=k, max_value=100).example()
+
+    result = modp(n_large, p_power_of_2)
+    assert result == 0, f"Result for n={n_large}, p={p_power_of_2} should be 0, but got {result}"
+```

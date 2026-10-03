@@ -1,0 +1,76 @@
+```python
+from hypothesis import given, strategies as st
+
+def fib(n: int):
+    """Return n-th Fibonacci number.
+    >>> fib(10)
+    55
+    >>> fib(1)
+    1
+    >>> fib(8)
+    21
+    """
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 1
+    else:
+        a, b = 0, 1
+        for _ in range(2, n + 1):
+            a, b = b, a + b
+        return b
+
+@given(st.integers(min_value=0, max_value=20))
+def test_fib_non_negativity(n):
+    """
+    Property: Fibonacci numbers are always non-negative for non-negative inputs.
+    """
+    result = fib(n)
+    assert result >= 0, f"Fibonacci number for n={n} should be non-negative."
+
+@given(st.integers(min_value=2, max_value=20))
+def test_fib_recurrence_relation(n):
+    """
+    Property: For n >= 2, fib(n) should be equal to fib(n-1) + fib(n-2).
+    """
+    result = fib(n)
+    expected = fib(n - 1) + fib(n - 2)
+    assert result == expected, f"Fib({n}) should be Fib({n-1}) + Fib({n-2})."
+
+@given(st.integers(min_value=0, max_value=1))
+def test_fib_base_cases(n):
+    """
+    Property: Test the base cases for Fibonacci: fib(0) = 0 and fib(1) = 1.
+    """
+    result = fib(n)
+    if n == 0:
+        assert result == 0, "fib(0) should be 0."
+    elif n == 1:
+        assert result == 1, "fib(1) should be 1."
+
+@given(st.integers(min_value=0, max_value=90)) # Max value limited to avoid overflow for large N
+def test_fib_monotonicity(n):
+    """
+    Property: Fibonacci sequence is monotonically non-decreasing for n >= 0.
+    """
+    if n > 0:
+        assert fib(n) >= fib(n - 1), f"Fib({n}) should be greater than or equal to Fib({n-1})."
+    else:
+        # For n=0, there's no fib(n-1) to compare with
+        pass
+
+@given(st.integers(min_value=0, max_value=90))
+def test_fib_known_values(n):
+    """
+    Property: Verify some known Fibonacci values from the docstring.
+    """
+    # This test is more about ensuring consistency with specific examples rather than a broad property
+    # It acts as a sanity check against the examples provided in the docstring.
+    if n == 10:
+        assert fib(n) == 55, f"fib(10) should be 55, but got {fib(n)}."
+    elif n == 1:
+        assert fib(n) == 1, f"fib(1) should be 1, but got {fib(n)}."
+    elif n == 8:
+        assert fib(n) == 21, f"fib(8) should be 21, but got {fib(n)}."
+
+```

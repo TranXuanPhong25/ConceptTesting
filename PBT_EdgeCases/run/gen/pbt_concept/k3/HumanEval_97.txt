@@ -1,0 +1,68 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(a=st.integers(), b=st.integers())
+def test_multiply_unit_digits(a, b):
+    result = multiply(a, b)
+    
+    # Property: The result should be the product of the absolute unit digits of a and b.
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    expected_product = unit_digit_a * unit_digit_b
+    
+    assert result == expected_product, (
+        f"For a={a}, b={b}: "
+        f"Expected product of unit digits ({unit_digit_a} * {unit_digit_b}) to be {expected_product}, "
+        f"but got {result}"
+    )
+
+@given(a=st.integers(), b=st.integers())
+def test_multiply_commutative(a, b):
+    # Property: The order of arguments should not affect the result.
+    result1 = multiply(a, b)
+    result2 = multiply(b, a)
+    assert result1 == result2, f"Multiply should be commutative: multiply({a}, {b}) != multiply({b}, {a})"
+
+@given(a=st.integers(), b=st.integers().filter(lambda x: x != 0))
+def test_multiply_by_ten_power_does_not_change_unit_digit_product(a, b):
+    # Property: Multiplying 'a' or 'b' by a power of 10 should not change the unit digit product
+    # as long as the original number is not a multiple of 10.
+    # Note: This property is more nuanced. If a number ends in 0, multiplying by 10 will keep it ending in 0.
+    # If it doesn't end in 0, multiplying by 10 will make it end in 0, changing its unit digit.
+    # So, we test that if the unit digit of 'a' and 'b' are non-zero, then multiplying by 10 changes the result.
+    # If one of them has a unit digit of 0, multiplying by 10 won't change the 0 product.
+
+    original_result = multiply(a, b)
+
+    if abs(a) % 10 != 0 and abs(b) % 10 != 0:
+        # If neither unit digit is 0, multiplying by 10 should change the result (to 0)
+        assert multiply(a * 10, b) == 0, "Multiplying a non-zero unit digit number by 10 should make product 0"
+        assert multiply(a, b * 10) == 0, "Multiplying a non-zero unit digit number by 10 should make product 0"
+    else:
+        # If at least one unit digit is 0, multiplying by 10 might not change the 0 product
+        assert multiply(a * 10, b) == 0, "Multiplying by 10 should maintain 0 product if one unit digit is 0"
+        assert multiply(a, b * 10) == 0, "Multiplying by 10 should maintain 0 product if one unit digit is 0"
+
+@given(a=st.integers(), b=st.integers())
+def test_multiply_with_zeros(a, b):
+    # Property: If either number's unit digit is zero, the product of unit digits is zero.
+    if abs(a) % 10 == 0 or abs(b) % 10 == 0:
+        assert multiply(a, b) == 0, f"If a unit digit is zero, the product should be zero. a={a}, b={b}"
+
+@given(a=st.integers(), b=st.integers())
+def test_multiply_sign_invariance_for_unit_digits(a, b):
+    # Property: The sign of the input numbers should not affect the product of their unit digits.
+    # The problem description and examples imply using absolute unit digits.
+    
+    result_positive_a_positive_b = multiply(abs(a), abs(b))
+    result_negative_a_positive_b = multiply(-abs(a), abs(b))
+    result_positive_a_negative_b = multiply(abs(a), -abs(b))
+    result_negative_a_negative_b = multiply(-abs(a), -abs(b))
+
+    assert result_positive_a_positive_b == result_negative_a_positive_b, \
+        f"Sign of 'a' should not affect unit digit product for a={a}, b={b}"
+    assert result_positive_a_positive_b == result_positive_a_negative_b, \
+        f"Sign of 'b' should not affect unit digit product for a={a}, b={b}"
+    assert result_positive_a_positive_b == result_negative_a_negative_b, \
+        f"Signs of 'a' and 'b' should not affect unit digit product for a={a}, b={b}"
+```

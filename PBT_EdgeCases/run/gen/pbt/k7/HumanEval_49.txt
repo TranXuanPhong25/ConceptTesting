@@ -1,0 +1,50 @@
+```python
+import math
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_1(n, p):
+    # Property 1: The result should always be between 0 and p-1 (inclusive).
+    result = modp(n, p)
+    assert 0 <= result < p, f"Result {result} is not within the range [0, {p-1}]"
+
+@given(st.integers(min_value=0, max_value=60), st.integers(min_value=2, max_value=1000))
+def test_modp_property_2(n, p):
+    # Property 2: For smaller 'n', the result should match the direct calculation.
+    # We limit 'n' to avoid excessively large intermediate numbers in the direct calculation.
+    if p > 0:
+        expected = (2**n) % p
+        result = modp(n, p)
+        assert result == expected, f"For n={n}, p={p}, expected {expected}, but got {result}"
+
+@given(st.integers(min_value=2, max_value=1000))
+def test_modp_property_3_n_is_0(p):
+    # Property 3: When n is 0, 2^0 is 1. So, modp(0, p) should always be 1 for any p > 1.
+    result = modp(0, p)
+    assert result == 1, f"modp(0, {p}) should be 1, but got {result}"
+
+@given(st.integers(min_value=1, max_value=100), st.integers(min_value=2, max_value=1000))
+def test_modp_property_4_multiplicative(n, p):
+    # Property 4: (2^a * 2^b) % p == ((2^a % p) * (2^b % p)) % p
+    # We can test this by splitting 'n' into two parts, 'a' and 'b'.
+    if n >= 2:
+        a = n // 2
+        b = n - a
+        result = modp(n, p)
+        expected = (modp(a, p) * modp(b, p)) % p
+        assert result == expected, f"Multiplicative property failed for n={n}, p={p}"
+
+@given(st.integers(min_value=1, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_property_5_cyclic_nature(n, p):
+    # Property 5: (2^n) % p should eventually repeat.
+    # This test checks if (2^n) % p == (2^(n + k*phi(p))) % p for some k,
+    # where phi(p) is Euler's totient function.
+    # For simplicity, we can just check if modp(n, p) and modp(n + p - 1, p) are equal
+    # if p is prime (by Fermat's Little Theorem, 2^(p-1) % p = 1).
+    # Since p is not guaranteed to be prime, we can use a slightly weaker property:
+    # (2^n % p) * (2^1 % p) % p == 2^(n+1) % p
+    result_n_plus_1 = modp(n + 1, p)
+    result_n_times_2 = (modp(n, p) * (2 % p)) % p
+    assert result_n_plus_1 == result_n_times_2, f"Cyclic property failed for n={n}, p={p}"
+
+```

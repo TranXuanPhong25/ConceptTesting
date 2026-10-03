@@ -1,0 +1,31 @@
+```python
+
+# Basic Test Cases
+assert multiply(148, 412) == 16, "Basic Test Case 1: Positive integers"
+assert multiply(19, 28) == 72, "Basic Test Case 2: Positive integers"
+assert multiply(2020, 1851) == 0, "Basic Test Case 3: One unit digit is zero"
+assert multiply(5, 7) == 35, "Basic Test Case 4: Single digit positive integers"
+assert multiply(10, 20) == 0, "Basic Test Case 5: Both unit digits are zero"
+
+# Edge Test Cases
+assert multiply(14, -15) == 20, "Edge Test Case 1: One negative number"
+assert multiply(-14, -15) == 20, "Edge Test Case 2: Both negative numbers"
+assert multiply(0, 5) == 0, "Edge Test Case 3: One input is zero"
+assert multiply(5, 0) == 0, "Edge Test Case 4: Other input is zero"
+assert multiply(-1, -1) == 1, "Edge Test Case 5: Single digit negative numbers"
+assert multiply(9, 9) == 81, "Edge Test Case 6: Largest single digit product"
+assert multiply(1000000000000000000, 1000000000000000000) == 0, "Edge Test Case 7: Very large numbers ending in zero"
+assert multiply(999999999999999999, 999999999999999999) == 81, "Edge Test Case 8: Very large numbers ending in nine"
+assert multiply(-123456789, -987654321) == 9, "Edge Test Case 9: Large negative numbers"
+
+# Large Scale Test Cases
+# Note: Since the function only considers unit digits, large numbers don't significantly impact
+# the *logic* or *performance* of the `multiply` function in a way that typical large-scale tests would.
+# The `multiply` function's complexity is O(1) regardless of the input magnitude.
+# However, we can still test with very large numbers to ensure no unexpected behavior with large integer types.
+assert multiply(1234567890123456789, 9876543210987654321) == 9, "Large Scale Test Case 1: Very large positive numbers"
+assert multiply(1234567890123456780, 9876543210987654320) == 0, "Large Scale Test Case 2: Very large positive numbers ending in zero"
+assert multiply(9999999999999999999999999999999999999999, 8888888888888888888888888888888888888888) == 72, "Large Scale Test Case 3: Extremely large numbers"
+assert multiply(-1234567890123456789, -9876543210987654321) == 9, "Large Scale Test Case 4: Very large negative numbers"
+
+```

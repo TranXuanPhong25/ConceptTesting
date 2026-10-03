@@ -1,0 +1,49 @@
+```python
+from hypothesis import given, strategies as st
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_definition(n, p):
+    # Property: modp(n, p) should be equivalent to (2**n) % p
+    result = modp(n, p)
+    expected = (2**n) % p
+    assert result == expected, f"modp({n}, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=1000), st.integers(min_value=2, max_value=1000))
+def test_modp_base_cases(n, p):
+    # Property: modp(0, p) should always be 1 for any p > 1
+    if n == 0:
+        result = modp(0, p)
+        assert result == 1, f"modp(0, {p}) should be 1, but got {result}"
+
+    # Property: modp(1, p) should always be 2 % p for any p > 1
+    if n == 1:
+        result = modp(1, p)
+        expected = 2 % p
+        assert result == expected, f"modp(1, {p}) should be {expected}, but got {result}"
+
+@given(st.integers(min_value=0, max_value=100), st.integers(min_value=2, max_value=100))
+def test_modp_modulo_p(n, p):
+    # Property: The result of modp(n, p) should always be less than p
+    result = modp(n, p)
+    assert 0 <= result < p, f"modp({n}, {p}) result {result} should be between 0 and {p-1}"
+
+@given(st.integers(min_value=0, max_value=50), st.integers(min_value=2, max_value=50))
+def test_modp_power_rule(n, p):
+    # Property: modp(n+m, p) == (modp(n, p) * modp(m, p)) % p
+    # For simplicity, let's test a simpler version: modp(n+1, p) == (modp(n, p) * 2) % p
+    if n >= 1:
+        result_n_plus_1 = modp(n + 1, p)
+        result_n = modp(n, p)
+        expected = (result_n * 2) % p
+        assert result_n_plus_1 == expected, \
+            f"modp({n+1}, {p}) should be (modp({n}, {p}) * 2) % {p} = {expected}, but got {result_n_plus_1}"
+
+@given(st.integers(min_value=0, max_value=10), st.just(2))
+def test_modp_with_p_is_2(n, p):
+    # Property: When p is 2, modp(n, 2) should be 0 if n >= 1, and 1 if n == 0
+    result = modp(n, p)
+    if n == 0:
+        assert result == 1, f"modp(0, 2) should be 1, but got {result}"
+    else:
+        assert result == 0, f"modp({n}, 2) should be 0, but got {result}"
+```

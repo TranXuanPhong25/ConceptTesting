@@ -1,0 +1,10 @@
+**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
+- param `interval1`: list[Any] (type from annotation)
+- edges `interval1`: [], bool values (True is an int subclass), floats like 1.0, None, nested containers, [x], duplicates, all equal, sorted / reversed, negative and zero elements, length 10**4
+- strategy `interval1`: st.lists(st.one_of(st.integers(), st.booleans(), st.floats(allow_nan=False), st.text(), st.none(), st.lists(st.integers()), st.dictionaries(st.text(), st.integers())), min_size=0, max_size=1000)
+- param `interval2`: int (type from annotation)
+- edges `interval2`: 0, 1, 2, 8, 9 (lower bound, just above it, large; values beyond the largest example)
+- strategy `interval2`: st.integers(min_value=0, max_value=9)
+- witness: @example(interval1=[], interval2=[])
+- witness: @example(interval1=[True, 1, 1.0], interval2=[True, 1, 1.0])
+- witness: @example(interval1=[0] * 1000, interval2=[0] * 1000)

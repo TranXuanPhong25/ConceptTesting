@@ -1,0 +1,16 @@
+**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
+- param `n`: tuple[int] (type from docstring examples)
+- domain `n`: [0, +inf] (examples cover 7..8; lower bound from docstring/examples)
+- edges `n`: degenerate (a, a), touching endpoints, disjoint, nested, negative endpoints, huge endpoints (2**53 + 1)
+- strategy `n`: st.tuples(st.integers(), st.integers()).map(sorted).map(tuple)
+- param `x`: tuple[int] (type from docstring examples)
+- domain `x`: [0, 9] (examples cover 2..3; lower bound from docstring/examples)
+- edges `x`: degenerate (a, a), touching endpoints, disjoint, nested, negative endpoints, huge endpoints (2**53 + 1)
+- strategy `x`: st.tuples(st.integers(), st.integers()).map(sorted).map(tuple)
+- param `y`: str (type from docstring examples)
+- domain `y`: [0, +inf] (examples cover 0..1101; lower bound from docstring/examples)
+- edges `y`: '', only '[]', unbalanced/odd counts, long run of one char, length 10**4
+- strategy `y`: st.text(alphabet='[]', min_size=0, max_size=200)
+- witness: @example(n=(0, 0), x=(0, 0), y=(0, 0))
+- witness: @example(n=(-5, 5), x=(-5, 5), y=(-5, 5))
+- witness: @example(n=(0, 2**53 + 1), x=(0, 2**53 + 1), y=(0, 2**53 + 1))

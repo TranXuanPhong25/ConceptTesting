@@ -1,0 +1,7 @@
+**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
+- param `dict`: dict (type from docstring examples)
+- edges `dict`: {}, one key, lower/UPPER/Mixed-case str keys, non-str keys (int) in first and in later positions, more than 2 keys
+- strategy `dict`: st.dictionaries(st.one_of(st.text(), st.integers()), st.text(), max_size=10)
+- witness: @example(dict={})
+- witness: @example(dict={'a': 'x', 'b': 'y', 5: 'z'})
+- witness: @example(dict={'A': 'x', 'B': 'y', 'c': 'z'})

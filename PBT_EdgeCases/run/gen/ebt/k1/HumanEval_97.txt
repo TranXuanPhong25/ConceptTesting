@@ -1,0 +1,35 @@
+```python
+
+# Basic Test Cases
+assert multiply(148, 412) == 16, "Basic Test Case 1: Positive integers"
+assert multiply(19, 28) == 72, "Basic Test Case 2: Positive integers"
+assert multiply(2020, 1851) == 0, "Basic Test Case 3: One unit digit is zero"
+assert multiply(10, 20) == 0, "Basic Test Case 4: Both unit digits are zero"
+assert multiply(5, 7) == 35, "Basic Test Case 5: Single digit numbers"
+
+# Edge Test Cases
+assert multiply(1, 1) == 1, "Edge Test Case 1: Smallest positive single-digit integers"
+assert multiply(9, 9) == 81, "Edge Test Case 2: Largest positive single-digit integers"
+assert multiply(14, -15) == 20, "Edge Test Case 3: One negative integer"
+assert multiply(-14, 15) == 20, "Edge Test Case 4: Another negative integer"
+assert multiply(-14, -15) == 20, "Edge Test Case 5: Both negative integers"
+assert multiply(0, 123) == 0, "Edge Test Case 6: One input is zero"
+assert multiply(123, 0) == 0, "Edge Test Case 7: Another input is zero"
+assert multiply(0, 0) == 0, "Edge Test Case 8: Both inputs are zero"
+assert multiply(123456789, 987654321) == 9, "Edge Test Case 9: Large positive numbers"
+assert multiply(-123456789, -987654321) == 9, "Edge Test Case 10: Large negative numbers"
+assert multiply(1000000000000000000, 2000000000000000000) == 0, "Edge Test Case 11: Very large numbers ending in zero"
+
+# Large Scale Test Cases (Focus on correct unit digit extraction and multiplication)
+# Since the function only considers unit digits, large scale tests primarily involve large numbers themselves,
+# rather than a large number of test cases with unique logic.
+# The core logic remains the same regardless of the magnitude of the non-unit digits.
+assert multiply(1234567890123456789, 9876543210987654321) == 9, "Large Scale Test Case 1: Very large numbers"
+assert multiply(1234567891234567891, 1234567891234567891) == 1, "Large Scale Test Case 2: Product of unit digits is 1"
+assert multiply(9999999999999999999, 9999999999999999999) == 81, "Large Scale Test Case 3: Product of unit digits is 81"
+assert multiply(-9999999999999999999, 9999999999999999999) == 81, "Large Scale Test Case 4: Mixed signs, large numbers"
+assert multiply(1000000000000000005, -1000000000000000007) == 35, "Large Scale Test Case 5: Mixed signs, large numbers, specific unit digits"
+assert multiply(10**100 + 4, 10**100 + 2) == 8, "Large Scale Test Case 6: Extremely large numbers represented as powers"
+assert multiply(10**100 - 1, 10**100 - 2) == 2, "Large Scale Test Case 7: Extremely large numbers ending in 9 and 8"
+
+```
