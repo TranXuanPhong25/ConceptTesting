@@ -58,9 +58,24 @@ Eval chạy đúng quy trình `bashes/generate.sh` + `scripts/generate.py` + `sc
 tái lập hay không. `ANCHOR OK` thì số của `concept_aux`/`sft` so thẳng được với các dòng `SFT (Harness)`, `RL (Harness)`
 của Table 1. `MISMATCH` thì chưa được so, phải tìm chỗ lệch protocol trước.
 
-Số của paper trong `PAPER_TABLE` (Cell 2) lấy từ **snippet tìm kiếm** vì môi trường soạn notebook bị chặn arxiv: LCB Seen
-SFT(Harness) 62.9 / RL(Harness) 74.1, LCB Unseen 42.1 / 69.9, "MBPP+Fix" 78.1 / 84.4. Ô CodeForces để `None`. **Phải đối
-chiếu với PDF Table 1** (cả việc "MBPP+Fix" có đúng là `Testcase_MBPPHard` không) trước khi báo cáo.
+Số của paper trong `PAPER_TABLE` (Cell 2) **đã đối chiếu với PDF** arXiv 2511.01104v1 (04-10-2026). Metric là **TBR**
+(True bug rate: % response mà bản đúng pass còn bản lỗi fail, tức `PassGoodFailBad`), trung bình 8 lần chạy. Seen và
+MBPP+Fix(Hard) nằm ở Table 1, Unseen (bug do Qwen3-14B sinh) nằm ở Table 2:
+
+| TBR % | MBPP+Fix(Hard) | LCB Seen | LCB Unseen | CF Seen | CF Unseen |
+|---|---|---|---|---|---|
+| SFT (I/O) | 44.6 | 42.9 | 17.3 | 59.5 | 23.1 |
+| SFT (Harness) | 62.9 | 42.1 | 16.3 | 46.0 | 25.3 |
+| RL (I/O) | 72.7 | 65.1 | 33.3 | 72.2 | 32.4 |
+| RL (Harness) | 74.1 | **69.9** (anchor) | 37.2 | 74.4 | 37.9 |
+
+- Bản snippet cũ sai: mỗi dataset trong bảng có 3 cột GI/ITR/TBR, snippet đọc 3 cột của MBPP thành 3 dataset (nên anchor
+  LCB Seen cũ ghi 74.1, thực ra đó là TBR của MBPP).
+- "MBPP+Fix" = split MBPP+Fix(Hard) của UTGen, 141 bài = `Shiyu-Lab/Testcase_MBPPHard` (141 dòng trên HF).
+- Kích thước tập eval (Table 6, khớp số dòng trên HF): MBPP 141, LCB Seen 76, LCB Unseen 93, CF Seen 100, CF Unseen 84.
+  Mọi tập đều < 100 bài trừ MBPP, nên `N_EVAL=100` lấy **đủ cả tập**, đúng như paper.
+- Paper báo SFT model ở k=5 test case/response, RL model tự chọn (tối đa 20). Notebook chấm mọi variant bằng mặc định
+  của `scripts/eval.py` (20 testcase, 5 generator). Với dòng SFT đây có thể là một chỗ lệch nhỏ.
 
 **Phía train vẫn khác paper:** họ full-FT 15 epoch, cutoff 16k, bf16. Ở đây QLoRA r=16, 1 epoch, cutoff 8192 (ví dụ dài hơn
 bị bỏ, dùng liger fused-CE để vừa T4), fp16. Đây là bất lợi cho model của mình, không làm mất tính hợp lệ của eval.
@@ -84,3 +99,16 @@ bài thường vượt một phiên Kaggle 12h. File gens được ghi theo chun
   "Không nhận ra schema" thì sửa hàm đó theo cột in ra.
 - Ghi chú judge: `reliability_guard()` của paper đặt `os.getcwd=None`, làm `tempfile` hỏng nếu chưa cache. Notebook gọi
   `tempfile.gettempdir()` trước khi fork để xử lý. Nếu không build được `python-prctl` thì notebook dùng shim no-op.
+
+## Lỗi Kaggle đã gặp
+
+Chạy bằng `kaggle kernels push` (xem `student/KAGGLE_CLI.md`). `kernel-metadata.json` dùng:
+`"machine_shape": "NvidiaTeslaT4"` (Kaggle cấp 2×T4) và
+`"docker_image": "gcr.io/kaggle-private-byod/python@sha256:37c64f7dd9c54116ecd1bcc88817c5469b88387388fade02bfa8bf3fc647d461"`.
+
+| Lỗi | Nguyên nhân | Sửa |
+|---|---|---|
+| `No matching distribution found for vllm==0.8.5.post1` → Cell 7 `ModuleNotFoundError: vllm` | image Kaggle mặc định (10-2026) đã lên Python 3.13 / torch 2.11; vllm 0.8.x–0.10.1 yêu cầu Python <3.13 | pin `docker_image` ở trên trong kernel-metadata (image cũ, Python 3.12, cùng image kernel vLLM-T4 trước đó chạy được). Không đổi bản vLLM nên protocol giữ nguyên |
+| Cell 6 `ImportError: cannot import name 'runtime_version' from 'google.protobuf'` (khi `import peft` → transformers → tensorflow) | cài vllm hạ protobuf, làm tensorflow có sẵn trong image bị vỡ; transformers tự import TF nếu thấy | Cell 1 đặt `os.environ["USE_TF"]="0"` trước khi import transformers (notebook không dùng TF) |
+| Kernel `CANCEL_ACKNOWLEDGED` sau ~12h, `harness_rl` LCB Seen mới sinh 30/76 bài | giới hạn 12h/phiên của Kaggle. Trên 2×T4, 8 mẫu × tối đa 32k token mất ~4h cho mỗi chunk 10 bài, KV cache bị preempt liên tục (>700 lần) | resume: tải `gens_*.jsonl` qua `kaggle kernels output --file-pattern`, đưa lên dataset private `xunphongtrn/conceptsft-gens` (thêm vào `dataset_sources`), rồi push lại cùng RUN_CFG. Notebook glob `/kaggle/input/**/gens_*.jsonl` và sinh tiếp phần còn thiếu |
+| `The following are not valid kernel sources: [<chính kernel đó>]` | Kaggle không cho một kernel dùng output của chính nó làm `kernel_sources` | resume qua dataset như dòng trên. `kernel_sources` chỉ dùng để lấy adapter/results từ kernel **khác** |
