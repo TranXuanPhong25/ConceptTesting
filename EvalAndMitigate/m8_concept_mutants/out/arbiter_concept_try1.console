@@ -1,0 +1,18 @@
+Direct use of automatic function calling (AFC) in Models.generate_content is not recommended. Instead, we recommend to use AFC in Chat.send_message. Similarly, direct use of AFC in Models.generate_content_stream is not recommended. Instead, we recommend to use AFC in Chat.send_message_stream.
+2 Cli_26_buggy concept items 10 calls 1 {'A': 3, 'B': 5, 'UNDETERMINED': 2} spent 0.710 USD
+4 Cli_8_buggy concept items 10 calls 1 {'A': 3, 'B': 6, 'UNDETERMINED': 1} spent 0.714 USD
+5 Codec_13_buggy concept items 10 calls 1 {'A': 2, 'B': 4, 'UNDETERMINED': 4} spent 0.721 USD
+6 Codec_17_buggy concept items 1 calls 1 {'A': 1} spent 0.722 USD
+7 Codec_18_buggy concept items 10 calls 1 {'A': 5, 'B': 5} spent 0.726 USD
+8 Codec_6_buggy concept items 10 calls 1 {'A': 6, 'B': 3, 'UNDETERMINED': 1} spent 0.732 USD
+9 Codec_7_buggy concept items 3 calls 1 {'B': 2, 'A': 1} spent 0.734 USD
+10 Codec_8_buggy concept items 10 calls 1 {'UNDETERMINED': 6, 'A': 3, 'B': 1} spent 0.740 USD
+11 Codec_9_buggy concept items 10 calls 1 {'UNDETERMINED': 2, 'B': 7, 'A': 1} spent 0.746 USD
+12 Csv_16_buggy concept items 10 calls 1 {'B': 3, 'A': 6, 'UNDETERMINED': 1} spent 0.752 USD
+Traceback (most recent call last):
+  File "/repo/m8_concept_mutants/arbiter.py", line 266, in <module>
+    {"ask": ask, "tests": tests, "completions": completions}[cmd](sys.argv[2], [int(x) for x in sys.argv[3:]])
+  File "/repo/m8_concept_mutants/arbiter.py", line 135, in ask
+    assert not PR.appended_leaks(O, recs[i], adv[i], p), f"focal body in arbiter prompt {i}"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: focal body in arbiter prompt 13

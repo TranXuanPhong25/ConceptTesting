@@ -1,0 +1,2106 @@
+{
+ "Cli_15": {
+  "idx": [
+   0
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli2.bug.BugCLI158Test::testSingleOptionSingleArgument": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.cli2.bug.BugCLI158Test::testSingleOptionMaximumNumberOfArgument": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli2.bug.BugCLI158Test::testSingleOptionSingleArgument": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: expected:<[1[, 1000]]> but was:<[1[]]>"
+    ],
+    "org.apache.commons.cli2.bug.BugCLI158Test::testSingleOptionMaximumNumberOfArgument": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: expected:<[1, 2[, 10000]]> but was:<[1, 2[]]>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Cli_1": {
+  "idx": [
+   1
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": false,
+   "err": "/scratch/m9fix/check/fCli_1/src/CommandLine.java:69: error: cannot find symbol",
+   "fixed": false,
+   "any_pass": false
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli.bug.BugCLI13Test::testCLI13": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Cli_26": {
+  "idx": [
+   2
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli.OptionBuilderTest::testBuilderIsResettedAlways": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli.OptionBuilderTest::testBuilderIsResettedAlways": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: we inherited a description"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Cli_32": {
+  "idx": [
+   3
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli.HelpFormatterTest::testRenderWrappedTextWordCut": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.cli.HelpFormatterTest::testFindWrapPos": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli.HelpFormatterTest::testRenderWrappedTextWordCut": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: String index out of range: 12"
+    ],
+    "org.apache.commons.cli.HelpFormatterTest::testFindWrapPos": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: wrap position 3 expected:<3> but was:<4>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Cli_8": {
+  "idx": [
+   4
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli.HelpFormatterTest::testPrintWrapped": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.cli.HelpFormatterTest::testPrintWrapped": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: single line padded text 2 expected:<... ...> but was:<......>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Codec_13": {
+  "idx": [
+   5
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": false,
+   "err": "/scratch/m9fix/check/fCodec_13/src/DoubleMetaphone.java:244: error: cannot find symbol",
+   "fixed": false,
+   "any_pass": false
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.language.DoubleMetaphoneTest::testIsDoubleMetaphoneEqualBasic": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.codec.language.DoubleMetaphoneTest::testCodec184": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Codec_17": {
+  "idx": [
+   6
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.StringUtilsTest::testNewStringNullInput_CODEC229": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.StringUtilsTest::testNewStringNullInput_CODEC229": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Codec_18": {
+  "idx": [
+   7
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.StringUtilsTest::testEqualsCS1": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.codec.binary.StringUtilsTest::testEqualsCS2": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.StringUtilsTest::testEqualsCS1": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: index 3,length 3"
+    ],
+    "org.apache.commons.codec.binary.StringUtilsTest::testEqualsCS2": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: index 3,length 3"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Codec_6": {
+  "idx": [
+   8
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.Base64InputStreamTest::testCodec101": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.Base64InputStreamTest::testCodec101": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: Codec101: First read successful [c=0]"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Codec_7": {
+  "idx": [
+   9
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.Base64Test::testByteToStringVariations": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.codec.binary.Base64Test::testRfc4648Section10Encode": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.Base64Test::testByteToStringVariations": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: byteToString static Hello World expected:<SGVsbG8gV29ybGQ=[]> but was:<SGVsbG8gV29ybGQ=[ ]>"
+    ],
+    "org.apache.commons.codec.binary.Base64Test::testRfc4648Section10Encode": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: expected:<Zg==[]> but was:<Zg==[ ]>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Codec_8": {
+  "idx": [
+   10
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.Base64InputStreamTest::testCodec105": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.Base64InputStreamTest::testCodec105": [
+     "FAIL",
+     "java.lang.ArrayIndexOutOfBoundsException: Index 2 out of bounds for length 2"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Codec_9": {
+  "idx": [
+   11
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.Base64Test::testCodec112": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.codec.binary.Base64Test::testCodec112": [
+     "FAIL",
+     "java.lang.IllegalArgumentException: Input array too big, the output array would be bigger (6) than the specified maxium size of 4"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Csv_16": {
+  "idx": [
+   12
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": false,
+   "err": "/scratch/m9fix/check/fCsv_16/src/CSVParser.java:523: error: cannot find symbol",
+   "fixed": false,
+   "any_pass": false
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.csv.CSVParserTest::testIteratorSequenceBreaking": [
+     "FAIL",
+     "org.junit.ComparisonFailure: expected:<[3]> but was:<[4]>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Csv_2": {
+  "idx": [
+   13
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.csv.CSVRecordTest::testGetStringInconsistentRecord": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.csv.CSVRecordTest::testGetStringInconsistentRecord": [
+     "FAIL",
+     "java.lang.Exception: Unexpected exception, expected<java.lang.IllegalArgumentException> but was<java.lang.ArrayIndexOutOfBoundsException>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Csv_4": {
+  "idx": [
+   14
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.csv.CSVParserTest::testNoHeaderMap": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.csv.CSVParserTest::testNoHeaderMap": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Gson_12": {
+  "idx": [
+   15
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.internal.bind.JsonTreeReaderTest::testSkipValue_filledJsonObject": [
+     "PASS",
+     ""
+    ],
+    "com.google.gson.internal.bind.JsonTreeReaderTest::testSkipValue_emptyJsonObject": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.internal.bind.JsonTreeReaderTest::testSkipValue_filledJsonObject": [
+     "FAIL",
+     "java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 32"
+    ],
+    "com.google.gson.internal.bind.JsonTreeReaderTest::testSkipValue_emptyJsonObject": [
+     "FAIL",
+     "java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 32"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Gson_14": {
+  "idx": [
+   16,
+   17
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testDoubleSupertype": [
+     "PASS",
+     ""
+    ],
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testIssue440WeakReference": [
+     "PASS",
+     ""
+    ],
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testDoubleSubtype": [
+     "PASS",
+     ""
+    ],
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testIssue603PrintStream": [
+     "PASS",
+     ""
+    ],
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testRecursiveResolveSimple": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testDoubleSupertype": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<? super java.lang.Number> but was:<? super ? super java.lang.Number>"
+    ],
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testIssue440WeakReference": [
+     "FAIL",
+     "java.lang.StackOverflowError: null"
+    ],
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testDoubleSubtype": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<? extends java.lang.Number> but was:<? extends ? extends java.lang.Number>"
+    ],
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testIssue603PrintStream": [
+     "FAIL",
+     "java.lang.StackOverflowError: null"
+    ],
+    "com.google.gson.internal.bind.RecursiveTypesResolveTest::testRecursiveResolveSimple": [
+     "FAIL",
+     "java.lang.StackOverflowError: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Gson_15": {
+  "idx": [
+   18
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.stream.JsonWriterTest::testNonFiniteDoublesWhenLenient": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.stream.JsonWriterTest::testNonFiniteDoublesWhenLenient": [
+     "FAIL",
+     "java.lang.IllegalArgumentException: Numeric values must be finite, but was NaN"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Gson_4": {
+  "idx": [
+   19,
+   20,
+   21,
+   22,
+   23,
+   24
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": false,
+   "err": "/scratch/m9fix/check/fGson_4/src/JsonWriter.java:418: error: method beforeValue in class JsonWriter cannot be applied to given types;",
+   "fixed": false,
+   "any_pass": false
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.stream.JsonReaderTest::testTopLevelValueTypeWithSkipValue": [
+     "FAIL",
+     "com.google.gson.stream.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 1 column 1 path $"
+    ],
+    "com.google.gson.stream.JsonReaderTest::testTopLevelValueTypes": [
+     "FAIL",
+     "com.google.gson.stream.MalformedJsonException: Use JsonReader.setLenient(true) to accept malformed JSON at line 1 column 1 path $"
+    ],
+    "com.google.gson.stream.JsonWriterTest::testTopLevelValueTypes": [
+     "FAIL",
+     "java.lang.IllegalStateException: JSON must start with an array or an object."
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Gson_7": {
+  "idx": [
+   25
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.functional.MapTest::testMapDeserializationWithUnquotedLongKeys": [
+     "FAIL",
+     "com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected a long but was STRING at line 1 column 2 path $."
+    ],
+    "com.google.gson.functional.MapTest::testMapDeserializationWithUnquotedIntegerKeys": [
+     "PASS",
+     ""
+    ],
+    "com.google.gson.stream.JsonReaderTest::testPeekingUnquotedStringsPrefixedWithIntegers": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": false,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.functional.MapTest::testMapDeserializationWithUnquotedLongKeys": [
+     "FAIL",
+     "com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected a long but was STRING at line 1 column 2 path $."
+    ],
+    "com.google.gson.functional.MapTest::testMapDeserializationWithUnquotedIntegerKeys": [
+     "FAIL",
+     "com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected an int but was STRING at line 1 column 2 path $."
+    ],
+    "com.google.gson.stream.JsonReaderTest::testPeekingUnquotedStringsPrefixedWithIntegers": [
+     "FAIL",
+     "java.lang.IllegalStateException: Expected an int but was STRING at line 1 column 2 path $[0]"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Gson_8": {
+  "idx": [
+   26
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": false,
+   "err": "/scratch/m9fix/check/fGson_8/src/UnsafeAllocator.java:48: error: cannot find symbol",
+   "fixed": false,
+   "any_pass": false
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "com.google.gson.internal.UnsafeAllocatorInstantiationTest::testInterfaceInstantiation": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<class java.lang.reflect.InvocationTargetException> but was:<class java.lang.UnsupportedOperationException>"
+    ],
+    "com.google.gson.internal.UnsafeAllocatorInstantiationTest::testAbstractClassInstantiation": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<class java.lang.reflect.InvocationTargetException> but was:<class java.lang.UnsupportedOperationException>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_11": {
+  "idx": [
+   27
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.RandomStringUtilsTest::testLANG807": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.RandomStringUtilsTest::testLANG807": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: Message (bound must be positive) must contain 'start'"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_12": {
+  "idx": [
+   28
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.RandomStringUtilsTest::testExceptions": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.RandomStringUtilsTest::testLANG805": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.RandomStringUtilsTest::testExceptions": [
+     "FAIL",
+     "java.lang.ArrayIndexOutOfBoundsException: Index 78708599 out of bounds for length 0"
+    ],
+    "org.apache.commons.lang3.RandomStringUtilsTest::testLANG805": [
+     "FAIL",
+     "java.lang.ArrayIndexOutOfBoundsException: Index 979803828 out of bounds for length 1"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_14": {
+  "idx": [
+   29
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testEquals": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testEquals": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_16": {
+  "idx": [
+   30
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testCreateNumber": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testCreateNumber": [
+     "FAIL",
+     "java.lang.NumberFormatException: 0Xfade is not a valid number."
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_19": {
+  "idx": [
+   31
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testUnfinishedEntity": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testOutOfBounds": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testUnfinishedEntity": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: String index out of range: 19"
+    ],
+    "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testOutOfBounds": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: String index out of range: 7"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_1": {
+  "idx": [
+   32
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::TestLang747": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::TestLang747": [
+     "FAIL",
+     "java.lang.NumberFormatException: For input string: \"80000000\""
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_20": {
+  "idx": [
+   33,
+   34
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.StringUtilsTest::testJoin_ArrayChar": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsTest::testJoin_Objectarray": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.StringUtilsTest::testJoin_ArrayChar": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang3.StringUtilsTest::testJoin_Objectarray": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_21": {
+  "idx": [
+   35
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.time.DateUtilsTest::testIsSameLocalTime_Cal": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.time.DateUtilsTest::testIsSameLocalTime_Cal": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: LANG-677"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_24": {
+  "idx": [
+   36
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testIsNumber": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testIsNumber": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: isNumber(String) LANG-664 failed"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_26": {
+  "idx": [
+   37
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.time.FastDateFormatTest::testLang645": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.time.FastDateFormatTest::testLang645": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: null expected:<fredag, week [53]> but was:<fredag, week [01]>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_27": {
+  "idx": [
+   38
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testCreateNumber": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testCreateNumber": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: begin 0, end 4, length 3"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_28": {
+  "idx": [
+   39
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testSupplementaryUnescaping": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.text.translate.NumericEntityUnescaperTest::testSupplementaryUnescaping": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: Failed to unescape numeric entities supplementary characters expected:<[\ud803\udc22]> but was:<[\u0c22]>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_30": {
+  "idx": [
+   40,
+   41,
+   42,
+   43,
+   44
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_CharArrayWithSupplementaryChars": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_StringWithSupplementaryChars": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAny_StringCharArrayWithBadSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<false> but was:<true>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAnyBut_StringStringWithSupplementaryChars": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAny_StringWithBadSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<false> but was:<true>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAny_StringCharArrayWithSupplementaryChars": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAnyBut_StringCharArrayWithSupplementaryChars": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_StringWithBadSupplementaryChars": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAny_StringStringWithSupplementaryChars": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_CharArrayWithBadSupplementaryChars": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": false,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_CharArrayWithSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<true> but was:<false>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_StringWithSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<true> but was:<false>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAny_StringCharArrayWithBadSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<false> but was:<true>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAnyBut_StringStringWithSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<2> but was:<3>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAny_StringWithBadSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<false> but was:<true>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAny_StringCharArrayWithSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<2> but was:<0>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAnyBut_StringCharArrayWithSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<2> but was:<3>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_StringWithBadSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<true> but was:<false>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testIndexOfAny_StringStringWithSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<2> but was:<0>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsNone_CharArrayWithBadSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<true> but was:<false>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_31": {
+  "idx": [
+   45
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAnyCharArrayWithSupplementaryChars": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAnyStringWithSupplementaryChars": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAnyCharArrayWithSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<false> but was:<true>"
+    ],
+    "org.apache.commons.lang3.StringUtilsEqualsIndexOfTest::testContainsAnyStringWithSupplementaryChars": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<false> but was:<true>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_33": {
+  "idx": [
+   46
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.ClassUtilsTest::testToClass_object": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.ClassUtilsTest::testToClass_object": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_35": {
+  "idx": [
+   47,
+   48
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.ArrayUtilsAddTest::testLANG571": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.ArrayUtilsAddTest::testLANG571": [
+     "FAIL",
+     "java.lang.ClassCastException: class [Ljava.lang.Object; cannot be cast to class [Ljava.lang.String; ([Ljava.lang.Object; and [Ljava.lang.String; are in module java.base of loader 'bootstrap')"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_36": {
+  "idx": [
+   49,
+   50
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testCreateNumber": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang3.math.NumberUtilsTest::testIsNumber": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testCreateNumber": [
+     "FAIL",
+     "java.lang.NumberFormatException: 2. is not a valid number."
+    ],
+    "org.apache.commons.lang3.math.NumberUtilsTest::testIsNumber": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: isNumber(String) LANG-521 failed"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_38": {
+  "idx": [
+   51
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.time.FastDateFormatTest::testLang538": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.time.FastDateFormatTest::testLang538": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: dateTime expected:<2009-10-16T[16]:42:16.000Z> but was:<2009-10-16T[08]:42:16.000Z>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_3": {
+  "idx": [
+   52
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testStringCreateNumberEnsureNoPrecisionLoss": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testStringCreateNumberEnsureNoPrecisionLoss": [
+     "FAIL",
+     "java.lang.AssertionError: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_40": {
+  "idx": [
+   53
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.StringUtilsEqualsIndexOfTest::testContainsIgnoreCase_LocaleIndependence": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.StringUtilsEqualsIndexOfTest::testContainsIgnoreCase_LocaleIndependence": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: en: 0 \u00df SS"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_41": {
+  "idx": [
+   54,
+   55
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.ClassUtilsTest::test_getShortClassName_Class": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.ClassUtilsTest::test_getPackageName_Class": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.ClassUtilsTest::test_getShortClassName_Class": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: null expected:<String[[]]> but was:<String[;]>"
+    ],
+    "org.apache.commons.lang.ClassUtilsTest::test_getPackageName_Class": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: null expected:<[]java.lang> but was:<[[L]java.lang>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_44": {
+  "idx": [
+   56
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.NumberUtilsTest::testLang457": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.NumberUtilsTest::testLang457": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: String index out of range: 0"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_45": {
+  "idx": [
+   57
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.WordUtilsTest::testAbbreviate": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.WordUtilsTest::testAbbreviate": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: begin 0, end 15, length 10"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_46": {
+  "idx": [
+   58,
+   59
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": false,
+   "err": "/scratch/m9fix/check/fLang_46/src/StringEscapeUtils.java:86: error: incompatible types: String cannot be converted to Writer",
+   "fixed": false,
+   "any_pass": false
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.StringEscapeUtilsTest::testEscapeJavaWithSlash": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: expected:<...tring with a slash ([]/) in it> but was:<...tring with a slash ([\\]/) in it>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_47": {
+  "idx": [
+   60,
+   61
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.text.StrBuilderTest::testLang412Left": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.text.StrBuilderTest::testLang412Right": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.text.StrBuilderTest::testLang412Left": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.text.StrBuilderTest::testLang412Right": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_49": {
+  "idx": [
+   62
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.math.FractionTest::testReduce": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.math.FractionTest::testReduce": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<1> but was:<100>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_4": {
+  "idx": [
+   63
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.text.translate.LookupTranslatorTest::testLang882": [
+     "FAIL",
+     "java.lang.AssertionError: Incorrect codepoint consumption expected:<3> but was:<0>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.text.translate.LookupTranslatorTest::testLang882": [
+     "FAIL",
+     "java.lang.AssertionError: Incorrect codepoint consumption expected:<3> but was:<0>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_50": {
+  "idx": [
+   64,
+   65
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.time.FastDateFormatTest::test_changeDefault_Locale_DateInstance": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.time.FastDateFormatTest::test_changeDefault_Locale_DateTimeInstance": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.time.FastDateFormatTest::test_changeDefault_Locale_DateInstance": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected same:<de_DE> was not:<en_US>"
+    ],
+    "org.apache.commons.lang.time.FastDateFormatTest::test_changeDefault_Locale_DateTimeInstance": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected same:<de_DE> was not:<en_US>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_51": {
+  "idx": [
+   66
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.BooleanUtilsTest::test_toBoolean_String": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.BooleanUtilsTest::test_toBoolean_String": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: String index out of range: 3"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_55": {
+  "idx": [
+   67
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.time.StopWatchTest::testLang315": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.time.StopWatchTest::testLang315": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_57": {
+  "idx": [
+   68
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.LocaleUtilsTest::testAvailableLocaleSet": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testIsAvailableLocale": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testAvailableLocaleList": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testCountriesByLanguage": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testLocaleLookupList_LocaleLocale": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testLanguagesByCountry": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testToLocale_1Part": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testToLocale_2Part": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testToLocale_3Part": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testLocaleLookupList_Locale": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testConstructor": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.LocaleUtilsTest::testAvailableLocaleSet": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testIsAvailableLocale": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testAvailableLocaleList": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testCountriesByLanguage": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testLocaleLookupList_LocaleLocale": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testLanguagesByCountry": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testToLocale_1Part": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testToLocale_2Part": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testToLocale_3Part": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testLocaleLookupList_Locale": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ],
+    "org.apache.commons.lang.LocaleUtilsTest::testConstructor": [
+     "FAIL",
+     "java.lang.NullPointerException: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_58": {
+  "idx": [
+   69
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.math.NumberUtilsTest::testLang300": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.math.NumberUtilsTest::testLang300": [
+     "FAIL",
+     "java.lang.NumberFormatException: 1l is not a valid number."
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_59": {
+  "idx": [
+   70
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.text.StrBuilderAppendInsertTest::testLang299": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.text.StrBuilderAppendInsertTest::testLang299": [
+     "FAIL",
+     "java.lang.StringIndexOutOfBoundsException: offset 0, count 3, length 1"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_5": {
+  "idx": [
+   71
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.LocaleUtilsTest::testLang865": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.LocaleUtilsTest::testLang865": [
+     "FAIL",
+     "java.lang.IllegalArgumentException: Invalid locale format: _GB"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_60": {
+  "idx": [
+   72,
+   73
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.text.StrBuilderTest::testLang295": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.text.StrBuilderTest::testLang295": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: The contains(char) method is looking beyond the end of the string"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_61": {
+  "idx": [
+   74
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.text.StrBuilderTest::testIndexOfLang294": [
+     "PASS",
+     ""
+    ],
+    "org.apache.commons.lang.text.StrBuilderTest::testLang294": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.text.StrBuilderTest::testIndexOfLang294": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: expected:<-1> but was:<6>"
+    ],
+    "org.apache.commons.lang.text.StrBuilderTest::testLang294": [
+     "FAIL",
+     "java.lang.ArrayIndexOutOfBoundsException: arraycopy: length -6 is negative"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_63": {
+  "idx": [
+   75
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.time.DurationFormatUtilsTest::testJiraLang281": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.time.DurationFormatUtilsTest::testJiraLang281": [
+     "FAIL",
+     "junit.framework.ComparisonFailure: expected:<[09]> but was:<[-2]>"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_64": {
+  "idx": [
+   76
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": false,
+   "err": "/scratch/m9fix/check/fLang_64/src/ValuedEnum.java:188: error: cannot find symbol",
+   "fixed": false,
+   "any_pass": false
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang.enums.ValuedEnumTest::testCompareTo_otherEnumType": [
+     "FAIL",
+     "junit.framework.AssertionFailedError: null"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ },
+ "Lang_7": {
+  "idx": [
+   77
+  ],
+  "unmatched": [],
+  "fixed_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testCreateNumber": [
+     "PASS",
+     ""
+    ]
+   },
+   "fixed": true,
+   "any_pass": true
+  },
+  "buggy_version": {
+   "compiled": true,
+   "err": "",
+   "tests": {
+    "org.apache.commons.lang3.math.NumberUtilsTest::testCreateNumber": [
+     "FAIL",
+     "java.lang.AssertionError: Expected NumberFormatException"
+    ]
+   },
+   "fixed": false,
+   "any_pass": false
+  }
+ }
+}

@@ -1,0 +1,161 @@
+{
+ "3": {
+  "code": "import org.junit.Test;\nimport static org.junit.Assert.*;\nimport java.io.PrintWriter;\nimport java.io.StringWriter;\nimport java.util.Comparator;\n\npublic class HelpFormatterM8GenericTest {\n\n    @Test\n    public void m8GenericItem1() throws Exception {\n        // input: width_one\n        HelpFormatter formatter = new HelpFormatter();\n        java.util.concurrent.Callable<Object> c = () -> formatter.findWrapPos(\"abc def\", 1, 0);\n        assertEquals(\"Integer:1\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem2() throws Exception {\n        // input: long_word_chop\n        HelpFormatter formatter = new HelpFormatter();\n        java.util.concurrent.Callable<Object> c = () -> formatter.findWrapPos(\"Thisisalongwordthatwillbechopped.\", 10, 0);\n        assertEquals(\"Integer:10\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem3() throws Exception {\n        // input: long_word_chop_with_space_after\n        HelpFormatter formatter = new HelpFormatter();\n        java.util.concurrent.Callable<Object> c = () -> formatter.findWrapPos(\"Thisisalongword that will be chopped.\", 10, 0);\n        assertEquals(\"Integer:15\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem4() throws Exception {\n        // input: long_word_chop_start_middle\n        HelpFormatter formatter = new HelpFormatter();\n        java.util.concurrent.Callable<Object> c = () -> formatter.findWrapPos(\"Some text andthenthisisalongwordthatwillbechopped.\", 10, 15);\n        assertEquals(\"Integer:25\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem6() throws Exception {\n        // input: explicit_newline_at_width_boundary\n        HelpFormatter formatter = new HelpFormatter();\n        java.util.concurrent.Callable<Object> c = () -> formatter.findWrapPos(\"This is a line\\nwith a newline.\", 15, 0);\n        assertEquals(\"Integer:15\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem8() throws Exception {\n        // input: typical_short_text_with_space\n        HelpFormatter formatter = new HelpFormatter();\n        java.util.concurrent.Callable<Object> c = () -> formatter.findWrapPos(\"This is a short text.\", 10, 0);\n        assertEquals(\"Integer:9\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem10() throws Exception {\n        // input: typical_long_text_multiple_breaks_start_middle\n        HelpFormatter formatter = new HelpFormatter();\n        java.util.concurrent.Callable<Object> c = () -> formatter.findWrapPos(\"This is a longer text that needs to be wrapped multiple times.\", 20, 15);\n        assertEquals(\"Integer:35\", m8repr(c.call()));\n    }\n\n    static String m8repr(Object o) {\n        String s = m8repr0(o, 0);\n        return s.length() > 400 ? s.substring(0, 400) + \"...\" : s;\n    }\n    static String m8repr0(Object o, int depth) {\n        if (o == null) return \"null\";\n        if (depth > 3) return \"...\";\n        if (o instanceof String) return \"\\\"\" + m8esc((String) o) + \"\\\"\";\n        if (o instanceof Character) return \"'\" + m8esc(String.valueOf(o)) + \"'\";\n        if (o instanceof Boolean) return String.valueOf(o);\n        if (o instanceof Number) return o.getClass().getSimpleName() + \":\" + o;\n        if (o instanceof CharSequence) return o.getClass().getSimpleName() + \":\\\"\" + m8esc(o.toString()) + \"\\\"\";\n        if (o instanceof Class) return \"class \" + ((Class<?>) o).getName();\n        if (o.getClass().isArray()) {\n            StringBuilder b = new StringBuilder(o.getClass().getComponentType().getSimpleName() + \"[\");\n            int n = java.lang.reflect.Array.getLength(o);\n            for (int i = 0; i < n && i < 50; i++) b.append(i > 0 ? \", \" : \"\").append(m8repr0(java.lang.reflect.Array.get(o, i), depth + 1));\n            return b.append(n > 50 ? \", ...]\" : \"]\").toString();\n        }\n        if (o instanceof java.util.Map) {\n            StringBuilder b = new StringBuilder(o.getClass().getSimpleName() + \"{\");\n            int i = 0;\n            for (Object e : ((java.util.Map<?, ?>) o).entrySet()) {\n                if (i++ >= 50) { b.append(\", ...\"); break; }\n                java.util.Map.Entry<?, ?> en = (java.util.Map.Entry<?, ?>) e;\n                b.append(i > 1 ? \", \" : \"\").append(m8repr0(en.getKey(), depth + 1)).append(\"=\").append(m8repr0(en.getValue(), depth + 1));\n            }\n            return b.append(\"}\").toString();\n        }\n        if (o instanceof java.util.Collection) {\n            StringBuilder b = new StringBuilder(o.getClass().getSimpleName() + \"[\");\n            int i = 0;\n            for (Object e : (java.util.Collection<?>) o) {\n                if (i++ >= 50) { b.append(\", ...\"); break; }\n                b.append(i > 1 ? \", \" : \"\").append(m8repr0(e, depth + 1));\n            }\n            return b.append(\"]\").toString();\n        }\n        return o.getClass().getSimpleName() + \":\" + m8esc(String.valueOf(o).replaceAll(\"@[0-9a-f]{4,}\", \"@?\"));\n    }\n    static String m8esc(String s) {\n        StringBuilder b = new StringBuilder();\n        for (char c : s.toCharArray()) {\n            if (c == '\\\\' || c == '\"') b.append('\\\\').append(c);\n            else if (c == '\\n') b.append(\"\\\\n\");\n            else if (c == '\\t') b.append(\"\\\\t\");\n            else if (c == '\\r') b.append(\"\\\\r\");\n            else if (c < 32 || c > 126) b.append(String.format(\"\\\\u%04x\", (int) c));\n            else b.append(c);\n        }\n        return b.toString();\n    }\n    static String m8outcome(Throwable e) {\n        String m = e.getMessage() == null ? \"\" : \": \" + m8esc(e.getMessage().replaceAll(\"@[0-9a-f]{4,}\", \"@?\"));\n        return \"throws \" + e.getClass().getName() + (m.length() > 200 ? m.substring(0, 200) + \"...\" : m);\n    }\n}\n",
+  "kept": [
+   1,
+   2,
+   3,
+   4,
+   6,
+   8,
+   10
+  ],
+  "dropped_compile": [],
+  "self_check": {
+   "1": [
+    "FAIL",
+    false
+   ],
+   "2": [
+    "FAIL",
+    false
+   ],
+   "3": [
+    "PASS",
+    true
+   ],
+   "4": [
+    "FAIL",
+    false
+   ],
+   "6": [
+    "PASS",
+    true
+   ],
+   "8": [
+    "PASS",
+    true
+   ],
+   "10": [
+    "PASS",
+    true
+   ]
+  }
+ },
+ "33": {
+  "code": "import org.junit.Test;\nimport static org.junit.Assert.*;\nimport java.util.Arrays;\nimport java.util.Collections;\n\npublic class StringUtilsM8GenericTest {\n\n    @Test\n    public void m8GenericItem1() throws Exception {\n        // input: single_element_array\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"single\"}, '#', 0, 1);\n        assertEquals(\"\\\"single\\\"\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem2() throws Exception {\n        // input: typical_array_char_full_range\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"a\", \"b\", \"c\"}, ';', 0, 3);\n        assertEquals(\"\\\"a;b;c\\\"\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem3() throws Exception {\n        // input: typical_array_char_sub_range\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"a\", \"b\", \"c\", \"d\"}, '-', 1, 3);\n        assertEquals(\"\\\"b-c\\\"\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem4() throws Exception {\n        // input: array_with_null_elements\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"a\", null, \"c\"}, ',', 0, 3);\n        assertEquals(\"\\\"a,,c\\\"\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem5() throws Exception {\n        // input: array_with_empty_string_elements\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"a\", \"\", \"c\"}, '|', 0, 3);\n        assertEquals(\"\\\"a||c\\\"\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem6() throws Exception {\n        // input: array_with_mixed_elements\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"one\", null, \"three\", \"\"}, ' ', 0, 4);\n        assertEquals(\"\\\"one  three \\\"\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem7() throws Exception {\n        // input: startIndex_zero_endIndex_array_length\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"x\", \"y\", \"z\"}, '.', 0, 3);\n        assertEquals(\"\\\"x.y.z\\\"\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem8() throws Exception {\n        // input: startIndex_negative\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"a\", \"b\"}, '!', -1, 1);\n        Throwable t = null;\n        try { c.call(); } catch (Throwable e) { t = e; }\n        assertNotNull(\"expected java.lang.ArrayIndexOutOfBoundsException\", t);\n        assertEquals(\"java.lang.ArrayIndexOutOfBoundsException\", t.getClass().getName());\n    }\n\n    @Test\n    public void m8GenericItem9() throws Exception {\n        // input: startIndex_out_of_bounds\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"a\", \"b\"}, '@', 2, 2);\n        Throwable t = null;\n        try { c.call(); } catch (Throwable e) { t = e; }\n        assertNotNull(\"expected java.lang.ArrayIndexOutOfBoundsException\", t);\n        assertEquals(\"java.lang.ArrayIndexOutOfBoundsException\", t.getClass().getName());\n    }\n\n    @Test\n    public void m8GenericItem10() throws Exception {\n        // input: endIndex_out_of_bounds\n        java.util.concurrent.Callable<Object> c = () -> StringUtils.join(new Object[]{\"a\", \"b\"}, '%', 0, 3);\n        Throwable t = null;\n        try { c.call(); } catch (Throwable e) { t = e; }\n        assertNotNull(\"expected java.lang.ArrayIndexOutOfBoundsException\", t);\n        assertEquals(\"java.lang.ArrayIndexOutOfBoundsException\", t.getClass().getName());\n    }\n\n    static String m8repr(Object o) {\n        String s = m8repr0(o, 0);\n        return s.length() > 400 ? s.substring(0, 400) + \"...\" : s;\n    }\n    static String m8repr0(Object o, int depth) {\n        if (o == null) return \"null\";\n        if (depth > 3) return \"...\";\n        if (o instanceof String) return \"\\\"\" + m8esc((String) o) + \"\\\"\";\n        if (o instanceof Character) return \"'\" + m8esc(String.valueOf(o)) + \"'\";\n        if (o instanceof Boolean) return String.valueOf(o);\n        if (o instanceof Number) return o.getClass().getSimpleName() + \":\" + o;\n        if (o instanceof CharSequence) return o.getClass().getSimpleName() + \":\\\"\" + m8esc(o.toString()) + \"\\\"\";\n        if (o instanceof Class) return \"class \" + ((Class<?>) o).getName();\n        if (o.getClass().isArray()) {\n            StringBuilder b = new StringBuilder(o.getClass().getComponentType().getSimpleName() + \"[\");\n            int n = java.lang.reflect.Array.getLength(o);\n            for (int i = 0; i < n && i < 50; i++) b.append(i > 0 ? \", \" : \"\").append(m8repr0(java.lang.reflect.Array.get(o, i), depth + 1));\n            return b.append(n > 50 ? \", ...]\" : \"]\").toString();\n        }\n        if (o instanceof java.util.Map) {\n            StringBuilder b = new StringBuilder(o.getClass().getSimpleName() + \"{\");\n            int i = 0;\n            for (Object e : ((java.util.Map<?, ?>) o).entrySet()) {\n                if (i++ >= 50) { b.append(\", ...\"); break; }\n                java.util.Map.Entry<?, ?> en = (java.util.Map.Entry<?, ?>) e;\n                b.append(i > 1 ? \", \" : \"\").append(m8repr0(en.getKey(), depth + 1)).append(\"=\").append(m8repr0(en.getValue(), depth + 1));\n            }\n            return b.append(\"}\").toString();\n        }\n        if (o instanceof java.util.Collection) {\n            StringBuilder b = new StringBuilder(o.getClass().getSimpleName() + \"[\");\n            int i = 0;\n            for (Object e : (java.util.Collection<?>) o) {\n                if (i++ >= 50) { b.append(\", ...\"); break; }\n                b.append(i > 1 ? \", \" : \"\").append(m8repr0(e, depth + 1));\n            }\n            return b.append(\"]\").toString();\n        }\n        return o.getClass().getSimpleName() + \":\" + m8esc(String.valueOf(o).replaceAll(\"@[0-9a-f]{4,}\", \"@?\"));\n    }\n    static String m8esc(String s) {\n        StringBuilder b = new StringBuilder();\n        for (char c : s.toCharArray()) {\n            if (c == '\\\\' || c == '\"') b.append('\\\\').append(c);\n            else if (c == '\\n') b.append(\"\\\\n\");\n            else if (c == '\\t') b.append(\"\\\\t\");\n            else if (c == '\\r') b.append(\"\\\\r\");\n            else if (c < 32 || c > 126) b.append(String.format(\"\\\\u%04x\", (int) c));\n            else b.append(c);\n        }\n        return b.toString();\n    }\n    static String m8outcome(Throwable e) {\n        String m = e.getMessage() == null ? \"\" : \": \" + m8esc(e.getMessage().replaceAll(\"@[0-9a-f]{4,}\", \"@?\"));\n        return \"throws \" + e.getClass().getName() + (m.length() > 200 ? m.substring(0, 200) + \"...\" : m);\n    }\n}\n",
+  "kept": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ],
+  "dropped_compile": [],
+  "self_check": {
+   "1": [
+    "PASS",
+    true
+   ],
+   "2": [
+    "PASS",
+    true
+   ],
+   "3": [
+    "PASS",
+    true
+   ],
+   "4": [
+    "PASS",
+    true
+   ],
+   "5": [
+    "PASS",
+    true
+   ],
+   "6": [
+    "PASS",
+    true
+   ],
+   "7": [
+    "PASS",
+    true
+   ],
+   "8": [
+    "PASS",
+    true
+   ],
+   "9": [
+    "FAIL",
+    false
+   ],
+   "10": [
+    "PASS",
+    true
+   ]
+  }
+ },
+ "53": {
+  "code": "import org.junit.Test;\nimport static org.junit.Assert.*;\nimport java.util.Locale;\n\npublic class StringUtilsM8GenericTest {\n\n    @Test\n    public void m8GenericItem1() throws Exception {\n        // input: empty, empty\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"\", \"\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem2() throws Exception {\n        // input: abc, empty\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"abc\", \"\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem3() throws Exception {\n        // input: abc, a\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"abc\", \"a\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem4() throws Exception {\n        // input: abc, A\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"abc\", \"A\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem5() throws Exception {\n        // input: aBc, bc\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"aBc\", \"bc\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem6() throws Exception {\n        // input: aBc, BC\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"aBc\", \"BC\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem7() throws Exception {\n        // input: aBc, bC\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"aBc\", \"bC\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem8() throws Exception {\n        // input: aBc, AbC\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"aBc\", \"AbC\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem9() throws Exception {\n        // input: long string, middle match\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"This is a long string\", \"long\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    @Test\n    public void m8GenericItem10() throws Exception {\n        // input: long string, middle match case\n        java.util.concurrent.Callable<Object> c = () -> org.apache.commons.lang.StringUtils.containsIgnoreCase(\"This is a long string\", \"LoNg\");\n        assertEquals(\"true\", m8repr(c.call()));\n    }\n\n    static String m8repr(Object o) {\n        String s = m8repr0(o, 0);\n        return s.length() > 400 ? s.substring(0, 400) + \"...\" : s;\n    }\n    static String m8repr0(Object o, int depth) {\n        if (o == null) return \"null\";\n        if (depth > 3) return \"...\";\n        if (o instanceof String) return \"\\\"\" + m8esc((String) o) + \"\\\"\";\n        if (o instanceof Character) return \"'\" + m8esc(String.valueOf(o)) + \"'\";\n        if (o instanceof Boolean) return String.valueOf(o);\n        if (o instanceof Number) return o.getClass().getSimpleName() + \":\" + o;\n        if (o instanceof CharSequence) return o.getClass().getSimpleName() + \":\\\"\" + m8esc(o.toString()) + \"\\\"\";\n        if (o instanceof Class) return \"class \" + ((Class<?>) o).getName();\n        if (o.getClass().isArray()) {\n            StringBuilder b = new StringBuilder(o.getClass().getComponentType().getSimpleName() + \"[\");\n            int n = java.lang.reflect.Array.getLength(o);\n            for (int i = 0; i < n && i < 50; i++) b.append(i > 0 ? \", \" : \"\").append(m8repr0(java.lang.reflect.Array.get(o, i), depth + 1));\n            return b.append(n > 50 ? \", ...]\" : \"]\").toString();\n        }\n        if (o instanceof java.util.Map) {\n            StringBuilder b = new StringBuilder(o.getClass().getSimpleName() + \"{\");\n            int i = 0;\n            for (Object e : ((java.util.Map<?, ?>) o).entrySet()) {\n                if (i++ >= 50) { b.append(\", ...\"); break; }\n                java.util.Map.Entry<?, ?> en = (java.util.Map.Entry<?, ?>) e;\n                b.append(i > 1 ? \", \" : \"\").append(m8repr0(en.getKey(), depth + 1)).append(\"=\").append(m8repr0(en.getValue(), depth + 1));\n            }\n            return b.append(\"}\").toString();\n        }\n        if (o instanceof java.util.Collection) {\n            StringBuilder b = new StringBuilder(o.getClass().getSimpleName() + \"[\");\n            int i = 0;\n            for (Object e : (java.util.Collection<?>) o) {\n                if (i++ >= 50) { b.append(\", ...\"); break; }\n                b.append(i > 1 ? \", \" : \"\").append(m8repr0(e, depth + 1));\n            }\n            return b.append(\"]\").toString();\n        }\n        return o.getClass().getSimpleName() + \":\" + m8esc(String.valueOf(o).replaceAll(\"@[0-9a-f]{4,}\", \"@?\"));\n    }\n    static String m8esc(String s) {\n        StringBuilder b = new StringBuilder();\n        for (char c : s.toCharArray()) {\n            if (c == '\\\\' || c == '\"') b.append('\\\\').append(c);\n            else if (c == '\\n') b.append(\"\\\\n\");\n            else if (c == '\\t') b.append(\"\\\\t\");\n            else if (c == '\\r') b.append(\"\\\\r\");\n            else if (c < 32 || c > 126) b.append(String.format(\"\\\\u%04x\", (int) c));\n            else b.append(c);\n        }\n        return b.toString();\n    }\n    static String m8outcome(Throwable e) {\n        String m = e.getMessage() == null ? \"\" : \": \" + m8esc(e.getMessage().replaceAll(\"@[0-9a-f]{4,}\", \"@?\"));\n        return \"throws \" + e.getClass().getName() + (m.length() > 200 ? m.substring(0, 200) + \"...\" : m);\n    }\n}\n",
+  "kept": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ],
+  "dropped_compile": [],
+  "self_check": {
+   "1": [
+    "PASS",
+    true
+   ],
+   "2": [
+    "PASS",
+    true
+   ],
+   "3": [
+    "PASS",
+    true
+   ],
+   "4": [
+    "PASS",
+    true
+   ],
+   "5": [
+    "PASS",
+    true
+   ],
+   "6": [
+    "PASS",
+    true
+   ],
+   "7": [
+    "PASS",
+    true
+   ],
+   "8": [
+    "PASS",
+    true
+   ],
+   "9": [
+    "PASS",
+    true
+   ],
+   "10": [
+    "PASS",
+    true
+   ]
+  }
+ }
+}

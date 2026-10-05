@@ -1,0 +1,26 @@
+/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language.build_library is deprecated. Use the new bindings instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language(path, name) is deprecated. Use Language(ptr, name) instead.
+  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
+/repo
+Current PATH: /venv/bin:/defects4j/framework/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Updated PATH: /defects4j/framework/bin:/venv/bin:/defects4j/framework/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+Total items in data: 76
+58
+Logging to file: /repo/data/rq1/logs/Gemini-2-5-flash_gen_test_evaluate_buggy_gen_test_non_private_or_default_m8_concept_part3_log_1.log
+Processing items:   0%|          | 0/76 [00:00<?, ?item/s]Processing Cli_26_buggy:   0%|          | 0/76 [00:00<?, ?item/s]Pre-test compiling Cli_26_buggy:   0%|          | 0/76 [00:01<?, ?item/s]Pre-test compiling buggy Cli_26_buggy:   0%|          | 0/76 [00:02<?, ?item/s]Compiling tests of Cli_26_buggy:   0%|          | 0/76 [00:03<?, ?item/s]      Running tests of Cli_26_buggy:   0%|          | 0/76 [00:13<?, ?item/s]  Running buggy tests of Cli_26_buggy:   0%|          | 0/76 [00:14<?, ?item/s]Running buggy tests of Cli_26_buggy:   1%|▏         | 1/76 [00:15<19:45, 15.81s/item]Processing Cli_32_buggy:   1%|▏         | 1/76 [00:15<19:45, 15.81s/item]            Pre-test compiling Cli_32_buggy:   1%|▏         | 1/76 [00:16<19:45, 15.81s/item]Pre-test compiling buggy Cli_32_buggy:   1%|▏         | 1/76 [00:17<19:45, 15.81s/item]Compiling tests of Cli_32_buggy:   1%|▏         | 1/76 [00:18<19:45, 15.81s/item]      Running tests of Cli_32_buggy:   1%|▏         | 1/76 [00:29<19:45, 15.81s/item]  Running buggy tests of Cli_32_buggy:   1%|▏         | 1/76 [00:30<19:45, 15.81s/item]Running buggy tests of Cli_32_buggy:   3%|▎         | 2/76 [00:31<19:27, 15.77s/item]Processing Cli_8_buggy:   3%|▎         | 2/76 [00:31<19:27, 15.77s/item]             Pre-test compiling Cli_8_buggy:   3%|▎         | 2/76 [00:32<19:27, 15.77s/item]Pre-test compiling buggy Cli_8_buggy:   3%|▎         | 2/76 [00:33<19:27, 15.77s/item]Compiling tests of Cli_8_buggy:   3%|▎         | 2/76 [00:34<19:27, 15.77s/item]      Running tests of Cli_8_buggy:   3%|▎         | 2/76 [00:50<19:27, 15.77s/item]  Running buggy tests of Cli_8_buggy:   3%|▎         | 2/76 [00:51<19:27, 15.77s/item]Running buggy tests of Cli_8_buggy:   3%|▎         | 2/76 [00:52<32:25, 26.29s/item]
+Traceback (most recent call last):
+  File "/repo/run/out/eval_m8_concept_part3.py", line 1786, in <module>
+    result = subprocess.run(
+             ^^^^^^^^^^^^^^^
+  File "/root/.local/share/uv/python/cpython-3.12.14-linux-aarch64-gnu/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['defects4j', 'test', '-w', '/repo/d4j_proj_base/Cli_8/buggy']' returned non-zero exit status 1.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/repo/run/out/eval_m8_concept_part3.py", line 1852, in <module>
+    with open(buggy_test_run_log_file_path, 'w') as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/repo/d4j_proj_base/Cli_8/fixed/generated_tests/testpackage_5cc8245e/buggy_test_run_log'

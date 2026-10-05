@@ -1,0 +1,149 @@
+
+## Intersection of clean methods, all: 70 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Advanced Doc | 1160 / 1016 | 9 (0.89%) | 93 (9.15%) | 256 (25.20%) | 0.266 | 3 | 29 |
+| m9 adv_rerun | 1225 / 1122 | 11 (0.98%) | 82 (7.31%) | 302 (26.92%) | 0.214 | 4 | 26 |
+| m9 concept | 1054 / 943 | 18 (1.91%) | 94 (9.97%) | 228 (24.18%) | 0.292 | 7 | 23 |
+| m9 placebo | 1147 / 1064 | 13 (1.22%) | 97 (9.12%) | 281 (26.41%) | 0.257 | 9 | 25 |
+
+- m9 concept vs m9 placebo: ≥1 E 23 vs 25: only m9 concept 7, only m9 placebo 9, p=0.804; ≥1 M 7 vs 9: only m9 concept 3, only m9 placebo 5, p=0.727
+- m9 concept vs m9 adv_rerun: ≥1 E 23 vs 26: only m9 concept 6, only m9 adv_rerun 9, p=0.607; ≥1 M 7 vs 4: only m9 concept 5, only m9 adv_rerun 2, p=0.453
+- m9 concept vs Advanced Doc: ≥1 E 23 vs 29: only m9 concept 6, only Advanced Doc 12, p=0.238; ≥1 M 7 vs 3: only m9 concept 5, only Advanced Doc 1, p=0.219
+- m9 adv_rerun vs Advanced Doc: ≥1 E 26 vs 29: only m9 adv_rerun 4, only Advanced Doc 7, p=0.549; ≥1 M 4 vs 3: only m9 adv_rerun 2, only Advanced Doc 1, p=1
+- m9 placebo vs m9 adv_rerun: ≥1 E 25 vs 26: only m9 placebo 4, only m9 adv_rerun 5, p=1; ≥1 M 9 vs 4: only m9 placebo 6, only m9 adv_rerun 1, p=0.125
+
+## Intersection of clean methods, without Gson_4 and Cli_1: 63 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Advanced Doc | 1067 / 950 | 2 (0.21%) | 67 (7.05%) | 250 (26.32%) | 0.211 | 2 | 24 |
+| m9 adv_rerun | 1142 / 1042 | 4 (0.38%) | 57 (5.47%) | 283 (27.16%) | 0.168 | 3 | 20 |
+| m9 concept | 958 / 852 | 7 (0.82%) | 59 (6.92%) | 209 (24.53%) | 0.220 | 6 | 17 |
+| m9 placebo | 1057 / 975 | 12 (1.23%) | 50 (5.13%) | 271 (27.79%) | 0.156 | 8 | 18 |
+
+- m9 concept vs m9 placebo: ≥1 E 17 vs 18: only m9 concept 7, only m9 placebo 8, p=1; ≥1 M 6 vs 8: only m9 concept 3, only m9 placebo 5, p=0.727
+- m9 concept vs m9 adv_rerun: ≥1 E 17 vs 20: only m9 concept 6, only m9 adv_rerun 9, p=0.607; ≥1 M 6 vs 3: only m9 concept 5, only m9 adv_rerun 2, p=0.453
+- m9 concept vs Advanced Doc: ≥1 E 17 vs 24: only m9 concept 5, only Advanced Doc 12, p=0.143; ≥1 M 6 vs 2: only m9 concept 5, only Advanced Doc 1, p=0.219
+- m9 adv_rerun vs Advanced Doc: ≥1 E 20 vs 24: only m9 adv_rerun 3, only Advanced Doc 7, p=0.344; ≥1 M 3 vs 2: only m9 adv_rerun 2, only Advanced Doc 1, p=1
+- m9 placebo vs m9 adv_rerun: ≥1 E 18 vs 20: only m9 placebo 3, only m9 adv_rerun 5, p=0.727; ≥1 M 8 vs 3: only m9 placebo 6, only m9 adv_rerun 1, p=0.125
+
+## Intersection of clean methods, without the 7 body-in-test-prompt methods (26:Gson_8, 32:Lang_1, 38:Lang_27, 49:Lang_36, 52:Lang_3, 56:Lang_44, 69:Lang_58): 63 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Advanced Doc | 991 / 875 | 9 (1.03%) | 91 (10.40%) | 198 (22.63%) | 0.315 | 3 | 28 |
+| m9 adv_rerun | 980 / 896 | 11 (1.23%) | 80 (8.93%) | 210 (23.44%) | 0.276 | 4 | 25 |
+| m9 concept | 1017 / 917 | 18 (1.96%) | 94 (10.25%) | 211 (23.01%) | 0.308 | 7 | 23 |
+| m9 placebo | 965 / 889 | 13 (1.46%) | 97 (10.91%) | 196 (22.05%) | 0.331 | 9 | 25 |
+
+- m9 concept vs m9 placebo: ≥1 E 23 vs 25: only m9 concept 7, only m9 placebo 9, p=0.804; ≥1 M 7 vs 9: only m9 concept 3, only m9 placebo 5, p=0.727
+- m9 concept vs m9 adv_rerun: ≥1 E 23 vs 25: only m9 concept 6, only m9 adv_rerun 8, p=0.791; ≥1 M 7 vs 4: only m9 concept 5, only m9 adv_rerun 2, p=0.453
+- m9 concept vs Advanced Doc: ≥1 E 23 vs 28: only m9 concept 6, only Advanced Doc 11, p=0.332; ≥1 M 7 vs 3: only m9 concept 5, only Advanced Doc 1, p=0.219
+- m9 adv_rerun vs Advanced Doc: ≥1 E 25 vs 28: only m9 adv_rerun 4, only Advanced Doc 7, p=0.549; ≥1 M 4 vs 3: only m9 adv_rerun 2, only Advanced Doc 1, p=1
+- m9 placebo vs m9 adv_rerun: ≥1 E 25 vs 25: only m9 placebo 4, only m9 adv_rerun 4, p=1; ≥1 M 9 vs 4: only m9 placebo 6, only m9 adv_rerun 1, p=0.125
+
+## Intersection of clean methods, without body-in-test-prompt methods, Gson_4 and Cli_1: 56 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Advanced Doc | 898 / 809 | 2 (0.25%) | 65 (8.03%) | 192 (23.73%) | 0.253 | 2 | 23 |
+| m9 adv_rerun | 897 / 816 | 4 (0.49%) | 55 (6.74%) | 191 (23.41%) | 0.224 | 3 | 19 |
+| m9 concept | 921 / 826 | 7 (0.85%) | 59 (7.14%) | 192 (23.24%) | 0.235 | 6 | 17 |
+| m9 placebo | 875 / 800 | 12 (1.50%) | 50 (6.25%) | 186 (23.25%) | 0.212 | 8 | 18 |
+
+- m9 concept vs m9 placebo: ≥1 E 17 vs 18: only m9 concept 7, only m9 placebo 8, p=1; ≥1 M 6 vs 8: only m9 concept 3, only m9 placebo 5, p=0.727
+- m9 concept vs m9 adv_rerun: ≥1 E 17 vs 19: only m9 concept 6, only m9 adv_rerun 8, p=0.791; ≥1 M 6 vs 3: only m9 concept 5, only m9 adv_rerun 2, p=0.453
+- m9 concept vs Advanced Doc: ≥1 E 17 vs 23: only m9 concept 5, only Advanced Doc 11, p=0.21; ≥1 M 6 vs 2: only m9 concept 5, only Advanced Doc 1, p=0.219
+- m9 adv_rerun vs Advanced Doc: ≥1 E 19 vs 23: only m9 adv_rerun 3, only Advanced Doc 7, p=0.344; ≥1 M 3 vs 2: only m9 adv_rerun 2, only Advanced Doc 1, p=1
+- m9 placebo vs m9 adv_rerun: ≥1 E 18 vs 19: only m9 placebo 3, only m9 adv_rerun 4, p=1; ≥1 M 8 vs 3: only m9 placebo 6, only m9 adv_rerun 1, p=0.125
+
+## Each config on its own clean methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Advanced Doc (75 methods) | 1239 / 1069 | 9 (0.84%) | 95 (8.89%) | 268 (25.07%) | 0.262 | 3 | 30 |
+| m9 adv_rerun (76 methods) | 1324 / 1171 | 11 (0.94%) | 86 (7.34%) | 316 (26.99%) | 0.214 | 4 | 27 |
+| m9 concept (74 methods) | 1116 / 976 | 18 (1.84%) | 94 (9.63%) | 236 (24.18%) | 0.285 | 7 | 23 |
+| m9 placebo (74 methods) | 1203 / 1118 | 13 (1.16%) | 101 (9.03%) | 291 (26.03%) | 0.258 | 9 | 26 |
+
+## Discordant methods (intersection, all)
+- ≥1 E, m9 concept vs m9 placebo: only m9 concept ['9:Codec_7', '36:Lang_24', '50:Lang_36', '60:Lang_47', '61:Lang_47', '75:Lang_63', '77:Lang_7']; only m9 placebo ['1:Cli_1', '3:Cli_32', '6:Codec_17', '18:Gson_15', '39:Lang_28', '57:Lang_45', '58:Lang_46', '62:Lang_49', '73:Lang_60']
+- ≥1 M, m9 concept vs m9 placebo: only m9 concept ['6:Codec_17', '31:Lang_19', '60:Lang_47']; only m9 placebo ['9:Codec_7', '54:Lang_41', '68:Lang_57', '75:Lang_63', '77:Lang_7']
+- ≥1 E, m9 concept vs m9 adv_rerun: only m9 concept ['36:Lang_24', '51:Lang_38', '60:Lang_47', '61:Lang_47', '75:Lang_63', '77:Lang_7']; only m9 adv_rerun ['3:Cli_32', '6:Codec_17', '32:Lang_1', '39:Lang_28', '47:Lang_35', '48:Lang_35', '57:Lang_45', '62:Lang_49', '73:Lang_60']
+- ≥1 M, m9 concept vs m9 adv_rerun: only m9 concept ['6:Codec_17', '31:Lang_19', '47:Lang_35', '48:Lang_35', '60:Lang_47']; only m9 adv_rerun ['53:Lang_40', '75:Lang_63']
+- ≥1 E, m9 concept vs Advanced Doc: only m9 concept ['8:Codec_6', '21:Gson_4', '36:Lang_24', '51:Lang_38', '60:Lang_47', '68:Lang_57']; only Advanced Doc ['3:Cli_32', '6:Codec_17', '18:Gson_15', '25:Gson_7', '32:Lang_1', '35:Lang_21', '39:Lang_28', '47:Lang_35', '48:Lang_35', '57:Lang_45', '59:Lang_46', '62:Lang_49']
+- ≥1 M, m9 concept vs Advanced Doc: only m9 concept ['6:Codec_17', '31:Lang_19', '47:Lang_35', '48:Lang_35', '60:Lang_47']; only Advanced Doc ['68:Lang_57']
+- ≥1 E, m9 adv_rerun vs Advanced Doc: only m9 adv_rerun ['8:Codec_6', '21:Gson_4', '68:Lang_57', '73:Lang_60']; only Advanced Doc ['18:Gson_15', '25:Gson_7', '35:Lang_21', '59:Lang_46', '61:Lang_47', '75:Lang_63', '77:Lang_7']
+- ≥1 M, m9 adv_rerun vs Advanced Doc: only m9 adv_rerun ['53:Lang_40', '75:Lang_63']; only Advanced Doc ['68:Lang_57']
+- ≥1 E, m9 placebo vs m9 adv_rerun: only m9 placebo ['1:Cli_1', '18:Gson_15', '51:Lang_38', '58:Lang_46']; only m9 adv_rerun ['9:Codec_7', '32:Lang_1', '47:Lang_35', '48:Lang_35', '50:Lang_36']
+- ≥1 M, m9 placebo vs m9 adv_rerun: only m9 placebo ['9:Codec_7', '47:Lang_35', '48:Lang_35', '54:Lang_41', '68:Lang_57', '77:Lang_7']; only m9 adv_rerun ['53:Lang_40']
+
+M-methods per config (method: M tests):
+- Advanced Doc: 1:Cli_1:7, 68:Lang_57:1, 71:Lang_5:1
+- m9 adv_rerun: 1:Cli_1:7, 53:Lang_40:1, 71:Lang_5:2, 75:Lang_63:1
+- m9 concept: 1:Cli_1:11, 6:Codec_17:1, 31:Lang_19:2, 47:Lang_35:1, 48:Lang_35:1, 60:Lang_47:1, 71:Lang_5:1
+- m9 placebo: 1:Cli_1:1, 9:Codec_7:5, 47:Lang_35:1, 48:Lang_35:1, 54:Lang_41:1, 68:Lang_57:1, 71:Lang_5:1, 75:Lang_63:1, 77:Lang_7:1
+
+## LLM calls and cost
+- docstring adv_rerun: methods 78, API attempts 82 (billed 78, errors 4), in 189655 / out 356499 tokens, $0.948
+  repetition loops (65,536 output tokens, docstring = the notebook's whole-text fallback): 3, $0.494: 49:Lang_36 $0.165, 52:Lang_3 $0.165, 56:Lang_44 $0.164
+- docstring concept: methods 78, API attempts 78 (billed 78, errors 0), in 214615 / out 581109 tokens, $1.517
+  repetition loops (65,536 output tokens, docstring = the notebook's whole-text fallback): 6, $0.989: 32:Lang_1 $0.165, 38:Lang_27 $0.165, 49:Lang_36 $0.165, 52:Lang_3 $0.165, 56:Lang_44 $0.165, 69:Lang_58 $0.165
+- docstring placebo: methods 78, API attempts 78 (billed 78, errors 0), in 211105 / out 404415 tokens, $1.074
+  repetition loops (65,536 output tokens, docstring = the notebook's whole-text fallback): 3, $0.495: 32:Lang_1 $0.165, 49:Lang_36 $0.165, 69:Lang_58 $0.165
+- test generation Gemini-2-5-flash_comment_generation_full_buggy_m9_adv_rerun_smoke_with_completion.jsonl: 3 completions (one call each, shim retries not logged)
+- test generation Gemini-2-5-flash_comment_generation_full_buggy_m9_adv_rerun_with_completion.jsonl: 78 completions (one call each, shim retries not logged)
+- test generation Gemini-2-5-flash_comment_generation_full_buggy_m9_concept_smoke_with_completion.jsonl: 3 completions (one call each, shim retries not logged)
+- test generation Gemini-2-5-flash_comment_generation_full_buggy_m9_concept_with_completion.jsonl: 78 completions (one call each, shim retries not logged)
+- test generation Gemini-2-5-flash_comment_generation_full_buggy_m9_placebo_smoke_with_completion.jsonl: 3 completions (one call each, shim retries not logged)
+- test generation Gemini-2-5-flash_comment_generation_full_buggy_m9_placebo_with_completion.jsonl: 78 completions (one call each, shim retries not logged)
+docstring adv_rerun: 82 API attempts (78 billed responses) $0.948
+docstring concept: 78 API attempts (78 billed responses) $1.517
+docstring placebo: 78 API attempts (78 billed responses) $1.074
+test generation (estimate) Gemini-2-5-flash_comment_generation_full_buggy_m9_adv_rerun_smoke_with_completion.jsonl: $0.015
+test generation (estimate) Gemini-2-5-flash_comment_generation_full_buggy_m9_adv_rerun_with_completion.jsonl: $0.816
+test generation (estimate) Gemini-2-5-flash_comment_generation_full_buggy_m9_concept_smoke_with_completion.jsonl: $0.017
+test generation (estimate) Gemini-2-5-flash_comment_generation_full_buggy_m9_concept_with_completion.jsonl: $1.219
+test generation (estimate) Gemini-2-5-flash_comment_generation_full_buggy_m9_placebo_smoke_with_completion.jsonl: $0.015
+test generation (estimate) Gemini-2-5-flash_comment_generation_full_buggy_m9_placebo_with_completion.jsonl: $0.849
+TOTAL $6.471 of cap $8.0
+
+## Part 2 fix rate (substitute the corrected implementation, run the bug's trigger tests; all 78 methods / 60 bugs)
+
+| arm | Part 2 found | compiled | fixed (method) | any trigger passes | bugs fixed (all its methods substituted) |
+|---|---|---|---|---|---|
+| adv_rerun | 74 | 68 | 17 | 19 | 19 / 60 |
+| concept | 72 | 64 | 14 | 17 | 14 / 60 |
+| placebo | 75 | 70 | 11 | 17 | 12 / 60 |
+
+Harness check: substituting the FIXED focal methods fixes 50/60 bugs (58 methods); the other 10 need changes outside the focal methods. Buggy methods substituted: 0 fixes.
+- adv_rerun, restricted to the 50 reproducible bugs: methods fixed 17/58, bugs fixed 19/50
+- concept, restricted to the 50 reproducible bugs: methods fixed 14/58, bugs fixed 14/50
+- placebo, restricted to the 50 reproducible bugs: methods fixed 10/58, bugs fixed 11/50
+- fixed methods per arm: adv_rerun: 6:Codec_17, 7:Codec_18, 8:Codec_6, 9:Codec_7, 11:Codec_9, 15:Gson_12, 27:Lang_11, 29:Lang_14, 31:Lang_19, 35:Lang_21, 38:Lang_27, 46:Lang_33, 66:Lang_51, 68:Lang_57, 70:Lang_59, 74:Lang_61, 77:Lang_7; concept: 4:Cli_8, 7:Codec_18, 8:Codec_6, 11:Codec_9, 15:Gson_12, 27:Lang_11, 28:Lang_12, 35:Lang_21, 46:Lang_33, 66:Lang_51, 70:Lang_59, 74:Lang_61, 75:Lang_63, 77:Lang_7; placebo: 4:Cli_8, 5:Codec_13, 6:Codec_17, 7:Codec_18, 11:Codec_9, 31:Lang_19, 35:Lang_21, 46:Lang_33, 66:Lang_51, 74:Lang_61, 75:Lang_63
+- fixed methods, concept vs placebo: only concept 6, only placebo 3, p=0.508
+- fixed bugs, concept vs placebo: only concept 6, only placebo 4, p=0.754
+- fixed methods, concept vs adv_rerun: only concept 3, only adv_rerun 6, p=0.508
+- fixed bugs, concept vs adv_rerun: only concept 3, only adv_rerun 8, p=0.227
+- fixed methods, placebo vs adv_rerun: only placebo 3, only adv_rerun 9, p=0.146
+- fixed bugs, placebo vs adv_rerun: only placebo 3, only adv_rerun 10, p=0.0923
+
+Fixed Part 2 vs ≥1 E (intersection of clean methods): ≥1 E among fixed / among not fixed, Fisher p
+- adv_rerun: ≥1 E 9/16 vs 17/54 (p=0.085); ≥1 M 0/16 vs 4/54
+- concept: ≥1 E 6/11 vs 17/59 (p=0.159); ≥1 M 0/11 vs 7/59
+- placebo: ≥1 E 4/9 vs 21/61 (p=0.712); ≥1 M 1/9 vs 8/61
+
+## Part 1 vs the bug concept (m2 manual labels; methods whose label has a C1-C8 concept)
+- adv_rerun (70 methods): keyword proxy, items 1-2 mention the bug's concept 58; mean concepts mentioned per method 4.3/8
+- concept (70 methods): keyword proxy, items 1-2 mention the bug's concept 50; mean concepts mentioned per method 3.5/8; checklist parsed 72/78, bug concept flagged 44/70, mean flagged per method 3.5/8; flag rate labelled concept 52/75 (0.69) vs other concepts of the same methods 192/437 (0.44), Fisher p=5.28e-05; flags per concept {'C1': 50, 'C2': 34, 'C3': 39, 'C4': 59, 'C5': 23, 'C6': 19, 'C7': 22, 'C8': 29}
+- placebo (70 methods): keyword proxy, items 1-2 mention the bug's concept 52; mean concepts mentioned per method 3.7/8
+
+## Docstrings
+- adv_rerun: docstrings byte-identical to the original Advanced run: 58/78
+- concept: docstrings byte-identical to the original Advanced run: 0/78
+- placebo: docstrings byte-identical to the original Advanced run: 0/78
+- adv_rerun: 78 completions, mean 11126 chars; docstring from /** */ 75, mean docstring 3778 chars; focal-body windows in the docstring (test prompt): ['49:Lang_36', '52:Lang_3', '56:Lang_44']
+- concept: 78 completions, mean 14959 chars; docstring from /** */ 72, mean docstring 6418 chars; focal-body windows in the docstring (test prompt): ['26:Gson_8', '32:Lang_1', '38:Lang_27', '49:Lang_36', '52:Lang_3', '56:Lang_44', '69:Lang_58']
+- placebo: 78 completions, mean 13614 chars; docstring from /** */ 75, mean docstring 3881 chars; focal-body windows in the docstring (test prompt): ['32:Lang_1', '49:Lang_36', '69:Lang_58']

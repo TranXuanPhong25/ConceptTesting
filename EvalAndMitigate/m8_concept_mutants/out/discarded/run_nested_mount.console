@@ -1,0 +1,48 @@
+jobs 5495 done 0
+100 / 5495 22s
+200 / 5495 46s
+300 / 5495 72s
+400 / 5495 93s
+500 / 5495 113s
+600 / 5495 170s
+700 / 5495 201s
+800 / 5495 221s
+900 / 5495 238s
+1000 / 5495 258s
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/root/.local/share/uv/python/cpython-3.12.14-linux-aarch64-gnu/lib/python3.12/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+                    ^^^^^^^^^^^^^^^^^^^
+  File "/repo/m8_concept_mutants/phase0.py", line 203, in work
+    res["tests"] = run_tests(tests_of(_E, m["idx"]), [f"{d}/cls", RUNNER] + b["cp_buggy"], b["root_buggy"])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repo/m8_concept_mutants/phase0.py", line 140, in run_tests
+    r = sh(JVM + ["-cp", ":".join(cp + [JUNIT]), "M8Runner"] + todo, cwd=cwd, timeout=30 + len(todo) * (TEST_TIMEOUT_MS / 1000 + 1))
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repo/m8_concept_mutants/phase0.py", line 30, in sh
+    return subprocess.run(cmd, cwd=cwd, capture_output=True, text=True, errors="replace", timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/share/uv/python/cpython-3.12.14-linux-aarch64-gnu/lib/python3.12/subprocess.py", line 548, in run
+    with Popen(*popenargs, **kwargs) as process:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/share/uv/python/cpython-3.12.14-linux-aarch64-gnu/lib/python3.12/subprocess.py", line 1026, in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/root/.local/share/uv/python/cpython-3.12.14-linux-aarch64-gnu/lib/python3.12/subprocess.py", line 1955, in _execute_child
+    raise child_exception_type(errno_num, err_msg, err_filename)
+FileNotFoundError: [Errno 2] No such file or directory: '/repo/d4j_proj_base/Gson_7/buggy'
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/repo/m8_concept_mutants/phase0.py", line 231, in <module>
+    """state of the shared checkouts: main sources unmodified vs HEAD (git diff --quiet) and hashes of the full diff and
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repo/m8_concept_mutants/phase0.py", line 223, in run
+    for k, r in enumerate(pool.imap_unordered(work, jobs, chunksize=1), 1):
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/.local/share/uv/python/cpython-3.12.14-linux-aarch64-gnu/lib/python3.12/multiprocessing/pool.py", line 873, in next
+    raise value
+FileNotFoundError: [Errno 2] No such file or directory: '/repo/d4j_proj_base/Gson_7/buggy'
