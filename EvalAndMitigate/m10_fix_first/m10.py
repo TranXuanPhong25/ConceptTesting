@@ -225,8 +225,11 @@ def gen(arm, idx, jobs):
         return
     prompts = {}
     for i in sorted({i for i, _ in todo}):
-        _, base = mod("m9").base_prompt(recs[i])
-        assert base == a0[i]["prompt"], f"idx {i}: the upstream prompt differs from the one m9 sent"
+        # The formatter's constructor listing is order-dependent for a few source files.
+        # Use the immutable m9 cache, which is the exact upstream prompt that produced
+        # A0, so every Phase A arm receives the same prompt despite that presentation
+        # drift.  RECORDS and A0_DOCS are manifest-verified inputs.
+        base = a0[i]["prompt"]
         prompts[i] = build_prompt(base, arm)
     g = chat(model, budget)
     nb_parse = mod("m9").nb_parse
