@@ -40,3 +40,26 @@ For example, a target guarded by `n1 > n2` after `n1 = len(nums1)` and
 ```
 
 The output is prompt-ready and still compatible with TestEval's own line/branch/path evaluation format.
+
+## Function-level C1-C8 tags for real-world code (`functions.py`)
+
+Independent of the TestEval schema: give it the source of one function or method (e.g. a `text` entry of an
+Agentless/CoSIL repo structure) and get bug-oriented concepts with evidence, in the repo's shared vocabulary
+(C1 None, C2 empty/blank, C3 boundary/index/length, C4 error contract, C5 format/escape/parse, C6 numeric,
+C7 chars/case/encoding/locale, C8 state/mutation). Stdlib `ast` only; Python 2 code returns an `error`.
+
+```python
+from concept_annotator_py import annotate_function, render_tags
+ann = annotate_function(method_source, line_offset=start_line - 1)   # facts: concept, kind, line, detail
+render_tags(ann)   # 'C1 None-check self.fp is None · C8 sets self.fp'  (ids are never dropped when shortening)
+```
+
+Notable facts: `unchecked-none` (a parameter defaulting to None / Optional that no test ever checks: a likely C1
+gap), `catches everything`, raised/caught exception types, ±1 indexes and slices, length bounds, string formatting
+outside error/log messages (messages are excluded), parameter mutation and `self.attr` writes.
+
+Checks: `python3 -m concept_annotator_py.functions selftest`; `tests/test_concept_annotator_py_functions.py`.
+`python3 -m concept_annotator_py.functions stats <dir|file>` prints the share of functions tagged per concept.
+On 7,042 stdlib functions there are 0 parse errors and no fact kind fires on more than 19% of functions (raise 19%,
+None-check 16%, self.attr writes 15%, …; `unchecked-none` 7%), so tags discriminate between candidates.
+Facts are syntactic: they show where a concept is handled, not whether it is handled correctly.
