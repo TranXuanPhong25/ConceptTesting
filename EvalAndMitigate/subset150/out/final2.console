@@ -1,0 +1,30 @@
+methods 68; located 65; patch inside method 64; diff/buggy-file line mismatches 49
+/repo
+inserted item (concept): 1404 chars, 200 words, 8 facets
+3.  **Checklist Review:** Go through each of the following aspects for the given code. For each aspect, state your finding, or explicitly state "No issues found." if there is none.
+    - C1 null input: behaviour when an argument, a field it depends on, or an element inside an argument is null.
+    - C2 empty/blank input: behaviour for empty strings, whitespace-only strings, and empty arrays or collections.
+    - C3 boundary/index/length: behaviour at the edges of the valid range: first and last index, lengths 0, 1 and the maximum, limits reached exactly or exceeded by one.
+    - C4 error contract: which invalid inputs raise which exception type, and which situations return an error value (such as null, -1 or false) instead.
+    - C5 escaping/normalisation/format: handling of special or reserved characters, escape sequences, whitespace or case normalisation, and the exact format of produced or accepted text.
+    - C6 numeric range/overflow/precision: behaviour for very large, very small, negative or zero numbers, overflow, rounding and floating-point precision.
+    - C7 characters/locale/unicode: behaviour for non-ASCII characters, supplementary (surrogate-pair) characters, case conversion and locale-dependent input.
+    - C8 state/mutation/idempotence: effects on the object's or the arguments' state, repeated or consecutive calls, and whether returned objects are shared or copies.
+
+inserted item (placebo): 1256 chars, 203 words, 8 facets
+3.  **Checklist Review:** Go through each of the following aspects for the given code. For each aspect, state your finding, or explicitly state "No issues found." if there is none.
+    - P1 naming: how the method, its parameters and its return value are named, and whether these names follow the conventions of the surrounding class.
+    - P2 documentation: which parts of the method's behaviour are documented for callers, and how the parameters and the return value are described.
+    - P3 performance: the expected time and memory cost for small and large inputs, and whether results are cached or recomputed.
+    - P4 thread-safety: whether the method may be called concurrently from several threads, and what synchronisation the callers need.
+    - P5 logging: whether the method writes log messages or console output, at which level, and what information they contain.
+    - P6 API stability: whether the method is part of the public API, whether it may change in future versions, and its deprecation status.
+    - P7 readability: how easy the method is to read and maintain: its length, its structure and the clarity of its steps.
+    - P8 dependencies: which other classes, methods and libraries the method relies on, and which callers rely on it.
+
+adv_rerun: 68 prompts, chars mean 9826 min 3150 max 21544, total 668154 (~190901 tokens at 3.5 chars/token)
+concept: 68 prompts, chars mean 11230 min 4554 max 22948, total 763626 (~218179 tokens at 3.5 chars/token)
+placebo: 68 prompts, chars mean 11082 min 4406 max 22800, total 753562 (~215303 tokens at 3.5 chars/token)
+leaks introduced by m9 (fixed-side patch line or trigger test name in an m9 prompt but not in the upstream prompt): 0 []
+already in the upstream Advanced prompt (inherited, same in the Advanced Doc baseline; a fixed-side line identical to an unchanged buggy-class line, or a test-like name in the class context): 3 [(1, 'Closure_27_buggy', 'fixed line', 'Preconditions.checkState(tryBody.isBlock());'), (7, 'Compress_26_buggy', 'fixed line', 'while (numToSkip > 0) {'), (57, 'Time_15_buggy', 'fixed line', 'throw new ArithmeticException("Multiplication overflows a long: " + val1 + " * " + val2);')]
+item text is static: it contains no per-method content, so it cannot carry the patch, fixed version, trigger tests or fix metadata

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Evaluation (the authors' FLEvalNew metrics) and paired statistics for the stock / concept / placebo arms.
+"""Evaluation (the authors' FLEvalNew metrics) and paired statistics for the stock / concept / placebo / ide arms.
 
 usage: python analyze.py eval <dataset> [--ids FILE|ID,ID]   -> out/<ds>/metrics.json, per_instance.jsonl
        python analyze.py stats <dataset>                     -> out/<ds>/stats.json (+ printed tables)
@@ -24,8 +24,9 @@ from prepare import DATA, STRUCT, VENDOR, load_rows
 
 HERE = Path(__file__).resolve().parent
 OUT = HERE / "out"
-ARMS = ("stock", "concept", "placebo")
-PAIRS = (("concept", "placebo"), ("concept", "stock"), ("placebo", "stock"))  # first = primary
+ARMS = ("stock", "concept", "placebo", "ide")
+# first = primary; concept vs ide asks whether concepts beat ordinary linter warnings
+PAIRS = (("concept", "placebo"), ("concept", "stock"), ("placebo", "stock"), ("concept", "ide"), ("ide", "stock"))
 GT_FILE = {"swebench_lite": "swebench_lite_gt.json", "locbench": "locbench_gt.json",
            "swebench_live": "swebench_live_gt_patch.json"}
 CONCEPTS = [f"C{i}" for i in range(1, 9)]
@@ -112,13 +113,16 @@ def wilcoxon(a: list[float], b: list[float]) -> tuple[int, float]:
 
 def stats(ds: str) -> None:
     per = load_jsonl(OUT / ds / "per_instance.jsonl")
-    ok = [r for r in per if all(r[a]["has_output"] for a in ARMS)]
-    print(f"[stats] {ds}: {len(per)} instances, {len(ok)} with output in all three arms (paired tests use all {len(per)}; "
-          f"missing = miss)")
-    res = {"n": len(per), "n_all_arms": len(ok), "pairs": {}, "per_concept": {}}
-    same_files = all(r[a]["file@5"] == r["stock"]["file@5"] for r in per for a in ARMS)
+    ran = [a for a in ARMS if any(r[a]["has_output"] for r in per)]
+    ok = [r for r in per if all(r[a]["has_output"] for a in ran)]
+    print(f"[stats] {ds}: {len(per)} instances; arms with output: {', '.join(ran)}; {len(ok)} instances with output in "
+          f"all of them (paired tests use all {len(per)}; missing = miss)")
+    res = {"n": len(per), "arms": ran, "n_all_arms": len(ok), "pairs": {}, "per_concept": {}}
+    same_files = all(r[a]["file@5"] == r["stock"]["file@5"] for r in per for a in ran)
     print(f"[stats] file-level identical across arms (shared file stage): {same_files}")
     for x, y in PAIRS:
+        if x not in ran or y not in ran:
+            continue
         row = {}
         for m in ("func@5", "func@1", "func@3"):
             b, c, p = mcnemar([r[x][m] for r in per], [r[y][m] for r in per])
@@ -131,7 +135,7 @@ def stats(ds: str) -> None:
             f"{m} {v[x]}/{v[y]} (only {v[f'{x}_only']}/{v[f'{y}_only']}, McNemar p={v['p']:.3g})" for m, v in row.items()
             if m != "func_rr") + f"; RR {row['func_rr'][f'mean_{x}']:.3f}/{row['func_rr'][f'mean_{y}']:.3f} "
             f"(Wilcoxon n={k}, p={p:.3g})")
-    print(f"[stats] per concept of the gold function(s) (func@5, concept/placebo/stock; McNemar concept vs placebo):")
+    print(f"[stats] per concept of the gold function(s) (func@5, concept/placebo/stock/ide; McNemar concept vs placebo):")
     for c in CONCEPTS + ["untagged"]:
         sub = [r for r in per if r["gold_concepts"] is not None and
                ((c in r["gold_concepts"]) if c != "untagged" else not r["gold_concepts"])]
@@ -140,7 +144,8 @@ def stats(ds: str) -> None:
         b, d, p = mcnemar([r["concept"]["func@5"] for r in sub], [r["placebo"]["func@5"] for r in sub])
         acc = {a: sum(r[a]["func@5"] for r in sub) for a in ARMS}
         res["per_concept"][c] = {"n": len(sub), **acc, "concept_only": b, "placebo_only": d, "p": p}
-        print(f"  {c:9} n={len(sub):4}  {acc['concept']:4}/{acc['placebo']:4}/{acc['stock']:4}  only {b}/{d}  p={p:.3g}")
+        print(f"  {c:9} n={len(sub):4}  {acc['concept']:4}/{acc['placebo']:4}/{acc['stock']:4}/{acc['ide']:4}  "
+              f"only {b}/{d}  p={p:.3g}")
     res["cost"] = ledger(ds)
     json.dump(res, open(OUT / ds / "stats.json", "w"), indent=1)
 

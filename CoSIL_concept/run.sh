@@ -3,9 +3,10 @@
 #   ./run.sh setup                          clone CoSIL @ pinned SHA, .venv, deps, selftest
 #   ./run.sh data                           download pinned datasets -> data/
 #   ./run.sh structures [ds|all] [--limit N] [--jobs N]   CoSIL repo structures + patch ground truth
-#   ./run.sh smoke                          3 instances x 3 arms end to end (+ eval, verify)
-#   ./run.sh run <files|stock|concept|placebo|all> [ds] [--limit N] [--ids FILE]
-#                                           all = files stage, then the three arms in parallel
+#   ./run.sh lint [ds] [--jobs N]          ruff warnings per function (the ide arm's tags), needs structures
+#   ./run.sh smoke                          3 instances x 4 arms end to end (+ eval, verify)
+#   ./run.sh run <files|stock|concept|placebo|ide|all> [ds] [--limit N] [--ids FILE]
+#                                           all = files stage, lint, then the four arms in parallel
 #   ./run.sh eval [ds]                      authors' Acc@1/3/5, MAP, MRR per arm -> out/<ds>/
 #   ./run.sh analyze [ds]                   McNemar / Wilcoxon / per-concept + offline tag check
 # ds: swebench_live (default, post-cutoff) | locbench | swebench_lite
@@ -33,6 +34,7 @@ cmd=${1:-}; shift || true
 case "$cmd" in
   setup) ./setup.sh ;;
   data) $PY prepare.py data ;;
+  lint) ds=$(ds_arg "${1:-}"); [ "${1:-}" = "$ds" ] && shift; $PY prepare.py lint "$ds" "$@" ;;
   structures)
     ds=${1:-swebench_live}; [ $# -gt 0 ] && shift
     if [ "$ds" = all ]; then for d in swebench_live locbench swebench_lite; do $PY prepare.py structures "$d" "$@"; done
@@ -44,10 +46,12 @@ case "$cmd" in
     case "$arm" in
       files) $PY cosil_concept.py files "$ds" "$@" ;;
       stock|concept|placebo) $PY cosil_concept.py funcs "$arm" "$ds" "$@" ;;
+      ide) $PY prepare.py lint "$ds" "$@" && $PY cosil_concept.py funcs ide "$ds" "$@" ;;
       all)
         $PY cosil_concept.py files "$ds" "$@"
+        $PY prepare.py lint "$ds" "$@"
         mkdir -p "work/$ds"
-        for a in stock concept placebo; do
+        for a in stock concept placebo ide; do
           $PY cosil_concept.py funcs "$a" "$ds" "$@" > "work/$ds/run_$a.log" 2>&1 &
         done
         echo "[run] arms running in parallel; progress: tail -f work/$ds/run_{stock,concept,placebo}.log"
@@ -58,9 +62,10 @@ case "$cmd" in
   smoke)
     ids=data/smoke_ids.txt
     $PY prepare.py structures swebench_live --ids $ids --jobs 3
+    $PY prepare.py lint swebench_live --ids $ids --jobs 3
     vertex
     $PY cosil_concept.py files swebench_live --ids $ids --threads 3
-    for a in stock concept placebo; do $PY cosil_concept.py funcs "$a" swebench_live --ids $ids --threads 3; done
+    for a in stock concept placebo ide; do $PY cosil_concept.py funcs "$a" swebench_live --ids $ids --threads 3; done
     $PY cosil_concept.py verify swebench_live --ids $ids | tee out/swebench_live/verify_smoke.txt
     $PY analyze.py eval swebench_live --ids $ids
     $PY analyze.py stats swebench_live ;;

@@ -2,6 +2,7 @@
 """Offline annotator check (no LLM) over the built structures of one dataset.
 
 Q1  Do gold-patched functions carry tags at a different rate than the other functions of the same files?
+Q1b The same for ruff warnings (the `ide` arm's tags, from prepare.py lint), side by side with the concept tag rate.
 Q2  Does the concept of the patch lines appear in the tags of the patched (pre-patch) function, which is what the
     concept arm shows? Patch concepts = facts of the post-patch function located on added lines (what the fix adds);
     compared with how often the other candidate functions of the same file carry that concept (chance).
@@ -75,7 +76,8 @@ def concepts_of(text: list[str], start: int) -> tuple[set[str], list[dict]]:
     return set(ann["concepts"]), ann["facts"]
 
 
-def check_instance(row: dict, structure: dict) -> dict:
+def check_instance(row: dict, structure: dict, ide: set | None = None) -> dict:
+    """ide: {(file, label, start)} of functions with ruff warnings, or None when the instance is not linted."""
     sys.path.insert(0, str(VENDOR))
     from get_repo_structure.get_repo_structure import parse_python_file
 
@@ -87,13 +89,14 @@ def check_instance(row: dict, structure: dict) -> dict:
     res = {"gold": [], "other": [], "added": []}
     for (f, label), (start, text) in texts.items():
         if f in files_text:
-            res["gold" if (f, label) in gold_keys else "other"].append((f, sorted(concepts_of(text, start)[0])))
+            res["gold" if (f, label) in gold_keys else "other"].append(
+                (f, sorted(concepts_of(text, start)[0]), None if ide is None else (f, label, start) in ide))
     changes = patch_changes(row["patch"])
     for f in files_text:
         new = apply_patch(files_text[f], row["patch"], f)
         ci, fn, _ = parse_python_file(None, "\n".join(new))
         new_spans = file_spans({"x.py": {"classes": ci, "functions": fn, "text": new}})["x.py"]
-        others = [c for g, c in res["other"] if g == f]
+        others = [c for g, c, _ in res["other"] if g == f]
         for line in sorted(changes[f]["added_new"]):
             s = locate(new_spans, line)
             if s is None or (f, s[1]) not in gold_keys:
@@ -119,14 +122,20 @@ def main(ds: str, ids: str | None, limit: int | None) -> None:
     from scipy.stats import fisher_exact
 
     gold, other, added, n = [], [], [], 0
+    ide_gold, ide_other = [], []  # (has concept tag, has ruff warning) per function, linted instances only
     for row in load_rows(ds, ids, limit):
         p = STRUCT / ds / f"{row['instance_id']}.json"
         if not p.exists():
             continue
-        r = check_instance(row, json.load(open(p))["structure"])
+        lp = p.with_suffix(".lint.json")
+        ide = {(f, f"{c}.{nm}" if c else nm, st) for f, rows in json.load(open(lp))["tags"].items()
+               for c, nm, st, _ in rows} if lp.exists() else None
+        r = check_instance(row, json.load(open(p))["structure"], ide)
         n += bool(r["gold"])
-        gold += [c for _, c in r["gold"]]
-        other += [c for _, c in r["other"]]
+        gold += [c for _, c, _ in r["gold"]]
+        other += [c for _, c, _ in r["other"]]
+        ide_gold += [(bool(c), w) for _, c, w in r["gold"] if w is not None]
+        ide_other += [(bool(c), w) for _, c, w in r["other"] if w is not None]
         added += r["added"]
     if not gold:
         print(f"[check_tags] {ds}: no instances with built structures and gold functions")
@@ -136,6 +145,13 @@ def main(ds: str, ids: str | None, limit: int | None) -> None:
     print(f"[check_tags] {ds}: {n} instances; gold functions {len(gold)}, other functions in the gold files {len(other)}")
     print(f"Q1 tagged: gold {tg / len(gold):.1%} vs other {to / max(len(other), 1):.1%} (Fisher p={p:.3g}); "
           f"mean #concepts gold {sum(map(len, gold)) / len(gold):.2f} vs other {sum(map(len, other)) / max(len(other), 1):.2f}")
+    if ide_gold:
+        wg, wo = sum(w for _, w in ide_gold), sum(w for _, w in ide_other)
+        pw = fisher_exact([[wg, len(ide_gold) - wg], [wo, len(ide_other) - wo]])[1]
+        allf = ide_gold + ide_other
+        print(f"Q1b ruff warnings: gold {wg / len(ide_gold):.1%} vs other {wo / max(len(ide_other), 1):.1%} "
+              f"(Fisher p={pw:.3g}); tag rate on the same {len(allf)} functions: concept "
+              f"{sum(c for c, _ in allf) / len(allf):.1%} vs ide {sum(w for _, w in allf) / len(allf):.1%}")
     cg, co = Counter(c for x in gold for c in x), Counter(c for x in other for c in x)
     print("   per concept (gold vs other): " + "  ".join(
         f"{c} {cg[c] / len(gold):.0%}/{co[c] / max(len(other), 1):.0%}" for c in CONCEPTS))

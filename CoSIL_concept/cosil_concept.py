@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CoSIL with C1-C8 concept tags on the function names it lists to the LLM. Arms: stock | concept | placebo.
+"""CoSIL with tags on the function names it lists to the LLM. Arms: stock | concept | placebo | ide.
 
 Everything here is an additive monkeypatch; vendor/CoSIL stays at the pinned commit, unedited.
 Injection points (the only places CoSIL lists function/method names to the LLM): FL_tools.get_functions_of_file
@@ -10,7 +10,7 @@ arguments and <name> answers, FL_tools.load_json cached (identical listings, ver
 
 usage: python cosil_concept.py selftest
        python cosil_concept.py files <dataset> [--ids FILE|ID,ID] [--limit N] [--threads N]
-       python cosil_concept.py funcs <stock|concept|placebo> <dataset> [--ids ...] [--limit N] [--threads N]
+       python cosil_concept.py funcs <stock|concept|placebo|ide> <dataset> [--ids ...] [--limit N] [--threads N]
        python cosil_concept.py verify <dataset> [--ids ...]
 env:   VERTEX_PROJECT / VERTEX_LOCATION (or VERTEXAI_*), ADC credentials; COSIL_MODEL, COSIL_MAX_USD (per process)
 """
@@ -41,7 +41,7 @@ sys.path.append(str(HERE.parent))  # concept_annotator_py lives at the repo root
 from concept_annotator_py.functions import annotate_function, render_tags  # noqa: E402
 from prepare import STRUCT, load_rows  # noqa: E402
 
-ARMS = ("stock", "concept", "placebo")
+ARMS = ("stock", "concept", "placebo", "ide")  # ide: ruff warnings (prepare.py lint) instead of concept tags
 MODEL = os.environ.get("COSIL_MODEL", "vertex_ai/gemini-2.5-flash")
 SEED = 20251007
 OUT, WORK = HERE / "out", HERE / "work"
@@ -83,28 +83,38 @@ def file_tags(instance_id: str, file_name: str) -> dict[tuple, tuple[str, str]]:
     return {k: (concept[k], placebo[k]) for k in concept}
 
 
+@lru_cache(maxsize=8)
+def ide_tags(instance_id: str) -> dict[tuple, str]:
+    """(file, class or "", name, start_line) -> ruff tag. A missing lint file fails the instance (rerun after lint)."""
+    d = json.load(open(STRUCT / _state.ds / f"{instance_id}.lint.json"))
+    return {(path, cls, name, start): tag for path, rows in d["tags"].items() for cls, name, start, tag in rows}
+
+
+def _arm_tag(instance_id: str, file_name: str, key: tuple) -> str:
+    if _state.arm == "ide":
+        return ide_tags(instance_id).get((file_name, *key), "")
+    return file_tags(instance_id, file_name)[key][ARMS.index(_state.arm) - 1]
+
+
 def _decorate(name: str, tag: str) -> str:
     return f"{name}  [{tag}]" if tag else name
 
 
 def tagged_functions_of_class(class_name: str, instance_id: str) -> str:
     """FL_tools.get_functions_of_class (same matching and order) with each method's arm tag appended."""
-    idx = ARMS.index(_state.arm) - 1
     _, classes, _ = _extracted(instance_id)
     out = []
     for c in classes:
         if c["name"] == class_name:
-            tags = file_tags(instance_id, c["file"])
-            out += [_decorate(m["name"], tags[(class_name, m["name"], m["start_line"])][idx]) for m in c["methods"]]
+            out += [_decorate(m["name"], _arm_tag(instance_id, c["file"], (class_name, m["name"], m["start_line"])))
+                    for m in c["methods"]]
     return str(out)
 
 
 def tagged_functions_of_file(file_name: str, instance_id: str) -> str:
     """FL_tools.get_functions_of_file (same matching and order) with each function's arm tag appended."""
-    idx = ARMS.index(_state.arm) - 1
     _, _, functions = _extracted(instance_id)
-    tags = file_tags(instance_id, file_name)
-    return str([_decorate(f["name"], tags[("", f["name"], f["start_line"])][idx])
+    return str([_decorate(f["name"], _arm_tag(instance_id, file_name, ("", f["name"], f["start_line"])))
                 for f in functions if f["file"] == file_name])
 
 
@@ -189,7 +199,7 @@ def boot(ds: str, arm: str):
 
     model_mod.completion = llm_completion
     FL_tools.load_json = cached_load_json  # FL_tools only; the localize scripts keep their own (mutated) copy
-    if arm in ("concept", "placebo"):
+    if arm != "stock":
         for mod in (FL_tools, cm):
             mod.get_functions_of_file = tagged_functions_of_file
             mod.get_functions_of_class = tagged_functions_of_class
@@ -219,7 +229,7 @@ def run(stage: str, ds: str, arm: str, ids: str | None, limit: int | None, threa
     if stage == "funcs" and (missing := [r["instance_id"] for r in rows if r["instance_id"] not in found]):
         print(f"[{ds}/{name}] {len(missing)} instances lack file-level output; run `files` first: {missing[:5]}")
     todo = [r for r in rows if r["instance_id"] not in done and (stage == "files" or r["instance_id"] in found)]
-    k = ARMS.index(arm) * len(todo) // 3 if stage == "funcs" else 0
+    k = ARMS.index(arm) * len(todo) // len(ARMS) if stage == "funcs" else 0
     todo = todo[k:] + todo[:k]  # parallel arms reach the huge structures (azure-sdk: 3.3GB RAM per copy) at different times
     stage_dir = WORK / ds / name
     (stage_dir / "parts").mkdir(parents=True, exist_ok=True)
@@ -267,7 +277,12 @@ def run(stage: str, ds: str, arm: str, ids: str | None, limit: int | None, threa
 
 
 # ---------------------------------------------------------------- verification + selftest
-_TAG = re.compile(r"  \[(C[1-8].*?)\](?=['\"](?:, |\]))")
+_TAG = re.compile(r"  \[([A-Z][A-Z0-9]* .*?)\](?=['\"](?:, |\]))")  # concept "C1 ..." or ruff "B006 ..."
+
+
+def _summary_prompt(ds: str, arm: str, iid: str) -> str:
+    part = WORK / ds / arm / "parts" / f"{iid}.jsonl"
+    return json.loads(part.read_text().splitlines()[-1])["func_traj"]["prompt"][1]["content"] if part.exists() else ""
 
 
 def verify(ds: str, ids: str | None) -> None:
@@ -279,25 +294,28 @@ def verify(ds: str, ids: str | None) -> None:
         print(f"[verify] {arm}: {len(got & {r['instance_id'] for r in rows})}/{len(rows)} instances finished")
     for r in rows:
         iid = r["instance_id"]
-        txt = {a: (WORK / ds / a / "listings" / f"{iid}.txt") for a in ARMS}
-        if not all(p.exists() for p in txt.values()):
+        txt = {a: p.read_text() for a in ARMS if (p := WORK / ds / a / "listings" / f"{iid}.txt").exists()}
+        if "stock" not in txt:
             continue
-        txt = {a: p.read_text() for a, p in txt.items()}
         tags = {a: _TAG.findall(t) for a, t in txt.items()}
         bare = {a: _TAG.sub("", t).replace('"', "'") for a, t in txt.items()}  # repr quotes follow the tag text
-        same_names = bare["concept"] == bare["placebo"] == bare["stock"]
-        moved = sum(a != b for a, b in zip(_concept_pairs(txt["concept"]), _concept_pairs(txt["placebo"])))
-        part = WORK / ds / "concept" / "parts" / f"{iid}.jsonl"
-        summary = json.loads(part.read_text().splitlines()[-1])["func_traj"]["prompt"][1]["content"] if part.exists() else ""
-        in_prompt = sum(t in summary for t in set(tags["concept"]))
-        print(f"[verify] {iid}: names identical across arms={same_names}; tagged names concept={len(tags['concept'])} "
-              f"placebo={len(tags['placebo'])} stock={len(tags['stock'])}; same tag multiset="
-              f"{Counter(tags['concept']) == Counter(tags['placebo'])}; tags moved by placebo={moved}; "
-              f"distinct concept tags found in the saved summary prompt={in_prompt}/{len(set(tags['concept']))}")
-    ex = next((l for r in rows for l in _lines(WORK / ds / "concept" / "listings" / f"{r['instance_id']}.txt")
-               if "  [C" in l), None)
-    if ex:
-        print("[verify] example concept listing line:\n" + ex[:700])
+        msg = [f"names identical across {'/'.join(txt)}={all(b == bare['stock'] for b in bare.values())}",
+               "tagged names " + " ".join(f"{a}={len(v)}" for a, v in tags.items())]
+        if "concept" in txt and "placebo" in txt:
+            moved = sum(a != b for a, b in zip(_concept_pairs(txt["concept"]), _concept_pairs(txt["placebo"])))
+            msg.append(f"concept/placebo same tag multiset={Counter(tags['concept']) == Counter(tags['placebo'])}, "
+                       f"moved by placebo={moved}")
+        for a in ("concept", "ide"):
+            if a in txt:
+                summary = _summary_prompt(ds, a, iid)
+                msg.append(f"distinct {a} tags in its saved summary prompt={sum(t in summary for t in set(tags[a]))}"
+                           f"/{len(set(tags[a]))}")
+        print(f"[verify] {iid}: " + "; ".join(msg))
+    for a in ("concept", "ide"):
+        ex = next((l for r in rows for l in _lines(WORK / ds / a / "listings" / f"{r['instance_id']}.txt")
+                   if _TAG.search(l)), None)
+        if ex:
+            print(f"[verify] example {a} listing line:\n" + ex[:700])
 
 
 def _concept_pairs(text: str) -> list[tuple[str, str]]:
@@ -322,7 +340,19 @@ def selftest() -> None:
     listing = "file: a.py \n\t static functions:  ['parse  [C1 None-check x is None]', 'g', \"h  [C5 q['a']]\"]"
     assert _TAG.findall(listing) == ["C1 None-check x is None", "C5 q['a']"], _TAG.findall(listing)
     assert _TAG.sub("", listing) == "file: a.py \n\t static functions:  ['parse', 'g', \"h\"]"
-    print(f"[selftest] ok: imports, name cleaning, tag rendering ({tag!r})")
+    assert _TAG.findall("['f  [B006 mutable-argument-default · F841 unused-variable x]']") == [
+        "B006 mutable-argument-default · F841 unused-variable x"]
+    from prepare import lint_structure
+    code = ["def f(a=[]):", "    x = 1", "    def g():", "        y = 2", "", "class K:", "    def m(self):",
+            "        return 1"]
+    st = {"m.py": {"classes": [{"name": "K", "start_line": 6, "end_line": 8, "text": code[5:],
+                                "methods": [{"name": "m", "start_line": 7, "end_line": 8, "text": code[6:]}]}],
+                   "functions": [{"name": "f", "start_line": 1, "end_line": 4, "text": code[:4]},
+                                 {"name": "g", "start_line": 3, "end_line": 4, "text": code[2:4]}], "text": code}}
+    lt = lint_structure(st)["m.py"]
+    assert lt == [["", "f", 1, "B006 mutable-argument-default · F841 unused-variable x, y"],
+                  ["", "g", 3, "F841 unused-variable y"]], lt
+    print(f"[selftest] ok: imports, name cleaning, tag rendering ({tag!r}), ruff lint mapping")
 
 
 if __name__ == "__main__":

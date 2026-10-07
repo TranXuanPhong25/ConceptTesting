@@ -1,0 +1,8 @@
+68 new methods -> /repo/data/prompts/buggy_source_data_unified_invoked_s150new.jsonl | 146 -> /repo/data/prompts/buggy_source_data_unified_invoked_subset150.jsonl
+Traceback (most recent call last):
+  File "/repo/subset150/labels_new.py", line 57, in <module>
+    main()
+  File "/repo/subset150/labels_new.py", line 27, in main
+    src = open(f"{REPO}/d4j_proj_base/{bug}/buggy/{path}", encoding="utf-8", errors="replace").read().splitlines()
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/repo/d4j_proj_base/Closure_27/buggy/src/com/google/javascript/rhino/IR.java'

@@ -1,0 +1,173 @@
+# subset150: 146 methods (78 old + 68 new), 101 bugs; per project {'Cli': 5, 'Codec': 7, 'Csv': 3, 'Gson': 12, 'Lang': 51, 'Closure': 5, 'Compress': 12, 'JacksonDatabind': 12, 'Jsoup': 12, 'Math': 12, 'Time': 15}
+arms with data: ['Only Doc', 'Advanced', 'Adv rerun', 'm9 concept', 'm9 placebo']
+glitched (empty error report) per arm: {"Only Doc": ["27:Lang_11", "85:Compress_26"], "Advanced": ["4:Cli_8", "27:Lang_11", "63:Lang_4"], "Adv rerun": ["27:Lang_11", "28:Lang_12"], "m9 concept": ["0:Cli_15", "5:Codec_13", "27:Lang_11", "64:Lang_50"], "m9 placebo": ["4:Cli_8", "10:Codec_8", "27:Lang_11", "28:Lang_12", "85:Compress_26", "97:JacksonDatabind_31", "138:Time_3"]}
+
+## Intersection of clean methods
+
+### all: 135 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Only Doc | 2044 / 1700 | 27 (1.59%) | 91 (5.35%) | 409 (24.06%) | 0.182 | 12 | 37 |
+| Advanced | 2090 / 1565 | 19 (1.21%) | 120 (7.67%) | 405 (25.88%) | 0.229 | 8 | 41 |
+| Adv rerun | 2165 / 1758 | 18 (1.02%) | 110 (6.26%) | 461 (26.22%) | 0.193 | 10 | 39 |
+| m9 concept | 2050 / 1575 | 30 (1.90%) | 118 (7.49%) | 382 (24.25%) | 0.236 | 13 | 35 |
+| m9 placebo | 2131 / 1684 | 21 (1.25%) | 130 (7.72%) | 411 (24.41%) | 0.240 | 17 | 39 |
+
+- m9 concept vs m9 placebo (primary): ≥1 E 35 vs 39: only m9 concept 9, only m9 placebo 13, p=0.523; ≥1 M 13 vs 17: only m9 concept 7, only m9 placebo 11, p=0.481
+- Advanced vs Only Doc (paper's mitigation): ≥1 E 41 vs 37: only Advanced 15, only Only Doc 11, p=0.557; ≥1 M 8 vs 12: only Advanced 5, only Only Doc 9, p=0.424
+- Adv rerun vs Advanced (A/A noise): ≥1 E 39 vs 41: only Adv rerun 8, only Advanced 10, p=0.815; ≥1 M 10 vs 8: only Adv rerun 5, only Advanced 3, p=0.727
+- m9 concept vs Adv rerun (secondary): ≥1 E 35 vs 39: only m9 concept 8, only Adv rerun 12, p=0.503; ≥1 M 13 vs 10: only m9 concept 8, only Adv rerun 5, p=0.581
+
+### old stratum (Lang, Gson, Codec, Cli, Csv): 70 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Only Doc | 1177 / 1103 | 10 (0.91%) | 69 (6.26%) | 268 (24.30%) | 0.205 | 5 | 26 |
+| Advanced | 1160 / 1016 | 9 (0.89%) | 93 (9.15%) | 256 (25.20%) | 0.266 | 3 | 29 |
+| Adv rerun | 1225 / 1122 | 11 (0.98%) | 82 (7.31%) | 302 (26.92%) | 0.214 | 4 | 26 |
+| m9 concept | 1054 / 943 | 18 (1.91%) | 94 (9.97%) | 228 (24.18%) | 0.292 | 7 | 23 |
+| m9 placebo | 1147 / 1064 | 13 (1.22%) | 97 (9.12%) | 281 (26.41%) | 0.257 | 9 | 25 |
+
+- m9 concept vs m9 placebo (primary): ≥1 E 23 vs 25: only m9 concept 7, only m9 placebo 9, p=0.804; ≥1 M 7 vs 9: only m9 concept 3, only m9 placebo 5, p=0.727
+- Advanced vs Only Doc (paper's mitigation): ≥1 E 29 vs 26: only Advanced 10, only Only Doc 7, p=0.629; ≥1 M 3 vs 5: only Advanced 1, only Only Doc 3, p=0.625
+- Adv rerun vs Advanced (A/A noise): ≥1 E 26 vs 29: only Adv rerun 4, only Advanced 7, p=0.549; ≥1 M 4 vs 3: only Adv rerun 2, only Advanced 1, p=1
+- m9 concept vs Adv rerun (secondary): ≥1 E 23 vs 26: only m9 concept 6, only Adv rerun 9, p=0.607; ≥1 M 7 vs 4: only m9 concept 5, only Adv rerun 2, p=0.453
+
+### new stratum: 65 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Only Doc | 867 / 597 | 17 (2.85%) | 22 (3.69%) | 141 (23.62%) | 0.135 | 7 | 11 |
+| Advanced | 930 / 549 | 10 (1.82%) | 27 (4.92%) | 149 (27.14%) | 0.153 | 5 | 12 |
+| Adv rerun | 940 / 636 | 7 (1.10%) | 28 (4.40%) | 159 (25.00%) | 0.150 | 6 | 13 |
+| m9 concept | 996 / 632 | 12 (1.90%) | 24 (3.80%) | 154 (24.37%) | 0.135 | 6 | 12 |
+| m9 placebo | 984 / 620 | 8 (1.29%) | 33 (5.32%) | 130 (20.97%) | 0.202 | 8 | 14 |
+
+- m9 concept vs m9 placebo (primary): ≥1 E 12 vs 14: only m9 concept 2, only m9 placebo 4, p=0.688; ≥1 M 6 vs 8: only m9 concept 4, only m9 placebo 6, p=0.754
+- Advanced vs Only Doc (paper's mitigation): ≥1 E 12 vs 11: only Advanced 5, only Only Doc 4, p=1; ≥1 M 5 vs 7: only Advanced 4, only Only Doc 6, p=0.754
+- Adv rerun vs Advanced (A/A noise): ≥1 E 13 vs 12: only Adv rerun 4, only Advanced 3, p=1; ≥1 M 6 vs 5: only Adv rerun 3, only Advanced 2, p=1
+- m9 concept vs Adv rerun (secondary): ≥1 E 12 vs 13: only m9 concept 2, only Adv rerun 3, p=1; ≥1 M 6 vs 6: only m9 concept 3, only Adv rerun 3, p=1
+
+### all, without Gson_4 and Cli_1: 128 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Only Doc | 1957 / 1616 | 26 (1.61%) | 58 (3.59%) | 393 (24.32%) | 0.129 | 11 | 30 |
+| Advanced | 1997 / 1499 | 12 (0.80%) | 94 (6.27%) | 399 (26.62%) | 0.191 | 7 | 36 |
+| Adv rerun | 2082 / 1678 | 11 (0.66%) | 85 (5.07%) | 442 (26.34%) | 0.161 | 9 | 33 |
+| m9 concept | 1954 / 1484 | 19 (1.28%) | 83 (5.59%) | 363 (24.46%) | 0.186 | 12 | 29 |
+| m9 placebo | 2041 / 1595 | 20 (1.25%) | 83 (5.20%) | 401 (25.14%) | 0.171 | 16 | 32 |
+
+- m9 concept vs m9 placebo (primary): ≥1 E 29 vs 32: only m9 concept 9, only m9 placebo 12, p=0.664; ≥1 M 12 vs 16: only m9 concept 7, only m9 placebo 11, p=0.481
+- Advanced vs Only Doc (paper's mitigation): ≥1 E 36 vs 30: only Advanced 15, only Only Doc 9, p=0.307; ≥1 M 7 vs 11: only Advanced 5, only Only Doc 9, p=0.424
+- Adv rerun vs Advanced (A/A noise): ≥1 E 33 vs 36: only Adv rerun 7, only Advanced 10, p=0.629; ≥1 M 9 vs 7: only Adv rerun 5, only Advanced 3, p=0.727
+- m9 concept vs Adv rerun (secondary): ≥1 E 29 vs 33: only m9 concept 8, only Adv rerun 12, p=0.503; ≥1 M 12 vs 9: only m9 concept 8, only Adv rerun 5, p=0.581
+
+### all, without the 8 methods whose docstring carries the focal body (any arm): 127 methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Only Doc | 1775 / 1454 | 26 (1.79%) | 90 (6.19%) | 327 (22.49%) | 0.216 | 11 | 36 |
+| Advanced | 1909 / 1424 | 19 (1.33%) | 118 (8.29%) | 347 (24.37%) | 0.254 | 8 | 40 |
+| Adv rerun | 1911 / 1524 | 18 (1.18%) | 108 (7.09%) | 367 (24.08%) | 0.227 | 10 | 38 |
+| m9 concept | 1998 / 1549 | 30 (1.94%) | 118 (7.62%) | 365 (23.56%) | 0.244 | 13 | 35 |
+| m9 placebo | 1937 / 1497 | 21 (1.40%) | 130 (8.68%) | 324 (21.64%) | 0.286 | 17 | 39 |
+
+- m9 concept vs m9 placebo (primary): ≥1 E 35 vs 39: only m9 concept 9, only m9 placebo 13, p=0.523; ≥1 M 13 vs 17: only m9 concept 7, only m9 placebo 11, p=0.481
+- Advanced vs Only Doc (paper's mitigation): ≥1 E 40 vs 36: only Advanced 14, only Only Doc 10, p=0.541; ≥1 M 8 vs 11: only Advanced 5, only Only Doc 8, p=0.581
+- Adv rerun vs Advanced (A/A noise): ≥1 E 38 vs 40: only Adv rerun 8, only Advanced 10, p=0.815; ≥1 M 10 vs 8: only Adv rerun 5, only Advanced 3, p=0.727
+- m9 concept vs Adv rerun (secondary): ≥1 E 35 vs 38: only m9 concept 8, only Adv rerun 11, p=0.648; ≥1 M 13 vs 10: only m9 concept 8, only Adv rerun 5, p=0.581
+
+focal body in a docstring (any arm; m5 body_leaks): ['26:Gson_8', '32:Lang_1', '38:Lang_27', '49:Lang_36', '52:Lang_3', '56:Lang_44', '69:Lang_58', '102:JacksonDatabind_31']
+
+## Each arm on its own clean methods
+
+| config | generated / compiled | M | E | FP | red-prec | methods ≥1 M | methods ≥1 E |
+|---|---|---|---|---|---|---|---|
+| Only Doc (144 methods) | 2195 / 1821 | 27 (1.48%) | 99 (5.44%) | 443 (24.33%) | 0.183 | 12 | 38 |
+| Advanced (143 methods) | 2215 / 1631 | 19 (1.16%) | 122 (7.48%) | 419 (25.69%) | 0.226 | 8 | 42 |
+| Adv rerun (144 methods) | 2311 / 1852 | 18 (0.97%) | 115 (6.21%) | 485 (26.19%) | 0.192 | 10 | 41 |
+| m9 concept (142 methods) | 2150 / 1643 | 30 (1.83%) | 121 (7.36%) | 396 (24.10%) | 0.234 | 13 | 36 |
+| m9 placebo (139 methods) | 2187 / 1738 | 21 (1.21%) | 134 (7.71%) | 421 (24.22%) | 0.241 | 17 | 40 |
+
+## Discordant methods (intersection, all)
+- ≥1 E, m9 concept vs m9 placebo (primary): only m9 concept ['9:Codec_7', '36:Lang_24', '50:Lang_36', '60:Lang_47', '61:Lang_47', '75:Lang_63', '77:Lang_7', '135:Time_15', '141:Time_3']; only m9 placebo ['1:Cli_1', '3:Cli_32', '6:Codec_17', '18:Gson_15', '39:Lang_28', '57:Lang_45', '58:Lang_46', '62:Lang_49', '73:Lang_60', '91:Compress_4', '106:JacksonDatabind_38', '122:Math_47', '142:Time_5']
+- ≥1 M, m9 concept vs m9 placebo (primary): only m9 concept ['6:Codec_17', '31:Lang_19', '60:Lang_47', '110:Jsoup_22', '122:Math_47', '123:Math_47', '125:Math_54']; only m9 placebo ['9:Codec_7', '54:Lang_41', '68:Lang_57', '75:Lang_63', '77:Lang_7', '78:Closure_167', '90:Compress_39', '92:Compress_4', '116:Jsoup_29', '135:Time_15', '145:Time_8']
+- ≥1 E, Advanced vs Only Doc (paper's mitigation): only Advanced ['25:Gson_7', '32:Lang_1', '35:Lang_21', '39:Lang_28', '47:Lang_35', '48:Lang_35', '54:Lang_41', '55:Lang_41', '59:Lang_46', '77:Lang_7', '80:Closure_27', '93:Compress_4', '104:JacksonDatabind_38', '131:Time_12', '135:Time_15']; only Only Doc ['1:Cli_1', '7:Codec_18', '14:Csv_4', '21:Gson_4', '51:Lang_38', '52:Lang_3', '60:Lang_47', '87:Compress_30', '91:Compress_4', '94:Compress_6', '142:Time_5']
+- ≥1 M, Advanced vs Only Doc (paper's mitigation): only Advanced ['71:Lang_5', '116:Jsoup_29', '118:Jsoup_60', '130:Math_8', '143:Time_6']; only Only Doc ['32:Lang_1', '47:Lang_35', '77:Lang_7', '91:Compress_4', '110:Jsoup_22', '123:Math_47', '127:Math_59', '129:Math_89', '135:Time_15']
+- ≥1 E, Adv rerun vs Advanced (A/A noise): only Adv rerun ['8:Codec_6', '21:Gson_4', '68:Lang_57', '73:Lang_60', '94:Compress_6', '114:Jsoup_22', '118:Jsoup_60', '129:Math_89']; only Advanced ['18:Gson_15', '25:Gson_7', '35:Lang_21', '59:Lang_46', '61:Lang_47', '75:Lang_63', '77:Lang_7', '93:Compress_4', '131:Time_12', '135:Time_15']
+- ≥1 M, Adv rerun vs Advanced (A/A noise): only Adv rerun ['53:Lang_40', '75:Lang_63', '79:Closure_27', '88:Compress_31', '122:Math_47']; only Advanced ['68:Lang_57', '130:Math_8', '143:Time_6']
+- ≥1 E, m9 concept vs Adv rerun (secondary): only m9 concept ['36:Lang_24', '51:Lang_38', '60:Lang_47', '61:Lang_47', '75:Lang_63', '77:Lang_7', '135:Time_15', '141:Time_3']; only Adv rerun ['3:Cli_32', '6:Codec_17', '32:Lang_1', '39:Lang_28', '47:Lang_35', '48:Lang_35', '57:Lang_45', '62:Lang_49', '73:Lang_60', '94:Compress_6', '104:JacksonDatabind_38', '114:Jsoup_22']
+- ≥1 M, m9 concept vs Adv rerun (secondary): only m9 concept ['6:Codec_17', '31:Lang_19', '47:Lang_35', '48:Lang_35', '60:Lang_47', '110:Jsoup_22', '123:Math_47', '125:Math_54']; only Adv rerun ['53:Lang_40', '75:Lang_63', '79:Closure_27', '86:Compress_27', '116:Jsoup_29']
+
+M-methods per arm (method: M tests):
+- Only Doc: 1:Cli_1:1, 32:Lang_1:1, 47:Lang_35:1, 68:Lang_57:6, 77:Lang_7:1, 86:Compress_27:1, 91:Compress_4:1, 110:Jsoup_22:7, 123:Math_47:3, 127:Math_59:2, 129:Math_89:1, 135:Time_15:2
+- Advanced: 1:Cli_1:7, 68:Lang_57:1, 71:Lang_5:1, 86:Compress_27:2, 116:Jsoup_29:1, 118:Jsoup_60:5, 130:Math_8:1, 143:Time_6:1
+- Adv rerun: 1:Cli_1:7, 53:Lang_40:1, 71:Lang_5:2, 75:Lang_63:1, 79:Closure_27:1, 86:Compress_27:2, 88:Compress_31:1, 116:Jsoup_29:1, 118:Jsoup_60:1, 122:Math_47:1
+- m9 concept: 1:Cli_1:11, 6:Codec_17:1, 31:Lang_19:2, 47:Lang_35:1, 48:Lang_35:1, 60:Lang_47:1, 71:Lang_5:1, 88:Compress_31:1, 110:Jsoup_22:5, 118:Jsoup_60:1, 122:Math_47:2, 123:Math_47:2, 125:Math_54:1
+- m9 placebo: 1:Cli_1:1, 9:Codec_7:5, 47:Lang_35:1, 48:Lang_35:1, 54:Lang_41:1, 68:Lang_57:1, 71:Lang_5:1, 75:Lang_63:1, 77:Lang_7:1, 78:Closure_167:1, 88:Compress_31:1, 90:Compress_39:1, 92:Compress_4:1, 116:Jsoup_29:1, 118:Jsoup_60:1, 135:Time_15:1, 145:Time_8:1
+
+## Per project (intersection): methods, then per arm ≥1 E / ≥1 M / E tests / M tests
+| project | n | Only Doc | Advanced | Adv rerun | m9 concept | m9 placebo |
+|---|---|---|---|---|---|---|
+| Cli | 3 | 2 / 1 / 5 / 1 | 1 / 1 / 2 / 7 | 1 / 1 / 11 / 7 | 0 / 1 / 0 / 11 | 2 / 1 / 4 / 1 |
+| Codec | 5 | 4 / 0 / 11 / 0 | 3 / 0 / 8 / 0 | 4 / 0 / 12 / 0 | 3 / 1 / 13 / 1 | 3 / 1 / 5 / 5 |
+| Csv | 3 | 1 / 0 / 2 / 0 | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 | 0 / 0 / 0 / 0 |
+| Gson | 12 | 8 / 0 / 35 / 0 | 8 / 0 / 42 / 0 | 7 / 0 / 36 / 0 | 7 / 0 / 38 / 0 | 8 / 0 / 61 / 0 |
+| Lang | 47 | 11 / 4 / 16 / 9 | 17 / 2 / 41 / 2 | 14 / 3 / 23 / 4 | 13 / 5 / 43 / 6 | 12 / 7 / 27 / 7 |
+| Closure | 5 | 0 / 0 / 0 / 0 | 1 / 0 / 2 / 0 | 1 / 1 / 1 / 1 | 1 / 0 / 1 / 0 | 1 / 1 / 1 / 1 |
+| Compress | 11 | 4 / 2 / 10 / 2 | 2 / 1 / 4 / 2 | 2 / 2 / 4 / 3 | 1 / 1 / 3 / 1 | 2 / 3 / 4 / 3 |
+| JacksonDatabind | 11 | 0 / 0 / 0 / 0 | 1 / 0 / 1 / 0 | 1 / 0 / 1 / 0 | 0 / 0 / 0 / 0 | 1 / 0 / 2 / 0 |
+| Jsoup | 12 | 3 / 1 / 5 / 7 | 3 / 2 / 15 / 6 | 5 / 2 / 17 / 2 | 4 / 2 / 8 / 6 | 4 / 2 / 15 / 2 |
+| Math | 12 | 3 / 3 / 6 / 6 | 3 / 1 / 3 / 1 | 4 / 1 / 5 / 1 | 4 / 3 / 10 / 5 | 5 / 0 / 10 / 0 |
+| Time | 14 | 1 / 1 / 1 / 2 | 2 / 1 / 2 / 1 | 0 / 0 / 0 / 0 | 2 / 0 / 2 / 0 | 1 / 2 / 1 / 2 |
+
+## Per concept (manual labels: m2 for the 78, subset150/manual_labels_new.json for 68 new methods; 68 new labels checked by hand)
+Methods can carry several concepts. Cells: ≥1 E / ≥1 M among the intersection methods with that label.
+
+| concept | n (old+new) | Only Doc | Advanced | Adv rerun | m9 concept | m9 placebo | concept vs placebo, ≥1 E only-concept/only-placebo |
+|---|---|---|---|---|---|---|---|
+| C0 | 16 (7+9) | 4 / 2 | 5 / 2 | 4 / 2 | 4 / 1 | 5 / 3 | 1/2 (p=1) |
+| C1 | 19 (10+9) | 9 / 2 | 8 / 0 | 9 / 0 | 6 / 5 | 5 / 2 | 2/1 (p=1) |
+| C2 | 4 (1+3) | 1 / 1 | 1 / 1 | 1 / 1 | 1 / 0 | 1 / 0 | 0/0 (p=1) |
+| C3 | 24 (15+9) | 8 / 1 | 8 / 1 | 9 / 0 | 5 / 1 | 8 / 2 | 0/3 (p=0.25) |
+| C4 | 26 (17+9) | 8 / 4 | 10 / 4 | 11 / 5 | 10 / 5 | 11 / 7 | 1/2 (p=1) |
+| C5 | 16 (10+6) | 2 / 0 | 6 / 2 | 4 / 2 | 5 / 1 | 3 / 4 | 3/1 (p=0.62) |
+| C6 | 13 (4+9) | 4 / 3 | 6 / 0 | 3 / 1 | 2 / 3 | 4 / 1 | 1/3 (p=0.62) |
+| C7 | 11 (11+0) | 0 / 0 | 1 / 1 | 1 / 2 | 0 / 1 | 1 / 1 | 0/1 (p=1) |
+| C8 | 20 (5+15) | 2 / 2 | 1 / 1 | 1 / 0 | 3 / 0 | 3 / 2 | 1/1 (p=1) |
+unlabelled methods in the intersection: []
+
+## Docstrings
+- Advanced vs Adv rerun byte-identical docstrings (T=0, same prompt): old 58/78, new 51/68
+- Only Doc: mean docstring 798 chars on the new methods; focal body in the docstring: []
+- Advanced: mean docstring 1036 chars on the new methods; focal body in the docstring: ['49:Lang_36', '52:Lang_3', '56:Lang_44']
+- Adv rerun: mean docstring 1060 chars on the new methods; focal body in the docstring: ['49:Lang_36', '52:Lang_3', '56:Lang_44']
+- m9 concept: mean docstring 4979 chars on the new methods; focal body in the docstring: ['26:Gson_8', '32:Lang_1', '38:Lang_27', '49:Lang_36', '52:Lang_3', '56:Lang_44', '69:Lang_58', '102:JacksonDatabind_31']
+- m9 placebo: mean docstring 1001 chars on the new methods; focal body in the docstring: ['32:Lang_1', '49:Lang_36', '69:Lang_58']
+
+## LLM calls and cost (new methods only; the 78 reuse earlier runs)
+
+docs_adv: 70 API attempts (68 billed, 0 at the 65,536-token limit) $0.380
+docs_basic: 84 API attempts (68 billed, 0 at the 65,536-token limit) $0.071
+m9 adv_rerun: 68 API attempts (68 billed, 0 at the 65,536-token limit) $0.390
+m9 concept: 68 API attempts (68 billed, 1 at the 65,536-token limit) $0.601
+m9 placebo: 68 API attempts (68 billed, 0 at the 65,536-token limit) $0.455
+testgen_s150_adv: 68 API attempts (68 billed, 2 at the 65,536-token limit) $0.774
+testgen_s150_concept: 68 API attempts (68 billed, 0 at the 65,536-token limit) $0.493
+testgen_s150_onlydoc: 69 API attempts (68 billed, 1 at the 65,536-token limit) $0.568
+testgen_s150_placebo: 71 API attempts (68 billed, 1 at the 65,536-token limit) $0.600
+testgen_s150_rerun: 69 API attempts (68 billed, 1 at the 65,536-token limit) $0.601
+TOTAL $4.933 of cap $25.0
+- test generation Only Doc: 68 completions, 69 API attempts, $0.568; 65,536-token completions: ['Compress_31_buggy'] ($0.164)
+- test generation Advanced: 68 completions, 68 API attempts, $0.774; 65,536-token completions: ['Compress_30_buggy', 'Compress_31_buggy'] ($0.329)
+- test generation Adv rerun: 68 completions, 69 API attempts, $0.601; 65,536-token completions: ['Compress_30_buggy'] ($0.164)
+- test generation m9 concept: 68 completions, 68 API attempts, $0.493; 65,536-token completions: [] ($0.000)
+- test generation m9 placebo: 68 completions, 71 API attempts, $0.600; 65,536-token completions: ['Compress_30_buggy'] ($0.164)
+- docstrings Only Doc, new methods with a >50k-char docstring (whole-text fallback of a repetition loop): []
+- docstrings Advanced, new methods with a >50k-char docstring (whole-text fallback of a repetition loop): []
+- docstrings Adv rerun, new methods with a >50k-char docstring (whole-text fallback of a repetition loop): []
+- docstrings m9 concept, new methods with a >50k-char docstring (whole-text fallback of a repetition loop): ['102:JacksonDatabind_31']
+- docstrings m9 placebo, new methods with a >50k-char docstring (whole-text fallback of a repetition loop): []
+  m9 concept loop: 102:JacksonDatabind_31 $0.165

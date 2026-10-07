@@ -1,8 +1,11 @@
 [verify] stock: 3/3 instances finished
 [verify] concept: 3/3 instances finished
 [verify] placebo: 3/3 instances finished
-[verify] delgan__loguru-1297: names identical across arms=True; tagged names concept=36 placebo=36 stock=0; same tag multiset=True; tags moved by placebo=34; distinct concept tags found in the saved summary prompt=30/30
-[verify] jazzband__tablib-613: names identical across arms=True; tagged names concept=47 placebo=47 stock=0; same tag multiset=True; tags moved by placebo=46; distinct concept tags found in the saved summary prompt=40/40
-[verify] wireservice__csvkit-1281: names identical across arms=True; tagged names concept=29 placebo=29 stock=0; same tag multiset=True; tags moved by placebo=26; distinct concept tags found in the saved summary prompt=27/27
+[verify] ide: 3/3 instances finished
+[verify] delgan__loguru-1297: names identical across stock/concept/placebo/ide=True; tagged names stock=0 concept=36 placebo=36 ide=0; concept/placebo same tag multiset=True, moved by placebo=34; distinct concept tags in its saved summary prompt=30/30; distinct ide tags in its saved summary prompt=0/0
+[verify] jazzband__tablib-613: names identical across stock/concept/placebo/ide=True; tagged names stock=0 concept=47 placebo=47 ide=4; concept/placebo same tag multiset=True, moved by placebo=46; distinct concept tags in its saved summary prompt=40/40; distinct ide tags in its saved summary prompt=3/3
+[verify] wireservice__csvkit-1281: names identical across stock/concept/placebo/ide=True; tagged names stock=0 concept=29 placebo=29 ide=5; concept/placebo same tag multiset=True, moved by placebo=26; distinct concept tags in its saved summary prompt=27/27; distinct ide tags in its saved summary prompt=4/4
 [verify] example concept listing line:
 	 static functions:  ['_builtin_datetime_formatter', '_loguru_datetime_formatter  [C6 mod format_string % args]', '_default_datetime_formatter  [C5 %-format, _format_timezone() · C6 floordiv dt.microsecond // 1000]', '_format_timezone  [C5 %-format · C6 divmod(), mod abs(offset) % 60 …]', '_compile_format  [C2 not spec · C3 slice spec[:-4] … · C4 raises ValueError … · C5 .endswith() … · C6 mod t.tm_year % 100 …]', 'aware_now  [C4 catches AttributeError · C5 .replace()]'] 
+[verify] example ide listing line:
+ODSFormat: ['export_set', 'export_book', 'import_sheet', 'read_cell', 'import_set', 'import_book', 'dset_sheet  [B007 unused-loop-control-variable j]', 'detect'] 

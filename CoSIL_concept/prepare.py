@@ -3,11 +3,14 @@
 
 usage: python prepare.py data
        python prepare.py structures <dataset> [--ids FILE|ID,ID] [--limit N] [--jobs N]
+       python prepare.py lint <dataset> [--ids FILE|ID,ID] [--limit N] [--jobs N]
 
 `structures` builds vendor/CoSIL-format `structures/<dataset>/<instance_id>.json` with CoSIL's own
 `get_repo_structure.create_structure`, from one partial bare clone per repo (`clones/`) plus a temporary
 `git worktree` per base commit. It is resumable (finished JSONs are skipped) and also writes the patch-derived
 ground truth `data/<dataset>_gt_patch.json` (the official gt for swebench_live).
+`lint` runs ruff (bug-oriented rules) over every .py file of a built structure and maps each warning to the listed
+functions/methods whose span contains it -> `structures/<dataset>/<instance_id>.lint.json` (the `ide` arm's tags).
 """
 
 from __future__ import annotations
@@ -16,11 +19,13 @@ import argparse
 import contextlib
 import io
 import json
+import keyword
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import time
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor
@@ -179,6 +184,82 @@ def gt_from_patch(patch: str, structure: dict) -> tuple[list[str], list[tuple]]:
     return sorted(entries), gold
 
 
+# ---------------------------------------------------------------- ruff warnings (ide arm)
+RUFF = str(Path(sys.executable).with_name("ruff"))
+RUFF_ARGS = ["--select", "F,B,PLE,PLW,RUF,S",  # pyflakes, bugbear, pylint errors/warnings, ruff-specific, bandit
+             # assert-used; ambiguous unicode; unused-noqa (an artifact of selecting only these rules); pure-style RUF
+             "--ignore", "S101,RUF001,RUF002,RUF003,RUF100,RUF005,RUF010,RUF021,RUF022,RUF023",
+             "--target-version", "py313", "--config", "exclude = []"]
+
+
+def lint_structure(structure: dict) -> dict[str, list[list]]:
+    """file -> [[class or "", name, start_line, tag]] for listed functions/methods with at least one warning."""
+    sys.path.insert(0, str(VENDOR))
+    sys.path.append(str(HERE.parent))
+    from CoSIL.util.preprocess_data import extract_structure
+    from concept_annotator_py.functions import render_tags
+
+    names = {r["code"]: r["name"] for r in json.loads(subprocess.run(
+        [RUFF, "rule", "--all", "--output-format", "json"], capture_output=True, text=True, check=True).stdout)}
+    spans = file_spans(structure)
+    facts: dict[tuple, list[dict]] = defaultdict(list)
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = os.path.realpath(tmp)
+        for path, lines in (x for x in extract_structure(structure)[0] if isinstance(x, tuple)):
+            f = Path(tmp, path)
+            f.parent.mkdir(parents=True, exist_ok=True)
+            f.write_text("\n".join(lines) + "\n", encoding="utf-8", errors="replace")
+        out = subprocess.run([RUFF, "check", "--isolated", "--no-cache", "--exit-zero", "--output-format", "json",
+                              *RUFF_ARGS, tmp], capture_output=True, text=True, check=True).stdout
+    for d in json.loads(out):
+        if not d.get("code"):  # syntax errors (e.g. Python 2 files) have no rule code
+            continue
+        path, row = os.path.relpath(d["filename"], tmp), d["location"]["row"]
+        arg = next((a for a in re.findall(r"`([^`]{1,40})`", d.get("message") or "") if not keyword.iskeyword(a)), "")
+        for kind, _, cls, name, start, end, _ in spans.get(path, []):
+            if kind != "class" and start <= row <= end:
+                facts[(path, cls, name, start)].append(
+                    {"concept": f"{d['code']} {names.get(d['code'], '')}".strip(), "detail": arg})
+    tags: dict[str, list[list]] = defaultdict(list)
+    for (path, cls, name, start), fs in sorted(facts.items()):
+        tags[path].append([cls, name, start, render_tags({"facts": fs})])
+    return dict(tags)
+
+
+def lint_one(ds: str, iid: str) -> str:
+    src, out = STRUCT / ds / f"{iid}.json", STRUCT / ds / f"{iid}.lint.json"
+    if out.exists():
+        return ""
+    t0 = time.time()
+    structure = json.load(open(src))["structure"]
+    tags = lint_structure(structure)
+    n_fn = sum(s[0] != "class" for spans in file_spans(structure).values() for s in spans)
+    n_tag = sum(map(len, tags.values()))
+    version = subprocess.run([RUFF, "--version"], capture_output=True, text=True).stdout.strip()
+    tmp = out.with_suffix(".tmp")
+    json.dump({"ruff": version, "args": RUFF_ARGS, "n_functions": n_fn, "n_tagged": n_tag, "tags": tags}, open(tmp, "w"))
+    os.replace(tmp, out)
+    return f"[lint] {iid}: {n_tag}/{n_fn} functions with warnings ({n_tag / max(n_fn, 1):.1%}) {time.time() - t0:.0f}s"
+
+
+def lint(ds: str, ids: str | None, limit: int | None, jobs: int) -> None:
+    rows = [r for r in load_rows(ds, ids, limit) if (STRUCT / ds / f"{r['instance_id']}.json").exists()]
+    print(f"[lint] {ds}: {len(rows)} instances with structures, jobs={jobs}", flush=True)
+    with ProcessPoolExecutor(max_workers=jobs) as ex:
+        futs = {ex.submit(lint_one, ds, r["instance_id"]): r["instance_id"] for r in rows}
+        for f in futs:
+            try:
+                if msg := f.result():
+                    print(msg, flush=True)
+            except Exception as e:  # rerun retries it
+                print(f"[lint] FAIL {futs[f]}: {e}", flush=True)
+    done = [json.load(open(STRUCT / ds / f"{r['instance_id']}.lint.json")) for r in rows
+            if (STRUCT / ds / f"{r['instance_id']}.lint.json").exists()]
+    n_fn, n_tag = sum(d["n_functions"] for d in done), sum(d["n_tagged"] for d in done)
+    print(f"[lint] {ds}: {len(done)}/{len(rows)} linted; {n_tag}/{n_fn} functions with warnings "
+          f"({n_tag / max(n_fn, 1):.1%})", flush=True)
+
+
 # ---------------------------------------------------------------- structures
 def git(*args, cwd=None, check=True, quiet=True):
     return subprocess.run(["git", *args], cwd=cwd, check=check, text=True,
@@ -255,7 +336,7 @@ def structures(ds: str, ids: str | None, limit: int | None, jobs: int) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["data", "structures"])
+    ap.add_argument("cmd", choices=["data", "structures", "lint"])
     ap.add_argument("dataset", nargs="?", choices=list(SOURCES))
     ap.add_argument("--ids")
     ap.add_argument("--limit", type=int)
@@ -263,5 +344,7 @@ if __name__ == "__main__":
     a = ap.parse_args()
     if a.cmd == "data":
         data()
+    elif a.cmd == "lint":
+        lint(a.dataset, a.ids, a.limit, a.jobs)
     else:
         structures(a.dataset, a.ids, a.limit, a.jobs)

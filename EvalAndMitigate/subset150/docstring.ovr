@@ -1,0 +1,11 @@
+# @after 5
+# run/docstring.ovr, unchanged
+tgt_model = os.environ['TGT_MODEL']
+version = os.environ['VERSION']
+print(len(data) if 'data' in dir() else '', tgt_model, version)
+# @after 7
+# subset150: the new methods only (the 78 keep their existing docstrings), read from S150_SRC
+data = [json.loads(l) for l in open(os.path.join(code_base, os.environ['S150_SRC']))]
+# @after 18
+# subset150: new output name, the existing docstring files stay untouched
+source_data_file_with_docstring = os.path.join(code_base, os.environ['S150_DOC_OUT'])

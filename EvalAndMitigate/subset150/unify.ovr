@@ -1,0 +1,11 @@
+# @after 3
+# subset150: read the drafts of the sampled bugs, not data/prompts/{fixed,buggy}_source_data_draft.jsonl
+import os
+fixed_source_file = os.environ['S150_FIXED_DRAFT']
+buggy_source_file = os.environ['S150_BUGGY_DRAFT']
+# @after 27
+# subset150: cell 28's records, written to S150_OUT instead of data/prompts/buggy_source_data_unified_invoked.jsonl
+with open(os.environ['S150_OUT'], 'w') as f:
+    for bug in unified_buggy_invoked:
+        f.write(json.dumps(bug) + '\n')
+print(len(unified_buggy_invoked), 'unified invoked ->', os.environ['S150_OUT'])
