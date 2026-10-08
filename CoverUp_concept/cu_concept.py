@@ -52,6 +52,7 @@ from concept_annotator_py.functions import CONCEPTS, annotate_function  # noqa: 
 ARMS = ("coverup", "concept", "concept_reason", "placebo_reason", "ide")
 MODEL = os.environ.get("CU_MODEL", "vertex_ai/gemini-2.5-flash")
 MAX_FACTS = 12
+MAX_TOKENS = int(os.environ.get("CU_MAX_TOKENS", "8192"))  # per reply, all arms; added 2026-10-08 during seed 1
 SIGNATURE_KINDS = {"none-default", "optional", "mutable-default", "cached", "unchecked-none"}  # anchored at the def line
 
 RECIPE = {
@@ -261,6 +262,7 @@ def patch_llm(ledger: Ledger, seed: int, creds: dict) -> None:
             print(f"\n[budget] CU_MAX_USD={ledger.cap} reached (ledger {ledger.total():.2f}); stopping", flush=True)
             os._exit(3)  # CoverUp's checkpoint is saved after every segment, so a rerun resumes
         req = {**req, "thinking": {"type": "enabled", "budget_tokens": 0}, "seed": seed, "timeout": 300,
+               "max_tokens": MAX_TOKENS,  # Gemini sometimes loops to 65536 tokens; normal replies are <4k (p99 3190)
                "vertex_credentials": creds,
                "vertex_project": os.environ.get("VERTEXAI_PROJECT") or os.environ.get("VERTEX_PROJECT"),
                "vertex_location": os.environ.get("VERTEXAI_LOCATION") or os.environ.get("VERTEX_LOCATION") or "global"}

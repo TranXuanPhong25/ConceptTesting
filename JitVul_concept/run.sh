@@ -7,6 +7,7 @@ ARMS="base concept placebo callee_code ide"   # ide last (added later)
 
 vertex() {  # Vertex settings: the repo's (gitignored) helper if present, else already-exported env. Values never echoed.
   if [ -f ../scripts/vertex_env.sh ]; then source ../scripts/vertex_env.sh >/dev/null; fi
+  if [ -n "${JV_LOCATION:-}" ]; then export VERTEX_LOCATION=$JV_LOCATION; fi  # per-run region (global 429s, 2026-10-08)
   if [ -z "${VERTEX_PROJECT:-${GOOGLE_CLOUD_PROJECT:-}}" ]; then echo "set VERTEX_PROJECT (and VERTEX_LOCATION)"; exit 1; fi
 }
 

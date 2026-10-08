@@ -7,7 +7,7 @@
 #   ./run.sh mutate <arm|all> [--seed K] [--pkgs a,b]  mutmut on the generated tests (seed omitted = every seed)
 #   ./run.sh analyze                     coverage, mutation score, cost, concept-site coverage, Wilcoxon -> out/
 # arms: coverup concept concept_reason placebo_reason ide
-# env: CU_RUN (default main; smoke uses smoke_arm64), CU_MAX_USD (default 40, all arms together), CU_CONCURRENCY (default 16), CU_MODEL, MUTMUT_JOBS
+# env: CU_RUN (default main; smoke uses smoke_$(uname -m)), CU_MAX_USD (default 40, all arms together), CU_CONCURRENCY (default 16), CU_MODEL, MUTMUT_JOBS
 set -euo pipefail
 cd "$(dirname "$0")"
 ROOT=$(cd .. && pwd)
@@ -65,7 +65,7 @@ case "$cmd" in
     $PY evaluate.py mutate "$arm" "$@" ;;
   analyze) $PY evaluate.py analyze ;;
   smoke)
-    export CU_RUN=smoke_arm64 LOGS=work/smoke_arm64/logs
+    export CU_RUN=smoke_$(uname -m); LOGS=work/$CU_RUN/logs
     opts --pkgs "$(echo "${SMOKE_PKGS:-codetiming sty}" | tr ' ' ,)"; vertex
     for a in $ARMS; do run_arm "$a"; done
     $PY evaluate.py mutate "$(echo $ARMS | tr ' ' ,)" --seed 1 --pkgs "$(echo $PKGS | tr ' ' ,)"
