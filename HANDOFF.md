@@ -4,7 +4,6 @@ Repo: this one (`~/dev/ConceptTester` on thinkbook). Read `AGENTS.md` first. Its
 - no Co-Authored-By;
 - push to main;
 - don't edit vendored paper code;
-- arm64/x86, no emulation;
 - one folder per paper;
 - keys via `scripts/*_env.sh`, never printed.
 

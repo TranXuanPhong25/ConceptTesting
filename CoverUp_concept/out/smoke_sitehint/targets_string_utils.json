@@ -1,0 +1,1386 @@
+[
+ {
+  "file": "string_utils/generation.py",
+  "func": "random_string",
+  "begin": 41,
+  "end": 60,
+  "mutants": {
+   "string_utils.generation.x_random_string__mutmut_3": {
+    "line": 53,
+    "orig": "if not isinstance(size, int) or size < 1:",
+    "mut": "if not isinstance(size, int) or size <= 1:",
+    "message_only": false
+   },
+   "string_utils.generation.x_random_string__mutmut_4": {
+    "line": 53,
+    "orig": "if not isinstance(size, int) or size < 1:",
+    "mut": "if not isinstance(size, int) or size < 2:",
+    "message_only": false
+   },
+   "string_utils.generation.x_random_string__mutmut_6": {
+    "line": 54,
+    "orig": "raise ValueError('size must be >= 1')",
+    "mut": "raise ValueError('XXsize must be >= 1XX')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   53,
+   54
+  ],
+  "hints": [
+   [
+    53,
+    "boolop",
+    "`not isinstance(size, int) or size < 1` combines 2 conditions: write one test per condition where only that condition is true, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    53,
+    "bound",
+    "`size < 1` has a boundary at 1: use size = 0, 1 and 2, and assert the exact outcome of each.",
+    [
+     "0",
+     "1",
+     "2"
+    ]
+   ],
+   [
+    53,
+    "isinstance",
+    "`isinstance(size, int)`: also pass True/False (bool is an int), 1.0 and a numeric string '1', asserting accept/reject.",
+    [
+     "True",
+     "1.0"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "encode",
+  "begin": 79,
+  "end": 106,
+  "mutants": {
+   "string_utils.manipulation.x\u01c1__RomanNumbers\u01c1encode__mutmut_6": {
+    "line": 84,
+    "orig": "raise ValueError('Invalid input, only strings or integers are allowed')",
+    "mut": "raise ValueError('XXInvalid input, only strings or integers are allowedXX')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__RomanNumbers\u01c1encode__mutmut_17": {
+    "line": 89,
+    "orig": "raise ValueError('Input must be >= 1 and <= 3999')",
+    "mut": "raise ValueError('XXInput must be >= 1 and <= 3999XX')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   84,
+   89
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "__index_for_sign",
+  "begin": 109,
+  "end": 114,
+  "mutants": {
+   "string_utils.manipulation.x\u01c1__RomanNumbers\u01c1__index_for_sign__mutmut_3": {
+    "line": 114,
+    "orig": "raise ValueError('Invalid token found: \"{}\"'.format(sign))",
+    "mut": "raise ValueError(None)",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__RomanNumbers\u01c1__index_for_sign__mutmut_4": {
+    "line": 114,
+    "orig": "raise ValueError('Invalid token found: \"{}\"'.format(sign))",
+    "mut": "raise ValueError('Invalid token found: \"{}\"'.format(None))",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__RomanNumbers\u01c1__index_for_sign__mutmut_5": {
+    "line": 114,
+    "orig": "raise ValueError('Invalid token found: \"{}\"'.format(sign))",
+    "mut": "raise ValueError('XXInvalid token found: \"{}\"XX'.format(sign))",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__RomanNumbers\u01c1__index_for_sign__mutmut_6": {
+    "line": 114,
+    "orig": "raise ValueError('Invalid token found: \"{}\"'.format(sign))",
+    "mut": "raise ValueError('invalid token found: \"{}\"'.format(sign))",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__RomanNumbers\u01c1__index_for_sign__mutmut_7": {
+    "line": 114,
+    "orig": "raise ValueError('Invalid token found: \"{}\"'.format(sign))",
+    "mut": "raise ValueError('INVALID TOKEN FOUND: \"{}\"'.format(sign))",
+    "message_only": true
+   }
+  },
+  "lines": [
+   114
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "decode",
+  "begin": 117,
+  "end": 156,
+  "mutants": {
+   "string_utils.manipulation.x\u01c1__RomanNumbers\u01c1decode__mutmut_4": {
+    "line": 119,
+    "orig": "raise ValueError('Input must be a non empty string')",
+    "mut": "raise ValueError('XXInput must be a non empty stringXX')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   119
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "__require_valid_input_and_encoding",
+  "begin": 162,
+  "end": 170,
+  "mutants": {
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1__require_valid_input_and_encoding__mutmut_3": {
+    "line": 164,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1__require_valid_input_and_encoding__mutmut_7": {
+    "line": 167,
+    "orig": "raise ValueError('Input string cannot be empty')",
+    "mut": "raise ValueError('XXInput string cannot be emptyXX')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1__require_valid_input_and_encoding__mutmut_13": {
+    "line": 170,
+    "orig": "raise ValueError('Invalid encoding')",
+    "mut": "raise ValueError('XXInvalid encodingXX')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   164,
+   167,
+   170
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "compress",
+  "begin": 173,
+  "end": 193,
+  "mutants": {
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_1": {
+    "line": 173,
+    "orig": "def x\u01c1__StringCompressor\u01c1compress__mutmut_orig(cls, input_string: str, encoding: str = 'utf-8', compression_level: int = 9) -> str:",
+    "mut": "def x\u01c1__StringCompressor\u01c1compress__mutmut_1(cls, input_string: str, encoding: str = 'XXutf-8XX', compression_level: int = 9) -> str:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_2": {
+    "line": 173,
+    "orig": "def x\u01c1__StringCompressor\u01c1compress__mutmut_orig(cls, input_string: str, encoding: str = 'utf-8', compression_level: int = 9) -> str:",
+    "mut": "def x\u01c1__StringCompressor\u01c1compress__mutmut_2(cls, input_string: str, encoding: str = 'UTF-8', compression_level: int = 9) -> str:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_3": {
+    "line": 173,
+    "orig": "def x\u01c1__StringCompressor\u01c1compress__mutmut_orig(cls, input_string: str, encoding: str = 'utf-8', compression_level: int = 9) -> str:",
+    "mut": "def x\u01c1__StringCompressor\u01c1compress__mutmut_3(cls, input_string: str, encoding: str = 'utf-8', compression_level: int = 10) -> str:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_8": {
+    "line": 176,
+    "orig": "if not isinstance(compression_level, int) or compression_level < 0 or compression_level > 9:",
+    "mut": "if not isinstance(compression_level, int) or compression_level < 0 and compression_level > 9:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_9": {
+    "line": 176,
+    "orig": "if not isinstance(compression_level, int) or compression_level < 0 or compression_level > 9:",
+    "mut": "if not isinstance(compression_level, int) and compression_level < 0 or compression_level > 9:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_14": {
+    "line": 176,
+    "orig": "if not isinstance(compression_level, int) or compression_level < 0 or compression_level > 9:",
+    "mut": "if not isinstance(compression_level, int) or compression_level < 0 or compression_level > 10:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_15": {
+    "line": 177,
+    "orig": "raise ValueError('Invalid compression_level: it must be an \"int\" between 0 and 9')",
+    "mut": "raise ValueError(None)",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_16": {
+    "line": 177,
+    "orig": "raise ValueError('Invalid compression_level: it must be an \"int\" between 0 and 9')",
+    "mut": "raise ValueError('XXInvalid compression_level: it must be an \"int\" between 0 and 9XX')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_17": {
+    "line": 177,
+    "orig": "raise ValueError('Invalid compression_level: it must be an \"int\" between 0 and 9')",
+    "mut": "raise ValueError('invalid compression_level: it must be an \"int\" between 0 and 9')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_18": {
+    "line": 177,
+    "orig": "raise ValueError('Invalid compression_level: it must be an \"int\" between 0 and 9')",
+    "mut": "raise ValueError('INVALID COMPRESSION_LEVEL: IT MUST BE AN \"INT\" BETWEEN 0 AND 9')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__StringCompressor\u01c1compress__mutmut_25": {
+    "line": 183,
+    "orig": "compressed_bytes = zlib.compress(original_bytes, compression_level)",
+    "mut": "compressed_bytes = zlib.compress(original_bytes, )",
+    "message_only": false
+   }
+  },
+  "lines": [
+   173,
+   176,
+   177,
+   183
+  ],
+  "hints": [
+   [
+    176,
+    "boolop",
+    "`not isinstance(compression_level, int) or compression_lev...` combines 3 conditions: write one test per condition where only that condition is true, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    176,
+    "bound",
+    "`compression_level < 0` has a boundary at 0: use compression_level = -1, 0 and 1, and assert the exact outcome of each.",
+    [
+     "-1",
+     "0",
+     "1"
+    ]
+   ],
+   [
+    176,
+    "bound",
+    "`compression_level > 9` has a boundary at 9: use compression_level = 8, 9 and 10, and assert the exact outcome of each.",
+    [
+     "8",
+     "9",
+     "10"
+    ]
+   ],
+   [
+    176,
+    "forward",
+    "`isinstance(compression_level, int)` passes parameter `compression_level` on: call with two different values of `compression_level` and assert the results differ as they should.",
+    []
+   ],
+   [
+    176,
+    "isinstance",
+    "`isinstance(compression_level, int)`: also pass True/False (bool is an int), 1.0 and a numeric string '1', asserting accept/reject.",
+    [
+     "True",
+     "1.0"
+    ]
+   ],
+   [
+    183,
+    "forward",
+    "`zlib.compress(original_bytes, compression_level)` passes parameter `compression_level` on: call with two different values of `compression_level` and assert the results differ as they should.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "__init__",
+  "begin": 213,
+  "end": 217,
+  "mutants": {
+   "string_utils.manipulation.x\u01c1__StringFormatter\u01c1__init____mutmut_2": {
+    "line": 213,
+    "orig": "if not is_string(input_string):",
+    "mut": "if not is_string(None):",
+    "message_only": false
+   },
+   "string_utils.manipulation.x\u01c1__StringFormatter\u01c1__init____mutmut_3": {
+    "line": 214,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   },
+   "string_utils.manipulation.x\u01c1__StringFormatter\u01c1__init____mutmut_4": {
+    "line": 216,
+    "orig": "self.input_string = input_string",
+    "mut": "self.input_string = None",
+    "message_only": false
+   }
+  },
+  "lines": [
+   213,
+   214,
+   216
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "reverse",
+  "begin": 282,
+  "end": 297,
+  "mutants": {
+   "string_utils.manipulation.x_reverse__mutmut_3": {
+    "line": 295,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   295
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "camel_case_to_snake",
+  "begin": 300,
+  "end": 321,
+  "mutants": {
+   "string_utils.manipulation.x_camel_case_to_snake__mutmut_4": {
+    "line": 316,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   316
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "snake_case_to_camel",
+  "begin": 324,
+  "end": 354,
+  "mutants": {
+   "string_utils.manipulation.x_snake_case_to_camel__mutmut_5": {
+    "line": 342,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   342
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "shuffle",
+  "begin": 357,
+  "end": 379,
+  "mutants": {
+   "string_utils.manipulation.x_shuffle__mutmut_3": {
+    "line": 370,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   370
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "strip_html",
+  "begin": 382,
+  "end": 402,
+  "mutants": {
+   "string_utils.manipulation.x_strip_html__mutmut_1": {
+    "line": 382,
+    "orig": "def x_strip_html__mutmut_orig(input_string: str, keep_tag_content: bool = False) -> str:",
+    "mut": "def x_strip_html__mutmut_1(input_string: str, keep_tag_content: bool = True) -> str:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x_strip_html__mutmut_4": {
+    "line": 398,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_strip_html__mutmut_7": {
+    "line": 400,
+    "orig": "r = HTML_TAG_ONLY_RE if keep_tag_content else HTML_RE",
+    "mut": "r = HTML_TAG_ONLY_RE if (keep_tag_content) or True else HTML_RE",
+    "message_only": false
+   }
+  },
+  "lines": [
+   382,
+   398,
+   400
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "asciify",
+  "begin": 433,
+  "end": 459,
+  "mutants": {
+   "string_utils.manipulation.x_asciify__mutmut_3": {
+    "line": 448,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_asciify__mutmut_17": {
+    "line": 454,
+    "orig": "ascii_bytes = normalized.encode('ascii', 'ignore')",
+    "mut": "ascii_bytes = normalized.encode('ASCII', 'ignore')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_asciify__mutmut_23": {
+    "line": 457,
+    "orig": "ascii_string = ascii_bytes.decode('utf-8')",
+    "mut": "ascii_string = ascii_bytes.decode('UTF-8')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   448,
+   454,
+   457
+  ],
+  "hints": [
+   [
+    454,
+    "codec",
+    "`normalized.encode('ascii', 'ignore')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ],
+   [
+    457,
+    "codec",
+    "`ascii_bytes.decode('utf-8')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "slugify",
+  "begin": 462,
+  "end": 497,
+  "mutants": {
+   "string_utils.manipulation.x_slugify__mutmut_4": {
+    "line": 486,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_slugify__mutmut_26": {
+    "line": 495,
+    "orig": "out = re.sub(re.escape(separator) + r'+', separator, out)",
+    "mut": "out = re.sub(re.escape(separator) + r'XX+XX', separator, out)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   486,
+   495
+  ],
+  "hints": [
+   [
+    495,
+    "escape",
+    "`separator` is escaped before going into a regex: use values containing regex metacharacters ('.', '*', '+', '|', '\\\\') and a multi-character value, and assert the exact result.",
+    [
+     "'.'",
+     "'*'",
+     "'+'"
+    ]
+   ],
+   [
+    495,
+    "forward",
+    "`re.sub(re.escape(separator) + '+', separator, out)` passes parameter `separator` on: call with two different values of `separator` and assert the results differ as they should.",
+    []
+   ],
+   [
+    495,
+    "forward",
+    "`re.escape(separator)` passes parameter `separator` on: call with two different values of `separator` and assert the results differ as they should.",
+    []
+   ],
+   [
+    495,
+    "regex",
+    "regex `re.sub(re.escape(separator) + '+', separator, out)`: use inputs with zero, one and several consecutive matches, matches at the start/end, and the empty string; assert exact outputs.",
+    [
+     "''"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "booleanize",
+  "begin": 500,
+  "end": 526,
+  "mutants": {
+   "string_utils.manipulation.x_booleanize__mutmut_2": {
+    "line": 523,
+    "orig": "if not is_string(input_string):",
+    "mut": "if not is_string(None):",
+    "message_only": false
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_3": {
+    "line": 524,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_4": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.upper() in ('true', '1', 'yes', 'y')",
+    "message_only": false
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_5": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.lower() not in ('true', '1', 'yes', 'y')",
+    "message_only": false
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_6": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.lower() in ('XXtrueXX', '1', 'yes', 'y')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_7": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.lower() in ('TRUE', '1', 'yes', 'y')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_8": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.lower() in ('true', 'XX1XX', 'yes', 'y')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_9": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.lower() in ('true', '1', 'XXyesXX', 'y')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_10": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.lower() in ('true', '1', 'YES', 'y')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_11": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.lower() in ('true', '1', 'yes', 'XXyXX')",
+    "message_only": true
+   },
+   "string_utils.manipulation.x_booleanize__mutmut_12": {
+    "line": 526,
+    "orig": "return input_string.lower() in ('true', '1', 'yes', 'y')",
+    "mut": "return input_string.lower() in ('true', '1', 'yes', 'Y')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   523,
+   524,
+   526
+  ],
+  "hints": [
+   [
+    526,
+    "case",
+    "`input_string.lower()` changes case: use UPPER, Mixed and lower case inputs (e.g. 'ABC', 'AbC') and non-ASCII letters ('\u00df', '\u0130'); assert they give the expected (case-insensitive) result.",
+    [
+     "'\u00df'"
+    ]
+   ],
+   [
+    526,
+    "member",
+    "`input_string.lower() in ('true', '1', 'yes', 'y')`: test every member 'true', '1', 'yes', 'y' and near-misses such as 'truex', 'TRUE', asserting each result.",
+    [
+     "'true'",
+     "'1'",
+     "'yes'",
+     "'y'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "strip_margin",
+  "begin": 529,
+  "end": 558,
+  "mutants": {
+   "string_utils.manipulation.x_strip_margin__mutmut_3": {
+    "line": 552,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   552
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "compress",
+  "begin": 561,
+  "end": 595,
+  "mutants": {
+   "string_utils.manipulation.x_compress__mutmut_2": {
+    "line": 561,
+    "orig": "def x_compress__mutmut_orig(input_string: str, encoding: str = 'utf-8', compression_level: int = 9) -> str:",
+    "mut": "def x_compress__mutmut_2(input_string: str, encoding: str = 'UTF-8', compression_level: int = 9) -> str:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x_compress__mutmut_9": {
+    "line": 595,
+    "orig": "return __StringCompressor.compress(input_string, encoding, compression_level)",
+    "mut": "return __StringCompressor.compress(input_string, encoding, )",
+    "message_only": false
+   }
+  },
+  "lines": [
+   561,
+   595
+  ],
+  "hints": [
+   [
+    595,
+    "forward",
+    "`__StringCompressor.compress(input_string, encoding, compr...` passes parameter `encoding` on: call with two different values of `encoding` and assert the results differ as they should.",
+    []
+   ],
+   [
+    595,
+    "forward",
+    "`__StringCompressor.compress(input_string, encoding, compr...` passes parameter `compression_level` on: call with two different values of `compression_level` and assert the results differ as they should.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/manipulation.py",
+  "func": "decompress",
+  "begin": 598,
+  "end": 608,
+  "mutants": {
+   "string_utils.manipulation.x_decompress__mutmut_1": {
+    "line": 598,
+    "orig": "def x_decompress__mutmut_orig(input_string: str, encoding: str = 'utf-8') -> str:",
+    "mut": "def x_decompress__mutmut_1(input_string: str, encoding: str = 'XXutf-8XX') -> str:",
+    "message_only": false
+   },
+   "string_utils.manipulation.x_decompress__mutmut_2": {
+    "line": 598,
+    "orig": "def x_decompress__mutmut_orig(input_string: str, encoding: str = 'utf-8') -> str:",
+    "mut": "def x_decompress__mutmut_2(input_string: str, encoding: str = 'UTF-8') -> str:",
+    "message_only": false
+   }
+  },
+  "lines": [
+   598
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "__init__",
+  "begin": 43,
+  "end": 47,
+  "mutants": {
+   "string_utils.validation.x\u01c1__ISBNChecker\u01c1__init____mutmut_4": {
+    "line": 44,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   44
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_isbn_13",
+  "begin": 49,
+  "end": 63,
+  "mutants": {
+   "string_utils.validation.x\u01c1__ISBNChecker\u01c1is_isbn_13__mutmut_15": {
+    "line": 56,
+    "orig": "product += int(digit) * weight",
+    "mut": "product = int(digit) * weight",
+    "message_only": false
+   },
+   "string_utils.validation.x\u01c1__ISBNChecker\u01c1is_isbn_13__mutmut_16": {
+    "line": 56,
+    "orig": "product += int(digit) * weight",
+    "mut": "product -= int(digit) * weight",
+    "message_only": false
+   }
+  },
+  "lines": [
+   56
+  ],
+  "hints": [
+   [
+    56,
+    "accum",
+    "`product += int(digit) * weight` accumulates in a loop: use a real-world valid input whose exact result you know (e.g. a valid checksum/total), and the same input with one element changed; assert the exact result for both.",
+    []
+   ],
+   [
+    56,
+    "parse",
+    "`int(digit)` parses a number: try ' 7 ', '+7', '-0', '1_000', '\u0663' (non-ASCII digit) and '7.0', asserting result or exception.",
+    [
+     "'+7'",
+     "'1_000'",
+     "'\u0663'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_isbn_10",
+  "begin": 65,
+  "end": 78,
+  "mutants": {
+   "string_utils.validation.x\u01c1__ISBNChecker\u01c1is_isbn_10__mutmut_7": {
+    "line": 71,
+    "orig": "product += int(digit) * (index + 1)",
+    "mut": "product -= int(digit) * (index + 1)",
+    "message_only": false
+   }
+  },
+  "lines": [
+   71
+  ],
+  "hints": [
+   [
+    71,
+    "accum",
+    "`product += int(digit) * (index + 1)` accumulates in a loop: use a real-world valid input whose exact result you know (e.g. a valid checksum/total), and the same input with one element changed; assert the exact result for both.",
+    []
+   ],
+   [
+    71,
+    "parse",
+    "`int(digit)` parses a number: try ' 7 ', '+7', '-0', '1_000', '\u0663' (non-ASCII digit) and '7.0', asserting result or exception.",
+    [
+     "'+7'",
+     "'1_000'",
+     "'\u0663'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_number",
+  "begin": 116,
+  "end": 138,
+  "mutants": {
+   "string_utils.validation.x_is_number__mutmut_2": {
+    "line": 136,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   136
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_decimal",
+  "begin": 159,
+  "end": 172,
+  "mutants": {
+   "string_utils.validation.x_is_decimal__mutmut_2": {
+    "line": 172,
+    "orig": "return is_number(input_string) and '.' in input_string",
+    "mut": "return is_number(None) and '.' in input_string",
+    "message_only": false
+   }
+  },
+  "lines": [
+   172
+  ],
+  "hints": [
+   [
+    172,
+    "boolop",
+    "`is_number(input_string) and '.' in input_string` combines 2 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_email",
+  "begin": 204,
+  "end": 244,
+  "mutants": {
+   "string_utils.validation.x_is_email__mutmut_5": {
+    "line": 220,
+    "orig": "if not is_full_string(input_string) or len(input_string) > 320 or input_string.startswith('.'):",
+    "mut": "if not is_full_string(input_string) or len(input_string) >= 320 or input_string.startswith('.'):",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_email__mutmut_6": {
+    "line": 220,
+    "orig": "if not is_full_string(input_string) or len(input_string) > 320 or input_string.startswith('.'):",
+    "mut": "if not is_full_string(input_string) or len(input_string) > 321 or input_string.startswith('.'):",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_email__mutmut_16": {
+    "line": 228,
+    "orig": "if len(head) > 64 or len(tail) > 255 or head.endswith('.') or ('..' in head):",
+    "mut": "if len(head) >= 64 or len(tail) > 255 or head.endswith('.') or ('..' in head):",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_email__mutmut_18": {
+    "line": 228,
+    "orig": "if len(head) > 64 or len(tail) > 255 or head.endswith('.') or ('..' in head):",
+    "mut": "if len(head) > 64 or len(tail) >= 255 or head.endswith('.') or ('..' in head):",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_email__mutmut_19": {
+    "line": 228,
+    "orig": "if len(head) > 64 or len(tail) > 255 or head.endswith('.') or ('..' in head):",
+    "mut": "if len(head) > 64 or len(tail) > 256 or head.endswith('.') or ('..' in head):",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_email__mutmut_30": {
+    "line": 232,
+    "orig": "head = head.replace('\\\\ ', '')",
+    "mut": "head = head.replace('XX\\\\ XX', '')",
+    "message_only": true
+   },
+   "string_utils.validation.x_is_email__mutmut_31": {
+    "line": 232,
+    "orig": "head = head.replace('\\\\ ', '')",
+    "mut": "head = head.replace('\\\\ ', 'XXXX')",
+    "message_only": true
+   },
+   "string_utils.validation.x_is_email__mutmut_32": {
+    "line": 233,
+    "orig": "if head.startswith('\"') and head.endswith('\"'):",
+    "mut": "if head.startswith('\"') or head.endswith('\"'):",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_email__mutmut_42": {
+    "line": 234,
+    "orig": "head = head.replace(' ', '')[1:-1]",
+    "mut": "head = head.replace('XX XX', '')[1:-1]",
+    "message_only": true
+   },
+   "string_utils.validation.x_is_email__mutmut_43": {
+    "line": 234,
+    "orig": "head = head.replace(' ', '')[1:-1]",
+    "mut": "head = head.replace(' ', 'XXXX')[1:-1]",
+    "message_only": true
+   },
+   "string_utils.validation.x_is_email__mutmut_44": {
+    "line": 234,
+    "orig": "head = head.replace(' ', '')[1:-1]",
+    "mut": "head = head.replace(' ', '')[2:-1]",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_email__mutmut_46": {
+    "line": 234,
+    "orig": "head = head.replace(' ', '')[1:-1]",
+    "mut": "head = head.replace(' ', '')[1:-2]",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_email__mutmut_59": {
+    "line": 242,
+    "orig": "return is_email(ESCAPED_AT_SIGN.sub('a', input_string))",
+    "mut": "return is_email(ESCAPED_AT_SIGN.sub('XXaXX', input_string))",
+    "message_only": true
+   },
+   "string_utils.validation.x_is_email__mutmut_60": {
+    "line": 242,
+    "orig": "return is_email(ESCAPED_AT_SIGN.sub('a', input_string))",
+    "mut": "return is_email(ESCAPED_AT_SIGN.sub('A', input_string))",
+    "message_only": true
+   }
+  },
+  "lines": [
+   220,
+   228,
+   232,
+   233,
+   234,
+   242
+  ],
+  "hints": [
+   [
+    220,
+    "boolop",
+    "`not is_full_string(input_string) or len(input_string) > 3...` combines 3 conditions: write one test per condition where only that condition is true, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    220,
+    "bound",
+    "`len(input_string) > 320` has a boundary at 320: use len(input_string) = 319, 320 and 321, and assert the exact outcome of each.",
+    [
+     "319",
+     "320",
+     "321"
+    ]
+   ],
+   [
+    228,
+    "boolop",
+    "`len(head) > 64 or len(tail) > 255 or head.endswith('.') o...` combines 4 conditions: write one test per condition where only that condition is true, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    228,
+    "bound",
+    "`len(head) > 64` has a boundary at 64: use len(head) = 63, 64 and 65, and assert the exact outcome of each.",
+    [
+     "63",
+     "64",
+     "65"
+    ]
+   ],
+   [
+    228,
+    "bound",
+    "`len(tail) > 255` has a boundary at 255: use len(tail) = 254, 255 and 256, and assert the exact outcome of each.",
+    [
+     "254",
+     "255",
+     "256"
+    ]
+   ],
+   [
+    233,
+    "boolop",
+    "`head.startswith('\"') and head.endswith('\"')` combines 2 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    234,
+    "index",
+    "`head.replace(' ', '')[1:-1]`: use the shortest valid input (length 0 or 1) and check the first and last elements exactly.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_camel_case",
+  "begin": 286,
+  "end": 305,
+  "mutants": {
+   "string_utils.validation.x_is_camel_case__mutmut_1": {
+    "line": 305,
+    "orig": "return is_full_string(input_string) and CAMEL_CASE_TEST_RE.match(input_string) is not None",
+    "mut": "return is_full_string(input_string) or CAMEL_CASE_TEST_RE.match(input_string) is not None",
+    "message_only": false
+   }
+  },
+  "lines": [
+   305
+  ],
+  "hints": [
+   [
+    305,
+    "boolop",
+    "`is_full_string(input_string) and CAMEL_CASE_TEST_RE.match...` combines 2 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    305,
+    "regex",
+    "regex `CAMEL_CASE_TEST_RE.match(input_string)`: use inputs with zero, one and several consecutive matches, matches at the start/end, and the empty string; assert exact outputs.",
+    [
+     "''"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_snake_case",
+  "begin": 308,
+  "end": 342,
+  "mutants": {
+   "string_utils.validation.x_is_snake_case__mutmut_1": {
+    "line": 308,
+    "orig": "def x_is_snake_case__mutmut_orig(input_string: Any, separator: str = '_') -> bool:",
+    "mut": "def x_is_snake_case__mutmut_1(input_string: Any, separator: str = 'XX_XX') -> bool:",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_snake_case__mutmut_4": {
+    "line": 331,
+    "orig": "'_': SNAKE_CASE_TEST_RE,",
+    "mut": "'XX_XX': SNAKE_CASE_TEST_RE,",
+    "message_only": true
+   },
+   "string_utils.validation.x_is_snake_case__mutmut_5": {
+    "line": 332,
+    "orig": "'-': SNAKE_CASE_TEST_DASH_RE",
+    "mut": "'XX-XX': SNAKE_CASE_TEST_DASH_RE",
+    "message_only": true
+   },
+   "string_utils.validation.x_is_snake_case__mutmut_10": {
+    "line": 336,
+    "orig": "separator,",
+    "mut": "None,",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_snake_case__mutmut_17": {
+    "line": 337,
+    "orig": "re.compile(re_template.format(sign=re.escape(separator)), re.IGNORECASE)",
+    "mut": "re.compile(re_template.format(sign=re.escape(separator)), )",
+    "message_only": false
+   }
+  },
+  "lines": [
+   308,
+   331,
+   332,
+   336,
+   337
+  ],
+  "hints": [
+   [
+    337,
+    "escape",
+    "`separator` is escaped before going into a regex: use values containing regex metacharacters ('.', '*', '+', '|', '\\\\') and a multi-character value, and assert the exact result.",
+    [
+     "'.'",
+     "'*'",
+     "'+'"
+    ]
+   ],
+   [
+    337,
+    "forward",
+    "`re.escape(separator)` passes parameter `separator` on: call with two different values of `separator` and assert the results differ as they should.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_json",
+  "begin": 345,
+  "end": 365,
+  "mutants": {
+   "string_utils.validation.x_is_json__mutmut_2": {
+    "line": 359,
+    "orig": "if is_full_string(input_string) and JSON_WRAPPER_RE.match(input_string) is not None:",
+    "mut": "if is_full_string(None) and JSON_WRAPPER_RE.match(input_string) is not None:",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_json__mutmut_4": {
+    "line": 359,
+    "orig": "if is_full_string(input_string) and JSON_WRAPPER_RE.match(input_string) is not None:",
+    "mut": "if is_full_string(input_string) and JSON_WRAPPER_RE.match(input_string) is None:",
+    "message_only": false
+   }
+  },
+  "lines": [
+   359
+  ],
+  "hints": [
+   [
+    359,
+    "boolop",
+    "`is_full_string(input_string) and JSON_WRAPPER_RE.match(in...` combines 2 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    359,
+    "regex",
+    "regex `JSON_WRAPPER_RE.match(input_string)`: use inputs with zero, one and several consecutive matches, matches at the start/end, and the empty string; assert exact outputs.",
+    [
+     "''"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_ip_v4",
+  "begin": 393,
+  "end": 415,
+  "mutants": {
+   "string_utils.validation.x_is_ip_v4__mutmut_10": {
+    "line": 412,
+    "orig": "if not (0 <= int(token) <= 255):",
+    "mut": "if not (1 <= int(token) <= 255):",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_ip_v4__mutmut_11": {
+    "line": 412,
+    "orig": "if not (0 <= int(token) <= 255):",
+    "mut": "if not (0 < int(token) <= 255):",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_ip_v4__mutmut_13": {
+    "line": 412,
+    "orig": "if not (0 <= int(token) <= 255):",
+    "mut": "if not (0 <= int(token) < 255):",
+    "message_only": false
+   }
+  },
+  "lines": [
+   412
+  ],
+  "hints": [
+   [
+    412,
+    "bound",
+    "`0 <= int(token) <= 255` has a boundary at 0: use int(token) = -1, 0 and 1, and assert the exact outcome of each.",
+    [
+     "-1",
+     "0",
+     "1"
+    ]
+   ],
+   [
+    412,
+    "bound",
+    "`0 <= int(token) <= 255` has a boundary at 255: use int(token) = 254, 255 and 256, and assert the exact outcome of each.",
+    [
+     "254",
+     "255",
+     "256"
+    ]
+   ],
+   [
+    412,
+    "parse",
+    "`int(token)` parses a number: try ' 7 ', '+7', '-0', '1_000', '\u0663' (non-ASCII digit) and '7.0', asserting result or exception.",
+    [
+     "'+7'",
+     "'1_000'",
+     "'\u0663'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_pangram",
+  "begin": 497,
+  "end": 513,
+  "mutants": {
+   "string_utils.validation.x_is_pangram__mutmut_10": {
+    "line": 513,
+    "orig": "return set(SPACES_RE.sub('', input_string)).issuperset(set(string.ascii_lowercase))",
+    "mut": "return set(SPACES_RE.sub('XXXX', input_string)).issuperset(set(string.ascii_lowercase))",
+    "message_only": true
+   }
+  },
+  "lines": [
+   513
+  ],
+  "hints": [
+   [
+    513,
+    "regex",
+    "regex `SPACES_RE.sub('', input_string)`: use inputs with zero, one and several consecutive matches, matches at the start/end, and the empty string; assert exact outputs.",
+    [
+     "''"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "contains_html",
+  "begin": 555,
+  "end": 574,
+  "mutants": {
+   "string_utils.validation.x_contains_html__mutmut_2": {
+    "line": 571,
+    "orig": "if not is_string(input_string):",
+    "mut": "if not is_string(None):",
+    "message_only": false
+   },
+   "string_utils.validation.x_contains_html__mutmut_3": {
+    "line": 572,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   },
+   "string_utils.validation.x_contains_html__mutmut_4": {
+    "line": 574,
+    "orig": "return HTML_RE.search(input_string) is not None",
+    "mut": "return HTML_RE.search(None) is not None",
+    "message_only": false
+   },
+   "string_utils.validation.x_contains_html__mutmut_5": {
+    "line": 574,
+    "orig": "return HTML_RE.search(input_string) is not None",
+    "mut": "return HTML_RE.search(input_string) is None",
+    "message_only": false
+   }
+  },
+  "lines": [
+   571,
+   572,
+   574
+  ],
+  "hints": [
+   [
+    574,
+    "regex",
+    "regex `HTML_RE.search(input_string)`: use inputs with zero, one and several consecutive matches, matches at the start/end, and the empty string; assert exact outputs.",
+    [
+     "''"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "words_count",
+  "begin": 577,
+  "end": 598,
+  "mutants": {
+   "string_utils.validation.x_words_count__mutmut_2": {
+    "line": 595,
+    "orig": "if not is_string(input_string):",
+    "mut": "if not is_string(None):",
+    "message_only": false
+   },
+   "string_utils.validation.x_words_count__mutmut_3": {
+    "line": 596,
+    "orig": "raise InvalidInputError(input_string)",
+    "mut": "raise InvalidInputError(None)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   595,
+   596
+  ],
+  "hints": []
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_isbn_13",
+  "begin": 621,
+  "end": 638,
+  "mutants": {
+   "string_utils.validation.x_is_isbn_13__mutmut_1": {
+    "line": 621,
+    "orig": "def x_is_isbn_13__mutmut_orig(input_string: str, normalize: bool = True) -> bool:",
+    "mut": "def x_is_isbn_13__mutmut_1(input_string: str, normalize: bool = False) -> bool:",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_isbn_13__mutmut_4": {
+    "line": 637,
+    "orig": "checker = __ISBNChecker(input_string, normalize)",
+    "mut": "checker = __ISBNChecker(input_string, None)",
+    "message_only": false
+   }
+  },
+  "lines": [
+   621,
+   637
+  ],
+  "hints": [
+   [
+    637,
+    "forward",
+    "`__ISBNChecker(input_string, normalize)` passes parameter `normalize` on: call with two different values of `normalize` and assert the results differ as they should.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "string_utils/validation.py",
+  "func": "is_isbn",
+  "begin": 641,
+  "end": 657,
+  "mutants": {
+   "string_utils.validation.x_is_isbn__mutmut_1": {
+    "line": 641,
+    "orig": "def x_is_isbn__mutmut_orig(input_string: str, normalize: bool = True) -> bool:",
+    "mut": "def x_is_isbn__mutmut_1(input_string: str, normalize: bool = False) -> bool:",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_isbn__mutmut_3": {
+    "line": 656,
+    "orig": "checker = __ISBNChecker(input_string, normalize)",
+    "mut": "checker = __ISBNChecker(None, normalize)",
+    "message_only": false
+   },
+   "string_utils.validation.x_is_isbn__mutmut_4": {
+    "line": 656,
+    "orig": "checker = __ISBNChecker(input_string, normalize)",
+    "mut": "checker = __ISBNChecker(input_string, None)",
+    "message_only": false
+   }
+  },
+  "lines": [
+   641,
+   656
+  ],
+  "hints": [
+   [
+    656,
+    "forward",
+    "`__ISBNChecker(input_string, normalize)` passes parameter `normalize` on: call with two different values of `normalize` and assert the results differ as they should.",
+    []
+   ]
+  ]
+ }
+]

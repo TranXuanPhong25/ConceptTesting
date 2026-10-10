@@ -1,0 +1,2023 @@
+[
+ {
+  "file": "flutils/codecs/b64.py",
+  "func": "decode",
+  "begin": 66,
+  "end": 92,
+  "mutants": {
+   "flutils.codecs.b64.x_decode__mutmut_1": {
+    "line": 68,
+    "orig": "errors: _STR = 'strict'",
+    "mut": "errors: _STR = 'XXstrictXX'",
+    "message_only": true
+   },
+   "flutils.codecs.b64.x_decode__mutmut_2": {
+    "line": 68,
+    "orig": "errors: _STR = 'strict'",
+    "mut": "errors: _STR = 'STRICT'",
+    "message_only": true
+   },
+   "flutils.codecs.b64.x_decode__mutmut_10": {
+    "line": 90,
+    "orig": "encoded_str = encoded_bytes.decode('utf-8')",
+    "mut": "encoded_str = encoded_bytes.decode('UTF-8')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   68,
+   90
+  ],
+  "hints": [
+   [
+    90,
+    "codec",
+    "`encoded_bytes.decode('utf-8')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "flutils/codecs/b64.py",
+  "func": "_get_codec_info",
+  "begin": 99,
+  "end": 107,
+  "mutants": {
+   "flutils.codecs.b64.x__get_codec_info__mutmut_2": {
+    "line": 101,
+    "orig": "obj = codecs.CodecInfo(  # type: ignore",
+    "mut": "obj = None",
+    "message_only": false
+   },
+   "flutils.codecs.b64.x__get_codec_info__mutmut_3": {
+    "line": 102,
+    "orig": "name=NAME,",
+    "mut": "name=None,",
+    "message_only": false
+   },
+   "flutils.codecs.b64.x__get_codec_info__mutmut_4": {
+    "line": 103,
+    "orig": "decode=decode,  # type: ignore[arg-type]",
+    "mut": "decode=None,  # type: ignore[arg-type]",
+    "message_only": false
+   },
+   "flutils.codecs.b64.x__get_codec_info__mutmut_5": {
+    "line": 104,
+    "orig": "encode=encode,  # type: ignore[arg-type]",
+    "mut": "encode=None,  # type: ignore[arg-type]",
+    "message_only": false
+   },
+   "flutils.codecs.b64.x__get_codec_info__mutmut_6": {
+    "line": 102,
+    "orig": "name=NAME,",
+    "mut": "decode=decode,  # type: ignore[arg-type]",
+    "message_only": false
+   },
+   "flutils.codecs.b64.x__get_codec_info__mutmut_7": {
+    "line": 103,
+    "orig": "decode=decode,  # type: ignore[arg-type]",
+    "mut": "encode=encode,  # type: ignore[arg-type]",
+    "message_only": false
+   },
+   "flutils.codecs.b64.x__get_codec_info__mutmut_8": {
+    "line": 104,
+    "orig": "encode=encode,  # type: ignore[arg-type]",
+    "mut": ")",
+    "message_only": false
+   }
+  },
+  "lines": [
+   101,
+   102,
+   103,
+   104
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/codecs/raw_utf8_escape.py",
+  "func": "_each_utf8_hex",
+  "begin": 16,
+  "end": 24,
+  "mutants": {
+   "flutils.codecs.raw_utf8_escape.x__each_utf8_hex__mutmut_3": {
+    "line": 18,
+    "orig": "if ord(char) < 128 and char.isprintable():",
+    "mut": "if ord(char) <= 128 and char.isprintable():",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x__each_utf8_hex__mutmut_4": {
+    "line": 18,
+    "orig": "if ord(char) < 128 and char.isprintable():",
+    "mut": "if ord(char) < 129 and char.isprintable():",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x__each_utf8_hex__mutmut_5": {
+    "line": 20,
+    "orig": "continue",
+    "mut": "break",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x__each_utf8_hex__mutmut_9": {
+    "line": 21,
+    "orig": "utf8_bytes = char.encode('utf8')",
+    "mut": "utf8_bytes = char.encode('UTF8')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   18,
+   20,
+   21
+  ],
+  "hints": [
+   [
+    18,
+    "boolop",
+    "`ord(char) < 128 and char.isprintable()` combines 2 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    18,
+    "bound",
+    "`ord(char) < 128` has a boundary at 128: use ord(char) = 127, 128 and 129, and assert the exact outcome of each.",
+    [
+     "127",
+     "128",
+     "129"
+    ]
+   ],
+   [
+    21,
+    "codec",
+    "`char.encode('utf8')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "flutils/codecs/raw_utf8_escape.py",
+  "func": "encode",
+  "begin": 27,
+  "end": 88,
+  "mutants": {
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_1": {
+    "line": 29,
+    "orig": "errors: _Str = 'strict'",
+    "mut": "errors: _Str = 'XXstrictXX'",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_2": {
+    "line": 29,
+    "orig": "errors: _Str = 'strict'",
+    "mut": "errors: _Str = 'STRICT'",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_10": {
+    "line": 58,
+    "orig": "text_bytes_utf8 = text_input.encode('utf-8')",
+    "mut": "text_bytes_utf8 = text_input.encode('UTF-8')",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_12": {
+    "line": 59,
+    "orig": "text_bytes_utf8 = cast(bytes, text_bytes_utf8)",
+    "mut": "text_bytes_utf8 = cast(None, text_bytes_utf8)",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_19": {
+    "line": 65,
+    "orig": "text_str_latin1 = text_bytes_utf8.decode('unicode_escape')",
+    "mut": "text_str_latin1 = text_bytes_utf8.decode('UNICODE_ESCAPE')",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_23": {
+    "line": 69,
+    "orig": "text_bytes_utf8 = text_str_latin1.encode('latin1')",
+    "mut": "text_bytes_utf8 = text_str_latin1.encode('LATIN1')",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_27": {
+    "line": 73,
+    "orig": "text_str = text_bytes_utf8.decode('utf-8', errors=errors_input)",
+    "mut": "text_str = text_bytes_utf8.decode(errors=errors_input)",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_28": {
+    "line": 73,
+    "orig": "text_str = text_bytes_utf8.decode('utf-8', errors=errors_input)",
+    "mut": "text_str = text_bytes_utf8.decode('utf-8', )",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_30": {
+    "line": 73,
+    "orig": "text_str = text_bytes_utf8.decode('utf-8', errors=errors_input)",
+    "mut": "text_str = text_bytes_utf8.decode('UTF-8', errors=errors_input)",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_41": {
+    "line": 76,
+    "orig": "'eutf8h',",
+    "mut": "'XXeutf8hXX',",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_42": {
+    "line": 76,
+    "orig": "'eutf8h',",
+    "mut": "'EUTF8H',",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_43": {
+    "line": 77,
+    "orig": "str(text_input),",
+    "mut": "str(None),",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_44": {
+    "line": 84,
+    "orig": "out_str: str = reduce(lambda a, b: f'{a}{b}', _each_utf8_hex(text_str))",
+    "mut": "out_str: str = None",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_45": {
+    "line": 84,
+    "orig": "out_str: str = reduce(lambda a, b: f'{a}{b}', _each_utf8_hex(text_str))",
+    "mut": "out_str: str = reduce(None, _each_utf8_hex(text_str))",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_46": {
+    "line": 84,
+    "orig": "out_str: str = reduce(lambda a, b: f'{a}{b}', _each_utf8_hex(text_str))",
+    "mut": "out_str: str = reduce(lambda a, b: f'{a}{b}', None)",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_47": {
+    "line": 84,
+    "orig": "out_str: str = reduce(lambda a, b: f'{a}{b}', _each_utf8_hex(text_str))",
+    "mut": "out_str: str = reduce(_each_utf8_hex(text_str))",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_48": {
+    "line": 84,
+    "orig": "out_str: str = reduce(lambda a, b: f'{a}{b}', _each_utf8_hex(text_str))",
+    "mut": "out_str: str = reduce(lambda a, b: f'{a}{b}', )",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_49": {
+    "line": 84,
+    "orig": "out_str: str = reduce(lambda a, b: f'{a}{b}', _each_utf8_hex(text_str))",
+    "mut": "out_str: str = reduce(lambda a, b: None, _each_utf8_hex(text_str))",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_50": {
+    "line": 84,
+    "orig": "out_str: str = reduce(lambda a, b: f'{a}{b}', _each_utf8_hex(text_str))",
+    "mut": "out_str: str = reduce(lambda a, b: f'{a}{b}', _each_utf8_hex(None))",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_51": {
+    "line": 86,
+    "orig": "out_bytes = out_str.encode('utf-8')",
+    "mut": "out_bytes = None",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_52": {
+    "line": 86,
+    "orig": "out_bytes = out_str.encode('utf-8')",
+    "mut": "out_bytes = out_str.encode(None)",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_53": {
+    "line": 86,
+    "orig": "out_bytes = out_str.encode('utf-8')",
+    "mut": "out_bytes = out_str.encode('XXutf-8XX')",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_encode__mutmut_54": {
+    "line": 86,
+    "orig": "out_bytes = out_str.encode('utf-8')",
+    "mut": "out_bytes = out_str.encode('UTF-8')",
+    "message_only": true
+   }
+  },
+  "lines": [
+   29,
+   58,
+   59,
+   65,
+   69,
+   73,
+   76,
+   77,
+   84,
+   86
+  ],
+  "hints": [
+   [
+    58,
+    "codec",
+    "`text_input.encode('utf-8')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ],
+   [
+    65,
+    "codec",
+    "`text_bytes_utf8.decode('unicode_escape')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ],
+   [
+    69,
+    "codec",
+    "`text_str_latin1.encode('latin1')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ],
+   [
+    73,
+    "codec",
+    "`text_bytes_utf8.decode('utf-8', errors=errors_input)`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ],
+   [
+    86,
+    "codec",
+    "`out_str.encode('utf-8')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "flutils/codecs/raw_utf8_escape.py",
+  "func": "decode",
+  "begin": 91,
+  "end": 140,
+  "mutants": {
+   "flutils.codecs.raw_utf8_escape.x_decode__mutmut_1": {
+    "line": 93,
+    "orig": "errors: _Str = 'strict'",
+    "mut": "errors: _Str = 'XXstrictXX'",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_decode__mutmut_2": {
+    "line": 93,
+    "orig": "errors: _Str = 'strict'",
+    "mut": "errors: _Str = 'STRICT'",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_decode__mutmut_10": {
+    "line": 123,
+    "orig": "text_str_latin1 = data_bytes.decode('unicode_escape')",
+    "mut": "text_str_latin1 = data_bytes.decode('UNICODE_ESCAPE')",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_decode__mutmut_14": {
+    "line": 127,
+    "orig": "text_bytes_utf8 = text_str_latin1.encode('latin1')",
+    "mut": "text_bytes_utf8 = text_str_latin1.encode('LATIN1')",
+    "message_only": true
+   },
+   "flutils.codecs.raw_utf8_escape.x_decode__mutmut_18": {
+    "line": 131,
+    "orig": "out = text_bytes_utf8.decode('utf-8', errors=errors_input)",
+    "mut": "out = text_bytes_utf8.decode(errors=errors_input)",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_decode__mutmut_19": {
+    "line": 131,
+    "orig": "out = text_bytes_utf8.decode('utf-8', errors=errors_input)",
+    "mut": "out = text_bytes_utf8.decode('utf-8', )",
+    "message_only": false
+   },
+   "flutils.codecs.raw_utf8_escape.x_decode__mutmut_21": {
+    "line": 131,
+    "orig": "out = text_bytes_utf8.decode('utf-8', errors=errors_input)",
+    "mut": "out = text_bytes_utf8.decode('UTF-8', errors=errors_input)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   93,
+   123,
+   127,
+   131
+  ],
+  "hints": [
+   [
+    123,
+    "codec",
+    "`data_bytes.decode('unicode_escape')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ],
+   [
+    127,
+    "codec",
+    "`text_str_latin1.encode('latin1')`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ],
+   [
+    131,
+    "codec",
+    "`text_bytes_utf8.decode('utf-8', errors=errors_input)`: use non-ASCII text ('\u00e9', '\u65e5\u672c') and, for decode, bytes invalid in that encoding; assert exact output or exception.",
+    [
+     "'\u00e9'",
+     "'\u65e5\u672c'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "flutils/codecs/raw_utf8_escape.py",
+  "func": "register",
+  "begin": 158,
+  "end": 162,
+  "mutants": {
+   "flutils.codecs.raw_utf8_escape.x_register__mutmut_2": {
+    "line": 162,
+    "orig": "codecs.register(_get_codec_info)   # type: ignore",
+    "mut": "codecs.register(None)   # type: ignore",
+    "message_only": false
+   }
+  },
+  "lines": [
+   162
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/packages.py",
+  "func": "_each_version_part",
+  "begin": 53,
+  "end": 87,
+  "mutants": {
+   "flutils.packages.x__each_version_part__mutmut_6": {
+    "line": 60,
+    "orig": "txt = '%s' % num",
+    "mut": "txt = None",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_8": {
+    "line": 60,
+    "orig": "txt = '%s' % num",
+    "mut": "txt = 'XX%sXX' % num",
+    "message_only": true
+   },
+   "flutils.packages.x__each_version_part__mutmut_10": {
+    "line": 61,
+    "orig": "if pos == 2 and num == 0:",
+    "mut": "if pos == 2 or num == 0:",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_11": {
+    "line": 61,
+    "orig": "if pos == 2 and num == 0:",
+    "mut": "if pos != 2 and num == 0:",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_12": {
+    "line": 61,
+    "orig": "if pos == 2 and num == 0:",
+    "mut": "if pos == 3 and num == 0:",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_13": {
+    "line": 61,
+    "orig": "if pos == 2 and num == 0:",
+    "mut": "if pos == 2 and num != 0:",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_14": {
+    "line": 61,
+    "orig": "if pos == 2 and num == 0:",
+    "mut": "if pos == 2 and num == 1:",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_15": {
+    "line": 62,
+    "orig": "txt = ''",
+    "mut": "txt = None",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_16": {
+    "line": 62,
+    "orig": "txt = ''",
+    "mut": "txt = 'XXXX'",
+    "message_only": true
+   },
+   "flutils.packages.x__each_version_part__mutmut_29": {
+    "line": 68,
+    "orig": "'pre_num': -1,",
+    "mut": "'pre_num': +1,",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_30": {
+    "line": 68,
+    "orig": "'pre_num': -1,",
+    "mut": "'pre_num': -2,",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_41": {
+    "line": 74,
+    "orig": "prerelease = cast(Tuple[str, int], prerelease)",
+    "mut": "prerelease = cast(None, prerelease)",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_53": {
+    "line": 77,
+    "orig": "should_add = False",
+    "mut": "should_add = None",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_57": {
+    "line": 79,
+    "orig": "kwargs['txt'] = '%s%s%s' % (",
+    "mut": "kwargs['txt'] = None",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_61": {
+    "line": 79,
+    "orig": "kwargs['txt'] = '%s%s%s' % (",
+    "mut": "kwargs['txt'] = 'XX%s%s%sXX' % (",
+    "message_only": true
+   },
+   "flutils.packages.x__each_version_part__mutmut_65": {
+    "line": 81,
+    "orig": "prerelease[0],",
+    "mut": "prerelease[1],",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_75": {
+    "line": 86,
+    "orig": "prerelease_built = True",
+    "mut": "prerelease_built = None",
+    "message_only": false
+   },
+   "flutils.packages.x__each_version_part__mutmut_76": {
+    "line": 86,
+    "orig": "prerelease_built = True",
+    "mut": "prerelease_built = False",
+    "message_only": false
+   }
+  },
+  "lines": [
+   60,
+   61,
+   62,
+   68,
+   74,
+   77,
+   79,
+   81,
+   86
+  ],
+  "hints": [
+   [
+    61,
+    "boolop",
+    "`pos == 2 and num == 0` combines 2 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    61,
+    "bound",
+    "`pos == 2` has a boundary at 2: use pos = 1, 2 and 3, and assert the exact outcome of each.",
+    [
+     "1",
+     "2",
+     "3"
+    ]
+   ],
+   [
+    61,
+    "bound",
+    "`num == 0` has a boundary at 0: use num = -1, 0 and 1, and assert the exact outcome of each.",
+    [
+     "-1",
+     "0",
+     "1"
+    ]
+   ],
+   [
+    79,
+    "index",
+    "`kwargs['txt']`: use the shortest valid input (length 0 or 1) and check the first and last elements exactly.",
+    []
+   ],
+   [
+    81,
+    "index",
+    "`prerelease[0]`: use the shortest valid input (length 0 or 1) and check the first and last elements exactly.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "flutils/packages.py",
+  "func": "_build_version_info",
+  "begin": 98,
+  "end": 109,
+  "mutants": {
+   "flutils.packages.x__build_version_info__mutmut_3": {
+    "line": 102,
+    "orig": "pre_pos = -1",
+    "mut": "pre_pos = None",
+    "message_only": false
+   },
+   "flutils.packages.x__build_version_info__mutmut_4": {
+    "line": 102,
+    "orig": "pre_pos = -1",
+    "mut": "pre_pos = +1",
+    "message_only": false
+   },
+   "flutils.packages.x__build_version_info__mutmut_5": {
+    "line": 102,
+    "orig": "pre_pos = -1",
+    "mut": "pre_pos = -2",
+    "message_only": false
+   }
+  },
+  "lines": [
+   102
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/packages.py",
+  "func": "_build_version_bump_position",
+  "begin": 112,
+  "end": 127,
+  "mutants": {
+   "flutils.packages.x__build_version_bump_position__mutmut_10": {
+    "line": 120,
+    "orig": "\"The given value for 'position', %r, must be an 'int' \"",
+    "mut": "None",
+    "message_only": false
+   },
+   "flutils.packages.x__build_version_bump_position__mutmut_12": {
+    "line": 120,
+    "orig": "\"The given value for 'position', %r, must be an 'int' \"",
+    "mut": "\"XXThe given value for 'position', %r, must be an 'int' XX\"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_position__mutmut_13": {
+    "line": 120,
+    "orig": "\"The given value for 'position', %r, must be an 'int' \"",
+    "mut": "\"the given value for 'position', %r, must be an 'int' \"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_position__mutmut_14": {
+    "line": 120,
+    "orig": "\"The given value for 'position', %r, must be an 'int' \"",
+    "mut": "\"THE GIVEN VALUE FOR 'POSITION', %R, MUST BE AN 'INT' \"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_position__mutmut_15": {
+    "line": 121,
+    "orig": "\"between (%r) and (%r).\" % (position, pos_min, pos_max)",
+    "mut": "\"XXbetween (%r) and (%r).XX\" % (position, pos_min, pos_max)",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_position__mutmut_16": {
+    "line": 121,
+    "orig": "\"between (%r) and (%r).\" % (position, pos_min, pos_max)",
+    "mut": "\"BETWEEN (%R) AND (%R).\" % (position, pos_min, pos_max)",
+    "message_only": true
+   }
+  },
+  "lines": [
+   120,
+   121
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/packages.py",
+  "func": "_build_version_bump_type",
+  "begin": 130,
+  "end": 166,
+  "mutants": {
+   "flutils.packages.x__build_version_bump_type__mutmut_5": {
+    "line": 137,
+    "orig": "pre_release = cast(str, pre_release)",
+    "mut": "pre_release = cast(None, pre_release)",
+    "message_only": false
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_20": {
+    "line": 146,
+    "orig": "if prerelease in ('a', 'alpha', 'b', 'beta'):",
+    "mut": "if prerelease in ('a', 'XXalphaXX', 'b', 'beta'):",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_21": {
+    "line": 146,
+    "orig": "if prerelease in ('a', 'alpha', 'b', 'beta'):",
+    "mut": "if prerelease in ('a', 'ALPHA', 'b', 'beta'):",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_24": {
+    "line": 146,
+    "orig": "if prerelease in ('a', 'alpha', 'b', 'beta'):",
+    "mut": "if prerelease in ('a', 'alpha', 'b', 'XXbetaXX'):",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_25": {
+    "line": 146,
+    "orig": "if prerelease in ('a', 'alpha', 'b', 'beta'):",
+    "mut": "if prerelease in ('a', 'alpha', 'b', 'BETA'):",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_26": {
+    "line": 147,
+    "orig": "is_alpha = False",
+    "mut": "is_alpha = None",
+    "message_only": false
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_31": {
+    "line": 148,
+    "orig": "if prerelease in ('a', 'alpha'):",
+    "mut": "if prerelease in ('a', 'XXalphaXX'):",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_32": {
+    "line": 148,
+    "orig": "if prerelease in ('a', 'alpha'):",
+    "mut": "if prerelease in ('a', 'ALPHA'):",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_37": {
+    "line": 153,
+    "orig": "\"Only the 'minor' or 'patch' parts of the version number \"",
+    "mut": "None",
+    "message_only": false
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_38": {
+    "line": 153,
+    "orig": "\"Only the 'minor' or 'patch' parts of the version number \"",
+    "mut": "\"XXOnly the 'minor' or 'patch' parts of the version number XX\"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_39": {
+    "line": 153,
+    "orig": "\"Only the 'minor' or 'patch' parts of the version number \"",
+    "mut": "\"only the 'minor' or 'patch' parts of the version number \"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_40": {
+    "line": 153,
+    "orig": "\"Only the 'minor' or 'patch' parts of the version number \"",
+    "mut": "\"ONLY THE 'MINOR' OR 'PATCH' PARTS OF THE VERSION NUMBER \"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_41": {
+    "line": 154,
+    "orig": "\"can get a prerelease bump.\"",
+    "mut": "\"XXcan get a prerelease bump.XX\"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_42": {
+    "line": 154,
+    "orig": "\"can get a prerelease bump.\"",
+    "mut": "\"CAN GET A PRERELEASE BUMP.\"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_49": {
+    "line": 164,
+    "orig": "\"The given value for 'pre_release', %r, can only be one of: \"",
+    "mut": "None",
+    "message_only": false
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_50": {
+    "line": 164,
+    "orig": "\"The given value for 'pre_release', %r, can only be one of: \"",
+    "mut": "\"XXThe given value for 'pre_release', %r, can only be one of: XX\"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_51": {
+    "line": 164,
+    "orig": "\"The given value for 'pre_release', %r, can only be one of: \"",
+    "mut": "\"the given value for 'pre_release', %r, can only be one of: \"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_52": {
+    "line": 164,
+    "orig": "\"The given value for 'pre_release', %r, can only be one of: \"",
+    "mut": "\"THE GIVEN VALUE FOR 'PRE_RELEASE', %R, CAN ONLY BE ONE OF: \"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_53": {
+    "line": 165,
+    "orig": "\"'a', 'alpha', 'b', 'beta', None.\"",
+    "mut": "\"XX'a', 'alpha', 'b', 'beta', None.XX\"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_54": {
+    "line": 165,
+    "orig": "\"'a', 'alpha', 'b', 'beta', None.\"",
+    "mut": "\"'a', 'alpha', 'b', 'beta', none.\"",
+    "message_only": true
+   },
+   "flutils.packages.x__build_version_bump_type__mutmut_55": {
+    "line": 165,
+    "orig": "\"'a', 'alpha', 'b', 'beta', None.\"",
+    "mut": "\"'A', 'ALPHA', 'B', 'BETA', NONE.\"",
+    "message_only": true
+   }
+  },
+  "lines": [
+   137,
+   146,
+   147,
+   148,
+   153,
+   154,
+   164,
+   165
+  ],
+  "hints": [
+   [
+    146,
+    "member",
+    "`prerelease in ('a', 'alpha', 'b', 'beta')`: test every member 'a', 'alpha', 'b', 'beta' and near-misses such as 'ax', 'A', asserting each result.",
+    [
+     "'a'",
+     "'alpha'",
+     "'b'",
+     "'beta'"
+    ]
+   ],
+   [
+    148,
+    "member",
+    "`prerelease in ('a', 'alpha')`: test every member 'a', 'alpha' and near-misses such as 'ax', 'A', asserting each result.",
+    [
+     "'a'",
+     "'alpha'"
+    ]
+   ]
+  ]
+ },
+ {
+  "file": "flutils/packages.py",
+  "func": "bump_version",
+  "begin": 169,
+  "end": 292,
+  "mutants": {
+   "flutils.packages.x_bump_version__mutmut_11": {
+    "line": 227,
+    "orig": "hold: List[Union[int, str]] = []",
+    "mut": "hold: List[Union[int, str]] = None",
+    "message_only": false
+   }
+  },
+  "lines": [
+   227
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/pathutils.py",
+  "func": "exists_as",
+  "begin": 336,
+  "end": 384,
+  "mutants": {
+   "flutils.pathutils.x_exists_as__mutmut_3": {
+    "line": 373,
+    "orig": "return 'directory'",
+    "mut": "return 'XXdirectoryXX'",
+    "message_only": true
+   },
+   "flutils.pathutils.x_exists_as__mutmut_4": {
+    "line": 373,
+    "orig": "return 'directory'",
+    "mut": "return 'DIRECTORY'",
+    "message_only": true
+   },
+   "flutils.pathutils.x_exists_as__mutmut_5": {
+    "line": 375,
+    "orig": "return 'file'",
+    "mut": "return 'XXfileXX'",
+    "message_only": true
+   },
+   "flutils.pathutils.x_exists_as__mutmut_6": {
+    "line": 375,
+    "orig": "return 'file'",
+    "mut": "return 'FILE'",
+    "message_only": true
+   }
+  },
+  "lines": [
+   373,
+   375
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/pathutils.py",
+  "func": "get_os_group",
+  "begin": 417,
+  "end": 458,
+  "mutants": {
+   "flutils.pathutils.x_get_os_group__mutmut_4": {
+    "line": 443,
+    "orig": "name = cast(int, name)",
+    "mut": "name = cast(None, name)",
+    "message_only": false
+   },
+   "flutils.pathutils.x_get_os_group__mutmut_11": {
+    "line": 449,
+    "orig": "'The given gid: %r, is not a valid gid for this operating '",
+    "mut": "'XXThe given gid: %r, is not a valid gid for this operating XX'",
+    "message_only": true
+   },
+   "flutils.pathutils.x_get_os_group__mutmut_12": {
+    "line": 449,
+    "orig": "'The given gid: %r, is not a valid gid for this operating '",
+    "mut": "'the given gid: %r, is not a valid gid for this operating '",
+    "message_only": true
+   },
+   "flutils.pathutils.x_get_os_group__mutmut_14": {
+    "line": 450,
+    "orig": "'system.' % name",
+    "mut": "'XXsystem.XX' % name",
+    "message_only": true
+   },
+   "flutils.pathutils.x_get_os_group__mutmut_15": {
+    "line": 450,
+    "orig": "'system.' % name",
+    "mut": "'SYSTEM.' % name",
+    "message_only": true
+   },
+   "flutils.pathutils.x_get_os_group__mutmut_19": {
+    "line": 456,
+    "orig": "'The given name: %r, is not a valid \"group name\" '",
+    "mut": "'XXThe given name: %r, is not a valid \"group name\" XX'",
+    "message_only": true
+   },
+   "flutils.pathutils.x_get_os_group__mutmut_20": {
+    "line": 456,
+    "orig": "'The given name: %r, is not a valid \"group name\" '",
+    "mut": "'the given name: %r, is not a valid \"group name\" '",
+    "message_only": true
+   },
+   "flutils.pathutils.x_get_os_group__mutmut_22": {
+    "line": 457,
+    "orig": "'for this operating system.' % name",
+    "mut": "'XXfor this operating system.XX' % name",
+    "message_only": true
+   },
+   "flutils.pathutils.x_get_os_group__mutmut_23": {
+    "line": 457,
+    "orig": "'for this operating system.' % name",
+    "mut": "'FOR THIS OPERATING SYSTEM.' % name",
+    "message_only": true
+   }
+  },
+  "lines": [
+   443,
+   449,
+   450,
+   456,
+   457
+  ],
+  "hints": [
+   [
+    443,
+    "forward",
+    "`cast(int, name)` passes parameter `name` on: call with two different values of `name` and assert the results differ as they should.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "flutils/pathutils.py",
+  "func": "path_absent",
+  "begin": 574,
+  "end": 621,
+  "mutants": {
+   "flutils.pathutils.x_path_absent__mutmut_5": {
+    "line": 602,
+    "orig": "path = cast(str, path)",
+    "mut": "path = cast(None, path)",
+    "message_only": false
+   },
+   "flutils.pathutils.x_path_absent__mutmut_14": {
+    "line": 607,
+    "orig": "for root, dirs, files in os.walk(path, topdown=False):",
+    "mut": "for root, dirs, files in os.walk(path, topdown=None):",
+    "message_only": false
+   },
+   "flutils.pathutils.x_path_absent__mutmut_25": {
+    "line": 610,
+    "orig": "if os.path.isfile(p) or os.path.islink(p):",
+    "mut": "if os.path.isfile(p) or os.path.islink(None):",
+    "message_only": false
+   },
+   "flutils.pathutils.x_path_absent__mutmut_33": {
+    "line": 615,
+    "orig": "os.unlink(p)",
+    "mut": "os.unlink(None)",
+    "message_only": false
+   }
+  },
+  "lines": [
+   602,
+   607,
+   610,
+   615
+  ],
+  "hints": [
+   [
+    610,
+    "boolop",
+    "`os.path.isfile(p) or os.path.islink(p)` combines 2 conditions: write one test per condition where only that condition is true, so swapping and/or or dropping a condition changes the result.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "flutils/setuputils/cfg.py",
+  "func": "_get_name",
+  "begin": 82,
+  "end": 105,
+  "mutants": {
+   "flutils.setuputils.cfg.x__get_name__mutmut_9": {
+    "line": 87,
+    "orig": "out = parser.get('metadata', 'name')",
+    "mut": "out = parser.get('metadata', 'NAME')",
+    "message_only": true
+   },
+   "flutils.setuputils.cfg.x__get_name__mutmut_12": {
+    "line": 90,
+    "orig": "\"The config file, %r, is missing the 'metadata' section.\"",
+    "mut": "\"XXThe config file, %r, is missing the 'metadata' section.XX\"",
+    "message_only": true
+   }
+  },
+  "lines": [
+   87,
+   90
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/setuputils/cfg.py",
+  "func": "_validate_setup_dir",
+  "begin": 108,
+  "end": 131,
+  "mutants": {
+   "flutils.setuputils.cfg.x__validate_setup_dir__mutmut_6": {
+    "line": 112,
+    "orig": "\"The given 'setup_dir' of %r does NOT exist.\"",
+    "mut": "\"XXThe given 'setup_dir' of %r does NOT exist.XX\"",
+    "message_only": true
+   },
+   "flutils.setuputils.cfg.x__validate_setup_dir__mutmut_14": {
+    "line": 117,
+    "orig": "\"The given 'setup_dir' of %r is NOT a directory.\"",
+    "mut": "\"XXThe given 'setup_dir' of %r is NOT a directory.XX\"",
+    "message_only": true
+   }
+  },
+  "lines": [
+   112,
+   117
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/setuputils/cfg.py",
+  "func": "_prep_setup_dir",
+  "begin": 134,
+  "end": 154,
+  "mutants": {
+   "flutils.setuputils.cfg.x__prep_setup_dir__mutmut_6": {
+    "line": 146,
+    "orig": "fs = cast(FrameSummary, fs)",
+    "mut": "fs = cast(None, fs)",
+    "message_only": false
+   },
+   "flutils.setuputils.cfg.x__prep_setup_dir__mutmut_20": {
+    "line": 153,
+    "orig": "\"Unable to find the directory that contains the 'setup.py' file.\"",
+    "mut": "None",
+    "message_only": false
+   },
+   "flutils.setuputils.cfg.x__prep_setup_dir__mutmut_21": {
+    "line": 153,
+    "orig": "\"Unable to find the directory that contains the 'setup.py' file.\"",
+    "mut": "\"XXUnable to find the directory that contains the 'setup.py' file.XX\"",
+    "message_only": true
+   },
+   "flutils.setuputils.cfg.x__prep_setup_dir__mutmut_22": {
+    "line": 153,
+    "orig": "\"Unable to find the directory that contains the 'setup.py' file.\"",
+    "mut": "\"unable to find the directory that contains the 'setup.py' file.\"",
+    "message_only": true
+   },
+   "flutils.setuputils.cfg.x__prep_setup_dir__mutmut_23": {
+    "line": 153,
+    "orig": "\"Unable to find the directory that contains the 'setup.py' file.\"",
+    "mut": "\"UNABLE TO FIND THE DIRECTORY THAT CONTAINS THE 'SETUP.PY' FILE.\"",
+    "message_only": true
+   }
+  },
+  "lines": [
+   146,
+   153
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/txtutils.py",
+  "func": "len_without_ansi",
+  "begin": 25,
+  "end": 56,
+  "mutants": {
+   "flutils.txtutils.x_len_without_ansi__mutmut_8": {
+    "line": 45,
+    "orig": "_text: str = cast(str, seq)",
+    "mut": "_text: str = cast(None, seq)",
+    "message_only": false
+   },
+   "flutils.txtutils.x_len_without_ansi__mutmut_20": {
+    "line": 48,
+    "orig": "seq = cast(Sequence[str], seq)",
+    "mut": "seq = cast(None, seq)",
+    "message_only": false
+   },
+   "flutils.txtutils.x_len_without_ansi__mutmut_32": {
+    "line": 52,
+    "orig": "if text.startswith('\\x1b[') and text.endswith('m'):",
+    "mut": "if text.startswith('\\x1b[') or text.endswith('m'):",
+    "message_only": false
+   },
+   "flutils.txtutils.x_len_without_ansi__mutmut_35": {
+    "line": 52,
+    "orig": "if text.startswith('\\x1b[') and text.endswith('m'):",
+    "mut": "if text.startswith('\\x1B[') and text.endswith('m'):",
+    "message_only": true
+   },
+   "flutils.txtutils.x_len_without_ansi__mutmut_40": {
+    "line": 55,
+    "orig": "out += len(text)",
+    "mut": "out = len(text)",
+    "message_only": false
+   }
+  },
+  "lines": [
+   45,
+   48,
+   52,
+   55
+  ],
+  "hints": [
+   [
+    52,
+    "boolop",
+    "`text.startswith('\\x1b[') and text.endswith('m')` combines 2 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    55,
+    "accum",
+    "`out += len(text)` accumulates in a loop: use a real-world valid input whose exact result you know (e.g. a valid checksum/total), and the same input with one element changed; assert the exact result for both.",
+    []
+   ]
+  ]
+ },
+ {
+  "file": "flutils/txtutils.py",
+  "func": "__init__",
+  "begin": 181,
+  "end": 211,
+  "mutants": {
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_1": {
+    "line": 183,
+    "orig": "width: int = 70,",
+    "mut": "width: int = 71,",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_4": {
+    "line": 186,
+    "orig": "expand_tabs: bool = True,",
+    "mut": "expand_tabs: bool = False,",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_5": {
+    "line": 187,
+    "orig": "replace_whitespace: bool = True,",
+    "mut": "replace_whitespace: bool = False,",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_6": {
+    "line": 188,
+    "orig": "fix_sentence_endings: bool = False,",
+    "mut": "fix_sentence_endings: bool = True,",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_7": {
+    "line": 189,
+    "orig": "break_long_words: bool = True,",
+    "mut": "break_long_words: bool = False,",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_9": {
+    "line": 191,
+    "orig": "break_on_hyphens: bool = True,",
+    "mut": "break_on_hyphens: bool = False,",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_10": {
+    "line": 192,
+    "orig": "tabsize: int = 8,",
+    "mut": "tabsize: int = 9,",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_12": {
+    "line": 197,
+    "orig": "self.__initial_indent: str = ''",
+    "mut": "self.__initial_indent: str = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_13": {
+    "line": 197,
+    "orig": "self.__initial_indent: str = ''",
+    "mut": "self.__initial_indent: str = 'XXXX'",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_14": {
+    "line": 198,
+    "orig": "self.__subsequent_indent: str = ''",
+    "mut": "self.__subsequent_indent: str = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_15": {
+    "line": 198,
+    "orig": "self.__subsequent_indent: str = ''",
+    "mut": "self.__subsequent_indent: str = 'XXXX'",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_16": {
+    "line": 199,
+    "orig": "self.__placeholder: str = ''",
+    "mut": "self.__placeholder: str = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_17": {
+    "line": 199,
+    "orig": "self.__placeholder: str = ''",
+    "mut": "self.__placeholder: str = 'XXXX'",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_21": {
+    "line": 203,
+    "orig": "self.expand_tabs: bool = expand_tabs",
+    "mut": "self.expand_tabs: bool = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_22": {
+    "line": 204,
+    "orig": "self.replace_whitespace: bool = replace_whitespace",
+    "mut": "self.replace_whitespace: bool = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_23": {
+    "line": 205,
+    "orig": "self.fix_sentence_endings: bool = fix_sentence_endings",
+    "mut": "self.fix_sentence_endings: bool = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_24": {
+    "line": 206,
+    "orig": "self.break_long_words: bool = break_long_words",
+    "mut": "self.break_long_words: bool = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_26": {
+    "line": 208,
+    "orig": "self.break_on_hyphens: bool = break_on_hyphens",
+    "mut": "self.break_on_hyphens: bool = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1__init____mutmut_28": {
+    "line": 210,
+    "orig": "self.max_lines: Optional[int] = max_lines",
+    "mut": "self.max_lines: Optional[int] = None",
+    "message_only": false
+   }
+  },
+  "lines": [
+   183,
+   186,
+   187,
+   188,
+   189,
+   191,
+   192,
+   197,
+   198,
+   199,
+   203,
+   204,
+   205,
+   206,
+   208,
+   210
+  ],
+  "hints": []
+ },
+ {
+  "file": "flutils/txtutils.py",
+  "func": "_wrap_chunks",
+  "begin": 273,
+  "end": 396,
+  "mutants": {
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_2": {
+    "line": 276,
+    "orig": "if self.width <= 0:",
+    "mut": "if self.width < 0:",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_3": {
+    "line": 276,
+    "orig": "if self.width <= 0:",
+    "mut": "if self.width <= 1:",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_4": {
+    "line": 277,
+    "orig": "raise ValueError(\"invalid width %r (must be > 0)\" % self.width)",
+    "mut": "raise ValueError(None)",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_5": {
+    "line": 277,
+    "orig": "raise ValueError(\"invalid width %r (must be > 0)\" % self.width)",
+    "mut": "raise ValueError(\"invalid width %r (must be > 0)\" / self.width)",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_6": {
+    "line": 277,
+    "orig": "raise ValueError(\"invalid width %r (must be > 0)\" % self.width)",
+    "mut": "raise ValueError(\"XXinvalid width %r (must be > 0)XX\" % self.width)",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_7": {
+    "line": 277,
+    "orig": "raise ValueError(\"invalid width %r (must be > 0)\" % self.width)",
+    "mut": "raise ValueError(\"INVALID WIDTH %R (MUST BE > 0)\" % self.width)",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_9": {
+    "line": 279,
+    "orig": "if self.max_lines > 1:",
+    "mut": "if self.max_lines >= 1:",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_10": {
+    "line": 279,
+    "orig": "if self.max_lines > 1:",
+    "mut": "if self.max_lines > 2:",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_11": {
+    "line": 280,
+    "orig": "indent = self.subsequent_indent",
+    "mut": "indent = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_12": {
+    "line": 282,
+    "orig": "indent = self.initial_indent",
+    "mut": "indent = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_13": {
+    "line": 283,
+    "orig": "indent_len = len_without_ansi(indent)",
+    "mut": "indent_len = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_14": {
+    "line": 283,
+    "orig": "indent_len = len_without_ansi(indent)",
+    "mut": "indent_len = len_without_ansi(None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_15": {
+    "line": 284,
+    "orig": "_placeholder_len = len_without_ansi(self.placeholder.lstrip())",
+    "mut": "_placeholder_len = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_16": {
+    "line": 284,
+    "orig": "_placeholder_len = len_without_ansi(self.placeholder.lstrip())",
+    "mut": "_placeholder_len = len_without_ansi(None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_17": {
+    "line": 284,
+    "orig": "_placeholder_len = len_without_ansi(self.placeholder.lstrip())",
+    "mut": "_placeholder_len = len_without_ansi(self.placeholder.rstrip())",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_18": {
+    "line": 285,
+    "orig": "if indent_len + _placeholder_len > self.width:",
+    "mut": "if indent_len - _placeholder_len > self.width:",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_19": {
+    "line": 285,
+    "orig": "if indent_len + _placeholder_len > self.width:",
+    "mut": "if indent_len + _placeholder_len >= self.width:",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_20": {
+    "line": 286,
+    "orig": "raise ValueError('placeholder too large for max width')",
+    "mut": "raise ValueError(None)",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_21": {
+    "line": 286,
+    "orig": "raise ValueError('placeholder too large for max width')",
+    "mut": "raise ValueError('XXplaceholder too large for max widthXX')",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_22": {
+    "line": 286,
+    "orig": "raise ValueError('placeholder too large for max width')",
+    "mut": "raise ValueError('PLACEHOLDER TOO LARGE FOR MAX WIDTH')",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_25": {
+    "line": 298,
+    "orig": "cur_len = 0",
+    "mut": "cur_len = 1",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_31": {
+    "line": 309,
+    "orig": "width = self.width - indent_len",
+    "mut": "width = self.width + indent_len",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_37": {
+    "line": 313,
+    "orig": "if self.drop_whitespace and chunks[-1].strip() == '' and lines:",
+    "mut": "if self.drop_whitespace and chunks[-1].strip() == 'XXXX' and lines:",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_38": {
+    "line": 314,
+    "orig": "del chunks[-1]",
+    "mut": "del chunks[+1]",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_39": {
+    "line": 314,
+    "orig": "del chunks[-1]",
+    "mut": "del chunks[-2]",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_45": {
+    "line": 320,
+    "orig": "if cur_len + l <= width:",
+    "mut": "if cur_len + l < width:",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_55": {
+    "line": 331,
+    "orig": "if chunks and len_without_ansi(chunks[-1]) > width:",
+    "mut": "if chunks and len_without_ansi(chunks[-1]) >= width:",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_56": {
+    "line": 332,
+    "orig": "self._handle_long_word(chunks, cur_line, cur_len, width)",
+    "mut": "self._handle_long_word(None, cur_line, cur_len, width)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_57": {
+    "line": 332,
+    "orig": "self._handle_long_word(chunks, cur_line, cur_len, width)",
+    "mut": "self._handle_long_word(chunks, None, cur_len, width)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_58": {
+    "line": 332,
+    "orig": "self._handle_long_word(chunks, cur_line, cur_len, width)",
+    "mut": "self._handle_long_word(chunks, cur_line, None, width)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_59": {
+    "line": 332,
+    "orig": "self._handle_long_word(chunks, cur_line, cur_len, width)",
+    "mut": "self._handle_long_word(chunks, cur_line, cur_len, None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_60": {
+    "line": 332,
+    "orig": "self._handle_long_word(chunks, cur_line, cur_len, width)",
+    "mut": "self._handle_long_word(cur_line, cur_len, width)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_61": {
+    "line": 332,
+    "orig": "self._handle_long_word(chunks, cur_line, cur_len, width)",
+    "mut": "self._handle_long_word(chunks, cur_len, width)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_62": {
+    "line": 332,
+    "orig": "self._handle_long_word(chunks, cur_line, cur_len, width)",
+    "mut": "self._handle_long_word(chunks, cur_line, width)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_63": {
+    "line": 332,
+    "orig": "self._handle_long_word(chunks, cur_line, cur_len, width)",
+    "mut": "self._handle_long_word(chunks, cur_line, cur_len, )",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_64": {
+    "line": 333,
+    "orig": "cur_len = sum(map(len_without_ansi, cur_line))",
+    "mut": "cur_len = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_65": {
+    "line": 333,
+    "orig": "cur_len = sum(map(len_without_ansi, cur_line))",
+    "mut": "cur_len = sum(None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_66": {
+    "line": 333,
+    "orig": "cur_len = sum(map(len_without_ansi, cur_line))",
+    "mut": "cur_len = sum(map(None, cur_line))",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_67": {
+    "line": 333,
+    "orig": "cur_len = sum(map(len_without_ansi, cur_line))",
+    "mut": "cur_len = sum(map(len_without_ansi, None))",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_68": {
+    "line": 333,
+    "orig": "cur_len = sum(map(len_without_ansi, cur_line))",
+    "mut": "cur_len = sum(map(cur_line))",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_69": {
+    "line": 333,
+    "orig": "cur_len = sum(map(len_without_ansi, cur_line))",
+    "mut": "cur_len = sum(map(len_without_ansi, ))",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_76": {
+    "line": 339,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len = len_without_ansi(cur_line[-1])",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_77": {
+    "line": 339,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len += len_without_ansi(cur_line[-1])",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_79": {
+    "line": 339,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len -= len_without_ansi(cur_line[+1])",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_80": {
+    "line": 339,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len -= len_without_ansi(cur_line[-2])",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_83": {
+    "line": 344,
+    "orig": "len(lines) + 1 < self.max_lines or",
+    "mut": "len(lines) + 1 < self.max_lines and (not chunks or",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_86": {
+    "line": 344,
+    "orig": "len(lines) + 1 < self.max_lines or",
+    "mut": "len(lines) - 1 < self.max_lines or",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_87": {
+    "line": 344,
+    "orig": "len(lines) + 1 < self.max_lines or",
+    "mut": "len(lines) + 2 < self.max_lines or",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_88": {
+    "line": 344,
+    "orig": "len(lines) + 1 < self.max_lines or",
+    "mut": "len(lines) + 1 <= self.max_lines or",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_89": {
+    "line": 348,
+    "orig": "not chunks[0].strip()) and cur_len <= width):",
+    "mut": "not chunks[0].strip()) or cur_len <= width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_90": {
+    "line": 345,
+    "orig": "(not chunks or",
+    "mut": "(not chunks and self.drop_whitespace and",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_91": {
+    "line": 345,
+    "orig": "(not chunks or",
+    "mut": "(chunks or",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_92": {
+    "line": 347,
+    "orig": "len(chunks) == 1 and",
+    "mut": "len(chunks) == 1 or not chunks[0].strip()) and cur_len <= width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_93": {
+    "line": 346,
+    "orig": "self.drop_whitespace and",
+    "mut": "self.drop_whitespace or len(chunks) == 1 and",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_94": {
+    "line": 347,
+    "orig": "len(chunks) == 1 and",
+    "mut": "len(chunks) != 1 and",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_95": {
+    "line": 347,
+    "orig": "len(chunks) == 1 and",
+    "mut": "len(chunks) == 2 and",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_96": {
+    "line": 348,
+    "orig": "not chunks[0].strip()) and cur_len <= width):",
+    "mut": "chunks[0].strip()) and cur_len <= width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_97": {
+    "line": 348,
+    "orig": "not chunks[0].strip()) and cur_len <= width):",
+    "mut": "not chunks[1].strip()) and cur_len <= width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_98": {
+    "line": 348,
+    "orig": "not chunks[0].strip()) and cur_len <= width):",
+    "mut": "not chunks[0].strip()) and cur_len < width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_103": {
+    "line": 361,
+    "orig": "if (cur_line[-1].strip() and",
+    "mut": "if (cur_line[-1].strip() or cur_len + self.placeholder_len <= width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_104": {
+    "line": 361,
+    "orig": "if (cur_line[-1].strip() and",
+    "mut": "if (cur_line[+1].strip() and",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_105": {
+    "line": 361,
+    "orig": "if (cur_line[-1].strip() and",
+    "mut": "if (cur_line[-2].strip() and",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_106": {
+    "line": 362,
+    "orig": "cur_len + self.placeholder_len <= width):",
+    "mut": "cur_len - self.placeholder_len <= width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_107": {
+    "line": 362,
+    "orig": "cur_len + self.placeholder_len <= width):",
+    "mut": "cur_len + self.placeholder_len < width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_108": {
+    "line": 364,
+    "orig": "cur_line.append(self.placeholder)",
+    "mut": "cur_line.append(None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_109": {
+    "line": 368,
+    "orig": "lines.append(indent + ''.join(cur_line))",
+    "mut": "lines.append(None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_110": {
+    "line": 368,
+    "orig": "lines.append(indent + ''.join(cur_line))",
+    "mut": "lines.append(indent - ''.join(cur_line))",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_111": {
+    "line": 368,
+    "orig": "lines.append(indent + ''.join(cur_line))",
+    "mut": "lines.append(indent + ''.join(None))",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_112": {
+    "line": 368,
+    "orig": "lines.append(indent + ''.join(cur_line))",
+    "mut": "lines.append(indent + 'XXXX'.join(cur_line))",
+    "message_only": true
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_113": {
+    "line": 369,
+    "orig": "break",
+    "mut": "return",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_114": {
+    "line": 371,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len = len_without_ansi(cur_line[-1])",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_115": {
+    "line": 371,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len += len_without_ansi(cur_line[-1])",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_116": {
+    "line": 371,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len -= len_without_ansi(None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_117": {
+    "line": 371,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len -= len_without_ansi(cur_line[+1])",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_118": {
+    "line": 371,
+    "orig": "cur_len -= len_without_ansi(cur_line[-1])",
+    "mut": "cur_len -= len_without_ansi(cur_line[-2])",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_119": {
+    "line": 373,
+    "orig": "del cur_line[-1]",
+    "mut": "del cur_line[+1]",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_120": {
+    "line": 373,
+    "orig": "del cur_line[-1]",
+    "mut": "del cur_line[-2]",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_121": {
+    "line": 380,
+    "orig": "prev_line = lines[-1].rstrip()",
+    "mut": "prev_line = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_122": {
+    "line": 380,
+    "orig": "prev_line = lines[-1].rstrip()",
+    "mut": "prev_line = lines[-1].lstrip()",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_123": {
+    "line": 380,
+    "orig": "prev_line = lines[-1].rstrip()",
+    "mut": "prev_line = lines[+1].rstrip()",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_124": {
+    "line": 380,
+    "orig": "prev_line = lines[-1].rstrip()",
+    "mut": "prev_line = lines[-2].rstrip()",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_125": {
+    "line": 382,
+    "orig": "prev_line_len = len_without_ansi(prev_line)",
+    "mut": "prev_line_len = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_126": {
+    "line": 382,
+    "orig": "prev_line_len = len_without_ansi(prev_line)",
+    "mut": "prev_line_len = len_without_ansi(None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_127": {
+    "line": 387,
+    "orig": "if (prev_line_len + self.placeholder_len <=",
+    "mut": "if (prev_line_len - self.placeholder_len <=",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_128": {
+    "line": 387,
+    "orig": "if (prev_line_len + self.placeholder_len <=",
+    "mut": "if (prev_line_len + self.placeholder_len < self.width):",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_129": {
+    "line": 391,
+    "orig": "lines[-1] = prev_line + self.placeholder",
+    "mut": "lines[-1] = None",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_130": {
+    "line": 391,
+    "orig": "lines[-1] = prev_line + self.placeholder",
+    "mut": "lines[+1] = prev_line + self.placeholder",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_131": {
+    "line": 391,
+    "orig": "lines[-1] = prev_line + self.placeholder",
+    "mut": "lines[-2] = prev_line + self.placeholder",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_132": {
+    "line": 391,
+    "orig": "lines[-1] = prev_line + self.placeholder",
+    "mut": "lines[-1] = prev_line - self.placeholder",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_133": {
+    "line": 392,
+    "orig": "break",
+    "mut": "return",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_134": {
+    "line": 393,
+    "orig": "lines.append(indent + self.placeholder.lstrip())",
+    "mut": "lines.append(None)",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_135": {
+    "line": 393,
+    "orig": "lines.append(indent + self.placeholder.lstrip())",
+    "mut": "lines.append(indent - self.placeholder.lstrip())",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_136": {
+    "line": 393,
+    "orig": "lines.append(indent + self.placeholder.lstrip())",
+    "mut": "lines.append(indent + self.placeholder.rstrip())",
+    "message_only": false
+   },
+   "flutils.txtutils.x\u01c1AnsiTextWrapper\u01c1_wrap_chunks__mutmut_137": {
+    "line": 394,
+    "orig": "break",
+    "mut": "return",
+    "message_only": false
+   }
+  },
+  "lines": [
+   276,
+   277,
+   279,
+   280,
+   282,
+   283,
+   284,
+   285,
+   286,
+   298,
+   309,
+   313,
+   314,
+   320,
+   331,
+   332,
+   333,
+   339,
+   344,
+   345,
+   346,
+   347,
+   348,
+   361,
+   362,
+   364,
+   368,
+   369,
+   371,
+   373,
+   380,
+   382,
+   387,
+   391,
+   392,
+   393,
+   394
+  ],
+  "hints": [
+   [
+    276,
+    "bound",
+    "`self.width <= 0` has a boundary at 0: use self.width = -1, 0 and 1, and assert the exact outcome of each.",
+    [
+     "-1",
+     "0",
+     "1"
+    ]
+   ],
+   [
+    279,
+    "bound",
+    "`self.max_lines > 1` has a boundary at 1: use self.max_lines = 0, 1 and 2, and assert the exact outcome of each.",
+    [
+     "0",
+     "1",
+     "2"
+    ]
+   ],
+   [
+    285,
+    "bound2",
+    "`indent_len + _placeholder_len > self.width` compares two values: make indent_len + _placeholder_len equal to self.width, then one less and one more, and assert each outcome.",
+    []
+   ],
+   [
+    313,
+    "boolop",
+    "`self.drop_whitespace and chunks[-1].strip() == '' and lines` combines 3 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ],
+   [
+    313,
+    "index",
+    "`chunks[-1]`: use the shortest valid input (length 0 or 1) and check the first and last elements exactly.",
+    []
+   ],
+   [
+    314,
+    "index",
+    "`chunks[-1]`: use the shortest valid input (length 0 or 1) and check the first and last elements exactly.",
+    []
+   ],
+   [
+    320,
+    "bound2",
+    "`cur_len + l <= width` compares two values: make cur_len + l equal to width, then one less and one more, and assert each outcome.",
+    []
+   ],
+   [
+    331,
+    "boolop",
+    "`chunks and len_without_ansi(chunks[-1]) > width` combines 2 conditions: write one test per condition where only that condition is false, so swapping and/or or dropping a condition changes the result.",
+    []
+   ]
+  ]
+ }
+]

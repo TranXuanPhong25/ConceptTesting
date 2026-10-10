@@ -88,6 +88,11 @@ def failing_tests(mdir: Path, env: dict) -> set[str]:
 
 def mutant_lines(mdir: Path, rel: str) -> dict[str, int]:
     """mutant key -> line in the original file (first line where the mutated function differs from the original)."""
+    return {k: v[0] for k, v in mutant_diffs(mdir, rel).items()}
+
+
+def mutant_diffs(mdir: Path, rel: str) -> dict[str, tuple[int, str, str]]:
+    """mutant key -> (original line number, original text, mutated text) of the first differing line."""
     mfile = mdir / "mutants" / rel
     spans = json.load(open(str(mfile) + ".spans"))["spans"]
     mlines = mfile.read_text(encoding="utf-8").splitlines()
@@ -108,12 +113,19 @@ def mutant_lines(mdir: Path, rel: str) -> dict[str, int]:
             continue
         oa, ob = spans[f"{func}__mutmut_orig"]
         orig, mut = mlines[oa:ob], mlines[a:b]  # spans are 0-based, end-exclusive
-        k = next((i for i in range(1, min(len(orig), len(mut))) if orig[i] != mut[i]), min(len(orig), len(mut)) - 1)
-        out[prefix + name] = starts[func] + k
+        # align on the def line (top-level functions' spans start one line earlier than methods'); the def line
+        # itself always differs (renamed), so the comparison starts after it
+        d_o = next((i for i, s in enumerate(orig) if s.lstrip().startswith(("def ", "async def "))), 0)
+        d_m = next((i for i, s in enumerate(mut) if s.lstrip().startswith(("def ", "async def "))), 0)
+        orig, mut = orig[d_o:], mut[d_m:]
+        same_def = re.sub(r"__mutmut_\w+\(", "(", orig[0]) == re.sub(r"__mutmut_\w+\(", "(", mut[0])
+        k = 0 if not same_def else next((i for i in range(1, min(len(orig), len(mut))) if orig[i] != mut[i]),
+                                        min(len(orig), len(mut)) - 1)
+        out[prefix + name] = (starts[func] + k, orig[k] if k < len(orig) else "", mut[k] if k < len(mut) else "")
     return out
 
 
-def mutate_ws(ws: Path, pkg: str, files: list[str], jobs: int) -> dict:
+def mutate_ws(ws: Path, pkg: str, files: list[str], jobs: int, keep: bool = False) -> dict:
     mdir = ws / "mut"
     shutil.rmtree(mdir, ignore_errors=True)
     mdir.mkdir()
@@ -175,7 +187,8 @@ def mutate_ws(ws: Path, pkg: str, files: list[str], jobs: int) -> dict:
             mutants[key] = [status_by_exit_code[code], lines.get(key)]
     res = {"dropped_tests": sorted(dropped), "tests": len(list((mdir / "coverup-tests").glob("test_*.py"))),
            "mutants": mutants}
-    shutil.rmtree(mdir)  # mutants/ copies are large; result.json keeps every verdict
+    if not keep:
+        shutil.rmtree(mdir)  # mutants/ copies are large; result.json keeps every verdict
     return res
 
 
@@ -225,10 +238,38 @@ def wilcoxon(a: list[float], b: list[float]) -> tuple[int, float]:
     return len(d), (float(w(d).pvalue) if d else 1.0)
 
 
+def line_map(pkg: str) -> dict[str, int]:
+    """mutant key -> original line, for every mutant of the package's subset modules. Mutants are identical in every
+    workspace, so one mutmut run with an empty test suite gives the map; it overrides the lines stored in
+    mut_result.json (written before the def-line alignment fix for module-level functions)."""
+    cache = HERE / "out" / "mutant_lines" / f"{pkg}.json"
+    if cache.exists():
+        return json.load(open(cache))
+    ws = cc.WORK / "_linemap" / pkg
+    shutil.rmtree(ws, ignore_errors=True)
+    (ws / "coverup-tests").mkdir(parents=True)
+    files = cc.subset()[pkg]["files"]
+    try:  # mutmut generates the mutants, then stops: no test covers anything; generation is all we need
+        mutate_ws(ws, pkg, files, os.cpu_count() or 4, keep=True)
+    except RuntimeError:
+        if not all((ws / "mut" / "mutants" / (f + ".spans")).exists() for f in files):
+            raise
+    out = {}
+    for f in files:
+        out.update(mutant_lines(ws / "mut", f))
+    shutil.rmtree(ws)
+    cache.parent.mkdir(parents=True, exist_ok=True)
+    json.dump(out, open(cache, "w"))
+    return out
+
+
 def ws_metrics(ws: Path, mods: dict) -> dict[str, dict]:
     """module -> metrics for one finished workspace."""
     final = json.load(open(ws / "final.json"))["files"] if (ws / "final.json").exists() else {}
     mut = json.load(open(ws / "mut_result.json")) if (ws / "mut_result.json").exists() else None
+    if mut is not None:
+        lm = line_map(next(iter(mods.values()))["pkg"])
+        mut["mutants"] = {k: [s, lm.get(k, ln)] for k, (s, ln) in mut["mutants"].items()}
     out = {}
     for mod, m in mods.items():
         src = cc.APPS / m["app"] / m["file"]
@@ -265,7 +306,7 @@ def analyze() -> None:
     for mod, m in mods.items():
         by_pkg[m["pkg"]][mod] = m
     rows = {}  # (arm, seed, module) -> metrics
-    blocks = defaultdict(lambda: [0, 0])  # arm -> [segments with a block, segments]
+    blocks_by = defaultdict(lambda: [0, 0])  # (arm, seed) -> [segments with a block, segments]
     for arm in cc.ARMS:
         for sdir in sorted((cc.WORK / arm).glob("s*")):
             for pkg, pm in by_pkg.items():
@@ -276,9 +317,17 @@ def analyze() -> None:
                     rows[(arm, sdir.name, mod)] = r
                 if (ws / "prompts.jsonl").exists():
                     for line in open(ws / "prompts.jsonl"):
-                        blocks[arm][0] += bool(json.loads(line)["block"])
-                        blocks[arm][1] += 1
-    seeds = sorted({s for _, s, _ in rows})
+                        blocks_by[(arm, sdir.name)][0] += bool(json.loads(line)["block"])
+                        blocks_by[(arm, sdir.name)][1] += 1
+    # only seeds finished in every arm and package (a run in progress must not empty the paired sets)
+    seeds = sorted(s for s in {s for _, s, _ in rows}
+                   if all((cc.WORK / a / s / p / "done.json").exists() for a in cc.ARMS for p in by_pkg))
+    rows = {k: v for k, v in rows.items() if k[1] in seeds}
+    blocks = defaultdict(lambda: [0, 0])  # arm -> [segments with a block, segments], complete seeds only
+    for (a, sd), (x, y) in blocks_by.items():
+        if sd in seeds:
+            blocks[a][0] += x
+            blocks[a][1] += y
     arms = [a for a in cc.ARMS if any(k[0] == a for k in rows)]
     # per (arm, module): mean over seeds; paired tests use modules finished (with mutation) in every arm and seed
     per = {a: {mod: {k: mean(rows[(a, s, mod)].get(k) for s in seeds if (a, s, mod) in rows)
