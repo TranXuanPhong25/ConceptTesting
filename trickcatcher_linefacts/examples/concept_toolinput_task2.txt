@@ -1,0 +1,55 @@
+The Python function below passes the existing tests, but it may still contain a bug that those tests miss. Its specification is the docstring.
+
+## Code
+```python
+
+
+def truncate_number(number: float) -> float:
+    """ Given a positive floating point number, it can be decomposed into
+    and integer part (largest integer smaller than given number) and decimals
+    (leftover part always smaller than 1).
+
+    Return the decimal part of the number.
+    >>> truncate_number(3.5)
+    0.5
+    """
+    assert number >= 0
+    if number == 0:
+        return 0
+    if number == 1:
+        return 1
+    else:
+        integer_part = int(number)
+        decimal_part = number - integer_part
+        return decimal_part
+```
+
+## Existing tests
+```python
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate(3.5) == 0.5
+    assert abs(candidate(1.33) - 0.33) < 1e-6
+    assert abs(candidate(123.456) - 0.456) < 1e-6
+```
+
+## Facts about the existing tests (computed by running them)
+Facts use standard test-adequacy terms (statement/branch/condition coverage, boundary values, equivalence classes, loop coverage, def-use pairs, mutation testing).
+- Branch coverage (C2): the True branch of `number == 1` (line 15) is never taken by the existing tests.
+  An input that reaches this: `truncate_number(1.0)`
+- Mutation (CRP constant): the mutant `number == 0` -> `number == 1` at line 13 survives: no existing test distinguishes them.
+  An input that reaches this: `truncate_number(1.0)`
+- Equivalence class: in the existing tests, parameter `number` of `truncate_number` was always a non-integer number.
+  An input that reaches this: `truncate_number(123.0)`
+Use these facts when choosing inputs.
+Write an assertion for each of these inputs; you may add others.
+
+Write up to 10 new test assertions that could reveal a bug in this implementation. Each assertion must have the form
+`assert truncate_number(<arguments>) == <expected>`, where <expected> is the value the specification requires, not what the
+code returns. Only use inputs the specification allows. Reply with a single ```python code block containing one
+assertion per line and nothing else.

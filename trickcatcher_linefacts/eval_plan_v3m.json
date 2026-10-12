@@ -1,0 +1,12 @@
+{
+ "version": "v3m",
+ "timing": "Fixed before any real mining output; build and canned smoke only in this session.",
+ "reference": "RBCTest (Huynh et al., ICSE 2026, arXiv:2504.17287), adapted from observation, confirmation and semantic verification; not a reimplementation.",
+ "cohort": "All 133 non-design tasks for contract agreement; DEV only for HumanEval+ input rejection and offline PF. Never pilot/design offline labels.",
+ "draws": "facts.fuzz_inputs(base_args, Random(20261010+task), valid=None), original 400 distinct seeded unfiltered candidates; no validator-dependent refill for agreement.",
+ "agreement": {"counts": ["both_valid", "mined_only", "contract_only", "both_invalid"], "valid_precision": "both_valid/(both_valid+mined_only)", "valid_recall": "both_valid/(both_valid+contract_only)", "zero_denominator": null, "aggregation": "per task and pooled micro counts; list tasks accepting or rejecting all nonempty draws"},
+ "mining": "Per-task candidate/confirmed/surviving counts; dropped candidate reasons and evidence; verifier reject/raise/timeout records; predicate hashes.",
+ "plus": "DEV-only plus_input rejection counts/rates, evaluation only and never fed back into mining or method parameters.",
+ "offline": {"directory": "out/offline_v3m", "OFFLINE_SKIP_PILOT": "1", "versions": ["v3m", "v3c", "v3f"], "cohorts": ["overall", "even", "odd"], "k": [3,5], "tables": ["strong-task coverage including no-fact tasks", "fact-weighted mean PF and matched base", "per-task better/worse, ties/no-score, exact two-sided sign p", "placebo@3", "2000 same-pool uniform random draws at K=3/5, seed 20261010+K", "same-pool oracle ceiling at K=3/5", "per-kind reach/PF/strong"], "zero_failing_plus": "excluded", "pf": "fail_hits/(fail_hits+pass_hits); zero hits undefined", "strong": "PF >= 0.5", "comparison_tolerance": 1e-12},
+ "decision": "No changes to mining, generator, ranking, gates or settings follow from these numbers. v3m is primary; v3c is the contract upper bound, offline only unless requested."
+}
