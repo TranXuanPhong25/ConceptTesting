@@ -37,17 +37,19 @@ def _blocks(text):
 
 def fake_mutant(put, entry, seed):
     tree = ast.parse(put)
-    fn = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and n.name == entry)
+    from ..symprompt.pathcollect import focal
+    fn, cls, wrapper, _ = focal(put, entry)
+    target = cls or fn
     sites = [n for n in ast.walk(fn) if (isinstance(n, ast.Compare) and type(n.ops[0]) in FLIP)
              or (isinstance(n, ast.BinOp) and type(n.op) in FLIP)]
-    before = ast.unparse(fn).splitlines()
+    before = ast.unparse(target).splitlines()
     if sites:
         site = sites[seed % len(sites)]
         if isinstance(site, ast.Compare):
             site.ops[0] = FLIP[type(site.ops[0])]()
         else:
             site.op = FLIP[type(site.op)]()
-    after = ast.unparse(fn).splitlines()
+    after = ast.unparse(target).splitlines()
     out = []
     for old, new in zip(before, after):
         if old != new:

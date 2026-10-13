@@ -1,0 +1,23 @@
+- [Shared memory README](README.md) — how Claude + Codex read/write this folder (format, rules)
+- [Research state](research-state.md) — START HERE: thesis direction, where files live, key results, next steps
+- [Working rules](working-rules.md) — all user rules: Vietnamese replies, git, secrets/ngrok, GPU runs, folders+CHANGELOG, PREREG
+- [Session 2026-10-13 (Claude)](session-2026-10-13-claude.md) — digest of the long session: user requests/quotes, decisions, lessons, open items, transcript path
+- [CoverUp concept verdict](coverup-concept-verdict.md) — seed 1 null; site-hint smoke p=7e-6 is an artifact (truncation + clustered mutants)
+- [Thesis concept requirement](thesis-concept-requirement.md) — thesis MUST have a "concept" guiding tests; never propose dropping concepts
+- [Test-aware mutants candidate](test-aware-mutants-candidate.md) — ESEM'26 base paper, artifact/Zenodo facts, proposed gap-concept test-gen extension
+- [STELLAR-D candidate](stellar-d-candidate.md) — 2609.23209 fits concept direction (MIT artifact, open CarQA/NaviQA-I); 2609.28130 NEATEST rejected (no LLM, code unreleased)
+- [API budget](api-budget.md) — ~$25 Vertex left (2026-10-09; ULT baseline spent ~$0.8 since); hard cap, reuse Zenodo, freeze CoSIL/JitVul/CoverUp seeds
+- [ULT concept status](ult-concept-status.md) — ULT_Lite baseline done (BCov@1 39, Mut@5 61); C1–C8 tag probe null, arm dropped; adequacy-gap arms await go-ahead
+- [CKGFuzzer paper facts](ckgfuzzer-paper-facts.md) — KG = call graph + summaries (no state edges); +8.73% claim rests on lcms typo, corrected ≈4.25%
+- [ConceptCoder paper facts](conceptcoder-paper-facts.md) — gain from concept-supervised training; NVC keeps ~3/4; concept prompting (A.4) hurts GPT-5.2
+- [Hybrid C1 verdict](hybrid-c1-verdict.md) — diff hints sig. only vs harmful rnd placebo; vs plain/checklist n.s.; C2 can't reach 33/50/111
+- [Line concept checklist](line-concept-checklist.md) — tester line-level concepts; only OUTCOME-GAP/STMT/mutant facts beat base offline; top-3 ~1/5 PUTs
+- [Commit policy](commit-only-when-asked.md) — trickcatcher_linefacts: commit+push own files after each finding; elsewhere only when asked
+- [Course vocabulary](course-vocabulary.md) — test_slides/ criteria are the default vocab, no longer required (lifted 2026-10-12; property concepts OK)
+- [Codex quota fallback](codex-quota-fallback.md) — Codex 5h quota out → my subagents; reset within ~30 min → schedule Codex
+- [Version tree diagram](version-tree-diagram.md) — after every new variant update the artifact: version tree, results + glossary, concept kinds, papers
+- [Reply vocabulary](reply-vocabulary.md) — Vietnamese sentences, all technical terms in English (task, input, hint, oracle, false alarm…)
+- [Pipeline folder workflow](pipeline-folder-workflow.md) — best pipeline in pipelines/<ver>/; new experiment = copy folder + CHANGELOG.md, edit the copy; big changes wait for Codex
+- [Prefer standard libraries](prefer-standard-libraries.md) — swap own code for libraries when results equal (user: fewer reviewer objections)
+- [Do not fix unasked](dont-fix-unasked.md) — pasted errors are context; never edit the Kaggle notebook unless asked
+- [Held-out final readiness](heldout-final-readiness.md) — CPU ready; amendment 1 fixes shared 10+4 TC pool; GPU waits for dev review and VibePass mining

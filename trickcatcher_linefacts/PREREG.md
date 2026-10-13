@@ -1103,3 +1103,122 @@ offline-behav of try 1 was stopped unread.
 - v9_callfb result (2026-10-13 ~12:00): RESULTS §11.36. Primary concept-hybrid vs plain-hybrid (ref) 26/19, p = .37;
   v9 concept-hybrid vs v8-strict 3/19 (worse). Round 2 with concrete calls kept 0.19 hint-hitting inputs/sample vs
   0.9 for Hypothesis. v9 is dropped; Hypothesis round 2 (v8-strict) stays.
+
+- v7_mutref amendments (recorded 2026-10-14; made during the run, before any oracle output was read):
+  (1) GPU outages: the run was relaunched from the last finished stage with the same cache (chain_from_eval /
+  chain_from_oraclellm / chain_from_score); (2) evaluate ran through analysis/mutref_eval_longtimeout.py, which
+  raises the per-task scoring sandbox timeout 600 -> 3600 s (task 83 timed out); (3) v4_evaluation.py scores an
+  assertion whose input raises MemoryError as a crash on both programs (task 87; commit 1b67d00); (4) oracle-score
+  needs --online for the B4 judge (first attempt failed offline on a cache miss).
+- v7_mutref result (2026-10-14): RESULTS §11.39. Primary (odd dev, strict, ref) concept-hybrid vs plain-hybrid 17/9,
+  p = .17; vs toolinput 11/8, p = .65. vs the old rule (v8-strict) 13/10. The mutref rule is not adopted; v7 rule stays.
+
+## Final comparison protocol (registered 2026-10-13 ~21:05, user-approved, before any baseline/held-out output)
+Addresses six fairness problems (user-reviewed critique, verified in data):
+1. Dev (113 HumanEval tasks; even/odd; pilot) has been used repeatedly for design choices and is development data only.
+   Confirmatory claims come only from held-out sets run once with a frozen configuration: VibePass LeetCode (66 PUTs,
+   24 questions, statistics clustered by question) and MBPP+ real-bug (12 PUTs). Dev results are reported as such.
+2. The final configuration is generated for real in strict mode (round 2 contributes only tool-verified inputs; the
+   expected-value call covers exactly those inputs and is skipped when none is kept). No CPU-reconstructed arm is used
+   for confirmatory claims; LLM calls/tokens are those of the real run.
+3. Placebo control matched in budget: placebo-hybrid receives the same number of round-2 strategy requests as
+   concept-hybrid for the same task/sample (as plain-hybrid already does), targeting placebo hints.
+4. Budgets fixed at generation time and identical for every arm and baseline: at most 8 LLM calls and at most 20
+   assertions per sample (assertions beyond 20 are dropped in generation order and recorded). Matched-count analysis is
+   secondary and uses random equal-size subsets (fixed seed, 100 draws, mean), not prefix truncation.
+5. TrickCatcher-full adapter: inputs serialised with repr/ast.literal_eval instead of a JSON round-trip (task 127 lost
+   400/400 inputs); crash/timeout accounting and budgets aligned with the other arms; the 7 empty-pool tasks rerun.
+   Until then no claim of beating TrickCatcher is made.
+6. One scorer everywhere: output equality = EvalPlus-style comparison with the task's atol (floats rel 1e-6 / atol,
+   recursive over lists/tuples, exceptions/timeouts as distinct outcomes), used by the oracle, evaluation and analyses.
+   Three separate metrics per arm: D_I (a contract-valid input on which PUT != reference), D_IO (D_I with the correct
+   expected value under the oracle), and precision of bug reports (assertions failing on the PUT that are correct /
+   all assertions failing on the PUT); false alarms over the same denominator for every arm.
+Arms on held-out: concept-hybrid (final hint selection: v7 rule unless v7_mutref's registered odd-task comparison favours
+the mutref rule), plain-hybrid, placebo-hybrid (matched), concept (round 1 only), toolinput, plain, and baselines
+CoverUp, MuTAP, SymPrompt, ACH (filter: inputs where PUT and mutant differ; paper filter secondary), TrickCatcher-full
+(fixed adapter), EvalAndMitigate onlydoc/advdoc. Same model, endpoint, K = 3, ref/full oracle (10 spec-only programs).
+Primary: concept-hybrid vs plain-hybrid and vs each baseline, D_IO under ref, per-question sign test (VibePass) /
+per-task (MBPP+). Secondary: D_I, precision, matched-count subsets, placebo.
+
+## Dev sanity run of the final comparison protocol (registered 2026-10-14 ~00:40, before any output)
+Development data only (protocol fix 1): checks that the frozen configuration and every baseline run end to end under
+the protocol, and gives dev numbers reported as such; no confirmatory claim. Runs:
+- `pipelines/v11_fair` (v7 hint rule; all four flags on: real strict round 2, matched placebo, <= 8 calls / <= 20
+  assertions per sample, shared tolerant scorer), seven arms, all 133 tasks, K = 3; round 1 reuses the v7 LLM cache
+  (identical prompts and seeds).
+- Baselines on the 113 dev tasks, K = 3, budget 8 LLM calls / 20 assertions per sample: SymPrompt, ACH (filter run),
+  CoverUp, MuTAP (N = 7 surviving mutants); TrickCatcher-full = tc_full_v2 (existing generations, CPU).
+- Scoring: every run through v11_fair evaluate + oracle (same ref programs: oracle cache copied from the v11_fair run),
+  ref and full. Witness-only computed as in RESULTS §11.37.
+Primary (dev, descriptive): concept-hybrid vs plain-hybrid, vs toolinput, vs witness-only and vs each baseline,
+D_IO under ref, per-task sign test. Secondary: D_I, precision, random-subset matched counts, placebo.
+Held-out runs only after this run completes and nothing is changed except bug fixes (recorded as amendments).
+- Dev sanity run amendment 1 (2026-10-14 ~00:45, before any arms/oracle output; user: "tạm thời chưa cần chạy cả full …
+  mình đang cải tiến input"): oracle = **ref only**. No b1, no postconditions, no B4 judge (saves GPU; b1 was the most
+  expensive stage and is used by no conclusion). Primary/secondary comparisons are on ref; full is not computed in
+  this run (can be added later from the same calls if needed).
+
+## B3 v12_rel: concept ablation ladder (registered 2026-10-14 ~01:10, design only; before any code or output)
+Question: does the *structure* of concepts help the LLM, beyond the facts and witnesses themselves? Folder
+pipelines/v12_rel, copied from pipelines/v11_fair (all four fairness flags on). Same tasks, spec, PUT, base tests,
+tool, K = 3, call cap 8 and assertion cap 20, same round-2 strict Hypothesis mechanism, and the same 3 selected hints
+(v7 rule) for every concept arm. Prompt input budget equalised: every arm's hint block is padded or truncated to the
+same token budget (the rel arm's length), recorded per sample. New arms (round 1 + round 2 as in concept-hybrid):
+- `review-hybrid`: generic code-review guidance of equal length (a fixed checklist: boundaries, off-by-one, empty and
+  singleton inputs, ordering/ties, types, large values), no task-specific facts. Round 2 targets the same hints
+  internally (like plain-hybrid) without showing them.
+- `flat-hybrid` = concept-hybrid (the 3 hint sentences, unrelated to each other).
+- `rel-hybrid`: the same 3 hints, each expanded into a typed chain computed by the tool on CPU from the AST and the
+  tracer: data dependence (value defined at line A used at line C), control dependence (line C guarded by the condition
+  at line B, with the branch outcome base tests never/always take), and a spec link (the docstring sentence whose words
+  best match the site's identifiers/operators, lexical, no LLM), shown as "spec clause R → condition B → line C ←
+  value from line A". Witness inputs are NOT shown (as in flat).
+- `rel-nospec-hybrid`: rel-hybrid without the spec-link edges.
+References always reported: plain-hybrid, toolinput, witness-only, placebo-hybrid (matched).
+Oracle: ref only (dev sanity amendment 1 applies). Run on dev only after the v11_fair dev sanity run finishes;
+held-out only if rel-hybrid beats flat-hybrid on dev.
+Primary (dev): rel-hybrid vs flat-hybrid, D_IO under ref, per-task sign test; secondary: flat vs review, rel vs
+rel-nospec, every concept arm vs toolinput and witness-only, random-subset matched counts, D_I, precision.
+- Final protocol amendment 1 (2026-10-14 ~01:20, before any held-out output): TrickCatcher-full (tc_full_v2) keeps
+  the paper's design, 10 program variants + 4 input generators = 14 LLM calls per task shared by its K = 3 resamples
+  (4.7 calls per sample on average). The call budget for this baseline is applied per task (14 <= 3 x 8 = 24, the
+  budget of every other arm per task); the 20-assertion cap per sample applies unchanged. Reason: faithfulness to the
+  original method; its samples are resamples of one shared generation, reported as such.
+
+## B4 v13_hyp: spec-violation hypotheses (registered 2026-10-14 ~02:00, design only; before any code or output)
+Question: does linking facts into explicit fault hypotheses (incl. ones without a fuzz witness, and at sites base tests
+already execute) help the LLM find bugs beyond flat/rel concepts and beyond the witnesses themselves?
+Folder pipelines/v13_hyp, copied from pipelines/v12_rel (fairness flags on, same caps and budgets).
+- Hypothesis = (spec clause R, code chain "value from line A → condition B → line C" from v12_rel relations, trigger
+  condition T as a Python predicate over the entry's arguments, expected violation "output breaks R when T holds").
+- Generation: one Qwen call per task (cached, same for all samples) proposes up to 6 hypotheses from spec + code +
+  the tool's relation chains for ALL candidate sites (covered sites included, not only gaps). Tool checks each: T must
+  parse, be pure, and be satisfied by no base-test input (otherwise "already tested" → dropped); a Hypothesis search
+  (the v4c domain strategy filtered by T, 200 draws) looks for a witness; hypotheses without a witness are KEPT and
+  marked "unwitnessed". Ranking: witnessed and PUT output differs from >= 1 surviving mutant first, then witnessed,
+  then unwitnessed; ties by task-level frozen order.
+- Arm `hyp-hybrid`: round 1 shows the top-3 hypotheses (R, chain, T; no witness values); round 2 targets hypotheses
+  whose T no round-1 input satisfies, with the strict Hypothesis mechanism using T as the filter (no LLM strategy if T
+  is a usable filter). References in the same run: flat-hybrid, rel-hybrid, plain-hybrid, toolinput, witness-only
+  (+ hyp-witness-only: witnesses of the shown hypotheses, ref oracle, no LLM).
+Oracle ref only. Dev only after B3; held-out only if hyp-hybrid beats rel-hybrid/flat-hybrid on dev.
+Primary (dev): hyp-hybrid vs flat-hybrid and vs toolinput, D_IO under ref, per-task sign test. Secondary: vs rel-hybrid,
+hyp-witness-only vs witness-only, share of detections from unwitnessed hypotheses and from covered sites,
+random-subset matched counts, D_I, precision.
+- Dev sanity run amendment 2 (2026-10-14 ~03:50, after arms, before any evaluation/oracle output was read): evaluate
+  failed with the per-task scoring sandbox timeout (600 s), as in v7_mutref. Same two fixes as the v7_mutref
+  amendments: evaluate runs through analysis/v11_eval_longtimeout.py (3600 s), and pipelines/v11_fair/v4_evaluation.py
+  gets the MemoryError guard (oversized input scored as a crash on both programs). Resumed from evaluate.
+- B3 v12_rel run note (2026-10-14 ~04:50, before any output): launched on dev, all 133 tasks (dev and pilot reported
+  separately), arms review/flat/rel/rel-nospec-hybrid + plain-hybrid, toolinput, placebo-hybrid in the same run; LLM
+  cache reused from v7 and v11_fair (identical prompts/seeds give identical responses). Evaluation with the same
+  MemoryError guard and 3600 s sandbox as v11_fair amendment 2. Runs concurrently with the baseline generation of the
+  dev sanity run on the same endpoint (affects wall time only).
+- B4 amendment 1 (2026-10-14 ~05:20, before any B4 output): under the v12 budget rule (target = rel block) the
+  three-hypothesis block (~230 whitespace tokens) would be truncated on most tasks (rel median 119; 5 tasks 0). In
+  v13_hyp the per-unit budget is the LONGER of the rel and hypothesis renderings of that unit; every arm in the v13 run
+  is padded to it, the hypothesis block is never truncated. Without hypotheses the rule equals v12_rel. Other
+  implementation choices (recorded in pipelines/v13_hyp/CHANGELOG.md): T usable as filter = the T-filtered draw yields
+  >= 1 valid input; "missed" = no valid round-1 input satisfies T; R accepted as an exact or near quote (difflib >= 0.9);
+  the per-task proposal call is reported separately from the per-sample cap of 8.

@@ -1,0 +1,165 @@
+{
+  "python": "3.11.14",
+  "dependencies": {
+    "pytest": "9.1.1",
+    "coverage": "7.16.2",
+    "mutmut": "3.8.0",
+    "httpx": "0.28.1"
+  },
+  "dataset": "HumanEval development tasks 2, 3, 4",
+  "k": 3,
+  "llm": "ScriptedClient; no network requests; token counts zero",
+  "baselines": {
+    "coverup": {
+      "rows": 9,
+      "llm_calls": 15,
+      "assertions": 9,
+      "dropped": 0,
+      "stop_reasons": {
+        "segments_completed": 9
+      },
+      "per_sample": [
+        {
+          "task": 2,
+          "sample": 0,
+          "llm_calls": 1,
+          "n_assertions": 2,
+          "stop_reason": "segments_completed"
+        },
+        {
+          "task": 2,
+          "sample": 1,
+          "llm_calls": 1,
+          "n_assertions": 2,
+          "stop_reason": "segments_completed"
+        },
+        {
+          "task": 2,
+          "sample": 2,
+          "llm_calls": 1,
+          "n_assertions": 2,
+          "stop_reason": "segments_completed"
+        },
+        {
+          "task": 3,
+          "sample": 0,
+          "llm_calls": 3,
+          "n_assertions": 0,
+          "stop_reason": "segments_completed"
+        },
+        {
+          "task": 3,
+          "sample": 1,
+          "llm_calls": 3,
+          "n_assertions": 0,
+          "stop_reason": "segments_completed"
+        },
+        {
+          "task": 3,
+          "sample": 2,
+          "llm_calls": 3,
+          "n_assertions": 0,
+          "stop_reason": "segments_completed"
+        },
+        {
+          "task": 4,
+          "sample": 0,
+          "llm_calls": 1,
+          "n_assertions": 1,
+          "stop_reason": "segments_completed"
+        },
+        {
+          "task": 4,
+          "sample": 1,
+          "llm_calls": 1,
+          "n_assertions": 1,
+          "stop_reason": "segments_completed"
+        },
+        {
+          "task": 4,
+          "sample": 2,
+          "llm_calls": 1,
+          "n_assertions": 1,
+          "stop_reason": "segments_completed"
+        }
+      ],
+      "output": "tests/dry_runs/coverup/gen.jsonl"
+    },
+    "mutap": {
+      "rows": 9,
+      "llm_calls": 42,
+      "assertions": 15,
+      "dropped": 0,
+      "stop_reasons": {
+        "survivors_exhausted": 6,
+        "surviving_mutant_limit": 3
+      },
+      "per_sample": [
+        {
+          "task": 2,
+          "sample": 0,
+          "llm_calls": 1,
+          "n_assertions": 2,
+          "stop_reason": "survivors_exhausted"
+        },
+        {
+          "task": 2,
+          "sample": 1,
+          "llm_calls": 1,
+          "n_assertions": 2,
+          "stop_reason": "survivors_exhausted"
+        },
+        {
+          "task": 2,
+          "sample": 2,
+          "llm_calls": 1,
+          "n_assertions": 2,
+          "stop_reason": "survivors_exhausted"
+        },
+        {
+          "task": 3,
+          "sample": 0,
+          "llm_calls": 8,
+          "n_assertions": 2,
+          "stop_reason": "surviving_mutant_limit"
+        },
+        {
+          "task": 3,
+          "sample": 1,
+          "llm_calls": 8,
+          "n_assertions": 2,
+          "stop_reason": "surviving_mutant_limit"
+        },
+        {
+          "task": 3,
+          "sample": 2,
+          "llm_calls": 8,
+          "n_assertions": 2,
+          "stop_reason": "surviving_mutant_limit"
+        },
+        {
+          "task": 4,
+          "sample": 0,
+          "llm_calls": 5,
+          "n_assertions": 1,
+          "stop_reason": "survivors_exhausted"
+        },
+        {
+          "task": 4,
+          "sample": 1,
+          "llm_calls": 5,
+          "n_assertions": 1,
+          "stop_reason": "survivors_exhausted"
+        },
+        {
+          "task": 4,
+          "sample": 2,
+          "llm_calls": 5,
+          "n_assertions": 1,
+          "stop_reason": "survivors_exhausted"
+        }
+      ],
+      "output": "tests/dry_runs/mutap/gen.jsonl"
+    }
+  }
+}

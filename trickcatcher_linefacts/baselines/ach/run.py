@@ -111,12 +111,14 @@ def sample(task, k_index, client, directory, args, run_id):
         kept = [r['source'] for r in checked if keep(r, args.filter)]
         rec.update(checks=checked, kept=kept, status='killed' if kept else 'not-killed')
         groups.append(kept)
-    final = tc.round_robin(groups, args.max_tests)
+    ordered = list(dict.fromkeys(a for group in groups for a in group))
+    final = ordered[:args.max_tests]
     statuses = [r['status'] for r in records]
     result = tc.row(task, ARM, k_index, run_id, client.model, final, session.calls, baseline=VERSION,
                     filter=args.filter, mutant_attempts=records, mutant_statuses=statuses,
                     n_mutants_killed=statuses.count('killed'),
-                    n_assertions_uncapped=len({a for g in groups for a in g}))
+                    n_assertions_uncapped=len(ordered),
+                    n_assertions_dropped=max(0, len(ordered)-len(final)))
     tc.atomic_json(directory / 'result.json', result)
     return result
 
@@ -144,6 +146,8 @@ def main(argv=None):
     args = p.parse_args(argv)
     if not 1 <= args.k < 1000 or args.llm_budget < CYCLE or args.mutants < 1 or args.max_tests < 1 or args.repeats < 1:
         p.error(f'need K in 1..999, --llm-budget >= {CYCLE} and positive limits')
+    if args.llm_budget > 8 or args.max_tests > 20:
+        p.error('final protocol requires at most 8 calls and 20 assertions')
     meta, tasks = tc.load_tasks(args.tasks, args.task_ids)
     out = args.out.resolve(); out.mkdir(parents=True, exist_ok=True)
     from .fake_client import FakeClient

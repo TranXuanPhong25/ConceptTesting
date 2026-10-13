@@ -222,3 +222,9 @@ Fact versions: v3f (frozen) → v3c (contract-filtered upper bound) → v3m / v3
   with QWEN_BASE_URL/QWEN_MODEL, V4_PYTHON, PYTHONPATH exported. Then analyse per PREREG "v7_mutref" (odd tasks).
 - Subagents for CoverUp/MuTAP and pipelines/v7_vp stopped at the Claude session limit (resets 22:40) with partial,
   uncommitted work in baselines/coverup, baselines/mutap, baselines/common.py|worker.py|tests and pipelines/v7_vp.
+
+## Update 2026-10-14 ~00:20
+- Knowledge moved to the shared `memory/` folder (Claude auto-memory is now a symlink to it; AGENTS.md rule 6 tells Codex).
+  Start from memory/research-state.md. Session digest: memory/session-2026-10-13-claude.md.
+- Done since 22:10: v7_mutref finished and analysed (RESULTS 11.39, not adopted); witness-only 11.37; random-subset
+  matched 11.38; tc_full_v2 11.40; v7_vp, v11_fair, CoverUp/MuTAP committed. Next: GPU run of v11_fair + baselines (await user).

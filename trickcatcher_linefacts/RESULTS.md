@@ -721,3 +721,45 @@ Qwen chỉ đọc spec, liệt kê yêu cầu hành vi (trích nguyên văn) kè
   - concept vs plain (round 1): 46.5/42.7, 30/26 (n.s.).
   - Với full: hướng giống ref; concept-hybrid hơn plain-hybrid 45/24 (p = .015), hơn placebo 43/21 (p = .008).
 - Ý nghĩa: prefix làm concept-hybrid **trông kém toolinput hơn thực tế**, vì input round 2 (phần có hint) nằm cuối danh sách. Với random subset, khoảng cách tới toolinput giảm từ 16 xuống 8 bug/run và không còn có ý nghĩa; toolinput vẫn nhỉnh hơn. Lợi thế của concept-hybrid so với không hint và so với placebo vẫn còn, nhưng với ref thì sát ngưỡng (.053). Từ giờ phân tích cùng số test dùng random subset.
+
+### 11.39 Hạng 2 chạy LLM: chọn hint theo giả thuyết lỗi (v7_mutref; phân tích đã đăng ký trên 54 task lẻ của dev; `analysis/mutref_compare.py`, `analysis/mutref_compare.txt`)
+- Bản strict (round 2 chỉ có input Hypothesis đã chọn), ref, bug/run: concept-hybrid **30.0** (10.0 call), toolinput 28.3, plain-hybrid 25.3, concept 24.7, placebo-hybrid 23.3, plain 21.0.
+- **So sánh chính (đã đăng ký)**:
+  - concept-hybrid vs plain-hybrid: **17/9 (p = .17)**; cùng số test (random subset) 29.7 vs 24.1, 23/11 (p = .058).
+  - concept-hybrid vs toolinput: 11/8 (p = .65); cùng số test 26.7 vs 28.1, 14/18.
+  - Phụ: concept-hybrid vs placebo-hybrid 18/5 (p = .011); cùng số test 21/9 (p = .043).
+  - Với full: hướng giống ref (vs plain-hybrid 17/11, vs toolinput 11/9, vs placebo 18/6).
+- So với luật chọn hint cũ trên cùng 54 task: concept-hybrid strict 30.0 vs v8-strict 29.7, 13/10 (p = .68); bản raw 32.0 vs 30.7, 13/8. toolinput 28.3 vs 29.0 (8/8).
+- Lưu ý:
+  - Bản strict được chấm bằng oracle của run raw; 961/33.748 lần tra (2.8%) không có record oracle (input Hypothesis Qwen không viết thành assertion) và bị tính là không phát hiện, nên các arm hybrid strict có thể bị tính thấp đi một chút.
+  - Dev có 112 task (v7: 113).
+- Kết luận:
+  - Luật mới tăng good@3 offline (25 → 35) nhưng **không tăng rõ số bug** khi chạy LLM.
+  - Hint vẫn hơn placebo rõ. Nhưng so với không hint và với toolinput thì vẫn chưa có ý nghĩa thống kê.
+  - Đúng như dự đoán ở CONCEPT_WEAKNESS: điểm nghẽn là Qwen làm theo hint và round 2, không phải chọn hint.
+  - Giữ luật v7 làm cấu hình chính theo giao thức (luật mutref không thắng trên task lẻ).
+
+### 11.40 TrickCatcher-full adapter sửa serialisation (baselines/tc_full_v2, CPU rerun trên generation đã cache)
+- Bỏ JSON round-trip, input chỉ đi qua repr/ast.literal_eval. Task 127 từ 0 lên 400 input. Task 157 đổi 300 → 307 (một generator bị timeout). Các task khác không đổi.
+- 4 task vẫn rỗng (50, 66, 119, 161). Nguyên nhân là code generator do Qwen viết bị lỗi (dùng sai API cyaron, NameError, sai số tham số). Đây là hành vi đúng của TrickCatcher, không phải lỗi adapter.
+- Paper metrics trên 133 task: detecting samples 151 → 154, any-of-K 53 → 54, FA rate 9.3% → 10.5%.
+- Chưa chấm lại ref/full trên dev. Việc này làm cùng với v11_fair, theo giao thức cuối.
+
+### 11.41 Dev sanity run của giao thức cuối: v11_fair (dev 113 task, K = 3, oracle ref; `analysis/final_protocol_v11_dev.md`)
+- Chạy thật trên GPU, bật cả 4 cờ: strict sinh thật, placebo cùng số request round 2, giới hạn 8 call / 20 assertion, scorer chung.
+- **Bug/run (ref)**: toolinput 64.3, **concept-hybrid 61.0**, **placebo-hybrid 57.7**, plain-hybrid 55.7, concept 48.0, plain 45.0, witness-only 43.0, gen-plain 41.3.
+  - concept-hybrid và plain-hybrid ra đúng số của bản dựng bằng CPU v8-strict (61.0 / 55.7), nên phần dựng CPU trước đây là đúng.
+- **So sánh chính** (theo task):
+  - concept-hybrid vs plain-hybrid: 29/20 (p = .25); random subset 43/26 (p = .053).
+  - concept-hybrid vs toolinput: 22/23 (p = 1); random subset 26/42 (p = .068).
+  - concept-hybrid vs witness-only: 35/14 (p = .004).
+- **Phát hiện mới: placebo cùng ngân sách gần bằng concept.**
+  - Trước đây placebo-hybrid chỉ có 1.27 call/sample và được 45.7. Khi cho cùng số request round 2 (3.46 call), placebo-hybrid lên 57.7.
+  - concept-hybrid vs placebo-hybrid còn **26/22 (p = .67)**; random subset 38/27 (p = .21). D_I: 35/25.
+  - Vậy phần lớn lợi thế "hơn placebo" trước đây đến từ **số lần round 2**, không phải từ nội dung hint. Hint thật chỉ hơn hint giả khoảng 3 bug/run, chưa có ý nghĩa thống kê.
+- **Precision** (assertion đúng / assertion fail trên PUT): plain .965, gen-plain .942, concept-hybrid .929, placebo-hybrid .930, plain-hybrid .928, toolinput .910, witness-only .902. Tỉ lệ sample báo lỗi chương trình đúng: concept-hybrid 14.2%, toolinput 14.2%, plain-hybrid 10.0%, placebo-hybrid 9.7%, plain 8.6%.
+- **Chi phí trên mỗi sample** (sinh test): concept-hybrid 3.27 call / khoảng 2.8k token vào; toolinput 1 call / khoảng 0.6k; witness-only không gọi LLM.
+- **Kết luận dev:**
+  - Trong cùng ngân sách, fact nằm trong hint (concept) chưa hơn rõ không hint (plain-hybrid), chưa hơn hint giả cùng ngân sách (placebo), và vẫn kém toolinput một chút.
+  - Thứ giúp nhiều là **round 2 với Hypothesis** (tool) và **witness** (fuzz).
+  - Đây là động lực của B3 (concept có quan hệ) và B4 (giả thuyết vi phạm spec). Baseline paper đang chạy, sẽ báo ở mục sau.

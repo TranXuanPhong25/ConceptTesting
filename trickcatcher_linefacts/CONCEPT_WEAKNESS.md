@@ -146,3 +146,7 @@ Luật (người dùng, 2026-10-13):
 2. Mình làm S1 → S2 → S3 → S4 (CPU), mỗi việc xong commit một lần.
 3. Khi Codex có quota: B1, rồi B2; tiếp theo B3, rồi B4. Mỗi bước: đăng ký PREREG trước, folder mới có CHANGELOG, commit sau khi thử.
 4. B5 cuối cùng.
+
+#### Tiến độ (2026-10-14 sáng)
+- Xong: S1 witness-only (RESULTS 11.37), S2 random subset (11.38), S3 tc_full_v2 (11.40), S4 v7_vp (commit 9d13824), S5 PREREG merge. Hạng 2 (mutref) chạy xong, không hơn luật cũ (11.39).
+- Đang chạy (Codex): B1 `pipelines/v11_fair`, B2 CoverUp/MuTAP.

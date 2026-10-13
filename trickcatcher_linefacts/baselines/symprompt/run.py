@@ -51,11 +51,13 @@ def sample(task, k_index, plan_, client, directory, args, run_id):
         groups.append(new)
         per_path.append(dict(path=i, parsed=parsed, repaired_code=code, assertions=new,
                              base_copies=len(found) - len(new), rejected=rejected))
-    final = tc.round_robin(groups, args.max_tests)
+    ordered = list(dict.fromkeys(a for group in groups for a in group))
+    final = ordered[:args.max_tests]
     result = tc.row(task, ARM, k_index, run_id, client.model, final, session.calls, baseline=VERSION,
                     focal=plan_['focal'], n_paths_collected=plan_['n_paths_collected'],
                     n_paths_prompted=len(per_path), paths=plan_['paths'][:len(per_path)], per_path=per_path,
-                    n_assertions_uncapped=len({a for g in groups for a in g}))
+                    n_assertions_uncapped=len(ordered),
+                    n_assertions_dropped=max(0, len(ordered)-len(final)))
     tc.atomic_json(Path(directory) / 'result.json', result)
     return result
 
@@ -78,6 +80,8 @@ def main(argv=None):
     args.max_paths = args.max_paths or args.llm_budget
     if not 1 <= args.k < 1000 or args.llm_budget < 1 or args.max_tests < 1 or args.max_paths < 1:
         p.error('need K in 1..999 and positive budgets')
+    if args.llm_budget > 8 or args.max_tests > 20:
+        p.error('final protocol requires at most 8 calls and 20 assertions')
     meta, tasks = tc.load_tasks(args.tasks, args.task_ids)
     out = args.out.resolve(); out.mkdir(parents=True, exist_ok=True)
     from .fake_client import FakeClient
