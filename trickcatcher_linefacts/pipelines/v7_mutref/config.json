@@ -1,0 +1,73 @@
+{
+  "VERSION": "v7_mutref",
+  "model": "qwen2.5-coder-7b-instruct",
+  "seeds": {
+    "facts": 20261010,
+    "mining": 20261010,
+    "arms": 20261010,
+    "oracle": 20261212,
+    "pilot": 20261010
+  },
+  "K": 3,
+  "workers": 12,
+  "V4_PYTHON": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/codex_v4/venv/bin/python",
+  "datasets": {
+    "humaneval": {
+      "he": "PBT_EdgeCases/run/data/humaneval.jsonl",
+      "hep": "PBT_EdgeCases/run/data/humaneval_plus.jsonl",
+      "contracts": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "oracle_hep": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "puts": "vendor/TrickCatcher/Datasets/EvalPlus/PUTs"
+    },
+    "heldout": {
+      "he": "humaneval_mbpp.jsonl",
+      "hep": "humaneval_mbpp_plus.jsonl",
+      "contracts": "humaneval_mbpp_plus.jsonl",
+      "oracle_hep": "humaneval_mbpp_plus.jsonl",
+      "puts": "PUTs",
+      "selection": "tasks.json"
+    }
+  },
+  "freeze_hypothesis_constants": true,
+  "B0_VARIANTS": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/b0/variants/Datasets/EvalPlus/GenProgs",
+  "hint_rank": {
+    "rule": "LR[noref+mutref]",
+    "source": "analysis/hint_rank.py -> out/hint_rank/results.json",
+    "weighting": "task",
+    "selection": "plain",
+    "tie_seed": 20261010,
+    "feature_groups": [
+      "crash",
+      "kind",
+      "mutref",
+      "struct"
+    ],
+    "coefficients": {
+      "kind=OUTCOME": 0.429,
+      "kind=STMT": 0.347,
+      "kind=MUTANT": 0.498,
+      "kind=MUTANT-X": 0.347,
+      "kind=BOUND": 0.197,
+      "kind=NUM": -0.058,
+      "kind=REL": -0.05,
+      "kind=SHAPE": -0.898,
+      "kind=OUTPUT": -0.143,
+      "kind=LOOP": -0.155,
+      "kind=LOOP-MAX": -0.31,
+      "kind=DU": 0.276,
+      "kind=DECISION": -0.071,
+      "kind=SPEC": -0.409,
+      "covered_site": -0.258,
+      "boundary": 0.205,
+      "tier1(g_demote)": -0.137,
+      "on_compare_line": 0.182,
+      "log10(hit_frac)": 0.549,
+      "out_change_vs_nearest_base": 0.477,
+      "crash_on_hit_input": 0.102,
+      "crash_frac": 0.534,
+      "mutant_agrees_ref_put_not": 0.58,
+      "only_mutant_disagrees_ref": -0.213,
+      "intercept": -0.729
+    }
+  }
+}

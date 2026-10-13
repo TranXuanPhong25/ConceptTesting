@@ -1,0 +1,7 @@
+v7 dev: 113 tasks, K=3 (witness-only is deterministic: same score for each sample); tasks without oracle execution: 0
+[ref] bugs/run: witness-only 43.0 | toolinput 64.7 (on witness calls 39.0, on LLM-added calls 39.3) | concept-hybrid 66.7 | plain-hybrid 57.3
+   calls/sample: w 1.4, ti 8.7, ch 14.2, ph 14.3 | false alarms/sample: w 0.09, ti 0.28, ch 0.41, ph 0.33
+   per task (wins/losses): toolinput_vs_witness 31/3 p=0.000, concept_hybrid_vs_witness 38/11 p=0.000, plain_hybrid_vs_witness 39/24 p=0.077, concept_hybrid_vs_toolinput 23/20 p=0.761
+[full] bugs/run: witness-only 44.0 | toolinput 65.0 (on witness calls 40.0, on LLM-added calls 38.7) | concept-hybrid 65.3 | plain-hybrid 56.3
+   calls/sample: w 1.4, ti 8.7, ch 14.2, ph 14.3 | false alarms/sample: w 0.06, ti 0.21, ch 0.36, ph 0.29
+   per task (wins/losses): toolinput_vs_witness 30/3 p=0.000, concept_hybrid_vs_witness 37/13 p=0.001, plain_hybrid_vs_witness 37/25 p=0.162, concept_hybrid_vs_toolinput 22/22 p=1.000

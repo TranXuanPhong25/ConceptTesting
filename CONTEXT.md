@@ -168,3 +168,57 @@ Fact versions: v3f (frozen) → v3c (contract-filtered upper bound) → v3m / v3
 - Held-out MBPP+ (§11.22, PREREG "Held-out confirmation"): 53 PUTs, only 9 real bugs by manual reading -> decide
   source before running (alternative: fresh HumanEval PUTs from other models).
 - User reply style: Vietnamese + simple English terms (spec, property-result) — memory reply-vocabulary.
+
+## Update 2026-10-12 ~23:20
+- Qwen endpoint offline since 23:05 (ngrok 404). advdoc-hybrid 797/798 (missing 160/1 advdoc-plainhybrid); provisional
+  scoring out/gen2_qwen7b_advhyb_v4_partial + out/oracle_advhyb_partial (RESULTS §11.23: 56.0 vs plainhybrid 51.3,
+  13/6; vs advdoc 21/0; vs concept-hybrid 9/20). Final: rerun `run_advhyb generate` (cache) -> evaluate -> oracle
+  collect/llm/score. Do not edit PREREG.md between oracle stages (oracle manifest pins its sha).
+- Held-out MBPP+: Haiku pass 3 done (58 PUTs, 12 real bugs; puts.json pass3_only). PREREG held-out amendment 3: v7 recipe,
+  primary 58, secondary 12 real bugs. Codex is porting the pipeline into trickcatcher_linefacts/heldout/ (no GPU);
+  then GPU: heldout run.py mine -> facts/specfacts/bundle (CPU) -> arms -> evaluate -> oracle.
+- Diagram v10 published (v6/v7, P-fb, EvalAndMitigate + advdoc-hyb, held-out tree 6, v7 table).
+
+## Overnight plan 2026-10-13 (~01:45; no GPU; Codex quota resets ~05:30)
+- Running: Codex pipelines/v7 packaging + equivalence; Codex CrossHair on 276 v5 hard gaps (analysis/crosshair_gaps.py);
+  my subagents: rank 2 fault-oriented hint ranking (analysis/hint_rank.py), rank 3 trigger inference
+  (analysis/trigger_conditions.py). Codex jobs polled every 20 min by a shell loop (no LLM polling).
+- After ~05:30 (Codex quota) and once pipelines/v7 passes equivalence: Codex builds pipelines/v7lib (coverage.py +
+  mutmut swap, offline equivalence) and pipelines/v9_callfb (rank 1: round 2 = concrete calls + reach/infect/propagate
+  trace feedback, strict, matched plain-hybrid control; fake-client tests; PREREG before any run). Commit after each.
+- Do NOT edit the Kaggle serve notebook (user forbade).
+
+## Update 2026-10-13 ~08:10 (user closing the session)
+- Done overnight (all committed): VibePass metrics §11.28, rank-2 hint ranking §11.29, rank-3 trigger inference §11.30,
+  VibePass feasibility §11.31 (66 LeetCode PUTs), MBPP+ real-12 held-out §11.32 (no concept advantage), CrossHair §11.33
+  (10/276, no bug-revealing witness), advdoc-hybrid final §11.34, pipelines/v7 (equivalent), pipelines/v9_callfb (built).
+- RUNNING detached (setsid, parent PID 1; survives session close): trickcatcher_linefacts/out/runlogs_v9/detached.sh =
+  ping every 20 min (runlogs_v9/ping.log) + chain.sh (v9 dev: bundle -> arms -> evaluate -> report -> oracle collect/llm/score).
+  Progress: runlogs_v9/steps.txt (arms was killed once at 08:08 and relaunched; it resumes from cache).
+  Outputs: out/pipelines/v9_callfb/humaneval/. When DONE: analyse per PREREG "v9_callfb" (concept-hybrid vs plain-hybrid
+  ref, matched count, vs toolinput, kept hint-hitting inputs/sample, D_I), RESULTS §11.35, diagram node, commit.
+
+## Update 2026-10-13 ~19:00 (user ending the session)
+- Done today (committed): v9 dropped (§11.36, concrete-call round 2 worse than Hypothesis), rank 5 BEHAV no gain (§11.35),
+  pending registrations merged into PREREG (v7_mutref, v10_spechint, v9 result).
+- RUNNING detached (setsid, PID in ~/.claude/jobs/08a7596f/tmp/mutref_chain.pid): rank 2 v7_mutref LLM run,
+  out/runlogs_mutref/chain_from_eval.sh = evaluate (via analysis/mutref_eval_longtimeout.py, 3600 s scoring sandbox)
+  -> oracle-collect -> oracle-llm (GPU) -> oracle-score -> strict; ping every 20 min. Arms finished 16:55 (2793/2793,
+  with one GPU outage 13:10–13:24 resumed from cache). Progress: out/runlogs_mutref/steps.txt; outputs under
+  trickcatcher_linefacts/pipelines/v7_mutref/out/humaneval/.
+- To do when DONE: (1) append to PREREG a "v7_mutref amendments" note: GPU outage relaunch; scoring sandbox 600 -> 3600 s
+  (task 83); v4_evaluation MemoryError guard (task 87 oversized input, scored as crash on both programs); (2) analyse per
+  PREREG "v7_mutref": ODD dev tasks primary — concept-hybrid vs plain-hybrid (ref), vs toolinput, matched test counts,
+  plus the strict (v8-style) construction; compare with v7 / v8-strict; (3) RESULTS §11.37, diagram node, commit.
+- 19:30 update: evaluate + oracle-collect finished; oracle-llm failed because the Qwen endpoint is down (404 since ~18:47).
+  Resume when the GPU is back: export QWEN_BASE_URL/QWEN_MODEL, V4_PYTHON, PYTHONPATH=repo root, then
+  `setsid nohup bash trickcatcher_linefacts/out/runlogs_mutref/chain_from_oraclellm.sh &` (oracle-llm -> oracle-score -> strict).
+- 21:10 update: final comparison protocol (six fairness fixes) registered in PREREG_PENDING.md (ea102be); user said
+  NOT to implement it yet (quota). TrickCatcher-full adapter fix agent stopped before writing anything. Still running:
+  CoverUp/MuTAP baselines (subagent), pipelines/v7_vp tracer fix (subagent), v7_mutref oracle (GPU, detached).
+- 22:10 update: v7_mutref oracle-llm finished (21:40); oracle-score failed offline because B4 judge requests need the
+  endpoint (needs --online). Endpoint down again (404). Resume when GPU is back:
+  `setsid nohup bash trickcatcher_linefacts/out/runlogs_mutref/chain_from_score.sh &` (oracle-score --online -> strict),
+  with QWEN_BASE_URL/QWEN_MODEL, V4_PYTHON, PYTHONPATH exported. Then analyse per PREREG "v7_mutref" (odd tasks).
+- Subagents for CoverUp/MuTAP and pipelines/v7_vp stopped at the Claude session limit (resets 22:40) with partial,
+  uncommitted work in baselines/coverup, baselines/mutap, baselines/common.py|worker.py|tests and pipelines/v7_vp.

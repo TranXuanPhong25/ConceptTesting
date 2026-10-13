@@ -583,3 +583,141 @@ Toàn dev (ref): concept-hybrid **67.0** (v6 61.3), toolinput 64.7, plain-hybrid
 
 ### 11.22 Held-out MBPP+ (đang dựng; `out/heldout_mbpp/`)
 PUT: lời giải blind của Codex (lượt 1, model mặc định: 42 PUT) và gpt-5.6-luna (lượt 2; lần thử đầu sinh template lỗi cú pháp, đã loại; lần sau 46 PUT), gộp 53. Đọc tay (`labels_manual.json`, gắn trước mọi kết quả): chỉ **9/53 là bug thật** (logic 3, robustness 2, performance 4); 44 là spec MBPP mơ hồ hoặc canonical MBPP+ lạ (ví dụ `removezero_ip('0.0.0.0') == '0...'`, `check_integer('') is None`). 35 bài là PUT ở cả hai model. MBPP+ vì vậy là held-out yếu; cần cân nhắc nguồn khác trước khi chạy.
+- Lượt 3 (Claude Haiku, blind, trên 322 bài lượt 1 làm đúng; `blind_haiku/`, `filter_haiku/summary.json`): 322/322 file
+  parse, không file nào trùng; 10 PUT, 5 bài mới (93, 223, 264, 453, 792). Đọc tay: bug thật 93 (mũ âm trả 1), 264
+  (`int()` cắt 10.5 thành 10), 453 (số chính phương cộng căn hai lần); mơ hồ 223 (cả 58 input fail đều có n ≠ len(arr),
+  trái "its length (n)"), 792. Tổng held-out **58 PUT, 12 bug thật**. Chốt cấu hình (PREREG held-out amendment 3):
+  công thức v7, chính trên 58 bài, phụ trên 12 bài bug thật. Đang port pipeline sang MBPP+ (`heldout/`, Codex).
+
+### 11.23 advdoc-hybrid: test advdoc + vòng 2 nhắm gợi ý (tạm: 797/798 lượt, endpoint chết 23:05; `out/oracle_advhyb_partial/report.txt`)
+Vòng 1 = test của advdoc (EvalAndMitigate); gợi ý v3m2 nào chưa test nào chạm thì vòng 2 viết mô tả Hypothesis cho nó, kết quả đúng của input mới do Qwen viết chỉ từ docstring mới. Đối chứng advdoc-plainhybrid: cùng số lượt vòng 2, không có gợi ý. ref/post lấy từ cache, không b1/judge; so theo bài bỏ bài 160 (thiếu 1 lượt). Dev, bug/lần chạy · báo nhầm · % báo lỗi chương trình đúng:
+- ref: advdoc-hybrid **56.0** · 3.8% · 17%, advdoc-plainhybrid 51.3 · 3.7% · 16%, advdoc 42.7; full: 54.0 / 50.3 / 41.0.
+- Theo bài (ref): advdoc-hybrid vs advdoc **21/0 (p = 1e-6)**, advdoc-plainhybrid vs advdoc 15/0; advdoc-hybrid vs advdoc-plainhybrid **13/6 (p = .17)**; vs onlydoc 35/11.
+- So với các cách của mình (lượt v3m2-hybrid, cùng gợi ý): vs concept-hybrid 9/20 (p = .061; full 9/21, p = .043), vs plain-hybrid 30/24, vs toolinput 13/21.
+- Khớp ước lượng §11.18 (55.0 vs 51.3). Vòng 2 cộng thêm được vào baseline của paper; gợi ý concept hơn vòng 2 không gợi ý theo hướng đúng nhưng chưa có ý nghĩa thống kê. advdoc-hybrid vẫn kém concept-hybrid: vòng 1 thấy code + test cũ (concept) tốt hơn vòng 1 chỉ từ docstring.
+- Pilot (20 bài, ref): advdoc-hybrid 8.0, advdoc-plainhybrid 6.7 (bài 160 thuộc dev).
+
+### 11.24 Vì sao concept-hybrid hơn advdoc-hybrid (dev, bỏ bài 160; script `analysis/`)
+Chạy PUT và đáp án chuẩn trên mọi input đã sinh để tách "chọn input" (có input làm PUT ≠ đáp án, tức một oracle hoàn hảo sẽ bắt) khỏi "lấy kết quả đúng" (ref). Bug/lần chạy:
+
+| Cách | input lộ bug vòng 1 | ref vòng 1 | + vòng 2 (lộ bug) | input lộ bug tổng | ref tổng | ref/lộ bug | input vòng 1 trùng test cũ | input trái spec vòng 1 | % input lộ bug |
+|---|---|---|---|---|---|---|---|---|---|
+| concept-hybrid | 53.3 | 47.3 | +15.7 | 69.0 | 62.0 | 0.90 | 2.6% | 4.5% | 13.5% |
+| advdoc-hybrid | 49.3 | 42.7 | +13.7 | 63.0 | 56.0 | 0.89 | 15.7% | 7.5% | 8.7% |
+| plain-hybrid | 51.7 | 45.0 | +9.3 | 61.0 | 53.0 | 0.87 | 1.8% | 3.0% | 12.3% |
+
+- Không phải do oracle: ref biến input lộ bug thành phát hiện với tỉ lệ như nhau (0.90 / 0.89). Khoảng cách nằm ở input.
+- Khoảng 3/4 khoảng cách (4.6 trên 6.0) đến từ vòng 1 (vòng 1 của concept-hybrid chính là arm concept, của advdoc-hybrid là arm advdoc); vòng 2 thêm gần như nhau (+14.7 vs +13.3 với ref), dù advdoc-hybrid có nhiều gợi ý bị bỏ lỡ hơn (1.35 vs 1.15 yêu cầu/lần chạy).
+- advdoc viết test chỉ từ docstring, không thấy code và test cũ: 15.7% input vòng 1 là chép lại đúng input của test cũ (ví dụ trong docstring), mà PUT đã qua mọi test cũ nên các input này không thể lộ bug; nhiều input trái spec hơn (`strlen(None)`, `string_to_md5(None)`); input chọn kiểu "điển hình" (1, 2, 3, rỗng). concept thấy code nên nhắm chỗ code yếu: số thực cho `incr_list` (42), ký tự ngoài ASCII cho `strlen` (23), `string_sequence(1000)` (15, chậm), `'Aba'` cho `is_palindrome` (48), chuỗi rỗng cho `find_max` (158).
+- Trên 20 bài concept-hybrid thắng: cả 20 bài advdoc-hybrid có ít lần chạy có input lộ bug hơn; 9 bài khác biệt chỉ ở vòng 1, 9 bài cả hai vòng, 2 bài chỉ ở vòng 2.
+- Tách phần vòng 1 (ref): advdoc 42.7 → plain 45.0 (thấy code + test cũ) → concept 47.3 (thêm gợi ý). Phần "thêm gợi ý" ở vòng 1 không chắc khi chạy lại seed khác (§11.9).
+
+### 11.25 v7: concept-hybrid có thắng toolinput không (dev, ref; `analysis/v7_vs_toolinput.py`)
+- Thô: concept-hybrid 67.0 vs toolinput 64.7, theo task 23/20 (p = .76); full 65.7 vs 65.0, 22/22. **Chưa thắng.**
+- concept-hybrid dùng nhiều test hơn: 14.2 vs 8.7 call/sample. Cắt concept-hybrid về đúng số test của toolinput: 46.7, toolinput thắng **37/15 (p = .003)**. Concept một vòng vs toolinput: 18/37 (p = .015). Pilot: toolinput 11.0, concept-hybrid 10.0.
+- Gộp test của concept-hybrid + toolinput: 76.7 (21.0 call/sample), nhưng gộp 2 sample concept-hybrid cũng được 75.0 (25.5 call/sample; 8/9), plain-hybrid + toolinput 75.3 (13/8): lợi chỉ do nhiều test hơn, không do kết hợp.
+- toolinput cũng dùng concept: input của nó là witness input của chính các hint (fact → input), chỉ không có câu chữ. Theo số test, đưa thẳng input hiệu quả hơn đưa câu hint rồi để LLM tự chọn input.
+
+### 11.26 Round 2 thật ra thêm gì (v7 dev, ref; `analysis/round2_split.py`)
+Round 2 chọn tối đa 2 Hypothesis input mỗi hint bị bỏ lỡ, rồi gọi Qwen bằng prompt toolinput (thấy code + base test + các input đó, "write an assertion for each of these inputs; you may add others", tối đa 10). Khi không chọn được input nào, prompt này thành prompt plain, tức một lần gọi plain mới.
+- concept-hybrid: 1.88 request/sample nhưng chỉ giữ được 0.9 Hypothesis input/sample; 103/238 sample có round 2 không chọn được input nào. Qwen tự thêm 4.5 test/sample (call mới, khác round 1).
+- Bug/run tăng ở round 2: concept-hybrid +19.0 = chỉ nhờ Hypothesis input 8.0, chỉ nhờ test Qwen tự thêm 6.0, cả hai 5.0. plain-hybrid +12.3 = 7.0 / 3.0 / 2.3 (2.3 Hypothesis input và 2.8 test tự thêm mỗi sample).
+- Hypothesis input rất hiệu quả (0.9 test/sample cho 13 bug/run). Nhưng khoảng 1/3 phần tăng của concept-hybrid là "gọi Qwen thêm một lần", và concept-hybrid được lần gọi plain miễn phí này nhiều hơn plain-hybrid (103 vs 71 sample không có input), nên một phần khoảng cách concept-hybrid vs plain-hybrid không đến từ hint.
+
+### 11.27 v8-strict: round 2 chỉ giữ Hypothesis input đã chọn (CPU, exact cho ref/full; `out/oracle_v8strict_est/report.txt`, `analysis/v8_compare.py`)
+Dựng từ run v7: concept-hybrid / plain-hybrid / placebo-hybrid = test round 1 + đúng các input round 2 đã chọn (bỏ 4.0 / 2.3 / 0.5 test Qwen tự thêm mỗi sample); arm khác giữ nguyên. Chấm ref/post từ cache, không judge (mọi arm chấm cùng thư mục). Dev, ref (call/sample):
+- toolinput 64.7 (8.7), **concept-hybrid 61.0** (9.9; v7 67.0), plain-hybrid 55.7 (11.9; v7 57.3), concept 48.0, placebo-hybrid 45.3, plain 45.0.
+- concept-hybrid vs plain-hybrid: **29/20 (p = .25)** (v7 33/16, p = .021). Cùng số test (cắt arm nhiều test hơn): 58.3 vs 48.0, **34/17 (p = .024)**. vs placebo-hybrid 33/13 (p = .005). vs toolinput 22/23; cùng số test 16/36 (p = .008).
+- 36 task có hint từ spec: concept-hybrid vs plain-hybrid 18.3 vs 18.3 (8/7); vs toolinput 9/7.
+- Kết luận: phần thắng plain-hybrid của v7 có phần nhờ lần gọi Qwen thêm; bỏ đi thì không còn significant khi để nguyên số test, nhưng vẫn significant khi so cùng số test (plain-hybrid giữ nhiều input round 2 hơn vì chỉ cần input hợp lệ). Hint từ spec (v7) không hơn round 2 không hint.
+
+### 11.28 Metric kiểu VibePass (V_I / D_I / D_IO; dev, per sample = task/run; `analysis/vibepass_metrics.py`, `analysis/vibepass_metrics_report.md`)
+V_I = có input hợp lệ; D_I = có input làm PUT ≠ canonical (lộ bug, không cần oracle); D_IO = có input lộ bug kèm expected value đúng theo oracle. FH = V_I − D_I (khoảng hụt do tìm input sai), OV = D_I − D_IO (khoảng hụt do expected output sai).
+
+| run / arm | V_I | D_I | D_IO o0 | D_IO ref | FH | OV o0 | OV ref |
+|---|---|---|---|---|---|---|---|
+| v7 toolinput | 110.3 | 75.7 | 47.0 | 64.7 | 34.7 | 28.7 | 11.0 |
+| v7 concept-hybrid | 112.0 | 75.0 | 51.7 | 66.7 | 37.0 | 23.3 | 8.3 |
+| v7 plain-hybrid | 113.0 | 67.0 | 50.7 | 57.3 | 46.0 | 16.3 | 9.7 |
+| v8-strict concept-hybrid | 110.7 | 69.3 | – | 61.0 | 41.3 | – | 8.3 |
+| v8-strict plain-hybrid | 112.7 | 64.3 | – | 55.7 | 48.3 | – | 8.7 |
+| v8-strict placebo-hybrid | 113.0 | 52.0 | – | 45.3 | 61.0 | – | 6.7 |
+| advdoc / onlydoc | 112.3 / 112.7 | 50.0 / 47.7 | 38.7 / 37.7 | 42.7 / 40.3 | 62.3 / 65.0 | 11.3 / 10.0 | 7.3 / 7.3 |
+| advdoc-hybrid / -plainhybrid (tạm) | 111.3 | 63.0 / 58.7 | 46.7 / 44.3 | 56.0 / 51.3 | 48.3 / 52.7 | – | 7.0 / 7.3 |
+
+- Giống VibePass: khoảng hụt lớn nhất là tìm input (FH 35–65 task/run); input hợp lệ không phải vấn đề. OV phụ thuộc oracle: với o0 là 10–29, với ref chỉ 6–11.
+- Theo task trên D_I: v7 concept-hybrid vs plain-hybrid 36/21 (p = .063); v8-strict 32/22 (p = .22); vs toolinput 24/26 (v7), 23/29 (v8); vs placebo-hybrid 44/10 (v7), 39/15 (v8). Phần hơn của concept nằm ở phía input nhưng so với plain-hybrid chưa significant; chỉ chắc khi so với placebo.
+
+### 11.29 Hạng 2: chọn hint theo giả thuyết lỗi (offline; fit trên 58 task chẵn, kiểm trên 54 task lẻ; `analysis/hint_rank.py`, `analysis/hint_rank_report.md`)
+Kho hint = mọi fact code của v6 (mọi kind, không loại) + fact spec của v7, khoảng 13 hint/task; luật chấm điểm rồi lấy top 3. good@3 (chẵn / lẻ):
+- pick() hiện tại: v6 24 / 20, v7 29 / 25. Random trên toàn kho: 25.7 / 29.4. Ceiling toàn kho: 42 / 44.
+- LR không dùng ref: 35 / 32 (vs random p = .20). Luật tay: 35 / 33 (p = .10). **Không có luật nào không dùng ref thắng rõ random trên task lẻ.**
+- **LR + tín hiệu mutref** (trên input PUT và mutant khác nhau, mutant khớp đa số ref program còn PUT thì không): 37 / **35**, vs random p = .018, vs pick_v7 trên task lẻ 10/0 (p = .002). Tỉ lệ hint tốt của MUTANT khi mutref bật .56, khi không bật khoảng .25, như nhau trên chẵn và lẻ. Tín hiệu này gần ý TrickCatcher (dùng ref program viết từ spec), phải ghi rõ.
+- LR + mutref + refdis (PUT khác đa số ref trên input chạm hint): 38 / 40, nhưng refdis gần như chính là oracle ref, là cận trên, không đưa vào method.
+- Phần lớn mức tăng đến từ **bỏ luật loại theo kind** (random trên toàn kho đã 29.4 so với pick 25), và từ việc luôn đưa đủ 3 hint (pick hay đưa ít hơn 3). good@3 không đo việc Qwen có làm theo được hint không (luật mới chọn nhiều OUTPUT, SHAPE, LOOP-MAX trước bị loại), nên phải chạy LLM mới biết số bug có tăng không.
+- Tỉ lệ hint tốt theo kind: MUTANT .44, OUTCOME .44, STMT .43, DU .42, MUTANT-X .38, BOUND .35, DECISION .30, NUM .22, LOOP-MAX .21, OUTPUT .19, REL .18, SHAPE .13, LOOP .12, SPEC .10. Site đã được base test chạy hay chưa không phân biệt được hint tốt/xấu (.23 vs .22).
+
+### 11.30 Hạng 3: trigger inference, viết hint thành điều kiện trên input (offline; `analysis/trigger_conditions.py`, `analysis/trigger_conditions_report.md`)
+Thư viện feature cố định (độ dài, rỗng, dấu, 0, độ lớn, sắp xếp, lặp, lớp ký tự, quan hệ giữa tham số…), chốt trước khi xem kết quả. Điều kiện gồm 1–2 feature, phải đúng với witness và sai với mọi base input, và trên fuzz input phải dự đoán được việc chạm hint (P(hit|C) ≥ .5 và ≥ 3 lần P(hit|không C)). Fuzz được chạy lại khớp hoàn toàn với out/facts_v3m2.
+- Trên 87 lượt Qwen bỏ lỡ hint tốt (lượt v3m2): dựng được điều kiện và điều kiện đó giải thích được lần bỏ lỡ (không input hợp lệ nào của Qwen thỏa) ở **53/87**. Theo nguyên nhân: "không thử dạng input đơn giản" **34/38**, "đúng hướng nhưng lệch" 3/8, "chỉ invalid input mới chạm" 3/6, "cần tính giá trị cụ thể" 13/35 (8 không có ứng viên).
+- Kiểm trên chính input hợp lệ của Qwen: input thỏa điều kiện chạm hint 105/110 (95%), không thỏa thì chỉ 13/852 (1.5%). Điều kiện đúng là trigger thật; nhưng chưa chạy LLM nên chưa chứng minh được đưa điều kiện vào prompt sẽ sửa được lần bỏ lỡ.
+- Độ phủ: 45/65 hint tốt đã đưa, 114/165 hint đã đưa (dev); 117/139 điều kiện chỉ 1 feature (độ dài = 1 hoặc 2, giá trị 0, số âm, rỗng…).
+- Lưu ý: câu hint mẫu kèm "e.g. <witness>" thì gần như thành toolinput; thử công bằng phải dùng câu điều kiện không kèm witness, hoặc dùng làm feedback round 2 (hạng 1). Với task 94, điều kiện mô tả input mà spec đã đào cấm, nên đưa vào sẽ sinh thêm invalid input.
+
+### 11.31 VibePass làm held-out thứ hai: khả thi (CPU, không LLM; `analysis/vibepass_feasibility.py`, `analysis/vibepass_feasibility_report.md`)
+- 173 dòng / 76 câu hỏi. 83 buggy solution qua hết public test của LiveCodeBench; 73 trong đó fail ít nhất 1 private test (72 sai output, 1 chỉ timeout) và khác silver trên input mà `test_checker` chấp nhận: **73 PUT dùng được / 30 câu hỏi**. Bản strict (sai output hoặc crash, silver qua hết test chính thức): 71 / 28 câu hỏi; riêng LeetCode **66 PUT / 24 câu hỏi**.
+- Bug khó: buggy solution trung vị chỉ fail 23% private test, dài trung vị 77 dòng; 45/66 là hard, 21 medium, không có easy. Nhiều PUT cùng câu hỏi (có câu 7 bản) nên phải thống kê theo câu hỏi.
+- Silver qua hết public, 170/173 qua hết private (3 dòng chỉ timeout). `test_checker` chấp nhận mọi input chính thức và loại 52% input tự sinh, dùng được làm contract (do GPT-5-mini viết, chưa audit tay).
+- 10 dòng AtCoder bị gắn nhãn "buggy" chỉ vì cách harness LiveCodeBench đọc stdin / thread; đề xuất bỏ AtCoder (chỉ 5 dòng strict, cần thêm 1–2 ngày dựng runner).
+- Đề xuất: dùng 66 PUT LeetCode strict làm held-out phụ (bài khó, báo riêng, không gộp với MBPP+), map public test → base check(), silver → đáp án, test_checker → contract, private test + input sinh hợp lệ → chấm. Dựng format khoảng 0.5–1 ngày; cần kiểm công cụ fact/mutant chạy được với method trong class. Đăng ký PREREG riêng trước khi chạy.
+
+### 11.32 Held-out MBPP+ 12 bug thật, cấu hình v7 đã đăng ký (`out/heldout_mbpp_real12/oracle_v7hyb/report.txt`)
+12 task, K = 3, 7 arm, chấm ref/full (không có dpp/tc). Bug/run (trên 12 task), số task bắt được ≥ 1/3 lần, false alarm, test/sample, ref:
+- plain 2.67 · 3 · 1.0% · 8.8; plain-hybrid 2.67 · 3 · 2.6% · 10.7; toolinput 2.67 · 3 · 5.3% · 7.9; concept 2.33 · 3 · 11.8% · 7.3; **concept-hybrid 2.33 · 3 · 9.3% · 9.2**; placebo-hybrid 2.33 · 3 · 1.3% · 8.9; gen-plain 1.33 · 2.
+- Theo task (ref): concept-hybrid vs plain-hybrid 1/1, vs toolinput 0/1, vs placebo-hybrid 1/1, concept vs plain 1/1. Mọi arm chỉ bắt được khoảng 3/12 bug; **không thấy lợi thế của concept** trên held-out, và mẫu quá nhỏ để kết luận gì thêm.
+- Concept sinh nhiều invalid input hơn hẳn: 31 assertion trái contract ở concept và concept-hybrid, false alarm 9–12% so với 1–3% của plain/plain-hybrid. Precondition đào cho MBPP+ (spec ngắn) không chặn được các hint trỏ ra ngoài miền hợp lệ — đúng điểm yếu A3.
+- ref abstain vì bất đồng 119 lần (ref program 100/120 sống); judge được hỏi 13 lần, chọn đúng 10.
+
+### 11.33 CrossHair trên 276 gap bí của v5 (CPU, không LLM; `analysis/crosshair_gaps.py`, `analysis/crosshair_gaps_report.md`)
+Cài đặt chốt trước: crosshair-tool 0.0.111 (z3 5.1), 60 s CPU mỗi gap, precondition = validator B5, kiểu tham số lấy từ base input; witness chỉ tính khi `tracer.fact_hit` chạm và validator v4 chấp nhận. 276 gap = 238 dev + 38 pilot; không có gap MUTANT (BOUND 133, SHAPE 51, OUTCOME 35, NUM 30, STMT 14, REL 13).
+- STMT/OUTCOME/BOUND (182 gap): CrossHair kiểm được **10/276** (dev 6/238), bằng Hypothesis do LLM viết (10/276; 9 nếu dùng validator v4). Chỉ trùng 5; gộp cả hai được 15/276. 161/182 gap hết 60 s; 10 gap được chứng minh không tới được (dưới precondition và kiểu đã thấy).
+- Mở rộng sang SHAPE/REL/NUM: 24/276 (gộp với Hypothesis 27/276), nhưng 10/14 witness mở rộng trái contract EvalPlus (`'\x00'`, trộn kiểu).
+- **Không witness nào của CrossHair làm lộ bug** (PUT = canonical trên cả 9 witness hợp lệ), trong khi 6/9 witness của Hypothesis lộ bug. Kiểm đối chứng: CrossHair tìm lại được 16/19 fact mà fuzz đã chạm.
+- Kết luận: CrossHair không tốt hơn Hypothesis trên các gap bí và không thêm bug nào; không đưa vào pipeline. Phần lớn gap bí là vùng khó tới bằng cả symbolic lẫn ngẫu nhiên, và tới được cũng hiếm khi là chỗ có bug.
+
+### 11.34 advdoc-hybrid kết quả cuối (đủ 798/798 lượt, có b1/judge; `out/gen2_qwen7b_advhyb_v4_r2`, `out/oracle_advhyb_r2/report.txt`)
+Trùng với số tạm ở §11.23: ref advdoc-hybrid **56.0**, advdoc-plainhybrid 51.3 (full 54.0 / 50.3); b1one 50.7 / 46.0. Theo task (ref, đủ 113 task): vs advdoc-plainhybrid 13/6 (p = .17), vs advdoc 21/0, vs concept-hybrid 9/20 (p = .061), vs toolinput 13/21. Kết luận của §11.23–11.24 giữ nguyên.
+
+### 11.35 Hạng 5: concept về hành vi theo spec (BEHAV, v10_spechint, offline; `out/pipelines/v10_spechint/humaneval/offline_behav/report.md`)
+Qwen chỉ đọc spec, liệt kê yêu cầu hành vi (trích nguyên văn) kèm điều kiện D "input mà yêu cầu này có ý nghĩa"; hint BEHAV chỉ sinh khi không base input nào thỏa D mà có fuzz input hợp lệ thỏa. Sau 2 lần sửa lỗi ở bước lọc (PREREG_PENDING amendment 1, 1b), lần 3:
+- 157 yêu cầu sống sót, nhưng **146/157 đã được base test thỏa D**, nên chỉ ra 7 hint BEHAV ở 5 task.
+- good@3: v7 54/112 → v10 55/112; task chẵn 29 → 30 (task 34, "output chỉ gồm phần tử không trùng", PF .86), **task lẻ 25 → 25**. Theo luật đã đăng ký (chỉ chạy LLM nếu BEHAV thêm hint tốt trên task lẻ): **không chạy LLM**.
+- Nguyên nhân: yêu cầu Qwen 7B đào ra ở mức thô ("output đã sắp xếp", "output là string", "đếm a, e, i, o, u"), nên điều kiện D cũng thô và base test nào cũng thỏa. Bug nằm ở mức mịn hơn (ví dụ "đã sắp xếp" chỉ lộ bug với input chưa sắp xếp có phần tử trùng hoặc số âm), là thứ yêu cầu mức spec không mô tả.
+- Kết luận: miền concept "hành vi theo spec" ở dạng này không bù được tầng 1 (khoảng 38 task bug ngữ nghĩa). Hướng còn lại cho tầng 1 là giả thuyết lỗi mịn hơn (mutref của hạng 2 trên chỗ đã cover).
+
+### 11.36 v9_callfb: round 2 = Qwen viết call cụ thể + feedback 3 mức (dev, ref; `out/pipelines/v9_callfb/humaneval/oracle/report.txt`)
+- Bug/run: toolinput 64.0, **concept-hybrid 51.3** (v8-strict 61.0), concept 48.0, plain 45.0, **plain-hybrid 45.0** (v8-strict 55.7), placebo-hybrid 44.7.
+- Theo task: v9 vs v8-strict concept-hybrid **3/19 (p = .001)**, plain-hybrid 0/21. concept-hybrid vs plain-hybrid 26/19 (p = .37), vs toolinput 18/33 (p = .049), vs placebo-hybrid 26/18. Round 2 chỉ thêm 6/0 task so với concept một round; plain-hybrid không thêm task nào so với plain (0/0).
+- Vì sao kém: concept-hybrid đề xuất 5.506 call, 5.441 hợp lệ nhưng chỉ **132 chạm hint (2.4%)**, giữ được 0.19 input/sample (Hypothesis ở v7/v8: 0.9). Theo kind: hint SPEC (input rất lớn, non-ASCII) 21/2.295 — Qwen không viết được literal 1.000 phần tử, trong khi strategy Hypothesis sinh dễ; MUTANT 616 call tới site và làm khác cục bộ nhưng chỉ 12 làm output khác (khó truyền ra output); BOUND 728 tới site nhưng chỉ 28 chạm đúng biên. plain-hybrid giữ 2.0 input/sample nhưng không lộ thêm bug nào: input Qwen tự nghĩ nằm sát input round 1, kém đa dạng hơn draw ngẫu nhiên của Hypothesis.
+- Kết luận: với Qwen 7B, để LLM viết **strategy** rồi để thư viện sinh input (Hypothesis) tốt hơn hẳn để LLM viết **input cụ thể** có feedback. Feedback 3 mức không bù được. Giữ round 2 kiểu Hypothesis (v8-strict) làm bản chính; v9 không dùng.
+
+### 11.37 Witness-only: phần đóng góp của fuzzing khi không có LLM (dev v7, CPU; `analysis/witness_only.py`, `analysis/witness_only.txt`)
+- witness-only = các input witness của hint đã chọn (chính là input toolinput đưa cho LLM), expected value lấy từ oracle. Không gọi LLM. Trung bình 1.4 call/task.
+- Bug/run (ref): **witness-only 43.0** (1.4 call/sample, false alarm 0.09), toolinput 64.7 (8.7 call), concept-hybrid 66.7 (14.2 call, v7 chưa strict), plain-hybrid 57.3 (14.3 call). Kết quả với full gần như giống.
+- Tách detection của toolinput: chỉ trên các call trùng witness được 39.0, chỉ trên các call LLM tự thêm được 39.3. Tức là LLM bỏ hoặc viết sai một phần witness (39.0 < 43.0), nhưng các test nó tự thêm cũng bắt được khoảng chừng ấy bug.
+- Theo task: toolinput hơn witness-only 31/3; concept-hybrid hơn witness-only 38/11; plain-hybrid hơn witness-only 39/24 (p = .08); concept-hybrid vs toolinput 23/20 (n.s.).
+- Ý nghĩa:
+  - Khoảng 2/3 bug mà toolinput bắt được đã có sẵn ở witness của fuzz, chỉ cần một oracle. Đây là phần của tool, không phải của LLM.
+  - LLM thêm được khoảng +22 bug/run so với witness-only. Vì vậy mọi so sánh concept phải kèm cả witness-only và toolinput.
+  - Kế hoạch: báo witness-only làm baseline bắt buộc trong giao thức cuối. Với B3 (ablation), phải đo "concept giúp LLM" theo phần vượt witness-only, không theo tổng.
+
+### 11.38 Cùng số test bằng random subset thay prefix (v8-strict construction, dev; `analysis/matched_subsets.py`, `analysis/matched_subsets.txt`)
+- Arm nào nhiều call hơn thì cắt xuống bằng arm kia bằng random subset (seed 20261013, 100 lần, lấy trung bình), thay cho lấy prefix (prefix thiên về thứ tự LLM viết). Đây là sửa 4 của giao thức, phần phân tích phụ. Theo task, so bằng tổng phân số qua 3 sample, nên số task "khác" nhiều hơn so với prefix.
+- Bug/run (ref), random so với prefix:
+  - concept-hybrid vs plain-hybrid: 59.3/51.5, 43/26 (p = .053); prefix 58.3/48.0, 34/17 (p = .024).
+  - concept-hybrid vs placebo-hybrid: 58.5/43.7, 42/23 (p = .025); prefix 50.7/42.7, 28/16.
+  - **concept-hybrid vs toolinput: 54.2/62.5, 26/40 (p = .11)**; prefix 46.0/62.0, 16/36 (p = .008).
+  - plain-hybrid vs toolinput: 48.1/63.6, 23/50 (p = .002).
+  - concept vs plain (round 1): 46.5/42.7, 30/26 (n.s.).
+  - Với full: hướng giống ref; concept-hybrid hơn plain-hybrid 45/24 (p = .015), hơn placebo 43/21 (p = .008).
+- Ý nghĩa: prefix làm concept-hybrid **trông kém toolinput hơn thực tế**, vì input round 2 (phần có hint) nằm cuối danh sách. Với random subset, khoảng cách tới toolinput giảm từ 16 xuống 8 bug/run và không còn có ý nghĩa; toolinput vẫn nhỉnh hơn. Lợi thế của concept-hybrid so với không hint và so với placebo vẫn còn, nhưng với ref thì sát ngưỡng (.053). Từ giờ phân tích cùng số test dùng random subset.

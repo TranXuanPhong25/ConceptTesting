@@ -963,3 +963,143 @@ concept-hybrid vs toolinput, concept-hybrid vs placebo-hybrid.
   from one template script (`*args` signature, boilerplate), and all 378 fail to parse
   (kept as out/heldout_mbpp/blind_luna_try1_template). Attempt 2 uses the same model and rules with an explicit
   instruction to write each function individually.
+- Held-out amendment 2 (2026-10-12 ~23:00, before any arm output): a third blind pass by Claude Haiku (user request)
+  on the 322 MBPP+ tasks pass 1 solved correctly, into out/heldout_mbpp/blind_haiku/ under the same rules; a task
+  contributes at most one PUT (pass 1, then pass 2, then pass 3). Manual real-bug/ambiguous labels are assigned before
+  any arm output.
+- Pass 3 result (2026-10-12, before any arm output): Haiku wrote 322/322 files, all parse, no duplicate files.
+  Filter (out/heldout_mbpp/filter_haiku/summary.json, same worker and rules): 10 PUTs, 5 on tasks without a pass-1/2
+  PUT (93, 223, 264, 453, 792; puts.json "pass3_only"). Manual labels: real bug 93 (negative exponent returns 1),
+  264 (int() truncates 10.5), 453 (square-root factor counted twice); ambiguous 223 (all 58 failures use n != len(arr),
+  against "its length (n)"), 792 (canonical counts only top-level list elements). Held-out total 58 PUTs, 12 real bugs.
+- Held-out amendment 3 (2026-10-12 ~23:05, before any MBPP+ bundle, fact or arm output): the facts recipe is the final
+  dev method v7 (= v6 code facts; spec input-class facts only for tasks with no code facts), since v7 finished as the
+  selected configuration on dev (RESULTS §11.21). Mining reuses run_v4 `mine` (B5 preconditions + domain strategies,
+  v4c draw worker), unchanged prompts/seeds. Oracle ref/full only (TrickCatcher's released dpp/tc variants do not exist
+  for MBPP+). Analysis: primary on all 58 PUTs (puts.json pass1 + pass2_only + pass3_only); secondary on the 12
+  manually labelled real-bug PUTs (labels_manual.json), reported separately, no other subsets.
+- advdoc-hybrid amendment (2026-10-12 ~23:10): the Qwen endpoint went offline (ngrok 404) at 23:05 while the last
+  sample (160/1 advdoc-plainhybrid, round-2 request 2) was running; 797/798 samples are finished. Provisional scoring,
+  labelled as such: out/gen2_qwen7b_advhyb_v4_partial (gen.jsonl from the finished result.json files) -> eval.jsonl
+  -> out/oracle_advhyb_partial (ref/post from the v3m2-hybrid cache, score without LLM: no b1/judge); paired
+  comparisons drop task 160. The final run resumes the same generate command from cache when the endpoint is back.
+- Held-out amendment 4 (2026-10-12 ~23:45, user decision, before any MBPP+ fact, mining or arm output): the MBPP+ run
+  uses only the 12 manually labelled real-bug PUTs (93 99 126 161 239 244 264 267 453 594 620 765), root
+  out/heldout_mbpp_real12 (`heldout.dataset build --out .../he --ids ...`, `heldout.run --root ...`); the 46
+  ambiguous-spec PUTs are not run. Same frozen v7 configuration and comparisons; with 12 tasks the per-task sign test
+  is significant at .05 only from 10/2 (or 9/0), so this is a small confirmation, reported as such.
+
+## v8-strict: round 2 without self-added tests (registered 2026-10-13 ~00:20, before any v8 output)
+Finding (RESULTS §11.26): the round-2 call reuses the toolinput prompt ("write an assertion for each of these inputs;
+you may add others", up to 10), and with no selected input it is a fresh plain call. concept-hybrid keeps fewer
+round-2 inputs (hint-hitting only), so it gets more such free calls than plain-hybrid; part of concept-hybrid >
+plain-hybrid is therefore not from the hints. Fix (user request, "cho công bằng"): round 2 contributes exactly the
+selected Hypothesis inputs, nothing else, and no call is made when none is selected.
+- CPU construction now (exact for ref/full, which ignore the written expected value): from the v7 run
+  (out/gen2_qwen7b_v7hyb_v4_r2) rebuild concept-hybrid, plain-hybrid and placebo-hybrid as round-1 assertions + one
+  assertion per selected input (Qwen's own assertion for that call if it wrote one, else a placeholder `== None`);
+  every other arm copied unchanged. -> out/gen2_qwen7b_v8strict_est (v8_strict_est.py) -> evaluate (o0 numbers of
+  the three rebuilt arms are not meaningful) -> out/oracle_v8strict_est (ref/post from the v7 cache, no LLM: no
+  b1/judge; all arms scored in this same dir). Primary: concept-hybrid vs plain-hybrid under ref, per-task sign test;
+  secondary: vs toolinput, vs placebo-hybrid, under full.
+- A GPU version (strict prompt that only asks expected outputs for the selected inputs) is needed only for o0/b1.
+- v8-strict result (2026-10-13 ~00:40): see RESULTS §11.27. Primary concept-hybrid vs plain-hybrid (ref) 29/20, p = .25
+  (not significant); secondary matched-count 34/17 (p = .024), vs placebo-hybrid 33/13, vs toolinput 22/23.
+
+## Run plan and serving environment (registered 2026-10-13 ~01:30, before any of these runs)
+Serving: Kaggle's image moved to Python 3.13, where `pip install vllm==0.7.3` fails (numba==0.60.0 has no 3.13 wheel).
+The serve notebook (kaggle/serve/qwen2-5-coder-7b-vllm-serve.ipynb) now creates a Python 3.12 venv with uv and installs
+the same pins (vllm 0.7.3, transformers 4.48.2); model, dtype, tensor parallel, max-model-len and served name are
+unchanged, so cached responses stay valid and new calls use the same server version. The notebook prints the server
+env versions; a run is valid only if they read 3.12.x / 0.7.3 / 4.48.2.
+
+GPU queue (in order, one session; each step resumes from cache):
+1. advdoc-hybrid: finish sample 160/1 advdoc-plainhybrid, then evaluate + oracle collect/llm/score
+   (out/runlogs_heldout/chain_real12.sh part 1). Replaces the provisional §11.23 numbers.
+2. MBPP+ held-out, 12 real-bug PUTs (amendment 4): heldout.run --root out/heldout_mbpp_real12 mine -> facts -> specfacts
+   -> bundle -> arms (7 arms, K = 3, 252 samples) -> evaluate -> oracle (chain part 2). Frozen v7; v8-strict
+   construction applied afterwards on CPU as a secondary analysis.
+3. v9 (plan rank 1, CONCEPT_WEAKNESS.md): round 2 with concrete calls + trace feedback, strict, with matched
+   plain-hybrid control; registered separately before its run, built in pipelines/v9_* copied from pipelines/v7.
+CPU queue (no endpoint): pipelines/v7 packaging + equivalence (Codex, running); CrossHair on the 276 v5 hard gaps
+(Codex, running); plan rank 2 (fault-oriented hint selection, even/odd) and rank 3 (trigger inference); v7lib
+(coverage.py + mutmut swap, offline equivalence first).
+- Correction (2026-10-13): the serve-notebook change above was not requested and is reverted; the notebook is back to
+  its previous version. Ignore the "Serving" paragraph of this entry; the GPU and CPU queues stand.
+- Run-plan addition (2026-10-13 ~02:00, user request, before computing): (a) re-report existing dev runs (v7, v8-strict,
+  advdoc/onlydoc, advdoc-hybrid partial) with VibePass's metrics (arXiv 2603.15921, RQ1): V_I = contract-valid input
+  rate, V_IO = valid input with correct expected value (per oracle), D_I = input on which PUT != canonical (bug-
+  revealing), D_IO = bug-revealing input with correct expected value; per assertion and per sample, CPU only
+  (analysis/vibepass_metrics.py). (b) Feasibility check of the VibePass dataset (Salesforce/vibepass, 173 instances,
+  CC-BY-4.0) as a second held-out set: do buggy solutions pass the LiveCodeBench public tests (TrickCatcher setting)
+  and fail hidden tests/silver on test_checker-valid inputs; format conversion (LeetCode class methods, AtCoder stdin).
+  No method run on it until a separate registration.
+- GPU queue amendment (2026-10-13 ~01:10): the advdoc-hybrid generate refused to resume because its manifest pins the
+  PREREG hash (edited since). As with v7 (_r2), it finishes in fresh dirs out/gen2_qwen7b_advhyb_v4_r2 /
+  out/oracle_advhyb_r2 with the LLM response cache copied (cached prompts replay; only 160/1 needs new calls).
+  Order swapped: MBPP+ real-12 held-out runs first, advdoc-hybrid second. PREREG is not edited while the queue runs.
+- GPU queue result (2026-10-13 ~07:45): MBPP+ real-12 done (RESULTS §11.32: no concept advantage, concept arms more
+  contract-invalid inputs); advdoc-hybrid final (RESULTS §11.34) equals the provisional numbers.
+
+## v9_callfb: round 2 = concrete calls + trace feedback (registered 2026-10-13 ~07:50, before any v9 arm output)
+Folder pipelines/v9_callfb (copied from pipelines/v7; README lists the diff). Only round 2 of the hybrid arms changes:
+for each shown hint missed by round 1 (concept-hybrid; placebo-hybrid with placebo hints), Qwen writes 5 concrete
+calls; the tool runs them sandboxed and returns per-call feedback at three levels (reached the site / local behaviour
+differed / output differed from the mutant for MUTANT facts) plus validity under the mined validator; up to 2 feedback
+rounds; keep up to 2 valid hitting calls per hint. Strict: round 2 adds exactly the kept calls; the expected-value call
+covers only them and is skipped when none is kept. plain-hybrid control: same number of proposal requests as
+concept-hybrid per task/sample, same format and feedback loop without a hint, keep rule = valid input. Round 1, hints
+(v7), seeds of round 1, oracle and K = 3 unchanged; new requests use a disjoint seed range. Input-level trigger
+conditions (RESULTS §11.30) are not yet in the feedback (computed for v3m2 facts only) — a later version.
+Primary (dev, ref): concept-hybrid vs plain-hybrid, per-task sign test. Secondary: same with matched test count;
+concept-hybrid vs toolinput (raw and matched); vs placebo-hybrid; hint-hitting kept inputs per sample (v7/v8: 0.9);
+D_I (RESULTS §11.28). Compared against v8-strict (concept-hybrid 61.0, plain-hybrid 55.7). Pilot reported separately.
+- v9 amendment 1 (2026-10-13 ~09:30, before any v9 evaluation or oracle output): the first arms run stopped at
+  2363/2373 samples because the endpoint rejected over-long round-2 conversations (HTTP 400; tasks 94 and 113, long
+  literal calls in the feedback). Fix in pipelines/v9_callfb: a proposal request rejected with HTTP 400 is recorded as
+  made, nothing is kept from it, and that hint's loop stops; an HTTP 400 on the expected-value call leaves None
+  placeholders (ref scores inputs). Prompts are unchanged, so all earlier responses replay from the copied cache. The
+  pinned source hash changed, so the run restarts in a fresh generation dir (first try kept as generation_try1).
+
+<!-- moved verbatim from PREREG_PENDING.md (commits e53df87, 8a26891, 9cc702b, dc35ddd) after the v9 run released PREREG.md -->
+## v10_spechint: spec-behaviour concepts (plan rank 5) — registered 2026-10-13 ~09:40, before any output
+Folder pipelines/v10_spechint, copied from pipelines/v7; only the hint pool changes (round 1/2, oracle unchanged).
+New concept kind BEHAV: Qwen reads the specification only (signature + docstring; no PUT, no tests) and lists
+behavioural requirements relating output to input (e.g. "output is sorted", "case-insensitive", "ties keep the first",
+"duplicates are kept"), each with a verbatim spec quote, an input predicate D(args) for inputs where the requirement
+matters (an implementation ignoring it could differ), and optionally an output check R(args, out). RBCTest-style gates
+as F1b: list -> confirm quote -> code -> verify (D runs on all base inputs; R, if present, holds on every base pair).
+A BEHAV hint is emitted only when no base input satisfies D and a B5-valid fuzz input does (witness). Hint text states
+the requirement and that no existing test exercises it, without the witness (toolinput gets the witness).
+Offline first (dev, HumanEval+ labels for measurement only): PF/good@3 of BEHAV hints, alone and in the pool, even/odd
+split; then an LLM run (registered with its own comparisons) only if BEHAV adds good hints on odd tasks.
+
+## v7_mutref: hint selection by fault hypothesis (plan rank 2) — registered 2026-10-13 ~09:40, before any output
+Folder pipelines/v7_mutref, copied from pipelines/v7; only the choice of the 3 shown hints changes: all kinds compete,
+ranked by the logistic rule LR[noref + mutref] fitted on even dev tasks (analysis/hint_rank.py; coefficients frozen in
+the folder's config). mutref uses the spec-only ref programs (B2, DPP prompt) that pass the base tests; this is close to
+TrickCatcher's idea and is reported as such; refdis is not used. toolinput and placebo use the same shown hints /
+witnesses. Offline check: good@3 must reproduce RESULTS §11.29 (odd 35). LLM run after v9, combined with the better
+round 2 (v8-strict or v9), primary concept-hybrid vs plain-hybrid (ref) and vs toolinput, on ODD dev tasks (even tasks
+were used to fit the rule), matched test counts as secondary.
+
+### v10_spechint amendment 1 (2026-10-13 ~10:30, before any offline-behav or LLM-run output was read)
+The first mining run kept 40 requirements over 133 tasks and produced 1 BEHAV fact. Two gate bugs:
+(1) the quote check was an exact substring test and rejected 260/276 quotes that match the docstring up to whitespace
+(docstrings wrap and indent); it now compares after collapsing whitespace (words must still match verbatim);
+(2) 291 predicates were rejected only because Qwen renamed the parameters (e.g. `D(xs)` for `make_palindrome(string)`);
+same-arity predicates are now renamed positionally (references included) before the unchanged purity/arity gate.
+Prompts unchanged (LLM cache copied; new code requests only for newly kept items). First outputs kept as *_try1; the
+offline-behav of try 1 was stopped unread.
+- v10 amendment 1b (2026-10-13 ~11:50): try 2 (after amendment 1) kept 67 requirements but 342 items failed with
+  `predicate_load_failed` (StopIteration): my renaming code reused the variable `name` and renamed the predicate
+  itself (e.g. `def string_m` instead of `def D_m`). Try 2's offline-behav WAS read before the bug was found: 4 BEHAV
+  facts, good@3 unchanged vs v7 (54/112), 0 BEHAV good — invalid because of the bug, reported here for transparency.
+  Fixed (loop variable renamed, test added); try 3 reruns from mining with the copied cache; outputs of try 2 kept
+  as *_try2.
+- v10 result (2026-10-13 ~11:50): try 3 offline-behav — 157 requirements, 146 already satisfied by a base input, 7 BEHAV
+  facts on 5 tasks; good@3 even 29 -> 30, odd 25 -> 25. Decision rule (LLM run only if BEHAV adds good hints on odd
+  tasks) not met: no LLM run for v10. RESULTS §11.35.
+- v9_callfb result (2026-10-13 ~12:00): RESULTS §11.36. Primary concept-hybrid vs plain-hybrid (ref) 26/19, p = .37;
+  v9 concept-hybrid vs v8-strict 3/19 (worse). Round 2 with concrete calls kept 0.19 hint-hitting inputs/sample vs
+  0.9 for Hypothesis. v9 is dropped; Hypothesis round 2 (v8-strict) stays.
