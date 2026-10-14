@@ -43,6 +43,10 @@ placebo-hybrid, plain-hybrid; K = 3) → round 2 = Hypothesis strategy per misse
   calls + feedback (§11.36), CrossHair (§11.33) gave nothing. MBPP+ real-12: no concept advantage (§11.32).
 - Main loss = fault-hypothesis gap (VibePass metrics §11.28): Qwen follows hints poorly; round 2 is where hints help.
 
+- v11_fair dev sanity (§11.41, real strict, matched placebo): concept-hybrid 61.0, toolinput 64.3, placebo-hybrid 57.7
+  (was 45.7 with fewer round-2 requests), plain-hybrid 55.7; concept vs placebo only 26/22 → most of the old "beats
+  placebo" came from the extra round-2 requests, not hint content.
+
 **Defensible claim now:** the tool yields grounded facts with witnesses and they help generation (beat placebo and
 paper baselines); NOT yet shown that an LLM reading concepts beats plain/toolinput under fair conditions.
 

@@ -1,0 +1,90 @@
+{
+  "VERSION": "v14_obgraph_py",
+  "model": "qwen2.5-coder-7b-instruct",
+  "seeds": {
+    "facts": 20261010,
+    "mining": 20261010,
+    "arms": 20261010,
+    "oracle": 20261212,
+    "pilot": 20261010,
+    "hypotheses": 20261014
+  },
+  "K": 3,
+  "workers": 12,
+  "V4_PYTHON": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/codex_v4/venv/bin/python",
+  "datasets": {
+    "humaneval": {
+      "he": "PBT_EdgeCases/run/data/humaneval.jsonl",
+      "hep": "PBT_EdgeCases/run/data/humaneval_plus.jsonl",
+      "contracts": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "oracle_hep": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "puts": "vendor/TrickCatcher/Datasets/EvalPlus/PUTs"
+    },
+    "heldout": {
+      "he": "humaneval_mbpp.jsonl",
+      "hep": "humaneval_mbpp_plus.jsonl",
+      "contracts": "humaneval_mbpp_plus.jsonl",
+      "oracle_hep": "humaneval_mbpp_plus.jsonl",
+      "puts": "PUTs",
+      "selection": "tasks.json"
+    }
+  },
+  "freeze_hypothesis_constants": true,
+  "B0_VARIANTS": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/b0/variants/Datasets/EvalPlus/GenProgs",
+  "strict_round2": true,
+  "placebo_matched": true,
+  "caps": true,
+  "shared_scorer": true,
+  "arms": [
+    "graph-strategy",
+    "card-strategy",
+    "graph-noconcept",
+    "plain-strategy",
+    "placebo-strategy",
+    "toolinput",
+    "new-toolinput",
+    "witness-only",
+    "new-witness-only"
+  ],
+  "experiment_method": "obgraph",
+  "experiment": {
+    "seed": 20261014,
+    "task_ids": [
+      27,
+      31,
+      51,
+      56,
+      57,
+      59,
+      63,
+      76,
+      78,
+      85,
+      91,
+      94,
+      98,
+      110,
+      118,
+      126,
+      136,
+      144,
+      149,
+      152
+    ],
+    "k": 1,
+    "strategy_slots": 3,
+    "draws": 100,
+    "draw_cap": 500,
+    "discovery_draws": 200,
+    "selected_per_slot": 2,
+    "max_input_calls": 12,
+    "max_assertions": 20,
+    "proposal_cap": 6,
+    "shown": 3,
+    "generation_calls": 3,
+    "proposal_calls_per_task": 1,
+    "proposal_max_tokens": 4096,
+    "strategy_max_tokens": 1024
+  },
+  "proposal_guidance": "python-json-example-v1"
+}

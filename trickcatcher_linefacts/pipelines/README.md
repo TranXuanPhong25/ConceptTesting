@@ -1,5 +1,11 @@
 # Frozen experiment pipelines
 
+New isolated trials (2026-10-14): [v14_obgraph](v14_obgraph/README.md), grounded obligation paths, and
+[v15_mrconcept](v15_mrconcept/README.md), conditional metamorphic concepts. Both use a dedicated `experiment.py`
+runner, fixed 20 dev tasks/K=1, and have passed CPU validation; online runs await Qwen availability.
+Their controls use fixed strategy slots rather than the legacy hybrid schedule. See the local
+[version tree and status](EXPERIMENTS-2026-10-14.md).
+
 v7 is B5 precondition mining and v4c Hypothesis domain strategies, followed by v6 code facts (the original fact extractor with mined validity), then specification input-class facts only for tasks without code facts. The hybrid bundle runs seven arms at K=3: plain, concept, toolinput, gen-plain, concept-hybrid, placebo-hybrid, and plain-hybrid. Evaluation uses v4 scoring; oracle scoring uses B1, reference programs, postconditions, and the mutant judge. The run of record is `out/gen2_qwen7b_v7hyb_v4_r2` with `out/oracle_v7hyb`. The optional strict construction keeps only the selected Hypothesis inputs in round 2, as in v8-strict.
 
 Stages, in order:

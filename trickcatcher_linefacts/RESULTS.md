@@ -763,3 +763,84 @@ Qwen chỉ đọc spec, liệt kê yêu cầu hành vi (trích nguyên văn) kè
   - Trong cùng ngân sách, fact nằm trong hint (concept) chưa hơn rõ không hint (plain-hybrid), chưa hơn hint giả cùng ngân sách (placebo), và vẫn kém toolinput một chút.
   - Thứ giúp nhiều là **round 2 với Hypothesis** (tool) và **witness** (fuzz).
   - Đây là động lực của B3 (concept có quan hệ) và B4 (giả thuyết vi phạm spec). Baseline paper đang chạy, sẽ báo ở mục sau.
+
+### 11.42 Baseline paper trong giao thức cuối (dev 113 task, K = 3, ref chung; `analysis/final_protocol_v11_dev.md`)
+- Bug/run: MuTAP 43.7 (precision .86), TrickCatcher-full (tc_full_v2) 43.0 (.99), SymPrompt 17.7 (.72), ACH 3.3 (1.00, chỉ giữ test giết mutant, 0.23 assertion/sample), CoverUp 3.0 (dừng sớm vì base test đã phủ code, 0.8 call/sample).
+- concept-hybrid (61.0) thắng mọi baseline: vs MuTAP 37/15 (p = .003), vs TC-full 35/16 (p = .011), vs SymPrompt 61/5, vs ACH 73/0, vs CoverUp 73/1.
+- Nhưng toolinput 64.3 và witness-only 43.0 cho thấy phần lớn lợi thế đến từ tool (witness + Hypothesis), không từ nội dung hint (§11.41). Amendments 3/4 (client baseline retry, over-context) trong PREREG.
+
+### 11.43 Hai hướng concept mới: v14_obgraph / v15_mrconcept (2026-10-14, CPU only)
+- Người dùng yêu cầu thử grounded obligation graph và conditional metamorphic concepts trước, trong folder mới.
+  Hai copy riêng từ v13_hyp: [v14_obgraph](pipelines/v14_obgraph/README.md), [v15_mrconcept](pipelines/v15_mrconcept/README.md).
+- Registration mới trong PREREG; exploratory cohort = 20 dev task IDs chọn bằng seed 20261014, K=1. Chưa dùng held-out.
+- CPU preparation trên 20/20 PUT pass base: 193 code nodes, 395 AST/linefact concept labels, 70 spec clauses,
+  424 typed edges (226 observed DATA, 198 enclosing CONTROL). 19/20 task có edge tới RETURN. Cả hai copy cho cùng counts.
+  Đây là structural availability; chưa phải số obligation/MR có ích hoặc số bug phát hiện.
+- 28 tests pass (14/copy), gồm path/purity/schema adversaries, runtime trigger/path checks, giữ MR fail trên input
+  chưa base-tested của buggy PUT, paired-input budget/resume, và tách canonical confirmation khỏi false alarms.
+- Shared-ref adapter CPU smoke trên frozen witnesses HumanEval/27: 2 calls, 10 cached spec-only ref responses,
+  2 calls được execute/score trong mỗi copy. Đây là compatibility check; không đánh giá các arm mới.
+- 222 direct source/config/doc files của v7/v11/v12/v13 giữ nguyên hash sau checks. Source vendor không sửa.
+- **Chưa có model-effectiveness result:** người dùng báo hết quota, không có Qwen endpoint. Chưa gọi model để
+  propose obligations/MRs hoặc generate strategies, không dùng paid fallback. Runbook của mỗi copy đã sẵn;
+  trần dự kiến 440 + 380 = 820 logical model requests cho hai smoke runs, reuse refs, báo actual tokens khi chạy.
+- Chi tiết/validation: `pipelines/<variant>/CPU_VALIDATION.{md,json}`; local version tree:
+  [EXPERIMENTS-2026-10-14.md](pipelines/EXPERIMENTS-2026-10-14.md).
+
+### 11.44 v14_obgraph / v15_mrconcept GPU smoke: proposal-format failure (2026-10-14)
+- Chạy thật trên Qwen2.5-Coder-7B-Instruct, frozen 20 dev tasks/K=1, shared saved v11 spec-only refs.
+  Full cohorts: v14 180 rows, v15 160 rows; ref execution/scoring hoàn tất. Không chạy held-out.
+- **Cả hai có 0 accepted/shown semantic cards trên 20 tasks**, không có new card witnesses. Các concept arms
+  dùng generic fallback đã đăng ký, nên đây **chưa là phép thử có treatment** cho graph hoặc conditional MR.
+- V14 rejection census: invalid/missing Python T 47; invalid typed path 48; unknown clause ID 13; Python syntax 6;
+  parse failure 1. Model hay đưa concrete input lists vào T, node IDs vào edge path, và JavaScript/expression vào O.
+- V15: 89 rows không có function source đúng schema, 18 dùng calls ngoài whitelist, 13 syntax/string errors.
+- Descriptive D_IO tasks/20: v14 graph/cards/noconcept **6/6/6**, plain 7, toolinput strategy-adapter 7, original
+  witness-only 6, new-witness-only 0. V15 MR 6, blind 7, flatfacts 6, toolinput adapter 7, original witness-only 6.
+  Primary sign contrasts: v14 0/0; v15 1/2; nominal p=1 ở cả hai. Không dùng chúng để kết luận idea không có ích.
+- Physical successful requests: 311 mỗi run, total 622; cache hits v14 129 / v15 69; transport failures 0.
+  New reference calls 0. Actual uncached tokens: v14 231.027 input + 39.734 output; v15 178.235 + 29.321.
+- Finding: **proposal format/code-source compliance là gate đang hỏng**. Cần một copy mới với Python/schema
+  guidance rõ và proposal-stage gate trước khi đánh giá utility; không sửa source hay diễn giải lại run frozen này.
+- Tracked report/data/script: [v14_v15_gpu_smoke.md](analysis/v14_v15_gpu_smoke.md),
+  [v14_v15_gpu_smoke.json](analysis/v14_v15_gpu_smoke.json), [summary script](analysis/v14_v15_gpu_smoke.py).
+- User corrected order: resume B3 → B4 trước, rồi mới quay lại v14/v15. B3 dùng exact frozen relation replay
+  adapter (PREREG clarification) để giữ manifest; completed baselines không rerun, held-out chưa bắt đầu.
+
+### 11.45 B3 v12_rel hoàn tất: relation chưa hơn flat concept rõ ràng (2026-10-14)
+- Frozen seven-arm/K=3: 2.793 evaluated rows, 133/133 task execution records; dev 113 và pilot 20 tách riêng.
+  Task 44 chạy lại thành công với nguyên worker/job/timers; nguyên nhân thiếu result lần đầu chưa xác định.
+- Dev D_IO tasks/run (mean over K): rel-hybrid **63,33**, flat-hybrid **62,33**, review-hybrid **60,67**,
+  rel-nospec **61,33**, plain **56,33**, placebo **57,67**, toolinput **62,33**.
+- Primary relation vs flat: raw wins/losses **16/15, p=1**; random equal-count **25/33, p=.358**.
+  Relation vs no-spec-links cũng chưa có khác biệt rõ (raw 15/10, p=.424; matched 26/25, p=1).
+- Relation vs plain: raw **32/22, p=.220**; matched **49/25, nominal p=.0071**. Matched vs placebo
+  41/27, p=.114; vs toolinput 27/36, p=.314. Các p-value chưa điều chỉnh multiple comparisons.
+- Pilot rel 11,0 vs flat 9,67 tasks/run; primary raw 2/0, p=.5; matched 5/4, p=1.
+- B3 manifest gốc không export witness-only; B4 có cả original và hypothesis witness controls.
+  Hint budget dùng whitespace proxy/punctuation padding, không bảo đảm bằng actual tokenizer tokens.
+- Chưa đạt registered relation-vs-flat promotion gate; không chạy held-out. B4 đã bắt đầu generation;
+  v14_obgraph_py/v15_mrconcept_py tiếp tục chờ B4 score theo thứ tự người dùng.
+- Tracked report + full comparison/provenance: [b3_v12_rel_results.md](analysis/b3_v12_rel_results.md),
+  [b3_v12_rel_results.json](analysis/b3_v12_rel_results.json).
+
+### 11.46 v14/v15 Python-format repair hoàn tất (2026-10-14)
+- Frozen 20 dev tasks/K=1, cùng saved v11 ref; v14 180 rows, v15 160 rows. Generation/ref scoring đã xong.
+  Chạy chồng CPU-heavy B4 với 2 workers; v14 từng bị HTTP 404 rồi resume cache khi người dùng bật GPU lại.
+- v14_obgraph_py: **5 accepted/shown cards trên 3/20 tasks**, không có discovery witness cho các cards.
+  Graph/card/noconcept D_IO đều **6/20**, plain 7, placebo 6, toolinput adapter 7, original witness-only 6,
+  new-witness-only 0. Primary graph vs card raw và equal-count đều wins/losses **0/0, p=1**.
+  Chỉ 1 property-evaluation record mỗi graph/card/noconcept arm; 0 confirmed obligation violations.
+  Graph treatment rất thưa, chưa cho thấy lợi ích. Remaining rejection chủ yếu path/grounding/purity.
+- v15_mrconcept_py: **41 accepted/shown cards trên 16/20 tasks**, 8 cards có discovery witnesses.
+  MR/blind D_IO **5/5**, flatfacts 4, placebo 4, toolinput adapter 4, new-toolinput 6, original witness-only 6,
+  new-witness-only 0. Primary raw wins/losses **2/2, p=1**; matched **2/1, p=1** (means 4,30/3,64).
+- MR property-oracle checks khác với endpoint shared-ref D_IO: không có confirmed property reports trên
+  selected inputs; MR-guided arm có 3 candidate reports, cả 3 false alarms với canonical. Accepted schema/base
+  consistency chưa bảo đảm relation đúng. Các arm cũng có abstentions, ghi đầy đủ trong report.
+- Actual uncached successful requests: v14 35 (90.071 input / 16.662 output tokens), v15 117 (90.012 / 12.620).
+  Cache hits 405/263; failed request-ledger entries 6/0. Không có paid fallback hoặc held-out run.
+- Đây là exploratory smoke, không đủ cơ sở promote hay kết luận toàn bộ hướng graph/MR không có ích.
+  Phân tích extraction limits nằm ở METHOD_V14_V15.md; source/config/budgets của run không được sửa sau kết quả.
+- Report, provenance và script: [v14_v15_format_repair.md](analysis/v14_v15_format_repair.md),
+  [JSON](analysis/v14_v15_format_repair.json), [script](analysis/v14_v15_format_repair.py).

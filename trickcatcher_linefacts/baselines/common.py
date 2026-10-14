@@ -431,10 +431,23 @@ def worker(mode, payload, directory, timeout=60):
 
 
 # ------------------------------------------------------------------ LLM access
+class ContextTooLong(Exception):
+    """HTTP 400: prompt + completion exceed the model context (dev sanity amendment 4)."""
+
+
+class TransientResponse(Exception):
+    """Marker for a retryable 5xx response."""
+
+
+def _transient(exc):
+    import httpx
+    return isinstance(exc, (TransientResponse, httpx.TimeoutException, httpx.TransportError))
+
+
 class QwenClient:
     """Shared OpenAI-compatible transport. Only explicit online mode reads endpoint credentials.
 
-    Each request is made once (no retries). Replay reads the local cache only. Endpoint and
+    Requests are retried on transient transport errors only (amendment 3). Replay reads the local cache only. Endpoint and
     credential values are never written into artifacts or included in transport errors.
     """
     model = MODEL
@@ -450,7 +463,10 @@ class QwenClient:
             self._endpoint = base.rstrip('/') + '/chat/completions'
             key = os.environ.get('QWEN_API_KEY')
             headers = {'Authorization': 'Bearer ' + key} if key else {}
-            self._http = httpx.Client(headers=headers, timeout=120, trust_env=False,
+            # 2026-10-14 (dev sanity amendment 3): same transport policy as the pipelines' client (600 s, up to 8
+            # retries on timeouts/connection errors/5xx with backoff); identical payload and seed, so a retry cannot
+            # change what the method asks. 4xx errors are not retried.
+            self._http = httpx.Client(headers=headers, timeout=600, trust_env=False,
                                       transport=httpx.HTTPTransport(retries=0, trust_env=False))
 
     def chat(self, messages, seed, **params):
@@ -463,13 +479,26 @@ class QwenClient:
             raise RuntimeError('offline Qwen cache miss: ' + key)
         start = time.monotonic()
         try:
-            response = self._http.post(self._endpoint, json=payload)
+            for attempt in range(9):
+                try:
+                    response = self._http.post(self._endpoint, json=payload)
+                    if getattr(response, "status_code", 200) >= 500 and attempt < 8:
+                        raise TransientResponse()
+                    break
+                except Exception as exc:
+                    if attempt == 8 or not _transient(exc):
+                        raise
+                    time.sleep(min(60, 2.0 * 2 ** attempt))
+            if getattr(response, 'status_code', 200) == 400 and 'maximum context length' in getattr(response, 'text', ''):
+                raise ContextTooLong()
             response.raise_for_status()
             data = response.json()
             usage = data.get('usage', {})
             result = dict(text=data['choices'][0]['message']['content'],
                           n_in=usage.get('prompt_tokens', 0), n_out=usage.get('completion_tokens', 0),
                           seconds=time.monotonic()-start, cache_hit=False, key=key)
+        except ContextTooLong:
+            raise
         except Exception:
             raise RuntimeError('Qwen request failed; generation aborted without retry') from None
         atomic_json(cached, result)
@@ -514,8 +543,13 @@ class Session:
         seed = int(digest([self.seed, self.task['task'], self.arm, self.sample, len(self.calls)])[:8], 16) % (2**31)
         label = f'call_{len(self.calls):03d}'
         atomic_json(self.directory/(label+'_prompt.json'), messages)
-        response = self.client.chat(messages, seed, temperature=0.7, top_p=0.95, max_tokens=self.max_tokens)
-        keep = ('text', 'n_in', 'n_out', 'seconds', 'cache_hit', 'key')
+        try:
+            response = self.client.chat(messages, seed, temperature=0.7, top_p=0.95, max_tokens=self.max_tokens)
+        except ContextTooLong:
+            # dev sanity amendment 4 (as v9 amendment 1): an over-long prompt is a request made (counts toward the
+            # budget) with an empty answer, so the method continues/stops by its own logic instead of aborting.
+            response = dict(text='', n_in=0, n_out=0, seconds=0, cache_hit=False, error='context_length')
+        keep = ('text', 'n_in', 'n_out', 'seconds', 'cache_hit', 'key', 'error')
         record = dict({k: response[k] for k in keep if k in response}, seed=seed, stage=stage)
         self.calls.append(record)
         atomic_json(self.directory/(label+'.json'), record)

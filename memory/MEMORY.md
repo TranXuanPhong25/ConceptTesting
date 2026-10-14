@@ -1,4 +1,5 @@
 - [Shared memory README](README.md) — how Claude + Codex read/write this folder (format, rules)
+- [HANDOFF 2026-10-14](../HANDOFF-2026-10-14.md) — READ FIRST when resuming: results, running jobs, next steps
 - [Research state](research-state.md) — START HERE: thesis direction, where files live, key results, next steps
 - [Working rules](working-rules.md) — all user rules: Vietnamese replies, git, secrets/ngrok, GPU runs, folders+CHANGELOG, PREREG
 - [Session 2026-10-13 (Claude)](session-2026-10-13-claude.md) — digest of the long session: user requests/quotes, decisions, lessons, open items, transcript path

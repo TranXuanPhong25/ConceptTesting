@@ -433,7 +433,10 @@ def analyze(run, oracle, baselines, dataset, output, clusters='task', dataset_ro
                 def ref_sources(o):
                     p = o/'exec'/f'{t}.job.json'
                     return read_json(p)['ref'] if p.exists() else ob.by_task(o, 'ref', ob.code_block).get(str(t), [])
-                if ref_sources(source['oracle']) != ref_sources(oracle):
+                mine = ref_sources(source['oracle'])
+                if not mine:   # the baseline produced no call for this task, so no ref program is needed (Claude 2026-10-14)
+                    continue
+                if mine != ref_sources(oracle):
                     raise ValueError(f'Baseline {name} ref program pool differs at task {t}')
             executions[name] = execute_records(source['tasks'], source['rows'], source['oracle'],
                                                data, atols, tmp/name, workers)

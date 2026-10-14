@@ -75,3 +75,8 @@ Verification on 2026-10-13: **22 pytest tests passed**. Both baselines completed
 three tasks × K=3, producing nine rows each. Summary and complete artifacts are in
 `tests/dry_runs/`; per-baseline tables are documented in their READMEs. Python
 3.11.14 and exact dependency versions are recorded in the summary and requirements.
+
+2026-10-14 (dev sanity amendment 3): `QwenClient` now retries transient transport failures (timeouts, connection
+errors, 5xx; up to 8 retries with backoff, 600 s timeout) with the identical payload and seed; 4xx is not retried.
+2026-10-14 (amendment 4): an HTTP 400 "maximum context length" counts as a request made with an empty answer
+(`ContextTooLong`, recorded as `error: context_length` in the call record) instead of aborting the run.

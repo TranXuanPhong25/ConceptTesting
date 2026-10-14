@@ -1,0 +1,960 @@
+{
+  "oracle": "ref",
+  "matched_seed": 20261010,
+  "matched_draws": 100,
+  "cohorts": {
+    "dev": {
+      "tasks": 113,
+      "k": 3,
+      "arms": {
+        "flat-hybrid": {
+          "D_I": 632,
+          "D_IO": 539,
+          "D_I_samples": 218,
+          "D_IO_samples": 187,
+          "correct_failing": 539,
+          "failing": 573,
+          "precision": 0.9406631762652705,
+          "false_alarms": 34
+        },
+        "placebo-hybrid": {
+          "D_I": 584,
+          "D_IO": 515,
+          "D_I_samples": 203,
+          "D_IO_samples": 173,
+          "correct_failing": 515,
+          "failing": 544,
+          "precision": 0.9466911764705882,
+          "false_alarms": 29
+        },
+        "plain-hybrid": {
+          "D_I": 555,
+          "D_IO": 478,
+          "D_I_samples": 195,
+          "D_IO_samples": 169,
+          "correct_failing": 478,
+          "failing": 532,
+          "precision": 0.8984962406015038,
+          "false_alarms": 54
+        },
+        "rel-hybrid": {
+          "D_I": 616,
+          "D_IO": 531,
+          "D_I_samples": 220,
+          "D_IO_samples": 190,
+          "correct_failing": 531,
+          "failing": 569,
+          "precision": 0.9332161687170475,
+          "false_alarms": 38
+        },
+        "rel-nospec-hybrid": {
+          "D_I": 598,
+          "D_IO": 502,
+          "D_I_samples": 219,
+          "D_IO_samples": 184,
+          "correct_failing": 502,
+          "failing": 547,
+          "precision": 0.9177330895795247,
+          "false_alarms": 45
+        },
+        "review-hybrid": {
+          "D_I": 545,
+          "D_IO": 465,
+          "D_I_samples": 214,
+          "D_IO_samples": 182,
+          "correct_failing": 465,
+          "failing": 508,
+          "precision": 0.9153543307086615,
+          "false_alarms": 43
+        },
+        "toolinput": {
+          "D_I": 505,
+          "D_IO": 422,
+          "D_I_samples": 222,
+          "D_IO_samples": 187,
+          "correct_failing": 422,
+          "failing": 456,
+          "precision": 0.9254385964912281,
+          "false_alarms": 34
+        }
+      },
+      "comparisons": [
+        {
+          "first": "rel-hybrid",
+          "second": "flat-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 16,
+          "losses": 15,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            190.0,
+            187.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "flat-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 25,
+          "losses": 33,
+          "sign_p": 0.3581433018061379,
+          "detecting_samples": [
+            183.38000000000005,
+            182.28000000000006
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "review-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 25,
+          "losses": 18,
+          "sign_p": 0.3603776529357674,
+          "detecting_samples": [
+            187.0,
+            182.0
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "review-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 37,
+          "losses": 28,
+          "sign_p": 0.3210841356849956,
+          "detecting_samples": [
+            181.99000000000004,
+            173.68000000000004
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "rel-nospec-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 15,
+          "losses": 10,
+          "sign_p": 0.42435622215270996,
+          "detecting_samples": [
+            190.0,
+            184.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "rel-nospec-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 26,
+          "losses": 25,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            183.1800000000001,
+            179.95000000000005
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "plain-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 28,
+          "losses": 21,
+          "sign_p": 0.3916029105474905,
+          "detecting_samples": [
+            182.0,
+            169.0
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "plain-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 46,
+          "losses": 26,
+          "sign_p": 0.024460907328324375,
+          "detecting_samples": [
+            179.57000000000005,
+            154.78000000000006
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "toolinput",
+          "matched": false,
+          "draws": 1,
+          "wins": 17,
+          "losses": 23,
+          "sign_p": 0.42959050784338615,
+          "detecting_samples": [
+            182.0,
+            187.0
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "toolinput",
+          "matched": true,
+          "draws": 100,
+          "wins": 26,
+          "losses": 39,
+          "sign_p": 0.13603239487789212,
+          "detecting_samples": [
+            171.94000000000008,
+            180.24000000000004
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "placebo-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 22,
+          "losses": 20,
+          "sign_p": 0.8776143287523155,
+          "detecting_samples": [
+            182.0,
+            173.0
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "placebo-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 39,
+          "losses": 28,
+          "sign_p": 0.22154872964481115,
+          "detecting_samples": [
+            176.34000000000003,
+            161.17000000000004
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "plain-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 31,
+          "losses": 23,
+          "sign_p": 0.34089094122009733,
+          "detecting_samples": [
+            187.0,
+            169.0
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "plain-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 50,
+          "losses": 24,
+          "sign_p": 0.0033722333341480717,
+          "detecting_samples": [
+            186.22000000000003,
+            154.58000000000007
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "toolinput",
+          "matched": false,
+          "draws": 1,
+          "wins": 20,
+          "losses": 19,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            187.0,
+            187.0
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "toolinput",
+          "matched": true,
+          "draws": 100,
+          "wins": 26,
+          "losses": 34,
+          "sign_p": 0.36629400670329104,
+          "detecting_samples": [
+            178.2600000000001,
+            180.64000000000004
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "placebo-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 27,
+          "losses": 21,
+          "sign_p": 0.4708790136217118,
+          "detecting_samples": [
+            187.0,
+            173.0
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "placebo-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 46,
+          "losses": 26,
+          "sign_p": 0.024460907328324375,
+          "detecting_samples": [
+            185.19000000000003,
+            161.43000000000006
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "plain-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 32,
+          "losses": 22,
+          "sign_p": 0.22032849417661104,
+          "detecting_samples": [
+            190.0,
+            169.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "plain-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 49,
+          "losses": 25,
+          "sign_p": 0.007084252673880493,
+          "detecting_samples": [
+            187.73000000000005,
+            154.34000000000006
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "toolinput",
+          "matched": false,
+          "draws": 1,
+          "wins": 20,
+          "losses": 17,
+          "sign_p": 0.7428293587290682,
+          "detecting_samples": [
+            190.0,
+            187.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "toolinput",
+          "matched": true,
+          "draws": 100,
+          "wins": 27,
+          "losses": 36,
+          "sign_p": 0.31350305329645284,
+          "detecting_samples": [
+            180.07000000000002,
+            181.87000000000006
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "placebo-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 25,
+          "losses": 20,
+          "sign_p": 0.5514843298025198,
+          "detecting_samples": [
+            190.0,
+            173.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "placebo-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 41,
+          "losses": 27,
+          "sign_p": 0.11425430684992328,
+          "detecting_samples": [
+            185.81000000000006,
+            160.81000000000003
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "plain-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 25,
+          "losses": 26,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            184.0,
+            169.0
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "plain-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 45,
+          "losses": 26,
+          "sign_p": 0.03192716208321237,
+          "detecting_samples": [
+            182.14000000000001,
+            152.18000000000012
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "toolinput",
+          "matched": false,
+          "draws": 1,
+          "wins": 16,
+          "losses": 20,
+          "sign_p": 0.617719317029696,
+          "detecting_samples": [
+            184.0,
+            187.0
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "toolinput",
+          "matched": true,
+          "draws": 100,
+          "wins": 19,
+          "losses": 33,
+          "sign_p": 0.07039422106706228,
+          "detecting_samples": [
+            174.08000000000004,
+            182.18
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "placebo-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 22,
+          "losses": 25,
+          "sign_p": 0.7708669945730264,
+          "detecting_samples": [
+            184.0,
+            173.0
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "placebo-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 36,
+          "losses": 33,
+          "sign_p": 0.8099490529189247,
+          "detecting_samples": [
+            179.65000000000003,
+            162.71
+          ]
+        }
+      ]
+    },
+    "pilot": {
+      "tasks": 20,
+      "k": 3,
+      "arms": {
+        "flat-hybrid": {
+          "D_I": 79,
+          "D_IO": 79,
+          "D_I_samples": 29,
+          "D_IO_samples": 29,
+          "correct_failing": 79,
+          "failing": 89,
+          "precision": 0.8876404494382022,
+          "false_alarms": 10
+        },
+        "placebo-hybrid": {
+          "D_I": 75,
+          "D_IO": 75,
+          "D_I_samples": 30,
+          "D_IO_samples": 30,
+          "correct_failing": 75,
+          "failing": 83,
+          "precision": 0.9036144578313253,
+          "false_alarms": 8
+        },
+        "plain-hybrid": {
+          "D_I": 58,
+          "D_IO": 58,
+          "D_I_samples": 25,
+          "D_IO_samples": 25,
+          "correct_failing": 58,
+          "failing": 73,
+          "precision": 0.7945205479452054,
+          "false_alarms": 15
+        },
+        "rel-hybrid": {
+          "D_I": 88,
+          "D_IO": 88,
+          "D_I_samples": 33,
+          "D_IO_samples": 33,
+          "correct_failing": 88,
+          "failing": 98,
+          "precision": 0.8979591836734694,
+          "false_alarms": 10
+        },
+        "rel-nospec-hybrid": {
+          "D_I": 87,
+          "D_IO": 87,
+          "D_I_samples": 32,
+          "D_IO_samples": 32,
+          "correct_failing": 87,
+          "failing": 100,
+          "precision": 0.87,
+          "false_alarms": 13
+        },
+        "review-hybrid": {
+          "D_I": 72,
+          "D_IO": 72,
+          "D_I_samples": 31,
+          "D_IO_samples": 31,
+          "correct_failing": 72,
+          "failing": 82,
+          "precision": 0.8780487804878049,
+          "false_alarms": 10
+        },
+        "toolinput": {
+          "D_I": 87,
+          "D_IO": 85,
+          "D_I_samples": 32,
+          "D_IO_samples": 31,
+          "correct_failing": 85,
+          "failing": 91,
+          "precision": 0.9340659340659341,
+          "false_alarms": 6
+        }
+      },
+      "comparisons": [
+        {
+          "first": "rel-hybrid",
+          "second": "flat-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 2,
+          "losses": 0,
+          "sign_p": 0.5,
+          "detecting_samples": [
+            33.0,
+            29.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "flat-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 5,
+          "losses": 4,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            32.10000000000002,
+            28.590000000000018
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "review-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 1,
+          "losses": 3,
+          "sign_p": 0.625,
+          "detecting_samples": [
+            29.0,
+            31.0
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "review-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 4,
+          "losses": 5,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            28.41000000000001,
+            29.100000000000016
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "rel-nospec-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 4,
+          "losses": 1,
+          "sign_p": 0.375,
+          "detecting_samples": [
+            33.0,
+            32.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "rel-nospec-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 6,
+          "losses": 4,
+          "sign_p": 0.75390625,
+          "detecting_samples": [
+            32.100000000000016,
+            31.44000000000002
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "plain-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 6,
+          "losses": 2,
+          "sign_p": 0.2890625,
+          "detecting_samples": [
+            31.0,
+            25.0
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "plain-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 9,
+          "losses": 4,
+          "sign_p": 0.266845703125,
+          "detecting_samples": [
+            29.810000000000016,
+            23.040000000000017
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "toolinput",
+          "matched": false,
+          "draws": 1,
+          "wins": 5,
+          "losses": 4,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            31.0,
+            31.0
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "toolinput",
+          "matched": true,
+          "draws": 100,
+          "wins": 6,
+          "losses": 5,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            29.860000000000014,
+            30.710000000000015
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "placebo-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 5,
+          "losses": 4,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            31.0,
+            30.0
+          ]
+        },
+        {
+          "first": "review-hybrid",
+          "second": "placebo-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 8,
+          "losses": 5,
+          "sign_p": 0.5810546875,
+          "detecting_samples": [
+            30.280000000000015,
+            27.790000000000013
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "plain-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 4,
+          "losses": 1,
+          "sign_p": 0.375,
+          "detecting_samples": [
+            29.0,
+            25.0
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "plain-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 10,
+          "losses": 2,
+          "sign_p": 0.03857421875,
+          "detecting_samples": [
+            28.640000000000015,
+            22.640000000000015
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "toolinput",
+          "matched": false,
+          "draws": 1,
+          "wins": 4,
+          "losses": 3,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            29.0,
+            31.0
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "toolinput",
+          "matched": true,
+          "draws": 100,
+          "wins": 7,
+          "losses": 3,
+          "sign_p": 0.34375,
+          "detecting_samples": [
+            28.07000000000001,
+            29.210000000000015
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "placebo-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 3,
+          "losses": 4,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            29.0,
+            30.0
+          ]
+        },
+        {
+          "first": "flat-hybrid",
+          "second": "placebo-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 6,
+          "losses": 5,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            28.73000000000001,
+            27.930000000000017
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "plain-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 5,
+          "losses": 1,
+          "sign_p": 0.21875,
+          "detecting_samples": [
+            33.0,
+            25.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "plain-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 7,
+          "losses": 3,
+          "sign_p": 0.34375,
+          "detecting_samples": [
+            32.65000000000001,
+            23.05000000000001
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "toolinput",
+          "matched": false,
+          "draws": 1,
+          "wins": 6,
+          "losses": 2,
+          "sign_p": 0.2890625,
+          "detecting_samples": [
+            33.0,
+            31.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "toolinput",
+          "matched": true,
+          "draws": 100,
+          "wins": 8,
+          "losses": 2,
+          "sign_p": 0.109375,
+          "detecting_samples": [
+            31.87000000000001,
+            30.390000000000015
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "placebo-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 5,
+          "losses": 2,
+          "sign_p": 0.453125,
+          "detecting_samples": [
+            33.0,
+            30.0
+          ]
+        },
+        {
+          "first": "rel-hybrid",
+          "second": "placebo-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 9,
+          "losses": 3,
+          "sign_p": 0.14599609375,
+          "detecting_samples": [
+            32.58000000000001,
+            28.410000000000018
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "plain-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 6,
+          "losses": 2,
+          "sign_p": 0.2890625,
+          "detecting_samples": [
+            32.0,
+            25.0
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "plain-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 9,
+          "losses": 3,
+          "sign_p": 0.14599609375,
+          "detecting_samples": [
+            30.670000000000012,
+            23.080000000000013
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "toolinput",
+          "matched": false,
+          "draws": 1,
+          "wins": 4,
+          "losses": 1,
+          "sign_p": 0.375,
+          "detecting_samples": [
+            32.0,
+            31.0
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "toolinput",
+          "matched": true,
+          "draws": 100,
+          "wins": 9,
+          "losses": 1,
+          "sign_p": 0.021484375,
+          "detecting_samples": [
+            30.81000000000001,
+            29.700000000000017
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "placebo-hybrid",
+          "matched": false,
+          "draws": 1,
+          "wins": 2,
+          "losses": 1,
+          "sign_p": 1.0,
+          "detecting_samples": [
+            32.0,
+            30.0
+          ]
+        },
+        {
+          "first": "rel-nospec-hybrid",
+          "second": "placebo-hybrid",
+          "matched": true,
+          "draws": 100,
+          "wins": 6,
+          "losses": 3,
+          "sign_p": 0.5078125,
+          "detecting_samples": [
+            31.48000000000001,
+            27.91000000000001
+          ]
+        }
+      ]
+    }
+  },
+  "pipeline": "v12_rel",
+  "cohort_rows": 2793,
+  "completed_execution_tasks": 133,
+  "provenance": {
+    "pipelines/v12_rel/out/humaneval/oracle/ref_metrics.json": "36f98ef55e5e0e52d3dc3d34c206b08c30dd89edc38c61a22df9cc441ad44e6c",
+    "pipelines/v12_rel/out/humaneval/generation/manifest.json": "7b41a0285bc92f8c3c8d02db68ef52dbedb9a928d0ca67ed7708d98ee33c7968",
+    "pipelines/v12_rel/out/humaneval/generation/tasks.json": "911df6e11f6878cec44a64ebf35e21bfa08c7d1bf98bcf4fb3b8f1ef217df7b1",
+    "pipelines/v12_rel/out/humaneval/generation/gen.jsonl": "d7f80257c1108b3f8c085481b31e2709fc852e69be9f948b4177bad8b3b161b0",
+    "pipelines/v12_rel/out/humaneval/generation/eval.jsonl": "0fd2bc12c562b69a0f011870ae94b1ca592d81785c1173c6965e9c7325e75684"
+  },
+  "limits": [
+    "Development and pilot reported separately; K=3.",
+    "Seven exported arms in original manifest; witness-only was not exported in this B3 run.",
+    "Sign p-values are nominal; no correction for multiple comparisons.",
+    "Prompt hint length uses a whitespace proxy with punctuation padding, not equal actual tokenizer lengths.",
+    "Task-44 original-worker retry succeeded; first missing-result cause remains undetermined."
+  ]
+}

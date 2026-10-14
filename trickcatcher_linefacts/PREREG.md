@@ -1222,3 +1222,117 @@ random-subset matched counts, D_I, precision.
   implementation choices (recorded in pipelines/v13_hyp/CHANGELOG.md): T usable as filter = the T-filtered draw yields
   >= 1 valid input; "missed" = no valid round-1 input satisfies T; R accepted as an exact or near quote (difflib >= 0.9);
   the per-task proposal call is reported separately from the per-sample cap of 8.
+- Dev sanity run amendment 3 (2026-10-14 ~06:30, before any baseline output was scored): CoverUp aborted on one Qwen
+  request (baselines/common.py had a 120 s timeout and no retries; the endpoint was shared with the B3 run) and MuTAP
+  was stopped. The baseline client now uses the pipelines' transport policy (600 s; up to 8 retries with backoff on
+  timeouts, connection errors and 5xx; identical payload and seed; 4xx not retried). Because manifests pin source
+  hashes, CoverUp and MuTAP restart in fresh dirs coverup_r2 / mutap_r2 with their LLM caches copied (same keys, so
+  completed requests replay identically). SymPrompt and ACH (finished, own clients) are unchanged.
+- Dev sanity run amendment 4 (2026-10-14 ~08:00, before any MuTAP output was scored): MuTAP_r2 aborted on an HTTP 400
+  (one augmentation prompt was 24.6k tokens > the 16,384-token context). As in v9 amendment 1, an over-context request
+  now counts as a request made with an empty answer (baselines/common.py ContextTooLong), so the method continues or
+  stops by its own logic. MuTAP restarts in mutap_r3 with the caches of mutap and mutap_r2 copied.
+
+## Exploratory v14_obgraph / v15_mrconcept (2026-10-14, before implementation outputs)
+
+User requested trying grounded obligation graphs and conditional metamorphic concepts FIRST, each in a new folder.
+These are LineFacts adaptations inspired by literature, not reproductions of PromeFuzz/MR-Coupler/MemoRIA.
+Copies of v13_hyp inherit v7/v11 mining, tracing, Hypothesis, sandbox and common ref scorer; protected copies stay intact.
+
+Initial cohort: 20 dev task IDs sampled without inspecting new outputs, random.Random(20261014).sample on sorted
+v11_fair dev IDs; IDs are frozen in each config. K=1 exploratory mechanism/effect smoke, no held-out and no confirmatory
+claim or promotion from its p-values. Expand to full dev only with a separately recorded scope before new outputs.
+
+v14_obgraph: one cached proposal/task, <=6 (clause ID, semantic family, tool concept IDs, connected typed edge IDs,
+trigger T, pure obligation O(args,result), explicit alternative hypothesis). Tool validates graph adjacency and concept
+anchors, exact clause IDs, predicate purity, finite base consistency. Base-trigger hits do not alone discard obligations.
+Discovery uses 200 common domain draws; unwitnessed cards stay. Ranking: witnessed PUT violates O while a surviving
+mutant satisfies it, then PUT violates O, then witnessed, then unwitnessed; ties proposal order. These are candidate
+spec violations, not ground truth. Display top 3 without witness values. Actual generated inputs must satisfy T and the
+observed selected path; trace-incomplete/path errors abstain. Path observation is co-execution evidence, not causal proof.
+Primary exploratory contrast graph-strategy vs card-strategy, same selected evidence/targets/filter. Secondary removes
+concept labels; plain/placebo controls and both original/new-pool toolinput/witness-only are mandatory.
+
+v15_mrconcept: one proposal/task, <=6 conditional relation cards (exact clause IDs, fixed family, D, pure tau(args),
+pure rho(args,followup_args,result,followup_result)). Families permutation, monotonicity, multiplicity, idempotence,
+round-trip; every applicability claim remains candidate. Both source/follow-up inputs must pass B5 and size/arity checks.
+Only relations contradicted by a pair of *already base-tested* inputs are rejected for base inconsistency. Never reject
+a relation for failing on untested buggy PUT inputs. Rank witnessed relation violations before witnessed/unwitnessed.
+Primary exploratory mr-strategy vs mr-blind; tool applies identical D/tau filters and paired input selection in both,
+so this isolates relation guidance. mr-flatfacts omits concept labels; placebo and original/new-pool witness references.
+
+Both: fixed three strategy slots/sample/arm, one LLM request/slot (no retry or expected-value request); max 1024 completion
+tokens/request, proposal max 4096. Empty slots use generic strategy guidance with explicit status. Model outputs only
+Hypothesis strategies; sandboxed draws <=100 valid unique candidates from <=500 examples/slot; select <=2 sources/slot,
+up to 12 distinct PUT inputs/sample (a pair costs two), <=20 placeholder assertions. Original witness-only and new-pool
+witness-only use zero generation requests; proposal cost is shared once/task and reported separately. Prompts are not
+declared tokenizer-equal: record server actual input/output tokens and matched call counts; no punctuation padding.
+Use original v11 mining/task bundle, no canonical/hidden inputs/ref outputs in proposal, selection or generation.
+
+Main endpoint D_IO under shared spec-only ref oracle, same saved v11 ref responses for all arms; D_I/precision, paired
+task effect and fixed-seed random-subset matching secondary. Missing references abstain (never silently fill with gold).
+Evaluate obligation/MR oracle validity separately against canonical+contract ONLY after generation is frozen; report
+candidate violations, confirmed finite-input violations and false alarms, not universal relation correctness.
+Record proposal rejection reasons, chain hits, trigger hits, input overlap, witnesses, draws, executions and actual tokens.
+CPU fixture checks and real cached-task graph preparation precede online run. No paid API and no held-out run.
+- Implementation clarification (2026-10-14, before any proposal/model output): paths must end at an observable
+  RETURN node; exact duplicate proposal cards are rejected. Pair validation is repeated in property scoring and
+  no atomic pair may be partially kept under the input-call cap. Empty accepted-card slots use generic singleton
+  generation with explicit status. New toolinput is a fixed-slot strategy adapter, not the historical one-call arm.
+- Run status (2026-10-14): user reports exhausted quota and no Qwen endpoint. CPU checks/preparation only;
+  no online proposal/generation, paid API fallback or held-out run has started.
+- CPU implementation check (before model outputs): normalize base keyword/default arguments to complete positional
+  tuples before T/O/rho consistency checks, so known base evidence is retained regardless of calling style.
+- Online run note (2026-10-14 ~12:52 local, before any model proposal/generation output): user supplied the Qwen
+  endpoint and explicitly requested GPU execution. Run v14_obgraph then v15_mrconcept, frozen 20 dev tasks/K=1,
+  source commit 4ff245d, existing caps/seeds/controls and saved v11 spec-only references. Detached sequential chain
+  under out/runlogs_v14_v15, four workers per variant, keepalive owned by each runner. No paid API or held-out run.
+- Resume queue note (2026-10-14 ~13:06 local, before new B3 scoring/B4 outputs): after the two new smoke runs,
+  resume the interrupted B3 with its original seven-arm/K=3 manifest and response cache using the current endpoint;
+  its previous arms stage stopped with HTTP 404. Then run registered B4 with the handoff's frozen configuration and
+  reuse v7/v11/v12 caches. No restart of completed baselines and no held-out run. Model inputs/config remain frozen.
+- B3 resume clarification (2026-10-14 ~13:30 local, before evaluation/scoring): the protected runner retraces all
+  base/witness relations even on resume. Reuse relation_meta from its already immutable generation/tasks.json via
+  analysis/resume_b3_frozen_relations.py instead. Require exact task equality and original source-hash equality;
+  preserve the original generation manifest, prompts, seeds, saved samples and cache. This avoids both repeated
+  CPU extraction and changing time-limited trace evidence. Adapter/snapshot hashes are logged; no method tuning.
+- User order correction (2026-10-14): resume B3 → B4 before returning to v14/v15. The original two smoke runs
+  had already completed when this arrived. No additional v14/v15 model calls may start until B3/B4 complete.
+
+## Python/JSON format repair: v14_obgraph_py / v15_mrconcept_py (2026-10-14, before their model outputs)
+
+Original smoke produced zero accepted cards in both methods, so it did not exercise the semantic treatments.
+Create separate copies. Only proposal guidance changes: explicit Python-only system instruction, one JSON-escaped
+toy FORMAT example (not a target-program proposal), instructions before evidence and a final format reminder.
+Suggest up to three cards within the original cap of six. Exact validators, graph grounding, D/T/O/tau/rho rules,
+ranking, search, generation budgets/controls, 20 dev IDs/K=1, seeds and shared refs remain unchanged.
+No target outcomes/canonical code enter format guidance. Original results remain archived; repair is exploratory.
+
+Mechanism gate: run all 20 cached/shared task proposal stages first; if zero cards survive checks, stop before
+generation and record mechanism_gate.json. If >=1 card survives, run the original full 20-task arm grid and scorer,
+report accepted-card task coverage and guidance-slot counts alongside D_IO; sparse treatment limits interpretation.
+Reuse original model-response caches only for byte-identical prompts/params/seeds, not old proposals/samples/results.
+Worst-case request caps remain 440/380; a zero-card gate costs only 20 proposal requests/method. No repair retries,
+paid API or held-out run. User priority: start model stages ONLY after B3 and B4 finish; CPU preparation can proceed.
+
+- Operational checkpoint (2026-10-14 ~15:30 local): B3 generation/evaluation/collect/ref completed; score
+  aborted with incomplete ref executions, missing task 44 only (132/133 result files). Retry only its original
+  saved job using unchanged worker source, per-call timers and 3,000 s outer timeout, capturing stderr.
+  Preserve successful results and resume B3 score → B4 → repaired v14/v15 only after complete score gates.
+  First failure cause is undetermined; no task exclusion, scoring-policy change or efficacy claim.
+
+- Scheduling amendment (2026-10-14 19:05 +0700, before repaired-method model outputs):
+  user requested using the GPU during B4 CPU work. B4 has 13 exported generation samples remaining, mostly
+  CPU classification; its original generation/evaluation/ref/scoring chain continues unchanged and may still
+  issue model calls. Start v14_obgraph_py then v15_mrconcept_py concurrently with B4, two workers per new
+  method. Replace only the dormant score-gated waiter; keep methods sequential and their original 20 dev
+  tasks/K=1, prompts/seeds/validators/budgets/ref cache/mechanism gate frozen. No B4 outcomes feed these runs.
+  CPU contention may affect wall time/timeouts; record overlap when interpreting exploratory results.
+
+- Operational GPU restart (2026-10-14 19:28 +0700): user restarted GPU and requested resume.
+  B4 stopped on HTTP 404 with 2,783/2,793 exported samples; repaired v14 stopped with 15/20 proposal summaries.
+  Resume B4 and the overlapping repaired v14→v15 chain from original caches. B4 uses
+  analysis/resume_b4_frozen_relations.py: verify all 133 incoming tasks and protected source hashes against
+  immutable manifest; replay exact relation_meta; require all original hypothesis cache keys and slim metadata
+  to match frozen tasks. Native hypothesis cache handling, prompts/config/seeds/sample limits/scorer remain
+  unchanged. Skip completed bundle/B3 stages. Repaired methods retain two workers and original mechanism gate.
