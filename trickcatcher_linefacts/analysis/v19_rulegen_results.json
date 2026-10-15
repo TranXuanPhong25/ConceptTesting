@@ -1,0 +1,510 @@
+{
+  "verification": "protocol, generation, parent provenance, guidance, pools, all20 native scores and comparisons verified",
+  "scope": "20-task design dev K=1, exploratory",
+  "gate": {
+    "tasks": 20,
+    "qualified": 13,
+    "usable": 17,
+    "required": 10,
+    "passed": true,
+    "rows": [
+      {
+        "task": 27,
+        "usable": true,
+        "model": true,
+        "cards": 1
+      },
+      {
+        "task": 31,
+        "usable": true,
+        "model": false,
+        "cards": 0
+      },
+      {
+        "task": 51,
+        "usable": true,
+        "model": true,
+        "cards": 3
+      },
+      {
+        "task": 56,
+        "usable": true,
+        "model": true,
+        "cards": 2
+      },
+      {
+        "task": 57,
+        "usable": true,
+        "model": true,
+        "cards": 2
+      },
+      {
+        "task": 59,
+        "usable": true,
+        "model": false,
+        "cards": 0
+      },
+      {
+        "task": 63,
+        "usable": false,
+        "model": false,
+        "cards": 0
+      },
+      {
+        "task": 76,
+        "usable": false,
+        "model": false,
+        "cards": 0
+      },
+      {
+        "task": 78,
+        "usable": true,
+        "model": false,
+        "cards": 0
+      },
+      {
+        "task": 85,
+        "usable": true,
+        "model": true,
+        "cards": 3
+      },
+      {
+        "task": 91,
+        "usable": true,
+        "model": true,
+        "cards": 2
+      },
+      {
+        "task": 94,
+        "usable": true,
+        "model": false,
+        "cards": 0
+      },
+      {
+        "task": 98,
+        "usable": true,
+        "model": true,
+        "cards": 3
+      },
+      {
+        "task": 110,
+        "usable": true,
+        "model": true,
+        "cards": 2
+      },
+      {
+        "task": 118,
+        "usable": true,
+        "model": true,
+        "cards": 2
+      },
+      {
+        "task": 126,
+        "usable": true,
+        "model": true,
+        "cards": 2
+      },
+      {
+        "task": 136,
+        "usable": true,
+        "model": true,
+        "cards": 3
+      },
+      {
+        "task": 144,
+        "usable": false,
+        "model": false,
+        "cards": 0
+      },
+      {
+        "task": 149,
+        "usable": true,
+        "model": true,
+        "cards": 3
+      },
+      {
+        "task": 152,
+        "usable": true,
+        "model": true,
+        "cards": 1
+      }
+    ],
+    "proposal_calls": 0
+  },
+  "costs": {
+    "rows": 120,
+    "generation_calls": 300,
+    "input_tokens": 210367,
+    "output_tokens": 77150,
+    "physical_success_records": 269,
+    "cache_hits": 31,
+    "transport_attempts": 269,
+    "new_reference_requests": 0,
+    "physical_input_tokens": 182256,
+    "physical_output_tokens": 69369,
+    "shared_parent_preprocessing_excluded": true
+  },
+  "arms": {
+    "plain": {
+      "D_I": 4,
+      "D_IO": 4,
+      "D_I_samples": 3,
+      "D_IO_samples": 3,
+      "correct_failing": 4,
+      "failing": 4,
+      "precision": 1.0,
+      "false_alarms": 0,
+      "detected_tasks": [
+        27,
+        51,
+        85
+      ],
+      "selected_inputs": 28,
+      "nonempty_tasks": 9,
+      "logical_calls": 60,
+      "input_tokens": 31158,
+      "output_tokens": 14255,
+      "slot_errors": {
+        "SyntaxError": 36,
+        "RuntimeError": 4,
+        "ValueError": 2
+      }
+    },
+    "behavior": {
+      "D_I": 4,
+      "D_IO": 4,
+      "D_I_samples": 3,
+      "D_IO_samples": 3,
+      "correct_failing": 4,
+      "failing": 4,
+      "precision": 1.0,
+      "false_alarms": 0,
+      "detected_tasks": [
+        27,
+        85,
+        149
+      ],
+      "selected_inputs": 18,
+      "nonempty_tasks": 7,
+      "logical_calls": 60,
+      "input_tokens": 52128,
+      "output_tokens": 16356,
+      "slot_errors": {
+        "SyntaxError": 45,
+        "ValueError": 3,
+        "RuntimeError": 1
+      }
+    },
+    "behavior+concept": {
+      "D_I": 6,
+      "D_IO": 6,
+      "D_I_samples": 3,
+      "D_IO_samples": 3,
+      "correct_failing": 6,
+      "failing": 6,
+      "precision": 1.0,
+      "false_alarms": 0,
+      "detected_tasks": [
+        27,
+        85,
+        149
+      ],
+      "selected_inputs": 24,
+      "nonempty_tasks": 8,
+      "logical_calls": 60,
+      "input_tokens": 58336,
+      "output_tokens": 15672,
+      "slot_errors": {
+        "SyntaxError": 44,
+        "ValueError": 2,
+        "RuntimeError": 1
+      }
+    },
+    "placebo": {
+      "D_I": 4,
+      "D_IO": 4,
+      "D_I_samples": 3,
+      "D_IO_samples": 3,
+      "correct_failing": 4,
+      "failing": 4,
+      "precision": 1.0,
+      "false_alarms": 0,
+      "detected_tasks": [
+        27,
+        85,
+        149
+      ],
+      "selected_inputs": 22,
+      "nonempty_tasks": 8,
+      "logical_calls": 60,
+      "input_tokens": 33039,
+      "output_tokens": 17060,
+      "slot_errors": {
+        "SyntaxError": 40,
+        "RuntimeError": 3,
+        "ValueError": 1
+      }
+    },
+    "toolinput": {
+      "D_I": 8,
+      "D_IO": 8,
+      "D_I_samples": 4,
+      "D_IO_samples": 4,
+      "correct_failing": 8,
+      "failing": 8,
+      "precision": 1.0,
+      "false_alarms": 0,
+      "detected_tasks": [
+        27,
+        85,
+        98,
+        149
+      ],
+      "selected_inputs": 30,
+      "nonempty_tasks": 10,
+      "logical_calls": 60,
+      "input_tokens": 35706,
+      "output_tokens": 13807,
+      "slot_errors": {
+        "SyntaxError": 38,
+        "ValueError": 1,
+        "RuntimeError": 2
+      }
+    },
+    "witness-only": {
+      "D_I": 41,
+      "D_IO": 40,
+      "D_I_samples": 14,
+      "D_IO_samples": 13,
+      "correct_failing": 40,
+      "failing": 40,
+      "precision": 1.0,
+      "false_alarms": 0,
+      "detected_tasks": [
+        27,
+        31,
+        51,
+        56,
+        57,
+        63,
+        85,
+        98,
+        110,
+        118,
+        136,
+        149,
+        152
+      ],
+      "selected_inputs": 62,
+      "nonempty_tasks": 18,
+      "logical_calls": 0,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "slot_errors": {}
+    }
+  },
+  "comparisons": [
+    {
+      "first": "behavior+concept",
+      "second": "behavior",
+      "matched": false,
+      "draws": 1,
+      "wins": 0,
+      "losses": 0,
+      "sign_p": 1.0,
+      "detecting_samples": [
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "behavior",
+      "matched": true,
+      "draws": 100,
+      "wins": 0,
+      "losses": 0,
+      "sign_p": 1.0,
+      "detecting_samples": [
+        3.0000000000000018,
+        3.0000000000000018
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "plain",
+      "matched": false,
+      "draws": 1,
+      "wins": 1,
+      "losses": 1,
+      "sign_p": 1.0,
+      "detecting_samples": [
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "plain",
+      "matched": true,
+      "draws": 100,
+      "wins": 1,
+      "losses": 1,
+      "sign_p": 1.0,
+      "detecting_samples": [
+        2.4100000000000015,
+        2.6500000000000017
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "placebo",
+      "matched": false,
+      "draws": 1,
+      "wins": 0,
+      "losses": 0,
+      "sign_p": 1.0,
+      "detecting_samples": [
+        3.0,
+        3.0
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "placebo",
+      "matched": true,
+      "draws": 100,
+      "wins": 0,
+      "losses": 1,
+      "sign_p": 1.0,
+      "detecting_samples": [
+        2.6100000000000017,
+        3.0000000000000018
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "toolinput",
+      "matched": false,
+      "draws": 1,
+      "wins": 0,
+      "losses": 1,
+      "sign_p": 1.0,
+      "detecting_samples": [
+        3.0,
+        4.0
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "toolinput",
+      "matched": true,
+      "draws": 100,
+      "wins": 0,
+      "losses": 0,
+      "sign_p": 1.0,
+      "detecting_samples": [
+        3.0000000000000018,
+        3.0000000000000018
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "witness-only",
+      "matched": false,
+      "draws": 1,
+      "wins": 0,
+      "losses": 10,
+      "sign_p": 0.001953125,
+      "detecting_samples": [
+        3.0,
+        13.0
+      ]
+    },
+    {
+      "first": "behavior+concept",
+      "second": "witness-only",
+      "matched": true,
+      "draws": 100,
+      "wins": 0,
+      "losses": 5,
+      "sign_p": 0.0625,
+      "detecting_samples": [
+        2.7600000000000016,
+        6.720000000000004
+      ]
+    }
+  ],
+  "candidate_properties": {
+    "plain": {
+      "records": 54,
+      "active": 23,
+      "canonical_holds": 54,
+      "canonical_fails": 0,
+      "candidate_reports": 4,
+      "confirmed_reports": 4,
+      "false_alarms": 0,
+      "abstains": 0
+    },
+    "behavior": {
+      "records": 34,
+      "active": 16,
+      "canonical_holds": 34,
+      "canonical_fails": 0,
+      "candidate_reports": 5,
+      "confirmed_reports": 5,
+      "false_alarms": 0,
+      "abstains": 0
+    },
+    "behavior+concept": {
+      "records": 50,
+      "active": 23,
+      "canonical_holds": 50,
+      "canonical_fails": 0,
+      "candidate_reports": 8,
+      "confirmed_reports": 8,
+      "false_alarms": 0,
+      "abstains": 0
+    },
+    "placebo": {
+      "records": 38,
+      "active": 19,
+      "canonical_holds": 34,
+      "canonical_fails": 0,
+      "candidate_reports": 6,
+      "confirmed_reports": 6,
+      "false_alarms": 0,
+      "abstains": 4
+    },
+    "toolinput": {
+      "records": 60,
+      "active": 30,
+      "canonical_holds": 60,
+      "canonical_fails": 0,
+      "candidate_reports": 12,
+      "confirmed_reports": 12,
+      "false_alarms": 0,
+      "abstains": 0
+    },
+    "witness-only": {
+      "records": 112,
+      "active": 62,
+      "canonical_holds": 112,
+      "canonical_fails": 0,
+      "candidate_reports": 51,
+      "confirmed_reports": 51,
+      "false_alarms": 0,
+      "abstains": 0
+    }
+  },
+  "generation_diagnostics": {
+    "static_failures": {
+      "SyntaxError": 203,
+      "ValueError": 9
+    },
+    "rejected_with_leading_prose_and_fenced_code": 198,
+    "rejected_but_first_fenced_block_passes_unchanged_checker": 141,
+    "responses_at_output_cap": 4,
+    "diagnostic_only_no_repair": true
+  }
+}

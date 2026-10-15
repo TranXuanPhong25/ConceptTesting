@@ -1561,3 +1561,28 @@ toolinput and witness-only with matched budgets). Keep all earlier failures inta
   zero coverage in the denominator, do not alter this frozen run. Input pools are literal-call
   semantics; hidden aliases are normalized away before native execution. No canonical material
   or plus-inputs have been read for this pilot at this checkpoint.
+
+
+## v19_rulegen — 2026-10-15, before generation
+
+User authorized implement and run rule-first generation comparison after v18. Full registration: `pipelines/v19_rulegen/PREREG.md`. Same20 dev, K=1, primary behavior+concept vs behavior; plain/placebo/toolinput/witness-only controls; max300 generation requests, same saved references; no canonical-driven model replacement, no held-out run.
+
+## v20_groundedflow CPU increment — 2026-10-15, before tests/outputs
+
+User requires plan then independent subagent audit before implementation. Two reviews complete; all blockers resolved in PLAN_GROUNDED_FLOW_V20.md/P0 resolutions and analysis/v20_plan_review.md. New folder only; initial scope narrowed to multiplicity. Full prereg: pipelines/v20_groundedflow/PREREG.md.21 known authored fixtures + static regressions, then all20 known-dev representation inventory without gold/canonical/reference; no minimum coverage, no GPU/D_IO stage. Freeze before first run, preserve failures. No change to older treatments/results.
+
+### v20 cpu_v2 pre-output correction — 2026-10-15
+
+Independent code audit rejected frozen cpu_v1 despite21/21 fixtures. No inventory/GPU was run. Preserve parent. New copy `v20_groundedflow_checked`,28 prewritten fixtures plus12 static/helper tests; lexical scope, entry shadowing, concrete input provenance, same eligible-value count loss and transparent output transport required. Conditional/Boolean provenance outside current evidence subset. See its PREREG.md and plan amendment; independent post-code review precedes inventory. No gold/reference/model API/D_IO.
+
+### v20 cpu_v3 bounded-analysis correction — 2026-10-15, pre-output
+
+Preserve cpu_v2/28-fixture outputs. Independent audit found coordinator recursion on sources already invalid for reassignment/unbound definitions; inventory not run. New folder v20_groundedflow_bounded, early unsupported return before slicing plus visited-name guard,32 prewritten fixtures/13 static checks. No semantic scope expansion. Independent recheck precedes all20 inventory. No model/oracle/GPU/D_IO.
+
+### v20 cpu_v4 size/depth correction — 2026-10-15, pre-output
+
+Preserve cpu_v3/32-fixture outputs; inventory never run. New v20_groundedflow_strict returns unsupported on oversized/deep AST before recursive helpers, catches parse failures, new oversize fixture/size-depth regression.33 prewritten fixtures/14 helper tests; same semantics and no GPU/D_IO. Post-review before all20 inventory.
+
+### v20 cpu_v5 validator adapter — 2026-10-15, pre-output
+
+cpu_v4 inventory retained:1/20 source supported;12 unresolved TypeError attempts. New v20_groundedflow_domainfix only corrects predicate invocation valid(*args), adds accept/reject integration fixtures and explicit worker reasons.35 prewritten native fixtures/14 static checks; same tasks/subset/validity/spec statuses, no relaxation. Independent review before fresh inventory; no GPU/D_IO.

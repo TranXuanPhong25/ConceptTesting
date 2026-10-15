@@ -1018,3 +1018,43 @@ No strategy generation, held-out evaluation or end-to-end D_IO comparison in thi
   [analysis script](analysis/v18_modelselect_results.py), [runbook](pipelines/v18_modelselect/README.md).
   Pilot complete. Future generation comparison needs a fresh preregistration; do not regenerate
   this run's candidates/choices from canonical feedback or call these metrics D_IO.
+
+
+## 11.53 v19_rulegen — rule-first generation comparison (2026-10-15)
+
+Complete20 design dev tasks/K=1,120 samples. Frozen protocol/generation and pre-gold parent provenance/guidance verified; all20 native scores and raw/equal-input comparisons independently recomputed. Saved spec-only references unchanged. No missing work to resume.
+
+| Arm | D_IO detected tasks /20 | D_IO input events | Selected inputs |
+|---|---:|---:|---:|
+| plain |3|4|28|
+| behavior |3|4|18|
+| behavior+concept |3|6|24|
+| placebo |3|4|22|
+| toolinput |4|8|30|
+| witness-only |13|40|62|
+
+- Representation17/20, frozen rule-first concept/fault coverage13/20. No canonical-driven replacement; full20-task denominator.
+- Concept and behavior detect the same tasks27/85/149. Primary comparison0 wins/0 losses, raw and equal-input, nominal sign p=1. More failing inputs do not increase detected tasks.
+- Equal-input concept vs behavior3.00/3.00; plain2.41/2.65; placebo2.61/3.00; toolinput3.00/3.00; witness-only2.76/6.72. These are mean task counts over100 random subsets, not integer new detections. Witness comparison0 wins/5 losses, nominal p=.0625; zero-yield tasks are matched to zero and therefore discarded from this diagnostic.
+- Main bottleneck:203 SyntaxError and9 ValueError rejections among300 logical strategy responses;11 further worker RuntimeErrors.198 rejected responses contain leading prose plus fenced code.141 rejected first code blocks pass the same static checker if extracted (read-only diagnosis, no repaired generation/scoring). Reliable generation interface is required before interpreting this as an isolated test of concept reasoning.
+- Shared-reference false alarms0 in every arm. Separate property/card audit: concept8 confirmed events vs behavior5, plain4, placebo6, toolinput12, witness-only51;0 observed property false alarms, placebo4 abstentions. Card events can repeat an input and are not D_IO.
+-300 logical requests,269 physical requests,31 exact-cache hits; physical182,256 input /69,369 output tokens (logical210,367/77,150).0 new oracle requests. Parent discovery/preprocessing costs excluded from incremental totals; witness-only reuses those candidate/old-tool witnesses and does not represent13 new LLM discoveries.
+- No concept generation improvement demonstrated; direct witness reuse is strongest in this exploratory run. Do not repair frozen outputs; any interface change needs a separate pipeline/preregistration.
+- [Report](analysis/v19_rulegen_results.md), [JSON](analysis/v19_rulegen_results.json), [audit script](analysis/v19_rulegen_results.py).
+
+
+## 11.54 v19 code-flow scope audit (2026-10-15)
+
+User requested actual implementation validation rather than detection metrics. CPU/source audit confirms v19 is AST pseudocode + typed model/fault prompt augmentation, not connected FSM/semantic behavioral reasoning. All29 concept-bearing slots have empty source bindings; FSM/replay evidence is not used in guidance, no catalog definitions are supplied, activation is logged only after random input selection. Task149's relevant deduplication mutation is omitted by fixed first3 truncation. Two independent CPU counterexamples reveal missing AugAssign old-value reads and an unsupported match/case branch incorrectly marked structurally supported (latter not claimed to occur in the20-task cohort). Gates/tests/hashes do not prove end-to-end semantic validity. Output extraction alone would not repair these methodological gaps. Frozen treatment/results unchanged, no GPU work added.
+
+[Audit](analysis/v19_flow_audit.md), [CPU checks](analysis/v19_flow_audit.py), [evidence](analysis/v19_flow_audit.json). Detection results in §11.53 remain implementation-specific exploratory results; they cannot settle the proposed connected behavioral-reasoning approach.
+
+## 11.55 v20 audited CPU multiplicity mechanism (2026-10-15)
+
+User required plan → independent subagent audit → implementation. Two read-only reviewers audited semantics and experimental validity before code; all blockers/resolutions recorded. Later independent code audits overruled passing fixtures, exposing lexical scope, builtin shadowing, argument provenance/eligible loss, bounded analyzer and validator-adapter bugs. Every frozen correction uses a new copy/preregistration; earlier failed artifacts retained separately.
+
+Final `v20_groundedflow_domainfix`:14 static/helper checks,35/35 known authored fixture expectations pass. Operation/occurrence before/committed events, exact original-argument identity, same eligible-value count loss and transparent return transport link a partial candidate requirement to native effects/output. No MCTS, complete FSM/symbolic execution, automatic spec entailment or unique-cause claim.
+
+Full20 known-dev CPU inventory retained:1/20 supported (task149, known design),12 native-checked attempts,3 complete candidate evidence instances,0 reviewed-grounded real-task instances; confirmed_bug null.19 unsupported tasks remain denominator.0 model requests, no canonical/reference execution/GPU/D_IO. Final inventory PUT bound24; final fixture native executions38, separate from predicate checks and preserved prior copies. Per-task inventory wall time recorded; full engineering CPU time not measured.
+
+Both reviewers accept only this narrow CPU increment; not broad mechanism/GPU readiness. Reviewed real-task obligations, derived collection provenance and guard/loop semantics remain open. [Plan](PLAN_GROUNDED_FLOW_V20.md), [review history](analysis/v20_plan_review.md), [CPU report](analysis/v20_cpu_results.md), [JSON](analysis/v20_cpu_results.json).
