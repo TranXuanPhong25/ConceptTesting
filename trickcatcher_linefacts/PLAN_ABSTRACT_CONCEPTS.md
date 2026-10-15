@@ -483,3 +483,42 @@ SWT-Bench là bước sau khi abstraction có bằng chứng hữu ích ở cấ
 - [Thử nghiệm CrossHair trước đây](analysis/crosshair_gaps_report.md), RESULTS §11.33.
 - [Search/relation research note](research/search_reasoning_2026-10-14/REPORT.md): LATS, Vital,
   discriminator quality và CEGAR; primary sources, each paper in a separate folder.
+
+
+## Implementation checkpoint — 2026-10-15
+
+User authorized starting immediately. CPU foundation now implemented in new v11_fair-based
+v16_behavior and separate v16_behavior_compact storage repair. See RESULTS §11.48 and
+pipelines/v16_behavior_compact/CPU_VALIDATION.md. Gate B passed 17/20; 26 CPU tests pass.
+The current machine is an observed finite predicate projection, not a symbolic over-approximation
+or complete obligation product. Mutation scope is explicitly implementation-origin and smaller
+than the full proposed grammar; no MOVE or full spec-model mutation yet. Gates C/D remain
+unrun because Qwen endpoint returned HTTP 404. No new bug-detection claim.
+
+Final runnable copy: `v16_behavior_ready`, strict malformed JSON shape rejection added before
+model outputs. Fresh CPU gate 17/20, 29 tests, real frozen strategy adapter 10/10. Original
+v16_behavior and storage-repair v16_behavior_compact preserved. Use ready copy for Gates C/D.
+
+
+2026-10-15 GPU checkpoint: Gate C failed 0/20 (threshold 10), 6 schema/quote candidate obligations,
+0 cards. Forty new completions; no generation/D_IO. Source/config unchanged after main-thread
+import preload resume. See RESULTS §11.49 / analysis/v16_behavior_gate_results.md.
+Further schema/template/model mutation work requires a new preregistered copy; this gate is final.
+
+
+2026-10-15 v17 checkpoint: typed template compiler/semantic-model mutation implemented in a new
+copy; 44 tests / representation17/20, concept gate2/20 failed, generation stopped. Audit found
+placeholder/unsupported rationale in accepted cards. Separate preregistered six-case synthetic
+probe: supplied-model selection6/6, parameter construction example match4/6, full schema+correctness1/6.
+Next hypothesis: tool enumerates/base-filters grounded candidate models and explanations; LLM
+selects/ranks. Requires fresh preregistration and actual-cohort validation, not a claim of concept gain.
+See RESULTS §11.50–11.51. No v18 run exists.
+
+
+2026-10-15 v18 selection pilot complete (user says no MCTS). Tool-generated/base-filtered models
+plus small ID-only menus:13/20 nonempty;12/20 retain/display a sampled-consistent requirement.
+LLM chooses11 vs lexical-rule12 vs uniform expected9.17; no LLM selection gain.703 valid frozen
+inputs,119 candidate discrepancies confirmed across12 tasks, no observed false alarms. Source/state
+and multi-input fault matching replace placeholder rationale. Metrics are not D_IO and not universal
+correctness. Preserve the finite candidate set instead of assuming LLM top1 is safe; future generation
+comparison needs separate matched-budget controls and preregistration. See RESULTS §11.52.

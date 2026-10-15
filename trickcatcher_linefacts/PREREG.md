@@ -1336,3 +1336,228 @@ paid API or held-out run. User priority: start model stages ONLY after B3 and B4
   immutable manifest; replay exact relation_meta; require all original hypothesis cache keys and slim metadata
   to match frozen tasks. Native hypothesis cache handling, prompts/config/seeds/sample limits/scorer remain
   unchanged. Skip completed bundle/B3 stages. Repaired methods retain two workers and original mechanism gate.
+
+- Operational B4 scoring retry (2026-10-14 23:49 +0700): generation/evaluation/collect/ref
+  completed, but score exited with incomplete executions (132/133); only task 44 result is missing.
+  Re-run that exact saved job with unchanged oracle worker, original per-call timers and 3,000 s outer
+  timeout, capturing exit code/stderr. Keep all 132 existing results and complete native scoring only
+  after all executions exist. No new model calls, task exclusions, source/config/prompt/scoring changes.
+
+
+## 2026-10-15 — v16_behavior, abstract behavior and semantic concept MVP
+
+User requested starting now, overriding the wait for benchmark research. New source copy from
+v11_fair; author/vendor code and all earlier versions remain unchanged. This implements our
+LineFacts design, not a reproduction of any cited paper. Foundation source hashes saved locally.
+
+Before new outputs: fixed design dev cohort [27,31,51,56,57,59,63,76,78,85,91,94,98,110,118,126,
+136,144,149,152], K=1, seed 20261015. No held-out access. Representation artifacts include
+source-mapped structured control flow, explicit collection state observations, operation requirements,
+first-order bounded mutations, and a finite observed predicate-state machine. The observed machine
+is an under-approximation; no abstract-interpretation soundness/completeness or symbolic proof claim.
+Float division, eval, recursion, unrecognized external operations and unresolved aliases are opaque.
+Every task remains in the denominator. Gate B: >=16/20 with a supported input-output summary,
+base passes, >=1 completed replay, and no known replay mismatch. Stop after gate failure.
+
+CPU discovery: <=8 unique recorded base inputs/task, <=40 frozen mined strategy draws/task,
+first 12 compatible mutants in source/operator order, <=12 unique shared inputs/mutant,
+2s per execution, 20000 recorded events maximum. Mutations are implementation-origin hypotheses,
+not actual bugs or validated spec models. Base-distinguished mutants reported separately.
+No canonical/reference code, plus inputs or detection outcomes used for preparation or ranking.
+
+Gate C: <=2 Qwen proposals/task (spec-only extraction then binding), 2048 completion tokens each,
+<=6 candidate cards, <=3 shown. Quoted docstring spans and typed DSL/bindings checked; semantic
+entailment remains a candidate. Reject base contradictions. Require >=10/20 grounded nontrivial
+concept tasks with explicit alternative/gap and computable discriminator. No repair model calls.
+If B/C fail, stop and report; changing treatment requires a new copy/amendment before new outputs.
+
+Conditional generation after gates: six LLM arms plain/flat-facts/behavior/behavior+concept/placebo/
+toolinput, plus witness-only. All share spec/PUT/base, domain filter, draw pool, request and selection
+policy: 3 strategies/task/arm, 1024 tokens each, <=2 random-valid selected inputs per slot and
+<=12 distinct calls/sample. Semantic activation is measured after common selection, never used
+as a private acceptance filter for the concept arm. Max logical model calls: 40 proposals + 360
+strategies =400. Common saved spec-only ref oracle, primary behavior+concept vs behavior; secondary
+behavior vs flat-facts, matched plain/placebo/toolinput/witness-only. D_IO primary; false alarms,
+random-subset equal-count contrasts, coverage and actual input/token/discovery costs reported.
+No content repair, paid fallback or MCTS run. Transport errors stop for resume. GPU requires live
+user Qwen; CPU artifacts are not an efficacy result. Full dev expansion is not automatic promotion.
+
+
+### 2026-10-15 — v16_behavior_compact storage repair, before repaired-run outputs
+
+Original CPU prepare aborted on task 94: 30 MiB worker JSON exceeded inherited 8 MiB IPC cap;
+19/20 task artifacts existed, no complete representation gate, model calls or detection scores.
+Keep failed v16_behavior sources/results intact. New copy v16_behavior_compact retains only
+first 64/last 64 events per replay after computing the full observed predicate machine, with
+omission counts. Native comparison/final state, execution/event/time caps, domain, mutant order,
+shared inputs, cohort, seeds, gates and all model/generation budgets unchanged. Re-run CPU audit
+in fresh output. This repairs storage, not a treatment/gate change; no efficacy claim.
+
+
+### 2026-10-15 — v16_behavior_ready format rejection hardening, before new outputs
+
+After compact CPU gate passed (17/20), code review found schema-invalid but syntactically valid
+JSON such as a top-level list could raise AttributeError instead of counted rejection. No model
+requests or concept/detection outcomes exist. New copy v16_behavior_ready explicitly rejects wrong
+JSON container types, non-string IDs/operators/quotes and malformed reasoning. No model repair
+calls, relaxed validators, new operators, budgets, task filtering or treatment changes. Re-run CPU
+gate fresh and freeze new source hashes; previous copies/results retained.
+
+
+### 2026-10-15 10:00 +0700 — user-authorized GPU availability waiter
+
+User requests continuing and expects GPU online in ~10 minutes. Outside frozen pipeline, use
+analysis/run_behavior_when_ready.py to verify protocol, wait until 10:10:40 +0700, then check the
+inherited user Qwen model endpoint once/minute for at most 40 minutes. Endpoint/key are environment
+only, never saved. When the pinned model is listed, execute the unchanged v16_behavior_ready `all`
+runner with two workers and the dedicated v4 interpreter. Maintain the existing 20-minute metadata
+keepalive only during the run. Gates, tasks, requests, seeds and scoring unchanged; no extra completion
+probe, paid fallback or model repair call. A failed concept gate stops before generation; transport/
+worker failure preserves caches for reviewed resume. Queue the completion/stop report back into this
+existing session. Operational state and logs live under out/runlogs_v16_ready (ignored).
+
+Preflight: protocol unchanged; all 20 first-stage prompts contain docstring/parameter/DSL instructions
+without PUT implementation or canonical material. 15/20 tasks have both usable behavior and at least
+one compatible implementation mutant under the frozen grammar; all 20 remain in the concept-gate
+denominator. This is engineering capacity, not accepted-concept coverage or detection evidence.
+
+
+### 2026-10-15 10:14 +0700 — v16 frozen resume, main-thread tracer initialization
+
+GPU ready at 10:13:41. First run stopped at binding prompt construction: lazy import of behavior
+loaded tracer in a ThreadPoolExecutor worker; its existing SIGALRM registration requires main thread.
+Three spec responses cached (1,310 input / 949 output tokens), zero binding responses, summaries,
+concept gate, generation or scoring. Frozen sources/config/tasks still match the protocol.
+Resume through analysis/resume_v16_frozen.py, importing behavior/tracer on main thread before the
+unchanged CLI. Reuse exact cached requests; no new seeds, prompts, validators, budgets or task
+exclusions. This changes initialization order only; no source edits or model-response repair.
+
+
+## 2026-10-15 — v17_templates, compiler-owned semantic concepts
+
+User requested continuing after v16's 0-card failure. Before new outputs, new copy from
+v16_behavior_ready. Replace whole expression-tree generation with a fixed registry of reusable
+MAP, FILTER, REDUCE, ORDER_CHECK, BALANCE, SEGMENT_COUNT, CAPACITY, NEIGHBOR_SELECT and CONTAINMENT
+models. No registry dispatch on task number/function name or canonical solutions. Parameters are
+LLM proposals from public spec-only units with tool-owned raw source spans; type/schema compilation
+is not proof of entailment. No implementation or reproduction of a cited paper.
+
+First Qwen call chooses <=6 template instances plus spec-unit IDs. Tool compiles them and <=6
+first-order spec-model alternatives each (boundary, reducer, filter membership, multiplicity,
+index parity, ordering, guard omission, containment). Second call selects proposal/fault/source
+block IDs and a short explicit missing-condition rationale. Discriminator is computed by the tool
+from original/alternative model outputs, not LLM-generated Python/DSL. Empty-output and component
+properties are valid; no requirement that the output relation mention input structurally when
+domain/template already binds it. No missing-R0 propagation: accepted proposal IDs assigned anew.
+
+Same fixed 20 design dev tasks as v16, K=1, seed 20261015. Same CPU representation rules/gate
+>=16/20, 8 bounded base replays, 40 mined discovery draws, existing first-order implementation
+mutants retained as common discovery artifacts. Before card acceptance, verify candidate property
+against ALL captured public base calls, cap 200 unique inputs/task; if cap exceeded abstain rather
+than silently truncate verification. No canonical/reference/plus inputs before frozen generation.
+A shown concept requires valid spec-unit/typed-template/fault/block references, complete rationale,
+no base contradiction/unknown and >=1 actual valid model-discriminating discovery input. Original
+input admissibility is unchanged; type/requirement assumptions are candidate metadata.
+Concept gate remains >=10/20 tasks, all 20 retained. Stop before generation if it fails; no repair calls.
+
+Two proposal requests/task, each <=2048 completion tokens, no content retries. At most 6 cards checked,
+show 3, deterministic rank: non-base candidate PUT violation, then non-base discriminator, then
+base-covered discriminator, original model order for ties. This uses candidate semantics, not gold.
+All base/fuzz/old tool/semantic-discriminator discovery costs shared; common pool available to
+toolinput/witness-only. Guided arms do not see concrete discovery inputs. Main comparison remains
+behavior+concept vs same behavior. Six LLM generation arms plus witness-only, each 3 strategy slots,
+1024 tokens/slot, 100 validity-filtered draws, random <=2 picks/slot, <=12 unique inputs/sample.
+Common domain-only acceptance filter; concept activation recorded after selection. Max completion
+requests 40 proposals +360 strategies=400, excluding transport retries; actual ledger reported.
+Same saved spec-only ref oracle and canonical/contract evaluation only after generation freezes.
+Report D_IO, false alarms, random-subset equal-input contrasts, mechanism coverage and token/time
+costs; candidate-property validity must be audited separately from D_IO. No held-out or MCTS run.
+Preregister new revisions before outputs; do not relax v16 or reinterpret its failure.
+
+
+- v17 operational detail, before outputs: each checked card replays at most 3 ranked discriminator
+  inputs with source-state tracing, requiring a completed trace touching a bound source line.
+  This is witnessed grounding, not causal/semantic proof. The common old+new witness union is
+  capped at 12 inputs by uniform fixed-seed sampling (20261015+task ID), shared by toolinput and
+  witness-only, to keep prompt size bounded. Guided prompts contain no concrete witnesses.
+
+
+- v17 preflight checkpoint before Qwen: 44 CPU tests, representation 17/20, all 20 public base
+  capture sets below cap. Manual compiler-only positive control on task 152 (MAP abs_sub) checked
+  four public base inputs; this is not an LLM proposal and never feeds proposal selection/gate.
+  Proposal/generation starts with a fresh cache. Native canonical-property audit is scoring-only;
+  report activated candidate violations, confirmed violations, false alarms and abstentions separately.
+
+
+### 2026-10-15 — conditional synthetic template-interface capability probe
+
+Registered while v17 proposals are running; exploratory design informed by v16 and partial v17
+rejections. ONLY IF v17 concept gate fails, run a separate six-case synthetic capability probe,
+not a new detection cohort or rescue of v17. Cases: character filtering, bidirectional non-strict
+ordering, index/value-qualified sum, paired absolute difference, filtered multiplicity, empty-safe
+minimum. Each has predeclared English requirement, candidate configuration and hand-written
+finite expected examples verified by CPU before calls. No benchmark task IDs/code/gold references.
+Compare (a) current parameter-synthesis interface, (b) selection among 2–4 tool-built candidate
+models, with randomized correct ID positions. Same Qwen, temperature 0, two calls/case, 512 output
+tokens each, max 12 logical completions separate from v17's 400 cap. No content repair or retries.
+Report syntax/schema compilation separately from semantic agreement on declared examples and ID
+selection correctness; actual tokens. Different prompts/interfaces intentionally differ; no clean
+causal claim about output format alone, no D_IO or general ability claims from six examples.
+Probe outputs never alter frozen v17 proposals/cards/gate. Source/data in own analysis folder.
+
+
+## 2026-10-15 — v18_modelselect, candidate coverage and ID selection pilot
+
+User explicitly authorizes tool-built candidate models + LLM choice and says MCTS is unnecessary.
+New source copy v17_templates -> v18_modelselect; no paper reimplementation, paid fallback or held-out.
+This is a SELECTION-ONLY pilot on the same fixed 20 design dev tasks, not a test-generation D_IO run.
+Before outputs: seed 20261018, unchanged 17/20-capable observed behavior substrate, template semantics
+from v17. Enumerate <=2048 typed template configurations/task; no task-ID/function-name dispatch.
+Arguments/element/output types and optional output components come from public base observations.
+Membership alphabets use a disclosed primitive vocabulary (English vowels, prime-valued hexadecimal
+digits computed arithmetically) and quoted literals from public spec. Segmentation tokens from quoted
+public words. No PUT constants or gold/reference code supply normative parameter values.
+
+Filter against ALL captured public base calls (cap 200). Rank survivors by a disclosed hand-engineered
+lexical compatibility/complexity prior, retain <=64. Choose <=4 displayed models, prioritizing distinct
+predictions on frozen discovery inputs; keep the full retained pool for evaluation. Shuffle display IDs
+with a fixed task seed. Report raw/retained/displayed coverage separately. Rule-first and uniform over
+EXACT same displayed models are mandatory selection controls. Lexical ranking is feature engineering,
+not learned semantic proof. No selection correctness claim from base agreement alone.
+
+Discovery/audit input pool <=80/task: captured base, frozen old tool witnesses, fixed mined strategy
+pool and <=80 structured typed proposals (empty/zero/sign/ties/duplicates/Unicode/delimiters/paired
+values). Original mined domain filter applies uniformly. Pool fixed without canonical or plus inputs.
+Record exact pool/models/model IDs/source hashes before LLM. Unsupported/opaque tasks stay in the
+20 denominator with no menu. CPU gate >=10/20 candidate tasks before any model calls; otherwise stop.
+
+One Qwen completion per task, <=256 output tokens, temperature0, return {"choice":"actual ID"} or
+NONE. No parameters, source IDs, witness inputs, free-form rationale or content repairs. Model sees
+public spec and displayed model definitions only, no PUT or concrete discovery inputs. All 20 queried
+(including NONE menus) if CPU gate passes. Max20 logical completions, two workers, exact-cache resume.
+No MCTS/search-agent loop. Invalid choice is reported as invalid; no silent fallback into LLM selection.
+
+Freeze ALL menus, choices and discovery pools before opening canonical/contract material. Then run
+scoring-only audit on this frozen pool (<=80 inputs/task): real contract validity; each model's
+sampled canonical-property consistency, unknowns, and output-component scope. Coverage = at least one
+retained/displayed model consistent on all valid audited inputs, with no unknown; not universal
+semantic correctness. Compare LLM selection vs lexical-rule-first and uniform expected consistency,
+including conditional-on-availability and true competing-model ambiguity by output scope. Report
+partial-component requirements separately; no implication of complete program specification.
+
+Tool-produced records for up to3 selected-model discrepancies contain requirement, observed source
+blocks/state/guard sites, input relation class, actual effect and alternative-model matches. These are
+bounded execution evidence, not causal proofs or LLM internal reasoning. Canonical audit confirms or
+rejects candidate discrepancies AFTER freeze. Report false requirements/false alarms separately.
+This pilot ends after selection audit: no strategy generation or D_IO assertion/oracle comparison,
+and no generation decisions feed back from this pilot's gold into the same run. A later benchmark
+comparison needs a separately frozen protocol (LLM-selected vs rule/random candidates, plain,
+toolinput and witness-only with matched budgets). Keep all earlier failures intact.
+
+
+- v18 pre-Qwen checkpoint: 52 CPU tests passed; representation17/20, candidate menus13/20,
+  seven menus ambiguous on sampled predictions within a scope. Task78 has mixed str/empty-list
+  public input representations, conservatively unsupported by current type inference; retain
+  zero coverage in the denominator, do not alter this frozen run. Input pools are literal-call
+  semantics; hidden aliases are normalized away before native execution. No canonical material
+  or plus-inputs have been read for this pilot at this checkpoint.

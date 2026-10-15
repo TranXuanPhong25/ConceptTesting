@@ -844,3 +844,177 @@ Qwen chỉ đọc spec, liệt kê yêu cầu hành vi (trích nguyên văn) kè
   Phân tích extraction limits nằm ở METHOD_V14_V15.md; source/config/budgets của run không được sửa sau kết quả.
 - Report, provenance và script: [v14_v15_format_repair.md](analysis/v14_v15_format_repair.md),
   [JSON](analysis/v14_v15_format_repair.json), [script](analysis/v14_v15_format_repair.py).
+
+### 11.47 B4 v13_hyp hoàn tất: hypothesis pipeline kém flat/toolinput trên dev (2026-10-14)
+- Đủ 2.793 generation/evaluation rows, 133/133 ref execution records, dev 113 + pilot 20, K=3.
+  Score trước đó thiếu task 44; exact saved-worker retry thành công sau 446,43 s, source/job/timers không đổi.
+  Native score hoàn tất 23:56:47 local; không có model call mới trong scoring retry. Nguyên nhân lần thiếu đầu chưa xác định.
+- Dev D_IO tasks/run: **hyp-hybrid 46,33**, flat-hybrid **62,67**, rel-hybrid **63,33**, toolinput **63,00**,
+  plain-hybrid **54,67**, witness-only **41,67**, hyp-witness-only **15,00**.
+- Primary hyp vs flat: raw wins/losses **14/43, nominal p=.000154**; equal-input subsets **21/51, p=.000535**.
+  Hyp vs toolinput: raw **14/35, p=.003802**; matched **20/41, p=.009853**. Không đạt promotion gate.
+- Hyp vs plain chưa rõ: raw 19/31, p=.119; matched 36/32, p=.716. Các p-values chưa điều chỉnh multiplicity.
+- Mechanism dev: 133 shown hypotheses trên 58/113 tasks; 66 có witnesses, 15 có surviving-mutant differences.
+  Proposal toàn 133 tasks: 133 logical calls, 687 parsed candidates, 197 kept; top-3 shown total 160 trên 70 tasks.
+- Generation budget thực dùng khác nhau: hyp-hybrid 1,83 calls/sample, flat 3,27; shared hypothesis proposal
+  tính riêng một lần/task. Equal-input matching không match LLM requests; kết quả là hiệu quả full methods,
+  chưa isolate riêng hypothesis wording. B4 manifest có witness controls nhưng không export placebo.
+- Pilot: hyp 9,0, flat 10,33, toolinput/plain 10,67 tasks/run; primary differences chưa rõ ở cohort nhỏ này.
+- Kết quả B3/B4 và repaired v14/v15 đã hoàn tất. Không promote hoặc chạy held-out từ các kết quả này.
+  Hướng FSM/spec/model mutation mới chỉ là plan/research, chưa có experiment result.
+- Tracked report, native attribution, costs và provenance:
+  [b4_v13_hyp_results.md](analysis/b4_v13_hyp_results.md), [JSON](analysis/b4_v13_hyp_results.json),
+  [script](analysis/b4_v13_hyp_results.py).
+
+
+### 11.48 v16 behavioral abstraction — CPU foundation, 2026-10-15
+
+User authorized starting immediately; benchmark-wait timer stopped. New v11_fair-based source
+v16_behavior, then separate v16_behavior_compact storage repair after task 94 exceeded worker IPC cap.
+Earlier sources/vendor unchanged; no paper reproduction or paid calls.
+
+- Representation gate **17/20**, required >=16/20: passed. 136 replay attempts, 135 completed/matching,
+  1 unresolved timeout, 0 observed mismatches. Opaque: 63 recursion, 76 recursion/float division, 144 eval.
+- **26 CPU tests pass** (8 behavior/DSL tests, 18 inherited fairness tests). Real frozen task-152 strategy
+  adapter: 10 draws, all 10 accepted by the common domain filter; no model call.
+- 409 observed finite projected states, 442 witnessed transitions. This is an under-approximation,
+  not symbolic execution, a complete FSM or a proof that merged paths are feasible.
+- Task 152 return observes result version 7 after six appends. Change-based versions preserve observed
+  collection changes/aliases; repeated no-op writes need not create a new version.
+- 119 first-order implementation mutants; 104 distinguishable on bounded common inputs, 55 have
+  at least one non-base discriminator (counts include opaque tasks). These are mutant disagreements,
+  **not** detected PUT bugs or validated specification mutations. Fixed source-prefix cap omits later
+  operations for some tasks; 78/152 have no compatible mutation in the initial grammar.
+- Explicit operation requirements, source/control/state IDs, typed JSON predicates and two-stage
+  spec-only extraction/binding runner implemented. Generation uses a common domain-only filter;
+  activation is measured after selection. Proposal/generation/scoring code has not run with the model.
+- Qwen endpoint check returned HTTP 404; new endpoint requested. **0 model calls**, concept gate and
+  D_IO unmeasured. No concept-advantage/promotion claim. MOVE CHECK, full spec-model mutation,
+  complete symbolic transitions/refinement and MCTS remain later extensions.
+- [CPU report](pipelines/v16_behavior_compact/CPU_VALIDATION.md),
+  [machine-readable counts/hashes](pipelines/v16_behavior_compact/CPU_VALIDATION.json),
+  [runbook](pipelines/v16_behavior_compact/README.md).
+
+- Final pre-model hardening copy: [v16_behavior_ready](pipelines/v16_behavior_ready/README.md),
+  rejects malformed JSON containers, quotes, IDs and reasoning as counted proposal failures.
+  Fresh CPU gate again **17/20** with the same replay/mutation counts, **29 tests pass**, and
+  task-152 real adapter smoke 10/10. No model outputs influenced these changes; protocol/source
+  hashes verified. Use this copy for continuation. [Ready CPU report](pipelines/v16_behavior_ready/CPU_VALIDATION.md).
+
+
+### 11.49 v16_behavior_ready — GPU proposal gate failed, 2026-10-15
+
+GPU metadata ready 10:13:41 +0700. First attempt stopped during binding prompt construction:
+tracer lazily imported in a thread tried to register SIGALRM. Three spec responses cached.
+External main-thread preload adapter resumed the exact source/config/task protocol and requests;
+no pipeline edits, model repair, validators/seeds/budget changes or new tasks.
+
+- Full **20/20 task proposal cohort**, 2 calls/task. **Concept gate 0/20**, required >=10/20: failed.
+  Six candidate obligations passed quotation/schema (5 task 51, 1 task 152); **0 accepted/shown cards**.
+  Representation CPU gate remains 17/20; that did not establish usable semantic concepts.
+- **40 logical / 40 successful new completion requests**, 40 unique cache keys, 3 cache hits on resume,
+  zero failed completion transport attempts. Actual **35,582 input / 23,251 output tokens**.
+  Request-duration sum 881.41 s is concurrent-request time, not wall time. No paid fallback.
+- Rejections: 9 spec JSON parse failures; 13 quotation mismatches; 18 relations missing structural
+  input/output dependency; 10 DSL operator/arity failures; 1 DSL depth/type failure; 2 references to
+  output in input predicates; 47 missing R0 references, 1 missing M1 reference. These count rejected
+  items/stages, not independent tasks. Missing IDs often propagate earlier spec rejection.
+- DSL expressiveness is a concrete bottleneck: raw outputs request unsupported mod/filter/map,
+  string operations and whole-function operators. Task 27 invents flip_case; task 51 binding uses
+  a mutation name string as discriminator. Task 152 has a schema-valid obligation but no compatible
+  mutation under the fixed grammar. Parse/grounding/expressiveness failures prevent this treatment
+  from reaching generation. They do not establish semantic-concept detection gain or failure.
+- **Generation rows 0; scorer not run; D_IO unmeasured (not zero).** Gate stops as preregistered.
+  Do not relax gate or rerun with changed content in this frozen version. Future work needs a
+  separately registered copy, ideally typed semantic templates and explicit unsupported cases.
+- [Report](analysis/v16_behavior_gate_results.md), [JSON](analysis/v16_behavior_gate_results.json),
+  [analysis script](analysis/v16_behavior_gate_report.py),
+  [frozen resume adapter](analysis/resume_v16_frozen.py). All frozen hashes verified.
+
+
+### 11.50 v17_templates — compiled spec-model alternatives, gate 2/20 (2026-10-15)
+
+New copy of v16_behavior_ready. Nine reusable typed semantic templates replace generated expression
+trees. Tool-owned spec spans, full public base verification (all 20 below cap 200), first-order
+spec-model alternatives and computed discrimination. No dependency on implementation mutant IDs.
+Main-thread tracer preload built into this runner. No source/validator edits after outputs.
+
+- **44 CPU tests pass**, representation **17/20**. Manual compiler-only task-152 positive control
+  passed four base cases; explicitly excluded from proposal/gate results.
+- Full 20-task model proposal cohort: 12 schema proposals, 4 base-consistent compiled templates,
+  **2 checked/shown cards on 2/20 tasks (27,78)**. Gate requires 10/20: failed.
+- Rejections: 18 spec-unit-reference failures (including omitted evidence), 13 unknown proposal IDs
+  cascading from earlier rejection, 6 base/type unknowns, 2 base contradictions, 1 candidate with no
+  replayed source-anchored discriminator. JSON parse/operator-tree failures no longer dominate.
+- **40 logical/new requests**, zero completion transport failures/cache hits; **38,891 input / 4,116
+  output tokens**. No generation or canonical scoring. D_IO unmeasured, not zero.
+- Qualitative audit: task 27's MAP swapcase candidate has a Unicode discrepancy/anchor, but rationale
+  copies the three prompt placeholders. Task 78's membership count matches source behavior on its
+  witness; its prose incorrectly calls that a semantic misunderstanding. These are technically accepted
+  by the frozen checks, not evidence of successful explicit fault reasoning. Keep primary gate 2/20;
+  do not silently redefine or relax it. Candidate discrepancies are not canonical-confirmed bugs.
+- Final state: concept_gate_failed_generation_stopped. Future design must change the LLM role/interface
+  and tool-produced evidence, not simply enlarge token limits or accept generic rationale.
+- [Report](analysis/v17_template_results.md), [JSON](analysis/v17_template_results.json),
+  [analysis script](analysis/v17_template_results.py), [runbook](pipelines/v17_templates/README.md).
+
+### 11.51 Separate synthetic interface capability probe — selection 6/6 (2026-10-15)
+
+Conditional probe preregistered before its calls and run only after v17 gate failure. Six hand-authored
+requirements: character filtering, bidirectional order, indexed sum, pairwise absolute difference,
+filtered multiplicity, empty-safe minimum. Declared configurations/examples and randomized candidate
+positions verified on CPU before responses. No benchmark code/gold or modification of v17.
+
+- Parameter synthesis: 5/6 compile; **4/6 match the declared finite examples**; 2/6 evidence/schema-valid;
+  **1/6 both example-correct and evidence/schema-valid**. Separate syntax from semantic/interface failures.
+- Selection among 2–4 supplied compiled candidates: valid choice and correct **6/6**.
+  Uniform-choice expected count 1.83/6; always-C0 baseline 3/6. Small convenience synthetic probe,
+  not a generalization/significance claim. Different interface prompts intentionally differ, so output
+  format alone is not isolated as a cause. Example agreement is not a universal semantic proof.
+- **12 new requests**, **9,364 input / 370 output tokens**, no completion transport failure/cache hit.
+  Separate budget from v17; combined this round 52 new requests, 48,255 input / 4,486 output tokens.
+- This supports investigating tool-built/base-filtered candidate models and LLM selection/ranking,
+  instead of LLM constructing parameters/IDs/rationale from scratch. No v18 benchmark run or D_IO claim.
+  Frozen generation remains stopped. Probe source/data design:
+  [probe.py](analysis/template_capability_probe/probe.py); results in the shared v17 report above.
+
+
+### 11.52 v18_modelselect — tool candidates work; LLM selection not better than rule (2026-10-15)
+
+User authorizes model-ID selection and explicitly excludes MCTS. Selection-only pilot, new copy
+v17_templates -> v18_modelselect. No parameter/evidence/rationale generation by LLM; no task-ID
+or function-name candidate dispatch. Tool uses typed template enumeration, disclosed lexical prior
+and public-base filtering. Uniform and rule-first controls use the exact same shuffled menus.
+All choices, candidates, pools and pre-gold execution records freeze before canonical/contract audit.
+No strategy generation, held-out evaluation or end-to-end D_IO comparison in this pilot.
+
+- **52 CPU tests pass**, representation17/20. Nonempty base-consistent retained pool/menu on
+  **13/20 tasks**, including7 menus with distinct sampled behaviors within an output scope.
+- Canonical audit: **703 valid frozen input calls**, zero invalid/unresolved. On this finite pool,
+  **12/20** tasks have a sampled-consistent model in the retained pool and displayed menu.
+  No consistent candidate lost by display trimming. This is sampled requirement consistency,
+  not universal model correctness. One selected requirement targets a tuple component only.
+- **LLM11**, **rule-first12**, **uniform expected9.17** sampled-consistent task selections.
+  Conditional on menu containing a consistent model: LLM11/12. Paired LLM vs rule:0 wins/1 loss.
+  On7 ambiguous menus: LLM5, rule6, uniform expected3.17. No incremental LLM selection gain shown.
+- Failure separation:7 tasks have no candidates; task91 has candidates but none fully matches the
+  reference on the frozen pool; task56 has the consistent empty=True BALANCE model available but
+  LLM chooses empty=False. Task78's mixed str/empty-list base representation is conservatively
+  unsupported by type inference, despite the generic registry being capable of that behavior.
+- Selected candidate properties produce **119 input-level discrepancy reports across12 tasks**;
+  canonical confirms all119, zero observed candidate-property false alarms. These are not119 bugs,
+  not D_IO, and do not prove global property correctness: task91's candidate can yield confirmed
+  reports on some inputs while differing from the reference elsewhere. Keep that distinction.
+- Tool evidence now contains actual source/state observations, relation classes, predicted value,
+  PUT effect and non-unique fault matches, rather than prose accepted by minimum string length.
+  Task152 ([0],[1]): model predicts[1], PUT[-1]; signed-subtraction alternative matches59/59 frozen
+  native calls. Task149 ['aa','aa']: model preserves2 occurrences, PUT1; duplicate-removal alternative
+  matches16/16 frozen calls, even-index alternative9/16. This is bounded hypothesis discrimination,
+  not unique causal proof. Task136 exception matches alone do not localize an aggregate/guard.
+- **20 logical/new requests**, **6,410 input /165 output tokens**, zero transport failures/cache hits;
+  all20 choice responses valid (13 model IDs,7 NONE). Two independent synthetic audit-kernel checks
+  confirm control scoring and confirmed-vs-false requirement classification. Frozen hashes verified.
+- [Report](analysis/v18_modelselect_results.md), [JSON](analysis/v18_modelselect_results.json),
+  [analysis script](analysis/v18_modelselect_results.py), [runbook](pipelines/v18_modelselect/README.md).
+  Pilot complete. Future generation comparison needs a fresh preregistration; do not regenerate
+  this run's candidates/choices from canonical feedback or call these metrics D_IO.

@@ -1,0 +1,80 @@
+{
+  "VERSION": "v16_behavior_ready",
+  "model": "qwen2.5-coder-7b-instruct",
+  "seeds": {
+    "facts": 20261010,
+    "mining": 20261010,
+    "arms": 20261010,
+    "oracle": 20261212,
+    "pilot": 20261010
+  },
+  "K": 3,
+  "workers": 12,
+  "V4_PYTHON": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/codex_v4/venv/bin/python",
+  "datasets": {
+    "humaneval": {
+      "he": "PBT_EdgeCases/run/data/humaneval.jsonl",
+      "hep": "PBT_EdgeCases/run/data/humaneval_plus.jsonl",
+      "contracts": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "oracle_hep": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "puts": "vendor/TrickCatcher/Datasets/EvalPlus/PUTs"
+    },
+    "heldout": {
+      "he": "humaneval_mbpp.jsonl",
+      "hep": "humaneval_mbpp_plus.jsonl",
+      "contracts": "humaneval_mbpp_plus.jsonl",
+      "oracle_hep": "humaneval_mbpp_plus.jsonl",
+      "puts": "PUTs",
+      "selection": "tasks.json"
+    }
+  },
+  "freeze_hypothesis_constants": true,
+  "B0_VARIANTS": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/b0/variants/Datasets/EvalPlus/GenProgs",
+  "strict_round2": true,
+  "placebo_matched": true,
+  "caps": true,
+  "shared_scorer": true,
+  "behavior": {
+    "task_ids": [
+      27,
+      31,
+      51,
+      56,
+      57,
+      59,
+      63,
+      76,
+      78,
+      85,
+      91,
+      94,
+      98,
+      110,
+      118,
+      126,
+      136,
+      144,
+      149,
+      152
+    ],
+    "seed": 20261015,
+    "base_replays": 8,
+    "discovery_draws": 40,
+    "max_mutants": 12,
+    "mutant_replays": 12,
+    "max_events": 20000,
+    "operation_timeout": 2,
+    "proposal_calls": 2,
+    "proposal_max_tokens": 2048,
+    "proposal_cap": 6,
+    "shown_cap": 3,
+    "representation_gate": 16,
+    "concept_gate": 10,
+    "strategy_slots": 3,
+    "strategy_max_tokens": 1024,
+    "draws": 100,
+    "selected_per_slot": 2,
+    "max_input_calls": 12,
+    "k": 1
+  }
+}

@@ -1,3 +1,24 @@
+Latest: [v18_modelselect](v18_modelselect/README.md), completed selection-only pilot (no MCTS).
+Retained/menu sampled consistency12/20; LLM11 vs rule12 vs uniform expected9.17. Tool evidence
+has119 canonical-confirmed input discrepancies across12 tasks; no generation/D_IO comparison.
+[Full report](../analysis/v18_modelselect_results.md). Earlier checkpoints below are historical.
+
+Latest (2026-10-15): [v17_templates](v17_templates/README.md), CPU 44 tests / representation
+17/20, but concept gate **2/20**, threshold 10: generation stopped, D_IO unmeasured.
+Separate synthetic interface probe: model selection 6/6; parameter construction + schema +
+example correctness 1/6. [Full results](../analysis/v17_template_results.md). Historical notes below.
+
+GPU checkpoint (2026-10-15): v16_behavior_ready proposal gate **0/20**, threshold 10/20;
+40 new requests, 0 generation rows, D_IO unmeasured. See
+[proposal report](../analysis/v16_behavior_gate_results.md). Earlier CPU-ready notes below are historical.
+
+Current runnable copy: [v16_behavior_ready](v16_behavior_ready/README.md), format-hardened
+before model outputs. Fresh CPU gate 17/20, 29 tests pass; 0 model calls, awaiting live Qwen.
+
+Current behavioral MVP (2026-10-15): [v16_behavior_compact](v16_behavior_compact/README.md),
+CPU representation gate 17/20, 26 tests pass; model stages await live user Qwen. Original
+[v16_behavior](v16_behavior/README.md) is preserved after oversized trace IPC failure.
+
 # Frozen experiment pipelines
 
 New isolated trials (2026-10-14): [v14_obgraph](v14_obgraph/README.md), grounded obligation paths, and
