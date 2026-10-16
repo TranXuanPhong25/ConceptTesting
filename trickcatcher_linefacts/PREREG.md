@@ -1586,3 +1586,40 @@ Preserve cpu_v3/32-fixture outputs; inventory never run. New v20_groundedflow_st
 ### v20 cpu_v5 validator adapter — 2026-10-15, pre-output
 
 cpu_v4 inventory retained:1/20 source supported;12 unresolved TypeError attempts. New v20_groundedflow_domainfix only corrects predicate invocation valid(*args), adds accept/reject integration fixtures and explicit worker reasons.35 prewritten native fixtures/14 static checks; same tasks/subset/validity/spec statuses, no relaxation. Independent review before fresh inventory; no GPU/D_IO.
+
+
+## v21_qwenchain P1 offline — 2026-10-16, before adapter checks
+
+Scheduled user authorization starts offline interface phase only. New v7 source copy; scope/limits in pipelines/v21_qwenchain/PREREG.md, audited Qwen-chain plan. Mechanical source/schema/lineage/literal/evidence/budget checks with explicitly hand-authored response fixtures. No model/API/GPU/canonical/ref/D_IO or semantic pilot. Check runs preserve hashes/failures; final P1 freeze after review.
+
+## v21_qwenchain_pilot P2 controlled16 — 2026-10-16, pre-completion
+
+User explicitly authorized real Qwen endpoint calls. New copy from frozen v21 P1. Exactly16 authored fixtures,5-stage chain,80 scheduled slots/240attempt maximum; same stage caps, no content repair, no paid fallback. Exact alias normalization/reference maps, JSON field-shape examples, real server raw tokenization with pinned official template and per-completion usage equality. All source/labels/metadata freeze before first completion. Human semantic gate pending: no automatic real20, canonical/ref or D_IO. Full prereg: pipelines/v21_qwenchain_pilot/PREREG.md.
+
+## v21_qwenchain_singlejson prompt-only controlled16 adaptation — 2026-10-16, pre-output
+
+First live pilot final:32 completions,0 validS1/S2, downstream blocked; retained/reported separately. User's broad Qwen-call authorization used for one distinct interface adaptation: single JSON root example, full-spec quote bounds and S2 masked-view clarity. Same validators/16fixtures/gates/caps/transport/role split; no static matcher or output repair. New frozen copy max80slots/240attempts, human gatepending, no real20/D_IO. See its PREREG.md. Do not pool runs or relax validators mid-run.
+
+
+# v22 contract/alignment audit — registered 2026-10-16 before outputs
+
+User requests fixing both empty-guard contract and missed S3 mismatch. Separate exploratory adaptation after observing v21 singlejson; same16 diagnostic fixtures (not unseen validation). Preserve prior frozen runs. Qwen owns semantics, tools only references/coverage/consistency/execution, no static semantic matcher or fault catalog.
+
+S2 permits empty guard to mean unconditional and empty effect to mean no separately described observable effect (statement remains required). Optional S3 alternative may be empty; selected hypothesis condition/effect remain required. S5 withdraw/unknown may omit condition; keep/revise require it. Prompts state conventions explicitly. S1 retains exact full-spec quote/span provenance, adds instruction not to substitute clause-sized spans while keeping full quote.
+
+S3 adds comparisons: exactly one Qwen-authored audit per S1 obligation, with obligation_ids (one), behavior_ids/source_ids, required_relation, actual_relation, divergence_condition, verdict consistent/mismatch/unknown and justification. Tools check exact coverage/references and explicit verdict-to-hypothesis/terminal consistency, never decide whether semantics are true. Each mismatch must link to a hypothesis; each selected hypothesis must cite a mismatch obligation. Unknown audit cannot be reported as all-consistent abstention. Required/actual relations and divergence (or explicit no divergence established) are model text. Prompt asks whether implementation adds/removes a condition and to consider admissible cases satisfying one relation but not the other; public examples alone cannot establish equivalence. No fixture-specific witness/answer in prompt.
+
+S3 output budget rises1024→2048 to fit audit+existing hypotheses; other caps768/1024/768/1024 unchanged. Max80 scheduled slots,240physical attempts,90112 one-attempt/270336 retry-inclusive output tokens. Context16384,2workers,temperature0,seed/order/16fixtures/domain filters/3cumulative attempts/120s/2+8s retry unchanged. No content repair/retry, no quota reuse, no paid fallback. Same12 unique inputs and ordinary/traced limits; execution evidence is not spec oracle. S4 concrete duplicate example replaced by nonconcrete format description so no discriminator seed provided.
+
+Offline regression checks must include empty-guard/effect, required statement, unknown vs consistent abstention, duplicate/missing audit coverage, wrong-type/foreign references, mismatch-to-hypothesis consistency, alias roundtrip, cached feedback and frozen fixture labels. They establish contracts only, not model accuracy. Source+fixtures freeze before model calls. Same mechanical62mandatory gate>=90%, probe>=6/7, independent human semantic12/16 gate pending; no automatic real20/canonical/ref/D_IO. Report stage failures, coverage, costs, model reasoning examples and limitations separately from prior pilots. If gate fails stop.
+
+Pre-freeze review clarification: absence of S1 obligations requires S3 unknown, not vacuous consistency; absence of S2 behaviors requires unknown comparisons with empty behavior references. Mechanical references permit empty list only when no upstream behavior claims exist.
+
+
+# S3 isolation diagnostic — 2026-10-16 before outputs
+
+User requests fixing guard and S3 missed mismatch. Full v22 audit diagnostic failed gate largely on upstream ID format; f12 never reached S3. Isolate S3 on exactly f11/f12/f13, the three original singlejson fixtures with accepted real Qwen S1/S2 parents. This set is fixed by prior accepted-parent availability, not new S3 outputs. No new extraction or end-to-end success claim.
+
+Copy frozen v22 treatment/schema/prompts/caps unchanged except VERSION/phase. Import ONLY exact accepted S1/S2 records from frozen v21 singlejson, verify old generation/source snapshot, exact task/source and artifact validation/IDs, preserve Qwen raw/origin and record file hash provenance; do not rewrite content or synthesize claims. Current namespaces validate original registered artifacts. Do not copy original S3 or downstream records.
+
+Exactly3 scheduled S3 slots (2048output tokens each), max9 physical attempts/18432 retry-inclusive output tokens; same context/tokenizer/transport/temperature/seed formula and cumulative attempts. No S4/S5/input/native/ref/canonical/D_IO, no auto20. Freeze replay parent hashes and all source before completions. Every raw result including rejection is retained. Report comparisons/verdicts, status/ID/schema errors, costs, imported-vs-new usage separately. Correct f11, known mismatch f12 and ambiguous f13 are prior seen hand-authored cases; no unseen accuracy/human-gate claim. Interpretation remains provisional.

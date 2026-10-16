@@ -1,0 +1,37 @@
+{
+  "rows": [
+    {
+      "fixture": "f11",
+      "state": "failed",
+      "error": "empty_ok",
+      "artifact": null,
+      "raw": "```json\n{\n  \"status\": \"ok\",\n  \"reason\": \"\",\n  \"comparisons\": [\n    {\n      \"obligation_ids\": [\"O1\"],\n      \"behavior_ids\": [\"B1\"],\n      \"source_ids\": [\"N1\"],\n      \"required_relation\": \"The function returns True exactly when the sum of xs is at most limit.\",\n      \"actual_relation\": \"The function returns True if the sum of the elements in `xs` is less than or equal to `limit`, otherwise it returns False.\",\n      \"divergence_condition\": \"None\",\n      \"verdict\": \"consistent\",\n      \"justification\": \"Both the required and actual relations specify that the function returns True when the sum of xs is less than or equal to limit.\"\n    }\n  ],\n  \"items\": [],\n  \"selected_ids\": []\n}\n```"
+    },
+    {
+      "fixture": "f12",
+      "state": "failed",
+      "error": "status",
+      "artifact": null,
+      "raw": "```json\n{\n  \"status\": \"mismatch\",\n  \"reason\": \"The implementation adds a condition that the spec does not permit.\",\n  \"comparisons\": [\n    {\n      \"obligation_ids\": [\"O1\"],\n      \"behavior_ids\": [\"B1\"],\n      \"source_ids\": [\"N1\"],\n      \"required_relation\": \"The function should return True exactly when the sum of xs is at most limit.\",\n      \"actual_relation\": \"The function returns False if the length of xs is greater than 2; otherwise, it returns True if the sum of xs is less than or equal to limit, otherwise it returns False.\",\n      \"divergence_condition\": \"len(xs) > 2\",\n      \"verdict\": \"mismatch\",\n      \"justification\": \"The implementation adds a condition that the spec does not permit. The spec does not restrict the length of xs, but the implementation checks if the length of xs is greater than 2 and returns False in that case.\"\n    }\n  ],\n  \"items\": [\n    {\n      \"id\": \"H1\",\n      \"statement\": \"The implementation adds a condition that the spec does not permit.\",\n      \"obligation_ids\": [\"O1\"],\n      \"behavior_ids\": [\"B1\"],\n      \"source_ids\": [\"N1\"],\n      \"condition\": \"len(xs) > 2\",\n      \"effect\": \"Returns False if the length of xs is greater than 2.\",\n      \"alternative\": \"\",\n      \"uncertainty\": \"\"\n    }\n  ],\n  \"selected_ids\": [\"H1\"]\n}\n```"
+    },
+    {
+      "fixture": "f13",
+      "state": "failed",
+      "error": "status",
+      "artifact": null,
+      "raw": "```json\n{\n  \"status\": \"mismatch\",\n  \"reason\": \"The implementation returns the first element of the list `xs` if it is not empty, otherwise it returns `None`. The specification requires returning the first suitable value from `xs`, but it does not specify what constitutes a 'suitable' value. The implementation assumes that any non-empty list has a suitable value, which is not necessarily true according to the specification.\",\n  \"comparisons\": [\n    {\n      \"obligation_ids\": [\"O1\"],\n      \"behavior_ids\": [\"B1\"],\n      \"source_ids\": [\"N1\"],\n      \"required_relation\": \"The function should return the first suitable value from the list `xs`.\",\n      \"actual_relation\": \"The function returns the first element of the list `xs` if it is not empty, otherwise it returns `None`.\",\n      \"divergence_condition\": \"The specification does not define what constitutes a 'suitable' value, while the implementation assumes any non-empty list has a suitable value.\",\n      \"verdict\": \"mismatch\",\n      \"justification\": \"The implementation adds a condition that the specification does not permit, as it assumes any non-empty list has a suitable value, which is not necessarily true according to the specification.\"\n    }\n  ],\n  \"items\": [\n    {\n      \"id\": \"H1\",\n      \"statement\": \"The implementation returns the first element of the list `xs` if it is not empty, otherwise it returns `None`. The specification requires returning the first suitable value from `xs`, but it does not specify what constitutes a 'suitable' value. The implementation assumes that any non-empty list has a suitable value, which is not necessarily true according to the specification.\",\n      \"obligation_ids\": [\"O1\"],\n      \"behavior_ids\": [\"B1\"],\n      \"source_ids\": [\"N1\"],\n      \"condition\": \"The specification does not define what constitutes a 'suitable' value, while the implementation assumes any non-empty list has a suitable value.\",\n      \"effect\": \"The function may return an incorrect value if the list does not contain a suitable value.\",\n      \"alternative\": \"The function should return the first element of the list `xs` if it is not empty, otherwise it should return `None`. The specification does not specify what constitutes a 'suitable' value, so the implementation should not make assumptions about the contents of the list.\",\n      \"uncertainty\": \"\"\n    }\n  ],\n  \"selected_ids\": [\"H1\"]\n}\n```"
+    }
+  ],
+  "new_completion_attempts": 3,
+  "received_completions": 3,
+  "input_tokens": 5352,
+  "output_tokens": 1029,
+  "imported_parent_records": 6,
+  "new_S1_S2_calls": 0,
+  "semantic_accuracy": null,
+  "D_IO": null,
+  "frozen_verified": true,
+  "tokenizer_metadata_calls": 3,
+  "tokenizer_metadata_errors": 0,
+  "scope": "S3 isolation only; unchanged accepted old Qwen parents; no end-to-end or D_IO claim"
+}

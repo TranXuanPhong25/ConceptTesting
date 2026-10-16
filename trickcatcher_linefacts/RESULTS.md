@@ -1058,3 +1058,39 @@ Final `v20_groundedflow_domainfix`:14 static/helper checks,35/35 known authored 
 Full20 known-dev CPU inventory retained:1/20 supported (task149, known design),12 native-checked attempts,3 complete candidate evidence instances,0 reviewed-grounded real-task instances; confirmed_bug null.19 unsupported tasks remain denominator.0 model requests, no canonical/reference execution/GPU/D_IO. Final inventory PUT bound24; final fixture native executions38, separate from predicate checks and preserved prior copies. Per-task inventory wall time recorded; full engineering CPU time not measured.
 
 Both reviewers accept only this narrow CPU increment; not broad mechanism/GPU readiness. Reviewed real-task obligations, derived collection provenance and guard/loop semantics remain open. [Plan](PLAN_GROUNDED_FLOW_V20.md), [review history](analysis/v20_plan_review.md), [CPU report](analysis/v20_cpu_results.md), [JSON](analysis/v20_cpu_results.json).
+
+## 11.56 v21 Qwen-chain P1 offline interfaces (2026-10-16)
+
+Scheduled user authorization covers offline interfaces/checks only. New best-v7 source copy `v21_qwenchain`; parent hashes/provenance recorded, online/historical experiment entrypoints disabled. Implements isolated S1/S2 views, five-stage schemas/reference/version lineage, bounded literal/feedback interfaces, cumulative attempt ledger/context/dependency caches and pinned raw execution reuse. Qwen owns semantic interpretation/alignment; tools do not use a semantic matcher.
+
+Final **48 offline checks pass**. Initial44-pass invocation preserved; independent audits found Unicode mapping, opaque-output comparison, feedback/S5 completeness and cache-budget counterexamples; fixes and regressions precede final freeze. Both reviewers accept the scoped P1 interface deliverable. Final source/config/prereg hashes verified and saved in P1_FROZEN.json.
+
+**0 model requests/GPU/canonical/ref/D_IO; semantic accuracy unmeasured.** Hand-authored response/native fixtures are interface checks, not Qwen behavior. Generic operation_value observations remain unknown, line hits do not prove expression activation. Real tokenizer/context binding, online transport and independent16-fixture semantic pilot remain later work. [Report](analysis/v21_offline_interfaces.md), [JSON](analysis/v21_offline_interfaces.json), [snapshot](pipelines/v21_qwenchain/P1_FROZEN.json).
+
+## 11.57 Qwen chain controlled16 first live pilot (2026-10-16)
+
+User authorized real endpoint calls. Fresh registered v21_qwenchain_pilot,74 preflight checks and two independent transport/fixture/alias reviews. Live model/context confirmed; raw-tokenizer counts with pinned official chat template match every completion's prompt usage. Frozen source/generation verified.
+
+Actual32 completions (80 scheduled slots),35169 input/11946 output tokens, no failed transport/unknown usage;32 tokenization metadata calls. S1 valid0/16, S2 valid0/16; S3/S4/S5 each blocked16. No generated test inputs, no real20/ref/canonical/D_IO. Human semantic gate unadjudicated.
+
+Failure diagnosis:12 S1 replies are bare items without envelope,4 S1 and all16 S2 replies copy the contract/meta-schema. Current prompt supplies competing envelope/fields/exact_shape structures, and Qwen mirrors those instructions. This is a prompt/interface failure; no conclusion about downstream alignment accuracy. Raw substantive statements are preserved, not silently wrapped/repaired. [Report](analysis/v21_qwenchain_pilot_results.md), [JSON](analysis/v21_qwenchain_pilot_results.json). Any follow-up must use a separate preregistered copy; first run remains final.
+
+## 11.58 Qwen chain single-output-shape adaptation (2026-10-16)
+
+Separate preregistered prompt-only copy v21_qwenchain_singlejson, same16 fixtures/validators/budgets/gates;74 offline checks and two read-only reviews before completions. Source/generation frozen and verified. First pilot remains unchanged and is not pooled.
+
+35/35 completions,33,290 input /6,412 output tokens;35 tokenizer metadata calls,0 errors/unknown usage. S1 valid13/16 (3 quote_mismatch); S2 valid3/16 (13 empty guard rejects); S3 valid3,blocked13, all3 abstain; S4/S5 blocked13 +not-applicable3. Mechanical gate19/62=30.65%, required applicable probes0/7. No generated inputs, experimental native executions or D_IO.
+
+Audit found our prompt/validator inconsistency: prompt allows empty strings but S2 requires nonempty guard even for unconditional behavior; preflight checks missed this choice. Raw f02 dedup and f04 boundary descriptions are plausible, but remain rejected artifacts. Separately f12 shows a semantic alignment miss: S2 recognizes len(xs)>2 early False while the spec permits any length, yet S3 abstains as consistent. f13 overclaims consistency despite undefined suitable. Schema passing therefore does not certify understanding. Whole-spec quote/span supplied by prompt is provenance only, not clause-extraction accuracy.
+
+Stop at failed gate; no third adaptation, automatic real20 or human-gate bypass. Human semantic accuracy remains unadjudicated. [Report](analysis/v21_qwenchain_singlejson_results.md), [raw diagnostic](analysis/v21_qwenchain_singlejson_results.json).
+
+## 11.59 v22 contract/alignment fixes and diagnostic rerun (2026-10-16)
+
+User requested fixing empty-guard implementation and missed S3 mismatch. New v22_qwenchain_audit registered/frozen;89 offline checks. S2 guard/effect conventions fixed, S3 now Qwen-authored per-obligation comparisons with mechanical coverage/reference/internal-consistency checks; unknown upstream cannot prove consistency. S3 cap increased1024→2048, other budgets unchanged; same16 seen fixtures, exploratory multi-component adaptation. Experiment review before freeze; flow review after launch, recorded without retrodating.
+
+39/39 completions,46,603 input/10,909 output tokens;39 tokenizer calls,0 errors. S1 valid16/16; S2 valid5,failed11 (9 local_id,2 items_cap); S3 valid1,failed4,blocked11; S4/S5 valid1,blocked15. Gate24/62=38.71%, applicable probes1/7; failed. Six admissible unique inputs on f06,3 native prediction matches/3 contradictions. S5 unknown,0 final inputs. No D_IO/automatic real20 or semantic accuracy claim.
+
+Guard and quote failures absent, but format shifts remain. f06 identifies subset-vs-equality mismatch and generates extra-container input whose native output is False. f12 never reaches S3 due behavior ID error. [Full diagnostic](analysis/v22_qwenchain_audit_results.md), [review chronology](analysis/v22_qwenchain_audit_review.md).
+
+Separate registered v22_qwenchain_s3replay imports the exact accepted old Qwen S1/S2 parents for f11/f12/f13 (source/task/artifact/parent hashes verified), then runs only3 new S3 calls:5,352 input/1,029 output tokens;3 tokenizer calls,0 errors. All3 rejected (empty_ok/status), no downstream work. Raw f12 now notices extra length guard, but condition precision remains incomplete; f13 still overclaims mismatch from undefined suitable. This isolates a qualitative change in model claims, not accepted pipeline success or unseen validation. [Replay report](analysis/v22_qwenchain_s3replay_results.md).

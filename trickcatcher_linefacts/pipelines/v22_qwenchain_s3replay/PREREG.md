@@ -1,0 +1,7 @@
+# S3 isolation diagnostic — 2026-10-16 before outputs
+
+User requests fixing guard and S3 missed mismatch. Full v22 audit diagnostic failed gate largely on upstream ID format; f12 never reached S3. Isolate S3 on exactly f11/f12/f13, the three original singlejson fixtures with accepted real Qwen S1/S2 parents. This set is fixed by prior accepted-parent availability, not new S3 outputs. No new extraction or end-to-end success claim.
+
+Copy frozen v22 treatment/schema/prompts/caps unchanged except VERSION/phase. Import ONLY exact accepted S1/S2 records from frozen v21 singlejson, verify old generation/source snapshot, exact task/source and artifact validation/IDs, preserve Qwen raw/origin and record file hash provenance; do not rewrite content or synthesize claims. Current namespaces validate original registered artifacts. Do not copy original S3 or downstream records.
+
+Exactly3 scheduled S3 slots (2048output tokens each), max9 physical attempts/18432 retry-inclusive output tokens; same context/tokenizer/transport/temperature/seed formula and cumulative attempts. No S4/S5/input/native/ref/canonical/D_IO, no auto20. Freeze replay parent hashes and all source before completions. Every raw result including rejection is retained. Report comparisons/verdicts, status/ID/schema errors, costs, imported-vs-new usage separately. Correct f11, known mismatch f12 and ambiguous f13 are prior seen hand-authored cases; no unseen accuracy/human-gate claim. Interpretation remains provisional.
