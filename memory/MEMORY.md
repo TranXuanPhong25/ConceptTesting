@@ -22,3 +22,7 @@
 - [Prefer standard libraries](prefer-standard-libraries.md) — swap own code for libraries when results equal (user: fewer reviewer objections)
 - [Do not fix unasked](dont-fix-unasked.md) — pasted errors are context; never edit the Kaggle notebook unless asked
 - [Held-out final readiness](heldout-final-readiness.md) — CPU ready; amendment 1 fixes shared 10+4 TC pool; GPU waits for dev review and VibePass mining
+- [LineFacts v23 diagnostic](linefacts-v23-diagnostic.md) — latest: Qwen160/160 complete; all schema-valid, correct assertions2/7 each arm; no concept gain; callback handled
+- [LineFacts v24 obligations](linefacts-v24-obligations.md) — latest:90/90 complete; contract0/9, generation0/54; interface failure, witness-only3/3; callback handled
+
+- [LineFacts v25 interface gate](linefacts-v25-interface-gate.md) — diagnostic transport-incomplete; delayed probe models404/endpoint offline,0completions; callbacks handled

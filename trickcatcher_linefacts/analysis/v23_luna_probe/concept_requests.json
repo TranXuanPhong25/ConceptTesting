@@ -1,0 +1,941 @@
+[
+  {
+    "case": "f02",
+    "request": {
+      "context": {
+        "base_tests": "assert f([2, 1]) == [1, 2]",
+        "code": "def f(xs):\n                                                                                                                                                              \n    return sorted(set(xs))\n",
+        "fixed_tool_evidence": {
+          "public_base_replays": [
+            {
+              "events": [
+                {
+                  "event": "line",
+                  "function": "f",
+                  "line": 3
+                },
+                {
+                  "event": "return",
+                  "function": "f",
+                  "line": 3
+                }
+              ],
+              "exception_type": null,
+              "input": "([2, 1],)",
+              "native_checked": true,
+              "omitted_events": 0,
+              "output_repr": "[1, 2]",
+              "status": "ok",
+              "trace_scope": "line events; no local-effect or data-propagation proof",
+              "validity_scope": "authored fixture type/domain filter",
+              "verification_reason": "native_and_traced_signatures_agree",
+              "worker_status": {
+                "ordinary": "ok",
+                "traced": "ok"
+              }
+            }
+          ],
+          "scope": "same public-base seeds for every arm; no evaluator witnesses or oracle feedback",
+          "syntax": {
+            "scope": "syntactic AST statements and lexical guards; reach/flow not inferred",
+            "statements": [
+              {
+                "kind": "Return",
+                "lexical_enclosing_guards": [],
+                "line": 3,
+                "text": "return sorted(set(xs))"
+              }
+            ]
+          }
+        },
+        "model_behavior_claim": null,
+        "signature": "f(xs)",
+        "spec": "Return a sorted list containing every integer from xs. Preserve the number of occurrences of each value, including duplicates. xs is a list of integers.",
+        "supplied_normative_concept": {
+          "relation": "Sorting preserves the multiplicity of each original occurrence.",
+          "domain": "Any list of integers.",
+          "uncertainty": ""
+        }
+      },
+      "instruction": "Compare the normative requirement and actual behavior. Propose at most one fault hypothesis. For mismatch give a feasible trigger sufficient to distinguish outputs, not merely reach a line. Consider an alternative and evidence against the hypothesis. Use consistent when supported, unknown for ambiguous intent; do not infer a global proof from finite examples. Source lines are statement numbers. Also propose up to3 concrete tests that discriminate or challenge the hypothesis. Give full positional argument tuples as Python literal strings, spec-expected output and separately predicted actual output, also literal strings (or exception:TypeName). For a single argument use (value,). Unknown spec intent permits abstention with inputs=[]. Do not force a mismatch for suspicious unused code. Do not use observations as the normative expected output. Return the combined object matching the schema.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "case": {
+            "const": "f02"
+          },
+          "hypothesis": {
+            "type": "object",
+            "properties": {
+              "verdict": {
+                "enum": [
+                  "mismatch",
+                  "consistent",
+                  "unknown"
+                ]
+              },
+              "required_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "actual_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "source_lines": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "uniqueItems": true,
+                "maxItems": 12
+              },
+              "trigger": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "alternative": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "verdict",
+              "required_relation",
+              "actual_relation",
+              "source_lines",
+              "trigger",
+              "alternative",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "tests": {
+            "type": "object",
+            "properties": {
+              "inputs": {
+                "type": "array",
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "arguments": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "expected": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "predicted_actual": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "purpose": {
+                      "enum": [
+                        "trigger",
+                        "contrast"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "arguments",
+                    "expected",
+                    "predicted_actual",
+                    "purpose"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "inputs",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "case",
+          "hypothesis",
+          "tests"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "case": "f06",
+    "request": {
+      "context": {
+        "base_tests": "assert f([1], [1]) is True",
+        "code": "def f(container, required):\n                                                                                                                                                                                                       \n    return set(required) == set(container)\n",
+        "fixed_tool_evidence": {
+          "public_base_replays": [
+            {
+              "events": [
+                {
+                  "event": "line",
+                  "function": "f",
+                  "line": 3
+                },
+                {
+                  "event": "return",
+                  "function": "f",
+                  "line": 3
+                }
+              ],
+              "exception_type": null,
+              "input": "([1], [1])",
+              "native_checked": true,
+              "omitted_events": 0,
+              "output_repr": "True",
+              "status": "ok",
+              "trace_scope": "line events; no local-effect or data-propagation proof",
+              "validity_scope": "authored fixture type/domain filter",
+              "verification_reason": "native_and_traced_signatures_agree",
+              "worker_status": {
+                "ordinary": "ok",
+                "traced": "ok"
+              }
+            }
+          ],
+          "scope": "same public-base seeds for every arm; no evaluator witnesses or oracle feedback",
+          "syntax": {
+            "scope": "syntactic AST statements and lexical guards; reach/flow not inferred",
+            "statements": [
+              {
+                "kind": "Return",
+                "lexical_enclosing_guards": [],
+                "line": 3,
+                "text": "return set(required) == set(container)"
+              }
+            ]
+          }
+        },
+        "model_behavior_claim": null,
+        "signature": "f(container, required)",
+        "spec": "Return True exactly when every value in required is present in container. Extra values in container are allowed. Both arguments are lists of integers; duplicate values do not affect membership.",
+        "supplied_normative_concept": {
+          "relation": "Required membership is inclusion: every required value is present; extra container values are permitted.",
+          "domain": "Both arguments are lists of integers; repeated values do not alter membership.",
+          "uncertainty": ""
+        }
+      },
+      "instruction": "Compare the normative requirement and actual behavior. Propose at most one fault hypothesis. For mismatch give a feasible trigger sufficient to distinguish outputs, not merely reach a line. Consider an alternative and evidence against the hypothesis. Use consistent when supported, unknown for ambiguous intent; do not infer a global proof from finite examples. Source lines are statement numbers. Also propose up to3 concrete tests that discriminate or challenge the hypothesis. Give full positional argument tuples as Python literal strings, spec-expected output and separately predicted actual output, also literal strings (or exception:TypeName). For a single argument use (value,). Unknown spec intent permits abstention with inputs=[]. Do not force a mismatch for suspicious unused code. Do not use observations as the normative expected output. Return the combined object matching the schema.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "case": {
+            "const": "f06"
+          },
+          "hypothesis": {
+            "type": "object",
+            "properties": {
+              "verdict": {
+                "enum": [
+                  "mismatch",
+                  "consistent",
+                  "unknown"
+                ]
+              },
+              "required_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "actual_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "source_lines": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "uniqueItems": true,
+                "maxItems": 12
+              },
+              "trigger": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "alternative": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "verdict",
+              "required_relation",
+              "actual_relation",
+              "source_lines",
+              "trigger",
+              "alternative",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "tests": {
+            "type": "object",
+            "properties": {
+              "inputs": {
+                "type": "array",
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "arguments": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "expected": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "predicted_actual": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "purpose": {
+                      "enum": [
+                        "trigger",
+                        "contrast"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "arguments",
+                    "expected",
+                    "predicted_actual",
+                    "purpose"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "inputs",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "case",
+          "hypothesis",
+          "tests"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "case": "f12",
+    "request": {
+      "context": {
+        "base_tests": "assert f([1], 2) is True",
+        "code": "def f(xs, limit):\n                                                                                                                                                        \n    if len(xs) > 2:\n        return False\n    return sum(xs) <= limit\n",
+        "fixed_tool_evidence": {
+          "public_base_replays": [
+            {
+              "events": [
+                {
+                  "event": "line",
+                  "function": "f",
+                  "line": 3
+                },
+                {
+                  "event": "line",
+                  "function": "f",
+                  "line": 5
+                },
+                {
+                  "event": "return",
+                  "function": "f",
+                  "line": 5
+                }
+              ],
+              "exception_type": null,
+              "input": "([1], 2)",
+              "native_checked": true,
+              "omitted_events": 0,
+              "output_repr": "True",
+              "status": "ok",
+              "trace_scope": "line events; no local-effect or data-propagation proof",
+              "validity_scope": "authored fixture type/domain filter",
+              "verification_reason": "native_and_traced_signatures_agree",
+              "worker_status": {
+                "ordinary": "ok",
+                "traced": "ok"
+              }
+            }
+          ],
+          "scope": "same public-base seeds for every arm; no evaluator witnesses or oracle feedback",
+          "syntax": {
+            "scope": "syntactic AST statements and lexical guards; reach/flow not inferred",
+            "statements": [
+              {
+                "kind": "If",
+                "lexical_enclosing_guards": [],
+                "line": 3,
+                "text": "if len(xs) > 2:\n        return False"
+              },
+              {
+                "kind": "Return",
+                "lexical_enclosing_guards": [
+                  {
+                    "body_or_else": "body",
+                    "line": 3,
+                    "test": "len(xs) > 2"
+                  }
+                ],
+                "line": 4,
+                "text": "return False"
+              },
+              {
+                "kind": "Return",
+                "lexical_enclosing_guards": [],
+                "line": 5,
+                "text": "return sum(xs) <= limit"
+              }
+            ]
+          }
+        },
+        "model_behavior_claim": null,
+        "signature": "f(xs, limit)",
+        "spec": "Return True exactly when the sum of xs is at most limit. xs is any list of integers; no restriction is imposed on its length. limit is an integer.",
+        "supplied_normative_concept": {
+          "relation": "The result is True if and only if the sum is at most the limit, independently of list length.",
+          "domain": "Any list of integers and an integer limit.",
+          "uncertainty": ""
+        }
+      },
+      "instruction": "Compare the normative requirement and actual behavior. Propose at most one fault hypothesis. For mismatch give a feasible trigger sufficient to distinguish outputs, not merely reach a line. Consider an alternative and evidence against the hypothesis. Use consistent when supported, unknown for ambiguous intent; do not infer a global proof from finite examples. Source lines are statement numbers. Also propose up to3 concrete tests that discriminate or challenge the hypothesis. Give full positional argument tuples as Python literal strings, spec-expected output and separately predicted actual output, also literal strings (or exception:TypeName). For a single argument use (value,). Unknown spec intent permits abstention with inputs=[]. Do not force a mismatch for suspicious unused code. Do not use observations as the normative expected output. Return the combined object matching the schema.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "case": {
+            "const": "f12"
+          },
+          "hypothesis": {
+            "type": "object",
+            "properties": {
+              "verdict": {
+                "enum": [
+                  "mismatch",
+                  "consistent",
+                  "unknown"
+                ]
+              },
+              "required_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "actual_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "source_lines": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "uniqueItems": true,
+                "maxItems": 12
+              },
+              "trigger": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "alternative": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "verdict",
+              "required_relation",
+              "actual_relation",
+              "source_lines",
+              "trigger",
+              "alternative",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "tests": {
+            "type": "object",
+            "properties": {
+              "inputs": {
+                "type": "array",
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "arguments": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "expected": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "predicted_actual": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "purpose": {
+                      "enum": [
+                        "trigger",
+                        "contrast"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "arguments",
+                    "expected",
+                    "predicted_actual",
+                    "purpose"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "inputs",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "case",
+          "hypothesis",
+          "tests"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "case": "f13",
+    "request": {
+      "context": {
+        "base_tests": "assert f([]) is None",
+        "code": "def f(xs):\n                                                                        \n    return xs[0] if xs else None\n",
+        "fixed_tool_evidence": {
+          "public_base_replays": [
+            {
+              "events": [
+                {
+                  "event": "line",
+                  "function": "f",
+                  "line": 3
+                },
+                {
+                  "event": "return",
+                  "function": "f",
+                  "line": 3
+                }
+              ],
+              "exception_type": null,
+              "input": "([],)",
+              "native_checked": true,
+              "omitted_events": 0,
+              "output_repr": "None",
+              "status": "ok",
+              "trace_scope": "line events; no local-effect or data-propagation proof",
+              "validity_scope": "authored fixture type/domain filter",
+              "verification_reason": "native_and_traced_signatures_agree",
+              "worker_status": {
+                "ordinary": "ok",
+                "traced": "ok"
+              }
+            }
+          ],
+          "scope": "same public-base seeds for every arm; no evaluator witnesses or oracle feedback",
+          "syntax": {
+            "scope": "syntactic AST statements and lexical guards; reach/flow not inferred",
+            "statements": [
+              {
+                "kind": "Return",
+                "lexical_enclosing_guards": [],
+                "line": 3,
+                "text": "return xs[0] if xs else None"
+              }
+            ]
+          }
+        },
+        "model_behavior_claim": null,
+        "signature": "f(xs)",
+        "spec": "Return the first suitable value from xs. xs is a list of integers.",
+        "supplied_normative_concept": {
+          "relation": "Return the first suitable element.",
+          "domain": "A list of integers.",
+          "uncertainty": "Suitability is not defined by this spec."
+        }
+      },
+      "instruction": "Compare the normative requirement and actual behavior. Propose at most one fault hypothesis. For mismatch give a feasible trigger sufficient to distinguish outputs, not merely reach a line. Consider an alternative and evidence against the hypothesis. Use consistent when supported, unknown for ambiguous intent; do not infer a global proof from finite examples. Source lines are statement numbers. Also propose up to3 concrete tests that discriminate or challenge the hypothesis. Give full positional argument tuples as Python literal strings, spec-expected output and separately predicted actual output, also literal strings (or exception:TypeName). For a single argument use (value,). Unknown spec intent permits abstention with inputs=[]. Do not force a mismatch for suspicious unused code. Do not use observations as the normative expected output. Return the combined object matching the schema.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "case": {
+            "const": "f13"
+          },
+          "hypothesis": {
+            "type": "object",
+            "properties": {
+              "verdict": {
+                "enum": [
+                  "mismatch",
+                  "consistent",
+                  "unknown"
+                ]
+              },
+              "required_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "actual_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "source_lines": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "uniqueItems": true,
+                "maxItems": 12
+              },
+              "trigger": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "alternative": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "verdict",
+              "required_relation",
+              "actual_relation",
+              "source_lines",
+              "trigger",
+              "alternative",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "tests": {
+            "type": "object",
+            "properties": {
+              "inputs": {
+                "type": "array",
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "arguments": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "expected": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "predicted_actual": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "purpose": {
+                      "enum": [
+                        "trigger",
+                        "contrast"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "arguments",
+                    "expected",
+                    "predicted_actual",
+                    "purpose"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "inputs",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "case",
+          "hypothesis",
+          "tests"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  {
+    "case": "f14",
+    "request": {
+      "context": {
+        "base_tests": "assert f([2, 1]) == [1, 2]",
+        "code": "def f(xs):\n                                                                                                  \n    temporary = set(xs)\n    return sorted(xs)\n",
+        "fixed_tool_evidence": {
+          "public_base_replays": [
+            {
+              "events": [
+                {
+                  "event": "line",
+                  "function": "f",
+                  "line": 3
+                },
+                {
+                  "event": "line",
+                  "function": "f",
+                  "line": 4
+                },
+                {
+                  "event": "return",
+                  "function": "f",
+                  "line": 4
+                }
+              ],
+              "exception_type": null,
+              "input": "([2, 1],)",
+              "native_checked": true,
+              "omitted_events": 0,
+              "output_repr": "[1, 2]",
+              "status": "ok",
+              "trace_scope": "line events; no local-effect or data-propagation proof",
+              "validity_scope": "authored fixture type/domain filter",
+              "verification_reason": "native_and_traced_signatures_agree",
+              "worker_status": {
+                "ordinary": "ok",
+                "traced": "ok"
+              }
+            }
+          ],
+          "scope": "same public-base seeds for every arm; no evaluator witnesses or oracle feedback",
+          "syntax": {
+            "scope": "syntactic AST statements and lexical guards; reach/flow not inferred",
+            "statements": [
+              {
+                "kind": "Assign",
+                "lexical_enclosing_guards": [],
+                "line": 3,
+                "text": "temporary = set(xs)"
+              },
+              {
+                "kind": "Return",
+                "lexical_enclosing_guards": [],
+                "line": 4,
+                "text": "return sorted(xs)"
+              }
+            ]
+          }
+        },
+        "model_behavior_claim": null,
+        "signature": "f(xs)",
+        "spec": "Return a sorted copy of xs, preserving every duplicate occurrence. xs is a list of integers.",
+        "supplied_normative_concept": {
+          "relation": "The returned sorted copy preserves every duplicate occurrence.",
+          "domain": "Any list of integers.",
+          "uncertainty": ""
+        }
+      },
+      "instruction": "Compare the normative requirement and actual behavior. Propose at most one fault hypothesis. For mismatch give a feasible trigger sufficient to distinguish outputs, not merely reach a line. Consider an alternative and evidence against the hypothesis. Use consistent when supported, unknown for ambiguous intent; do not infer a global proof from finite examples. Source lines are statement numbers. Also propose up to3 concrete tests that discriminate or challenge the hypothesis. Give full positional argument tuples as Python literal strings, spec-expected output and separately predicted actual output, also literal strings (or exception:TypeName). For a single argument use (value,). Unknown spec intent permits abstention with inputs=[]. Do not force a mismatch for suspicious unused code. Do not use observations as the normative expected output. Return the combined object matching the schema.",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "case": {
+            "const": "f14"
+          },
+          "hypothesis": {
+            "type": "object",
+            "properties": {
+              "verdict": {
+                "enum": [
+                  "mismatch",
+                  "consistent",
+                  "unknown"
+                ]
+              },
+              "required_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "actual_relation": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              },
+              "source_lines": {
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "uniqueItems": true,
+                "maxItems": 12
+              },
+              "trigger": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "alternative": {
+                "type": "string",
+                "maxLength": 2400
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "verdict",
+              "required_relation",
+              "actual_relation",
+              "source_lines",
+              "trigger",
+              "alternative",
+              "reason"
+            ],
+            "additionalProperties": false
+          },
+          "tests": {
+            "type": "object",
+            "properties": {
+              "inputs": {
+                "type": "array",
+                "maxItems": 3,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "arguments": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "expected": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "predicted_actual": {
+                      "type": "string",
+                      "maxLength": 2400,
+                      "minLength": 1
+                    },
+                    "purpose": {
+                      "enum": [
+                        "trigger",
+                        "contrast"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "arguments",
+                    "expected",
+                    "predicted_actual",
+                    "purpose"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 2400,
+                "minLength": 1
+              }
+            },
+            "required": [
+              "inputs",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "case",
+          "hypothesis",
+          "tests"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+]

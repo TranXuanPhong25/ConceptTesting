@@ -1623,3 +1623,79 @@ User requests fixing guard and S3 missed mismatch. Full v22 audit diagnostic fai
 Copy frozen v22 treatment/schema/prompts/caps unchanged except VERSION/phase. Import ONLY exact accepted S1/S2 records from frozen v21 singlejson, verify old generation/source snapshot, exact task/source and artifact validation/IDs, preserve Qwen raw/origin and record file hash provenance; do not rewrite content or synthesize claims. Current namespaces validate original registered artifacts. Do not copy original S3 or downstream records.
 
 Exactly3 scheduled S3 slots (2048output tokens each), max9 physical attempts/18432 retry-inclusive output tokens; same context/tokenizer/transport/temperature/seed formula and cumulative attempts. No S4/S5/input/native/ref/canonical/D_IO, no auto20. Freeze replay parent hashes and all source before completions. Every raw result including rejection is retained. Report comparisons/verdicts, status/ID/schema errors, costs, imported-vs-new usage separately. Correct f11, known mismatch f12 and ambiguous f13 are prior seen hand-authored cases; no unseen accuracy/human-gate claim. Interpretation remains provisional.
+
+
+## 2026-10-17 — v23_concepthyp code-first mechanism diagnostic and separate Luna probe
+
+User authorizes direct best-v7 copy, code/CPU first, clean-context subagent audit, libraries where adequate; optionally gpt-6-luna low to test concept use. New folder v23_concepthyp has parent/port hashes, isolated spec/code views, concept-guided vs direct hypotheses and three matched downstream presentation arms. Full16 seen authored fixtures, no Qwen completions this increment; no benchmark/held-out or automatic progression. Future exact Qwen protocol/caps and truth boundaries in its PREREG.md/README.md; freeze source/generation before post-hoc fixture scoring. CPU scripted responses are not model evidence.
+
+Separate exploratory clean-context Luna/low probe, registered BEFORE agent outputs: exactly f02/f06/f12/f13/f14. One independent agent per concept/plain arm, same original spec/code/base/syntax/native-base evidence. Concept arm additionally receives an authored normative relation/domain/uncertainty, with no hypothesis, fault label, trigger or distinguishing input. Each agent outputs one hypothesis and at most3 literal tests per case, no feedback revision, labels/oracles excluded. One batched context per arm is disclosed; not API-stage-isolated, no exact token/request cost parity. Raw answers frozen together before replay/reference evaluation. Report schema correctness, verdict/trigger review, input discrepancies, correctly specified failing assertions, false alarms, ambiguity and masked-code handling. Equal outcomes mean no observed concept gain. Supplied-concept use only: cannot establish Qwen extraction reliability or benchmark gain. Probe packet hashes in analysis/v23_luna_probe/protocol.json.
+
+
+### v23 diagnostic16 online authorization and preflight audit resolutions — before first Qwen output
+
+User supplied live endpoint and explicitly requested launch after code completion. This supersedes the code-first/no-Qwen increment status only for diagnostic16. Same registered16 cases and three-arm matrix, no benchmark expansion. Clean-context audit found terminal-failure/resume, inherited CLI, stage reporting, HTTP parser cap and stale CPU gate problems; fixes are made before source freeze with regression tests. Tokenizer/protocol mismatches quarantine and stop globally; ordinary terminal transport/context failures remain failed artifacts. Full-denominator incomplete reporting, no repairs/retry beyond registered transport attempts. Code and exact fixtures CPU-preflight before detached launch; endpoint env-only. Separate Luna probe completed equal3/3 buggy cases for both arms and is not used to tune Qwen prompts, cases or selection.
+
+
+### v23 completion disposition — 2026-10-17, post-output decision
+
+Diagnostic16 completed exit0; source/generation and160 raw Qwen artifacts verified. Schema reliability does not establish the mechanism: correct assertion cases2/7 in all three arms; semantic alignment, sufficient triggers, expected-output reasoning and argument/prediction transport remain weak. No promotion, automatic real20/benchmark/held-out, output repair or additional Qwen adaptation. Full denominator/costs and independent model-assisted semantic review in analysis/v23_qwen_diagnostic_results.md. Prior frozen protocol is unchanged; this is a completion decision, not a preregistered new test. Callback handled, no duplicate/resume work.
+
+
+## 2026-10-17 — v24_obligations executable-contract mechanism diagnostic9
+
+User explicitly approves executable obligation repair. Copy best v7, preserve v23. Plan independently audited before code; clean-context code audit/CPU gate required before model outputs.9 seen authored cases: f01/f02/f14/f15/f03/f04/f05/f06/f13 (3buggy,5correct,1ambiguous). Full protocol in pipelines/v24_obligations/PREREG.md and README.md. One model-authored full returned-value relation per function, source quote/domain/uncertainty; restricted isolated predicate and trigger execution; named JSON arguments. Diagnostic-only authored finite semantic qualification explicitly disclosed, never represented as reference-free spec verification. No bank rows or failed-predicate repairs fed to model.
+
+Freeze24 type-only Hypothesis inputs/task plus bases before Qwen. Code-only behavior, model hypothesis, one fixed-pool feedback revision; obligation immutable. Witness support needs qualified predicate, true trigger, reached target and observed violation; counterevidence/unknowns preserved. Same6 selected concrete inputs/native traces for verified_hyp/text_hyp/toolinput; no private witness.2 generation calls×3 candidates/arm, raw AND mechanically selected yields scored using SAME independent post-freeze fixture oracle. witness_only entire24+base pool; novel task/input detections subtract whole pool. f13 unqualified/no gold oracle, raw overconfidence preserved. Input-generation-only, not model expected-output or changed-oracle efficacy. Max90 logical/270 completion attempts; tokenizer/liveness separate; no content repair, paid fallback or automatic real20/held-out/benchmark. CPU scripted controls are not model evidence.
+
+
+### v24 code-audit resolutions — before any Qwen completion
+
+Clean-context audit found semantic-bank loose-type gaps (float/int and bool/int inside lists), interrupted worker result recovery/rerun ambiguity, missing reach counterevidence for hypothesis revision and incomplete novelty/coverage/worker-cost reporting. Fixed before freeze: typed negative probes and CPU controls; durable one-attempt isolated execution with private .part output and atomic canonical cache; no retry of interrupted unknowns; explicit S4 reach/native/omission/counterexample data; full raw/selected/novel/duplicate/fallback reporting and recorded launches/reported calls with interrupted upper bounds. Worker binary/version pinned in dependency/cache identities. No previous model output used to tune these changes. Shared pool may saturate3 bugs; no score-based pool change or new-task gain claim under saturation.
+
+
+### v24 completion disposition —2026-10-17, post-output decision
+
+Frozen diagnostic9 completed90/90 calls. Contract0/9 accepted (Python/prose fields swapped), generation0/54 accepted (Markdown fences), initial/final hypothesis8/9 and1/9. Calibration never reached for Qwen obligations; all support unverified, no generated inputs/flags to evaluate. Text control loses rejected artifact content via value(), so intended executable/raw-text contrast not realized. Witness-only3/3 bugs saturates cohort. Report interface infeasibility with full9 denominator and separate CPU/trigger counts; do not treat zero flags as precision or these zeros as a causal concept-effectiveness test. No field swap, fence extraction, missing-field filling, recovered candidate execution, repairs, new adaptation or benchmark launch. Source/raw artifacts unchanged. Completion callback handled.
+
+
+## 2026-10-17 — v25_interface_gate, prospective split-output feasibility5
+
+User explicitly authorizes continuation, clean-context audits and old endpoint automatic use when GPU returns~10min. New best-v7 copy, explicit v24 audited runtime ports; v24 unchanged. Five seen authored cases f02/f04/f06/f14/f13. Code-only predicate separate from spec-only metadata; code-only trigger separate from small hypothesis metadata; structured JSON inputs. Parser prospectively accepts bare payload or exactly one matching whole fence with no extra prose, never swaps/fills/repairs content or recovers v24. Raw text control preserves original response bytes/status/origin/hash regardless of validation.
+
+Small staged feasibility only: A four defined predicates calibrated +f13 proper unknown; B three bugs supported +correct unused-set f14 consistent/no pool violation +f13 unknown; C valid discriminators, f14 normal contrast/obligation=True, f13 inputs=[] with reason. Gate failure stops dependent phases, full5 denominator and NA slots preserved. Frozen24+base type-only pools/typed negative bank; finite diagnostic-gold calibration disclosed. Common6 selected by contract violation then input order BEFORE hypotheses; same rows across exported controls. No model arm comparison or benchmark launch. Novel inputs/tasks subtract whole pool, same independent post-freeze oracle; witness ceiling may saturate3 bugs.
+
+Source/CPU freeze before optional capability selection: root OpenAPI advertised guided_json plus at most1 adversarial echo (prompt NOT_JSON, exact bare JSON {schema_gate:true},64 output tokens, seed20261017, cumulative3 transport attempts) determines guided vs plain before tasks. No task-output-based mode change; protocol/tokenizer mismatch stops globally. Max30 task slots/30720 logical output tokens plus1 echo64; physical attempt ceiling93. Metadata/wait/liveness separately counted; endpoint env-only, no paid fallback/content retry/new adaptation. Plan audited before code; code/CPU audit before any real completion.
+
+
+### Pre-output audit clarification —2026-10-17
+
+Before any echo/task completion: f14 Gate B requires every full-pool obligation check
+evaluated=True and native checked with a usable observation (unknown is not a pass).
+Bug Gate C requires observed_supported over the generated candidates, including no
+known trigger counterexample/unresolved evidence, plus at least one witness. This
+makes explicit the registered conjunction. Other candidates retain individual
+binding/domain/runtime outcomes in the denominator; they are never silently repaired.
+Failure-stage exported controls include identical selected native pool rows even when
+no contract qualifies. Resume reconstructs missing context exports from durable cases
+without repeating model calls. Decoded whole-envelope payload/framing are retained
+even when subsequent syntax/schema checks reject it. Capability raw evidence is hash
+bound and included in final snapshot. Worker calls and unresolved upper bounds are
+reported separately from model/tokenizer metadata traffic and CPU preflight.
+
+
+### v25 completion disposition —2026-10-17, post-output decision
+
+Owned feasibility5 stopped after gate A with no task completion body: f02/f04 each3ReadTimeout; f06 completion503→404; f14/f13 tokenizer3HTTP errors each. A=false/B-C blocked, no task semantics or serialization performance observed. Tiny capability echo passed42/10tokens and fixed guided_json;8task completion attempts have unknown usage, not zero consumption. Preserve all attempts/raw records/frozen source; no recovery, reset, alternate backend, prompt adaptation or relaunch. Raw nulls reflect missing transport responses. All5 denominators retained; generation/false-flag/novelty zeros are unmeasured defaults, not concept efficacy. Read-only native baseline3/3bugs/36inputs saturates cohort. Transport cause beyond persisted timeout/503/404/tokenizer errors remains unknown. Callback handled; no automatic comparison/benchmark/real20/held-out/paid calls. Independent terminal review and analysis-time ledger hashes recorded separately from original freeze.
+
+
+## 2026-10-17 — delayed v25 transport probe, before new completions
+
+User says "10 nữa thử lại" after proposal of a2-call transport diagnostic; schedule one owned new probe at2026-10-17T14:08:06UTC (~21:08Vietnam), old endpoint env-only. No edits/resets to original frozen v25 attempts/source. Utility outside pipeline; imports frozen interfaces read-only, not a new semantic treatment. Exact f02 metadata messages/seed/model/temp/top_p/max_tokens768 from v25; plain first then identical request plus guided_json schema. Fixed order is operational diagnosis, not a causal backend comparison. Max2 completion requests/1536 output-token ceiling,1 physical attempt each, max2 metadata requests (models/tokenize) once; no retries, wait polls or fresh echo. Readiness/protocol failure blocks remaining calls. A received usage-valid but schema-invalid plain output still permits guided transport probe. No diagnostic5 chaining/full comparison/benchmark/real20/held-out/paid calls even on success.
+
+Freeze utility hash, original v25 source/run snapshot identity, both payloads and scheduled timestamp before network. Before/after verification uses unchanged old source/data hashes. HTTP status, latency, bounded redacted body/hash, exact received response/usage or unknown-usage reservation persist in separate out/transport_probes/v25_20261017_140806. Response errors cannot establish server-internal root cause without server logs. Missing/uncertain responses never become zero-cost or semantic failures. Scheduled controller detached with exclusive lock; any existing attempt reservation is consumed and never resent. Terminal same-thread callback will audit/report; no endpoint URL/key in files/logs. Authored httpx controls plus clean-context audit precede launch.
+
+
+### Delayed transport probe disposition —2026-10-17, post-output
+
+Scheduled probe ran14:08:06UTC; only models GET attempted, HTTP404/ERR_NGROK_3200 endpoint offline after0.217735796s. Metadata preflight failed before tokenizer/plain/guided;0completion attempts/0unknown completion usage. No backend/schema/semantic comparison. Source/probe hash/original v25 artifacts unchanged. Preserve frozen utility and attempts; no retry/reset/diagnostic5/benchmark/paid calls. Error body bare-hostname privacy gap documented without copying hostname into analysis; no repair of frozen source. Terminal callback handled.

@@ -57,3 +57,11 @@ paper baselines); NOT yet shown that an LLM reading concepts beats plain/toolinp
    always with witness-only and toolinput. B4 `v13_hyp`: link facts into spec-violation hypotheses ("value from line A
    through branch B to line C violates rule R"), allow hypotheses without a witness, consider covered sites
    (~1/3 of bugs lie on paths every base test already runs). Large → Codex.
+
+2026-10-17 v25_interface_gate: user authorized continued implementation and old endpoint when GPU ready. Audited prospective split-output feasibility5,74 source files/prepared data/dependencies frozen; staged A/B/C early-stop only. See [[linefacts-v25-interface-gate]], RESULTS §11.64 and analysis/v25_cpu_audit.md; inspect owned status before any action, never duplicate or auto-expand to comparison/benchmark.
+
+2026-10-17 v25 terminal supersedes launch: transport-incomplete, no task response; A failed, B/C blocked. f02/f04 timeout, f06 completion503→404, f14/f13 tokenizer HTTP errors. Only capability echo42/10tokens known;8task attempts usage unknown. Frozen hashes verified, independent review/callback handled; no retry/reset/auto-expansion. Read [[linefacts-v25-interface-gate]] and RESULTS §11.65.
+
+2026-10-17 user authorized tiny transport retry after10min. Detached probe scheduled14:08:06UTC/21:08Vietnam in fresh out/transport_probes/v25_20261017_140806; max2single-attempt completions, no diagnostic5/benchmark chaining. Frozen original v25 preserved. See [[linefacts-v25-interface-gate]], RESULTS §11.66 and transport probe audit; inspect status, never duplicate.
+
+2026-10-17 transport probe terminal supersedes schedule: models GET404/ERR_NGROK_3200, endpoint offline at21:08Vietnam;0tokenizer/plain/guided completions.0unknown completion usage for this probe; old8unknown attempts unchanged. Source/original hashes verified, independent review/callback handled, no retries/new calls. Read [[linefacts-v25-interface-gate]] and RESULTS §11.67; no active run.

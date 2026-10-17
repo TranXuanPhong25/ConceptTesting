@@ -1,0 +1,1560 @@
+{
+  "scope": "frozen seen authored diagnostic16; no benchmark, unseen or human-gold claim",
+  "verification": {
+    "source_and_generation_hashes": true,
+    "source_bound_CPU_gate": true,
+    "parent_v7_unchanged": true,
+    "all_160_raw_origins_and_usage_checked": true,
+    "all_16_spec_only_and_code_only_preparation_views_checked": true,
+    "independent_score_recomputation_matches": true
+  },
+  "costs": {
+    "physical_completion_attempts": 160,
+    "input_tokens": 175022,
+    "output_tokens": 28221,
+    "unknown_usage_attempts": 0,
+    "shared_preparation_attempts": 32,
+    "generation_requests": 160,
+    "cost_scope": "common preparation separate; no total-cost-matched efficacy claim"
+  },
+  "costs_by_stage_group": {
+    "concept_chain": {
+      "calls": 48,
+      "input_tokens": 60082,
+      "output_tokens": 9422
+    },
+    "direct_chain": {
+      "calls": 48,
+      "input_tokens": 59985,
+      "output_tokens": 9496
+    },
+    "hyp_only": {
+      "calls": 32,
+      "input_tokens": 45308,
+      "output_tokens": 6830
+    },
+    "shared": {
+      "calls": 32,
+      "input_tokens": 9647,
+      "output_tokens": 2473
+    }
+  },
+  "tokenizer_metadata_calls": 153,
+  "tokenizer_metadata_errors": 0,
+  "wall_seconds": 3211.105533,
+  "stage_counts": {
+    "inputs": {
+      "valid": 48,
+      "failed": 0
+    },
+    "hypothesis": {
+      "valid": 32,
+      "failed": 0
+    },
+    "behavior": {
+      "valid": 16,
+      "failed": 0
+    },
+    "concept": {
+      "valid": 16,
+      "failed": 0
+    },
+    "revision": {
+      "valid": 48,
+      "failed": 0
+    }
+  },
+  "totals": {
+    "concept_chain": {
+      "coarse_verdict_correct_cases": 10,
+      "false_hypothesis_on_correct_case": 3,
+      "candidate_slots": 96,
+      "state_invalid_literal": 41,
+      "invalid_arity": 28,
+      "state_observed": 52,
+      "prediction_matches_native_slots": 49,
+      "prediction_contradicted_native_slots": 3,
+      "correct_expected_slots": 40,
+      "incorrect_expected_slots": 12,
+      "wrong_expected_equals_PUT_slots": 10,
+      "unique_scored_inputs": 51,
+      "unique_input_discrepancies": 12,
+      "unique_correct_bug_assertions": 2,
+      "unique_false_alarm_inputs": 2,
+      "detected_bug_cases": 4,
+      "correct_assertion_cases": 2,
+      "false_alarm_cases": 2,
+      "false_alarm_on_correct_cases": 2,
+      "repeated_invalid_after_feedback": 16,
+      "invalid_not_literal": 5,
+      "state_unknown": 3,
+      "unknown_filtered": 3,
+      "invalid_full_positional_tuple_required": 8
+    },
+    "direct_chain": {
+      "coarse_verdict_correct_cases": 9,
+      "false_hypothesis_on_correct_case": 4,
+      "candidate_slots": 96,
+      "state_invalid_literal": 25,
+      "invalid_arity": 17,
+      "state_observed": 69,
+      "prediction_matches_native_slots": 58,
+      "prediction_contradicted_native_slots": 11,
+      "correct_expected_slots": 56,
+      "incorrect_expected_slots": 13,
+      "wrong_expected_equals_PUT_slots": 8,
+      "unique_scored_inputs": 67,
+      "unique_input_discrepancies": 13,
+      "unique_correct_bug_assertions": 4,
+      "unique_false_alarm_inputs": 5,
+      "detected_bug_cases": 5,
+      "correct_assertion_cases": 2,
+      "false_alarm_cases": 5,
+      "false_alarm_on_correct_cases": 2,
+      "repeated_invalid_after_feedback": 5,
+      "state_unknown": 2,
+      "unknown_filtered": 2,
+      "invalid_full_positional_tuple_required": 8
+    },
+    "hyp_only": {
+      "coarse_verdict_correct_cases": 10,
+      "false_hypothesis_on_correct_case": 3,
+      "candidate_slots": 96,
+      "state_invalid_literal": 27,
+      "invalid_arity": 20,
+      "state_observed": 66,
+      "prediction_matches_native_slots": 59,
+      "prediction_contradicted_native_slots": 7,
+      "correct_expected_slots": 48,
+      "incorrect_expected_slots": 18,
+      "wrong_expected_equals_PUT_slots": 14,
+      "unique_scored_inputs": 61,
+      "unique_input_discrepancies": 15,
+      "unique_correct_bug_assertions": 2,
+      "unique_false_alarm_inputs": 4,
+      "detected_bug_cases": 5,
+      "correct_assertion_cases": 2,
+      "false_alarm_cases": 4,
+      "false_alarm_on_correct_cases": 3,
+      "repeated_invalid_after_feedback": 8,
+      "state_unknown": 3,
+      "unknown_filtered": 3,
+      "invalid_full_positional_tuple_required": 6,
+      "invalid_not_literal": 1
+    }
+  },
+  "rows": [
+    {
+      "case": "f01",
+      "gold_verdict": "consistent",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 5,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 5,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 5,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "correct_no_fault",
+        "direct_chain": "correct_no_fault",
+        "note": "Faithful core; S2 non-list TypeError claim too strong."
+      }
+    },
+    {
+      "case": "f02",
+      "gold_verdict": "mismatch",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 4,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [
+            "([-1, 0, 1, -1, 0, 1],)",
+            "([1, 2, 2, 3, 3, 3],)",
+            "([10, 20, 20, 10, 30],)"
+          ],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 4,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [
+            "([-1, 0, 1, -1, 0, 1],)",
+            "([1, 2, 2, 3, 3, 3],)",
+            "([10, 20, 20, 10, 30],)"
+          ],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "missed_fault",
+        "direct_chain": "missed_fault",
+        "note": "Both call returned dedup consistent with multiplicity preservation."
+      }
+    },
+    {
+      "case": "f03",
+      "gold_verdict": "consistent",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([10, 20, 30], 25)"
+          ]
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([10, 20, 30], 25)"
+          ]
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([10, 20, 30], 25)"
+          ]
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "correct_no_fault",
+        "direct_chain": "correct_no_fault",
+        "note": "S2 fabricated empty limitation; candidate count error."
+      }
+    },
+    {
+      "case": "f04",
+      "gold_verdict": "mismatch",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([1, 2, 3, 4, 5], 3)",
+            "([1, 2, 3], 3)",
+            "([5, 5, 5], 5)"
+          ],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([1, 2, 3, 4, 5], 2)",
+            "([1, 2, 3, 4], 2)",
+            "([1, 2, 3], 2)"
+          ],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([10, 20, 30], 25)"
+          ]
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 4,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([1, 2, 3, 4, 5], 2)",
+            "([1, 2, 3, 4], 2)",
+            "([1, 2, 3], 2)",
+            "([100, 200, 300], 300)"
+          ],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "correct_fault_bad_trigger",
+        "direct_chain": "correct_fault_bad_trigger",
+        "note": "Both identify strict/inclusive mismatch; base trigger has no equality."
+      }
+    },
+    {
+      "case": "f05",
+      "gold_verdict": "consistent",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "correct_no_fault",
+        "direct_chain": "correct_no_fault",
+        "note": "Concept membership core retained; explicit iff/extras/duplicate invariance omitted."
+      }
+    },
+    {
+      "case": "f06",
+      "gold_verdict": "mismatch",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 2,
+          "correct_bug_assertions": 2,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [
+            "([1, 2, 3], [1, 2])",
+            "([1, 2], [1])"
+          ],
+          "correct_assertion_inputs": [
+            "([1, 2, 3], [1, 2])",
+            "([1, 2], [1])"
+          ],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "missed_fault",
+        "direct_chain": "missed_fault",
+        "note": "Both equate inclusion with equality after equal-set base example."
+      }
+    },
+    {
+      "case": "f07",
+      "gold_verdict": "consistent",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "correct_no_fault",
+        "direct_chain": "false_fault",
+        "note": "Direct invents missing empty-eligible guard which already exists."
+      }
+    },
+    {
+      "case": "f08",
+      "gold_verdict": "mismatch",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 1,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([-1, -2, -3],)",
+            "([0, -1, -2],)",
+            "([],)"
+          ],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 3,
+          "input_discrepancies": 2,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([-1, -2, -3],)",
+            "([0, 0, 0],)"
+          ],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "correct_fault_with_trigger",
+        "direct_chain": "correct_fault_with_trigger",
+        "note": "Correct None-versus-ValueError mechanism and admissible trigger."
+      }
+    },
+    {
+      "case": "f09",
+      "gold_verdict": "consistent",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 3,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 3,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "consistent",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "correct_no_fault",
+        "direct_chain": "correct_no_fault",
+        "note": "Concept loses explicit boolean iff/empty=True semantics."
+      }
+    },
+    {
+      "case": "f10",
+      "gold_verdict": "mismatch",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 5,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "correct_fault_bad_trigger",
+        "direct_chain": "correct_fault_bad_trigger",
+        "note": "Both identify any/all; all-even trigger passes both; direct misstates empty behavior."
+      }
+    },
+    {
+      "case": "f11",
+      "gold_verdict": "consistent",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([], 2)"
+          ]
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 6,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([], 2)"
+          ]
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "false_fault",
+        "direct_chain": "false_fault",
+        "note": "Invented empty-list issue on correct sum comparison."
+      }
+    },
+    {
+      "case": "f12",
+      "gold_verdict": "mismatch",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 5,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 1,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([1, 2, 3, 4], 10)",
+            "([1, 2, 3, 4], 11)",
+            "([1, 2, 3], 6)"
+          ],
+          "correct_assertion_inputs": [
+            "([1, 2, 3, 4], 11)"
+          ],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 4,
+          "input_discrepancies": 2,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([1, 2, 3, 4], 10)",
+            "([1, 2, 3], 6)"
+          ],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([], 2)"
+          ]
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 5,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 1,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([1, 2, 3, 4], 10)",
+            "([1, 2, 3, 4], 11)",
+            "([1, 2, 3], 6)"
+          ],
+          "correct_assertion_inputs": [
+            "([1, 2, 3, 4], 11)"
+          ],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "wrong_fault_for_real_bug",
+        "direct_chain": "wrong_fault_for_real_bug",
+        "note": "Both ignore actual len>2 mechanism and cite empty/noninteger concerns."
+      }
+    },
+    {
+      "case": "f13",
+      "gold_verdict": "unknown",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "unresolved_spec_overclaim",
+        "direct_chain": "unresolved_spec_overclaim",
+        "note": "Undefined suitable not recorded as uncertainty; both overclaim mismatch."
+      }
+    },
+    {
+      "case": "f14",
+      "gold_verdict": "consistent",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 0,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 3,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([3, 3, 3, 2, 2, 1],)"
+          ]
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 3,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 1,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": [
+            "([3, 3, 3, 2, 2, 1],)"
+          ]
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "false_fault",
+        "direct_chain": "false_fault",
+        "note": "Both wrongly propagate unused local set into returned sorted(xs)."
+      }
+    },
+    {
+      "case": "f15",
+      "gold_verdict": "consistent",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 2,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 1,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 4,
+          "input_discrepancies": 0,
+          "correct_bug_assertions": 0,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [],
+          "correct_assertion_inputs": [],
+          "false_alarm_inputs_list": []
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "false_fault",
+        "direct_chain": "false_fault",
+        "note": "Both invent empty defect despite recognizing unreachable dedup return."
+      }
+    },
+    {
+      "case": "f16",
+      "gold_verdict": "mismatch",
+      "arms": {
+        "concept_chain": {
+          "unique_scored_inputs": 4,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 1,
+          "false_alarm_inputs": 0,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([-1, 0, 1, 2],)",
+            "([-2, 0, 1, 2, 3],)",
+            "([10, 10, 10],)"
+          ],
+          "correct_assertion_inputs": [
+            "([10, 10, 10],)"
+          ],
+          "false_alarm_inputs_list": []
+        },
+        "direct_chain": {
+          "unique_scored_inputs": 4,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 2,
+          "false_alarm_inputs": 1,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([0, -1, -2, 1, 2, 3],)",
+            "([1, 2, 2, 3, 4, 4, 5],)",
+            "([1, 2, 3, 4, 5],)"
+          ],
+          "correct_assertion_inputs": [
+            "([0, -1, -2, 1, 2, 3],)",
+            "([1, 2, 3, 4, 5],)"
+          ],
+          "false_alarm_inputs_list": [
+            "([1, 2, 2, 3, 4, 4, 5],)"
+          ]
+        },
+        "hyp_only": {
+          "unique_scored_inputs": 4,
+          "input_discrepancies": 3,
+          "correct_bug_assertions": 1,
+          "false_alarm_inputs": 1,
+          "verdict": "mismatch",
+          "discrepancy_inputs": [
+            "([-1, 0, 1, 2, 2],)",
+            "([-2, -1, 0, 1, 2],)",
+            "([10, 10, 10],)"
+          ],
+          "correct_assertion_inputs": [
+            "([10, 10, 10],)"
+          ],
+          "false_alarm_inputs_list": [
+            "([-1, 0, 1, 2, 2],)"
+          ]
+        }
+      },
+      "model_assisted_review": {
+        "concept_chain": "out_of_domain_hypothesis",
+        "direct_chain": "correct_fault_with_trigger",
+        "note": "Concept uses noninteger concern outside domain; direct identifies dedup with sufficient trigger."
+      }
+    }
+  ],
+  "semantic_packets": [
+    {
+      "case": "f01",
+      "source": "def f(xs):\n    'Return a sorted list containing every integer from xs. Preserve the number of occurrences of each value, including duplicates. xs is a list of integers.'\n    return sorted(xs)\n",
+      "concept": {
+        "domain": "xs is a list of integers",
+        "relation": "Return a sorted list containing every integer from xs, preserving the number of occurrences of each value, including duplicates",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` takes a list `xs` as input and returns a new list that is sorted in ascending order. The sorting is done using Python's built-in `sorted` function. The function does not have any lexical guards or conditions that affect its execution.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input `xs` is a list. If `xs` is not a list, the function will raise a `TypeError`. The function does not modify the original list `xs`; it returns a new sorted list."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "consistent",
+          "required_relation": "Return a sorted list containing every integer from xs. Preserve the number of occurrences of each value, including duplicates. xs is a list of integers.",
+          "actual_relation": "Return a sorted list containing every integer from xs. Preserve the number of occurrences of each value, including duplicates. xs is a list of integers.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "",
+          "alternative": "",
+          "reason": "The function `f` correctly returns a sorted list containing every integer from the input list `xs`, preserving the number of occurrences of each value, including duplicates. This behavior matches the normative requirement."
+        },
+        "direct_chain": {
+          "verdict": "consistent",
+          "required_relation": "The function `f` returns a sorted list of integers.",
+          "actual_relation": "The function `f` returns a sorted list of integers.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([2, 1])",
+          "alternative": "unknown",
+          "reason": "The function `f` uses Python's built-in `sorted` function to return a new list that is sorted in ascending order. This behavior matches the normative requirement."
+        }
+      }
+    },
+    {
+      "case": "f02",
+      "source": "def f(xs):\n    'Return a sorted list containing every integer from xs. Preserve the number of occurrences of each value, including duplicates. xs is a list of integers.'\n    return sorted(set(xs))\n",
+      "concept": {
+        "domain": "xs is a list of integers",
+        "relation": "Return a sorted list containing every integer from xs, preserving the number of occurrences of each value, including duplicates",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` takes a list `xs` as input, converts it to a set to remove duplicates, sorts the set, and returns the sorted list. The function does not have any lexical guards or unreachable code.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input `xs` is a list. If `xs` is not a list, the function may raise a TypeError."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "consistent",
+          "required_relation": "Return a sorted list containing every integer from xs. Preserve the number of occurrences of each value, including duplicates. xs is a list of integers.",
+          "actual_relation": "Return a sorted list containing every integer from xs. Preserve the number of occurrences of each value, including duplicates. xs is a list of integers.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "",
+          "alternative": "",
+          "reason": "The function `f` correctly returns a sorted list containing every integer from the input list `xs`, preserving the number of occurrences of each value, including duplicates. The behavior matches the normative requirement."
+        },
+        "direct_chain": {
+          "verdict": "consistent",
+          "required_relation": "The function `f` returns a sorted list containing every integer from the input list `xs`, preserving the number of occurrences of each value, including duplicates.",
+          "actual_relation": "The function `f` takes a list `xs` as input, converts it to a set to remove duplicates, sorts the set, and returns the sorted list. The function does not have any lexical guards or unreachable code.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([2, 1]) == [1, 2]",
+          "alternative": "unknown",
+          "reason": "The function `f` is consistent with the normative requirement as it returns a sorted list containing every integer from the input list `xs`, preserving the number of occurrences of each value, including duplicates."
+        }
+      }
+    },
+    {
+      "case": "f03",
+      "source": "def f(xs, limit):\n    'Return the number of integers in xs that are greater than or equal to limit. xs is a list of integers and limit is an integer.'\n    return sum(1 for x in xs if x >= limit)\n",
+      "concept": {
+        "domain": "xs is a list of integers and limit is an integer",
+        "relation": "Return the number of integers in xs that are greater than or equal to limit",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` takes a list `xs` and a limit `limit`, and returns the count of elements in `xs` that are greater than or equal to `limit`. The function uses a generator expression within the `sum` function to iterate over `xs` and count the elements that meet the condition.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input `xs` is a list of numbers and that `limit` is a number. If `xs` contains non-numeric values, the function may raise a `TypeError`. The function does not handle cases where `xs` is empty or `limit` is not a number."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "consistent",
+          "required_relation": "Return the number of integers in xs that are greater than or equal to limit",
+          "actual_relation": "Return the number of integers in xs that are greater than or equal to limit",
+          "source_lines": [
+            3
+          ],
+          "trigger": "",
+          "alternative": "",
+          "reason": "The function `f` correctly implements the required relation by using a generator expression within the `sum` function to count the number of elements in `xs` that are greater than or equal to `limit`. The provided test case `assert f([1, 3], 2) == 1` confirms that the function behaves as expected."
+        },
+        "direct_chain": {
+          "verdict": "consistent",
+          "required_relation": "The function `f` correctly counts the number of elements in `xs` that are greater than or equal to `limit`.",
+          "actual_relation": "The function `f` correctly counts the number of elements in `xs` that are greater than or equal to `limit`.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([1, 3], 2)",
+          "alternative": "unknown",
+          "reason": "The function `f` uses a generator expression within the `sum` function to iterate over `xs` and count the elements that meet the condition. This behavior matches the normative requirement specified in the `spec` field."
+        }
+      }
+    },
+    {
+      "case": "f04",
+      "source": "def f(xs, limit):\n    'Return the number of integers in xs that are greater than or equal to limit. xs is a list of integers and limit is an integer.'\n    return sum(1 for x in xs if x > limit)\n",
+      "concept": {
+        "domain": "xs is a list of integers and limit is an integer",
+        "relation": "Return the number of integers in xs that are greater than or equal to limit",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` takes a list `xs` and a limit `limit`, and returns the count of elements in `xs` that are greater than `limit`. The function uses a generator expression within the `sum` function to iterate over `xs` and count the elements that satisfy the condition `x > limit`. The returned value is the count of such elements.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input `xs` is a list of numbers and that `limit` is a number. If `xs` contains non-numeric elements or `limit` is not a number, the function may produce unexpected results or raise an error."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return the number of integers in xs that are greater than or equal to limit",
+          "actual_relation": "Return the number of integers in xs that are greater than limit",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([1, 3], 2)",
+          "alternative": "Return the number of integers in xs that are greater than or equal to limit",
+          "reason": "The function `f` is designed to count elements in `xs` that are strictly greater than `limit`. However, the normative requirement specifies that the function should count elements that are greater than or equal to `limit`. This discrepancy leads to a mismatch between the expected and actual behavior."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return the number of integers in xs that are greater than or equal to limit.",
+          "actual_relation": "Return the number of integers in xs that are greater than limit.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([1, 3], 2)",
+          "alternative": "The function should return the count of elements in `xs` that are greater than or equal to `limit`.",
+          "reason": "The function `f` currently returns the count of elements in `xs` that are strictly greater than `limit`, not greater than or equal to `limit` as specified in the normative requirement."
+        }
+      }
+    },
+    {
+      "case": "f05",
+      "source": "def f(container, required):\n    'Return True exactly when every value in required is present in container. Extra values in container are allowed. Both arguments are lists of integers; duplicate values do not affect membership.'\n    return set(required) <= set(container)\n",
+      "concept": {
+        "domain": "Lists of integers",
+        "relation": "Every value in 'required' is present in 'container'",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` checks if all elements in the `required` set are present in the `container` set. It returns `True` if `required` is a subset of `container`, otherwise `False`. The function does not have any lexical guards or side effects.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input `container` and `required` are iterable objects that can be converted to sets. If the inputs are not iterable or contain non-hashable elements, the function may raise a `TypeError`."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "consistent",
+          "required_relation": "Every value in 'required' is present in 'container'",
+          "actual_relation": "Every value in 'required' is present in 'container'",
+          "source_lines": [
+            3
+          ],
+          "trigger": "([1], [1])",
+          "alternative": "",
+          "reason": "The function `f` correctly checks if all elements in the `required` set are present in the `container` set. The provided input `([1], [1])` results in `True`, which matches the expected behavior."
+        },
+        "direct_chain": {
+          "verdict": "consistent",
+          "required_relation": "Return True exactly when every value in required is present in container. Extra values in container are allowed. Both arguments are lists of integers; duplicate values do not affect membership.",
+          "actual_relation": "Return True exactly when every value in required is present in container. Extra values in container are allowed. Both arguments are lists of integers; duplicate values do not affect membership.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "([1], [1])",
+          "alternative": "",
+          "reason": "The function `f` correctly checks if all elements in the `required` set are present in the `container` set. The provided test case `assert f([1], [1]) is True` matches the expected behavior."
+        }
+      }
+    },
+    {
+      "case": "f06",
+      "source": "def f(container, required):\n    'Return True exactly when every value in required is present in container. Extra values in container are allowed. Both arguments are lists of integers; duplicate values do not affect membership.'\n    return set(required) == set(container)\n",
+      "concept": {
+        "domain": "Lists of integers",
+        "relation": "Every value in 'required' is present in 'container'",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` checks if the set of elements in `required` is equal to the set of elements in `container`. It returns `True` if they are equal, otherwise `False`. The function does not have any lexical guards or side effects.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that `container` and `required` are iterable objects. If they are not, a `TypeError` will be raised when converting them to sets."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "consistent",
+          "required_relation": "Every value in 'required' is present in 'container'",
+          "actual_relation": "Every value in 'required' is present in 'container'",
+          "source_lines": [
+            3
+          ],
+          "trigger": "([1], [1])",
+          "alternative": "",
+          "reason": "The function `f` correctly checks if the set of elements in `required` is equal to the set of elements in `container`. The input `([1], [1])` results in `True` because both sets contain the same single element, 1."
+        },
+        "direct_chain": {
+          "verdict": "consistent",
+          "required_relation": "Return True exactly when every value in required is present in container. Extra values in container are allowed. Both arguments are lists of integers; duplicate values do not affect membership.",
+          "actual_relation": "Return True exactly when every value in required is present in container. Extra values in container are allowed. Both arguments are lists of integers; duplicate values do not affect membership.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "([1], [1])",
+          "alternative": "unknown",
+          "reason": "The function `f` correctly checks if the set of elements in `required` is equal to the set of elements in `container`. The provided test case `([1], [1])` returns `True`, which matches the normative requirement."
+        }
+      }
+    },
+    {
+      "case": "f07",
+      "source": "def f(xs):\n    'Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists. xs may be any list of integers, including an empty list.'\n    ys = [x for x in xs if x > 0]\n    return min(ys) if ys else None\n",
+      "concept": {
+        "domain": "xs is any list of integers, including an empty list",
+        "relation": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` filters out non-positive numbers from the input list `xs` and returns the minimum of the remaining positive numbers. If there are no positive numbers, it returns `None`.",
+        "source_lines": [
+          3,
+          4
+        ],
+        "limitations": "The function assumes that the input list `xs` contains only numbers. If the list contains non-numeric values, the behavior is undefined."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "consistent",
+          "required_relation": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists. xs may be any list of integers, including an empty list.",
+          "actual_relation": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists. xs may be any list of integers, including an empty list.",
+          "source_lines": [
+            3,
+            4
+          ],
+          "trigger": "f([1, 2, 3])",
+          "alternative": "unknown",
+          "reason": "The function `f` correctly filters out non-positive numbers and returns the minimum of the remaining positive numbers. If there are no positive numbers, it returns `None`. The provided test case `f([-1, 2, 3]) == 2` is consistent with the function's behavior."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "The function should return the smallest strictly positive integer in xs, or None if no strictly positive integer exists.",
+          "actual_relation": "The function filters out non-positive numbers from the input list xs and returns the minimum of the remaining positive numbers. If there are no positive numbers, it returns None.",
+          "source_lines": [
+            3,
+            4
+          ],
+          "trigger": "f([0, -1, -2])",
+          "alternative": "The function should return None if the input list contains no strictly positive integers.",
+          "reason": "The function does not handle the case where the input list contains no strictly positive integers. It should return None in such cases."
+        }
+      }
+    },
+    {
+      "case": "f08",
+      "source": "def f(xs):\n    'Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists. xs may be any list of integers, including an empty list.'\n    ys = [x for x in xs if x > 0]\n    return min(ys)\n",
+      "concept": {
+        "domain": "xs is any list of integers, including an empty list",
+        "relation": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` filters out non-positive numbers from the input list `xs` and returns the minimum of the remaining positive numbers. If there are no positive numbers in the input list, the function will raise a `ValueError` when trying to find the minimum of an empty list.",
+        "source_lines": [
+          3,
+          4
+        ],
+        "limitations": "The function assumes that the input list `xs` contains only numbers. If the list contains non-numeric values, the function may raise a `TypeError` when trying to compare them."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists.",
+          "actual_relation": "Return the smallest strictly positive integer in xs, or raise a ValueError if no strictly positive integer exists.",
+          "source_lines": [
+            4
+          ],
+          "trigger": "f([0, -1, -2])",
+          "alternative": "Return None if no strictly positive integer exists.",
+          "reason": "The function raises a ValueError when the input list contains no strictly positive integers, while the required relation specifies returning None in such cases."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists.",
+          "actual_relation": "Return the minimum of the positive numbers in xs, or raise a ValueError if no positive numbers exist.",
+          "source_lines": [
+            3,
+            4
+          ],
+          "trigger": "f([0, -1, -2])",
+          "alternative": "Return None if no positive numbers exist.",
+          "reason": "The function does not return None when no positive numbers are present, instead it raises a ValueError."
+        }
+      }
+    },
+    {
+      "case": "f09",
+      "source": "def f(xs):\n    'Return True exactly when every integer in xs is even. For an empty list return True. xs is a list of integers.'\n    return all(x % 2 == 0 for x in xs)\n",
+      "concept": {
+        "domain": "xs is a list of integers",
+        "relation": "For every integer in xs, it must be even",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` checks if all elements in the input list `xs` are even. It returns `True` if all elements are even, and `False` otherwise.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input `xs` is a list of integers. If `xs` contains non-integer values, the behavior is undefined."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "consistent",
+          "required_relation": "For every integer in xs, it must be even",
+          "actual_relation": "For every integer in xs, it must be even",
+          "source_lines": [
+            3
+          ],
+          "trigger": "",
+          "alternative": "",
+          "reason": "The function `f` correctly checks if all elements in the input list `xs` are even. It returns `True` if all elements are even, and `False` otherwise. This behavior matches the normative requirement."
+        },
+        "direct_chain": {
+          "verdict": "consistent",
+          "required_relation": "The function `f` returns `True` if all elements in the input list `xs` are even, and `False` otherwise.",
+          "actual_relation": "The function `f` returns `True` if all elements in the input list `xs` are even, and `False` otherwise.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([2, 4])",
+          "alternative": "unknown",
+          "reason": "The function `f` is consistent with the normative requirement. It correctly checks if all elements in the input list `xs` are even and returns `True` if they are, and `False` otherwise."
+        }
+      }
+    },
+    {
+      "case": "f10",
+      "source": "def f(xs):\n    'Return True exactly when every integer in xs is even. For an empty list return True. xs is a list of integers.'\n    return any(x % 2 == 0 for x in xs)\n",
+      "concept": {
+        "domain": "xs is a list of integers",
+        "relation": "For every integer in xs, it must be even",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` checks if any element in the input list `xs` is even. It returns `True` if at least one element is even, and `False` otherwise.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input `xs` is a list of integers. If `xs` contains non-integer values, the behavior is undefined."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "For every integer in xs, it must be even",
+          "actual_relation": "At least one integer in xs must be even",
+          "source_lines": [
+            3
+          ],
+          "trigger": "[2, 4]",
+          "alternative": "The function should return True if all integers in xs are even, and False otherwise.",
+          "reason": "The function `f` returns True if at least one element in the input list `xs` is even, which does not match the required relation that all integers in xs must be even."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return True exactly when every integer in xs is even. For an empty list return True. xs is a list of integers.",
+          "actual_relation": "Return True if at least one integer in xs is even. For an empty list return True.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "[2, 4]",
+          "alternative": "The function should return False if at least one integer in xs is odd.",
+          "reason": "The function `f` returns True if at least one element in the input list `xs` is even, which does not match the required behavior of returning True only if every element is even."
+        }
+      }
+    },
+    {
+      "case": "f11",
+      "source": "def f(xs, limit):\n    'Return True exactly when the sum of xs is at most limit. xs is any list of integers; no restriction is imposed on its length. limit is an integer.'\n    return sum(xs) <= limit\n",
+      "concept": {
+        "domain": "xs is any list of integers; limit is an integer",
+        "relation": "The sum of xs is at most limit",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` takes two parameters, `xs` and `limit`. It returns `True` if the sum of the elements in `xs` is less than or equal to `limit`, and `False` otherwise. The function does not have any lexical guards or side effects.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function does not handle cases where `xs` is not a list or `limit` is not a number. It also does not handle cases where `xs` is an empty list."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "The sum of xs is at most limit",
+          "actual_relation": "The function does not handle cases where xs is not a list or limit is not a number. It also does not handle cases where xs is an empty list.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([], 2)",
+          "alternative": "The function should return False for an empty list xs.",
+          "reason": "The function does not handle cases where xs is not a list or limit is not a number. It also does not handle cases where xs is an empty list. The function should return False for an empty list xs."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return True exactly when the sum of xs is at most limit.",
+          "actual_relation": "Return True if the sum of xs is less than or equal to limit.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([], 2)",
+          "alternative": "The function should return False when xs is an empty list.",
+          "reason": "The function does not handle cases where xs is an empty list. According to the specification, the function should return True when xs is an empty list because the sum of an empty list is 0, which is less than or equal to any limit."
+        }
+      }
+    },
+    {
+      "case": "f12",
+      "source": "def f(xs, limit):\n    'Return True exactly when the sum of xs is at most limit. xs is any list of integers; no restriction is imposed on its length. limit is an integer.'\n    if len(xs) > 2:\n        return False\n    return sum(xs) <= limit\n",
+      "concept": {
+        "domain": "xs is any list of integers; limit is an integer",
+        "relation": "The sum of xs is at most limit",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` checks if the sum of the elements in the list `xs` is less than or equal to the `limit`. If the length of `xs` is greater than 2, it returns `False`. Otherwise, it returns the result of the sum comparison.",
+        "source_lines": [
+          3,
+          4,
+          5
+        ],
+        "limitations": "The function does not handle cases where `xs` is an empty list or contains non-numeric elements. It also does not handle cases where `limit` is not a number."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return True exactly when the sum of xs is at most limit.",
+          "actual_relation": "The function does not handle cases where `xs` is an empty list or contains non-numeric elements. It also does not handle cases where `limit` is not a number.",
+          "source_lines": [
+            3,
+            4,
+            5
+          ],
+          "trigger": "f([], 2)",
+          "alternative": "The function should handle cases where `xs` is an empty list by returning True, as the sum of an empty list is 0, which is less than or equal to any non-negative limit. It should also handle cases where `xs` contains non-numeric elements by raising a TypeError, as the sum function cannot handle non-numeric elements. Additionally, it should handle cases where `limit` is not a number by raising a TypeError.",
+          "reason": "The function does not handle edge cases and non-numeric inputs, which leads to incorrect behavior."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return True exactly when the sum of xs is at most limit.",
+          "actual_relation": "Return True exactly when the sum of xs is at most limit, but does not handle cases where xs is an empty list or contains non-numeric elements, and does not handle cases where limit is not a number.",
+          "source_lines": [
+            3,
+            4,
+            5
+          ],
+          "trigger": "f([], 2)",
+          "alternative": "The function should handle cases where xs is an empty list or contains non-numeric elements, and should handle cases where limit is not a number.",
+          "reason": "The function does not handle cases where xs is an empty list or contains non-numeric elements, and does not handle cases where limit is not a number. This can be distinguished from the required behavior by providing an input where xs is an empty list or contains non-numeric elements, or where limit is not a number."
+        }
+      }
+    },
+    {
+      "case": "f13",
+      "source": "def f(xs):\n    'Return the first suitable value from xs. xs is a list of integers.'\n    return xs[0] if xs else None\n",
+      "concept": {
+        "domain": "xs is a list of integers",
+        "relation": "Return the first suitable value from xs",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` returns the first element of the input list `xs` if `xs` is not empty, otherwise it returns `None`. The function does not have any lexical guards that affect its behavior.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input `xs` is a list. If `xs` is not a list or is an empty list, the function may not behave as expected."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return the first suitable value from xs. xs is a list of integers.",
+          "actual_relation": "Return the first element of the input list xs if xs is not empty, otherwise it returns None. The function does not have any lexical guards that affect its behavior.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([1, 2, 3])",
+          "alternative": "The function should return the first element of the input list xs if xs is not empty, otherwise it should return None.",
+          "reason": "The function does not have any lexical guards that affect its behavior, so it will always return the first element of the input list xs if xs is not empty, otherwise it will return None. This behavior is consistent with the required relation."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return the first suitable value from xs. xs is a list of integers.",
+          "actual_relation": "Return the first element of the input list xs if xs is not empty, otherwise it returns None.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "f([1, 2, 3])",
+          "alternative": "The function should return the first element of the input list xs if xs is not empty, otherwise it should return None.",
+          "reason": "The function does not have any lexical guards that affect its behavior. The function assumes that the input xs is a list. If xs is not a list or is an empty list, the function may not behave as expected."
+        }
+      }
+    },
+    {
+      "case": "f14",
+      "source": "def f(xs):\n    'Return a sorted copy of xs, preserving every duplicate occurrence. xs is a list of integers.'\n    temporary = set(xs)\n    return sorted(xs)\n",
+      "concept": {
+        "domain": "xs is a list of integers",
+        "relation": "Return a sorted copy of xs, preserving every duplicate occurrence",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` takes a list `xs` as input, converts it to a set to remove duplicates, and then returns a sorted list of the original elements. The set conversion is not used in the final return value, so it is an unused operation.",
+        "source_lines": [
+          3,
+          4
+        ],
+        "limitations": "The function does not handle cases where `xs` is not a list, and it does not preserve the original order of elements in the list. The set conversion is not used in the final return value, so it is an unused operation."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return a sorted copy of xs, preserving every duplicate occurrence",
+          "actual_relation": "Return a sorted list of the original elements, without preserving duplicates",
+          "source_lines": [
+            3,
+            4
+          ],
+          "trigger": "f([2, 2, 1])",
+          "alternative": "The function should return a sorted list of the original elements, preserving every duplicate occurrence.",
+          "reason": "The function converts the input list to a set, which removes duplicates, before sorting it. This results in a sorted list without preserving duplicates, which does not match the required relation."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return a sorted copy of xs, preserving every duplicate occurrence. xs is a list of integers.",
+          "actual_relation": "Return a sorted list of the original elements, without preserving duplicates.",
+          "source_lines": [
+            3,
+            4
+          ],
+          "trigger": "f([2, 2, 1])",
+          "alternative": "The function should return a sorted list of the original elements, preserving duplicates.",
+          "reason": "The function converts the input list to a set, which removes duplicates, before sorting it. This results in a sorted list without preserving duplicates, which does not match the required behavior."
+        }
+      }
+    },
+    {
+      "case": "f15",
+      "source": "def f(xs):\n    'Return a sorted copy of xs, preserving every duplicate occurrence. xs is a list of integers.'\n    if False:\n        return sorted(set(xs))\n    return sorted(xs)\n",
+      "concept": {
+        "domain": "xs is a list of integers",
+        "relation": "Return a sorted copy of xs, preserving every duplicate occurrence",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` returns the sorted list of elements in `xs`. The `if False` block is unreachable and does not affect the function's behavior.",
+        "source_lines": [
+          3,
+          4,
+          5
+        ],
+        "limitations": "The function does not handle the case where `xs` is empty. The `if False` block is unreachable and does not affect the function's behavior."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return a sorted copy of xs, preserving every duplicate occurrence",
+          "actual_relation": "Return a sorted list of elements in xs, preserving every duplicate occurrence. The `if False` block is unreachable and does not affect the function's behavior.",
+          "source_lines": [
+            3,
+            4,
+            5
+          ],
+          "trigger": "f([])",
+          "alternative": "The function should handle the case where `xs` is empty and return an empty list.",
+          "reason": "The function does not handle the case where `xs` is empty, which is a normative requirement. The `if False` block is unreachable and does not affect the function's behavior."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return a sorted copy of xs, preserving every duplicate occurrence. xs is a list of integers.",
+          "actual_relation": "Return a sorted copy of xs, but the `if False` block is unreachable and does not affect the function's behavior.",
+          "source_lines": [
+            3,
+            4,
+            5
+          ],
+          "trigger": "f([])",
+          "alternative": "The function should handle the case where `xs` is empty and return an empty list.",
+          "reason": "The `if False` block is unreachable and does not affect the function's behavior. The function should handle the case where `xs` is empty and return an empty list."
+        }
+      }
+    },
+    {
+      "case": "f16",
+      "source": "def f(xs):\n    'Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences. xs is any list of integers.'\n    return sum(set(x for x in xs if x > 1))\n",
+      "concept": {
+        "domain": "xs is any list of integers",
+        "relation": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+        "uncertainty": ""
+      },
+      "behavior": {
+        "summary": "The function `f` takes a list `xs` as input and returns the sum of unique elements in `xs` that are greater than 1. The function uses a generator expression to filter elements greater than 1, converts the result to a set to remove duplicates, and then sums the elements of the set.",
+        "source_lines": [
+          3
+        ],
+        "limitations": "The function assumes that the input list `xs` contains elements that can be compared with the integer 1. If the input list contains non-integer elements, the function may raise a TypeError."
+      },
+      "hypotheses": {
+        "concept_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences. xs is any list of integers.",
+          "actual_relation": "The function assumes that the input list `xs` contains elements that can be compared with the integer 1. If the input list contains non-integer elements, the function may raise a TypeError.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "[2, 'a']",
+          "alternative": "The function should handle non-integer elements gracefully, either by ignoring them or raising a custom error.",
+          "reason": "The function's behavior does not match the normative requirement because it does not handle non-integer elements, which can lead to a TypeError."
+        },
+        "direct_chain": {
+          "verdict": "mismatch",
+          "required_relation": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+          "actual_relation": "Return the sum of unique elements in xs that are greater than 1.",
+          "source_lines": [
+            3
+          ],
+          "trigger": "[2, 2]",
+          "alternative": "The function should return the sum of all strictly positive integers in xs, including repeated positive occurrences.",
+          "reason": "The function uses a generator expression to filter elements greater than 1 and then converts the result to a set to remove duplicates. This means that repeated positive occurrences are excluded from the sum, which does not match the required behavior of including repeated positive occurrences."
+        }
+      }
+    }
+  ],
+  "semantic_review_authority": "root plus independent clean-context v23_semantic_review; model-assisted qualitative labels, not independent human gold",
+  "semantic_takeaway": "Correct mechanism plus admissible sufficient trigger: concept f08; direct f08/f16. Coarse verdict counts do not certify fault mechanism.",
+  "Luna_probe": "separate supplied-concept probe; null; never pooled",
+  "advance_to_benchmark": false
+}

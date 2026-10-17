@@ -1,0 +1,99 @@
+{
+  "VERSION": "v23_concepthyp",
+  "model": "qwen2.5-coder-7b-instruct",
+  "seeds": {
+    "facts": 20261010,
+    "mining": 20261010,
+    "arms": 20261010,
+    "oracle": 20261212,
+    "pilot": 20261010
+  },
+  "K": 3,
+  "workers": 12,
+  "V4_PYTHON": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/codex_v4/venv/bin/python",
+  "datasets": {
+    "humaneval": {
+      "he": "PBT_EdgeCases/run/data/humaneval.jsonl",
+      "hep": "PBT_EdgeCases/run/data/humaneval_plus.jsonl",
+      "contracts": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "oracle_hep": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "puts": "vendor/TrickCatcher/Datasets/EvalPlus/PUTs"
+    },
+    "heldout": {
+      "he": "humaneval_mbpp.jsonl",
+      "hep": "humaneval_mbpp_plus.jsonl",
+      "contracts": "humaneval_mbpp_plus.jsonl",
+      "oracle_hep": "humaneval_mbpp_plus.jsonl",
+      "puts": "PUTs",
+      "selection": "tasks.json"
+    }
+  },
+  "freeze_hypothesis_constants": true,
+  "B0_VARIANTS": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/b0/variants/Datasets/EvalPlus/GenProgs",
+  "chain": {
+    "phase": "concept_hypothesis_fixed_evidence_diagnostic",
+    "online_enabled": true,
+    "model": "qwen2.5-coder-7b-instruct",
+    "stages": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5"
+    ],
+    "max_tokens": {
+      "S1": 768,
+      "S2": 1024,
+      "S3": 2048,
+      "S4": 768,
+      "S5": 1024
+    },
+    "temperature": 0,
+    "top_p": 1,
+    "seed": 20261016,
+    "max_attempts": 3,
+    "timeout_seconds": 120,
+    "retry_backoff_seconds": [
+      2,
+      8
+    ],
+    "max_proposals_per_stage": 6,
+    "max_unique_inputs": 12,
+    "max_source_chars": 65536,
+    "max_ast_nodes": 4096,
+    "max_ast_depth": 64,
+    "max_input_chars": 1000,
+    "max_input_nodes": 256,
+    "max_input_depth": 16,
+    "max_items": 64,
+    "max_output_bytes": 4096,
+    "max_events": 2048,
+    "trace_summary_events_per_id": 2,
+    "context_window_tokens": 16384,
+    "max_feedback_chars": 16000
+  },
+  "diagnostic": {
+    "cases": 16,
+    "arms": [
+      "concept_chain",
+      "direct_chain",
+      "hyp_only"
+    ],
+    "round_inputs": 3,
+    "final_unique_inputs": 6,
+    "max_source_lines": 64,
+    "trace_prompt_events": 128,
+    "max_model_calls": 160,
+    "max_attempts_per_call": 3,
+    "timeout_seconds": 120,
+    "max_tokens": {
+      "concept": 768,
+      "behavior": 768,
+      "hypothesis": 1024,
+      "inputs": 768,
+      "revision": 768
+    },
+    "seed": 20261017,
+    "online_authorized": true
+  }
+}
