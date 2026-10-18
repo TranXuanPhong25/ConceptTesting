@@ -43,3 +43,11 @@ analysis/v25_transport_probe_results.md/json/py. No active schedule/retry or imp
 diagnostic5 authorization. Endpoint must be online/new before fresh authorized run.
 Frozen redactor missed bare hostname in error HTML; never copy/link error body into
 tracked analysis. Future redactor hardening is needed; no frozen source/raw repair.
+
+2026-10-18 explicit fresh retry completed: user asked try again, run
+v25_20261018_040624 at11:08Vietnam. Only models GET404/ERR_NGROK_3200, endpoint offline,
+latency0.194s.0tokenizer/completions/unknown completion usage. New wrapper reuses frozen
+probe read-only, bare-host privacy guard,7CPU controls and independent code audit.
+Old source/data/raw hashes unchanged. Read RESULTS §11.68 and
+analysis/v25_transport_retry_results.md/json/py. Callback handled, no active retry or
+implicit diagnostic5 authorization; need endpoint online/new before further attempt.

@@ -1178,3 +1178,20 @@ Probe chạy đúng14:08:06UTC/21:08:06Vietnam (delay0.051909s), dừng prefligh
 Script SHA/frozen protocol,74v25 source files, prepared data,770old frozen artifacts và old transport/status/report analysis hashes đều verified unchanged. Exact planned request pair chỉ khác guided flag; cap2single-attempt completions không sử dụng. Root+clean-context independent audit xác nhận evidence. Không đủ server logs kết luận GPU/upstream/guided-decoder root cause; fixed sequential design cũng không xác lập causal comparison.
 
 Privacy caveat: ngrok error body có bare hostname vượt frozen redactor; không copy body/hostname vào analysis/tracked files, originals giữ nguyên, chưa repair source. Callback handled; không retry/reset/diagnostic5/comparison/benchmark/paid/new calls. Cần endpoint online hoặc endpoint mới trước fresh authorized run. [Sanitized report](analysis/v25_transport_probe_results.md), [data](analysis/v25_transport_probe_results.json), [read-only verifier](analysis/v25_transport_probe_results.py).
+
+
+## 11.68 explicit fresh transport retry — still endpoint offline (2026-10-18)
+
+User says "tử lại đi". New run v25_20261018_040624 at04:08:10UTC/11:08Vietnam; same frozen f02 payload pair, max2single-attempt completions, no automatic further run-id. Reuses frozen utility read-only via small new wrapper with bare/encoded-host privacy adapter;7local HTTP/privacy controls pass and clean-context code audit no blocker. Original v25 source/prompts/attempts untouched.
+
+Actual1models GET →HTTP404/ERR_NGROK_3200, endpoint offline; latency0.194394049s, wall0.197042s.0tokenizer/plain/guided completion attempts,0unknown completion usage,0PUT/predicate workers. No model output, schema/concept or paired-backend result. Generic metadata usage_unknown label does not mean a generation call was sent; old8unknown attempts remain separate. No server logs to identify upstream cause.
+
+Wrapper/frozen script hashes, original74sources/prepared-data/770frozen artifacts, old diagnostic+probe transport/status/report analysis hashes all verified unchanged. New error artifact has bare hostname masked; no body/endpoint copied to tracked analysis. No retry/reset/diagnostic5/comparison/benchmark/paid expansion. Callback handled. [Report](analysis/v25_transport_retry_results.md), [verification JSON](analysis/v25_transport_retry_results.json), [read-only verifier](analysis/v25_transport_retry_results.py).
+
+## 11.69 Luna subagent chain diagnostic (2026-10-18)
+
+User asked whether model is the bottleneck. Six preregistered failure-targeted probes:3 S2 extraction cases +3 S3 replay cases, fresh gpt-6-luna subagent per exact saved Qwen system/user packet, no parent history/answers/labels or content retries. Same frozen v22 validators/aliases; all parent source/generation and packet-message equality verified.
+
+Luna6/6 valid vs prior Qwen0/6. S3: correct sum→abstain; length-guard bug→mismatch with sufficient len>2 AND sum<=limit divergence; undefined suitable→unknown. S2 describes any-even, sorted distinct values and early exit using valid IDs/caps. This supports model capability as a material contributor; prompt/interface design still matters.
+
+Not a causal equal-budget benchmark: agent harness/tool/default reasoning differs, no comparable token accounting, one response on6 seen targeted failures. No full-chain/S4/S5/generation/D_IO/human gate or concept-gain claim. No new GPU/paid calls. [Prereg+report](analysis/luna_chain_probe_20261018/REPORT.md), [raw/validation](analysis/luna_chain_probe_20261018/results.json).

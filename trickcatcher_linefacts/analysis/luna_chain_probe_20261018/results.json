@@ -1,0 +1,282 @@
+{
+  "model": "gpt-6-luna",
+  "rows": [
+    {
+      "packet": "p01",
+      "stage": "S3",
+      "fixture": "f11",
+      "parent_case": "trickcatcher_linefacts/out/pipelines/v22_qwenchain_s3replay/humaneval/s3_replay/cases/f11",
+      "request_key": "c926ca79c4149ca27c2e693923ff263e44ec6d87759bf5921f4912bfa0d5353d",
+      "packet_sha256": "7cee1b0cc722d7df0491df1225fd5c3febfaafb82c250e96b624cfb931daf348",
+      "qwen_state": "failed",
+      "qwen_error": "empty_ok",
+      "response_sha256": "94cfdb480884c0ff79d357792e8528f0e7543f9444c06d0239a84efb3135ac3e",
+      "state": "valid",
+      "raw": "{\"status\":\"abstain\",\"reason\":\"The sole obligation is consistent with the shown implementation; no candidate mismatch is established.\",\"comparisons\":[{\"obligation_ids\":[\"O1\"],\"behavior_ids\":[\"B1\"],\"source_ids\":[\"N1\"],\"required_relation\":\"For every list of integers of any length and integer limit, return True exactly when the sum of the list is at most limit.\",\"actual_relation\":\"The function body returns the result of sum(xs) <= limit directly, with no additional guard, filter, or early exit; for lists of integers this compares their sum to the integer limit.\",\"divergence_condition\":\"No admissible divergence is established from the supplied source: the direct comparison applies to all inputs in the stated domain, with no length restriction.\",\"verdict\":\"consistent\",\"justification\":\"The complete shown function body directly implements the specified predicate, and the source shows no branch or other condition that could exclude a list length or alter the result. The public example alone would not establish this, but the supplied body supports agreement over the stated input domain.\"}],\"items\":[],\"selected_ids\":[]}\n",
+      "parsed": {
+        "status": "abstain",
+        "reason": "The sole obligation is consistent with the shown implementation; no candidate mismatch is established.",
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "O1"
+            ],
+            "behavior_ids": [
+              "B1"
+            ],
+            "source_ids": [
+              "N1"
+            ],
+            "required_relation": "For every list of integers of any length and integer limit, return True exactly when the sum of the list is at most limit.",
+            "actual_relation": "The function body returns the result of sum(xs) <= limit directly, with no additional guard, filter, or early exit; for lists of integers this compares their sum to the integer limit.",
+            "divergence_condition": "No admissible divergence is established from the supplied source: the direct comparison applies to all inputs in the stated domain, with no length restriction.",
+            "verdict": "consistent",
+            "justification": "The complete shown function body directly implements the specified predicate, and the source shows no branch or other condition that could exclude a list length or alter the result. The public example alone would not establish this, but the supplied body supports agreement over the stated input domain."
+          }
+        ],
+        "items": [],
+        "selected_ids": []
+      }
+    },
+    {
+      "packet": "p02",
+      "stage": "S3",
+      "fixture": "f12",
+      "parent_case": "trickcatcher_linefacts/out/pipelines/v22_qwenchain_s3replay/humaneval/s3_replay/cases/f12",
+      "request_key": "acf67c3ae996f1c7edeee199cf5c0a280122535f743ba042788622a661dd5fce",
+      "packet_sha256": "3be963d3551d13a31526763648084aa21f34b0f7b0eacc72e6182ff7aabacd33",
+      "qwen_state": "failed",
+      "qwen_error": "status",
+      "response_sha256": "03c125dd825a7bdf2bb22924465f9671df70a33497cb092779bcd820b5d2c6fe",
+      "state": "valid",
+      "raw": "{\"status\":\"ok\",\"reason\":\"\",\"comparisons\":[{\"obligation_ids\":[\"O1\"],\"behavior_ids\":[\"B1\"],\"source_ids\":[\"N1\"],\"required_relation\":\"Return True iff sum(xs) <= limit for any integer list xs, without a length restriction.\",\"actual_relation\":\"The function first returns False when len(xs) > 2; otherwise it returns whether sum(xs) <= limit.\",\"divergence_condition\":\"An integer list with length greater than 2 and sum(xs) <= limit satisfies the required relation but triggers the early False return.\",\"verdict\":\"mismatch\",\"justification\":\"The explicit length guard adds a condition the requirement excludes; for example, a three-element integer list whose sum is at most limit must return True by the spec but returns False under the guard.\"}],\"items\":[{\"id\":\"H1\",\"statement\":\"The implementation rejects all lists longer than two even when their sum is at most limit.\",\"obligation_ids\":[\"O1\"],\"behavior_ids\":[\"B1\"],\"source_ids\":[\"N1\"],\"condition\":\"len(xs) > 2 and sum(xs) <= limit\",\"effect\":\"Returns False where the requirement calls for True.\",\"alternative\":\"\",\"uncertainty\":\"\"}],\"selected_ids\":[\"H1\"]}\n",
+      "parsed": {
+        "status": "ok",
+        "reason": "",
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "O1"
+            ],
+            "behavior_ids": [
+              "B1"
+            ],
+            "source_ids": [
+              "N1"
+            ],
+            "required_relation": "Return True iff sum(xs) <= limit for any integer list xs, without a length restriction.",
+            "actual_relation": "The function first returns False when len(xs) > 2; otherwise it returns whether sum(xs) <= limit.",
+            "divergence_condition": "An integer list with length greater than 2 and sum(xs) <= limit satisfies the required relation but triggers the early False return.",
+            "verdict": "mismatch",
+            "justification": "The explicit length guard adds a condition the requirement excludes; for example, a three-element integer list whose sum is at most limit must return True by the spec but returns False under the guard."
+          }
+        ],
+        "items": [
+          {
+            "id": "H1",
+            "statement": "The implementation rejects all lists longer than two even when their sum is at most limit.",
+            "obligation_ids": [
+              "O1"
+            ],
+            "behavior_ids": [
+              "B1"
+            ],
+            "source_ids": [
+              "N1"
+            ],
+            "condition": "len(xs) > 2 and sum(xs) <= limit",
+            "effect": "Returns False where the requirement calls for True.",
+            "alternative": "",
+            "uncertainty": ""
+          }
+        ],
+        "selected_ids": [
+          "H1"
+        ]
+      }
+    },
+    {
+      "packet": "p03",
+      "stage": "S3",
+      "fixture": "f13",
+      "parent_case": "trickcatcher_linefacts/out/pipelines/v22_qwenchain_s3replay/humaneval/s3_replay/cases/f13",
+      "request_key": "d70c16d6d52f8e6d4f552f72fea61ef420057e250ad9722290b1e9a10b3829fe",
+      "packet_sha256": "9eea75d110b9cdc8cc8e55fb1e09bec1402b329da86dad88e09af80e476bf4ca",
+      "qwen_state": "failed",
+      "qwen_error": "status",
+      "response_sha256": "e893d9c800e76344a9484284d372549fd7bf1876b2f8821e423b20732fe64acb",
+      "state": "valid",
+      "raw": "{\"status\":\"unknown\",\"reason\":\"The specification does not define what makes a value suitable, so the required selection relation cannot be compared decisively with the implementation.\",\"comparisons\":[{\"obligation_ids\":[\"O1\"],\"behavior_ids\":[\"B1\"],\"source_ids\":[\"N2\",\"N4\",\"N5\",\"N6\",\"N7\",\"N8\",\"N9\"],\"required_relation\":\"Return the first value in xs that is suitable; the suitability predicate and any conditions for suitability are unspecified.\",\"actual_relation\":\"For a truthy xs, return xs[0] without testing suitability; for a falsy xs, return None (N2, N4-N9).\",\"divergence_condition\":\"If xs is nonempty and its first value is unsuitable while a later value is suitable, the required relation would select the later value but the implementation returns xs[0]; whether such a case is admissible depends on the undefined meaning of suitable.\",\"verdict\":\"unknown\",\"justification\":\"The implementation's first-element behavior is clear, but the spec leaves suitable undefined. It could mean every integer is suitable, or could impose a predicate; the evidence does not resolve this, so neither consistency nor mismatch is established.\"}],\"items\":[],\"selected_ids\":[]}\n",
+      "parsed": {
+        "status": "unknown",
+        "reason": "The specification does not define what makes a value suitable, so the required selection relation cannot be compared decisively with the implementation.",
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "O1"
+            ],
+            "behavior_ids": [
+              "B1"
+            ],
+            "source_ids": [
+              "N2",
+              "N4",
+              "N5",
+              "N6",
+              "N7",
+              "N8",
+              "N9"
+            ],
+            "required_relation": "Return the first value in xs that is suitable; the suitability predicate and any conditions for suitability are unspecified.",
+            "actual_relation": "For a truthy xs, return xs[0] without testing suitability; for a falsy xs, return None (N2, N4-N9).",
+            "divergence_condition": "If xs is nonempty and its first value is unsuitable while a later value is suitable, the required relation would select the later value but the implementation returns xs[0]; whether such a case is admissible depends on the undefined meaning of suitable.",
+            "verdict": "unknown",
+            "justification": "The implementation's first-element behavior is clear, but the spec leaves suitable undefined. It could mean every integer is suitable, or could impose a predicate; the evidence does not resolve this, so neither consistency nor mismatch is established."
+          }
+        ],
+        "items": [],
+        "selected_ids": []
+      }
+    },
+    {
+      "packet": "p04",
+      "stage": "S2",
+      "fixture": "f10",
+      "parent_case": "trickcatcher_linefacts/out/pipelines/v22_qwenchain_audit/humaneval/qwen_chain_pilot/cases/f10",
+      "request_key": "4c814f4879a5fcd41b39f614533a51c3114bab652a065f630c075e0c56aaa477",
+      "packet_sha256": "114b2bd7a2e6908c435c4e1f6cbcb0b5cad3e2845821673be42c7a22fc90124b",
+      "qwen_state": "failed",
+      "qwen_error": "local_id",
+      "response_sha256": "1600122eb5eaf550645b67eba52999110c9c72cc410971c85f73537d889099ea",
+      "state": "valid",
+      "raw": "{\"status\":\"ok\",\"reason\":\"\",\"items\":[{\"id\":\"B1\",\"statement\":\"When called, f iterates over xs and returns True if at least one element x satisfies x % 2 == 0; otherwise it returns False.\",\"source_ids\":[\"N2\",\"N4\",\"N6\",\"N7\",\"N8\",\"N9\"],\"guard\":\"\",\"effect\":\"Returns the boolean result of any over the generated evenness checks.\",\"uncertainty\":\"\"}]}\n",
+      "parsed": {
+        "status": "ok",
+        "reason": "",
+        "items": [
+          {
+            "id": "B1",
+            "statement": "When called, f iterates over xs and returns True if at least one element x satisfies x % 2 == 0; otherwise it returns False.",
+            "source_ids": [
+              "N2",
+              "N4",
+              "N6",
+              "N7",
+              "N8",
+              "N9"
+            ],
+            "guard": "",
+            "effect": "Returns the boolean result of any over the generated evenness checks.",
+            "uncertainty": ""
+          }
+        ]
+      }
+    },
+    {
+      "packet": "p05",
+      "stage": "S2",
+      "fixture": "f02",
+      "parent_case": "trickcatcher_linefacts/out/pipelines/v22_qwenchain_audit/humaneval/qwen_chain_pilot/cases/f02",
+      "request_key": "4a21fa6e65ed9be148b5cd030cc9a8410f86944c2606e0865bd3e47aef83d340",
+      "packet_sha256": "28fb409149df14d5c4fbdfc078ed7688f833110a27ab1de808231d59e5c1c480",
+      "qwen_state": "failed",
+      "qwen_error": "items_cap",
+      "response_sha256": "4cc19a10e52a9cee3d1dca9ad38def55375da7b43146f2626682c1a78df0eb63",
+      "state": "valid",
+      "raw": "{\"status\":\"ok\",\"reason\":\"\",\"items\":[{\"id\":\"B1\",\"statement\":\"Defines f with parameter xs; when called, it forms a set from xs and returns that set's elements in sorted order.\",\"source_ids\":[\"N1\",\"N2\",\"N4\",\"N6\"],\"guard\":\"\",\"effect\":\"Returns the sorted list of distinct elements from xs.\",\"uncertainty\":\"Set construction requires hashable elements, and sorting requires mutually orderable elements; the behavior of those operations is otherwise external context.\"}]}\n",
+      "parsed": {
+        "status": "ok",
+        "reason": "",
+        "items": [
+          {
+            "id": "B1",
+            "statement": "Defines f with parameter xs; when called, it forms a set from xs and returns that set's elements in sorted order.",
+            "source_ids": [
+              "N1",
+              "N2",
+              "N4",
+              "N6"
+            ],
+            "guard": "",
+            "effect": "Returns the sorted list of distinct elements from xs.",
+            "uncertainty": "Set construction requires hashable elements, and sorting requires mutually orderable elements; the behavior of those operations is otherwise external context."
+          }
+        ]
+      }
+    },
+    {
+      "packet": "p06",
+      "stage": "S2",
+      "fixture": "f12",
+      "parent_case": "trickcatcher_linefacts/out/pipelines/v22_qwenchain_audit/humaneval/qwen_chain_pilot/cases/f12",
+      "request_key": "f2c1970f6292295744c1e6c3eefe03fddf308a1df76ee6390ddbecc40c56ee87",
+      "packet_sha256": "e3a1b0da754bb33f620da0bd0e53fe025e16c4f71181b44ad9983276ea1a690c",
+      "qwen_state": "failed",
+      "qwen_error": "local_id",
+      "response_sha256": "8921255f4de5285244e43181ba0ed88bc7ec9bad7aaac54aca1b6b2c71c69baa",
+      "state": "valid",
+      "raw": "{\"status\":\"ok\",\"reason\":\"\",\"items\":[{\"id\":\"B1\",\"statement\":\"Defines f with parameters xs and limit.\",\"source_ids\":[\"N1\"],\"guard\":\"\",\"effect\":\"Makes the function available for calls.\",\"uncertainty\":\"\"},{\"id\":\"B2\",\"statement\":\"Checks whether len(xs) is greater than 2.\",\"source_ids\":[\"N2\",\"N6\",\"N9\",\"N10\"],\"guard\":\"When f is called\",\"effect\":\"Controls whether the function returns False immediately.\",\"uncertainty\":\"\"},{\"id\":\"B3\",\"statement\":\"Returns False.\",\"source_ids\":[\"N7\",\"N11\"],\"guard\":\"If len(xs) > 2\",\"effect\":\"The call returns False without evaluating the later return.\",\"uncertainty\":\"\"},{\"id\":\"B4\",\"statement\":\"Computes sum(xs) and compares it as less than or equal to limit, returning the comparison result.\",\"source_ids\":[\"N3\",\"N8\",\"N12\",\"N13\",\"N16\",\"N17\"],\"guard\":\"If len(xs) is not greater than 2\",\"effect\":\"Returns whether sum(xs) <= limit.\",\"uncertainty\":\"\"}]}\n",
+      "parsed": {
+        "status": "ok",
+        "reason": "",
+        "items": [
+          {
+            "id": "B1",
+            "statement": "Defines f with parameters xs and limit.",
+            "source_ids": [
+              "N1"
+            ],
+            "guard": "",
+            "effect": "Makes the function available for calls.",
+            "uncertainty": ""
+          },
+          {
+            "id": "B2",
+            "statement": "Checks whether len(xs) is greater than 2.",
+            "source_ids": [
+              "N2",
+              "N6",
+              "N9",
+              "N10"
+            ],
+            "guard": "When f is called",
+            "effect": "Controls whether the function returns False immediately.",
+            "uncertainty": ""
+          },
+          {
+            "id": "B3",
+            "statement": "Returns False.",
+            "source_ids": [
+              "N7",
+              "N11"
+            ],
+            "guard": "If len(xs) > 2",
+            "effect": "The call returns False without evaluating the later return.",
+            "uncertainty": ""
+          },
+          {
+            "id": "B4",
+            "statement": "Computes sum(xs) and compares it as less than or equal to limit, returning the comparison result.",
+            "source_ids": [
+              "N3",
+              "N8",
+              "N12",
+              "N13",
+              "N16",
+              "N17"
+            ],
+            "guard": "If len(xs) is not greater than 2",
+            "effect": "Returns whether sum(xs) <= limit.",
+            "uncertainty": ""
+          }
+        ]
+      }
+    }
+  ],
+  "valid": 6,
+  "qwen_valid": 0,
+  "attempts": 6,
+  "token_cost": "unavailable through subagent harness; unmatched to Qwen budgets",
+  "D_IO": null,
+  "scope": "six targeted seen-case probes; agent harness differs; not end-to-end or causal model isolation"
+}

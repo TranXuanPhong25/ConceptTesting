@@ -1,6 +1,6 @@
 # Plan: hypothesis có source/spec/path evidence, concept/input và model gọi tool
 
-Ngày 2026-10-16. **Trạng thái: chỉ lập plan**, theo yêu cầu mới nhất của user. Chưa copy pipeline, viết implementation hoặc gọi model. Yêu cầu endpoint trước đó không còn là điều kiện của task planning này.
+Ngày 2026-10-16. **Cập nhật 2026-10-18: P1 CPU đã implement trong `pipelines/v21_flowtools/` (xem CHANGELOG); online/pilot vẫn gated.** Trạng thái ban đầu: **chỉ lập plan**, theo yêu cầu mới nhất của user. Chưa copy pipeline, viết implementation hoặc gọi model. Yêu cầu endpoint trước đó không còn là điều kiện của task planning này.
 
 ## 1. Mục tiêu và điểm bắt đầu
 

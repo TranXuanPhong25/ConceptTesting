@@ -1699,3 +1699,19 @@ Freeze utility hash, original v25 source/run snapshot identity, both payloads an
 ### Delayed transport probe disposition —2026-10-17, post-output
 
 Scheduled probe ran14:08:06UTC; only models GET attempted, HTTP404/ERR_NGROK_3200 endpoint offline after0.217735796s. Metadata preflight failed before tokenizer/plain/guided;0completion attempts/0unknown completion usage. No backend/schema/semantic comparison. Source/probe hash/original v25 artifacts unchanged. Preserve frozen utility and attempts; no retry/reset/diagnostic5/benchmark/paid calls. Error body bare-hostname privacy gap documented without copying hostname into analysis; no repair of frozen source. Terminal callback handled.
+
+
+## 2026-10-18 — explicitly authorized fresh transport retry
+
+User says "tử lại đi" after prior endpoint-offline report. Fresh run v25_20261018_040624, immediate old-endpoint retry, original diagnostic5 and prior probe untouched. Reuse exact frozen f02 plain/guided payloads, fixed plain-first order, max2single-attempt completions/1536output-token ceiling and max2metadata GET-models/POST-tokenize once. Preflight or plain transport/protocol failure blocks remaining calls. No reset/retry/polling/diagnostic5/full comparison/benchmark/real20/held-out/paid expansion. Frozen utility is reused read-only through new wrapper; only persistence privacy adapter masks bare/encoded hostname. Protocol records original source/snapshot identity, frozen utility hash, fresh wrapper hash and exact payload pair before network. New output directory must not exist (exclusive creation), including interrupted/terminal run. HTTP latency/status/sanitized body and known vs unknown completion usage retained. Local CPU controls and independent audit before launch; terminal callback audits actual results. Sequential-order/server-log limits unchanged. No endpoint/hostname/key in tracked reports or logs; no Kaggle changes.
+
+Audit clarification before launch: authorization/cap applies only to v25_20261018_040624. Never create another run-id automatically after any failure.7local HTTP/privacy controls pass; clean-context wrapper audit reports no blocker. No actual model output used to tune this retry.
+
+
+# Luna chain diagnostic — 2026-10-18 before subagent outputs
+
+User explicitly requests Luna subagent comparison to test model bottleneck. Six fixed packet probes: S2 f10/f02/f12 (representative v22 local-ID/item-cap failures), S3 f11/f12/f13 (all prior accepted-parent replay cases, including consistency/mismatch/ambiguity). This is failure-targeted, seen-case diagnostic, not representative accuracy/causal model benchmark.
+
+Read exact saved Qwen request messages, give each packet to a fresh gpt-6-luna subagent with no parent history. No evaluator labels, Qwen answers, reports, hints or schema repair supplied. Subagent may read its packet and write one response only; no code inspection outside packet, tests, extra agents or endpoint calls. System/user message content is unchanged; subagent wrapper/tools/default reasoning budget differ from Qwen endpoint. Cannot match raw token cap/temperature/decoding or measure comparable token costs through this harness. Record this limitation, model name, packet hashes and one-attempt/no-content-retry contract.
+
+Score with existing frozen v22 alias expansion/schema validation, exact task/registry/selected IDs. Raw text unchanged; any invalid output stays invalid. S3 semantic review assesses whether required-vs-actual divergence is noticed, condition sufficiency, correct-control false alarms and unknown eligibility kept unknown; provisional manual interpretation, not semantic accuracy certification. No generation/native inputs/D_IO, paid API fallback or automatic pipeline promotion. No first-pilot source modifications.
