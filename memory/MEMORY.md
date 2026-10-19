@@ -26,3 +26,7 @@
 - [LineFacts v24 obligations](linefacts-v24-obligations.md) — latest:90/90 complete; contract0/9, generation0/54; interface failure, witness-only3/3; callback handled
 
 - [LineFacts v25 interface gate](linefacts-v25-interface-gate.md) — 18/10 fresh retry models404/endpoint offline,0completions; old runs preserved, callbacks handled
+
+- [Luna version retest](linefacts-luna-version-retest.md) — complete16/9/5: no concept task gain; JSON, comprehension-scope validator and frozen-support gating losses
+
+- [v32 scope/support](linefacts-v32-scope-support.md) — 48 CPU pass;fresh Luna Atrue/Bfalse,f06 signature block;scope fix exercised,support model promotion untested

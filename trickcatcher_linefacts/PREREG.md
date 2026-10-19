@@ -1715,3 +1715,40 @@ User explicitly requests Luna subagent comparison to test model bottleneck. Six 
 Read exact saved Qwen request messages, give each packet to a fresh gpt-6-luna subagent with no parent history. No evaluator labels, Qwen answers, reports, hints or schema repair supplied. Subagent may read its packet and write one response only; no code inspection outside packet, tests, extra agents or endpoint calls. System/user message content is unchanged; subagent wrapper/tools/default reasoning budget differ from Qwen endpoint. Cannot match raw token cap/temperature/decoding or measure comparable token costs through this harness. Record this limitation, model name, packet hashes and one-attempt/no-content-retry contract.
 
 Score with existing frozen v22 alias expansion/schema validation, exact task/registry/selected IDs. Raw text unchanged; any invalid output stays invalid. S3 semantic review assesses whether required-vs-actual divergence is noticed, condition sufficiency, correct-control false alarms and unknown eligibility kept unknown; provisional manual interpretation, not semantic accuracy certification. No generation/native inputs/D_IO, paid API fallback or automatic pipeline promotion. No first-pilot source modifications.
+
+
+## 2026-10-18 — native v23/v24/v25 diagnostics with requested Luna/low subagents
+
+User explicitly requests model gpt-5.6-luna low retest of thread versions, tools optionally disabled. Prereg in analysis/luna_versions_20261018/PREREG.md written before model outputs; native16/9/5 cohorts and exact run(client,root) engines preserved, fresh output roots only. Adapter and source freezes, independent plan/code audits,16CPU checks and single actual canary precede scientific task launch16:36:02UTC. Max160+90+30 single-attempt task CLI invocations plus1canary turn; no endpoint/paidAPI/fallback/held-out/benchmark. v25 plain backend and originalA/B/C early-stop.
+
+Operational canary outcome/amendment explicitly preserved:2config-only CLI rejections before any model turn, then1canary (13565in/199out) FAILED schema-exposure gate, host denied its tool attempt. Before scientific tasks, epoch4 permits exactly2pre-turn configuration warnings, discloses schemas exposed/host disabled, rejects any task tool/router attempt before score/cache. No additional canary or task-based prompt repair. Role flattening/base instructions and unenforced numeric Qwen sampling/output budgets differ; no matched causal model inference. Requested CLI identity/catalog only unless server event supplies ID; separate origins/usage, oldQwen/otherLuna results unchanged. See protocol_v4/readiness_v4 and AUDIT.md. This is native small diagnostics only; no automatic wider comparison even if v25 passes.
+
+
+## 2026-10-19 — explicit continuation of Luna v23/v24 after usage limit
+
+User says "thử tiếp đi m". Original epoch1v23/v24 stopped with usage-limit turn.failed/error, after73/65accepted stage responses, one unknown-usage quota attempt each; no task tool execution. v25 remains completedAfailed. Register before calls in analysis/luna_versions_continue_20261019/PREREG.md. Newroot imports complete old native artifacts/caches byte-identically, original whole-file inventories+source hashes verified. Originalsource/Client/prompt/schema unchanged, accepted stages reused, not new independent samples. Only missing stages can call exactgpt-5.6-luna/low through new continuation_transport namespace, max87/25 new single attempts; quota slots cumulativeatmost2 undernewauthorization. No auto retries/further run-id. Startv23first; v24 onlyafterfreshreceivedresponse confirms access. No new canary/model/provider/Qwen/paid/benchmark/held-out. Native costs omit newnamespace, so external aggregates old+new exactlyonce; retain original2unknown usages and pause-across-days/harness limits. No v25validator repair or rerun inthiscontinuation. Independent read-only audit and CPUcopy/provenance checks before call.
+
+
+### Luna native diagnostic retest disposition —2026-10-19, post-output
+
+Complete original16/9/5denominators afterexplicitquota continuation; noacceptedresponsesrepeated, old2quotaunknown preserved.251receivedtargetresponses/253CLIinvocations, no tasktool/router use. v23C/D/H correctbugassertioncases5/7/5of7,FA1/0/0,2C/HcasesblockedmalformedhypothesisJSON; rawreasoningfaithful, f13C/Hunknownvsdirectunsupportedrule. v24verifiedselected1/3bugs vtext/tool/witness3/3; normativerelationsfaithfulbutexplicitpolicyviolation/validatorfalsepositives andfrozen-supportgaterejectusefulf06newwitness. v25AfalseB/Cblocked;3correct-in-domainpredicatesrejectedbyglobalcomprehensionnameset. No repairs/renaming/execution/rescoringrejectedpredicates, newmodel/comparison/benchmark/heldout/paidcalls orpromotion. Reportrawvsgatedinputyield,unknownoracle,finiteauthoredgoldlimits andrequestedCLIrole/sampling/serveridentity limits. Originalcanaryexposurefailed,schemasexposedhostdisabled; donotrelabelfullytoolsfree. Cumulativeknown2,010,148/54,531targettokens,canaryseparate13,565/199,2quotausagesunknown. Callback/workcomplete, noactivejoborautomaticretry. Independentterminalreviews+read-onlyintegrity/costverificationrecorded; futurefixrequiresnewfrozenvariant/protocol.
+
+
+## 2026-10-19 — v32_scope_support, prospective lexical scope + cumulative support
+
+User accepts fixes after Luna version retest. New best-v7 copy + explicit v25 ports;
+no frozen historical source/output repair or rescore. Detailed preregistration in
+pipelines/v32_scope_support/PREREG.md. CPU regression tests and clean-context audits
+before freeze. Same seen5 authored packets/full24+base pool, fresh Luna/low requested
+through unchanged CLI adapter, max30 single attempts; no Qwen endpoint/paid fallback.
+A finite contract calibration, B supported or fully-known all-trigger-False provisional
+admission, C cumulative evidence and novel witness/consistent contrast/abstention.
+Provisional candidate never labeled verified. Unknown/invalid slots and old evidence
+retained. No full arm comparison or task-gain claim, benchmark/real20/held-out/retry.
+Raw origin, usage, worker calls, full-pool novelty, all5 failures and semantic review
+reported. Old inventories verified; package immutable after model launch.
+
+
+### v32 disposition — post-output 2026-10-19
+
+Fresh seen5 Atrue/Bfalse/Cblocked,22receivedCLIcalls. Lexical reuse accepted in f04/f14; support promotion only CPU-tested. f06 trigger wrong signature rejected unchanged, plus evidence-grounding error. No prompt/source/output repair, retry, comparison or benchmark chaining. All5/usage/workers/unknown coverage and independent reviews in analysis/v32_scope_support_20261019/REPORT.md and RESULTS §11.73.

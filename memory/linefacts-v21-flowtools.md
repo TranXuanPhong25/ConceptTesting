@@ -19,3 +19,9 @@ metadata:
 **Why:** user asked "implement đi" then "làm nốt đi" with an endpoint.
 **How to apply:** do not rerun these cohorts; next idea must target expected-value correctness (oracle side),
 not more structural evidence. Related: [[linefacts-v23-diagnostic]], [[abstract-concept-direction]].
+
+2026-10-19 clarification: post-hoc action/claim audit qualifies that broad next-step advice. The implemented agent did
+not actively replay/check paths on pilot20, and its interface hid an ID cap. A precise contract repair is justified
+separately from adding generic structural hints. See [[flowtools-contract-audit]] and
+`trickcatcher_linefacts/analysis/v21_failure_audit/REPORT.md`. Original efficacy scores/negative verdict unchanged;
+v30 is CPU-only, no model promotion.

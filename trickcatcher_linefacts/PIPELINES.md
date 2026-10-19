@@ -607,3 +607,5 @@ This table separates **an idea borrowed from a paper**, **an original prompt art
 | **Sandbox / provenance / immutable artifact** | Worker có giới hạn thực thi và namespace mạng tách biệt / thông tin nguồn và hash / artifact không được trộn với cấu hình khác. Sandbox ở đây không phải lời khẳng định cách ly filesystem toàn diện. |
 
 All executable source links and function names can be checked in [FUNCTION_INDEX.md](FUNCTION_INDEX.md). [pipeline_source_manifest.json](diagrams/pipeline_source_manifest.json) records audited source hashes. Diagrams are reproducible with [render_pipelines.py](diagrams/render_pipelines.py), which renders documentation only. Earlier [VERSIONS.md](VERSIONS.md) is retained as a version map; this file is the requested execution-flow specification.
+
+- **v32_scope_support** (2026-10-19, best-v7 copy + v25 ports): lexical comprehension scopes and cumulative witness support;48 CPU pass. Fresh Luna seen5 Atrue/Bfalse/Cblocked on f06 wrong trigger signature;scope fix exercised,support promotion model-untested,no comparison/promotion. See analysis/v32_scope_support_20261019/REPORT.md.
