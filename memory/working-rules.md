@@ -38,3 +38,9 @@ Concepts must stay central ([[thesis-concept-requirement]]). Paid API budget is 
 **Who does what:** large implementation → Codex (background); small fixes, analyses, GPU runs, writing → Claude.
 If Codex quota is out → Claude subagents ([[codex-quota-fallback]]). Codex sandbox has no network/LLM; Claude runs
 real LLM calls. After a new variant, Claude updates the diagram artifact ([[version-tree-diagram]]).
+
+**OpenRouter secret rule (user2026-10-19):** read scripts/openrouter_env.example.sh only; scripts/openrouter_env.sh must NEVER be inspected/printed, only sourced silently for authorized runs. Key stays process environment, never logs or commits. User authorized ~30-task qwen/qwen3.5-35b-a3b feasibility run, not unlimited spend/fallback.
+
+**New directions (2026-10-20):** before proposing/building one, check the version tree (v7…v35) and name the earlier
+version that tried the same core idea and its result ([[check-version-tree-before-proposing]]). Borderline result →
+look for a go/no-go signal in existing outputs; never enlarge runs to salvage it ([[signal-not-more-data]]).

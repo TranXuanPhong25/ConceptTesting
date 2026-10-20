@@ -1,0 +1,4888 @@
+{
+  "value_equality_sensitivity": {
+    "scope": "post-hoc Python-value equality sensitivity; frozen typed primary unchanged",
+    "detection": {
+      "chain": 8,
+      "direct": 25
+    },
+    "final_detection": {
+      "chain": 8,
+      "direct": 21
+    },
+    "chain_only": 0,
+    "direct_only": 17
+  },
+  "direct_only_loss_causes": {
+    "S3_terminal_unknown": 10,
+    "S3:comparison_source_refs": 1,
+    "input_search_no_discriminator": 1,
+    "S3_terminal_abstain": 1,
+    "S2:source_refs": 3,
+    "S2:behavior_fields": 1
+  },
+  "legacy_reference_cap_rejections": [
+    {
+      "task_id": 57,
+      "stage": "S3",
+      "reference_lengths": [
+        16
+      ]
+    },
+    {
+      "task_id": 68,
+      "stage": "S2",
+      "reference_lengths": [
+        2,
+        5,
+        4,
+        11,
+        17,
+        4
+      ]
+    },
+    {
+      "task_id": 78,
+      "stage": "S2",
+      "reference_lengths": [
+        2,
+        15
+      ]
+    },
+    {
+      "task_id": 83,
+      "stage": "S2",
+      "reference_lengths": [
+        2,
+        3,
+        12,
+        17,
+        4,
+        2
+      ]
+    },
+    {
+      "task_id": 130,
+      "stage": "S3",
+      "reference_lengths": [
+        3,
+        14,
+        3
+      ]
+    },
+    {
+      "task_id": 137,
+      "stage": "S2",
+      "reference_lengths": [
+        3,
+        16,
+        4,
+        19,
+        5
+      ]
+    }
+  ],
+  "type_only_value_equal_differences": [
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(2,)",
+      "put": "[1, 3, 2]",
+      "canonical": "[1, 3, 2.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(10,)",
+      "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0]",
+      "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(3,)",
+      "put": "[1, 3, 2, 8.0]",
+      "canonical": "[1, 3, 2.0, 8.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(11,)",
+      "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0]",
+      "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(20,)",
+      "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0]",
+      "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(21,)",
+      "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0]",
+      "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(22,)",
+      "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0]",
+      "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(30,)",
+      "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0]",
+      "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(31,)",
+      "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0, 288.0]",
+      "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0, 288.0]"
+    },
+    {
+      "task_id": 130,
+      "arm": "direct",
+      "input_repr": "(32,)",
+      "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0, 288.0, 17.0]",
+      "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0, 288.0, 17.0]"
+    }
+  ],
+  "status": {
+    "state": "complete",
+    "summary": {
+      "scope": "post-generation canonical IO conditional on mined/spec admissibility; same maximum calls/inputs, actual tokens unmatched",
+      "tasks": 30,
+      "detection": {
+        "chain": 8,
+        "direct": 26
+      },
+      "final_detection": {
+        "chain": 8,
+        "direct": 21
+      },
+      "chain_only": 0,
+      "direct_only": 18,
+      "equal_input_mean": {
+        "chain": 8.0,
+        "direct": 8.37
+      }
+    },
+    "costs": {
+      "CLI_invocations": 253,
+      "received": 253,
+      "known_usage_attempts": 253,
+      "unknown_usage_attempts": 0,
+      "input_tokens_known": 2225985,
+      "output_tokens_known": 96074,
+      "forbidden_item_count": 0,
+      "denied_router_attempts": 0,
+      "request_count_scope": "CLI invocations/turns, internal server HTTP retries unobserved"
+    }
+  },
+  "source_verified": true,
+  "generation_verified": true,
+  "report": {
+    "tasks": 30,
+    "arms": {
+      "chain": {
+        "stages": {
+          "S1": {
+            "valid": 30
+          },
+          "S2": {
+            "valid": 25,
+            "failed": 5
+          },
+          "S3": {
+            "valid": 23,
+            "failed": 2,
+            "blocked": 5
+          },
+          "S4": {
+            "not_applicable": 14,
+            "valid": 9,
+            "blocked": 7
+          },
+          "S5": {
+            "not_applicable": 14,
+            "valid": 9,
+            "blocked": 7
+          }
+        },
+        "tasks_with_inputs": 9,
+        "inputs": 27,
+        "final_tasks": 9,
+        "selected_concept_tasks": 9,
+        "errors": [
+          {
+            "task_id": 57,
+            "stage": "S3",
+            "reason": "comparison_source_refs"
+          },
+          {
+            "task_id": 68,
+            "stage": "S2",
+            "reason": "source_refs"
+          },
+          {
+            "task_id": 78,
+            "stage": "S2",
+            "reason": "source_refs"
+          },
+          {
+            "task_id": 83,
+            "stage": "S2",
+            "reason": "source_refs"
+          },
+          {
+            "task_id": 130,
+            "stage": "S3",
+            "reason": "comparison_source_refs"
+          },
+          {
+            "task_id": 135,
+            "stage": "S2",
+            "reason": "behavior_fields"
+          },
+          {
+            "task_id": 137,
+            "stage": "S2",
+            "reason": "source_refs"
+          }
+        ]
+      },
+      "direct": {
+        "stages": {
+          "1": {
+            "valid": 29,
+            "failed": 1
+          },
+          "2": {
+            "valid": 30
+          },
+          "3": {
+            "valid": 30
+          },
+          "4": {
+            "valid": 30
+          },
+          "5": {
+            "valid": 30
+          }
+        },
+        "tasks_with_inputs": 30,
+        "inputs": 324,
+        "final_tasks": 28,
+        "selected_concept_tasks": 0,
+        "errors": [
+          {
+            "task_id": 119,
+            "stage": "1",
+            "reason": "unique_json_object_required"
+          }
+        ]
+      }
+    },
+    "costs": {
+      "CLI_invocations": 253,
+      "received": 253,
+      "known_usage_attempts": 253,
+      "unknown_usage_attempts": 0,
+      "input_tokens_known": 2225985,
+      "output_tokens_known": 96074,
+      "forbidden_item_count": 0,
+      "denied_router_attempts": 0,
+      "request_count_scope": "CLI invocations/turns, internal server HTTP retries unobserved"
+    },
+    "arm_costs": {
+      "chain": {
+        "calls": 103,
+        "received": 103,
+        "input_tokens": 1005737,
+        "output_tokens": 61666,
+        "unknown": 0
+      },
+      "direct": {
+        "calls": 150,
+        "received": 150,
+        "input_tokens": 1220248,
+        "output_tokens": 34408,
+        "unknown": 0
+      }
+    },
+    "canary": {
+      "CLI_invocations": 1,
+      "received": 1,
+      "known_usage_attempts": 1,
+      "unknown_usage_attempts": 0,
+      "input_tokens_known": 6690,
+      "output_tokens_known": 9,
+      "forbidden_item_count": 0,
+      "denied_router_attempts": 0,
+      "request_count_scope": "CLI invocations/turns, internal server HTTP retries unobserved"
+    },
+    "D_IO": null
+  },
+  "io_score": {
+    "scope": "post-generation canonical IO conditional on mined/spec admissibility; same maximum calls/inputs, actual tokens unmatched",
+    "tasks": 30,
+    "detection": {
+      "chain": 8,
+      "direct": 26
+    },
+    "final_detection": {
+      "chain": 8,
+      "direct": 21
+    },
+    "chain_only": 0,
+    "direct_only": 18,
+    "equal_input_mean": {
+      "chain": 8.0,
+      "direct": 8.37
+    },
+    "rows": [
+      {
+        "task_id": 2,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(1,)",
+                "decisive": false,
+                "different": false,
+                "final": true
+              },
+              {
+                "input_repr": "(2,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(0.999999,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "0.999999",
+                "put_exception": null,
+                "canonical": "0.999999"
+              },
+              {
+                "input_repr": "(1.0,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "1",
+                "put_exception": null,
+                "canonical": "0.0"
+              },
+              {
+                "input_repr": "(10.0,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "0.0",
+                "put_exception": null,
+                "canonical": "0.0"
+              },
+              {
+                "input_repr": "(2.0000001,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "9.999999983634211e-08",
+                "put_exception": null,
+                "canonical": "9.999999983634211e-08"
+              },
+              {
+                "input_repr": "(1.0000000000000002,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "2.220446049250313e-16",
+                "put_exception": null,
+                "canonical": "2.220446049250313e-16"
+              },
+              {
+                "input_repr": "(3.0,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "0.0",
+                "put_exception": null,
+                "canonical": "0.0"
+              }
+            ],
+            "detected": true,
+            "final_detected": false,
+            "unresolved": 2
+          }
+        }
+      },
+      {
+        "task_id": 5,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "([0, 1], 7)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[1]",
+                "put_exception": null,
+                "canonical": "[0, 7, 1]"
+              },
+              {
+                "input_repr": "([1, 0, 2], 9)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[1, 2]",
+                "put_exception": null,
+                "canonical": "[1, 9, 0, 9, 2]"
+              },
+              {
+                "input_repr": "([0], 7)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[]",
+                "put_exception": null,
+                "canonical": "[0]"
+              },
+              {
+                "input_repr": "([1, 2, 3], 4)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[1, 4, 2, 4, 3]",
+                "put_exception": null,
+                "canonical": "[1, 4, 2, 4, 3]"
+              },
+              {
+                "input_repr": "([5, 6, 3, 2], 8)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[5, 8, 6, 8, 3, 8, 2]",
+                "put_exception": null,
+                "canonical": "[5, 8, 6, 8, 3, 8, 2]"
+              },
+              {
+                "input_repr": "([2, 2, 2], 2)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[2, 2, 2, 2, 2]",
+                "put_exception": null,
+                "canonical": "[2, 2, 2, 2, 2]"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([0, 1], 9)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1]",
+                "put_exception": null,
+                "canonical": "[0, 9, 1]"
+              },
+              {
+                "input_repr": "([1, 0, 2], 9)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 2]",
+                "put_exception": null,
+                "canonical": "[1, 9, 0, 9, 2]"
+              },
+              {
+                "input_repr": "([0], 7)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[]",
+                "put_exception": null,
+                "canonical": "[0]"
+              },
+              {
+                "input_repr": "([0, 1, 2], 9)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 9, 2]",
+                "put_exception": null,
+                "canonical": "[0, 9, 1, 9, 2]"
+              },
+              {
+                "input_repr": "([1, 0, 2, 3], 9)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 2, 9, 3]",
+                "put_exception": null,
+                "canonical": "[1, 9, 0, 9, 2, 9, 3]"
+              },
+              {
+                "input_repr": "([0, 0], 5)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[]",
+                "put_exception": null,
+                "canonical": "[0, 5, 0]"
+              },
+              {
+                "input_repr": "([1, 0, 2], 0)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 2]",
+                "put_exception": null,
+                "canonical": "[1, 0, 0, 0, 2]"
+              },
+              {
+                "input_repr": "([0, -1, 2], 7)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[-1, 7, 2]",
+                "put_exception": null,
+                "canonical": "[0, 7, -1, 7, 2]"
+              },
+              {
+                "input_repr": "([0, 1, 0], 5)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1]",
+                "put_exception": null,
+                "canonical": "[0, 5, 1, 5, 0]"
+              },
+              {
+                "input_repr": "([1, 0, 2, 0, 3], 0)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 2, 3]",
+                "put_exception": null,
+                "canonical": "[1, 0, 0, 0, 2, 0, 0, 0, 3]"
+              },
+              {
+                "input_repr": "([1, 0, 2, 0, 3], 4)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[1, 2, 3]",
+                "put_exception": null,
+                "canonical": "[1, 4, 0, 4, 2, 4, 0, 4, 3]"
+              },
+              {
+                "input_repr": "([0, 1, 0, 2, 0], 6)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[1, 2]",
+                "put_exception": null,
+                "canonical": "[0, 6, 1, 6, 0, 6, 2, 6, 0]"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 13,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(0, 5)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "5",
+                "put_exception": null,
+                "canonical": "5"
+              },
+              {
+                "input_repr": "(5, 0)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "5",
+                "put_exception": null,
+                "canonical": "5"
+              },
+              {
+                "input_repr": "(-3, 6)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": null,
+                "put_exception": "RecursionError",
+                "canonical": "3"
+              },
+              {
+                "input_repr": "(6, -3)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": null,
+                "put_exception": "RecursionError",
+                "canonical": "-3"
+              },
+              {
+                "input_repr": "(-3, -6)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": null,
+                "put_exception": "RecursionError",
+                "canonical": "-3"
+              },
+              {
+                "input_repr": "(0, -5)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "-5",
+                "put_exception": null,
+                "canonical": "-5"
+              },
+              {
+                "input_repr": "(7, -14)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": null,
+                "put_exception": "RecursionError",
+                "canonical": "-7"
+              },
+              {
+                "input_repr": "(-7, 14)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": null,
+                "put_exception": "RecursionError",
+                "canonical": "7"
+              },
+              {
+                "input_repr": "(1, -1)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": null,
+                "put_exception": "RecursionError",
+                "canonical": "-1"
+              },
+              {
+                "input_repr": "(-1, 1)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": null,
+                "put_exception": "RecursionError",
+                "canonical": "1"
+              },
+              {
+                "input_repr": "(0, 0)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              },
+              {
+                "input_repr": "(1, 1)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "1",
+                "put_exception": null,
+                "canonical": "1"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 14,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "('aa',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "['aa']",
+                "put_exception": null,
+                "canonical": "['a', 'aa']"
+              },
+              {
+                "input_repr": "('aaaa',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "['a', 'aaa', 'aaaa']",
+                "put_exception": null,
+                "canonical": "['a', 'aa', 'aaa', 'aaaa']"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('aa',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['aa']",
+                "put_exception": null,
+                "canonical": "['a', 'aa']"
+              },
+              {
+                "input_repr": "('abab',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['a', 'aba', 'abab']",
+                "put_exception": null,
+                "canonical": "['a', 'ab', 'aba', 'abab']"
+              },
+              {
+                "input_repr": "('aaaa',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['a', 'aaa', 'aaaa']",
+                "put_exception": null,
+                "canonical": "['a', 'aa', 'aaa', 'aaaa']"
+              },
+              {
+                "input_repr": "('abcabc',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['a', 'ab', 'abca', 'abcab', 'abcabc']",
+                "put_exception": null,
+                "canonical": "['a', 'ab', 'abc', 'abca', 'abcab', 'abcabc']"
+              },
+              {
+                "input_repr": "('ababab',)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "['a', 'ab', 'aba', 'abab', 'ababa', 'ababab']",
+                "put_exception": null,
+                "canonical": "['a', 'ab', 'aba', 'abab', 'ababa', 'ababab']"
+              },
+              {
+                "input_repr": "('xyxy',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['x', 'xyx', 'xyxy']",
+                "put_exception": null,
+                "canonical": "['x', 'xy', 'xyx', 'xyxy']"
+              },
+              {
+                "input_repr": "('abcabcabc',)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "['a', 'ab', 'abc', 'abca', 'abcab', 'abcabc', 'abcabca', 'abcabcab', 'abcabcabc']",
+                "put_exception": null,
+                "canonical": "['a', 'ab', 'abc', 'abca', 'abcab', 'abcabc', 'abcabca', 'abcabcab', 'abcabcabc']"
+              },
+              {
+                "input_repr": "('aaaaaa',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['a', 'aa', 'aaaa', 'aaaaa', 'aaaaaa']",
+                "put_exception": null,
+                "canonical": "['a', 'aa', 'aaa', 'aaaa', 'aaaaa', 'aaaaaa']"
+              },
+              {
+                "input_repr": "('12',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "['1', '12']",
+                "put_exception": null,
+                "canonical": "['1', '12']"
+              },
+              {
+                "input_repr": "('aabb',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "['a', 'aa', 'aab', 'aabb']",
+                "put_exception": null,
+                "canonical": "['a', 'aa', 'aab', 'aabb']"
+              }
+            ],
+            "detected": true,
+            "final_detected": false,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 20,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([-10.0, -9.9, 100.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(100.0, -10.0)",
+                "put_exception": null,
+                "canonical": "(-10.0, -9.9)"
+              },
+              {
+                "input_repr": "([0.0, 0.0, 1.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(1.0, 0.0)",
+                "put_exception": null,
+                "canonical": "(0.0, 0.0)"
+              },
+              {
+                "input_repr": "([1e+16, 1e+16, -1.0],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "(1e+16, 1e+16)",
+                "put_exception": null,
+                "canonical": "(1e+16, 1e+16)"
+              },
+              {
+                "input_repr": "([1.0, 3.0, 10.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(10.0, 1.0)",
+                "put_exception": null,
+                "canonical": "(1.0, 3.0)"
+              },
+              {
+                "input_repr": "([1.0, 1.0, 5.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(5.0, 1.0)",
+                "put_exception": null,
+                "canonical": "(1.0, 1.0)"
+              },
+              {
+                "input_repr": "([-5.0, -4.0, 10.0, 20.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(20.0, -5.0)",
+                "put_exception": null,
+                "canonical": "(-5.0, -4.0)"
+              },
+              {
+                "input_repr": "([1.0, 1.1, 5.0, 20.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(20.0, 1.0)",
+                "put_exception": null,
+                "canonical": "(1.0, 1.1)"
+              },
+              {
+                "input_repr": "([-3.0, -2.9, 0.0, 8.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(8.0, -3.0)",
+                "put_exception": null,
+                "canonical": "(-3.0, -2.9)"
+              },
+              {
+                "input_repr": "([1.0, 2.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(2.0, 1.0)",
+                "put_exception": null,
+                "canonical": "(1.0, 2.0)"
+              },
+              {
+                "input_repr": "([1.0, 2.0, 10.0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(10.0, 1.0)",
+                "put_exception": null,
+                "canonical": "(1.0, 2.0)"
+              },
+              {
+                "input_repr": "([0.0, 2.0],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "(2.0, 0.0)",
+                "put_exception": null,
+                "canonical": "(0.0, 2.0)"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 25,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(1,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(0,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(-12,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(49,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[7, 7]",
+                "put_exception": null,
+                "canonical": "[7, 7]"
+              },
+              {
+                "input_repr": "(210,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[2, 3, 5, 7]",
+                "put_exception": null,
+                "canonical": "[2, 3, 5, 7]"
+              },
+              {
+                "input_repr": "(2310,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[2, 3, 5, 7, 11]",
+                "put_exception": null,
+                "canonical": "[2, 3, 5, 7, 11]"
+              },
+              {
+                "input_repr": "(1000003,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(60,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[2, 2, 3, 5]",
+                "put_exception": null,
+                "canonical": "[2, 2, 3, 5]"
+              },
+              {
+                "input_repr": "(99991,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(10000019,)",
+                "decisive": false,
+                "different": false,
+                "final": true
+              },
+              {
+                "input_repr": "(360,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "[2, 2, 2, 3, 3, 5]",
+                "put_exception": null,
+                "canonical": "[2, 2, 2, 3, 3, 5]"
+              }
+            ],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 6
+          }
+        }
+      },
+      {
+        "task_id": 40,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([0, 0, 0],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([1, 1, -2],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([2, -2, 0],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([1, -2],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "([0, 0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "([1, -2, 3],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "([1, 2],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "([2, -4],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "([5, -10],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "([0, 0, 1],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "([0, 0, 2, -1],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 42,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([1.5],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[2]",
+                "put_exception": null,
+                "canonical": "[2.5]"
+              },
+              {
+                "input_repr": "([-1.9, 0.1],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[0, 1]",
+                "put_exception": null,
+                "canonical": "[-0.8999999999999999, 1.1]"
+              },
+              {
+                "input_repr": "([True, False],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[2, 1]",
+                "put_exception": null,
+                "canonical": "[2, 1]"
+              },
+              {
+                "input_repr": "([1.9, 2.1],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[2, 3]",
+                "put_exception": null,
+                "canonical": "[2.9, 3.1]"
+              },
+              {
+                "input_repr": "([0.0, -0.1],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 0]",
+                "put_exception": null,
+                "canonical": "[1.0, 0.9]"
+              },
+              {
+                "input_repr": "(['1'],)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "([1000000000000000000000000, -1000000000000000000000000],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[1000000000000000000000001, -999999999999999999999999]",
+                "put_exception": null,
+                "canonical": "[1000000000000000000000001, -999999999999999999999999]"
+              },
+              {
+                "input_repr": "([None],)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "([2.75, -2.75],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[3, -1]",
+                "put_exception": null,
+                "canonical": "[3.75, -1.75]"
+              },
+              {
+                "input_repr": "([0.25, -0.25, 1.25],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[1, 0, 2]",
+                "put_exception": null,
+                "canonical": "[1.25, 0.75, 2.25]"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 2
+          }
+        }
+      },
+      {
+        "task_id": 49,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(-1, 5)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(1, 1)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(5, 0)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(-2, 7)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(0, 1)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(1, 2)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              },
+              {
+                "input_repr": "(2, -5)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(10000000, 1000000007)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(100000000, 1000000007)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(999999, 2)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(1, 3)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "2",
+                "put_exception": null,
+                "canonical": "2"
+              },
+              {
+                "input_repr": "(2, 4)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              }
+            ],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 9
+          }
+        }
+      },
+      {
+        "task_id": 51,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "('a b',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'b'",
+                "put_exception": null,
+                "canonical": "' b'"
+              },
+              {
+                "input_repr": "('x y z',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'xyz'",
+                "put_exception": null,
+                "canonical": "'x y z'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('a b',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'b'",
+                "put_exception": null,
+                "canonical": "' b'"
+              },
+              {
+                "input_repr": "(' b ',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'b'",
+                "put_exception": null,
+                "canonical": "' b '"
+              },
+              {
+                "input_repr": "('b  c',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'bc'",
+                "put_exception": null,
+                "canonical": "'b  c'"
+              },
+              {
+                "input_repr": "('a\\tb',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'\\tb'",
+                "put_exception": null,
+                "canonical": "'\\tb'"
+              },
+              {
+                "input_repr": "('a  b',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'b'",
+                "put_exception": null,
+                "canonical": "'  b'"
+              },
+              {
+                "input_repr": "('a\\nb',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'\\nb'",
+                "put_exception": null,
+                "canonical": "'\\nb'"
+              },
+              {
+                "input_repr": "('b c',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'bc'",
+                "put_exception": null,
+                "canonical": "'b c'"
+              },
+              {
+                "input_repr": "('  xyz  ',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'xyz'",
+                "put_exception": null,
+                "canonical": "'  xyz  '"
+              },
+              {
+                "input_repr": "('a b c',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'bc'",
+                "put_exception": null,
+                "canonical": "' b c'"
+              },
+              {
+                "input_repr": "(' A E I O U xyz ',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'xyz'",
+                "put_exception": null,
+                "canonical": "'      xyz '"
+              },
+              {
+                "input_repr": "(' a\\tb c ',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'\\tbc'",
+                "put_exception": null,
+                "canonical": "' \\tb c '"
+              },
+              {
+                "input_repr": "('A! e?I_oU z',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'!?_z'",
+                "put_exception": null,
+                "canonical": "'! ?_ z'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 54,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('a', 'aa')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('\u0130', 'i')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('', '')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('ABC', 'cba')",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('\u00df', 'SS')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('Aa', 'aA')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('\u017f', 's')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('\u03c2', '\u03c3')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('aab', 'ab')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('a b', 'ba')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('K', '\u212a')",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('\u1e9e', '\u00df')",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 57,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([1, 1, 2],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([1, 1, 2, 3],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([3, 3, 2, 1],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([5, 5, 6],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([2, 2, 2, 3],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([-1, -1, 0, 2],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([7, 7, 8, 9],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([0, 0, -1, -2],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([0, 0, 1],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([0, 0, 1, 2],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "([5, 5, 6, 7],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "True"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 58,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "([1, [2]], [1, [2]])",
+                "decisive": false,
+                "different": false,
+                "final": true
+              },
+              {
+                "input_repr": "([9, 1, 5, 3], [3, 5, 1])",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "[1, 3, 5]",
+                "put_exception": null,
+                "canonical": "[1, 3, 5]"
+              }
+            ],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 1
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([3, 1, 2, 2, 1], [2, 3, 3, 4])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[2, 3]",
+                "put_exception": null,
+                "canonical": "[2, 3]"
+              },
+              {
+                "input_repr": "([-5, 0, 7, -5, 2], [7, -5, 0, 7])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[0, -5, 7]",
+                "put_exception": null,
+                "canonical": "[-5, 0, 7]"
+              },
+              {
+                "input_repr": "([], [1, 2, 3])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[]",
+                "put_exception": null,
+                "canonical": "[]"
+              },
+              {
+                "input_repr": "([10, 1, 5, 3], [3, 10, 5, 1])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 10, 3, 5]",
+                "put_exception": null,
+                "canonical": "[1, 3, 5, 10]"
+              },
+              {
+                "input_repr": "([100, -1, 50, 0, 2], [2, 0, -1, 100])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[0, 2, 100, -1]",
+                "put_exception": null,
+                "canonical": "[-1, 0, 2, 100]"
+              },
+              {
+                "input_repr": "([8, 6, 4, 2], [9, 8, 6, 4, 2, 0])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[8, 2, 4, 6]",
+                "put_exception": null,
+                "canonical": "[2, 4, 6, 8]"
+              },
+              {
+                "input_repr": "([1, 2, 3], [3, 2, 1])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[1, 2, 3]",
+                "put_exception": null,
+                "canonical": "[1, 2, 3]"
+              },
+              {
+                "input_repr": "([0, 10, -2, 5], [5, -2, 10, 0])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[0, 10, 5, -2]",
+                "put_exception": null,
+                "canonical": "[-2, 0, 5, 10]"
+              },
+              {
+                "input_repr": "([-10, -3, 0, 2, 100], [100, 2, 0, -3, -10])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[0, 2, 100, -10, -3]",
+                "put_exception": null,
+                "canonical": "[-10, -3, 0, 2, 100]"
+              },
+              {
+                "input_repr": "([42, -7, 13, 0], [0, 13, -7, 42])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[0, -7, 42, 13]",
+                "put_exception": null,
+                "canonical": "[-7, 0, 13, 42]"
+              },
+              {
+                "input_repr": "([9, 1, 5, 3], [3, 5, 1, 9])",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "[1, 3, 5, 9]",
+                "put_exception": null,
+                "canonical": "[1, 3, 5, 9]"
+              },
+              {
+                "input_repr": "([-8, 4, 0, -3, 7], [7, -3, 0, 4, -8])",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[0, 4, 7, -8, -3]",
+                "put_exception": null,
+                "canonical": "[-8, -3, 0, 4, 7]"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 62,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": null,
+                "put_exception": "IndexError",
+                "canonical": "[]"
+              },
+              {
+                "input_repr": "([0],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[]",
+                "put_exception": null,
+                "canonical": "[]"
+              },
+              {
+                "input_repr": "([0, 0, 0],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[0, 0]",
+                "put_exception": null,
+                "canonical": "[0, 0]"
+              },
+              {
+                "input_repr": "([5, -2, 0, 7, -1, 3],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[-2, 0, 21, -4, 15]",
+                "put_exception": null,
+                "canonical": "[-2, 0, 21, -4, 15]"
+              },
+              {
+                "input_repr": "([1.5, -2, 0.25],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[-2, 0.5]",
+                "put_exception": null,
+                "canonical": "[-2, 0.5]"
+              },
+              {
+                "input_repr": "([9, 0],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[0]",
+                "put_exception": null,
+                "canonical": "[0]"
+              },
+              {
+                "input_repr": "([2, -3, 5, 0, -7, 11, 13],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[-3, 10, 0, -28, 55, 78]",
+                "put_exception": null,
+                "canonical": "[-3, 10, 0, -28, 55, 78]"
+              },
+              {
+                "input_repr": "([0, 0, 1, 0, 0, 1, 0, 1],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[0, 2, 0, 0, 5, 0, 7]",
+                "put_exception": null,
+                "canonical": "[0, 2, 0, 0, 5, 0, 7]"
+              },
+              {
+                "input_repr": "([0, 1],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[2]",
+                "put_exception": null,
+                "canonical": "[1]"
+              },
+              {
+                "input_repr": "([1, 0],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[0]",
+                "put_exception": null,
+                "canonical": "[0]"
+              },
+              {
+                "input_repr": "([1, 2],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[4]",
+                "put_exception": null,
+                "canonical": "[2]"
+              },
+              {
+                "input_repr": "([7, -3],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[-6]",
+                "put_exception": null,
+                "canonical": "[-3]"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 68,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([1, 4, 2],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "[4, 1]",
+                "put_exception": null,
+                "canonical": "[2, 2]"
+              },
+              {
+                "input_repr": "([3, 8, 4, 6],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[8, 1]",
+                "put_exception": null,
+                "canonical": "[4, 2]"
+              },
+              {
+                "input_repr": "([1, 10, 2, 4],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[10, 1]",
+                "put_exception": null,
+                "canonical": "[2, 2]"
+              },
+              {
+                "input_repr": "([1, 10, 2],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[10, 1]",
+                "put_exception": null,
+                "canonical": "[2, 2]"
+              },
+              {
+                "input_repr": "([7, 12, 2, 10],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[2, 2]",
+                "put_exception": null,
+                "canonical": "[2, 2]"
+              },
+              {
+                "input_repr": "([9, 8, 2],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[2, 2]",
+                "put_exception": null,
+                "canonical": "[2, 2]"
+              },
+              {
+                "input_repr": "([1, 6, 2, 4],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[6, 1]",
+                "put_exception": null,
+                "canonical": "[2, 2]"
+              },
+              {
+                "input_repr": "([9, 12, 4, 8],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "[4, 2]",
+                "put_exception": null,
+                "canonical": "[4, 2]"
+              },
+              {
+                "input_repr": "([3, 8, 6, 2],)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "[2, 3]",
+                "put_exception": null,
+                "canonical": "[2, 3]"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 78,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              },
+              {
+                "input_repr": "('01245689ACEF',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "2",
+                "put_exception": null,
+                "canonical": "2"
+              },
+              {
+                "input_repr": "('2357BD',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "6",
+                "put_exception": null,
+                "canonical": "6"
+              },
+              {
+                "input_repr": "('00000000',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              },
+              {
+                "input_repr": "('FFFFFFFF',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              },
+              {
+                "input_repr": "('222333555777BBBDDD',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "18",
+                "put_exception": null,
+                "canonical": "18"
+              },
+              {
+                "input_repr": "([],)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              },
+              {
+                "input_repr": "(['2'],)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "1",
+                "put_exception": null,
+                "canonical": "1"
+              },
+              {
+                "input_repr": "(['2', '3', '5', '7', 'B', 'D'],)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "6",
+                "put_exception": null,
+                "canonical": "6"
+              },
+              {
+                "input_repr": "(['23'],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "1"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 79,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(255,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'db11111111db'",
+                "put_exception": null,
+                "canonical": "'db11111111db'"
+              },
+              {
+                "input_repr": "(256,)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": null,
+                "put_exception": "ValueError",
+                "canonical": "'db100000000db'"
+              },
+              {
+                "input_repr": "(-1,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(1.5,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(True,)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'db1db'",
+                "put_exception": null,
+                "canonical": "'db1db'"
+              },
+              {
+                "input_repr": "(255.0,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(128,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'db10000000db'",
+                "put_exception": null,
+                "canonical": "'db10000000db'"
+              },
+              {
+                "input_repr": "(2,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'db10db'",
+                "put_exception": null,
+                "canonical": "'db10db'"
+              },
+              {
+                "input_repr": "(254,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'db11111110db'",
+                "put_exception": null,
+                "canonical": "'db11111110db'"
+              },
+              {
+                "input_repr": "(257,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": null,
+                "put_exception": "ValueError",
+                "canonical": "'db100000001db'"
+              },
+              {
+                "input_repr": "(127,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'db1111111db'",
+                "put_exception": null,
+                "canonical": "'db1111111db'"
+              },
+              {
+                "input_repr": "(129,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'db10000001db'",
+                "put_exception": null,
+                "canonical": "'db10000001db'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 3
+          }
+        }
+      },
+      {
+        "task_id": 83,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(6,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(7,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(8,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(0,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(-1,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(9,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(10,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(11,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(12,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(2,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "18",
+                "put_exception": null,
+                "canonical": "18"
+              },
+              {
+                "input_repr": "(3,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "180",
+                "put_exception": null,
+                "canonical": "180"
+              }
+            ],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 9
+          }
+        }
+      },
+      {
+        "task_id": 98,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('I',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "1"
+              },
+              {
+                "input_repr": "('xIxI',)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              },
+              {
+                "input_repr": "('aIeiO',)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "1",
+                "put_exception": null,
+                "canonical": "1"
+              },
+              {
+                "input_repr": "('Iae',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "1"
+              },
+              {
+                "input_repr": "('xIx',)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "0"
+              },
+              {
+                "input_repr": "('AIA',)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "2",
+                "put_exception": null,
+                "canonical": "2"
+              },
+              {
+                "input_repr": "('IB',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "1"
+              },
+              {
+                "input_repr": "('Ixx',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "1"
+              },
+              {
+                "input_repr": "('AIEOU',)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "3",
+                "put_exception": null,
+                "canonical": "3"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 101,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "('a,b',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "['ab']",
+                "put_exception": null,
+                "canonical": "['a', 'b']"
+              },
+              {
+                "input_repr": "('alpha,beta',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "['alphabeta']",
+                "put_exception": null,
+                "canonical": "['alpha', 'beta']"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('a,b',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['ab']",
+                "put_exception": null,
+                "canonical": "['a', 'b']"
+              },
+              {
+                "input_repr": "('one,two three',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['onetwo', 'three']",
+                "put_exception": null,
+                "canonical": "['one', 'two', 'three']"
+              },
+              {
+                "input_repr": "('a,,b',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['ab']",
+                "put_exception": null,
+                "canonical": "['a', 'b']"
+              },
+              {
+                "input_repr": "('hello,world',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['helloworld']",
+                "put_exception": null,
+                "canonical": "['hello', 'world']"
+              },
+              {
+                "input_repr": "('a,b c,d',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['ab', 'cd']",
+                "put_exception": null,
+                "canonical": "['a', 'b', 'c', 'd']"
+              },
+              {
+                "input_repr": "('one,,two',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['onetwo']",
+                "put_exception": null,
+                "canonical": "['one', 'two']"
+              },
+              {
+                "input_repr": "('red,blue green',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['redblue', 'green']",
+                "put_exception": null,
+                "canonical": "['red', 'blue', 'green']"
+              },
+              {
+                "input_repr": "('alpha,beta,gamma',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['alphabetagamma']",
+                "put_exception": null,
+                "canonical": "['alpha', 'beta', 'gamma']"
+              },
+              {
+                "input_repr": "('cat,dog bird',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['catdog', 'bird']",
+                "put_exception": null,
+                "canonical": "['cat', 'dog', 'bird']"
+              },
+              {
+                "input_repr": "('red, green,blue',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "['red', 'greenblue']",
+                "put_exception": null,
+                "canonical": "['red', 'green', 'blue']"
+              },
+              {
+                "input_repr": "('a,b c',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "['ab', 'c']",
+                "put_exception": null,
+                "canonical": "['a', 'b', 'c']"
+              },
+              {
+                "input_repr": "('a,b,c d',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "['abc', 'd']",
+                "put_exception": null,
+                "canonical": "['a', 'b', 'c', 'd']"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 110,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "([1], [2])",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'YES'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([3, 5], [2, 4, 6])",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([1, 2], [4])",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([1], [2, 3])",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([2], [1, 3, 5])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([1, 3], [2, 4, 5])",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([2], [1, 3])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([1, 3, 5], [2, 4, 6, 7])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([-1, -3], [-2, 5])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'NO'"
+              },
+              {
+                "input_repr": "([1], [2])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'YES'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([1], [2, 3, 5])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              },
+              {
+                "input_repr": "([1, 3, 5], [2, 4, 6, 7, 9])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'NO'",
+                "put_exception": null,
+                "canonical": "'YES'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 119,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "(['()', ')('],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'Yes'",
+                "put_exception": null,
+                "canonical": "'No'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(['(()))', ')(('],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'Yes'",
+                "put_exception": null,
+                "canonical": "'No'"
+              },
+              {
+                "input_repr": "(['())', '(()'],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'Yes'",
+                "put_exception": null,
+                "canonical": "'Yes'"
+              },
+              {
+                "input_repr": "(['()', ')('],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'Yes'",
+                "put_exception": null,
+                "canonical": "'No'"
+              },
+              {
+                "input_repr": "(['((())', '))('],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'Yes'",
+                "put_exception": null,
+                "canonical": "'No'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 130,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(2,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0]"
+              },
+              {
+                "input_repr": "(10,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0]"
+              },
+              {
+                "input_repr": "(999,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "(3,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0]"
+              },
+              {
+                "input_repr": "(11,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0]"
+              },
+              {
+                "input_repr": "(20,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0]"
+              },
+              {
+                "input_repr": "(21,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0]"
+              },
+              {
+                "input_repr": "(22,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0]"
+              },
+              {
+                "input_repr": "(30,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0]"
+              },
+              {
+                "input_repr": "(31,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0, 288.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0, 288.0]"
+              },
+              {
+                "input_repr": "(32,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "[1, 3, 2, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0, 288.0, 17.0]",
+                "put_exception": null,
+                "canonical": "[1, 3, 2.0, 8.0, 3.0, 15.0, 4.0, 24.0, 5.0, 35.0, 6.0, 48.0, 7.0, 63.0, 8.0, 80.0, 9.0, 99.0, 10.0, 120.0, 11.0, 143.0, 12.0, 168.0, 13.0, 195.0, 14.0, 224.0, 15.0, 255.0, 16.0, 288.0, 17.0]"
+              },
+              {
+                "input_repr": "(100,)",
+                "decisive": false,
+                "different": false,
+                "final": false
+              }
+            ],
+            "detected": true,
+            "final_detected": false,
+            "unresolved": 2
+          }
+        }
+      },
+      {
+        "task_id": 134,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('a\\tb',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('a\\nb',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('ab\\tc',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('ab\\nc',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('a\\rb',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('a\\x0bb',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('a\\x0cb',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('a\\u2003b',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('a\\u2028b',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('a\\xa0b',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('a\\x1cb',)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "False"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 135,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "([1],)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "-1"
+              },
+              {
+                "input_repr": "([2, 1],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "1",
+                "put_exception": null,
+                "canonical": "1"
+              },
+              {
+                "input_repr": "([1, 3, 2, 4, 0],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "4",
+                "put_exception": null,
+                "canonical": "4"
+              },
+              {
+                "input_repr": "([42],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "-1"
+              },
+              {
+                "input_repr": "([5, 1, 2],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "1",
+                "put_exception": null,
+                "canonical": "1"
+              },
+              {
+                "input_repr": "([1, 4, 3, 2],)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "3",
+                "put_exception": null,
+                "canonical": "3"
+              },
+              {
+                "input_repr": "([0],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "-1"
+              },
+              {
+                "input_repr": "([999],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "-1"
+              },
+              {
+                "input_repr": "([8],)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "0",
+                "put_exception": null,
+                "canonical": "-1"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 137,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('10', '2')",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'2'",
+                "put_exception": null,
+                "canonical": "'10'"
+              },
+              {
+                "input_repr": "(9, '10')",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "9",
+                "put_exception": null,
+                "canonical": "'10'"
+              },
+              {
+                "input_repr": "('2,9', '10')",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'2,9'",
+                "put_exception": null,
+                "canonical": "'10'"
+              },
+              {
+                "input_repr": "('1.10', '1.2')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'1.2'",
+                "put_exception": null,
+                "canonical": "'1.2'"
+              },
+              {
+                "input_repr": "(-1, -2)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "-2",
+                "put_exception": null,
+                "canonical": "-1"
+              },
+              {
+                "input_repr": "(2, '10')",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "2",
+                "put_exception": null,
+                "canonical": "'10'"
+              },
+              {
+                "input_repr": "('9.9', '10')",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'9.9'",
+                "put_exception": null,
+                "canonical": "'10'"
+              },
+              {
+                "input_repr": "('2.10', '2,9')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'2,9'",
+                "put_exception": null,
+                "canonical": "'2,9'"
+              },
+              {
+                "input_repr": "(-1, '-0.5')",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "-1",
+                "put_exception": null,
+                "canonical": "'-0.5'"
+              },
+              {
+                "input_repr": "('-2,5', -1)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'-2,5'",
+                "put_exception": null,
+                "canonical": "-1"
+              },
+              {
+                "input_repr": "('1.0', '1')",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'1.0'",
+                "put_exception": null,
+                "canonical": "None"
+              },
+              {
+                "input_repr": "('10', 2.5)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "2.5",
+                "put_exception": null,
+                "canonical": "'10'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 153,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "('C', ['a'])",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'C.'",
+                "put_exception": null,
+                "canonical": "'C.a'"
+              },
+              {
+                "input_repr": "('C', ['ab', 'cd'])",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'C.'",
+                "put_exception": null,
+                "canonical": "'C.ab'"
+              },
+              {
+                "input_repr": "('C', ['foo', 'bar'])",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "'C.'",
+                "put_exception": null,
+                "canonical": "'C.foo'"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('C', ['aA', 'Bb'])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'C.aA'",
+                "put_exception": null,
+                "canonical": "'C.aA'"
+              },
+              {
+                "input_repr": "('X', ['abc', 'dE'])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'X.dE'",
+                "put_exception": null,
+                "canonical": "'X.dE'"
+              },
+              {
+                "input_repr": "('Test', ['lower', 'A'])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'Test.A'",
+                "put_exception": null,
+                "canonical": "'Test.A'"
+              },
+              {
+                "input_repr": "('C', ['a'])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'C.'",
+                "put_exception": null,
+                "canonical": "'C.a'"
+              },
+              {
+                "input_repr": "('Class', ['abc', 'def'])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'Class.'",
+                "put_exception": null,
+                "canonical": "'Class.abc'"
+              },
+              {
+                "input_repr": "('X', ['a', 'B'])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'X.B'",
+                "put_exception": null,
+                "canonical": "'X.B'"
+              },
+              {
+                "input_repr": "('Demo', ['aA', 'ab'])",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'Demo.aA'",
+                "put_exception": null,
+                "canonical": "'Demo.aA'"
+              },
+              {
+                "input_repr": "('X', ['abc', 'def'])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'X.'",
+                "put_exception": null,
+                "canonical": "'X.abc'"
+              },
+              {
+                "input_repr": "('Z', ['abc', 'deF'])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'Z.'",
+                "put_exception": null,
+                "canonical": "'Z.deF'"
+              },
+              {
+                "input_repr": "('Class', ['lowercase', 'tiny'])",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'Class.'",
+                "put_exception": null,
+                "canonical": "'Class.tiny'"
+              },
+              {
+                "input_repr": "('Edge', ['A', ''])",
+                "decisive": false,
+                "different": false,
+                "final": true
+              },
+              {
+                "input_repr": "('Tie', ['aA', 'Aa', 'BB'])",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "'Tie.BB'",
+                "put_exception": null,
+                "canonical": "'Tie.BB'"
+              }
+            ],
+            "detected": true,
+            "final_detected": false,
+            "unresolved": 1
+          }
+        }
+      },
+      {
+        "task_id": 154,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('', '')",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "('a', 'aa')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('cabx', 'abc')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('', 'a')",
+                "decisive": false,
+                "different": false,
+                "final": false
+              },
+              {
+                "input_repr": "('a', 'a')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('aaaa', 'aa')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('aababa', 'abaa')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('abcabc', 'acb')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              },
+              {
+                "input_repr": "('ab', 'ba')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('aaaaab', 'baa')",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('abcde', 'cdeab')",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "True",
+                "put_exception": null,
+                "canonical": "True"
+              },
+              {
+                "input_repr": "('xyz', 'zyx')",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "False",
+                "put_exception": null,
+                "canonical": "False"
+              }
+            ],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 2
+          }
+        }
+      },
+      {
+        "task_id": 155,
+        "arms": {
+          "chain": {
+            "inputs": [
+              {
+                "input_repr": "(-10,)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "(0, 1)",
+                "put_exception": null,
+                "canonical": "(1, 1)"
+              },
+              {
+                "input_repr": "(-120,)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "(1, 1)",
+                "put_exception": null,
+                "canonical": "(2, 1)"
+              },
+              {
+                "input_repr": "(-100,)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "(0, 1)",
+                "put_exception": null,
+                "canonical": "(2, 1)"
+              },
+              {
+                "input_repr": "(-20,)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "(1, 0)",
+                "put_exception": null,
+                "canonical": "(2, 0)"
+              },
+              {
+                "input_repr": "(-12,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "(1, 1)",
+                "put_exception": null,
+                "canonical": "(1, 1)"
+              },
+              {
+                "input_repr": "(0,)",
+                "decisive": true,
+                "different": false,
+                "final": true,
+                "put": "(1, 0)",
+                "put_exception": null,
+                "canonical": "(1, 0)"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "(-120,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(1, 1)",
+                "put_exception": null,
+                "canonical": "(2, 1)"
+              },
+              {
+                "input_repr": "(-1000,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(0, 1)",
+                "put_exception": null,
+                "canonical": "(3, 1)"
+              },
+              {
+                "input_repr": "(-2040,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(3, 0)",
+                "put_exception": null,
+                "canonical": "(4, 0)"
+              },
+              {
+                "input_repr": "(-10,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(0, 1)",
+                "put_exception": null,
+                "canonical": "(1, 1)"
+              },
+              {
+                "input_repr": "(-20,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(1, 0)",
+                "put_exception": null,
+                "canonical": "(2, 0)"
+              },
+              {
+                "input_repr": "(-1010,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(1, 2)",
+                "put_exception": null,
+                "canonical": "(2, 2)"
+              },
+              {
+                "input_repr": "(-2300,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(1, 1)",
+                "put_exception": null,
+                "canonical": "(3, 1)"
+              },
+              {
+                "input_repr": "(-9080,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(2, 1)",
+                "put_exception": null,
+                "canonical": "(3, 1)"
+              },
+              {
+                "input_repr": "(-10000,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(0, 1)",
+                "put_exception": null,
+                "canonical": "(4, 1)"
+              },
+              {
+                "input_repr": "(-12000,)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "(1, 1)",
+                "put_exception": null,
+                "canonical": "(4, 1)"
+              },
+              {
+                "input_repr": "(-100,)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "(0, 1)",
+                "put_exception": null,
+                "canonical": "(2, 1)"
+              },
+              {
+                "input_repr": "(-200,)",
+                "decisive": true,
+                "different": true,
+                "final": true,
+                "put": "(1, 0)",
+                "put_exception": null,
+                "canonical": "(3, 0)"
+              }
+            ],
+            "detected": true,
+            "final_detected": true,
+            "unresolved": 0
+          }
+        }
+      },
+      {
+        "task_id": 161,
+        "arms": {
+          "chain": {
+            "inputs": [],
+            "detected": false,
+            "final_detected": false,
+            "unresolved": 0
+          },
+          "direct": {
+            "inputs": [
+              {
+                "input_repr": "('\u00e9',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'\u00e9'",
+                "put_exception": null,
+                "canonical": "'\u00c9'"
+              },
+              {
+                "input_repr": "('\u00df',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'\u00df'",
+                "put_exception": null,
+                "canonical": "'SS'"
+              },
+              {
+                "input_repr": "('a1B!',)",
+                "decisive": true,
+                "different": false,
+                "final": false,
+                "put": "'A1b!'",
+                "put_exception": null,
+                "canonical": "'A1b!'"
+              },
+              {
+                "input_repr": "('\u00e9\u00e8',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'\u00e8\u00e9'",
+                "put_exception": null,
+                "canonical": "'\u00c9\u00c8'"
+              },
+              {
+                "input_repr": "('\u00df\u00e9',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'\u00e9\u00df'",
+                "put_exception": null,
+                "canonical": "'SS\u00c9'"
+              },
+              {
+                "input_repr": "('\u03a9\u03c0',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'\u03c0\u03a9'",
+                "put_exception": null,
+                "canonical": "'\u03c9\u03a0'"
+              },
+              {
+                "input_repr": "('\u0416',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'\u0416'",
+                "put_exception": null,
+                "canonical": "'\u0436'"
+              },
+              {
+                "input_repr": "('\u0416\u044f',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'\u044f\u0416'",
+                "put_exception": null,
+                "canonical": "'\u0436\u042f'"
+              },
+              {
+                "input_repr": "('\u00e91',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'1\u00e9'",
+                "put_exception": null,
+                "canonical": "'\u00c91'"
+              },
+              {
+                "input_repr": "('\u0416-2',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'2-\u0416'",
+                "put_exception": null,
+                "canonical": "'\u0436-2'"
+              },
+              {
+                "input_repr": "('\u00e9!',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'!\u00e9'",
+                "put_exception": null,
+                "canonical": "'\u00c9!'"
+              },
+              {
+                "input_repr": "('\u03a92',)",
+                "decisive": true,
+                "different": true,
+                "final": false,
+                "put": "'2\u03a9'",
+                "put_exception": null,
+                "canonical": "'\u03c92'"
+              }
+            ],
+            "detected": true,
+            "final_detected": false,
+            "unresolved": 0
+          }
+        }
+      }
+    ]
+  },
+  "chain_S5_decisions": {
+    "keep": 8,
+    "unknown": 2,
+    "revise": 1
+  },
+  "chain_retention_status": {
+    "accepted": 23
+  },
+  "shared_nonempty_input_tasks": 9,
+  "selected_concepts": [
+    {
+      "task_id": 5,
+      "artifact": {
+        "status": "ok",
+        "reason": "O1 is consistent for the specified empty-list output. O2 mismatches when input elements include zero because the implementation filters them, while the requirement says to preserve consecutive elements.",
+        "items": [
+          {
+            "statement": "Zero-valued input elements are incorrectly treated as sentinels rather than ordinary list elements.",
+            "obligation_ids": [
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S1:v1:O2"
+            ],
+            "behavior_ids": [
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S2:v1:B3",
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S2:v1:B4"
+            ],
+            "source_ids": [
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:If:17:8:18:37",
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:If:19:8:20:36"
+            ],
+            "condition": "The eligible input contains a zero element, such as numbers=[0,1], with a delimiter that makes the required insertion observable.",
+            "effect": "The actual output omits the zero and may omit an adjacent delimiter, producing a different sequence from the required interspersed list.",
+            "alternative": "The specification might intend zero values to be excluded, but that rule is not stated in the provided requirement.",
+            "uncertainty": "",
+            "id": "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S3:v1:H1"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S2:v1:B1",
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S2:v1:B2",
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S2:v1:B5"
+            ],
+            "source_ids": [
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:Expr:12:4:12:24",
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:Expr:13:4:13:21",
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:Assign:14:4:14:15",
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:For:16:4:20:36",
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:Return:22:4:22:17"
+            ],
+            "required_relation": "For an empty input list, return [].",
+            "actual_relation": "After mutating the input with leading and trailing zero sentinels, iterate and return an empty result list.",
+            "divergence_condition": "None established for the specified empty-list output.",
+            "verdict": "consistent",
+            "justification": "The sentinel processing produces no retained elements or delimiters, so the returned output is []. Mutation is outside this obligation's stated output relation."
+          },
+          {
+            "obligation_ids": [
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S1:v1:O2"
+            ],
+            "behavior_ids": [
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S2:v1:B3",
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S2:v1:B4",
+              "f0407ce908588533d5228d185dc4aa0433ef02f67ac830a51631ccc1a445ea33:S2:v1:B5"
+            ],
+            "source_ids": [
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:If:17:8:18:37",
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:If:19:8:20:36",
+              "1d840de4bcf2ccafb2a4bf53bd61f0c110b0f9e4bbe6559f94860f055a624a6e:Return:22:4:22:17"
+            ],
+            "required_relation": "For every consecutive pair in an eligible non-empty list, preserve both original elements and insert the supplied delimiter between them.",
+            "actual_relation": "Retain only nonzero elements and insert the delimiter only when both adjacent values are nonzero; return the filtered result.",
+            "divergence_condition": "For example, numbers=[0,1] and delimeter=7: the required output is [0,7,1], while the actual output is [1].",
+            "verdict": "mismatch",
+            "justification": "The actual guards treat zero-valued input elements as sentinels and omit them, contrary to preserving every original element. The specification's singleton and invalid-input behavior remains unspecified."
+          }
+        ]
+      }
+    },
+    {
+      "task_id": 14,
+      "artifact": {
+        "status": "ok",
+        "reason": "Mismatch established: the suffix-equality guard can omit required prefixes, although the empty-input behavior is compatible with the public example.",
+        "items": [
+          {
+            "statement": "The equality guard incorrectly excludes prefixes that match the remaining suffix.",
+            "obligation_ids": [
+              "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S2:v1:B2",
+              "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S2:v1:B3"
+            ],
+            "source_ids": [
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:If:11:8:12:43",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Compare:11:11:11:42",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Expr:12:12:12:43",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Subscript:11:11:11:25",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Subscript:11:28:11:42",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Call:12:12:12:43",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Attribute:12:12:12:27",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Subscript:12:28:12:42"
+            ],
+            "condition": "For some i in range(len(string)), string[:i+1] == string[i+1:].",
+            "effect": "The matching prefix is absent from the returned list despite being required.",
+            "alternative": "The intended requirement may have been to return only prefixes differing from their corresponding suffix, but that restriction is not stated in the original obligation.",
+            "uncertainty": "",
+            "id": "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S3:v1:H1"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S2:v1:B1",
+              "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S2:v1:B2",
+              "e55c35d8747209b709fcb146f8995290eea8a57cfae7968e371914fad85d5116:S2:v1:B3"
+            ],
+            "source_ids": [
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:For:10:4:12:43",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:If:11:8:12:43",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Compare:11:11:11:42",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Expr:12:12:12:43",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Subscript:11:11:11:25",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Subscript:11:28:11:42",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Call:12:12:12:43",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Attribute:12:12:12:27",
+              "9fdce60967f1b67d2e47759ac08c7aebb68e5e48c6d1fd5ee0ccdc100c70c192:Subscript:12:28:12:42"
+            ],
+            "required_relation": "Return every prefix of the input string in ascending length order, with no stated exclusion condition.",
+            "actual_relation": "Initializes an empty list, iterates i from 0 through len(string)-1, and appends string[:i+1] only when string[:i+1] != string[i+1:]; then returns the list. Empty input exits with [].",
+            "divergence_condition": "There exists an index i in range(len(string)) such that string[:i+1] == string[i+1:], for example input 'aa' at i=0.",
+            "verdict": "mismatch",
+            "justification": "The implementation can omit a valid prefix when it equals the corresponding suffix, whereas the obligation requires all prefixes. The empty-prefix ambiguity does not eliminate this nonempty-prefix divergence."
+          }
+        ]
+      }
+    },
+    {
+      "task_id": 51,
+      "artifact": {
+        "status": "ok",
+        "reason": "The implementation matches the required string-to-string shape, but it removes literal spaces, creating a mismatch for inputs containing spaces under both output and retention obligations.",
+        "items": [
+          {
+            "statement": "The implementation incorrectly removes literal spaces in addition to vowels.",
+            "obligation_ids": [
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S1:v1:O2",
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B3",
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B4"
+            ],
+            "source_ids": [
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Assign:20:4:20:32",
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Return:21:4:21:65"
+            ],
+            "condition": "The input contains a literal space.",
+            "effect": "The returned string omits that space, differing from vowel-only removal and non-vowel retention.",
+            "alternative": "The intended specification may treat literal spaces as ignorable formatting, although that is not stated in the supplied requirement.",
+            "uncertainty": "The vowel set itself is unspecified, but this divergence does not depend on that ambiguity.",
+            "id": "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S3:v1:H1"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B1",
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B3",
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B4"
+            ],
+            "source_ids": [
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:FunctionDef:3:0:21:65",
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Assign:20:4:20:32",
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Return:21:4:21:65"
+            ],
+            "required_relation": "The function accepts a string as its whole input.",
+            "actual_relation": "The function accepts one argument and, when that argument is a string, applies string replacement, iterates over its characters, and returns a string; behavior for non-string inputs is not established.",
+            "divergence_condition": "None established for the specified string-input domain; behavior outside that domain is undefined by the obligation.",
+            "verdict": "consistent",
+            "justification": "For string inputs, the implementation has the required one-input string-to-string shape. Non-string eligibility is unspecified."
+          },
+          {
+            "obligation_ids": [
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S1:v1:O2"
+            ],
+            "behavior_ids": [
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B2",
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B3",
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B4"
+            ],
+            "source_ids": [
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Assign:19:4:19:25",
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Assign:20:4:20:32",
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Return:21:4:21:65"
+            ],
+            "required_relation": "The output is formed from the input string by removing vowels.",
+            "actual_relation": "The implementation removes lowercase and uppercase a, e, i, o, and u, and also removes every literal space before filtering; all other characters are retained.",
+            "divergence_condition": "An eligible input contains a literal space that is not a vowel.",
+            "verdict": "mismatch",
+            "justification": "Removing a literal space is an additional transformation not required by vowel removal. The specification leaves the vowel set ambiguous, but a space is explicitly a non-vowel under the stated relation."
+          },
+          {
+            "obligation_ids": [
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B3",
+              "c3aed5a2350e137421136b7e160418d73c6db080e0bb94305cbe0883880ad252:S2:v1:B4"
+            ],
+            "source_ids": [
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Assign:20:4:20:32",
+              "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7:Return:21:4:21:65"
+            ],
+            "required_relation": "Characters that are not vowels are retained in their original order.",
+            "actual_relation": "Non-vowel characters are retained in order after all literal spaces have first been deleted.",
+            "divergence_condition": "An eligible input contains one or more literal spaces.",
+            "verdict": "mismatch",
+            "justification": "Literal spaces are non-vowel characters, so the required relation retains them, whereas the implementation removes them before filtering."
+          }
+        ]
+      }
+    },
+    {
+      "task_id": 58,
+      "artifact": {
+        "status": "ok",
+        "reason": "The implementation has a clear sorted-order mismatch and can fail the universal list requirement on unhashable inputs. Uniqueness is consistent only under an unspecified set-style equality interpretation.",
+        "items": [
+          {
+            "statement": "The implementation fails the universal two-list requirement for inputs containing unhashable elements.",
+            "obligation_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S2:v1:B1"
+            ],
+            "source_ids": [
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:FunctionDef:3:0:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Return:11:4:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Call:11:11:11:41"
+            ],
+            "condition": "At least one element of l1 is unhashable and the required common-element result would otherwise be defined.",
+            "effect": "set(l1) raises an exception, so no required intersection result is returned.",
+            "alternative": "The intended domain may implicitly restrict lists to hashable elements, but that eligibility condition is not stated.",
+            "uncertainty": "The specification leaves eligibility for element types undefined.",
+            "id": "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          },
+          {
+            "statement": "The implementation does not guarantee sorted output.",
+            "obligation_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S2:v1:B1"
+            ],
+            "source_ids": [
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:FunctionDef:3:0:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Return:11:4:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Call:11:11:11:41"
+            ],
+            "condition": "The intersection contains at least two sortable distinct elements and the set-to-list iteration order is not ascending.",
+            "effect": "The function returns an unsorted list instead of the required sorted list.",
+            "alternative": "The environment could coincidentally enumerate the set in sorted order for particular values, but this does not establish the required guarantee.",
+            "uncertainty": "",
+            "id": "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S3:v1:H2",
+            "local_id": "H2",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S3:v1:H1",
+          "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S3:v1:H2"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S2:v1:B1"
+            ],
+            "source_ids": [
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:FunctionDef:3:0:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Return:11:4:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Call:11:11:11:41"
+            ],
+            "required_relation": "Return elements occurring in both input lists for every invocation with two lists.",
+            "actual_relation": "For hashable elements, returns the set intersection as a list; set construction or intersection may raise for unsupported elements.",
+            "divergence_condition": "A list contains an unhashable element, causing an exception instead of returning the common elements.",
+            "verdict": "mismatch",
+            "justification": "The requirement applies to every invocation with two lists, while the implementation requires elements of the first list to be hashable and may exit by raising an exception."
+          },
+          {
+            "obligation_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S1:v1:O2"
+            ],
+            "behavior_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S2:v1:B1"
+            ],
+            "source_ids": [
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:FunctionDef:3:0:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Return:11:4:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Call:11:11:11:41"
+            ],
+            "required_relation": "Return each common element at most once.",
+            "actual_relation": "Set construction and intersection remove duplicates according to the set implementation's equality and hashing semantics, then return a list.",
+            "divergence_condition": "No established divergence under the unspecified equality and uniqueness semantics; unsupported unhashable inputs overlap with the unresolved applicability of the requirement.",
+            "verdict": "unknown",
+            "justification": "The implementation enforces uniqueness under set semantics, but the specification does not define whether uniqueness is based on equality, identity, or another notion."
+          },
+          {
+            "obligation_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "935f8d96573efd79ab786676dda633e9b67c57ba8aabda49742cad35a81921ed:S2:v1:B1"
+            ],
+            "source_ids": [
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:FunctionDef:3:0:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Return:11:4:11:41",
+              "c48356aeab6e401700e0a8fa29e7b6f9479302883fe10947963193669cdb0183:Call:11:11:11:41"
+            ],
+            "required_relation": "Return the common elements in sorted order.",
+            "actual_relation": "Return the set intersection converted directly to a list, with no sorting operation and no specified ordering guarantee.",
+            "divergence_condition": "For sortable inputs whose intersection has at least two distinct elements, the resulting list order is not sorted.",
+            "verdict": "mismatch",
+            "justification": "The required relation explicitly requires sorted output, whereas converting a set directly to a list does not establish sorted order."
+          }
+        ]
+      }
+    },
+    {
+      "task_id": 101,
+      "artifact": {
+        "status": "ok",
+        "reason": "A mismatch is established for comma-separated words without whitespace; behavior for other punctuation or separator forms remains unspecified.",
+        "items": [
+          {
+            "statement": "Comma-only separation is handled incorrectly because commas are removed rather than treated as word boundaries.",
+            "obligation_ids": [
+              "b2c16f35f892401415c5e386f7ad44168f3d7f9a9794a61988e208414c477dac:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "b2c16f35f892401415c5e386f7ad44168f3d7f9a9794a61988e208414c477dac:S2:v1:B1"
+            ],
+            "source_ids": [
+              "313c37aeddbfab16fcd7a30d9593f2b53435597205334074c6173e0362e70815:Return:13:4:13:37"
+            ],
+            "condition": "The input contains two words separated by a comma with no whitespace, e.g. `\"a,b\"`.",
+            "effect": "The implementation concatenates the words and returns `[\"ab\"]` instead of `[\"a\",\"b\"]`.",
+            "alternative": "The intended domain may implicitly require commas to be followed by whitespace, but that restriction is not stated.",
+            "uncertainty": "",
+            "id": "b2c16f35f892401415c5e386f7ad44168f3d7f9a9794a61988e208414c477dac:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "b2c16f35f892401415c5e386f7ad44168f3d7f9a9794a61988e208414c477dac:S3:v1:H1"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "b2c16f35f892401415c5e386f7ad44168f3d7f9a9794a61988e208414c477dac:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "b2c16f35f892401415c5e386f7ad44168f3d7f9a9794a61988e208414c477dac:S2:v1:B1"
+            ],
+            "source_ids": [
+              "313c37aeddbfab16fcd7a30d9593f2b53435597205334074c6173e0362e70815:FunctionDef:2:0:13:37",
+              "313c37aeddbfab16fcd7a30d9593f2b53435597205334074c6173e0362e70815:Return:13:4:13:37"
+            ],
+            "required_relation": "For a string of words separated by commas or spaces, return an array containing the words, treating commas and spaces as separators.",
+            "actual_relation": "Removes every comma from `s`, then splits on whitespace; commas without surrounding whitespace are not separators and comma characters are discarded.",
+            "divergence_condition": "An eligible input contains adjacent words separated only by a comma, such as `\"a,b\"`.",
+            "verdict": "mismatch",
+            "justification": "The required result is `[\"a\",\"b\"]`, while the implementation returns `[\"ab\"]`. The public examples do not establish behavior for this admissible comma-separated form."
+          }
+        ]
+      }
+    },
+    {
+      "task_id": 110,
+      "artifact": {
+        "status": "ok",
+        "reason": "A concrete mismatch is established under the ordinary element-exchange interpretation: the equal-length guard causes false NO results. The exchange semantics remain underspecified, so this conclusion depends on that admissible interpretation.",
+        "items": [
+          {
+            "statement": "The equal-length precondition rejects valid exchanges on unequal-length lists.",
+            "obligation_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S1:v1:O2",
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B2"
+            ],
+            "source_ids": [
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:If:16:4:17:19",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:Compare:16:7:16:29",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:Return:17:8:17:19"
+            ],
+            "condition": "lst1 and lst2 have different lengths, but enough exchangeable even elements exist in lst2 to make every element of lst1 even.",
+            "effect": "The requirement predicts YES while the implementation returns NO immediately.",
+            "alternative": "If the intended exchange operation requires preserving equal list lengths, the length guard may be required; the specification does not state that constraint.",
+            "uncertainty": "The exchange operation and length constraints are unspecified.",
+            "id": "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S3:v1:H1"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B1"
+            ],
+            "source_ids": [
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:FunctionDef:2:0:26:16",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:arg:2:13:2:17",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:arg:2:19:2:23"
+            ],
+            "required_relation": "Accept two non-empty lists of numbers as inputs.",
+            "actual_relation": "Defines a function accepting two arguments named lst1 and lst2; behavior for non-list, empty, or otherwise undefined values is not established.",
+            "divergence_condition": "An invocation outside the specified non-empty-list domain, or with meanings of numbers not supported by modulo arithmetic.",
+            "verdict": "unknown",
+            "justification": "The function signature supports the required inputs, but the evidence does not establish behavior across the specification's undefined input boundaries."
+          },
+          {
+            "obligation_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S1:v1:O2"
+            ],
+            "behavior_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B2",
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B3",
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B4",
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B5",
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B6"
+            ],
+            "source_ids": [
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:If:16:4:17:19",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:For:18:4:25:27",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:If:19:8:25:27",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:For:20:12:25:27",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:BinOp:19:11:19:22",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:Compare:21:19:21:35"
+            ],
+            "required_relation": "Determine whether exchanges between the lists can make every element of lst1 even, with no stated restriction that the lists have equal lengths.",
+            "actual_relation": "Requires equal lengths and returns NO otherwise; when lengths match, scans each odd lst1 element and exchanges it with the first currently even lst2 element.",
+            "divergence_condition": "There are unequal-length lists for which an allowed exchange can make lst1 entirely even, such as lst1=[1] and lst2=[2], under the ordinary interpretation that individual elements may be exchanged.",
+            "verdict": "mismatch",
+            "justification": "The implementation imposes an equal-length guard absent from the requirement, so it rejects some exchanges that can make lst1 entirely even."
+          },
+          {
+            "obligation_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B6"
+            ],
+            "source_ids": [
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:Return:26:4:26:16",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:Constant:26:11:26:16"
+            ],
+            "required_relation": "Return \"YES\" whenever the required exchange is possible.",
+            "actual_relation": "Returns \"YES\" only after equal lengths and successful greedy replacements for every odd lst1 element.",
+            "divergence_condition": "An unequal-length input pair admits a valid exchange making lst1 entirely even, for example [1] and [2].",
+            "verdict": "mismatch",
+            "justification": "For that condition the required result is YES, but the length guard causes the actual result to be NO."
+          },
+          {
+            "obligation_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S1:v1:O4"
+            ],
+            "behavior_ids": [
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B2",
+              "62c359ddb91edb8bdc6586e0080290987aea51c55a85fd9d2861392c199ad1fd:S2:v1:B5"
+            ],
+            "source_ids": [
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:If:16:4:17:19",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:Return:17:8:17:19",
+              "380ca876b9e3a9c32e3ee03d35d6970cfdfc7fe16002e00e6ba242eb06f25512:Return:25:16:25:27"
+            ],
+            "required_relation": "Return \"NO\" when no allowed exchange can make every element of lst1 even.",
+            "actual_relation": "Returns \"NO\" for unequal lengths or when a processed odd lst1 element finds no even lst2 element.",
+            "divergence_condition": "No divergence is established for genuinely impossible exchanges; however, the same NO path is also taken for some possible exchanges because of the equal-length guard.",
+            "verdict": "consistent",
+            "justification": "Whenever the exchange is impossible, returning NO agrees with the requirement. The additional false-NO behavior is captured under O2 and O3."
+          }
+        ]
+      }
+    },
+    {
+      "task_id": 119,
+      "artifact": {
+        "status": "ok",
+        "reason": "The balance predicate and eligible-input handling are consistent, but candidate generation tests interior insertions beyond the two required concatenation orders, producing a substantive Yes/No mismatch under that divergence condition.",
+        "items": [
+          {
+            "statement": "The implementation accepts an interleaving of the two strings as a successful arrangement, although the requirement permits only whole-string concatenation orders.",
+            "obligation_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S1:v1:O2"
+            ],
+            "behavior_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B3",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B4",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B5"
+            ],
+            "source_ids": [
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:32:4:32:14",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:33:4:33:14",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:For:34:4:37:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:35:8:35:29",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:If:36:8:37:24"
+            ],
+            "condition": "Some interior insertion of b into a is good while both a+b and b+a are not good.",
+            "effect": "The function returns Yes although the required result is No.",
+            "alternative": "The phrase \u201csome order\u201d could be interpreted as allowing insertion or interleaving, but the stated two-string concatenation wording supports only the two whole-string orders.",
+            "uncertainty": "",
+            "id": "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          },
+          {
+            "statement": "The final output relation is wrong on inputs whose only accepted candidate is an interior insertion.",
+            "obligation_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S1:v1:O4"
+            ],
+            "behavior_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B4",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B5",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B6"
+            ],
+            "source_ids": [
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:For:34:4:37:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:35:8:35:29",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:If:36:8:37:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Constant:38:11:38:15"
+            ],
+            "condition": "At least one interior insertion passes the predicate and neither a+b nor b+a passes it.",
+            "effect": "The implementation returns Yes instead of No.",
+            "alternative": "If the intended task permits inserting one string inside the other, the observed output relation would be consistent with that broader requirement.",
+            "uncertainty": "",
+            "id": "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S3:v1:H2",
+            "local_id": "H2",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S3:v1:H1",
+          "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S3:v1:H2"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B3"
+            ],
+            "source_ids": [
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:32:4:32:14",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:33:4:33:14",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:For:34:4:37:24"
+            ],
+            "required_relation": "For eligible inputs, the argument is a list of exactly two parenthesis-only strings.",
+            "actual_relation": "The function unpacks the argument into two values and uses the first value's length; on eligible inputs, this proceeds without an input-validation exit.",
+            "divergence_condition": "None established for eligible inputs.",
+            "verdict": "consistent",
+            "justification": "The observed argument handling supports the stated two-string input domain, and no separate validation requirement is specified."
+          },
+          {
+            "obligation_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S1:v1:O2"
+            ],
+            "behavior_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B3",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B4",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B5",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B6"
+            ],
+            "source_ids": [
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:32:4:32:14",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:33:4:33:14",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:For:34:4:37:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:35:8:35:29",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:If:36:8:37:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Constant:38:11:38:15"
+            ],
+            "required_relation": "There exists a good concatenation in one of exactly two orders: a+b or b+a.",
+            "actual_relation": "The function tests every value formed by inserting b at each position in a, including interior insertions, and returns Yes if any such value is accepted; otherwise it returns No.",
+            "divergence_condition": "There is an eligible pair for which an interior insertion a[:i]+b+a[i:] is good for some 0<i<len(a), while both a+b and b+a are not good.",
+            "verdict": "mismatch",
+            "justification": "The implementation's candidate set is strictly broader than the two permitted concatenation orders, so it can return Yes for an interleaving that the requirement does not allow."
+          },
+          {
+            "obligation_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B1",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B2"
+            ],
+            "source_ids": [
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:19:8:19:18",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:If:20:8:21:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:22:8:22:17",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:For:23:8:29:32",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Return:30:8:30:25",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Return:21:12:21:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:If:24:12:29:32",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:AugAssign:25:16:25:26",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:AugAssign:27:16:27:26",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:If:28:16:29:32",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Return:29:20:29:32"
+            ],
+            "required_relation": "A candidate is good exactly when its parentheses are balanced: no prefix has more closing than opening parentheses and the final balance is zero.",
+            "actual_relation": "The predicate rejects odd lengths, decrements for every non-'(' character and rejects negative prefixes, then accepts only when the final counter is zero.",
+            "divergence_condition": "None established for eligible parenthesis-only candidate strings.",
+            "verdict": "consistent",
+            "justification": "For candidates containing only '(' and ')', the counter scan implements the stated balanced-parentheses condition; the odd-length check is redundant but does not change the result."
+          },
+          {
+            "obligation_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S1:v1:O4"
+            ],
+            "behavior_ids": [
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B4",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B5",
+              "8025905903ad5bf1a290597bed28b590d157fcc4cd8b30bcb23dfe98d6b8c001:S2:v1:B6"
+            ],
+            "source_ids": [
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:For:34:4:37:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Assign:35:8:35:29",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:If:36:8:37:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Constant:38:11:38:15",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:BinOp:35:12:35:29",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Call:36:11:36:21",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Return:37:12:37:24",
+              "7255f741f387c061978c65c3e6d059ef3ca498ebdb0c19ecddde15bae51c92bf:Constant:37:19:37:24"
+            ],
+            "required_relation": "Return exactly Yes iff at least one of a+b or b+a is good; otherwise return exactly No.",
+            "actual_relation": "Return Yes iff at least one insertion of b into a, including interior positions, passes the balance predicate; return No after all insertion positions fail.",
+            "divergence_condition": "An eligible pair has a good interior-insertion candidate but neither permitted whole-string order is good.",
+            "verdict": "mismatch",
+            "justification": "The Yes/No outputs quantify over extra interleavings, so the output can differ from the required existential condition over only the two orders."
+          }
+        ]
+      }
+    },
+    {
+      "task_id": 153,
+      "artifact": {
+        "status": "ok",
+        "reason": "Most obligations align with the observed implementation. A concrete mismatch exists for nonempty lists whose maximum uppercase-minus-lowercase strength is at most -1, due to the initial -1 sentinel.",
+        "items": [
+          {
+            "statement": "The initial best-strength sentinel causes valid extensions with maximum strength at most -1 to be omitted.",
+            "obligation_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B1",
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B4",
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B5"
+            ],
+            "source_ids": [
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:19:4:19:27",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:20:4:20:28",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:If:30:8:32:43",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:31:12:31:41",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:32:12:32:43",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Return:33:4:33:48"
+            ],
+            "condition": "The extension list is nonempty and every extension has strength less than or equal to -1.",
+            "effect": "The function returns class_name. with no selected extension instead of class_name.<strongest_extension>.",
+            "alternative": "The intended input domain may exclude lists whose maximum strength is nonpositive, but that restriction is not stated.",
+            "uncertainty": "The empty-list behavior and permitted extension contents are unspecified, but the listed condition uses a nonempty list within the candidate eligibility.",
+            "id": "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S3:v1:H1"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B2",
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B5"
+            ],
+            "source_ids": [
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:FunctionDef:2:0:33:48",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:For:21:4:32:43",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Return:33:4:33:48"
+            ],
+            "required_relation": "Accept a class-name string and an extension list, then return a formatted class-and-extension string.",
+            "actual_relation": "The function accepts the two parameters, iterates over extensions, and returns class_name.selected_extension after normal completion; no input validation or alternate exit is established.",
+            "divergence_condition": "No divergence is established for inputs matching the stated string-and-list domain.",
+            "verdict": "consistent",
+            "justification": "The observed signature and normal return scope match the specified input and output relation. Behavior outside that domain is not specified."
+          },
+          {
+            "obligation_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S1:v1:O2"
+            ],
+            "behavior_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B2",
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B3"
+            ],
+            "source_ids": [
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:For:21:4:32:43",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:22:8:22:15",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:23:8:23:14",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:For:24:8:28:23",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:29:8:29:27",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:If:25:12:28:23",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Name:29:8:29:16",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:BinOp:29:19:29:27"
+            ],
+            "required_relation": "For each eligible extension, strength equals the count of uppercase letters minus the count of lowercase letters.",
+            "actual_relation": "For each extension, uppercase and lowercase letters are counted using isupper/is lower checks, and strength is computed as cap minus sm.",
+            "divergence_condition": "No divergence is established for extensions whose characters can be processed by the observed iteration and case checks.",
+            "verdict": "consistent",
+            "justification": "The implementation computes the same subtraction relation identified by the candidate requirement. The specification's word \u201cfraction\u201d remains ambiguous, but its example and candidate relation support subtraction."
+          },
+          {
+            "obligation_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S1:v1:O3"
+            ],
+            "behavior_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B1",
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B4",
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B5"
+            ],
+            "source_ids": [
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:19:4:19:27",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:20:4:20:28",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:If:30:8:32:43",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:31:12:31:41",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:32:12:32:43",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Return:33:4:33:48"
+            ],
+            "required_relation": "When the extension list contains at least one extension, return the class name followed by the strongest extension, including when its strength is negative.",
+            "actual_relation": "Initializes best strength to -1, replaces it only when a current strength is strictly greater than -1 or the stored value, then returns the selected extension; if no replacement occurs, the selected extension remains empty.",
+            "divergence_condition": "A nonempty list whose maximum strength is less than or equal to -1, such as ['a'] with strength -1, yields the required extension but the actual empty selection.",
+            "verdict": "mismatch",
+            "justification": "The initial sentinel value -1 is also a possible extension strength, so valid nonempty inputs can fail to select any extension."
+          },
+          {
+            "obligation_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S1:v1:O4"
+            ],
+            "behavior_ids": [
+              "eba754a09f84e7abc5fff367b4224368360c3153b06fb703c6572de1c049b3ba:S2:v1:B4"
+            ],
+            "source_ids": [
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:If:30:8:32:43",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Compare:30:11:30:40",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:31:12:31:41",
+              "7fa660008245f469984a54c79c81aa91ffd8aab5b2a10438119ab2ee8ce0df87:Assign:32:12:32:43"
+            ],
+            "required_relation": "Among extensions tied for greatest strength, select the earliest one in list order.",
+            "actual_relation": "Replace the selected extension only when current strength is strictly greater than the stored strength; equal-strength later extensions do not replace the earlier selection.",
+            "divergence_condition": "No divergence is established for eligible tie cases processed normally.",
+            "verdict": "consistent",
+            "justification": "The strict greater-than guard preserves the first extension attaining the maximum strength."
+          }
+        ]
+      }
+    },
+    {
+      "task_id": 155,
+      "artifact": {
+        "status": "ok",
+        "reason": "The implementation is consistent for ordinary inputs but mismatches the digit-counting requirement for negative values whose absolute representation has trailing zeros.",
+        "items": [
+          {
+            "statement": "Negative inputs whose absolute value ends in zero are undercounted because reversal followed by integer conversion drops the resulting leading zeros.",
+            "obligation_ids": [
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B2",
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B3",
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B4",
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B5"
+            ],
+            "source_ids": [
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:If:11:4:13:33",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:Assign:12:8:12:22",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:Assign:13:8:13:33",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:Assign:14:4:14:22",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:For:15:4:19:26",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:Return:20:4:20:32"
+            ],
+            "condition": "num is negative and str(abs(num)) ends with at least one zero.",
+            "effect": "The returned counts omit those zero digits; for example, -120 would count 21 instead of counting 120.",
+            "alternative": "If the intended semantics count digits only after normalization that removes leading zeros, this would not be a mismatch, but that interpretation is not stated and conflicts with ordinary digit counting.",
+            "uncertainty": "",
+            "id": "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S3:v1:H1",
+            "local_id": "H1",
+            "stage": "S3",
+            "version": 1
+          }
+        ],
+        "selected_ids": [
+          "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S3:v1:H1"
+        ],
+        "decisions": [],
+        "comparisons": [
+          {
+            "obligation_ids": [
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S1:v1:O1"
+            ],
+            "behavior_ids": [
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B1",
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B2",
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B3",
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B4",
+              "ca22be8df42795a8e9a73d4fd3f94a4c58699c8a75d302afd18e2dc402349900:S2:v1:B5"
+            ],
+            "source_ids": [
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:If:11:4:13:33",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:Assign:12:8:12:22",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:Assign:13:8:13:33",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:Assign:14:4:14:22",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:For:15:4:19:26",
+              "b4ac2bf44ae9ff27a7774451a2dd064b14cadc49eb3a5074a4067ca5446e36b7:Return:20:4:20:32"
+            ],
+            "required_relation": "For every integer, return a two-element tuple counting all even and odd decimal digits, excluding a negative sign.",
+            "actual_relation": "Initializes counters, and for negative inputs replaces the value with its absolute value, reverses its decimal digits, converts the result to an integer, then counts the remaining decimal characters and returns the counts.",
+            "divergence_condition": "The input is negative and its absolute decimal representation ends in one or more zeros, such as -120.",
+            "verdict": "mismatch",
+            "justification": "Reversing and converting to an integer removes trailing zeros from the reversed representation, so digits that are present in the required input representation are not counted. The public example establishes that zero is an even digit, making this outcome divergent."
+          }
+        ]
+      }
+    }
+  ],
+  "raw_chain_rejects": [
+    {
+      "task_id": 57,
+      "stage": "S3",
+      "error": "comparison_source_refs",
+      "raw": "{\"comparisons\":[{\"obligation_ids\":[\"O1\"],\"behavior_ids\":[\"B2\",\"B3\",\"B4\",\"B5\",\"B6\"],\"source_ids\":[\"N2\",\"N3\",\"N4\",\"N5\",\"N8\",\"N10\",\"N13\",\"N19\",\"N26\",\"N27\",\"N37\",\"N38\",\"N39\",\"N40\",\"N50\",\"N51\"],\"required_relation\":\"Return True iff the complete list is monotonically increasing or decreasing; otherwise return False.\",\"actual_relation\":\"Lists of length at most one return True. For longer lists, the first pair selects increasing mode only when l[0] < l[1]; otherwise decreasing mode is selected. The function returns False on any later opposite-direction change and True if no such violation occurs; equal adjacent values are allowed.\",\"divergence_condition\":\"No admissible divergence is established because strict versus non-strict monotonicity, empty and singleton inputs, and element comparability are unspecified.\",\"verdict\":\"unknown\",\"justification\":\"The implementation is consistent with a non-strict interpretation for comparable elements and with the public examples, but the requirement does not define strictness, behavior for short lists, or eligibility/comparability conditions. Passing examples cannot establish equivalence.\"}],\"hypotheses\":[],\"selected\":[],\"summary\":\"No mismatch is established; equivalence remains unknown because key specification cases and ordering semantics are undefined.\"}"
+    },
+    {
+      "task_id": 68,
+      "stage": "S2",
+      "error": "source_refs",
+      "raw": "{\"items\":[{\"statement\":\"Defines a function accepting one argument.\",\"source_ids\":[\"N1\",\"N7\"],\"guard\":\"\",\"effect\":\"Creates callable behavior; no direct output at definition time.\",\"uncertainty\":\"\"},{\"statement\":\"Returns an empty list when the argument has length zero.\",\"source_ids\":[\"N2\",\"N9\",\"N18\",\"N19\",\"N20\"],\"guard\":\"len(arr) == 0\",\"effect\":\"Output is [].\",\"uncertainty\":\"\"},{\"statement\":\"Computes the minimum element of a non-empty argument.\",\"source_ids\":[\"N3\",\"N11\",\"N21\",\"N22\"],\"guard\":\"The length-zero condition is false.\",\"effect\":\"Stores the computed value for subsequent checks.\",\"uncertainty\":\"\"},{\"statement\":\"Returns the minimum element and its first index when that minimum has zero remainder under division by 2.\",\"source_ids\":[\"N4\",\"N12\",\"N13\",\"N23\",\"N24\",\"N25\",\"N36\",\"N37\",\"N41\",\"N42\",\"N47\"],\"guard\":\"The computed minimum satisfies min_value % 2 == 0.\",\"effect\":\"Output is [min_value, arr.index(min_value)].\",\"uncertainty\":\"\"},{\"statement\":\"Scans the argument from the beginning and returns the first element with zero remainder under division by 2 together with its index.\",\"source_ids\":[\"N5\",\"N14\",\"N15\",\"N16\",\"N26\",\"N27\",\"N28\",\"N29\",\"N30\",\"N31\",\"N38\",\"N39\",\"N40\",\"N43\",\"N44\",\"N45\",\"N46\"],\"guard\":\"The minimum does not satisfy the preceding divisibility condition, and an element satisfying item % 2 == 0 is encountered.\",\"effect\":\"Output is [item, index], and iteration stops immediately.\",\"uncertainty\":\"\"},{\"statement\":\"Returns an empty list after scanning without finding such an element.\",\"source_ids\":[\"N5\",\"N6\",\"N17\",\"N31\"],\"guard\":\"The minimum is not divisible by 2 and no scanned element satisfies item % 2 == 0.\",\"effect\":\"Output is [].\",\"uncertainty\":\"\"}],\"summary\":\"For a non-empty argument, the function first checks the minimum; it returns that minimum and its first index if divisible by 2, otherwise it returns the first scanned element divisible by 2 and its index, or an empty list if none is found.\"}"
+    },
+    {
+      "task_id": 78,
+      "stage": "S2",
+      "error": "source_refs",
+      "raw": "{\"items\":[{\"statement\":\"Defines a function accepting one argument.\",\"source_ids\":[\"N1\",\"N3\"],\"guard\":\"\",\"effect\":\"Creates the callable function; no output occurs at definition time.\",\"uncertainty\":\"\"},{\"statement\":\"When called, invokes the argument's count method for each of the characters '2', '3', '5', '7', 'B', and 'D', then adds the six resulting values.\",\"source_ids\":[\"N2\",\"N4\",\"N6\",\"N8\",\"N10\",\"N12\",\"N14\",\"N17\",\"N19\",\"N21\",\"N24\",\"N26\",\"N27\",\"N28\",\"N29\"],\"guard\":\"The argument supports count calls compatible with these string arguments.\",\"effect\":\"Returns the sum of the six counts.\",\"uncertainty\":\"\"}],\"summary\":\"The function returns how many occurrences of the six specified characters appear in its argument, subject to the argument's count-method behavior.\"}"
+    },
+    {
+      "task_id": 83,
+      "stage": "S2",
+      "error": "source_refs",
+      "raw": "{\"items\":[{\"statement\":\"Defines a callable function accepting one parameter n.\",\"source_ids\":[\"N1\",\"N5\"],\"guard\":\"\",\"effect\":\"Creates the function during initialization.\",\"uncertainty\":\"\"},{\"statement\":\"Initializes a local counter to zero.\",\"source_ids\":[\"N2\",\"N6\",\"N7\"],\"guard\":\"When the function is called.\",\"effect\":\"The counter starts at 0.\",\"uncertainty\":\"\"},{\"statement\":\"Iterates i over the integers from 10**(n-1), inclusive, up to 10**n, exclusive.\",\"source_ids\":[\"N3\",\"N8\",\"N9\",\"N12\",\"N13\",\"N14\",\"N17\",\"N18\",\"N19\",\"N20\",\"N25\",\"N26\"],\"guard\":\"When evaluating the range expression succeeds.\",\"effect\":\"Processes each generated integer in sequence.\",\"uncertainty\":\"Behavior for parameter values that make range construction or iteration invalid is not otherwise specified.\"},{\"statement\":\"For each i, converts i to a string and checks whether its first character or last character equals the string '1'.\",\"source_ids\":[\"N10\",\"N15\",\"N21\",\"N22\",\"N27\",\"N28\",\"N29\",\"N30\",\"N31\",\"N32\",\"N33\",\"N34\",\"N35\",\"N36\",\"N37\",\"N38\",\"N39\"],\"guard\":\"For each iterated i.\",\"effect\":\"Determines whether the counter should be incremented.\",\"uncertainty\":\"\"},{\"statement\":\"Increments the counter by one whenever either character check is true.\",\"source_ids\":[\"N10\",\"N16\",\"N23\",\"N24\"],\"guard\":\"The first or last character of str(i) is '1'.\",\"effect\":\"Adds one to the accumulated count.\",\"uncertainty\":\"\"},{\"statement\":\"Returns the final counter value after the iteration completes.\",\"source_ids\":[\"N4\",\"N11\"],\"guard\":\"The loop completes without an exception.\",\"effect\":\"The function output is the accumulated integer count.\",\"uncertainty\":\"\"}],\"summary\":\"The function counts integers in the specified power-of-ten range whose decimal string representation starts or ends with '1', then returns that count.\"}"
+    },
+    {
+      "task_id": 130,
+      "stage": "S3",
+      "error": "comparison_source_refs",
+      "raw": "{\"comparisons\":[{\"obligation_ids\":[\"O1\"],\"behavior_ids\":[\"B1\"],\"source_ids\":[\"N1\",\"N3\",\"N6\"],\"required_relation\":\"The input n must be a non-negative integer.\",\"actual_relation\":\"tri(n) attempts to evaluate range(n + 1) and construct the list; no explicit non-negative-integer validation is established, and evaluation may error for unsupported inputs.\",\"divergence_condition\":\"An input outside the stated domain for which the required contract specifies no behavior, but actual acceptance or failure would be relevant; the evidence does not establish the required comparison.\",\"verdict\":\"unknown\",\"justification\":\"Behavior for ineligible inputs is not defined by the requirement, while the candidate evidence does not fully characterize input handling or exits.\"},{\"obligation_ids\":[\"O2\"],\"behavior_ids\":[\"B2\",\"B3\",\"B4\",\"B5\"],\"source_ids\":[\"N2\",\"N5\",\"N8\",\"N9\",\"N10\",\"N15\",\"N16\",\"N17\",\"N25\",\"N26\",\"N27\",\"N33\",\"N34\",\"N35\"],\"required_relation\":\"The sequence uses tri(1)=3, the even clause 1+n/2, and the odd clause tri(n-1)+tri(n-2)+tri(n+1), subject to the stated recurrence's ambiguity around tri(0).\",\"actual_relation\":\"The helper returns 1 at 0, 3 at 1, 2 at 2, 1+n/2 for other even inputs, and the three-term recursive sum for odd inputs other than 1 and 2; odd recursive evaluation may fail or not terminate.\",\"divergence_condition\":\"No divergence is established for recurrence-covered indices: the explicit value at 2 equals the even clause, and the extra tri(0)=1 resolves an otherwise unspecified index.\",\"verdict\":\"consistent\",\"justification\":\"The actual branches agree with the stated clauses wherever the requirement defines or exemplifies the value; the additional tri(0) behavior addresses an ambiguity rather than contradicting a requirement.\"},{\"obligation_ids\":[\"O3\"],\"behavior_ids\":[\"B1\"],\"source_ids\":[\"N1\",\"N3\",\"N6\"],\"required_relation\":\"For an eligible non-negative integer n, return a list containing the first n+1 sequence values.\",\"actual_relation\":\"When range(n+1) can be evaluated, returns one helper-computed value for each integer i from 0 through n inclusive, yielding a list of length n+1.\",\"divergence_condition\":\"For an eligible non-negative integer n, the list would need to omit, add, or reorder an index in 0 through n; no such condition is established by the evidence.\",\"verdict\":\"consistent\",\"justification\":\"The list construction covers exactly the integer range 0 through n and returns one computed value per index.\"}],\"hypotheses\":[],\"selected\":[],\"summary\":\"The recurrence and output length are consistent with the stated requirements for eligible inputs. Input validation and behavior outside the eligible domain remain unknown; no mismatch is established.\"}"
+    },
+    {
+      "task_id": 135,
+      "stage": "S2",
+      "error": "behavior_fields",
+      "raw": "{\"items\":[{\"statement\":\"Defines a function that returns -1 when the argument is falsy.\",\"source_ids\":[\"N1\",\"N2\",\"N9\"],\"guard\":\"arr is falsy\",\"effect\":\"Returns -1.\"},{\"statement\":\"Returns 0 when the argument has length 1.\",\"source_ids\":[\"N3\",\"N11\"],\"guard\":\"len(arr) == 1\",\"effect\":\"Returns 0.\"},{\"statement\":\"Initializes a result index to -1 and examines adjacent elements from index 1 through the end.\",\"source_ids\":[\"N4\",\"N5\"],\"guard\":\"arr is truthy and has length other than 1\",\"effect\":\"Iterates over adjacent element pairs.\"},{\"statement\":\"Whenever the current element is less than the preceding element, updates the result index to the current index.\",\"source_ids\":[\"N16\",\"N28\"],\"guard\":\"arr[i] < arr[i - 1]\",\"effect\":\"Sets max_index to i; later decreases overwrite earlier values.\"},{\"statement\":\"Returns the final stored result index.\",\"source_ids\":[\"N6\"],\"guard\":\"After the applicable earlier branches and loop\",\"effect\":\"Returns -1 if no comparison triggered, otherwise the last index where the comparison was true.\"}],\"summary\":\"The function handles falsy and single-length inputs specially, then scans adjacent elements and returns the last index at which the sequence decreases, or -1 if none does.\"}"
+    },
+    {
+      "task_id": 137,
+      "stage": "S2",
+      "error": "source_refs",
+      "raw": "{\"items\":[{\"statement\":\"Defines a function compare_one accepting two arguments, a and b.\",\"source_ids\":[\"N1\",\"N3\",\"N4\"],\"guard\":\"\",\"effect\":\"\",\"uncertainty\":\"\"},{\"statement\":\"Converts a and b to strings, replaces every period with a comma, and compares the resulting strings lexicographically.\",\"source_ids\":[\"N2\",\"N5\",\"N8\",\"N9\",\"N14\",\"N15\",\"N16\",\"N17\",\"N18\",\"N19\",\"N24\",\"N25\",\"N32\",\"N33\",\"N34\",\"N35\"],\"guard\":\"\",\"effect\":\"\",\"uncertainty\":\"The behavior of str() and replace() for supplied values is externally determined.\"},{\"statement\":\"Returns b when the transformed string for a is less than the transformed string for b.\",\"source_ids\":[\"N2\",\"N5\",\"N6\",\"N10\"],\"guard\":\"The first transformed-string comparison is true.\",\"effect\":\"The function outputs the original b value.\",\"uncertainty\":\"\"},{\"statement\":\"Returns None when the transformed strings for a and b are equal.\",\"source_ids\":[\"N2\",\"N7\",\"N11\",\"N12\",\"N20\",\"N21\",\"N22\",\"N26\",\"N27\",\"N28\",\"N29\",\"N30\",\"N31\",\"N36\",\"N37\",\"N38\",\"N39\",\"N40\",\"N41\"],\"guard\":\"The first comparison is false and the equality comparison is true.\",\"effect\":\"The function outputs None.\",\"uncertainty\":\"\"},{\"statement\":\"Returns a otherwise.\",\"source_ids\":[\"N2\",\"N7\",\"N11\",\"N13\",\"N23\"],\"guard\":\"The transformed strings are neither ordered as less-than nor equal.\",\"effect\":\"The function outputs the original a value.\",\"uncertainty\":\"\"}],\"summary\":\"The function compares period-to-comma-transformed string representations of its arguments and returns b, None, or a according to the lexicographic comparison.\"}"
+    }
+  ],
+  "semantic_accuracy": null
+}

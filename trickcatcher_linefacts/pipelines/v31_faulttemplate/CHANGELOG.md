@@ -19,4 +19,4 @@ Parent: `pipelines/v29_vibepass` (PARENT.json). Plan: `trickcatcher_linefacts/PL
 - Amendment 3 (independent Opus review): openai-SDK client (retry, fail-fast 400, no caching of empty/truncated
   replies, provider pinned, 16k tokens), survivor cap 200, PUT-ok kills, public-example domain filter, template-random
   baseline, witness-only race fix, stronger leak guard + CPU leak test, protocol env/evaluator digests. 39 tests pass.
-- Status: running MVP (vibepass_half).
+- Status: MVP complete 2026-10-20 ($2.56). Rule met: fault-template 18 vs plain 15 tasks confirmed, paired 4–1, FA tests 27 vs 32; weak (p≈0.38, one win from a plain schema failure, ranking ≈ random). See analysis/v31_faulttemplate_results.md.

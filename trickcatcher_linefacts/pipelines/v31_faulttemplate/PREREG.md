@@ -1221,3 +1221,23 @@ Review findings applied (no output was seen; the leak attempt was never scored):
   filter removes out-of-profile inputs; accepted to avoid contract-invalid false alarms); vibepass_half tool stage
   (no reference): site concepts 31/33, 195 selected inputs, type match 62/143.
 Decision rule otherwise unchanged; cohort vibepass_half, K=1.
+
+## Amendment 4 (2026-10-20, during generation, before freeze; no score computed or viewed)
+Resume plumbing only; prompts, arms, tools, scorer and decision rule unchanged.
+- The OpenRouter **workspace** monthly budget ($2.00, separate from the key limit) returned 403 after 149/198 calls; the
+  limit was raised and the run resumed. 403 attempt logs are archived per slot as `attempts_workspace403.json`
+  (they never reached a model) so the retry counter restarts.
+- Bug 1: an LLM arm that failed with transport_exhausted was not recorded, but its tool ledger kept `round` events with
+  no probes; on resume the successful call produced probe events → `ledger_replay_drift`. Fix: before an unrecorded LLM
+  arm starts, its ledger is archived as `ledger.unrecorded-<n>.json` and rebuilt (executions are deterministic and cached).
+- Bug 2: a truncated HTTP body raised `JSONDecodeError` inside the SDK and escaped the attempt loop; it now counts as a
+  transport attempt like other API errors.
+- Because `ft_run.py`, `openrouter_client.py` and this file changed, the first protocol is kept as
+  `protocol_registered_v1.json`; the new protocol.json differs from it only in those three source hashes.
+- Amendment 4b (same day, before freeze, no score viewed): the two code fixes above were **reverted**. `flow_tools`
+  keys ledgers and the execution cache on a hash of every pipeline `.py` file, so any code change invalidates all
+  cached sessions (`ledger_context_drift`). Pipeline code is therefore byte-identical to the registered commit 86f37f4.
+  Instead, the 13 stale ledgers of unrecorded LLM arms were archived once (`ledger.unrecorded-<n>.json`) by an
+  out-of-pipeline script before resuming; a truncated body (`JSONDecodeError`) still fails its arm, which is not
+  recorded and is retried by rerunning. protocol.json is regenerated and differs from `protocol_registered_v1.json`
+  only in the PREREG.md hash.

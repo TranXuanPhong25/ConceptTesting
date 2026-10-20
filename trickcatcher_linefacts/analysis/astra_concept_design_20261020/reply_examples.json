@@ -1,0 +1,68 @@
+{
+  "scope": "Illustrative relation/claim/query example. NOT rendered as task prompt example; would reveal a diagnostic witness. Production format example must use unrelated identity function.",
+  "examples": [
+    {
+      "claims": [
+        {
+          "id": "h1",
+          "kind": "mismatch",
+          "statement": "Loss of multiplicity may occur only when xs repeats an eligible value.",
+          "stance": "revise",
+          "evidence": [
+            "original_spec",
+            "T1"
+          ],
+          "uncertainty": "Distinct-list observation refutes prior length-only claim; duplicate condition still needs replay."
+        }
+      ],
+      "queries": [
+        {
+          "action": {
+            "tool": "replay_input",
+            "input": "([4, 4],)",
+            "ids": [],
+            "hypothesis": "h1"
+          },
+          "claim": "h1",
+          "prediction": "If deduplication reaches output, native return has one 4; preserving occurrences yields two.",
+          "why": "Compare with earlier distinct-list row. A count-preserving return rejects this concrete prediction; one occurrence supports it only on this input."
+        }
+      ],
+      "note": "A tool returns observed native output, not relation_violated or expected output."
+    },
+    {
+      "claims": [
+        {
+          "id": "h1",
+          "kind": "mismatch",
+          "statement": "A local set operation causes returned multiplicity loss.",
+          "stance": "withdraw",
+          "evidence": [
+            "T2",
+            "source_return"
+          ],
+          "uncertainty": "Native duplicate replay preserved occurrences; source returns original collection. No universal correctness conclusion."
+        }
+      ],
+      "final_inputs": []
+    },
+    {
+      "claims": [
+        {
+          "id": "n1",
+          "kind": "normative",
+          "statement": "Suitable is undefined for nonempty inputs.",
+          "stance": "unknown",
+          "evidence": [
+            "original_spec"
+          ],
+          "uncertainty": "Observed first-element behavior does not define the intended eligibility predicate."
+        }
+      ],
+      "final_inputs": [
+        "([4, 1],)"
+      ],
+      "note": "An exploratory input is retained although normative oracle remains unknown."
+    }
+  ]
+}
