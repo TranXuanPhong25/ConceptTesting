@@ -45,7 +45,7 @@
 - [v29 VibePass Codex](v29-vibepass.md) — INVALID: prompts leaked the reference (`_plus` test field); numbers unusable
 - [Flowtools contract audit](flowtools-contract-audit.md) — v21 tool-use/source-trigger gaps; audited v30 CPU repair54/54, no new model run
 - [v31 fault templates](v31-faulttemplate.md) — 2026-10-19 explicit fault-type concepts + templates vs plain, Qwen3.5-35B; rule met but weak: 18 vs 15 confirmed /33, 4–1, FA 27 vs 32, $2.56
-- [v34 fault-concept placebo](v34-ftplacebo.md) — 2026-10-20 concept vs same inputs: detection 8–2 but FA 27>23, rule not met; v35 CPU ceiling 14/33 → direction stopped (input pool is the cap)
+- [v34 fault-concept placebo](v34-ftplacebo.md) — v34 rule not met; v35 stop; v37 Mokav-mutant no-go 3/20; v38 HumanEval spec programs = canonical; v39 VibePass spec programs no-go (C' 12/33, H' 2); paper route closed
 - [Signal, not more data](signal-not-more-data.md) — borderline result → mechanism check on existing outputs for go/no-go; never enlarge runs to salvage
 - [Check version tree first](check-version-tree-before-proposing.md) — before any new direction, name the earlier v-number that tried the core idea + result; v31 repeated v7 MUTANT
 
@@ -53,4 +53,6 @@
 
 - [Concept training evidence gap](concept-training-evidence-gap.md) — recent losses mainly upstream/gates/oracle/pool; concept-to-input training proposal premature
 
-- [Astra concept-agent diagnostic](astra-concept-agent-diagnostic.md) — Qwen32B authorized;draft7concepts/8episodes;quota19% stopped,same-task resume00:46Vietnam21Oct
+- [Astra concept-agent diagnostic](astra-concept-agent-diagnostic.md) — v40 complete72:allarms6/6buginputs,0concept-onlywins; semanticcapabilityfail/no-go,callbackhandled
+
+- [v43 concept-identification tools](v43-concept-identify.md) — implemented core, audit/CPU pending; quota15 checkpoint, scheduled continuation,0newcalls

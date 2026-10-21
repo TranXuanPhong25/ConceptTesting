@@ -110,3 +110,40 @@ and PLAN_ABSTRACT_CONCEPTS.md. User authorized implementation immediately on 202
 2026-10-20 fault-concept line (v31→v34→v35, Qwen3.5-35B OpenRouter, vibepass_half): v31 fault-template 18 vs plain 15 (4–1, weak); v34 vs same-input placebo 8–2 but FA 27>23, rule not met; post-hoc concepts point at the bug in 11/33, 5/8 wins use no exposing concept; v35 CPU ceiling 14/33 < 17 → registered **stop**. Cap = template input pool (exposes 17/33 < plain Qwen 19/33), not site location. See [[v31-faulttemplate]], [[v34-ftplacebo]], analysis/v35_concept_ceiling/RESULTS.md.
 
 2026-10-20 direction review (Claude, user asked): proposal "semantic chain + fault concept/template + property oracle" judged no-go as a new run — prior art v23/v21_flowtools/v28, no complementarity (v33 chain-only 0 tasks, 10/17 direct-only end S3 unknown; template ranking ≈ random; template pool < plain). Use the three-branch table (requirement→mismatch, fault hypothesis→input, property→oracle) as thesis "what was tried" with mechanism-explained negatives. Untracked analysis/v36_llm_localize/probe.py (other session, 22:30) has no PREREG.md and targets localization, which v35 says is not the bottleneck; not touched. See [[check-version-tree-before-proposing]], [[signal-not-more-data]].
+
+2026-10-21 Astra D1/v40: usercontinue withquota100%, stop<=15%. Astra7conceptdesign completed; v40best-v7+v30ports code/CPU12/clean audit pass, source/prepared frozen,16sharedobservations32workers. Prelaunchendpointmodels404 =>0Qwentaskcalls,all72slotsnotattempted; noactivecontroller, waitingliveendpoint. PriorCLI schedulefailedactivewriter,notasuccessfulresume. See [[astra-concept-agent-diagnostic]], RESULTS§11.78 and analysis/v40_concept_agent_20261021/REPORT.md.
+
+2026-10-21 v40terminal supersedesreadiness: delayedexactQwen32B launched05:23:51UTC/quota54; models+tokenize received, completionE3CAturn1failedtransport180.101s.1unknownusage/0response/71unattempted; nosemantic/toolresult orconceptgain. Independenthashaudit89source/8prepared/162terminalfilesPASS, no genfreeze/repair/retry/reset. Callbackhandled/noactivecontroller; see [[astra-concept-agent-diagnostic]], RESULTS§11.79 and analysis/v40_concept_agent_20261021/TERMINAL.md.
+
+
+2026-10-21 v40 explicit retry terminal: new d1_retry_20261021 stopped exactmodel/
+context preflight after1received/models metadata;0tokenizer/completion/newworkers,
+all72notattempted. Body not saved, alias vs context failure cannot be separated.
+Original1unknown completion untouched, no semantic conclusion/automatic further
+calls. Frozen source/old inventory unchanged; see [[astra-concept-agent-diagnostic]]
+and RESULTS§11.80.
+
+
+2026-10-21 v40 retry2: user requests anothertry; one savedmetadataGET confirms
+currentserver advertises7B/context16384, required32B alias absent. Conditional
+32BD1 notlaunched,0completion/newworker calls, all72notattempted. This is not
+retrospective metadata or loadedweights proof. Original1unknownusage retained.
+No automatic retry/substitution; see [[astra-concept-agent-diagnostic]], RESULTS§11.81.
+
+
+2026-10-21 v40 retry3 RUNNING supersedes prior7Bmetadata stop: user retries after
+32Bservedlabel; liveGET confirms32B-AWQ/context8192. AuditPASS, detachedcontroller
+3050555 launched13:20UTC. Firstactual32B response/schema-valid event observed;
+semantic correctness/utility not yet reviewed, latercalls running. No duplicate
+launch/treatmentrepair. Quota81%, stop<=15, terminalcallback queues originalthread
+for all8×3 postfreezeaudit/costs. See [[astra-concept-agent-diagnostic]].
+
+
+2026-10-21 v40 retry3 terminal COMPLETE/REVIEWED supersedes running status.72/72
+Qwen32Bresponses,all3arms6/6buginputs and4/4newtaskdiscoveries beyondsuppliedshared
+rows,0concept-onlywins. CAsemanticcapability failsE2/E4correct-Hretention,E6dedup
+evidence andE3wrongbinding; E7finalnoFA,E8unknown. CombinedpackageNO-GOperprereg;
+no automaticrun/benchmark/training. Actualknown241789tokens+original1unknown
+cumulative;126newnativeworkers+32historicalshared reusedonce. Clean-context2semantic
+audits+integrityPASS,callbackhandled. See [[astra-concept-agent-diagnostic]],
+RESULTS§11.82 andanalysis/v40_retry3_20261021/REPORT.md beforeproposingmorework.

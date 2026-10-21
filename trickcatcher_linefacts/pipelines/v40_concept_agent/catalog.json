@@ -1,0 +1,278 @@
+{
+  "version": "design-only-2026-10-20",
+  "language": "vi-with-English-technical-terms",
+  "status": "proposed vocabulary; not a validated benchmark ontology",
+  "hierarchy": {
+    "collection_content": [
+      "occurrence_conservation",
+      "membership_inclusion"
+    ],
+    "selection_and_combination": [
+      "quantified_decision",
+      "eligible_contribution",
+      "order_policy",
+      "eligible_selection"
+    ],
+    "domain_outcome": [
+      "defined_outcome"
+    ]
+  },
+  "instance_rule": "Concept instance = human-defined relation + explicit spec binding + tool-measured finite input/observation gap. A quoted requirement alone is a binding, not new empirical information. An observed gap proves neither a bug nor feasibility/infeasibility.",
+  "dimension_rule": "Dimension is an operational input axis, not another concept: cardinality, occurrence count, eligibility, equality-to-threshold, subset slack, position, tie structure, cancellation, empty eligible set. Values and support conditions are bound per task.",
+  "concepts": [
+    {
+      "id": "occurrence_conservation",
+      "intent": "Trong declared output collection, mỗi eligible input occurrence phải được giữ đúng multiplicity; không suy ra thứ tự từ relation này.",
+      "activation": [
+        "preserve every occurrence",
+        "including duplicates",
+        "sorted copy of all input items"
+      ],
+      "exclude_or_ambiguous": [
+        "unique/distinct/set output",
+        "aggregation changes output type",
+        "all values nhưng không rõ occurrence hay distinct value: unknown binding"
+      ],
+      "parameters_domain": "Bind input collection, output projection, eligibility predicate (default all only if justified), value equality. Initial support: finite list[int], exact int excluding bool; hashable scalar equality for Counter.",
+      "dimensions_moves": [
+        "duplicate 1 eligible value 1→2→3 times",
+        "duplicate eligible vs ineligible value",
+        "move repeated occurrence first/middle/last",
+        "empty/singleton; hold distinct-value set constant"
+      ],
+      "observable_relation_scope": "Counter(output) == Counter(eligible input) if full multiset preservation required; can inspect a single value count as necessary condition. Sorting order is separate. One valid violation falsifies this bound relation; equality on samples does not prove it.",
+      "minimal_contrast": "Spec preserves occurrences: [2]→[2] versus [2,2]→[2,2]; sorted(set(xs)) returns [2] on second. Counter equality alone cannot catch a wrong order.",
+      "tool_gap_example": "In base+replay rows, eligible duplicate count is always ≤1. Eligible multiplicity≥2 has 0 observations; feasibility not inferred from absence.",
+      "unsupported_failure_modes": [
+        "unhashable/nan/custom equality",
+        "alias/identity semantics",
+        "filter predicate unclear",
+        "dedup in unused variable or unreachable branch is not an output violation"
+      ],
+      "implementation": [
+        "collections.Counter",
+        "native output replay",
+        "stdlib equality with explicit type policy"
+      ]
+    },
+    {
+      "id": "membership_inclusion",
+      "intent": "Boolean acceptance requires set(required) ⊆ set(container); extra container values and duplicate counts do not change membership when explicitly allowed.",
+      "activation": [
+        "every required value is present",
+        "extras allowed",
+        "duplicates do not affect membership"
+      ],
+      "exclude_or_ambiguous": [
+        "exactly these values",
+        "multiset/bag inclusion",
+        "contiguous substring/subsequence",
+        "contains all without multiplicity policy: bind conservatively or unknown"
+      ],
+      "parameters_domain": "Bind container and required argument roles, equality, duplicate policy. Initial support finite list[int]. Argument direction must be explicit.",
+      "dimensions_moves": [
+        "equal sets→strict superset container",
+        "remove one required value",
+        "empty required / empty container",
+        "duplicate required or extra values",
+        "hold required fixed while adding extras"
+      ],
+      "observable_relation_scope": "For the declared iff contract: output == (set(required) <= set(container)). Pairwise monotonicity under adding container values is only necessary, not sufficient; constant True passes monotonicity.",
+      "minimal_contrast": "container=[1], required=[1] and container=[1,2], required=[1]. Both True under inclusion; equality implementation differs on second.",
+      "tool_gap_example": "Observed accepted-domain cases cover equality only; no row has all required present plus at least one extra container value.",
+      "unsupported_failure_modes": [
+        "set conversion destroys specified multiplicity",
+        "Unicode/custom equality assumptions",
+        "unsupported required/container types",
+        "a wrong equality binding can make a buggy implementation look correct"
+      ],
+      "implementation": [
+        "set.issubset",
+        "native replay",
+        "no custom solver"
+      ]
+    },
+    {
+      "id": "quantified_decision",
+      "intent": "For bound eligibility/domain items, output aggregates a predicate by explicit all or any semantics, including declared empty-domain behavior.",
+      "activation": [
+        "every/all",
+        "at least one/any",
+        "no item satisfies"
+      ],
+      "exclude_or_ambiguous": [
+        "exactly k",
+        "majority",
+        "each item but unclear eligible domain",
+        "empty behavior contradicts usual quantifier: use explicit spec exception"
+      ],
+      "parameters_domain": "Bind item collection, eligible domain, predicate, quantifier, output bool and empty policy. First implementation only audited elementary predicates (integer comparisons/parity).",
+      "dimensions_moves": [
+        "0/1/many predicate witnesses and counterexamples",
+        "mixed True/False with positions permuted",
+        "empty and all-ineligible collection",
+        "duplicate a witness versus duplicate a counterexample"
+      ],
+      "observable_relation_scope": "all(P(x)) / any(P(x)) over the bound finite domain; observed witness/counterexample counts are measurements. No deduction about unobserved elements or unsupported predicates.",
+      "minimal_contrast": "Every value even: [2,4] and [2,3]. all=False on mixed case, any=True. Empty gives True only when the contract says so or unambiguously uses universal semantics.",
+      "tool_gap_example": "All tested nonempty inputs have homogeneous predicate truth; no mixed witness/counterexample row.",
+      "unsupported_failure_modes": [
+        "LLM invents P",
+        "vacuous-truth assumption conflicts with explicit empty case",
+        "short-circuit reach mistaken for semantic forall proof"
+      ],
+      "implementation": [
+        "builtins.all",
+        "builtins.any",
+        "native replay"
+      ]
+    },
+    {
+      "id": "eligible_contribution",
+      "intent": "Each eligible occurrence contributes its specified weight exactly once to an additive aggregate; optional final comparison is applied to that aggregate. Count uses weight1; sum uses weight x.",
+      "activation": [
+        "number of items satisfying P",
+        "sum of all positive items",
+        "sum is at most limit"
+      ],
+      "exclude_or_ambiguous": [
+        "distinct values only",
+        "product/median/order-dependent fold",
+        "rounded weighted arithmetic",
+        "count occurrences vs categories unspecified"
+      ],
+      "parameters_domain": "Bind xs, predicate P, contribution w, neutral0, aggregate result or declared comparison to limit. Initial support int-only count/sum and <,<=,>,>=; no general generated expression DSL.",
+      "dimensions_moves": [
+        "P false→equality boundary→P true",
+        "repeat an eligible occurrence",
+        "insert ineligible element",
+        "split/join list while holding aggregate fixed",
+        "length changes with zero/cancelling contributions",
+        "aggregate below/equal/above comparison threshold"
+      ],
+      "observable_relation_scope": "Aggregate A(xs)=sum(w(x) for eligible occurrences). Decomposition A(a+b)=A(a)+A(b) requires independent eligibility and no length-normalization. For Boolean output do not add booleans; compare independently computed aggregate to the specified bound.",
+      "minimal_contrast": "Count x>=limit: ([1],2)→0, ([2],2)→1. Sum positives: [2]→2 and [2,2]→4. At-most predicate: ([0],1) and ([0,0,0],1) must both True if no length rule exists.",
+      "tool_gap_example": "No observed eligible equality case; or every observed list length≤2 so length and aggregate effects have not been separated. These are distinct measured gaps, not fault labels.",
+      "unsupported_failure_modes": [
+        "float rounding/overflow semantics",
+        "global eligibility depends on other items",
+        "sum(set(...)) can combine duplicate and threshold faults",
+        "length changes also change sum unless controlled"
+      ],
+      "implementation": [
+        "builtins.sum",
+        "operator comparison functions",
+        "Counter for contribution diagnostics",
+        "native replay"
+      ]
+    },
+    {
+      "id": "order_policy",
+      "intent": "Returned sequence respects declared ordering relation and tie policy over its required content. Order obligation does not imply content preservation.",
+      "activation": [
+        "ascending/descending",
+        "stable ordering",
+        "sort by key then secondary key"
+      ],
+      "exclude_or_ambiguous": [
+        "unordered output",
+        "any valid order",
+        "ties unspecified",
+        "custom locale/NaN comparison without policy"
+      ],
+      "parameters_domain": "Bind output sequence, key, direction, tie policy. Initial support natural integer order; stability needs distinguishable identity-bearing items and remains outside first diagnostic.",
+      "dimensions_moves": [
+        "already sorted/reverse/one inversion",
+        "ties with distinct secondary values",
+        "permute input while preserving multiset",
+        "tie at start/end",
+        "0/1/2 elements"
+      ],
+      "observable_relation_scope": "Adjacent order comparisons and explicit tie relation; Counter content checked separately only when spec requires. Permutation invariance of sorted values needs deterministic order and no identity-dependent ties.",
+      "minimal_contrast": "Ascending [2,1] must yield [1,2]; [2,2] distinguishes multiplicity but cannot distinguish direction. Stable key order needs two different records with equal key.",
+      "tool_gap_example": "Observed key groups are singleton; no observation exercises an equal-key pair with different secondary values.",
+      "unsupported_failure_modes": [
+        "claiming stability from equal indistinguishable integers",
+        "using set-equality as complete sort oracle",
+        "tuple/key/identity support not implemented"
+      ],
+      "implementation": [
+        "sorted where semantics match",
+        "adjacent comparisons",
+        "no custom ranking compiler in first diagnostic"
+      ]
+    },
+    {
+      "id": "eligible_selection",
+      "intent": "Choose an eligible input item according to the stated rule (first, minimum, maximum, or kth), with explicit tie/empty behavior. Eligibility and choice rule must both be bound.",
+      "activation": [
+        "smallest strictly positive",
+        "first matching",
+        "kth smallest under stated indexing"
+      ],
+      "exclude_or_ambiguous": [
+        "first suitable where suitable undefined",
+        "arbitrary eligible element",
+        "ties/empty/k indexing unspecified when relevant"
+      ],
+      "parameters_domain": "Bind xs, P, selection rule and empty outcome. First support first/min/max over int lists; kth and custom identity semantics postponed.",
+      "dimensions_moves": [
+        "no eligible/one/multiple eligible",
+        "move best eligible element after distractor",
+        "minimum eligible differs from minimum raw input",
+        "ties and boundary eligibility",
+        "add an ineligible element before the current choice"
+      ],
+      "observable_relation_scope": "Output belongs to eligible candidates and satisfies the specified rank/position; empty fallback separate. Eligibility membership alone does not prove optimal/first choice.",
+      "minimal_contrast": "Smallest positive: [-1,2,3]→2 vs [-1,0]→declared fallback; [3,2] distinguishes first-positive from minimum-positive. Undefined suitable cannot get an invented exact expected value.",
+      "tool_gap_example": "All observed cases have exactly one eligible item; first and minimum remain observationally indistinguishable on that finite set.",
+      "unsupported_failure_modes": [
+        "inferring eligibility from implementation",
+        "inventing a rule to resolve ambiguous prose",
+        "duplicate identities and total ordering unsupported"
+      ],
+      "implementation": [
+        "min/max with explicit empty handling",
+        "next over validated predicate",
+        "native replay"
+      ]
+    },
+    {
+      "id": "defined_outcome",
+      "intent": "Every input in the declared domain has an allowed outcome category: value, specified sentinel, or specified exception. Bind explicit empty/degenerate clauses without treating every exception as a bug.",
+      "activation": [
+        "may be empty",
+        "return None if no eligible item",
+        "raises ValueError when ...",
+        "all lists are valid with stated return contract"
+      ],
+      "exclude_or_ambiguous": [
+        "nonempty precondition",
+        "unspecified behavior outside domain",
+        "resource exhaustion",
+        "missing empty clause where semantics are genuinely underspecified"
+      ],
+      "parameters_domain": "Bind domain, degenerate condition, allowed outcome and output projection. Timeout is unresolved execution, not evidence of required exception or nontermination.",
+      "dimensions_moves": [
+        "empty raw vs nonempty but empty eligible",
+        "one eligible item vs none",
+        "valid boundary vs invalid input",
+        "exercise declared sentinel and normal branch"
+      ],
+      "observable_relation_scope": "Native return/exception category compared with a spec-justified allowed outcome. Exact nonempty value needs another bound relation; normal return alone does not establish correctness.",
+      "minimal_contrast": "Smallest-positive with None fallback: [2] returns2, [0,-1] returnsNone; unguarded min([]) raises ValueError. If spec forbids empty eligible set, the latter is not an admissible counterexample.",
+      "tool_gap_example": "Native base runs all return a value on nonempty eligible groups; fallback domain has zero observed executions.",
+      "unsupported_failure_modes": [
+        "domain filter silently excludes declared degenerate inputs",
+        "exception captured as opaque text without type",
+        "timeouts scored as bugs",
+        "no universal totality proof from finite tests"
+      ],
+      "implementation": [
+        "existing isolated native worker",
+        "exception type capture",
+        "explicit domain check"
+      ]
+    }
+  ]
+}

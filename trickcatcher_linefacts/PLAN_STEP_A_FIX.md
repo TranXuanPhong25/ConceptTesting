@@ -45,3 +45,16 @@ data Qwen has not memorized: the self-written diag16 fixtures, or a post-cutoff 
 ## Decision rule (to register before running A1's gate)
 Go to a model run only if the A1 CPU gate passes (>= 50% top-3) on dev and the failing inputs it needs come from the
 method's own outputs, not EvalPlus. Otherwise stop the fault-site line and keep mutants as adequacy probes only (A2).
+
+## Revision 2026-10-20 (before any A1 code): A1 cannot raise task-level detection
+A1 localizes only after some input already fails, i.e. after the task is already detected. It can improve the report
+(where / why) or a later repair, and possibly find more failing inputs, but not the registered metric (tasks with a
+confirmed bug). v35, v36 (LLM localization, other session: hit@3 6/14, CFG no help) and v37 all put the loss at input
+reach. Therefore: A1 gate is deprioritized (and would need line-level ground truth that dev PUTs do not have); A3 code
+fixes are applied only if the fault-template line is reopened. Current priority is step b through the spec-alternative
+route: v39 gate (vibepass_half, Qwen-32B DPP programs) → if go, a registered Mokav-style DET-search run (v40).
+
+## Update 2026-10-21: v39 no-go
+v39 (vibepass_half, Qwen-32B DPP programs, complete 240/240 calls): C' 12/33, H' 2 → G1 and G2 fail, the planned
+DET-search run is not started. Spec programs are wrong for 9/24 questions and add bug exposure beyond the templates in
+only 2 tasks. Paper route closed (v37, v38, v39). Step a fixes (A1–A3) remain parked; step b input reach is open.

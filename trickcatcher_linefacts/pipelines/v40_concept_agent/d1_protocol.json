@@ -1,0 +1,92 @@
+{
+  "status": "proposal for implementation and audit; user subsequently authorized exact Qwen32B diagnostic run via parent; design agent performed no API/native/model run",
+  "question": "Can a capable model selectively revise false claims and adapt replay queries from real counterevidence, while retaining correct claims and refusing unsupported normative bindings? Does supplied relation+measured-gap content add value over the same raw evidence and generic testing?",
+  "target_requested": {
+    "model": "qwen2.5-coder-32b-instruct",
+    "reasoning": "not a Luna reasoning setting; use pinned Qwen server sampling configuration",
+    "temperature": 0,
+    "top_p": 1,
+    "fallback": "none; parent verifies served model/tokenizer identity before launch",
+    "identity_reporting": "requested ID plus available server evidence; do not infer exact weights/quantization from alias"
+  },
+  "arms": [
+    {
+      "id": "concept_adaptive",
+      "packet": "concept_arms",
+      "query_policy": "up to3 actions each in turns1,2; up to2 replay actions each turn"
+    },
+    {
+      "id": "generic_adaptive",
+      "packet": "generic_arm",
+      "query_policy": "same as concept_adaptive; same fallible initial hypothesis and all raw observations"
+    },
+    {
+      "id": "concept_committed",
+      "packet": "concept_arms",
+      "query_policy": "turn1 commits both3-action batches before any new feedback; execute batch1 now and batch2 after turn2. Turn2 can revise claims but cannot replace committed queries. Final inputs remain adaptive in every arm."
+    }
+  ],
+  "episode_count": 8,
+  "turns_per_episode_arm": 3,
+  "task_completion_attempt_ceiling": 72,
+  "content_retry": false,
+  "transport_retry": false,
+  "optional_canary_attempt_ceiling": 1,
+  "canary_scope": "Identity/transport with no task payload, no free tool/replay privilege. Omit when identical transport readiness already verified.",
+  "per_completion": {
+    "max_input_tokens_including_history": 6144,
+    "max_output_tokens": 1536,
+    "minimum_total_context_needed": 8192,
+    "require_transport_enforcement": true,
+    "context_policy": "Parent verifies tokenizer/template and endpoint limits. No silent truncation. If complete packet exceeds6144 or model cannot enforce1536 output, stop and revise protocol before outputs, not during run."
+  },
+  "token_upper_bound": {
+    "task_input": 442368,
+    "task_output": 110592,
+    "canary_input": 1000,
+    "canary_output": 32,
+    "caveat": "Hard caps require tokenizer/template and transport enforcement verified by parent."
+  },
+  "tools": [
+    "inspect_flow",
+    "inspect_data",
+    "replay_input"
+  ],
+  "tool_contract_source": "v30_flowcontract.tool_contract with published limits; allowlisted subset only. Do not change or launch frozen v30 experiment.",
+  "per_episode_arm": {
+    "total_actions": 6,
+    "in_round_replay_requests": 4,
+    "final_inputs": 2,
+    "max_observed_ids_per_action": 4,
+    "max_observed_names_per_action": 4,
+    "native_ordinary_and_traced_process_ceiling": 12,
+    "final_input_policy": "No expected-value assertion required; preserve admissible proposals even when claim status unknown. No dependent-stage hard gate."
+  },
+  "total_runtime_ceiling": {
+    "in_round_replay_requests": 96,
+    "final_native_requests": 48,
+    "shared_base_plus_injection_requests": 16,
+    "combined_native_requests": 160,
+    "ordinary_plus_traced_processes": 320,
+    "domain_checks": "additional bounded in-worker checks reported separately; not hidden model calls"
+  },
+  "preflight_cpu_ceiling": {
+    "finite_bank_inputs_per_episode": 64,
+    "native_requests": 512,
+    "ordinary_plus_traced_processes": 1024,
+    "rule": "Deterministic declared list[int] domain; no adaptive search enlargement. Preflight outputs remain private except the16 declared shared rows. These are harness checks, not evaluation accuracy estimates."
+  },
+  "context_policy": "Fresh isolated context per episode/arm; same within-episode history only. Model has no filesystem, shell, web, reference/evaluator access or other-episode context. Expose only audited tool bridge. Shuffle opaque episode IDs and rotate arm launch order before outputs.",
+  "failure_policy": "Invalid content consumes its fixed turn; explicit parse/action error in next scheduled turn only. Valid sibling actions survive. Rejected/duplicate actions consume published slots. Native disagreement is unusable observation. Integrity/leak/transport/unbounded-cost failure stops whole run, with remaining slots marked not_attempted. No silent repairs or reuse of unknown completion slots.",
+  "measurement_policy": "Every claim/evidence/query timestamp retained. Agent tool output contains native values/exceptions, trace limits and validity provenance, never expected output or relation pass/fail. Predictions are committed before their observations. Supplied witnesses and model-authored assertions cannot count as new discovery. Score rejection or revision before injected evidence as proactive reasoning, not feedback-driven adaptation; never require an agent to endorse the supplied hypothesis. E3 is primarily premise calibration because the spec/catalog already contradict equality.",
+  "go_no_go": {
+    "capability_required": "concept_adaptive valid final on8/8; correct handling of false/overbroad H on4/4 E1/E5/E6/E7 (proactive rejection or evidence-linked revision both valid); retain correct H on2/2 E2/E4; reject wrong normative binding on E3; remain normatively unknown on E8; no unsupported bug flag on E7/E8; independently useful replay/contrast and final input on at least3 of4 no-supplied-witness bug episodes E1/E2/E4/E5.",
+    "adaptation_denominator": "Report E1/E5/E6/E7 as four potential false-H feedback challenges; separate proactive correction, initial endorsement and actual post-feedback opportunities. E3 is premise calibration, not credited as counterevidence-driven revision. If fewer than2 genuine unresolved post-feedback opportunities exist, adaptive comparison is inconclusive/ceiling-limited; do not count repeated/relabelled queries or replace cases after outputs.",
+    "incremental_concept_required": "Among E1/E2/E4/E5 (no supplied revealing row), concept_adaptive must discover at least2 tasks missed by generic_adaptive, with0 opposite losses and no additional false bug claims. For a distinct execution-query adaptivity claim, require at least2 evidence-linked useful query adaptations missed by concept_committed on genuine unresolved E1/E5/E6/E7 opportunities. Both required to pursue the combined mechanism; failures/ceiling are no-go for that mechanism. Diagnostic signal only, not statistical efficacy proof.",
+    "if_capable_but_generic_equal": "No incremental concept signal. Do not promote concept pipeline, train concept-to-input, expand n/K or launch benchmark to rescue. Document successful generic empirical testing and unresolved value of vocabulary.",
+    "if_capability_fails": "Stop this policy package. Diagnose frozen first failures: wrong premise, evidence misread, stale claim, domain error, tool/schema, input miss or unsupported oracle. No automatic rerun.",
+    "if_signal_passes": "May propose a separately audited extraction-only transfer diagnostic. Does not authorize model spend, held-out, training or new pipeline."
+  },
+  "operational_stop": "User quota guard stops when remaining<=15%, old20% superseded. Authoritative live checks before task calls; no endpoint persisted.",
+  "quota_policy_amendment": "Explicit user continue2026-10-21; historical quota10% pause is superseded by fresh quota check; live values recorded only in runtime state."
+}

@@ -1280,3 +1280,112 @@ User requests Astra improved catalog/tests, then authorizes small diagnostic on 
 ### Astra D1 quota amendment — user resume at15%, actual remaining10% (2026-10-20)
 
 User explicitly lowers stop threshold20→15%. Cancelled old waiting timer, checked live quota at16:40UTC:10%remaining, therefore stopped/interrupted Astra again without research/model launch. Replacement verified active at same17:46:32UTC/00:46:32Vietnam, unit suffix-15; quota guard and continuation instructions now remaining<=15%. Existing0Qwencompletion/0unknownattempt checkpoint unchanged. No findings or efficacy result from this brief conditional resume.
+
+
+## 11.78 v40_concept_agent — Astra design implemented/frozen, endpoint404 blocks model run (2026-10-21)
+
+User sayscontinue; quota100% at01:05UTC, stop<=15%. Previous scheduledCLI wakefailed activewriterconflict (no modelrun); manuallycontinued. Astra completed7relationcatalog and8episode3arm72slotD1 design withpriorart/selfaudit. Freshbest-v7copy+v30tool/v23fixtureports v40_concept_agent implements predictions beforeexecution, native-onlyfeedback, selectiveclaimstates, adaptive/committedquerycontrols and finalinputs withoutsemanticadmissiongate. Initialauditwithheldapproval for droppedtooldata, malformedactions, lostrawresponse andresumeusage/limits; allfixed beforecalls. StableCPU12/12pass4.02s including72scriptedresponses/resume(no actualmodelturns); independentclean-context codeauditapproved frozenpreparation89fb756eda3d472dc12afd1cb924c7581e6a0da897ae64b67802cacc248e4af0 conditional onliveexactmodel/tokenizer/quota. Mainpreparation16nativeobservations/32durableworkerlaunches,allcompleted; PUTentrycountnotexplicitlyrecorded, notzero. No originalsource/outputrepair,vendor/Kaggle edits orautoexpansion.
+
+PrelaunchGET /v1/models returns404; one metadataattempt today,0taskattempts/responses/tokenizerrequests/unknowntaskusage. All72slots not_attempted across24episode-armrows; generation, semanticrevision, adaptation, discovery, falseclaims andnovelty unmeasured. Yesterdayexactmodel/context8192 metadata doesnotcertifytodayavailability. No hiddenwitness/expectedoracle inpublicmessages, E3/E6sharedexposurefloorseparate, no supplied-semantics/extraction/generic-equality overclaim. Source/prepared/dependency/guardverified frozen; approval/statusreadywaitingendpoint. Asyncquestion requests liveendpoint; no retry/fallback/scheduledGPUlaunch. [Implementation/readiness report](analysis/v40_concept_agent_20261021/REPORT.md), [all slots/status](analysis/v40_concept_agent_20261021/prepared_status.json), [codeaudit](analysis/v40_concept_agent_20261021/CODE_REVIEW.md), [Astra design](analysis/astra_concept_design_20261020/DESIGN.md), [protocol](pipelines/v40_concept_agent/PREREG.md).
+
+
+### v40 user-authorized delayed launch scheduled —2026-10-21, no task outputs yet
+
+User asks10minthenrun. Detachedcontroller verifiedalive waits until05:23:50UTC/12:23:50Vietnam before anytaskcall. Recheckquota>15%, frozen source/prepareddata andliveexactmodel/context/tokenizer; noQwencompletionbeforedeadline. Sourceunchanged, onlyexternalorchestration; no transportretry/fallback/unknownattemptreset. Safequotapause maywaitreset/resumeexactdurableslots. CallbackCodexqueueexistingthread replacesfailedCLIwriterresume. Actualexecution/callbacknotyetobserved,0taskattemptsatscheduling. [Schedule](analysis/v40_concept_agent_20261021/SCHEDULE.md).
+
+
+## 11.79 v40 delayed Qwen32B terminal — first completion transport failure, semantic diagnostic unmeasured (2026-10-21)
+
+Owned callback handled without relaunch/repair/retry/reset. Deadline05:23:50UTC, actualcontrollerlaunch05:23:51.190827UTC(12:23:51Vietnam); quota54%>15%, freshparentcheck53%. Live models/tokenize received exactqwen2.5-coder-32b-instruct/context8192; earlier404 historical. First slot E3__concept_adaptive__1 reserved/failed after180.10103203100152s, reasonTransportStop transport_or_JSON_failure. No raw_response/acceptedresponse/artifact/event; no completedbody persisted. Frozenclient coarsensHTTPX/JSONerrors; configuredtimeout180s+elapsedconsistentwithtimeout but underlyingReadTimeout/reset/HTTPstatus/serverreceipt/queue/progress unknown withoutserverlogs. Do not callthisschema/semantic/counterexamplefailure.
+
+All8episodes×3arms×3turns:1failedtransport+71not_attempted,0receivedoutputs/parsedclaims/modelqueries/replays/finalinputs. E3CAturn1fails, its2laterturnsnotattempted; GA/CC all3notattempted; everyother7episode all9notattempted. No post-turn toolfeedback/modeloutput delivered; only E3initialpacket(B0included) was placed inattemptedrequest, serverreceiptunknown. E3/E6preparedinjectedexposingrows were notdelivered inturn2. No modelabstention orcorrectness/falsealarm/novelty/utility/adaptivity metric; noconceptgain ornegative semanticconclusion. Knownusageattempts0+unknownusageattempt1, actualtokens/dollarsunobserved. Tokenizer2359 is requestsize, NOT received/billedinput; output1536 onlycap. Delayedrunmetadata2received(models/tokenize),prelaunchmetadata1failed404separate. Modelnativeworkers0; sharedCPU32launchesallcompleted/ok,16nativeagreements; explicitPUTcounterabsent,32singleentrycallsinferrednotrecorded.
+
+Independentclean-contextterminalauditPASS:89source+8prepared+approval/dependency/Pythonbinary/guard/schedulerscript hashesmatch; separate terminalinventory162/162 filesexact(SHA7046515ee6c05cc2ad8f2c355e44bc5a554f92b4a27466898d5e74016f32bcad),no generation_frozen becauseincomplete. Analysis-onlyscorerlabels distinguish1failed/71unattempted and no-received-outputmetricsNA; no raw/treatmentchanges. Schedulercallbackcodexqueue0 andthiscallbackreceived; diagnosticprocessreturncode0isnotcompletion(statusstopped). Noactivecontroller/automaticfurthercall. [Terminal/all8×3](analysis/v40_concept_agent_20261021/TERMINAL.md), [machine status](analysis/v40_concept_agent_20261021/incomplete_status.json), [independent audit](analysis/v40_concept_agent_20261021/TERMINAL_AUDIT.md).
+
+
+## 11.80 v40 explicit retry — model/context preflight stops before completions (2026-10-21)
+
+User explicitly requests retry; clean-context launcher audit PASS, fresh namespace
+d1_retry_20261021 with byte-identical source/prepared/approval/shared evidence.
+At12:22:33–34UTC, quota93%>15%, models metadata received, then frozen exactalias/
+context8192 check fails: requested_model_or_context_unavailable. Response body
+not retained; cannot distinguish alias absent versus missing/mismatched context
+metadata, identify served model, or infer another timeout.0tokenizer/0completions/
+0new workers, all72slots not_attempted across8episodes3arms. No Qwen output,
+abstention, predictions/revision, false alarm/yield/novelty/capability or concept-gain
+measurement. New model-token usage0 with0completion calls; cumulative original
+1failed completion remains unknown usage, never relabeled zero or reset. New1+
+old2received metadata=3; historicalprelaunch404 separate. Copied16CPUobservations/
+32workers historical once, not new attempts; explicitPUTcounter absent. Old162file
+inventory and89source/8prepared unchanged; new151terminalinventory matched. No
+repair, timeout/prompt change, retry, fallback, benchmark, heldout/training or paid
+call; no active controller. [Report/all24rows](analysis/v40_retry_20261021/REPORT.md),
+[machine status](analysis/v40_retry_20261021/incomplete_status.json).
+
+
+Explicit retry callback received12:25UTC, after foreground reporting. Read-only
+reverification passed old162/new151 inventory,89source/8prepared/approval/deps;
+all72notattempted unchanged. Quota91%>15%. No duplicate launch/scoring/Qwen/worker
+calls. Callbackreceipt now observed; see analysis/v40_retry_20261021/callback_reverification.json.
+
+
+## 11.81 v40 second explicit retry — current server advertises7B, required32B alias absent (2026-10-21)
+
+User says “thế thử đi”. Prospective singlemetadataGET at12:30:12UTC returnsHTTP200
+in0.6727s; saved secret-safe body/hash advertises qwen2.5-coder-7b-instruct with
+max_model_len16384, requiredexact32B alias absent. This establishes currentgate
+failure, not historicalmissingmetadata reconstruction or weights verification.
+No32Bdiagnostic launch/tokenizer/completion/newworkers, all72conditionalslots
+not_attempted, no semantic/capability/conceptgain result. No7Bsubstitution, frozen
+source/contextchange, automaticretry/reset orpaid/benchmark/heldout/training. New
+1metadatareceived; cumulative4receivedmetadata, historical404separate; cumulative
+1taskattempt remainsunknown actualusage,0responses. Historical16sharedobservations/
+32workers countedonce,0newworkers. Quota90%; old162/151inventory/source/prepared
+verified unchanged. [Actualmetadata/report/all8×3](analysis/v40_retry2_20261021/REPORT.md),
+[machine status](analysis/v40_retry2_20261021/status.json).
+
+
+## 11.82 v40 retry3 complete — useful inputs, semantic revision and incremental concept gates fail (2026-10-21)
+
+Exactrequested/returned Qwen2.5-Coder32B, metadata root32B-AWQ/context8192;
+13:20:19–14:07:31UTC.72/72received actualresponses, allrawJSONparseable,71schema-
+valid/65controlleraccepted.24/23/18acceptedturns CA/GA/CC; all24finalturns valid.
+No unattempted slots, no newtransportfailure/retry/repair. FiveCC T2replacement-
+commitment failures +oneCC prematurefinal +oneGA E1queryclaim schemafailure, all
+raw preserved;13thirdreplaycap refusals. No domain/native disagreement. Frozen
+89source/8prepared/approval/deps/guard andallold/newinventories exact.
+
+All3arms independently expose6/6buggy episodes throughreplay/final, including4/4
+no-supplied-exposure E1/E2/E4/E5. Supplied16rows aloneexposeE3/E6; no CA-only task
+win(0/0vsGA). Finalinputs accepted16/16each, revealing11/12,10/12,11/12 across6buggy
+cases;2correctE7matches+2ambiguousE8unknown perarm. Input-only fixture-oracletrack,
+no model-authored assertiongain. Uniqueexposing task-inputpairs outside ENTIRE
+v40same-tasksharedpool25/19/15; stricterall-tasksharedliteral23/18/14. These are
+not historicalwhole24+base/benchmarknovelty claims.
+
+Independentclean-context semantic audits E1–E4 andE5–E8 plusparent rawreview: E1/E5
+proactively narrowfalseH, E7allfinals nofalsebug, E8allsemanticabstention. But CA
+correctHretention E2/E4=0/2: observes strictcounts/exceptions thenwithdraws true
+implementationclaims, substitutes desiredspec inE2. E6CA/CCwithdraw dedup despite
+cleanreplays, GAfinalclaims withoutdedup againstevidence. E3CA/CCwrong-direction
+inclusionexplanation andinvertedwhy; GAfinalextracontainermismatch correct. CA24/24
+validturns means semanticfailurecannotbeexplainedonlybyinterface. E7CArepeats
+disprovedqueryT2,withdrawsT3; GAchangespredictionT2. OnlyE7clearunresolvedinitial
+falseHfeedbackopportunity(<2registeredminimum); CC7/8emptylaterbatch +6invalidT2
+limitsadaptivitycontrol. Capabilityfail+incrementalconceptfail =>combinedpackage
+NO-GO perprereg; no n/Kexpansion/training/benchmark torescue. Inputsfounddoesnot
+proveclaimsorconceptutility, andsmallsupplied-conceptseenfixtures do notestablish
+real-task/abstractconceptuniversalfailure.
+
+Newactualknown tokens220592prompt+21197completion=241789. Cumulativefourroot
+completionattempts73/responses72/known72/oldunknown1; actualtotalusage unknown,
+knownsubtotalplusoriginalunknown. New146HTTPoperations incl2modelGET/72tokenize/
+72completion; scopedcumulative152 incloriginal404; earlier20Octreadiness excluded.
+Newnative126completedworkers (116ok/10PUTexceptions),117logicalexecutionrequests/
+108inferredcachehits; historical32sharedworkers reusedonce, notrerun. Explicit
+PUTcounterabsent,126new+32historicalentrycalls inferredfromsource/status. Quota66%
+atcallback/45%14:14UTC, above15. Callbackhandled, noactivecontroller/automaticcalls.
+[Full8×3report](analysis/v40_retry3_20261021/REPORT.md),
+[semanticA](analysis/v40_retry3_20261021/SEMANTIC_A.md),
+[semanticB](analysis/v40_retry3_20261021/SEMANTIC_B.md),
+[cost/integrity](analysis/v40_retry3_20261021/INTEGRITY_COST_AUDIT.md).

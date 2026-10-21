@@ -13,7 +13,7 @@ Output: `out/analysis/v38_specalt_gate/gate.json`. Rule in PREREG.md (committed 
 **Registered verdict: G1' and G2' pass → "go".** It is **not interpretable** as evidence for the method:
 
 - Validity check (post-hoc, before any further step): **182 of the 183 valid DPP programs** equal the HumanEval+
-  canonical solution on every completed pool input. Qwen2.5-Coder-7B has memorized HumanEval. The "alternative version" is the answer key, so the gate measures contamination.
+  canonical solution on every completed pool input. HumanEval is known to be in Qwen training data, so this is most likely memorization; strictly, equality with canonical shows correctness and cannot by itself separate skill from memorization (v39 Amendment 1.2). Either way the "alternative version" is the answer key here, so the gate cannot tell how the method behaves when spec programs are wrong.
 - The same applies to the HumanEval/MBPP-based sets (dev113, pilot20, MBPP+ real-12): spec-derived alternatives
   cannot be evaluated there. (Correction 2026-10-20: VibePass is LeetCode / LiveCodeBench in HumanEval format, not
   HumanEval; it was wrongly listed here. v39 runs this gate on vibepass_half.) It also explains why B2 (ref oracle) and direct/plain arms look strong.

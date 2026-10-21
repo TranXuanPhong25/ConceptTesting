@@ -21,6 +21,7 @@ OUT = LF / 'out' / 'analysis' / 'v39_specalt_vibepass'
 V35 = LF / 'out' / 'analysis' / 'v35_concept_ceiling' / 'ceiling.json'
 ROOT = LF.parent / 'trickcatcher_linefacts/out/heldout_vibepass_real/he'
 MODEL, NREF, SEED = 'qwen2.5-coder-32b-instruct', 10, 20261021
+TRANSPORT = ('NotFoundError', 'InternalServerError', 'APITimeoutError', 'APIConnectionError')
 
 
 def tasks():
@@ -43,8 +44,13 @@ def generate():
     def one(job):
         q, s = job
         path = OUT / 'programs' / f'{q}_{s}.json'
-        if path.exists():
-            return
+        if path.exists():  # Amendment 1: one retry of transport failures only, kept beside the first attempt
+            first = json.loads(path.read_text())
+            if first.get('error') not in TRANSPORT:
+                return
+            path = OUT / 'programs' / f'{q}_{s}.retry.json'
+            if path.exists():
+                return
         msgs = [dict(role='system', content=dsys), dict(role='user', content=dusr.replace('{signature_and_doctoring}', questions[q]))]
         try:
             r = client.chat.completions.create(model=MODEL, messages=msgs, temperature=0.8, top_p=0.95, max_tokens=2048,
@@ -55,7 +61,7 @@ def generate():
             rec = dict(question=q, sample=s, text=None, error=f'{type(exc).__name__}')
         immutable(path, rec)
     (OUT / 'programs').mkdir(parents=True, exist_ok=True)
-    with ThreadPoolExecutor(8) as ex:
+    with ThreadPoolExecutor(4) as ex:
         list(ex.map(one, jobs))
     recs = [json.loads(p.read_text()) for p in (OUT / 'programs').glob('*.json')]
     print(dict(calls=len(recs), failed=sum(r.get('text') is None for r in recs), length=sum(r.get('finish') == 'length' for r in recs)))
@@ -96,8 +102,11 @@ def analyse(case, r, programs, v35):
 def score():
     cases, plus = tasks()
     by_q = {}
-    for p in sorted((OUT / 'programs').glob('*.json'), key=lambda p: (p.stem.split('_')[0], int(p.stem.split('_')[1]))):
+    for p in sorted((OUT / 'programs').glob('*_[0-9].json'), key=lambda p: (p.stem.split('_')[0], int(p.stem.split('_')[1]))):
         rec = json.loads(p.read_text())
+        retry = p.with_name(p.stem + '.retry.json')
+        if rec.get('error') in TRANSPORT and retry.exists():
+            rec = json.loads(retry.read_text())
         src = code_block(rec['text']) if rec.get('text') else ''
         if src:
             by_q.setdefault(rec['question'], []).append(src)

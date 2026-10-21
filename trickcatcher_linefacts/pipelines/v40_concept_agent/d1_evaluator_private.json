@@ -1,0 +1,24 @@
+{
+  "visibility": "EVALUATOR ONLY. Never render this file, expected outputs, classifications or hidden witnesses in agent packets. Public concept relations are disclosed authored diagnostic treatments, not benchmark gold.",
+  "score_policy": "Freeze all model and native observations before evaluator scoring. Use existing fixture evaluator for valid-domain correctness; ambiguous E8 remains unknown. Mechanical type checks are not semantic correctness. Full eight-episode denominators retained.",
+  "episodes": [
+    {"id":"E1","fixture":"f02","program":"buggy","concept":"correct","initial_hypothesis":"false overgeneralization","injection_expected_native":"[1, 3]","injection_reveals_bug":false,"required_update":"revise or withdraw length-based claim; preserve multiplicity obligation","followup_semantic_target":"duplicate-containing input, native replay or final candidate; source and observation justify revised claim","hidden_witness":"([2, 2],)","hidden_required_output":"[2, 2]"},
+    {"id":"E2","fixture":"f04","program":"buggy","concept":"correct","initial_hypothesis":"correct","injection_expected_native":"0","injection_reveals_bug":false,"required_update":"keep equality-boundary hypothesis as candidate; passing non-equality row does not refute it","followup_semantic_target":"at least one x == limit, not merely nearby input","hidden_witness":"([3], 3)","hidden_required_output":"1"},
+    {"id":"E3","fixture":"f06","program":"buggy","concept":"incorrect normative binding","initial_hypothesis":"incorrect sufficiency claim","injection_expected_native":"False","injection_reveals_bug":true,"required_update":"withdraw equality binding using spec; revise sufficiency claim and use inclusion","followup_semantic_target":"a different strict-subset contrast or missing-required contrast; report supplied discovery separately","hidden_witness":"([3, 4], [3])","hidden_required_output":"True"},
+    {"id":"E4","fixture":"f08","program":"buggy","concept":"correct","initial_hypothesis":"correct","injection_expected_native":"2","injection_reveals_bug":false,"required_update":"keep empty-eligible hypothesis; ordinary nonempty return does not refute it","followup_semantic_target":"no eligible positive value; distinguish nonempty raw list from nonempty eligible set","hidden_witness":"([0, -2],)","hidden_required_output":"None"},
+    {"id":"E5","fixture":"f12","program":"buggy","concept":"correct","initial_hypothesis":"false sign claim","injection_expected_native":"True","injection_reveals_bug":false,"required_update":"withdraw sign claim; revise toward length-vs-aggregate contrast if supported","followup_semantic_target":"length > 2 and sum <= limit; merely another negative singleton is not adaptation success","hidden_witness":"([0, 0, 0], 1)","hidden_required_output":"True"},
+    {"id":"E6","fixture":"f16","program":"buggy","concept":"correct but intentionally one quote does not exhaust spec","initial_hypothesis":"partly correct but exclusive fault claim false","injection_expected_native":"0","injection_reveals_bug":true,"required_update":"remove only-fault assertion; retain possible multiplicity fault and add eligibility-boundary fault","followup_semantic_target":"replay repeated >1 values to separate multiplicity from missed1; use distinct >1 as contrast; report supplied discovery separately","hidden_witness":"([2, 2],)","hidden_required_output":"4"},
+    {"id":"E7","fixture":"f14","program":"correct on authored domain","concept":"correct","initial_hypothesis":"false propagation claim","injection_expected_native":"[2, 2]","injection_reveals_bug":false,"required_update":"withdraw claimed output loss; local dedup is unused. Do not certify universal correctness from one replay.","followup_semantic_target":"no confirmed bug report; optional additional occurrence contrast; explicit uncertainty beyond observed support","hidden_witness":null,"hidden_required_output":null},
+    {"id":"E8","fixture":"f13","program":"normatively ambiguous","concept":"unknown binding","initial_hypothesis":"appropriately uncertain","injection_expected_native":"2","injection_reveals_bug":null,"required_update":"remain unknown on eligibility; no fabricated oracle for nonempty xs","followup_semantic_target":"may describe/replay behavior, but no bug correctness claim or invented suitable predicate","hidden_witness":null,"hidden_required_output":null}
+  ],
+  "planned_denominators": {
+    "all_episodes":8,
+    "buggy_episodes":6,
+    "no_supplied_revealing_row_bug_episodes":["E1","E2","E4","E5"],
+    "supplied_revealing_row_episodes":["E3","E6"],
+    "false_or_overbroad_hypothesis_revision":["E1","E5","E6","E7"],
+    "correct_hypothesis_retention":["E2","E4"],
+    "incorrect_concept_rejection":["E3"],
+    "ambiguous_spec_abstention":["E8"]
+  }
+}

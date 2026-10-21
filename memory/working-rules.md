@@ -44,3 +44,5 @@ real LLM calls. After a new variant, Claude updates the diagram artifact ([[vers
 **New directions (2026-10-20):** before proposing/building one, check the version tree (v7…v35) and name the earlier
 version that tried the same core idea and its result ([[check-version-tree-before-proposing]]). Borderline result →
 look for a go/no-go signal in existing outputs; never enlarge runs to salvage it ([[signal-not-more-data]]).
+
+**Endpoint keepalive (2026-10-20):** `scripts/ping_endpoint.sh <env-file>` (URL only from env/env-file, logs status codes only) every 20 min: GET /models + 1-token chat. Keep the env file outside the repo (session scratchpad, chmod 600). Current GPU model: qwen2.5-coder-32b-instruct (AWQ, ctx 8192).

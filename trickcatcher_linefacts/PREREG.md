@@ -1752,3 +1752,80 @@ reported. Old inventories verified; package immutable after model launch.
 ### v32 disposition — post-output 2026-10-19
 
 Fresh seen5 Atrue/Bfalse/Cblocked,22receivedCLIcalls. Lexical reuse accepted in f04/f14; support promotion only CPU-tested. f06 trigger wrong signature rejected unchanged, plus evidence-grounding error. No prompt/source/output repair, retry, comparison or benchmark chaining. All5/usage/workers/unknown coverage and independent reviews in analysis/v32_scope_support_20261019/REPORT.md and RESULTS §11.73.
+
+
+## 2026-10-21 — Astra D1 supplied-concept selective revision, before task outputs
+
+Explicit user authorization: exactqwen2.5-coder-32b-instruct on suppliedendpoint, no paidfallback; Codexquota stop<=15%. Newbest-v7copy v40_concept_agent +explicitv30tools/v23fixtures, originalrunsunchanged. Priorart includesv28active replay33nativechecked withnoincrementalgain; D1novelmeasurement is prediction→evidence→selectiverevision, notfirsttooluse. Protocol in pipelines/v40_concept_agent/PREREG.md and d1_protocol.json.8seen authored episodes,3arms(conceptadaptive/genericadaptive/conceptcommitted),3turns/arm,72single-attempttaskcalls; no retries/reset. Same spec/code/base/fallibleH/raw observations; C adds strict relation/binding/recomputedgap package. Private evaluator/examples excluded, no oracleverdict fromtools. Two native sharedrows/case; E3/E6already exposing, discoverydenominatorE1/E2/E4/E5. Max6actions4replays2finalinputs/arm,160native requests/320processes overall; input6144/output1536/context8192 withtokenizerbinding andexactmodelmetadata required. All24rows/72slots retained, unknowns explicit. No hard claim gate for finalinput; artifact predictiondurablebeforequeries. MeaningfulCPU12/12 andclean-context codeaudit passed; exactsource/prepared/dependency/guard frozen beforeanytaskcall. Capability is notconceptutility; genericparity orcommittedparity/insufficientopportunities meansnoincremental/combinedclaim andno n/Kexpansion,training,benchmarkorheldout. TodayprelaunchmodelsGET404; no task/model/tokenizer calls haveoccurred. No readjustment based onmodeloutputs.
+
+
+### 2026-10-21 v40 external delayed-launch authorization (before Qwen outputs)
+
+User says wait10min thenrun unchangeddiagnostic. Notbefore05:23:50UTC/12:23:50Vietnam, detached externalcontroller; no treatment/schema/source/seed changes. Quota>15% +frozenverification +exactmodel/context/tokenizer remainrequired. Waitquotaresetonly; terminaltransport/protocolfailure stops, no retry/fallback orunknownslotreset. CallbackusesCodexqueueexistingthread toavoidpreviousactivewriterconflict. All72slotsstillnotattemptedatscheduling. See analysis/v40_concept_agent_20261021/SCHEDULE.md andruntime delayed_launch.json.
+
+
+### v40 terminal disposition2026-10-21 — incomplete, no semantic treatment result
+
+Scheduledauthorizedlaunch occurred05:23:51UTC; exactmodel/context/tokenizer matched, firstE3conceptadaptivecompletion failedtransport after180.101s. Oneunknown-usageattemptconsumed,0modelresponses,71slotsnotattempted. No schema/evidence/tool-use/semanticresult, no retry/reset orfrozenprompt/source/outputrepair. Terminal162-fileinventoryandindependentreadonlyaudit verified. Report RESULTS§11.79 and analysis/v40_concept_agent_20261021/TERMINAL.md. No automaticnewrun/benchmark/paid/training; underlyingtransportsubcauseunobserved.
+
+
+## 2026-10-21 — explicit v40 transport retry, before new outputs
+
+User says “thuwr lai di”. One fresh d1_retry_20261021 namespace with unchanged
+frozen v40 treatment/180s client. See analysis/v40_retry_20261021/PREREG.md.
+Historical d1 remains byte-identical with1unknown completion consumed. Newcap72
+single attempts, cumulativecap73; shared CPU preparation/approval copied identically,
+not rerun or independent evidence. New root passed explicitly to unchanged d1.run.
+No new probe/canary, prompt adaptation, timeout change, unknown-attempt reset,
+automatic retry, paid fallback, training, benchmark or held-out. Quota<=15 stops.
+Transport/protocol failure stops. Clean-context external-launcher audit before calls;
+post-terminal full-slot saved-data review plus new/cumulative cost reporting.
+
+
+### Explicit v40 retry terminal disposition —2026-10-21, post-preflight
+
+New root d1_retry_20261021 stopped12:22:34UTC on requested_model_or_context_unavailable
+after one received/models request. Exactalias/context8192 combined check failed;
+metadata body absent, so individual failed condition/served model unobserved.
+No tokenizer/completion/new workers; all72slots not_attempted. Original1unknown
+attempt and frozen source/old inventory untouched, no further retry or repair.
+Saved-data scoring only; no concept/capability/semantic conclusion.
+
+
+## 2026-10-21 — second explicit v40 retry, metadata gate only
+
+User says “thế thử đi”; protocol registered before request in
+analysis/v40_retry2_20261021/PREREG.md. One GET/models saved secret-safe body/hash
+to diagnose alias and context separately, conditional unchanged32BD1 only if
+frozenmetadata matches. HTTP200 advertises only qwen2.5-coder-7b-instruct/16384;
+required32B alias absent, so conditional diagnostic never launched.0tokenizer/
+completions/workers;72notattempted. No silent substitution/repair/automaticretry.
+This metadata does not recover previousretry's missing response body.
+
+
+## 2026-10-21 — third explicit v40 retry after served32B correction, before task calls
+
+User supplies32Bservedlabel and says retry. Prospective GET/models (protocol
+analysis/v40_retry3_20261021/PREREG.md) at13:18UTC returns exact32B alias/context8192,
+rootQwen/Qwen2.5-Coder-32B-Instruct-AWQ. Metadata advertised, not loadedweightproof.
+Fresh d1_retry3_20261021 registered, copied byte-identical historical preparation/
+shared/approval, all3prior inventories unchanged. Up to72fresh single-attempt
+completions+cumulativeoriginal1unknown=73ceiling; priorretry1/2 completions0.
+Frozen treatment/180s unchanged, explicitroot launcher requires clean-contextaudit
+beforecalls. Stopquota<=15 ortransport/protocol; no automaticretry/reset/repair,
+substitution, paidfallback, benchmark/heldout/training. Preliminary1metadataGET
+separate from frozenclientmetadata; preserve actual new/cumulative costs/unknowns.
+
+
+### v40 retry3 terminal disposition —2026-10-21, post-output
+
+Complete72/72received,65controlleraccepted,all24finalvalid. Threearms6/6revealing
+buggytasks and4/4no-supplied cases,0CA-only/0oppositetaskwins. CAfailedcorrect-H
+retentionE2/E4, E6multiplicityretention andcoherentE3normativebindingrejection;
+E7finalcalibrated/E8unknown. Proactive E1/E5/E6 notcountedfeedbackrevision, onlyE7
+clearunresolvedinitialHchallenge<2registeredminimum. CC7/8emptylaterbatches and
+6invalidT2 limit causaladaptivity inference. Registeredcapability+incremental
+conceptrequirements fail; combinedpackage no-go. No treatment/outputrepair,
+retry/reset, modelassertionclaim, automatic n/Kexpansion/training/benchmark/paid.
+Savedpost-freeze fixture scoring and2independent semanticreviews+integrity/cost
+auditcompleted, oldunknown preserved. SeeRESULTS§11.82 andanalysis/v40_retry3_20261021.

@@ -30,3 +30,13 @@ Mokav-style DET search between the PUT and spec programs only if
 - G1: C' >= 17/33, and
 - G2: H' >= 3.
 Descriptive: consensus witness tasks, consensus precision (false-alarm risk), valid programs per task, call failures.
+
+## Amendment 1 — 2026-10-21 00:40, after reading the first-pass output (stated openly)
+1. Transport: the endpoint went offline at about 23:58 (ngrok page; 121 NotFound, 11 InternalServerError, 8 timeouts),
+   so only 100/240 calls returned and 12/24 questions have programs (the 12 with lower question ids). Transport
+   failures are retried once when the endpoint is back (same messages and seeds, 4 workers). Model-side outcomes
+   (empty / unparsable / length) are not retried. The first-pass gate is reported as transport-incomplete.
+2. Criterion flaw: "valid program equals silver on the whole pool" measures correctness, which a good spec program
+   should have; it cannot separate skill from memorization. The memorization condition is dropped from the verdict.
+   G1/G2 stay as registered on all 33 tasks. Correct-program share is reported descriptively, split by question id
+   (< 3300 vs >= 3300, a rough proxy for problems published before / after mid-2024; Qwen2.5-Coder released 2024-09).

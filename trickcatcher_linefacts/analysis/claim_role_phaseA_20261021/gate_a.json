@@ -1,0 +1,244 @@
+{
+ "per_annotator": {
+  "parent": {
+   "high_role_rows": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive"
+   ],
+   "eligible": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive",
+    "E4/concept_adaptive",
+    "E4/concept_committed",
+    "E6/concept_adaptive",
+    "E6/concept_committed",
+    "E6/generic_adaptive"
+   ],
+   "eligible_not_upstream": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive",
+    "E4/concept_adaptive",
+    "E4/concept_committed"
+   ],
+   "eligible_unknown_rows": [
+    "E4/concept_adaptive",
+    "E4/concept_committed"
+   ],
+   "cond2_strict": "2/7",
+   "cond2_lenient": "4/7",
+   "cond2_pass": false,
+   "cond2_pass_lenient": true,
+   "first_unrecovered": {
+    "NONE": 15,
+    "ROLE": 2,
+    "SPEC": 2,
+    "UNKNOWN": 2,
+    "FINAL": 1,
+    "PRED": 2
+   }
+  },
+  "reviewer_1": {
+   "high_role_rows": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive"
+   ],
+   "eligible": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive",
+    "E4/concept_adaptive",
+    "E4/concept_committed",
+    "E6/concept_adaptive",
+    "E6/concept_committed",
+    "E6/generic_adaptive"
+   ],
+   "eligible_not_upstream": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive",
+    "E4/concept_adaptive"
+   ],
+   "eligible_unknown_rows": [],
+   "cond2_strict": "3/7",
+   "cond2_lenient": "3/7",
+   "cond2_pass": false,
+   "cond2_pass_lenient": false,
+   "first_unrecovered": {
+    "NONE": 15,
+    "ROLE": 3,
+    "UNKNOWN": 2,
+    "FINAL": 1,
+    "PRED": 3
+   }
+  },
+  "reviewer_2": {
+   "high_role_rows": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive"
+   ],
+   "eligible": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive",
+    "E4/concept_adaptive",
+    "E4/concept_committed",
+    "E6/concept_adaptive",
+    "E6/concept_committed",
+    "E6/generic_adaptive"
+   ],
+   "eligible_not_upstream": [
+    "E2/concept_adaptive",
+    "E2/generic_adaptive",
+    "E4/concept_adaptive",
+    "E4/concept_committed"
+   ],
+   "eligible_unknown_rows": [],
+   "cond2_strict": "4/7",
+   "cond2_lenient": "4/7",
+   "cond2_pass": true,
+   "cond2_pass_lenient": true,
+   "first_unrecovered": {
+    "NONE": 14,
+    "ROLE": 3,
+    "SPEC": 2,
+    "UNKNOWN": 1,
+    "FINAL": 1,
+    "PRED": 3
+   }
+  }
+ },
+ "agreement": {
+  "E2/concept_committed": {
+   "parent": [
+    "none",
+    "low"
+   ],
+   "reviewer_1": [
+    "none",
+    "T1 C3 prediction: low"
+   ],
+   "reviewer_2": [
+    "none",
+    "low"
+   ]
+  },
+  "E3/concept_adaptive": {
+   "parent": [
+    "SPEC",
+    "na"
+   ],
+   "reviewer_1": [
+    "UNKNOWN",
+    "T1 pred True: low"
+   ],
+   "reviewer_2": [
+    "SPEC",
+    "na"
+   ]
+  },
+  "E3/concept_committed": {
+   "parent": [
+    "SPEC",
+    "na"
+   ],
+   "reviewer_1": [
+    "UNKNOWN",
+    "T2 raw-invalid pred True: low"
+   ],
+   "reviewer_2": [
+    "SPEC",
+    "low"
+   ]
+  },
+  "E3/generic_adaptive": {
+   "parent": [
+    "none",
+    "na"
+   ],
+   "reviewer_1": [
+    "none",
+    "T1 pred True: low"
+   ],
+   "reviewer_2": [
+    "UNKNOWN",
+    "na"
+   ]
+  },
+  "E4/concept_adaptive": {
+   "parent": [
+    "UNKNOWN",
+    "medium"
+   ],
+   "reviewer_1": [
+    "ROLE",
+    "medium (T2 withdraw + 'will return None' predictions)"
+   ],
+   "reviewer_2": [
+    "ROLE",
+    "medium"
+   ]
+  },
+  "E4/concept_committed": {
+   "parent": [
+    "UNKNOWN",
+    "medium"
+   ],
+   "reviewer_1": [
+    "FINAL",
+    "T2 raw-invalid: low"
+   ],
+   "reviewer_2": [
+    "FINAL",
+    "low"
+   ]
+  },
+  "E5/generic_adaptive": {
+   "parent": [
+    "none",
+    "na"
+   ],
+   "reviewer_1": [
+    "none",
+    "T2 pred True for ([0,0,0],0): low"
+   ],
+   "reviewer_2": [
+    "none",
+    "low"
+   ]
+  },
+  "E6/concept_adaptive": {
+   "parent": [
+    "FINAL",
+    "low"
+   ],
+   "reviewer_1": [
+    "PRED",
+    "T2 pred 4: low"
+   ],
+   "reviewer_2": [
+    "PRED",
+    "low"
+   ]
+  },
+  "E6/generic_adaptive": {
+   "parent": [
+    "PRED",
+    "medium"
+   ],
+   "reviewer_1": [
+    "PRED",
+    "T2 preds: low; T3 C3: medium"
+   ],
+   "reviewer_2": [
+    "PRED",
+    "low"
+   ]
+  }
+ },
+ "agreed_high_role_episodes": [
+  "E2"
+ ],
+ "relations": {
+  "E2": "eligible_contribution"
+ },
+ "cond1_pass": false,
+ "cond2_pass_all_annotators": false,
+ "gate_A": "STOP"
+}
