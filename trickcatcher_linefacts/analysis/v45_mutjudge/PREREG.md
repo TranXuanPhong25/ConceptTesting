@@ -1,4 +1,4 @@
-# v43 binary judge on v42 mutant-disagreement questions (Qwen2.5-Coder-32B) — diagnostic
+# v45 (renumbered from v43 on 2026-10-22; v43 is also used by v43_concept_identify) binary judge on v42 mutant-disagreement questions (Qwen2.5-Coder-32B) — diagnostic
 
 Written 2026-10-21 before any model call. v42 was **no-go** by its rule (D1 15/33, lift 0.62), so this is not the
 registered follow-up step; the user asked to try the GPU endpoint anyway ("xong rồi thì chạy thử nhé"). It is a

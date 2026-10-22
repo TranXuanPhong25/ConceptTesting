@@ -1389,3 +1389,60 @@ atcallback/45%14:14UTC, above15. Callbackhandled, noactivecontroller/automaticca
 [semanticA](analysis/v40_retry3_20261021/SEMANTIC_A.md),
 [semanticB](analysis/v40_retry3_20261021/SEMANTIC_B.md),
 [cost/integrity](analysis/v40_retry3_20261021/INTEGRITY_COST_AUDIT.md).
+
+
+## 11.83 v43 implementation/readiness — paired binding diagnostic launched, efficacy pending (2026-10-22)
+
+User-authorized best-v7copy+v40ports,3finitepooltools and Qwenbindingproposal/
+pairedraw-toolfinals. Same78savedobservations,globalrelationmenu, no per-taskAstra
+binding/newPUTcalls. CPU19/19PASS,independentreviewPASS,60source/8pools/deps/
+4parentinventories frozenbeforecalls. Stableenv replaced vanishedtempvenv before
+prepare; parents untouched. Readiness1synthetictool8359>6144STOP,4metadata preserved.
+Prospectivelycommitted/audited pre-inferenceengineeringamendment only changed
+syntheticreadiness envelope innewnamespace; source/treatment/gates/caps unchanged.
+Readiness2READY25metadata/max4748,notuniversalbound. Actualeach-calltokenizer
+guards6144/1536/8192. Max24singleattempts;8initial+16pairedfinalslots, no retries/
+unknownreset or thirdreadinessadaptation. Detachedrunstarted17:37:27UTC
+(00:37Vietnam22Oct),quota53%>15,firstactualcompletionreserved. No efficacy/semantic
+result yet. [Runningreport](analysis/v43_concept_identify_20261021/REPORT.md),
+[failedreadiness/amendment](analysis/v43_concept_identify_20261021/READINESS_AMENDMENT.md),
+[finalreview](analysis/v43_concept_identify_20261021/RUN_APPROVAL_REVIEW.md).
+
+
+## 11.84 v43 terminal — one complete binding-selection win, registered no-go (2026-10-22)
+
+Complete18/18received,6dependentfinalsblocked across24plannedslots:5valid/3invalid
+initials,raw4valid/1invalid/3blocked,tool5valid/3blocked. AllrawJSONparseable/finish
+stop;0transport/unknownv43usage. E1/E3/E6conceptunknown violatesconceptenum (relation
+unknown allowed); E2raw9evidenceIDs exceeds8. E3RAWcontainscorrectsubsetbinding
+butwholestageblocked, no repair/execution/retry. All8cases retained.
+
+Independentcleancontextsemanticreview+parentRAWreview: strictcompleteexecutable
+binding+truthfuljudgment successraw1/8(E4),tool2/8(E4/E5),1tool-onlysemanticwin/0
+oppositelosses (<2needed),toolvalid5/8not8/8. NO-GOoriginalscientificgate. E2both
+correctmismatchreason butcount_ge missing/selectedempty; formatdifference notwin.
+E5rawalreadyidentifieslengthbug butdropscorrectsum_le_limitbinding;toolretainsit,
+solefullselectionwin. E7rawfalsebug→toolunknown, butunsupportedoutputroles/wrong
+equal_setsmeaningremain, notcorrectcontrol. E8bothmistakefirstitemforundefined
+firstsuitable, failambiguity. E1missingoccurrencebinding/E6wrongpositiveboundary.
+Initialrequiredfacetcoverage3/8RAW(E3/E4/E5),2/8admitted;4/14concreteproposalsare
+justifiedexecutableinclE1companionascending,10unknownproposalsseparate.
+
+All8requested3tools;only5initialsadmitted =>15components,126cells53computed/73
+unknown,44holdtrue/9false,20contrasts,0componenterrors. Observedrelationagreement
+isnotnormativevalidity. Actualraw/toolpacketparityexactexcepttool_feedback;
+same78reusedbiasedpriorQwen/sharedrows,0newPUTworkers/no inputdiscovery/assertion
+claim. Noper-taskAstrabinding, global17operatorvocabengineeredonseenfixtures;
+notopen-vocabularydiscovery/transfer. No automaticmorecalls/schemafix/fill/benchmark.
+
+ActualQwenusage30,639input+2,569output=33,208known tokens,0v43unknown; original
+v40unknown remainsseparateuntouched. Scoped66HTTP:18completions+actualmetadata19
++readiness1FAILED4+readiness2READY25. Originalsynthetic8359capfailure preserved;
+prospectivelycommitted/auditedpre-inferenceengineeringamendment/readiness2max4748
+withoutsource/prompt/schema/cap/gatechanges, no thirdadaptation. Actualmaxinput3111,
+run17:37:27–18:03:20UTC21Oct/00:37–01:03Vietnam22Oct,allfinishstop. Dollar/GPUcost
+unmeasured. Independentintegrity102checksPASS:60source/8pools/deps/approval/4v40
+parentinventories/generation189/terminal290exact. Callbackhandled, noactivejob.
+[All8report](analysis/v43_concept_identify_20261021/REPORT.md),
+[independentsemantics](analysis/v43_concept_identify_20261021/SEMANTIC_REVIEW.md),
+[integrity/costs](analysis/v43_concept_identify_20261021/INTEGRITY_COST_AUDIT.md).

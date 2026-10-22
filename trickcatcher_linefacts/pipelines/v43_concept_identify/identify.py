@@ -9,8 +9,10 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+from datetime import datetime, timezone
 
 from jsonschema import Draft202012Validator
+from jsonschema.exceptions import ValidationError
 from . import identify_tools as t
 from .d1_client import Client, TransportStop
 from .flow_common import digest, immutable, strict_json, write_json
@@ -44,6 +46,8 @@ def old_verify():
 
 def deps():
     return {'python': sys.version, 'libraries': {x: importlib.metadata.version(x) for x in ('httpx','jsonschema','jinja2')},
+            'installed_distributions':dict(sorted((dist.metadata['Name'],dist.version) for dist in importlib.metadata.distributions())),
+            'python_binary_sha256':hashlib.sha256(Path(sys.executable).resolve().read_bytes()).hexdigest(),
             'quota_sha256': hashlib.sha256(QUOTA.read_bytes()).hexdigest()}
 
 
@@ -53,6 +57,8 @@ def parent_inventories():
 
 
 def prepare():
+    audit=read(ROOT/'preparation_approval.json')
+    assert audit['passed'] and audit['sources']==sources(), 'preparation_audit_required'
     old_verify()
     for ep in [f'E{i}' for i in range(1,9)]:
         original = read(OLD/'prepared'/f'{ep}.json')
@@ -113,6 +119,29 @@ def decode(response, initial):
     return value
 
 
+def validate_selection(value, allowed_ids, evidence_ids):
+    if set(value['selected'])-set(allowed_ids):
+        raise ValueError('undefined_selected_binding')
+    if set(value['evidence'])-set(evidence_ids):
+        raise ValueError('undefined_evidence_id')
+
+
+def initial_packet(row):
+    return {'instruction':'Propose up to3 fallible spec bindings from GLOBAL vocabulary; quote exact spec. Choose any of3 tools. Unknown binding is allowed. No human per-task binding is given.',
+            'spec':row['spec'],'code':row['code'],'parameters':row['parameters'],
+            'concepts':t.CONCEPTS,'relations':t.RELATIONS,'relation_concepts':t.RELATION_CONCEPTS,
+            'available_tools':TOOLS,'reply_schema':schema(True)}
+
+
+def final_packet(row, proposal, feedback, arm):
+    return {'instruction':'Choose which candidate bindings are justified by SPEC, not agreement with code. Empty selected means normative unknown. Judge observed code mismatch separately; observations are finite. Do not invent missing spec rules. Evidence IDs: original_spec, source_return, and observation O IDs.',
+            'spec':row['spec'],'code':row['code'],'parameters':row['parameters'],
+            'relations':t.RELATIONS,'relation_concepts':t.RELATION_CONCEPTS,
+            'initial_proposal':proposal,'observations':row['rows'],
+            'candidate_checks':{b['id']:t.binding_checks(b,row['parameters'],row['spec']) for b in proposal['bindings']},
+            'tool_feedback':feedback if arm=='tool' else None,'reply_schema':schema(False)}
+
+
 def quota():
     done=subprocess.run([sys.executable,str(QUOTA),'check'],capture_output=True,text=True,timeout=30,check=True)
     snapshot=strict_json(done.stdout);write_json(ROOT/'quota_latest.json',snapshot)
@@ -132,13 +161,14 @@ def complete(client, slot, packet, initial, allowed_ids=None, evidence_ids=None)
     try:
         value=decode(response,initial)
         if not initial:
-            if set(value['selected'])-set(allowed_ids):
-                raise ValueError('undefined_selected_binding')
-            if set(value['evidence'])-set(evidence_ids):
-                raise ValueError('undefined_evidence_id')
+            validate_selection(value,allowed_ids,evidence_ids)
         artifact.update(state='valid',parsed=value)
-    except Exception as exc:
+    except (ValueError, AssertionError, ValidationError) as exc:
         value=None;artifact.update(state='invalid',error_type=type(exc).__name__)
+        if isinstance(exc, ValidationError):
+            artifact.update(error_code='reply_schema',schema_path=list(exc.absolute_path),schema_rule=exc.validator)
+        else:
+            artifact['error_code']=str(exc)
     immutable(ROOT/'artifacts'/f'{slot}.json',artifact)
     print(slot,artifact['state'],flush=True)
     return value
@@ -148,27 +178,21 @@ def run():
     verify()
     approval=read(ROOT/'approval.json')
     assert approval['passed'] and approval['sources']==sources() and approval['freeze_hash']==digest(read(ROOT/'freeze.json')), 'independent_audit_required'
-    state={'state':'running','model':CONFIG['model'],'pid':os.getpid()};write_json(ROOT/'status.json',state)
+    state={'state':'running','model':CONFIG['model'],'pid':os.getpid(),
+           'started_utc':datetime.now(timezone.utc).isoformat()};write_json(ROOT/'status.json',state)
     client=None
     try:
         quota();client=Client(ROOT/'transport')
         for i in (3,6,2,8,4,1,5,7):
             row=read(ROOT/'prepared'/f'E{i}.json')
-            packet={'instruction':'Propose up to3 fallible spec bindings from GLOBAL vocabulary; quote exact spec. Choose any of3 tools. Unknown binding is allowed. No human per-task binding is given.',
-                    'spec':row['spec'],'code':row['code'],'parameters':row['parameters'],
-                    'concepts':t.CONCEPTS,'relations':t.RELATIONS,'available_tools':TOOLS,'reply_schema':schema(True)}
-            proposal=complete(client,f'E{i}__initial',packet,True)
+            proposal=complete(client,f'E{i}__initial',initial_packet(row),True)
             if proposal is None:
                 immutable(ROOT/'blocked'/f'E{i}.json',{'final_raw':'initial_invalid','final_tool':'initial_invalid'})
                 continue
             feedback=t.tools(proposal['bindings'],row['rows'],row['parameters'],row['code'],proposal['tools'])
             immutable(ROOT/'tool_results'/f'E{i}.json',feedback)
             for arm in (('raw','tool') if i%2 else ('tool','raw')):
-                final_packet={'instruction':'Choose which candidate bindings are justified by SPEC, not agreement with code. Empty selected means normative unknown. Judge observed code mismatch separately; observations are finite. Do not invent missing spec rules. Evidence IDs: original_spec, source_return, and observation O IDs.',
-                              'spec':row['spec'],'code':row['code'],'parameters':row['parameters'],
-                              'relations':t.RELATIONS,'initial_proposal':proposal,'observations':row['rows'],
-                              'tool_feedback':feedback if arm=='tool' else None,'reply_schema':schema(False)}
-                answer=complete(client,f'E{i}__final_{arm}',final_packet,False,
+                answer=complete(client,f'E{i}__final_{arm}',final_packet(row,proposal,feedback,arm),False,
                                 allowed_ids=[x['id'] for x in proposal['bindings']],
                                 evidence_ids=['original_spec','source_return']+[x['id'] for x in row['rows']])
                 if answer is not None:
@@ -182,6 +206,7 @@ def run():
         state.update(state='stopped',error_type=type(exc).__name__,reason=str(exc) if isinstance(exc,TransportStop) else 'controller_failure')
     finally:
         if client:client.close()
+        state['ended_utc']=datetime.now(timezone.utc).isoformat()
         write_json(ROOT/'status.json',state)
         print(json.dumps(state),flush=True)
 

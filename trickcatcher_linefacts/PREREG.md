@@ -1829,3 +1829,53 @@ conceptrequirements fail; combinedpackage no-go. No treatment/outputrepair,
 retry/reset, modelassertionclaim, automatic n/Kexpansion/training/benchmark/paid.
 Savedpost-freeze fixture scoring and2independent semanticreviews+integrity/cost
 auditcompleted, oldunknown preserved. SeeRESULTS§11.82 andanalysis/v40_retry3_20261021.
+
+
+## 2026-10-22 Vietnam — v43 tool-assisted binding selection, before model calls
+
+Explicit user implement+run. Freshbest-v7copy v43_concept_identify+hashedv40ports.
+Globalfinite relationvocabulary, Qwenproposes8candidate sets then16pairedraw/tool
+finals, max24single-attemptcompletions. No per-taskAstrabinding/goldfill. Same
+78reused nativeobservations inbotharms, no newPUTcalls/newinputdiscovery claim.
+Prospectivefullprotocol/amendments in pipelinePREREG; pairednormativebinding/
+observedbehavioradjudication, >=2tool-onlyepisodewins/0oppositelosses/controlchecks.
+CPU19/19pass, independentexact-sourcepreparation+frozen-readinessauditsPASS.
+60source/eightpools/deps+all4parentinventories frozen beforemetadata/taskcalls.
+Stableenv replaces vanishedtemporaryenv, originalparents unchanged. Up to25
+metadata-onlycontext-envelope readiness requests registered; taskrunapproval
+awaitsreadinessresult. No content/transportretry/fallback/training/benchmark.
+Userquota<=15 stop, safequota-onlycachedcontinuation; oldunknowns neverreset.
+
+
+### v43 pre-inference engineering amendment — synthetic readiness1 over-cap
+
+Originalreadiness1 stoppedE1synthetictool8359>6144, only4metadatarequests/0model
+completions. Failedstatus/rawmetadata preserved. No actualcandidatebinding outcome
+observed. Explicit user implement+run permits prospective engineeringcorrection:
+analysis/v43_concept_identify_20261021/READINESS_AMENDMENT.md supersedes ONLY the
+original synthetic-readiness stop/noautomaticrepair orchestration rule. One fresh
+readiness2<=25metadatarequests with validpublicquote/realargumentmeasurements and
+partialASTreadshapes, no diagnosticrelation/goldcomputation; no payloadtruncation.
+60frozen source/eightpools/prompt/schema/model/arms/caps/scientificGOgates unchanged.
+Independent review before newmetadata, anyreadiness2failure stops. No additional
+taskattempts beyond24, no oldnamespace/unknownreset, no thirdreadinessadaptation.
+
+
+V43 metric operationalization before anycompletion: evaluator-only rubric at
+analysis/v43_concept_identify_20261021/EVALUATOR_RUBRIC.md. Testedfacet coverage,
+selectedbindingtruth/roles, truthfulimplementationjudgment andcontrols assessed
+separately; no repairedcandidatefill. Exactquoteformat separate from semantic
+entailment. Original>=2tool-onlysemanticwins/0loss gate unchanged; pureformat wins
+are notsemanticwins. All8cases retained, including missingcandidate/blockedfinals.
+
+
+### v43 terminal disposition — post-output2026-10-22Vietnam
+
+18received/4schemainvalid+6blocked =>all24slots,0retry/unknownv43completion.
+All8initial/10actualfinals/6blocked independentlyreviewed. Completebinding+judgment
+raw1/8,tool2/8,1tool-onlysemanticwinE5/0loss (<2required),toolvalid5/8not8; E7not
+correctlyresolved/E8normativeambiguityfailure. RegisteredscientificNO-GO, no new
+calls/n/K/schemaadaptation/goldcandidatefill/training/benchmark. E3rawcorrect
+bindingblockedbyunknownconceptenumretainedwithoutrepair. Readiness1FAILED8359
+andpre-inferenceengineeringamendment/readiness2READY4748 preserved/reported, no
+thirdadaptation. Source/pools/parents/outputsunchanged; saved-datareviewonly.

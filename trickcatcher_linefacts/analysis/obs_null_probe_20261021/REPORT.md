@@ -26,3 +26,6 @@ Tokens: 19214 prompt + 1434 completion. Local Qwen2.5-Coder-32B endpoint (metada
   register trước, không dùng probe này để đổi verdict Phase A.
 
 Files: `run.py`, `responses/*.json` (raw text, usage; không có URL), `results.json`.
+
+**Note 2026-10-22:** cụm "concept-induced role substitution" ở trên chỉ là post-hoc hypothesis. Concept-binding ablation
+sau đó ([REPORT](../concept_binding_ablation_20261022/REPORT.md)) ra **inconclusive**, nên không dùng cụm này như kết luận.

@@ -1,0 +1,971 @@
+{
+  "scope": "all8initial+16pairedfinal slots retained; RAW-invalid read but never repaired/executed",
+  "status": {
+    "state": "complete",
+    "model": "qwen2.5-coder-32b-instruct",
+    "pid": 3162595,
+    "started_utc": "2026-10-21T17:37:27.628100+00:00",
+    "ended_utc": "2026-10-21T18:03:20.114084+00:00"
+  },
+  "slots": {
+    "initial_invalid": 3,
+    "final_raw_blocked": 3,
+    "final_tool_blocked": 3,
+    "initial_valid": 5,
+    "final_raw_invalid": 1,
+    "final_tool_valid": 5,
+    "final_raw_valid": 4
+  },
+  "rows": [
+    {
+      "episode": "E1",
+      "pool_rows": 13,
+      "initial_state": "invalid",
+      "initial_error": "reply_schema",
+      "initial_error_path": [
+        "bindings",
+        2,
+        "concept"
+      ],
+      "raw_bindings": [
+        {
+          "raw": {
+            "id": "binding1",
+            "concept": "order_policy",
+            "relation": "ascending",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted list containing every integer from xs."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "xs",
+              "output"
+            ],
+            "spec_quote": "Preserve the number of occurrences of each value, including duplicates."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": false,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [],
+            "spec_quote": "xs is a list of integers."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": false,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": false
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        }
+      ],
+      "raw_requested_tools": [
+        "contrast",
+        "compare_bindings",
+        "return_dependencies"
+      ],
+      "finals": {
+        "raw": {
+          "state": "blocked",
+          "reason": "initial_invalid"
+        },
+        "tool": {
+          "state": "blocked",
+          "reason": "initial_invalid"
+        }
+      }
+    },
+    {
+      "episode": "E2",
+      "pool_rows": 7,
+      "initial_state": "valid",
+      "initial_error": null,
+      "initial_error_path": null,
+      "raw_bindings": [
+        {
+          "raw": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "count_gt",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding2",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding3",
+            "concept": "membership_inclusion",
+            "relation": "unknown",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        }
+      ],
+      "raw_requested_tools": [
+        "contrast",
+        "compare_bindings",
+        "return_dependencies"
+      ],
+      "finals": {
+        "raw": {
+          "state": "invalid",
+          "error": "reply_schema",
+          "error_path": [
+            "evidence"
+          ],
+          "raw_output": {
+            "selected": [],
+            "implementation_judgment": "observed_mismatch",
+            "reason": "The code counts integers greater than the limit, not greater than or equal to the limit as specified.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O1",
+              "O2",
+              "O3",
+              "O4",
+              "O5",
+              "O6",
+              "O7"
+            ]
+          }
+        },
+        "tool": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [],
+            "implementation_judgment": "observed_mismatch",
+            "reason": "The code counts integers greater than the limit, not greater than or equal to the limit as specified.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O1",
+              "O3",
+              "O5"
+            ]
+          }
+        }
+      },
+      "actual_tool_result_path": "trickcatcher_linefacts/out/pipelines/v43_concept_identify/humaneval/binding8/tool_results/E2.json",
+      "actual_contrasts": 4,
+      "paired_common_packet_equal": true
+    },
+    {
+      "episode": "E3",
+      "pool_rows": 8,
+      "initial_state": "invalid",
+      "initial_error": "reply_schema",
+      "initial_error_path": [
+        "bindings",
+        1,
+        "concept"
+      ],
+      "raw_bindings": [
+        {
+          "raw": {
+            "id": "binding1",
+            "concept": "membership_inclusion",
+            "relation": "required_subset_container",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Return True exactly when every value in required is present in container. Extra values in container are allowed."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding2",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Both arguments are lists of integers; duplicate values do not affect membership."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": false,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": false
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Extra values in container are allowed."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": false,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": false
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        }
+      ],
+      "raw_requested_tools": [
+        "contrast",
+        "compare_bindings",
+        "return_dependencies"
+      ],
+      "finals": {
+        "raw": {
+          "state": "blocked",
+          "reason": "initial_invalid"
+        },
+        "tool": {
+          "state": "blocked",
+          "reason": "initial_invalid"
+        }
+      }
+    },
+    {
+      "episode": "E4",
+      "pool_rows": 7,
+      "initial_state": "valid",
+      "initial_error": null,
+      "initial_error_path": null,
+      "raw_bindings": [
+        {
+          "raw": {
+            "id": "binding1",
+            "concept": "eligible_selection",
+            "relation": "min_positive_none",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "required_subset_container",
+            "arguments": [
+              "ys",
+              "xs"
+            ],
+            "spec_quote": "xs may be any list of integers, including an empty list."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": false,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding3",
+            "concept": "order_policy",
+            "relation": "unknown",
+            "arguments": [],
+            "spec_quote": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        }
+      ],
+      "raw_requested_tools": [
+        "contrast",
+        "compare_bindings",
+        "return_dependencies"
+      ],
+      "finals": {
+        "raw": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [
+              "binding1"
+            ],
+            "implementation_judgment": "observed_mismatch",
+            "reason": "The code raises a ValueError when no strictly positive integer exists, whereas the spec requires returning None. Binding1 is justified by the spec, but the observed behavior does not match the spec.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O1",
+              "O2",
+              "O5",
+              "O6",
+              "O7"
+            ]
+          }
+        },
+        "tool": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [
+              "binding1"
+            ],
+            "implementation_judgment": "observed_mismatch",
+            "reason": "The code raises a ValueError when no strictly positive integer exists, which does not match the spec that requires returning None in such cases.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O1",
+              "O2",
+              "O5",
+              "O6",
+              "O7"
+            ]
+          }
+        }
+      },
+      "actual_tool_result_path": "trickcatcher_linefacts/out/pipelines/v43_concept_identify/humaneval/binding8/tool_results/E4.json",
+      "actual_contrasts": 4,
+      "paired_common_packet_equal": true
+    },
+    {
+      "episode": "E5",
+      "pool_rows": 9,
+      "initial_state": "valid",
+      "initial_error": null,
+      "initial_error_path": null,
+      "raw_bindings": [
+        {
+          "raw": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "sum_le_limit",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return True exactly when the sum of xs is at most limit."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding2",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "No restriction is imposed on its length."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": false,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding3",
+            "concept": "order_policy",
+            "relation": "unknown",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "No restriction is imposed on its length."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": false,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        }
+      ],
+      "raw_requested_tools": [
+        "contrast",
+        "compare_bindings",
+        "return_dependencies"
+      ],
+      "finals": {
+        "raw": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [],
+            "implementation_judgment": "observed_mismatch",
+            "reason": "The code incorrectly returns False when the length of xs is greater than 2, regardless of the sum of xs and limit. This does not align with the spec, which only requires the sum of xs to be at most limit without any length condition.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O6",
+              "O7",
+              "O8",
+              "O9"
+            ]
+          }
+        },
+        "tool": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [
+              "binding1"
+            ],
+            "implementation_judgment": "observed_mismatch",
+            "reason": "Binding1 is justified by the spec but the code introduces an additional length condition not present in the spec, causing mismatches in observations O6, O7, O8, and O9.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O6",
+              "O7",
+              "O8",
+              "O9"
+            ]
+          }
+        }
+      },
+      "actual_tool_result_path": "trickcatcher_linefacts/out/pipelines/v43_concept_identify/humaneval/binding8/tool_results/E5.json",
+      "actual_contrasts": 4,
+      "paired_common_packet_equal": true
+    },
+    {
+      "episode": "E6",
+      "pool_rows": 15,
+      "initial_state": "invalid",
+      "initial_error": "reply_schema",
+      "initial_error_path": [
+        "bindings",
+        1,
+        "concept"
+      ],
+      "raw_bindings": [
+        {
+          "raw": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "sum_gt_one",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding2",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": false,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": false
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding3",
+            "concept": "occurrence_conservation",
+            "relation": "unknown",
+            "arguments": [],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        }
+      ],
+      "raw_requested_tools": [
+        "contrast",
+        "compare_bindings",
+        "return_dependencies"
+      ],
+      "finals": {
+        "raw": {
+          "state": "blocked",
+          "reason": "initial_invalid"
+        },
+        "tool": {
+          "state": "blocked",
+          "reason": "initial_invalid"
+        }
+      }
+    },
+    {
+      "episode": "E7",
+      "pool_rows": 9,
+      "initial_state": "valid",
+      "initial_error": null,
+      "initial_error_path": null,
+      "raw_bindings": [
+        {
+          "raw": {
+            "id": "binding1",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs",
+              "output"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": false,
+            "arity_matches": false,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding2",
+            "concept": "order_policy",
+            "relation": "ascending",
+            "arguments": [
+              "output"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": false,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding3",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "xs",
+              "output"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": false,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        }
+      ],
+      "raw_requested_tools": [
+        "contrast",
+        "compare_bindings",
+        "return_dependencies"
+      ],
+      "finals": {
+        "raw": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [
+              "binding1",
+              "binding2"
+            ],
+            "implementation_judgment": "observed_mismatch",
+            "reason": "The code does not preserve the order of elements as it uses a set which removes duplicates, but the spec requires preserving every duplicate occurrence. However, the output is sorted as required by the spec.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O1",
+              "O2",
+              "O3",
+              "O4",
+              "O5",
+              "O6"
+            ]
+          }
+        },
+        "tool": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [
+              "binding1",
+              "binding2"
+            ],
+            "implementation_judgment": "unknown",
+            "reason": "Binding1 and binding2 are justified by the spec as they require preserving occurrences and sorting in ascending order. Binding3 is not selected because it implies the output should be a set, which does not preserve duplicates.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O1",
+              "O2",
+              "O3",
+              "O4",
+              "O5",
+              "O6"
+            ]
+          }
+        }
+      },
+      "actual_tool_result_path": "trickcatcher_linefacts/out/pipelines/v43_concept_identify/humaneval/binding8/tool_results/E7.json",
+      "actual_contrasts": 4,
+      "paired_common_packet_equal": true
+    },
+    {
+      "episode": "E8",
+      "pool_rows": 10,
+      "initial_state": "valid",
+      "initial_error": null,
+      "initial_error_path": null,
+      "raw_bindings": [
+        {
+          "raw": {
+            "id": "binding1",
+            "concept": "eligible_selection",
+            "relation": "first",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the first suitable value from xs. xs is a list of integers."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": true
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding2",
+            "concept": "defined_outcome",
+            "relation": "first",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the first suitable value from xs. xs is a list of integers."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": false
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        },
+        {
+          "raw": {
+            "id": "binding3",
+            "concept": "order_policy",
+            "relation": "first",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the first suitable value from xs. xs is a list of integers."
+          },
+          "mechanical_checks_only": {
+            "concept_in_vocabulary": true,
+            "relation_in_vocabulary": true,
+            "argument_names_known": true,
+            "arity_matches": true,
+            "quote_exact_nonempty": true,
+            "concept_relation_compatible": false
+          },
+          "semantic_validity": "independent manual review, not inferred from these flags"
+        }
+      ],
+      "raw_requested_tools": [
+        "contrast",
+        "compare_bindings",
+        "return_dependencies"
+      ],
+      "finals": {
+        "raw": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [
+              "binding1"
+            ],
+            "implementation_judgment": "no_observed_mismatch",
+            "reason": "Binding1 is justified by the spec as it specifies returning the first suitable value from xs, which aligns with the code's behavior of returning the first item or None if the list is empty.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O1",
+              "O2",
+              "O3",
+              "O4",
+              "O5",
+              "O6"
+            ]
+          }
+        },
+        "tool": {
+          "state": "valid",
+          "error": null,
+          "error_path": null,
+          "raw_output": {
+            "selected": [
+              "binding1"
+            ],
+            "implementation_judgment": "no_observed_mismatch",
+            "reason": "Binding1 is justified by the spec as it returns the first item of the list xs, which aligns with the spec's requirement to return the first suitable value from xs. Bindings 2 and 3 are not justified as they incorrectly associate with the concept of defined outcome and order policy, respectively, which are not directly supported by the spec.",
+            "evidence": [
+              "original_spec",
+              "source_return",
+              "O1",
+              "O2",
+              "O3",
+              "O4",
+              "O5",
+              "O6"
+            ]
+          }
+        }
+      },
+      "actual_tool_result_path": "trickcatcher_linefacts/out/pipelines/v43_concept_identify/humaneval/binding8/tool_results/E8.json",
+      "actual_contrasts": 4,
+      "paired_common_packet_equal": true
+    }
+  ],
+  "raw_candidate_count": 24,
+  "raw_candidate_mechanical_flags": {
+    "concept_in_vocabulary_true": 20,
+    "relation_in_vocabulary_true": 24,
+    "argument_names_known_true": 19,
+    "arity_matches_true": 23,
+    "quote_exact_nonempty_true": 22,
+    "concept_relation_compatible_true": 18,
+    "argument_names_known_false": 5,
+    "concept_in_vocabulary_false": 4,
+    "concept_relation_compatible_false": 6,
+    "quote_exact_nonempty_false": 2,
+    "arity_matches_false": 1
+  },
+  "actual_tool_invocations": {
+    "contrast": 5,
+    "compare_bindings": 5,
+    "return_dependencies": 5
+  },
+  "saved_comparison_matrix_counts": {
+    "computed": 53,
+    "holds_True": 44,
+    "unknown": 73,
+    "binding_unknown": 39,
+    "holds_False": 9,
+    "binding_arguments_or_observation_unsupported": 34
+  },
+  "costs": {
+    "completion_attempts": 18,
+    "responses": 18,
+    "known_usage_attempts": 18,
+    "unknown_usage_attempts": 0,
+    "input_tokens_known": 30639,
+    "output_tokens_known": 2569,
+    "metadata": {
+      "readiness1": {
+        "requests": 4,
+        "by_path_state": {
+          "/models:received": 1,
+          "/tokenize:received": 3
+        }
+      },
+      "readiness2": {
+        "requests": 25,
+        "by_path_state": {
+          "/models:received": 1,
+          "/tokenize:received": 24
+        }
+      },
+      "actual_run": {
+        "requests": 19,
+        "by_path_state": {
+          "/models:received": 1,
+          "/tokenize:received": 18
+        }
+      }
+    },
+    "new_PUT_workers": 0,
+    "original_v40_unknown_completion": "historical separate; never reset or included in v43 known total",
+    "client_completion_latency_seconds": {
+      "min": 69.32869852520525,
+      "median": 84.22705938504077,
+      "max": 97.9207938190084,
+      "sum": 1520.922169385245
+    }
+  },
+  "integrity": {
+    "source_files": 60,
+    "prepared_pools": 8,
+    "prepared_rows": 78,
+    "terminal_entries": 290,
+    "terminal_inventory_sha256": "f37843902d263de369b390a159f7c87d04a076785c4a60b87de579e84c9b3672",
+    "generation_entries": 189
+  },
+  "semantic_review": "separate manual independent review; does not follow from schema or observed holds",
+  "no_input_discovery_assertion_or_reference_free_proof_claim": true
+}

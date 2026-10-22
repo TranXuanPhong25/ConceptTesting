@@ -40,3 +40,58 @@ metadata GET; report it separately. Model cap24 unchanged. No generation resume
 after any other stop cause. Invalid selected IDs are recorded as semantic interface
 failures even if JSON-valid. Contrast holds-vector selection ignores candidate
 predicted-value changes when classifying relation satisfaction changes.
+
+
+## Resume amendment —2026-10-21 17:10UTC, before preparation/outcomes
+
+Initial schema-valid bindings with unsupported argument names/arity, mismatched
+concept labels or nonexact/empty quotes remain candidates, never repaired or gold
+filled. BOTH final arms get identical mechanical candidate_checks (names/arity,
+exact nonempty substring, global vocabulary compatibility), always spec_entailment
+unverified. Semantic accuracy requires independent post-freeze spec adjudication;
+passing these checks is not normative proof. Unknown final/evidence IDs invalidate
+that fixed final turn. Initial JSON/schema failure blocks bothdependent finals.
+
+Global relation-to-concept compatibility is a public vocabulary aid, not per-task
+binding. The finite relation menu was engineered with these seen fixtures in mind;
+no claim of automatic open-vocabulary concept discovery or held-out transfer. Both
+finalarms see the SAME rawpool/alloperator definitions/sharedinitialproposal and
+mechanicalchecks; only requested computedtoolfeedback differs. Empty toolselection
+is permitted and reported as unrealized extra tooling, no forced/adapted calls.
+
+Tool errors recorded per component with sanitized error type; valid siblingtools
+survive. No new PUT calls. Partial return-read inventory explicitly omits guards,
+aliases/sideeffects/nested scopes and is not a sound slice. A contrast holds one
+ARGUMENT fixed except one changed argument, not a guaranteed single independent
+semantic dimension. All rawobservations stay visible, even if no contrast found.
+
+Pre-prepare auditapproval pins exact source before pool creation; finalrunapproval
+also pins freeze digest. All4parentterminalinventory hashes plus exact contents
+verified, not only self-consistency. Content/schema failures have safe error codes.
+CPU regressions are artificial library/control checks, not diagnostic model/PUT
+outcomes. No new model/PUT/outcome existed at this amendment.
+
+
+Context-readiness amendment before preparation/modeloutputs: comparison matrices
+use explicit columns and arrays retaining status/value/exception/holds/reason for
+every observation×candidate. No rows or candidate disagreement selected by gold.
+This reduces repeated JSON field names; unknown reasons remain visible.
+
+After audited pool preparation/freeze, at most25 metadata-only readiness requests
+(one GETmodels plus8initial/8raw/8tool synthetic-envelope tokenizations) may check
+context feasibility without any canary completion. Hypothetical schema-sized
+candidates/feedback are clearly marked readiness-only, never task output or actual
+candidates; no tool computation on diagnostic bindings occurs in that size check.
+An envelope is an estimate, not an upper bound on arbitraryUnicode tokenization.
+Actual every-call tokenizer guard remains authoritative; no silenttruncation, cap
+change, or metadata retry. Record readiness separately from run's models/tokenize
+requests. Any readiness protocol/transport/cap failure stops before task calls,
+no automaticfallback/repair. If fit, run cap24 and original paired design unchanged.
+
+
+Pre-prepare environment amendment: oldtemporaryV4venv disappeared before any
+v43preparation/freeze/model calls. New isolated stable env at usercache uses same
+Python3.12.2 binarySHA and pinned httpx0.27.2/jsonschema4.23.0/jinja2 3.1.4. No
+parentconfig/environment/output repaired or rewritten. v43config points only to
+newenv; freeze records full installed-distribution versions and executableSHA.
+Rerun controlregressions + independent delta audit before preparationapproval.

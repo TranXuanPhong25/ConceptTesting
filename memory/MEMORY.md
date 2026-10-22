@@ -46,13 +46,23 @@
 - [Flowtools contract audit](flowtools-contract-audit.md) — v21 tool-use/source-trigger gaps; audited v30 CPU repair54/54, no new model run
 - [v31 fault templates](v31-faulttemplate.md) — 2026-10-19 explicit fault-type concepts + templates vs plain, Qwen3.5-35B; rule met but weak: 18 vs 15 confirmed /33, 4–1, FA 27 vs 32, $2.56
 - [v34 fault-concept placebo](v34-ftplacebo.md) — v34 rule not met; v35 stop; v37 Mokav-mutant no-go 3/20; v38 HumanEval spec programs = canonical; v39 VibePass spec programs no-go (C' 12/33, H' 2); paper route closed
-- [Signal, not more data](signal-not-more-data.md) — borderline result → mechanism check on existing outputs for go/no-go; never enlarge runs to salvage
+- [Signal, not more data](signal-not-more-data.md) — borderline result → mechanism check for go/no-go; never enlarge runs or blame dataset size; look at tool coverage + concept accuracy/taxonomy
 - [Check version tree first](check-version-tree-before-proposing.md) — before any new direction, name the earlier v-number that tried the core idea + result; v31 repeated v7 MUTANT
+- [v36 LLM localization](v36-llm-localize.md) — 2026-10-20 Qwen2.5-Coder-32B code vs CFG: no-go; CFG adds nothing, bug-revealing inputs 2–3/33
+- [v41 observed I/O relations](v41-iorel.md) — 2026-10-21 CPU ceiling no-go (C2 11/33, lift 0.38); sampling alone reaches bugs 22/33 → oracle/selection is the bottleneck
+- [v42/v45 mutant oracle](v42-v45-mutoracle.md) — v42 CPU no-go (D1 15/33, lift .62); v45 (ex-v43_mutjudge) in-head judge invalid instrument (no program-variant oracle, "unsure" exit); proper-oracle ceiling 8/15 (≥3 progs 4)
+- [v44 concept matrix](v44-concept-matrix.md) — 2026-10-21 6 kinds × tool methods: no-go (union 21 vs random 21.4); perfect pick doubles class coverage vs random instance; 11 tasks unreachable
 
 - [v32 scope/support](linefacts-v32-scope-support.md) — 48 CPU pass;fresh Luna Atrue/Bfalse,f06 signature block;scope fix exercised,support model promotion untested
 
 - [Concept training evidence gap](concept-training-evidence-gap.md) — recent losses mainly upstream/gates/oracle/pool; concept-to-input training proposal premature
 
 - [Astra concept-agent diagnostic](astra-concept-agent-diagnostic.md) — v40 complete72:allarms6/6buginputs,0concept-onlywins; semanticcapabilityfail/no-go,callbackhandled
+- [Concept prior-work proposal](concept-priorwork-proposal.md) — KITE/ReProAgent/UnitCon/RTED mechanism comparison; generic loops overlap prior work, conditional semantic validation/adaptive testing proposal
+- [Concept research follow-through](concept-research-autonomy.md) — autonomous continuation authorized; saved v40/v41 evidence gives no-go for current package, no new run
+- [Claim-role separation plan](../research/benchmark-papers-2025-2026/audit/PLAN_CLAIM_ROLE_SEPARATION_20261021.md) — plan-only: saved-data mechanism audit, conditional role-separation diagnostic and concept controls
+- [Claim-role Phase A](claim-role-phaseA.md) — 2026-10-21 saved-data audit: Gate A STOP (high ROLE only E2; E6 PRED); E4 OBS-null probe not supported; packet ablation inconclusive (packet removal kills None predictions); B1/B2 not run
 
-- [v43 concept-identification tools](v43-concept-identify.md) — implemented core, audit/CPU pending; quota15 checkpoint, scheduled continuation,0newcalls
+- [v43 concept-identification tools](v43-concept-identify.md) — complete18+6blocked;raw1/8tool2/8,onewin/no-go,0newPUT,callbackhandled
+- [v7–v47 implementation audit](v7-v47-implementation-audit.md) — retrospective inventory; fidelity, generality, interface and control limits; no new inference
+- [v47 concept selection](v47-concept-select.md) — 2026-10-22 LLM picks from tool menus no-go (16/15 vs random 18); new methods +2 tasks (56, 89)

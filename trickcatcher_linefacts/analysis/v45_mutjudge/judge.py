@@ -1,7 +1,7 @@
-"""v43 binary judge on v42 mutant-disagreement questions (see PREREG.md). Usage (repo root):
-  PYTHONPATH=. $V4_PYTHON trickcatcher_linefacts/analysis/v43_mutjudge/judge.py build
-  QWEN_BASE_URL=... PYTHONPATH=. $V4_PYTHON trickcatcher_linefacts/analysis/v43_mutjudge/judge.py generate
-  PYTHONPATH=. $V4_PYTHON trickcatcher_linefacts/analysis/v43_mutjudge/judge.py score
+"""v45 (renumbered from v43) binary judge on v42 mutant-disagreement questions (see PREREG.md). Usage (repo root):
+  PYTHONPATH=. $V4_PYTHON trickcatcher_linefacts/analysis/v45_mutjudge/judge.py build
+  QWEN_BASE_URL=... PYTHONPATH=. $V4_PYTHON trickcatcher_linefacts/analysis/v45_mutjudge/judge.py generate
+  PYTHONPATH=. $V4_PYTHON trickcatcher_linefacts/analysis/v45_mutjudge/judge.py score
 The endpoint URL comes from the environment only and is never written to disk or printed.
 """
 import collections
@@ -21,7 +21,7 @@ from trickcatcher_linefacts.pipelines.v34_ftplacebo.flow_run import Reference, n
 from trickcatcher_linefacts.pipelines.v34_ftplacebo.v4_tools import enumerate_mutants
 
 HERE = Path(__file__).resolve().parent
-OUT = HERE.parents[1] / 'out' / 'analysis' / 'v43_mutjudge'
+OUT = HERE.parents[1] / 'out' / 'analysis' / 'v45_mutjudge'
 MODEL = 'qwen2.5-coder-32b-instruct'
 ARMS = ('binary', 'code', 'concept')
 QUESTIONS_SHA256 = '3b4f48378d8c78cfae6f782715fd96681a22d9500cbb5ee9bf256a069b7cabca'

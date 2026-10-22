@@ -611,3 +611,5 @@ All executable source links and function names can be checked in [FUNCTION_INDEX
 - **v32_scope_support** (2026-10-19, best-v7 copy + v25 ports): lexical comprehension scopes and cumulative witness support;48 CPU pass. Fresh Luna seen5 Atrue/Bfalse/Cblocked on f06 wrong trigger signature;scope fix exercised,support promotion model-untested,no comparison/promotion. See analysis/v32_scope_support_20261019/REPORT.md.
 
 - **v40_concept_agent** (2026-10-21): Astra7relationcatalog + seen8/3arm selective-revision diagnostic; best-v7/v30ports, CPU12/audit/sourcefreeze pass. Endpointmodels404,0Qwentaskcalls/all72notattempted; waitingliveendpoint, noefficacyclaim. See analysis/v40_concept_agent_20261021/REPORT.md.
+
+- **v43_concept_identify** (2026-10-22): COMPLETE18responses/6blocked; rawbinding+judgment1/8/tool2/8,1semanticwin/0loss butgate>=2+valid8 unmet, NO-GO.78reusedrows/0newPUT;60source/deps/parentinventories/auditsPASS. Readiness1fail preserved+prospectiveengineeringamendment. See analysis/v43_concept_identify_20261021/REPORT.md.
