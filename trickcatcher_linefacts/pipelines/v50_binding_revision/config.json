@@ -1,0 +1,46 @@
+{
+  "VERSION": "v50_binding_revision",
+  "model": "qwen2.5-coder-32b-instruct",
+  "seeds": {
+    "facts": 20261010,
+    "mining": 20261010,
+    "arms": 20261010,
+    "oracle": 20261212,
+    "pilot": 20261010
+  },
+  "K": 3,
+  "workers": 1,
+  "V4_PYTHON": "/home/phong/.cache/concepttester/v50-venv/bin/python",
+  "datasets": {
+    "humaneval": {
+      "he": "PBT_EdgeCases/run/data/humaneval.jsonl",
+      "hep": "PBT_EdgeCases/run/data/humaneval_plus.jsonl",
+      "contracts": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "oracle_hep": "~/.cache/evalplus/HumanEvalPlus-v0.1.10.jsonl",
+      "puts": "vendor/TrickCatcher/Datasets/EvalPlus/PUTs"
+    },
+    "heldout": {
+      "he": "humaneval_mbpp.jsonl",
+      "hep": "humaneval_mbpp_plus.jsonl",
+      "contracts": "humaneval_mbpp_plus.jsonl",
+      "oracle_hep": "humaneval_mbpp_plus.jsonl",
+      "puts": "PUTs",
+      "selection": "tasks.json"
+    }
+  },
+  "freeze_hypothesis_constants": true,
+  "B0_VARIANTS": "/tmp/claude-1000/-home-phong-dev-ConceptTester/2dddac78-7845-4887-9c28-b6313bcf7c52/scratchpad/b0/variants/Datasets/EvalPlus/GenProgs",
+  "chain": {
+    "max_input_chars": 1000,
+    "max_input_nodes": 256,
+    "max_input_depth": 16,
+    "max_items": 64,
+    "max_output_bytes": 4096
+  },
+  "revision": {
+    "phase": "CPU_and_preparation",
+    "max_completions": 24,
+    "native_workers_in_diagnostic": 0,
+    "online_launch_requires_exclusive_window": true
+  }
+}

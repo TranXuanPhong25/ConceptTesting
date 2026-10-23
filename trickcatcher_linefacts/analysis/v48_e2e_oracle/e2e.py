@@ -30,7 +30,14 @@ DATA = REPO / CONFIG['vibepass']['root']
 EXACT_MAX = 20000
 DRAWS = 2000
 PRIORITY = ('coverage', 'mutation', 'boundary', 'class', 'spec_range', 'value_biased')
-METRICS = ('correct_assertions', 'confirmed_tasks', 'fa_tests', 'fa_tasks', 'unconfirmed', 'tests', 'put_exception_inputs')
+METRICS = ('correct_assertions', 'confirmed_tasks', 'fa_tests', 'fa_tasks', 'unconfirmed', 'tests', 'put_no_test_inputs')
+PRIMARY = ('e_no_valid_program', 'a_no_exposing_input', 'confirmed', 'lost_to_cap', 'c_vote_wrong_variant_had_ref',
+           'd_vote_wrong_value', 'b_common_mode', 'b2_variants_failed', 'put_not_ok')
+
+
+def rel(path):
+    path = Path(path).resolve()
+    return str(path.relative_to(REPO)) if path.is_relative_to(REPO) else str(path)  # tests use tmp paths
 
 
 class Inventory:
@@ -39,7 +46,7 @@ class Inventory:
 
     def add(self, path):
         path = Path(path).resolve()
-        key = str(path.relative_to(REPO))
+        key = rel(path)
         sha = hashlib.sha256(path.read_bytes()).hexdigest()
         if key in self.files and self.files[key] != sha:
             raise ValueError('input artifact changed during run: ' + key)
@@ -103,7 +110,7 @@ def status(inv=None, tasks=None):
         present, overflow, empty, missing = 0, 0, 0, []
         for path in paths:
             if not path.is_file():
-                missing.append(str(path.relative_to(REPO)))
+                missing.append(rel(path))
                 continue
             present += 1
             try:
@@ -115,7 +122,7 @@ def status(inv=None, tasks=None):
                 overflow += r['finish_reason'] == 'context_overflow'
                 empty += not r['text'].strip() and r['finish_reason'] != 'context_overflow'
             except (ValueError, TypeError, AttributeError) as exc:
-                bad.append(dict(path=str(path.relative_to(REPO)), error=str(exc)))
+                bad.append(dict(path=rel(path), error=str(exc)))
         return dict(planned=len(paths), present=present, missing=missing,
                     context_overflow=overflow, empty_non_overflow=empty)
 
@@ -232,6 +239,12 @@ def checked_programs(inv, case):
     return srcs, overflow
 
 
+def put_ok(row):
+    """PUT returned a parsable value: otherwise (exception/timeout/skipped/unparsable) no test is emitted."""
+    v = iorel.value(row['put'])
+    return v is not None and v[0] == 'ok'
+
+
 def execute_case(inv, case, prep, program_tasks, root):
     cid = case['case_id']
     for path in (Path(__file__), Path(oracle.__file__), Path(iorel.__file__), Path(ft_run.__file__),
@@ -268,7 +281,7 @@ def execute_case(inv, case, prep, program_tasks, root):
     return dict(case_id=cid, inputs=len(inputs), valid_programs=len(valid), context_overflow=len(overflow),
                 vote_tests=sum(r['vote'] is not None for r in rows.values()),
                 consensus_tests=sum(r['consensus'] is not None for r in rows.values()),
-                put_exception_inputs=sum(r['put'][0] in ('exception', 'timeout') for r in rows.values()))
+                put_no_test_inputs=sum(not put_ok(r) for r in rows.values()))
 
 
 def execute(tasks=None):
@@ -353,7 +366,7 @@ def metric(inputs, rows, labels, rule, cap):
     fa = len(tests) - correct
     return dict(correct_assertions=correct, confirmed_tasks=int(correct > 0), fa_tests=fa, fa_tasks=int(fa > 0),
                 unconfirmed=sum(labels[lit][rule] == 'unconfirmed' for lit in tests), tests=len(tests),
-                put_exception_inputs=sum(rows[lit]['put'][0] in ('exception', 'timeout') for lit in set(inputs)))
+                put_no_test_inputs=sum(not put_ok(rows[lit]) for lit in set(inputs)))
 
 
 def expectation(batches, rows, labels):
@@ -385,6 +398,27 @@ def decomposition(inputs, rows, truth, valid_programs):
                  and rows[lit]['vote'] is not None and not same(iorel.value(rows[lit]['vote']), truth[lit]['ref'])]
     wrong = [lit for lit in emitted(inputs, rows, cap=None) if truth[lit]['ref'] is None
              or not same(iorel.value(rows[lit]['vote']), truth[lit]['ref'])]
+    classes = collections.Counter()
+    for lit in ordered(exposing):
+        row, ref = rows[lit], truth[lit]['ref']
+        put, outs = iorel.value(row['put']), [iorel.value(o) for o in row['programs'].values()]
+        if not put_ok(row):
+            classes['put_not_ok'] += 1
+        elif row['vote'] is not None and same(iorel.value(row['vote']), ref):
+            classes['vote_right'] += 1
+        elif row['vote'] is not None:
+            classes['vote_wrong_variant_had_ref' if any(o is not None and same(o, ref) for o in outs) else 'vote_wrong_value'] += 1
+        elif outs and all(o is not None and same(o, put) for o in outs):
+            classes['common_mode'] += 1
+        else:  # no variant returns a parsable value different from the PUT (exceptions/timeouts/unparsable only)
+            classes['variants_failed'] += 1
+    hits = {mode: {lit for lit in emitted(inputs, rows, cap=cap) if truth[lit]['vote'] == 'confirmed'}
+            for mode, cap in (('capped', 20), ('uncapped', None))}
+    primary = ('e_no_valid_program' if not valid_programs else 'a_no_exposing_input' if not exposing
+               else 'confirmed' if hits['capped'] else 'lost_to_cap' if hits['uncapped']
+               else 'c_vote_wrong_variant_had_ref' if classes['vote_wrong_variant_had_ref']
+               else 'd_vote_wrong_value' if classes['vote_wrong_value'] else 'b_common_mode' if classes['common_mode']
+               else 'b2_variants_failed' if classes['variants_failed'] else 'put_not_ok')
     splits = {}
     for mode, cap in (('capped', 20), ('uncapped', None)):
         split = collections.Counter()
@@ -392,7 +426,9 @@ def decomposition(inputs, rows, truth, valid_programs):
             t = truth[lit]
             if t['vote'] == 'confirmed':
                 continue
-            if not t['valid']:
+            if t.get('reference_skipped'):
+                split['reference_skipped'] += 1
+            elif not t['valid']:
                 split['invalid_input'] += 1
             elif t['ref'] is None or iorel.value(rows[lit]['put']) is None:
                 split['unresolved_output'] += 1
@@ -405,10 +441,11 @@ def decomposition(inputs, rows, truth, valid_programs):
         splits[mode] = dict(split)
     return dict(a_no_exposing_input=not exposing, b_common_mode=common and bool(valid_programs),
                 c_vote_wrong=vote_miss, d_emitted_wrong_value=wrong, e_no_valid_program=not valid_programs,
-                exposing_inputs=len(exposing), fa_split=splits, flags_may_overlap=True)
+                exposing_inputs=len(exposing), exposing_classes=dict(classes), primary=primary,
+                fa_split=splits, flags_may_overlap=True)
 
 
-def reference_truth(inv, case, record, official):
+def reference_truth(inv, case, record, official, diag):
     cid, rows = case['case_id'], record['inputs']
     pool = pool_inputs(inv, cid)
     # load_ref verifies the frozen v41 job; it never writes to v41.
@@ -419,10 +456,19 @@ def reference_truth(inv, case, record, official):
     new = ordered(set(rows) - set(pool))
     if new:
         ref = case['reference']
-        generated = iorel.run_batch(OUT / 'references' / cid / 'generated',
-                                    {'contract': ref['contract'], 'ref': ref['source']}, ref['entry'], new)
+        srcs = {'contract': ref['contract'], 'ref': ref['source']}
+        try:
+            g = iorel.run_batch(OUT / 'references' / cid / 'generated', srcs, ref['entry'], new)
+            raw.update({lit: (g['contract'][i], g['ref'][i]) for i, lit in enumerate(new)})
+        except RuntimeError:  # one sandbox failure must not void the task: chunks of 100, a failed chunk is skipped
+            for s in range(0, len(new), 100):
+                part = new[s:s + 100]
+                try:
+                    g = iorel.run_batch(OUT / 'references' / cid / f'generated_{s}', srcs, ref['entry'], part)
+                    raw.update({lit: (g['contract'][i], g['ref'][i]) for i, lit in enumerate(part)})
+                except RuntimeError:
+                    raw.update({lit: (['skipped'], ['skipped']) for lit in part})
         inv.tree(OUT / 'references' / cid)
-        raw.update({lit: (generated['contract'][i], generated['ref'][i]) for i, lit in enumerate(new)})
     truth = {}
     for lit, row in rows.items():
         contract, ref_raw = raw[lit]
@@ -434,9 +480,11 @@ def reference_truth(inv, case, record, official):
                 cache.append(iorel.official_exposes(official, case, lit))
             return cache[0]
 
-        # Diagnostic reach also requires the official path, independent of whether a vote exists.
-        exposing = contract[0] == 'ok' and put is not None and ref is not None and not same(put, ref) and exposes()
-        truth[lit] = dict(valid=contract[0] == 'ok', ref=ref, exposing=exposing,
+        # Diagnostic reach (official path) only for the decomposed arms' inputs; emitted tests are judged lazily.
+        exposing = (contract[0] == 'ok' and put is not None and ref is not None and not same(put, ref) and exposes()) \
+            if lit in diag else None
+        skipped = contract[0] in ('skipped', 'timeout') or (contract[0] == 'ok' and ref_raw[0] in ('skipped', 'timeout'))
+        truth[lit] = dict(valid=contract[0] == 'ok', ref=ref, exposing=exposing, reference_skipped=skipped,
                           **{rule: judge(iorel.value(row[rule]), contract, ref, put, exposes) for rule in ('vote', 'consensus')})
     return truth
 
@@ -484,7 +532,7 @@ def score():
             record = inv.read(OUT / 'tasks' / f'{cid}.json')
             for name, sha in record['artifact_sha256'].items():
                 p = inv.add(REPO / name)
-                if inv.files[str(p.relative_to(REPO))] != sha:
+                if inv.files[rel(p)] != sha:
                     raise ValueError('execution input changed: ' + name)
             checked_programs(inv, cases[cid]) if cid in common else None
             expected = ordered(all_inputs(prep[cid]) | set(pool_subset(pool_inputs(inv, cid), cid)))
@@ -501,7 +549,9 @@ def score():
         rows = []
         for cid in cohort:
             record = records[cid]
-            truth = reference_truth(inv, refs[cid], record, official)
+            selected = selections(inv, cases[cid], prep[cid], pool_subset(pool_inputs(inv, cid), cid))[0]
+            decomposed = {arm: next(selected[arm][1]) for arm in ('all_menu', 'llm_code')}
+            truth = reference_truth(inv, refs[cid], record, official, set().union(*decomposed.values()))
             arms, controls = {}, {}
             for arm, (method, batches) in arm_choices[cid].items():
                 count, arms[arm] = expectation(batches, record['inputs'], truth)
@@ -510,11 +560,10 @@ def score():
                 for rule in arm.values():
                     for m in rule.values():
                         m['precision'] = m['correct_assertions'] / m['tests'] if m['tests'] else None
-            selected = selections(inv, cases[cid], prep[cid], pool_subset(pool_inputs(inv, cid), cid))[0]
-            failures = {arm: decomposition(next(selected[arm][1]), record['inputs'], truth, record['valid_programs'])
-                        for arm in ('all_menu', 'llm_code')}
+            failures = {arm: decomposition(u, record['inputs'], truth, record['valid_programs']) for arm, u in decomposed.items()}
             rows.append(dict(case_id=cid, valid_programs=record['valid_programs'], arms=arms, controls=controls,
-                             selection_usage=usage[cid], failures=failures))
+                             selection_usage=usage[cid], failures=failures,
+                             reference_skipped=sum(t['reference_skipped'] for t in truth.values())))
         totals = aggregate(rows, common)
         program_usage = [inv.read(oracle.OUT / 'programs' / 'tc' / cid / f'{i}.json') for cid in sorted(common, key=int)
                          for i in range(oracle.NPROG)]
@@ -527,7 +576,12 @@ def score():
         per_arm_usage = {a: dict(calls=0, input_tokens=0, output_tokens=0) for a in totals}
         per_arm_usage.update(llm_code=pick_usage['spec+code'], llm_spec=pick_usage['spec-only'],
                              kind_matched=pick_usage['spec+code'])
+        failure_summary = {arm: dict(primary={k: sum(r['failures'][arm]['primary'] == k for r in rows) for k in PRIMARY},
+                                     exposing_classes=dict(sum((collections.Counter(r['failures'][arm]['exposing_classes'])
+                                                                for r in rows), collections.Counter())))
+                           for arm in ('all_menu', 'llm_code')}
         summary = dict(tasks=len(rows), common_tasks=len(common), arms=totals, decision=decision(totals),
+                       failures=failure_summary, reference_skipped=sum(r['reference_skipped'] for r in rows),
                        upstream=dict(shared_tc=tokens(program_usage), picks=pick_usage,
                                      per_arm_pick_calls=per_arm_usage,
                                      note='Other controls use no picks; pool_matched + tc is TC-full-style, not complete TC-full.'),

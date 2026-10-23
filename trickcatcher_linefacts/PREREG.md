@@ -1879,3 +1879,20 @@ calls/n/K/schemaadaptation/goldcandidatefill/training/benchmark. E3rawcorrect
 bindingblockedbyunknownconceptenumretainedwithoutrepair. Readiness1FAILED8359
 andpre-inferenceengineeringamendment/readiness2READY4748 preserved/reported, no
 thirdadaptation. Source/pools/parents/outputsunchanged; saved-datareviewonly.
+
+
+## 2026-10-23 — round-novelty saved-data analysis (v11_fair dev), before scoring
+
+CPU-only analysis of saved v11_fair dev outputs (ref oracle), motivated by Anthropic's code-review blog (59% of
+repeatedly flagged code existed at the first review pass). Splits each hybrid sample into round 1 / round 2 and
+asks whether round 2 finds bugs round 1 missed, and whether real hints beat matched placebo on that novelty.
+Full registration, gate (replay must equal final_protocol_v11_dev.json), definitions and decision rule:
+[analysis/round_novelty_20261023/PREREG.md](analysis/round_novelty_20261023/PREREG.md). No LLM call, no new run.
+
+
+## 2026-10-23 — v51 latent concept oracle (frozen Qwen2.5-Coder-1.5B probes), before any VibePass score
+
+User-approved new direction ("đồng ý"). Concept-bottleneck probes on frozen hidden states as a per-input oracle,
+trained on MBPP+ mutants (tool-labelled discrepancy concepts), tested on the saved v41 VibePass pool; controls are the
+direct probe, a placebo bottleneck, and verbal/likelihood/surface baselines. CPU only, $0. Full registration and
+decision rule: [analysis/v51_latent_concept/PREREG.md](analysis/v51_latent_concept/PREREG.md).

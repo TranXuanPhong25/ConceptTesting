@@ -293,3 +293,19 @@ def test_decision_uses_every_amendment_control():
     assert E.decision(arms)['verdict'] == 'GO'
     arms['menu_matched']['vote']['capped']['confirmed_tasks'] = 2
     assert E.decision(arms)['verdict'] == 'NO-GO'
+
+
+def test_primary_failure_and_exposing_classes():
+    rows = synthetic_rows(2)
+    truth = {lit: dict(valid=True, ref=E.iorel.value(ok(2)), exposing=True, vote='fa') for lit in rows}
+    for row in rows.values():
+        row['programs'], row['vote'] = {'p0': ok(0)}, None
+    d = E.decomposition(rows, rows, truth, [0])
+    assert d['primary'] == 'b_common_mode' and d['exposing_classes'] == dict(common_mode=2)
+    for row in rows.values():
+        row['programs'] = {'p0': ['timeout']}
+    assert E.decomposition(rows, rows, truth, [0])['primary'] == 'b2_variants_failed'
+    for lit in truth:
+        truth[lit]['exposing'] = False
+    assert E.decomposition(rows, rows, truth, [0])['primary'] == 'a_no_exposing_input'
+    assert E.decomposition(rows, rows, truth, [])['primary'] == 'e_no_valid_program'

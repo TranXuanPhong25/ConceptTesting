@@ -86,3 +86,21 @@ input / valid input with PUT right (spurious disagreement) / PUT wrong but wrong
   log-uniform over negative ranges, kind errors make the case incomplete, digest-checked cache reuse). CPU tests, plus a
   report of which current33 menus would change (expected: the 5 order-duplicate tasks). For future fresh cohorts only;
   v48 scoring uses the frozen v47 menus/picks.
+
+## Amendment 2 (2026-10-23, after an independent read-only Opus code review; before any full execute or reference read)
+Engineering/reporting only; arms, oracle, cap and decision unchanged.
+- Inventory keys outside the repo (pytest tmp paths) are absolute; 2 previously failing tests now pass (45 total).
+- “PUT-exception inputs” → `put_no_test_inputs`: every input where the PUT does not return a parsable value
+  (exception, timeout, batch `skipped`, unparsable) — all emit no test.
+- Failure decomposition: every exposing input gets one class (`put_not_ok`, `vote_right`,
+  `vote_wrong_variant_had_ref`, `vote_wrong_value`, `common_mode`, `variants_failed` = no variant returns a parsable value
+  different from the PUT); each task gets one `primary` failure in a fixed order (e no valid program → a no exposing
+  input → confirmed → lost to cap → c vote wrong although a variant had the reference value → d vote wrong value →
+  b common-mode → b2 variants failed → PUT not ok); summary totals per arm.
+- Official-path checks for reach only on the decomposed arms' inputs (`all_menu` ∪ `llm_code`); emitted tests of every
+  arm are still judged on the official path (lazily), as registered.
+- Reference batch for generated inputs: on a sandbox failure, rerun in chunks of 100; a failed chunk is
+  `reference_skipped` (reported, FA split bucket `reference_skipped`, not `invalid_input`).
+- Known limits of `menu_fixed.py` (future cohorts only, not used here): negative log-uniform gives 0 a large share;
+  the unsupported-form check can flag prose lines with one-letter parameter names; `prepare_case` omits
+  `universes`/`pool_max` needed by a v47-style score.

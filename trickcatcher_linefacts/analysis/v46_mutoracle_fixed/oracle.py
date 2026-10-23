@@ -189,7 +189,7 @@ def generate():
     import openai
     run = ft_run.FTRun('vibepass_half')
     qs = load_questions()
-    client = openai.OpenAI(base_url=os.environ['QWEN_BASE_URL'], api_key='none', timeout=3600, max_retries=3,
+    client = openai.OpenAI(base_url=os.environ['QWEN_BASE_URL'], api_key='none', timeout=1200, max_retries=3,
                            default_headers={'ngrok-skip-browser-warning': '1'})
     served = {m.id: getattr(m, 'max_model_len', None) for m in client.models.list().data}
     if served.get(MODEL, 0) != 8192:

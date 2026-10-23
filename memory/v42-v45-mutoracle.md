@@ -14,7 +14,8 @@ metadata:
   increase abstention.
 - Gotcha: V4_PYTHON venv lives in an old /tmp scratchpad; tmp cleanup deletes it piecemeal. Rebuilt in place 2026-10-22
   (py 3.12.2, hypothesis 6.169.0, openai 1.109.1, mutmut 3.8.0, httpx 0.27.2, jinja2 3.1.4, jsonschema 4.23.0,
-  networkx 3.4.2). Do not edit v34 config.json (protocol hashes .json).
+  networkx 3.4.2, sortedcontainers 2.4.0 — PUT 171 imports it). Rebuilt venv reproduces v41 PUT outcomes 1320/1320.
+  Do not edit v34 config.json (protocol hashes .json).
 
 - 2026-10-22 audit (user: "impl đủ và đúng chưa?"): execution verified 112/112 on official path; BUT v43 did not use
   the pipeline oracle (TrickCatcher: 10 sampled programs, majority; v39 has 240 Qwen-32B DPP programs) and its prompt
@@ -24,3 +25,9 @@ metadata:
 **Why:** v42 closes mutant-disagreement *selection*; the oracle side is untested with the pipeline oracle.
 **How to apply:** an oracle diagnostic in this repo must use program variants (v39 programs / tc-full), never an
 in-head LLM judgement with an "unsure" exit. Related: [[v41-iorel]], [[v34-ftplacebo]], [[check-version-tree-before-proposing]].
+
+v46 (`analysis/v46_mutoracle_fixed`, PREREG + amendment 1, the repaired oracle diagnostic) status 2026-10-23 19:00: the
+endpoint serves one request at a time. 8 client workers livelocked it, so oracle.py uses 1 worker (`V46_WORKERS`) with a
+1200 s timeout (f000e3d, 9e3f9e9; a vLLM restart had left a 3600 s client hanging). Alone on the server it does ~38 calls/h.
+The tunnel went offline about 18:55. Cached: TC 492/620 (tc 250, tc_concept 242; up to task 132), judge 1/1821. Rerun
+`generate` to resume from the cache. The other session's v48 orchestrator waits for tc 310 and reads it read-only.

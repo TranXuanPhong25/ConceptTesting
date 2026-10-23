@@ -69,3 +69,15 @@ programs equal the PUT), `defn` concept-comment presence, AST similarity of prog
   property oracle, Qwen precision .15), v38/v39 (stochastic spec programs). DPP-only and random-family-label controls
   from the plan are dropped (v39 DPP covers 24 question ids only). v49 generation starts before v48 is scored: generation
   does not depend on v48; v48's decomposition is reported alongside to explain v49, not to choose its gate.
+
+## Amendment 2 (2026-10-23, after an independent read-only Opus code review; before any full execute or reference read)
+- **Problem span (rule clarification, M1):** “≥ 3 distinct problems” now means ≥ 3 problems with **positive per-problem
+  net** (Σ defn − brute confirmed tasks over that problem's tasks), plus the task margin ≥ 3 and FA ≤ — so one problem's
+  duplicated tasks cannot supply the margin while other problems net to zero. Test added.
+- `tc` code extracted with `tc_full.source` (joins blocks, as v46/v48), not `code_block`.
+- Execution: one process per (program, chunk of 200 inputs), 8 in parallel, process limit scaled to the job; a crashed
+  or hung chunk reruns in chunks of 25 and only a failing sub-chunk abstains (`skipped`), reported. Registered rule
+  (1 s per call, timeout = abstention) unchanged.
+- Official-path reach only on menu ∪ `llm_code` inputs (as v48 Amendment 2); emitted tests of every family are judged
+  lazily on the official path. `defn` vs `tc` (k = 10) is report-only; the k-matched view is `defn_vs_tc_k5`.
+- v48 code is frozen (Amendment 2) before v49 execute; v49 pins it in its inventory.

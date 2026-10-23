@@ -1446,3 +1446,25 @@ parentinventories/generation189/terminal290exact. Callbackhandled, noactivejob.
 [All8report](analysis/v43_concept_identify_20261021/REPORT.md),
 [independentsemantics](analysis/v43_concept_identify_20261021/SEMANTIC_REVIEW.md),
 [integrity/costs](analysis/v43_concept_identify_20261021/INTEGRITY_COST_AUDIT.md).
+
+## 11.85 Round novelty trên saved v11_fair dev — NO SIGNAL (2026-10-23, CPU, ref)
+
+Lấy ý từ blog code review của Anthropic (59% chỗ bị flag lặp đã có từ round đầu). Tách mỗi hybrid sample thành
+round 1 / round 2. Gate replay khớp final_protocol_v11_dev.json. Redundancy share (R2 tìm lại bug R1 đã thấy):
+concept 29%, placebo 44%, plain 48%. r2_new concept vs placebo 39 vs 39 (15/15). Cùng số input R2 (co-primary
+quyết định): 35.5 vs 20.5, 16/8, p = .15 → **NO SIGNAL**. Cùng số request nhưng concept chỉ ra 354 verified input R2,
+placebo 926. 28/39 r2_new của concept nằm trên task witness-only đã detect; phần vượt tool concept 11 vs placebo 23
+(3/10). Tức là concept round 2 chủ yếu tìm lại vùng mà fuzz witness đã có. False alarm R2/call .006/.017/.029.
+[Report](analysis/round_novelty_20261023/RESULTS.md), [PREREG + amendment 1](analysis/round_novelty_20261023/PREREG.md).
+
+## 11.86 v51 latent concept oracle (Qwen2.5-Coder-1.5B frozen probes) — NO-GO (2026-10-23, CPU, $0)
+
+Probe hidden state (layer 28, last token) trên (spec, call, observed output). Train trên MBPP+ mutant (mutmut), nhãn
+do tool tính. Concept bottleneck dùng 7 discrepancy concept. Eval trên pool v41 VibePass (22 PUT, 17 problem).
+MBPP+ validation: direct .626, CBM .627, placebo type-matched .631, nên concept không thêm gì ngay trong phân phối.
+VibePass macro AUC: direct .476, CBM .495, placebo .385, verbal .441, surface .496, **intrinsic NLL .650** (direct thua
+intrinsic 3/14, p = .013) → **NO-GO**. Cơ chế: wrong output VibePass có 52% NUM_NEAR (số lệch nhỏ) và 0
+TYPE/BOOL/SIZE. Probe đọc tốt concept dạng output (≥ .92) nhưng NUM_NEAR chỉ .78; concept top-1 đúng 19%. B − C = .11
+chỉ vì placebo rơi dưới chance. Top-3 của mọi arm ≤ chọn ngẫu nhiên (11.7/22); con số surface 16/22 là artifact do
+hòa score. Không chạy 7B. [Report](analysis/v51_latent_concept/RESULTS.md),
+[PREREG + amendment 1](analysis/v51_latent_concept/PREREG.md).

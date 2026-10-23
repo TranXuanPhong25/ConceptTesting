@@ -52,7 +52,8 @@ def generate(smoke):
     import openai
     freeze_local_constants()
     run = ft_run.FTRun('vibepass_half')
-    client = openai.OpenAI(base_url=__import__('os').environ['QWEN_BASE_URL'], api_key='none', timeout=3600,
+    # 900 s > queue behind one other client's call + own 1024 tokens; tunnels drop idle connections silently
+    client = openai.OpenAI(base_url=__import__('os').environ['QWEN_BASE_URL'], api_key='none', timeout=900,
                            max_retries=2, default_headers={'ngrok-skip-browser-warning': '1'})
     served = {m.id: getattr(m, 'max_model_len', None) for m in client.models.list().data}
     if served.get(MODEL, 0) != 8192:

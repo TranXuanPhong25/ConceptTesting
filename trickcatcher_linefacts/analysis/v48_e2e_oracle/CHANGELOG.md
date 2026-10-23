@@ -72,3 +72,13 @@ The checkout is on `main`. Staging exactly the four new files failed before any 
 The session disallows permission escalation, so no commit was created and no push was attempted. No other
 session's files were staged. A validated patch of these four files is saved at
 `trickcatcher_linefacts/out/analysis/v48_e2e_oracle/implementation.patch` for the writable checkout owner.
+
+## 2026-10-23 (Claude) — review fixes before full execute
+Opus code review: must-fix test path independence; should-fix decomposition gaps (PUT no-test, variant failures,
+cap loss, totals), official-check scope, no-test counting, reference chunk fallback. Applied in `e2e.py`, test added
+(45 pass). PREREG Amendment 2. Full `execute` still waits for v46 `tc` programs (owner session concepttester-ca).
+
+## 2026-10-23 (Claude) — execute + score, RESULTS
+v46 tc reached 310/310 at 21:46; execute (rc 0) and score (rc 0, 0 reference skips) ran unattended. NO-GO: llm_code 6
+confirmed tasks vs random3 6.37, menu_matched 6.38, pool_matched 5.87, kind_matched 6.22, heuristic 6; FA 152 vs
+146.37. Primary failures: common-mode 9, no valid variant 7, no exposing input 7, lost to cap 3. See RESULTS.md.
