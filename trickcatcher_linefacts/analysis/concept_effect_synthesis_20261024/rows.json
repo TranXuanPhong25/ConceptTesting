@@ -1,0 +1,2282 @@
+{
+ "generated": "2026-10-24",
+ "rows": [
+  {
+   "version": "v3m2 (hint layer, offline)",
+   "date": "2026-10-11",
+   "benchmark": "HumanEval dev113 (112 with labels)",
+   "n_tasks": 112,
+   "model": "none(CPU) for ranking (preconditions mined by Qwen2.5-Coder-7B)",
+   "model_tier": "none",
+   "concept_kind": "code facts (OUTCOME/STMT/MUTANT/BOUND/NUM/DU) top-3 by fixed rank rule",
+   "concept_role": "hint-to-test-writer (offline proxy: are shown hints at the bug?)",
+   "concept_info_source": "execution/tool (fuzz+tracer+mutants on PUT)",
+   "arms": {
+    "concept": 44,
+    "random": 45.0,
+    "placebo": 13,
+    "other": {
+     "ceiling_best3": 53,
+     "v3f": {
+      "pick": 45,
+      "random": 43.8
+     },
+     "v3c_contract_upper": {
+      "pick": 46,
+      "random": 46.4
+     },
+     "v3m": {
+      "pick": 44,
+      "random": 44.9
+     },
+     "v4": {
+      "pick": 22,
+      "random": 22.2
+     },
+     "v4c": {
+      "pick": 29,
+      "random": 29.7
+     },
+     "v3mm": {
+      "pick": 43,
+      "random": 42.2
+     },
+     "v5": {
+      "pick": 44,
+      "random": 45.0
+     },
+     "v6": {
+      "pick": 44,
+      "random": 44.6
+     },
+     "v7": {
+      "pick": ">=55"
+     }
+    }
+   },
+   "metric": "good@3 tasks /112 (>=1 of 3 shown hints 'good': PF>=.5 on HumanEval+)",
+   "fa": null,
+   "paired": "shown-fact PF ~0.47 vs background ~0.17 (51/21, p~.0005); pick vs random not compared by test (44 vs 45.0)",
+   "placebo_controlled": true,
+   "registration": "frozen offline metric definitions (dev)",
+   "registered_verdict": "no signal",
+   "verdict_text": "rank rule not better than random within the pool",
+   "mechanism_note": "tool facts do point at bug sites (PF ~3x background) and beat placebo hints (13), but the fixed rank rule = random pick; the pool content carries the signal",
+   "source": "trickcatcher_linefacts/RESULTS.md:96-105; trickcatcher_linefacts/out/diagram/conceptester-v4.html (results table 1)"
+  },
+  {
+   "version": "gen2 (concept vs plain, one round)",
+   "date": "2026-10-11",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "code facts top-3 hints (v3m2)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 53.0,
+    "plain": 47.3,
+    "other": {
+     "seed2_concept": 47.3,
+     "seed2_plain": 45.0,
+     "pooled6_concept": 50.2,
+     "pooled6_plain": 46.2,
+     "toolinput": 60.0
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3)",
+   "fa": {
+    "concept": "4.8%",
+    "plain": "3.0%"
+   },
+   "paired": "seed1 ref 28/14 p=.044 (full 28/12 p=.017); seed2 ref 22/17 p=.52; pooled 6 runs ref 34/26 p=.37 (full 33/24 p=.29); concept vs toolinput ref 12/21",
+   "placebo_controlled": false,
+   "registration": "secondary (primary was gen-concept vs gen-plain)",
+   "registered_verdict": "no signal",
+   "verdict_text": "~+4 bugs/run, same direction in 3 runs, not significant when pooled",
+   "mechanism_note": "seed-1 significance partly luck; witness inputs (toolinput) beat hint text",
+   "source": "trickcatcher_linefacts/RESULTS.md:125-139; trickcatcher_linefacts/RESULTS.md:456-466"
+  },
+  {
+   "version": "gen2 (generator arms)",
+   "date": "2026-10-11",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "code facts top-3 appended to TrickCatcher input-generator prompt",
+   "concept_role": "hint-to-test-writer (input-generator program)",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 47.0,
+    "plain": 39.3,
+    "placebo": 43.7,
+    "other": {
+     "o0": {
+      "gen-concept": 39.0,
+      "gen-plain": 31.7,
+      "gen-placebo": 35.0
+     },
+     "toolinput_ref": 60.0
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3)",
+   "fa": {
+    "concept": "3.8%",
+    "plain": "2.5%",
+    "placebo": "3.5%"
+   },
+   "paired": "registered primary (o0): gen-concept vs gen-plain 33/18 p=.049; ref 28/15 p=.066; full 27/16 p=.13. gen-concept vs gen-placebo: o0 26/20 p=.46, ref 22/22, full 21/22",
+   "placebo_controlled": true,
+   "registration": "primary (gen-concept vs gen-plain, o0)",
+   "registered_verdict": "rule met (weak)",
+   "verdict_text": "primary vs gen-plain significant at o0 only; ties gen-placebo under every oracle",
+   "mechanism_note": "any appended hint block (incl. placebo) helps the generator prompt; content effect not separated",
+   "source": "trickcatcher_linefacts/RESULTS.md:127-138; trickcatcher_linefacts/RESULTS.md:170-171; trickcatcher_linefacts/PREREG.md:278"
+  },
+  {
+   "version": "c+t (concept-toolinput)",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "code fact hints, each with a witness input",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 57.0,
+    "plain": 47.3,
+    "other": {
+     "toolinput": 60.0,
+     "concept_hint_only": 53.0
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3)",
+   "fa": {
+    "concept": "5.0%",
+    "plain": "3.0%",
+    "toolinput": "4.3%"
+   },
+   "paired": "registered primary vs toolinput ref 11/16 p=.44 (full 10/16 p=.33); vs plain ref 32/18 p=.065 (full 33/18 p=.049)",
+   "placebo_controlled": false,
+   "registration": "primary (vs toolinput)",
+   "registered_verdict": "no signal",
+   "verdict_text": "adding hint sentences to witness inputs does not beat witness inputs alone",
+   "mechanism_note": "once a concrete witness input is given, the hint text adds nothing",
+   "source": "trickcatcher_linefacts/RESULTS.md:336-346; trickcatcher_linefacts/PREREG.md:783"
+  },
+  {
+   "version": "hybrid (v4c hints)",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113 (112 scored)",
+   "n_tasks": 112,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "code fact hints (weak v4c set) + round-2 Hypothesis strategy for unreached hints",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 56.3,
+    "plain": 50.7,
+    "placebo": 48.0,
+    "other": {
+     "toolinput": 55.0,
+     "concept_1round": 43.0,
+     "plain_1round": 44.7
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3); arms = concept-hybrid / plain-hybrid / placebo-hybrid",
+   "fa": {
+    "concept": "3.6%",
+    "plain": "2.1%",
+    "placebo": "2.5%"
+   },
+   "paired": "ref: vs plain-hybrid 26/14 p=.081 (full 24/14 p=.14); vs placebo-hybrid 27/20 (o0 33/16 p=.021); vs toolinput 22/21; round 2: concept-hybrid vs concept 22/0, plain-hybrid vs plain 14/0",
+   "placebo_controlled": true,
+   "registration": "primary (v4 arms: vs plain-hybrid, gen-plain, placebo-hybrid, toolinput)",
+   "registered_verdict": "no signal",
+   "verdict_text": "near-threshold vs plain-hybrid only",
+   "mechanism_note": "round 2 (more calls/tests: 11.9 vs 9.3 per run) drives the gain; weak hints make 1-round concept lose to plain (43.0 vs 44.7)",
+   "source": "trickcatcher_linefacts/RESULTS.md:382-396; trickcatcher_linefacts/PREREG.md:504-506"
+  },
+  {
+   "version": "hyb-v3m2",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "code fact hints (v3m2) + round-2 Hypothesis strategy for unreached hints",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 62.0,
+    "plain": 53.0,
+    "placebo": 47.0,
+    "other": {
+     "toolinput": 60.7,
+     "concept_1round": 47.3,
+     "plain_1round": 45.0,
+     "tests_per_run": {
+      "concept-hybrid": 10.9,
+      "plain-hybrid": 11.0,
+      "toolinput": 7.7
+     }
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3); arms = concept-hybrid / plain-hybrid / placebo-hybrid",
+   "fa": {
+    "concept": "3.9%",
+    "plain": "2.7%",
+    "placebo": "3.0%"
+   },
+   "paired": "primary ref: vs plain-hybrid 32/14 p=.011 (budget-matched 29/15 p=.049; full 31/14 p=.016); vs placebo-hybrid 33/11 p=.001 (budget-matched 21/19); vs toolinput 19/17 (cut to toolinput test count: toolinput 33/16)",
+   "placebo_controlled": true,
+   "registration": "primary (vs plain-hybrid and placebo-hybrid, raw and budget-matched; vs toolinput)",
+   "registered_verdict": "rule met (weak)",
+   "verdict_text": "raw primaries significant vs plain-hybrid and placebo-hybrid; budget-matched vs placebo 21/19",
+   "mechanism_note": "placebo-hybrid got far fewer round-2 calls (placebo hints are rarely 'unreached'; 1.27 vs 3.58 calls/sample found later); with matched round-2 budget (v11_fair) concept vs placebo fell to 26/22",
+   "source": "trickcatcher_linefacts/RESULTS.md:435-454; trickcatcher_linefacts/PREREG.md:881-889"
+  },
+  {
+   "version": "v6",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "code fact hints re-fuzzed under F1b validator (spec-valid witnesses only)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool + spec (mined validator)",
+   "arms": {
+    "concept": 61.3,
+    "other": {
+     "v3m2_concept_hybrid": 62.0,
+     "concept_1round": 47.3,
+     "invalid_input_share_12_changed_tasks": "15.2% -> 11.0% (concept)"
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3); concept = concept-hybrid",
+   "fa": {
+    "concept": "3.7% (from 3.9%)"
+   },
+   "paired": "concept-hybrid vs plain-hybrid ref 30/13 p=.014, full 29/13 p=.020; vs toolinput 19/18",
+   "placebo_controlled": false,
+   "registration": "primary (invalid-input share vs v3m2; concept-hybrid vs plain-hybrid)",
+   "registered_verdict": "rule met (weak)",
+   "verdict_text": "invalid share down on 12 changed tasks, no bug lost; vs plain-hybrid significant",
+   "mechanism_note": "only 12/113 tasks changed hints (rest replayed from cache), so the vs-plain result is mostly the hyb-v3m2 result; placebo not compared",
+   "source": "trickcatcher_linefacts/RESULTS.md:508-513; trickcatcher_linefacts/PREREG.md:894-901"
+  },
+  {
+   "version": "v7",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "code fact hints + spec input-class facts (LARGE/DUP/NONASCII/SPACE) for 36 hintless tasks",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 67.0,
+    "plain": 57.3,
+    "placebo": 45.7,
+    "other": {
+     "toolinput": 64.7,
+     "concept_1round": 48.0,
+     "plain_1round": 45.0,
+     "primary_36_spec_tasks": {
+      "concept-hybrid": 20.3,
+      "plain-hybrid": 18.7
+     },
+     "pilot20": {
+      "concept-hybrid": 10.0,
+      "plain-hybrid": 9.7,
+      "toolinput": 11.0
+     }
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3); arms = concept-hybrid / plain-hybrid / placebo-hybrid (whole dev)",
+   "fa": {
+    "concept": "3.3%",
+    "plain": "2.6%",
+    "placebo": "2.7%"
+   },
+   "paired": "registered primary (36 spec-fact tasks): concept-hybrid vs plain-hybrid 8/6 p=.79, concept vs plain 7/7; vs placebo-hybrid 12/3 p=.035. Whole dev (secondary): vs plain-hybrid 33/16 p=.021, vs placebo-hybrid 38/8, vs toolinput 23/20; matched to toolinput test count toolinput wins 37/15 p=.003",
+   "placebo_controlled": true,
+   "registration": "primary on the 36 spec-fact tasks",
+   "registered_verdict": "no signal",
+   "verdict_text": "gain on the 36 tasks comes from round 2 itself (plain-hybrid also 14.0 -> 18.7)",
+   "mechanism_note": "spec hint content not better than an un-hinted round 2; placebo-hybrid budget-starved; toolinput equal with fewer tests",
+   "source": "trickcatcher_linefacts/RESULTS.md:579-582; trickcatcher_linefacts/RESULTS.md:515-531; trickcatcher_linefacts/RESULTS.md:615-619; trickcatcher_linefacts/PREREG.md:913-914"
+  },
+  {
+   "version": "v8-strict",
+   "date": "2026-10-13",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B (CPU reconstruction of the v7 run)",
+   "model_tier": "weak",
+   "concept_kind": "v7 hints; round 2 keeps only selected Hypothesis inputs",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 61.0,
+    "plain": 55.7,
+    "placebo": 45.3,
+    "other": {
+     "toolinput": 64.7,
+     "random_subset_matched": {
+      "concept-hybrid": 59.3,
+      "plain-hybrid": 51.5
+     }
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3); arms = concept-hybrid / plain-hybrid / placebo-hybrid",
+   "fa": null,
+   "paired": "primary vs plain-hybrid 29/20 p=.25; matched prefix 34/17 p=.024; random subset 43/26 p=.053; vs placebo-hybrid 33/13 p=.005 (random subset 42/23 p=.025); vs toolinput 22/23 (random subset 26/40 p=.11)",
+   "placebo_controlled": true,
+   "registration": "primary (vs plain-hybrid, ref)",
+   "registered_verdict": "no signal",
+   "verdict_text": "primary not significant once the free extra plain call is removed",
+   "mechanism_note": "part of v7's win came from extra Qwen calls; advantage survives only at matched test count; placebo still budget-starved",
+   "source": "trickcatcher_linefacts/RESULTS.md:627-632; trickcatcher_linefacts/RESULTS.md:714-723; trickcatcher_linefacts/PREREG.md:1003-1007"
+  },
+  {
+   "version": "v9_callfb",
+   "date": "2026-10-13",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "v7 hints; round 2 = Qwen writes concrete calls + 3-level reach/infect/propagate feedback",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 51.3,
+    "plain": 45.0,
+    "placebo": 44.7,
+    "other": {
+     "toolinput": 64.0,
+     "v8strict_concept_hybrid": 61.0
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3); arms = concept-hybrid / plain-hybrid / placebo-hybrid",
+   "fa": null,
+   "paired": "primary vs plain-hybrid 26/19 p=.37; vs placebo-hybrid 26/18; vs toolinput 18/33 p=.049; v9 vs v8-strict concept-hybrid 3/19 p=.001",
+   "placebo_controlled": true,
+   "registration": "primary (vs plain-hybrid, ref)",
+   "registered_verdict": "no signal",
+   "verdict_text": "worse than v8-strict; not adopted",
+   "mechanism_note": "Qwen-7B literal calls hit the hint 2.4% (132/5,441); 0.19 kept inputs/sample vs Hypothesis 0.9",
+   "source": "trickcatcher_linefacts/RESULTS.md:698-702; trickcatcher_linefacts/PREREG.md:1054-1056"
+  },
+  {
+   "version": "rank-2 offline (hint_rank, LR+mutref)",
+   "date": "2026-10-13",
+   "benchmark": "HumanEval dev, 54 odd tasks (rule fit on 58 even)",
+   "n_tasks": 54,
+   "model": "none(CPU) (mutref uses Qwen spec-only ref programs)",
+   "model_tier": "none",
+   "concept_kind": "fault-hypothesis hint ranking (all kinds compete; mutant agrees with ref majority, PUT does not)",
+   "concept_role": "hint selection (offline proxy)",
+   "concept_info_source": "execution/tool + spec ref programs",
+   "arms": {
+    "concept": 35,
+    "random": 29.4,
+    "other": {
+     "pick_v7": 25,
+     "LR_noref": 32,
+     "hand_rule": 33,
+     "ceiling": 44
+    }
+   },
+   "metric": "good@3 on odd tasks",
+   "fa": null,
+   "paired": "LR+mutref vs random p=.018; vs pick_v7 10/0 p=.002; LR without ref vs random p=.20",
+   "placebo_controlled": false,
+   "registration": "offline analysis (even fit / odd test), then registered LLM run v7_mutref",
+   "registered_verdict": "GO",
+   "verdict_text": "offline selection beats random on held-out odd tasks; led to v7_mutref",
+   "mechanism_note": "most of the gain is from dropping the kind filter and always showing 3 hints; mutref is close to TrickCatcher's ref-program signal",
+   "source": "trickcatcher_linefacts/RESULTS.md:651-657"
+  },
+  {
+   "version": "rank-2 LLM (v7_mutref)",
+   "date": "2026-10-13",
+   "benchmark": "HumanEval dev, 54 odd tasks",
+   "n_tasks": 54,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "hints chosen by fault-hypothesis rule (LR+mutref)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool + spec ref programs",
+   "arms": {
+    "concept": 30.0,
+    "plain": 25.3,
+    "placebo": 23.3,
+    "other": {
+     "toolinput": 28.3,
+     "concept_1round": 24.7,
+     "plain_1round": 21.0,
+     "old_rule_v8strict": 29.7
+    }
+   },
+   "metric": "bugs/run (ref, strict round 2); arms = concept-hybrid / plain-hybrid / placebo-hybrid",
+   "fa": null,
+   "paired": "primary vs plain-hybrid 17/9 p=.17 (random subset 23/11 p=.058); vs toolinput 11/8 p=.65; secondary vs placebo-hybrid 18/5 p=.011 (matched 21/9 p=.043); vs old rule 13/10 p=.68",
+   "placebo_controlled": true,
+   "registration": "primary (vs plain-hybrid and toolinput, odd tasks)",
+   "registered_verdict": "no signal",
+   "verdict_text": "better hint choice offline (good@3 25 -> 35) does not raise bugs",
+   "mechanism_note": "bottleneck is Qwen following the hint / round 2, not hint selection",
+   "source": "trickcatcher_linefacts/RESULTS.md:725-740; trickcatcher_linefacts/PREREG.md:1077-1084"
+  },
+  {
+   "version": "rank-5 BEHAV (v10_spechint)",
+   "date": "2026-10-13",
+   "benchmark": "HumanEval dev (112 labeled; gate on odd tasks)",
+   "n_tasks": 112,
+   "model": "Qwen2.5-Coder-7B (spec mining only; no LLM test run)",
+   "model_tier": "weak",
+   "concept_kind": "spec behavioural requirements (BEHAV) with input predicate",
+   "concept_role": "hint-to-test-writer (offline gate)",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 25,
+    "other": {
+     "v7_without_BEHAV_odd": 25,
+     "even": "29 -> 30",
+     "all": "54 -> 55 /112",
+     "BEHAV_hints": "7 on 5 tasks"
+    }
+   },
+   "metric": "good@3 on odd tasks (with vs without BEHAV)",
+   "fa": null,
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "primary offline gate (LLM run only if BEHAV adds good hints on odd tasks)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "odd 25 -> 25: LLM run not launched",
+   "mechanism_note": "146/157 requirements already satisfied by base tests; spec-level requirements too coarse for the fine-grained bugs",
+   "source": "trickcatcher_linefacts/RESULTS.md:691-696; trickcatcher_linefacts/PREREG.md:1065-1075"
+  },
+  {
+   "version": "v11_fair",
+   "date": "2026-10-14",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "v7 hints, strict round 2, placebo with matched round-2 requests",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 61.0,
+    "plain": 55.7,
+    "placebo": 57.7,
+    "other": {
+     "toolinput": 64.3,
+     "concept_1round": 48.0,
+     "plain_1round": 45.0,
+     "witness_only": 43.0,
+     "gen_plain": 41.3
+    }
+   },
+   "metric": "bugs/run (ref oracle, K=3); arms = concept-hybrid / plain-hybrid / placebo-hybrid",
+   "fa": {
+    "concept": "precision .929; 14.2% samples alarm on correct program",
+    "plain": "precision .928; 10.0%",
+    "placebo": "precision .930; 9.7%"
+   },
+   "paired": "vs plain-hybrid 29/20 p=.25 (random subset 43/26 p=.053); vs placebo-hybrid 26/22 p=.67 (random subset 38/27 p=.21; D_I 35/25); vs toolinput 22/23 p=1; vs witness-only 35/14 p=.004",
+   "placebo_controlled": true,
+   "registration": "primary (dev, descriptive)",
+   "registered_verdict": "no signal",
+   "verdict_text": "hint content not better than no hint or a budget-matched placebo",
+   "mechanism_note": "earlier 'beats placebo' came from round-2 call count (placebo 1.27 -> 3.46 calls/sample: 45.7 -> 57.7); gain is round-2 Hypothesis + fuzz witnesses",
+   "source": "trickcatcher_linefacts/RESULTS.md:748-765; trickcatcher_linefacts/PREREG.md:1144-1160"
+  },
+  {
+   "version": "round novelty",
+   "date": "2026-10-23",
+   "benchmark": "HumanEval dev113 (saved v11_fair, CPU re-split)",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B (saved outputs)",
+   "model_tier": "weak",
+   "concept_kind": "v7 hints in round 2 (Hypothesis)",
+   "concept_role": "hint-to-test-writer (round 2)",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 35.5,
+    "placebo": 20.5,
+    "other": {
+     "raw_r2_new": {
+      "concept": 39,
+      "placebo": 39,
+      "plain": 32
+     },
+     "r2_new_beyond_tool": {
+      "concept": 11,
+      "placebo": 23,
+      "plain": 14
+     },
+     "redundancy_share": {
+      "concept": "29%",
+      "placebo": "44%",
+      "plain": "48%"
+     },
+     "R2_inputs": {
+      "concept": 354,
+      "placebo": 926,
+      "plain": 890
+     }
+    }
+   },
+   "metric": "round-2-new detections (input-matched co-primary)",
+   "fa": {
+    "concept": ".006 FA/R2 call",
+    "placebo": ".017",
+    "plain": ".029"
+   },
+   "paired": "co-primary matched 16/8 p=.15; raw 15/15 p=1; beyond-tool 3/10 p=.09; concept vs plain-hybrid raw 15/11 p=.56",
+   "placebo_controlled": true,
+   "registration": "primary + co-primary (amendment 1)",
+   "registered_verdict": "no signal",
+   "verdict_text": "NO SIGNAL",
+   "mechanism_note": "28/39 concept round-2-new on tasks witness-only already detects: concept round 2 re-finds tool witnesses",
+   "source": "trickcatcher_linefacts/analysis/round_novelty_20261023/RESULTS.md:15-44"
+  },
+  {
+   "version": "MBPP+ held-out (real12, v7 config)",
+   "date": "2026-10-13",
+   "benchmark": "MBPP+ real-bug 12",
+   "n_tasks": 12,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "v7 config (code facts + spec facts)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 2.33,
+    "plain": 2.67,
+    "placebo": 2.33,
+    "other": {
+     "toolinput": 2.67,
+     "concept_1round": 2.33,
+     "plain_1round": 2.67
+    }
+   },
+   "metric": "bugs/run on 12 tasks (ref); arms = concept-hybrid / plain-hybrid / placebo-hybrid",
+   "fa": {
+    "concept": "9.3%",
+    "plain": "2.6%",
+    "placebo": "1.3%"
+   },
+   "paired": "primary concept-hybrid vs plain-hybrid 1/1; vs toolinput 0/1; vs placebo-hybrid 1/1; concept vs plain 1/1",
+   "placebo_controlled": true,
+   "registration": "primary (held-out, amendment 4: 12 real bugs)",
+   "registered_verdict": "no signal",
+   "verdict_text": "no concept advantage; sample too small",
+   "mechanism_note": "all arms ~3/12; concept pushes contract-invalid inputs (FA 9-12% vs 1-3%) because MBPP+ specs are too short to mine preconditions",
+   "source": "trickcatcher_linefacts/RESULTS.md:674-678; trickcatcher_linefacts/PREREG.md:947-957"
+  },
+  {
+   "version": "advdoc-hyb",
+   "date": "2026-10-13",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "v3m2 hints in round 2 on top of EvalAndMitigate advdoc tests",
+   "concept_role": "hint-to-test-writer (round 2)",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 56.0,
+    "plain": 51.3,
+    "other": {
+     "advdoc": 42.7,
+     "concept_hybrid_v3m2": 62.0
+    }
+   },
+   "metric": "bugs/run (ref); concept = advdoc-hybrid, plain = advdoc-plainhybrid (same round-2 calls, no hint)",
+   "fa": {
+    "concept": "3.8%",
+    "plain": "3.7%"
+   },
+   "paired": "primary vs advdoc-plainhybrid 13/6 p=.17; vs advdoc 21/0; vs concept-hybrid 9/20 p=.061",
+   "placebo_controlled": false,
+   "registration": "primary (vs advdoc-plainhybrid and advdoc)",
+   "registered_verdict": "no signal",
+   "verdict_text": "right direction, not significant",
+   "mechanism_note": "round 2 adds to any base; hint content edge n.s.",
+   "source": "trickcatcher_linefacts/RESULTS.md:688-689; trickcatcher_linefacts/RESULTS.md:592-597; trickcatcher_linefacts/PREREG.md:938-945"
+  },
+  {
+   "version": "F4 (concept-guided validity)",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113 (inputs of 6 v3m2 arms)",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "15 general input-constraint groups walked one by one (type/length/sign/bounds/empty/order/dup/relation/charset/...)",
+   "concept_role": "validity",
+   "concept_info_source": "external taxonomy + spec",
+   "arms": {
+    "concept": 211,
+    "plain": 283,
+    "other": {
+     "odd_heldout_caught": {
+      "F4": 65,
+      "F1b": 146
+     },
+     "bugs_per_run_concept_arm_ref": {
+      "F4": 52.0,
+      "F1b": 52.7
+     }
+    }
+   },
+   "metric": "contract-invalid inputs caught /591 (plain = F1b open prompt, no taxonomy)",
+   "fa": {
+    "concept": "113 valid inputs rejected (30 bug-exposing)",
+    "plain": "48 (3 bug-exposing)"
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "primary (F4 vs F1b)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "worse than the open prompt on catch and false rejections, also on odd held-out tasks",
+   "mechanism_note": "asked per group, Qwen 7B turns what the function checks/returns into input preconditions",
+   "source": "trickcatcher_linefacts/RESULTS.md:357-378; trickcatcher_linefacts/PREREG.md:841-853"
+  },
+  {
+   "version": "F4b (F4 + 3 anti-self-constraint rules)",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113 (rules from even/pilot, scored on odd)",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "15 constraint groups + 3 rules (no checked/returned property as precondition)",
+   "concept_role": "validity",
+   "concept_info_source": "external taxonomy + spec",
+   "arms": {
+    "concept": 217,
+    "plain": 283,
+    "other": {
+     "odd_heldout": {
+      "F4b": "94 caught / 30 wrong",
+      "F1b": "146 / 25"
+     }
+    }
+   },
+   "metric": "contract-invalid inputs caught /591",
+   "fa": {
+    "concept": "74 valid rejected (15 bug-exposing)",
+    "plain": "48 (3)"
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "exploratory follow-up of registered F4",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "still worse than F1b",
+   "mechanism_note": "for Qwen 7B, open 'list all conditions' beats walking a concept taxonomy",
+   "source": "trickcatcher_linefacts/RESULTS.md:363; trickcatcher_linefacts/RESULTS.md:378"
+  },
+  {
+   "version": "F5 (requirements in generation prompt)",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "mined input requirements (F1b) written into the test-generation prompt",
+   "concept_role": "validity",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 52.0,
+    "other": {
+     "concept_arm_without_block": 53.0,
+     "invalid_share": {
+      "concept": "5.3% -> 5.0%",
+      "plain": "2.8% -> 3.5%",
+      "toolinput": "5.5% -> 6.1%"
+     },
+     "plain_arm": "47.3 -> 46.0",
+     "toolinput_arm": "60.0 -> 60.7"
+    }
+   },
+   "metric": "bugs/run (ref) of the concept arm with vs without the requirement block",
+   "fa": null,
+   "paired": "with vs without block: concept 14/16 p=.86, plain 12/15 p=.70, toolinput 11/8 p=.65",
+   "placebo_controlled": false,
+   "registration": "primary (registered before output)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "invalid-input share not reduced",
+   "mechanism_note": "Qwen 7B ignores the requirement block; post-hoc filtering (F1b) works better",
+   "source": "trickcatcher_linefacts/RESULTS.md:398-408; trickcatcher_linefacts/PREREG.md:866"
+  },
+  {
+   "version": "P-A (property oracle)",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113 (inputs of 6 v3m2 arms)",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B (properties mined from spec)",
+   "model_tier": "weak",
+   "concept_kind": "output properties/postconditions (B3) used as oracle",
+   "concept_role": "oracle",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 50,
+    "other": {
+     "exact_ref_oracle_same_inputs": 82,
+     "property_only_tasks": 4,
+     "ref_only_tasks": 36
+    }
+   },
+   "metric": "tasks with a bug caught on the same inputs (control = exact-value ref oracle)",
+   "fa": {
+    "concept": "13 tasks alarm on the correct program"
+   },
+   "paired": "property-only 4 tasks vs ref-only 36",
+   "placebo_controlled": false,
+   "registration": "exploratory (property step A)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "properties much weaker than exact expected values",
+   "mechanism_note": "only useful as fallback where ref abstains",
+   "source": "trickcatcher_linefacts/RESULTS.md:411-416; trickcatcher_linefacts/PREREG.md:816"
+  },
+  {
+   "version": "P-fb (property fallback)",
+   "date": "2026-10-12",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "output properties used only when ref abstains",
+   "concept_role": "oracle",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 65.0,
+    "other": {
+     "concept_hybrid_ref_only": 62.0,
+     "toolinput": "60.7 -> 64.7",
+     "plain": "45.0 -> 48.0"
+    }
+   },
+   "metric": "bugs/run (concept-hybrid, ref + property fallback vs ref only)",
+   "fa": {
+    "concept": "20% runs alarm correct program (ref only 15%)"
+   },
+   "paired": "concept-hybrid vs plain-hybrid stays 33/15 p=.013",
+   "placebo_controlled": false,
+   "registration": "report-only",
+   "registered_verdict": null,
+   "verdict_text": "report-only: ~+3 bugs/run in every arm, +3-5 pt FA",
+   "mechanism_note": "uniform small oracle gain, not concept-specific; does not change arm ranking",
+   "source": "trickcatcher_linefacts/RESULTS.md:572-577"
+  },
+  {
+   "version": "B3 v12_rel",
+   "date": "2026-10-14",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "relational concepts (relations between facts/spec links) vs flat facts",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 63.33,
+    "plain": 56.33,
+    "placebo": 57.67,
+    "other": {
+     "flat_hybrid": 62.33,
+     "review_hybrid": 60.67,
+     "rel_nospec": 61.33,
+     "toolinput": 62.33
+    }
+   },
+   "metric": "D_IO tasks/run (ref, K=3)",
+   "fa": null,
+   "paired": "primary rel vs flat 16/15 p=1 (random equal-count 25/33 p=.358); vs plain raw 32/22 p=.22, matched 49/25 nominal p=.0071; vs placebo matched 41/27 p=.114; vs toolinput 27/36 p=.314",
+   "placebo_controlled": true,
+   "registration": "primary (relation vs flat)",
+   "registered_verdict": "no signal",
+   "verdict_text": "relation not better than flat concept; promotion gate not met",
+   "mechanism_note": "relation structure adds nothing over flat facts; vs-plain advantage only matched and uncorrected",
+   "source": "trickcatcher_linefacts/RESULTS.md:810-822"
+  },
+  {
+   "version": "B4 v13_hyp",
+   "date": "2026-10-14",
+   "benchmark": "HumanEval dev113",
+   "n_tasks": 113,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "spec-violation fault hypotheses",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "spec + code + execution/tool",
+   "arms": {
+    "concept": 46.33,
+    "plain": 54.67,
+    "other": {
+     "flat_hybrid": 62.67,
+     "rel_hybrid": 63.33,
+     "toolinput": 63.0,
+     "witness_only": 41.67,
+     "hyp_witness_only": 15.0
+    }
+   },
+   "metric": "D_IO tasks/run (ref, K=3); concept = hyp-hybrid, plain = plain-hybrid",
+   "fa": null,
+   "paired": "primary hyp vs flat 14/43 p=.000154 (matched 21/51 p=.000535); vs toolinput 14/35 p=.0038; vs plain raw 19/31 p=.119, matched 36/32 p=.716",
+   "placebo_controlled": false,
+   "registration": "primary (hyp vs flat)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "hypothesis pipeline worse than flat facts and toolinput",
+   "mechanism_note": "hypotheses shown on only 58/113 tasks; fewer calls (1.83 vs 3.27/sample); no placebo exported",
+   "source": "trickcatcher_linefacts/RESULTS.md:848-858"
+  },
+  {
+   "version": "v14_obgraph_py",
+   "date": "2026-10-14",
+   "benchmark": "HumanEval dev, 20 tasks, K=1",
+   "n_tasks": 20,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "obligation-graph cards",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "spec + code",
+   "arms": {
+    "concept": 6,
+    "plain": 7,
+    "placebo": 6,
+    "other": {
+     "card": 6,
+     "noconcept": 6,
+     "toolinput": 7,
+     "witness_only": 6
+    }
+   },
+   "metric": "D_IO tasks /20",
+   "fa": null,
+   "paired": "primary graph vs card 0/0 p=1",
+   "placebo_controlled": true,
+   "registration": "exploratory smoke",
+   "registered_verdict": "no signal",
+   "verdict_text": "no benefit",
+   "mechanism_note": "treatment very sparse: 5 accepted cards on 3/20 tasks",
+   "source": "trickcatcher_linefacts/RESULTS.md:827-833"
+  },
+  {
+   "version": "v15_mrconcept_py",
+   "date": "2026-10-14",
+   "benchmark": "HumanEval dev, 20 tasks, K=1",
+   "n_tasks": 20,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "metamorphic-relation concept cards",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 5,
+    "placebo": 4,
+    "other": {
+     "blind": 5,
+     "flatfacts": 4,
+     "toolinput": 4,
+     "new_toolinput": 6,
+     "witness_only": 6
+    }
+   },
+   "metric": "D_IO tasks /20",
+   "fa": {
+    "concept": "3 MR property reports, all false alarms"
+   },
+   "paired": "primary raw 2/2 p=1; matched 2/1 p=1",
+   "placebo_controlled": true,
+   "registration": "exploratory smoke",
+   "registered_verdict": "no signal",
+   "verdict_text": "no benefit",
+   "mechanism_note": "41 accepted cards on 16/20 tasks but MR = blind; witness-only 6 >= every LLM arm",
+   "source": "trickcatcher_linefacts/RESULTS.md:834-840"
+  },
+  {
+   "version": "v18_modelselect",
+   "date": "2026-10-15",
+   "benchmark": "HumanEval dev, 20 tasks",
+   "n_tasks": 20,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "tool-enumerated typed spec-model templates; LLM picks a model ID",
+   "concept_role": "revision/identification (spec-model selection for oracle properties)",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 11,
+    "random": 9.17,
+    "other": {
+     "rule_first": 12,
+     "ambiguous_menus_7": {
+      "LLM": 5,
+      "rule": 6,
+      "uniform": 3.17
+     }
+    }
+   },
+   "metric": "tasks with a sampled-consistent model selected /20",
+   "fa": {
+    "concept": "0 observed property false alarms (119 confirmed discrepancy reports)"
+   },
+   "paired": "LLM vs rule 0 wins / 1 loss",
+   "placebo_controlled": false,
+   "registration": "selection-only pilot",
+   "registered_verdict": "no signal",
+   "verdict_text": "no incremental LLM selection gain over the rule",
+   "mechanism_note": "tool candidates carry the value; LLM selection = rule",
+   "source": "trickcatcher_linefacts/RESULTS.md:997-999"
+  },
+  {
+   "version": "v19_rulegen",
+   "date": "2026-10-15",
+   "benchmark": "HumanEval dev, 20 tasks, K=1",
+   "n_tasks": 20,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "rule-first typed model/fault concept + behavior pseudocode",
+   "concept_role": "hint-to-test-writer (strategy generation)",
+   "concept_info_source": "code + external taxonomy",
+   "arms": {
+    "concept": 3,
+    "plain": 3,
+    "placebo": 3,
+    "other": {
+     "behavior": 3,
+     "toolinput": 4,
+     "witness_only": 13
+    }
+   },
+   "metric": "D_IO detected tasks /20 (concept = behavior+concept)",
+   "fa": {
+    "concept": 0,
+    "plain": 0,
+    "placebo": 0
+   },
+   "paired": "primary concept vs behavior 0/0 p=1 (raw and equal-input)",
+   "placebo_controlled": true,
+   "registration": "primary (concept vs behavior)",
+   "registered_verdict": "no signal",
+   "verdict_text": "no concept generation improvement",
+   "mechanism_note": "203/300 strategy responses SyntaxError (interface); audit: concept slots had empty source bindings; witness reuse strongest",
+   "source": "trickcatcher_linefacts/RESULTS.md:1027-1046"
+  },
+  {
+   "version": "v21_flowtools",
+   "date": "2026-10-18",
+   "benchmark": "pilot20",
+   "n_tasks": 20,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "spec concept + code behavior + mismatch hypothesis; CFG/trace flow tools",
+   "concept_role": "hint-to-test-writer (model also writes expected)",
+   "concept_info_source": "spec + code + execution/tool",
+   "arms": {
+    "concept": 2,
+    "plain": 2,
+    "placebo": 1,
+    "other": {
+     "concept_hyp": 3,
+     "input_hyp": 2,
+     "agent_tools": 4,
+     "fixed_tools": 3,
+     "flow_input": 4,
+     "toolinput": 3,
+     "diag16": {
+      "concept+input+hyp": 7,
+      "toolinput": 7,
+      "plain": 6,
+      "placebo+input": 5
+     }
+    }
+   },
+   "metric": "confirmed tasks /20 (concept = concept+input+hyp, placebo = placebo+input)",
+   "fa": {
+    "concept": 21,
+    "plain": 33,
+    "placebo": 38,
+    "toolinput": 34
+   },
+   "paired": "concept+input+hyp vs toolinput 1/2, vs plain 1/1, vs placebo+input 2/1; concept+hyp vs plain 2/1",
+   "placebo_controlled": true,
+   "registration": "primary (amendment-1 rule: beat toolinput AND plain AND placebo, FA not higher)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "negative / inconclusive",
+   "mechanism_note": "oracle-bound: wrong expected on 7-14 discrepancy tasks per arm; witness already shows a discrepancy on 8/20",
+   "source": "trickcatcher_linefacts/analysis/v21_flowtools_results.md:37-56"
+  },
+  {
+   "version": "v23_concepthyp (Qwen)",
+   "date": "2026-10-17",
+   "benchmark": "fixtures16 (7 buggy)",
+   "n_tasks": 16,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "spec concept -> code behavior -> hypothesis chain",
+   "concept_role": "hint-to-test-writer (hypothesis)",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 2,
+    "plain": 2,
+    "other": {
+     "hyp_only": 2,
+     "input_discrepancy_cases": {
+      "concept_chain": 4,
+      "direct_chain": 5,
+      "hyp_only": 5
+     }
+    }
+   },
+   "metric": "buggy cases with a correctly specified failing assertion /7 (plain = direct_chain)",
+   "fa": {
+    "concept": "2 cases with false assertion",
+    "plain": 5,
+    "hyp_only": 4
+   },
+   "paired": "concept vs direct: one gain (f12), one loss (f06)",
+   "placebo_controlled": false,
+   "registration": "mechanism diagnostic",
+   "registered_verdict": "no signal",
+   "verdict_text": "no concept benefit",
+   "mechanism_note": "schema solved (160/160 valid); expected-value inference is the bottleneck (expected drifts toward PUT)",
+   "source": "trickcatcher_linefacts/analysis/v23_qwen_diagnostic_results.md:20-35; trickcatcher_linefacts/analysis/v23_qwen_diagnostic_results.md:43-45"
+  },
+  {
+   "version": "v23 Luna supplied-concept probe",
+   "date": "2026-10-17",
+   "benchmark": "fixtures5 (3 buggy)",
+   "n_tasks": 5,
+   "model": "GPT-6 Luna (low, subagent)",
+   "model_tier": "strong",
+   "concept_kind": "supplied authored concepts",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "spec (authored)",
+   "arms": {
+    "concept": 3,
+    "plain": 3
+   },
+   "metric": "buggy cases caught with correct assertions /3",
+   "fa": {
+    "concept": 0,
+    "plain": 0
+   },
+   "paired": "same 4 bug-revealing inputs in both arms",
+   "placebo_controlled": false,
+   "registration": "separate preregistered probe",
+   "registered_verdict": "ceiling",
+   "verdict_text": "no incremental concept benefit",
+   "mechanism_note": "concept arm only adds passing contrasts; easy seen subset",
+   "source": "trickcatcher_linefacts/RESULTS.md:1103; trickcatcher_linefacts/analysis/v23_luna_probe/report.json"
+  },
+  {
+   "version": "Luna retest v23 (native)",
+   "date": "2026-10-19",
+   "benchmark": "fixtures16 (7 buggy)",
+   "n_tasks": 16,
+   "model": "GPT-5.6 Luna (low)",
+   "model_tier": "strong",
+   "concept_kind": "spec concept -> hypothesis chain (v23 engine unchanged)",
+   "concept_role": "hint-to-test-writer (hypothesis)",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 5,
+    "plain": 7,
+    "other": {
+     "hyp_only": 5
+    }
+   },
+   "metric": "correct-assertion bug tasks /7 (plain = direct)",
+   "fa": {
+    "concept": "1 case",
+    "plain": 0,
+    "hyp_only": 0
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "user-authorized native retest",
+   "registered_verdict": "no signal",
+   "verdict_text": "no concept task gain",
+   "mechanism_note": "concept/hyp arms blocked on f04/f16 by malformed hypothesis JSON; raw fault reasoning correct",
+   "source": "trickcatcher_linefacts/analysis/luna_versions_continue_20261019/REPORT.md:17-21"
+  },
+  {
+   "version": "Luna retest v24 (native)",
+   "date": "2026-10-19",
+   "benchmark": "fixtures9 (3 buggy)",
+   "n_tasks": 9,
+   "model": "GPT-5.6 Luna (low)",
+   "model_tier": "strong",
+   "concept_kind": "executable spec obligations; verified hypotheses gate inputs",
+   "concept_role": "input-selection (verified hypothesis gate)",
+   "concept_info_source": "spec + execution/tool",
+   "arms": {
+    "concept": 1,
+    "other": {
+     "text_hyp": 3,
+     "toolinput": 3,
+     "witness_only": 3
+    }
+   },
+   "metric": "bug tasks with selected bug inputs /3 (concept = verified_hyp)",
+   "fa": {
+    "concept": 0
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "user-authorized native retest",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "no concept task gain",
+   "mechanism_note": "validator false rejections and frozen support gate discard useful output (6 novel bug inputs dropped)",
+   "source": "trickcatcher_linefacts/analysis/luna_versions_continue_20261019/REPORT.md:20; trickcatcher_linefacts/analysis/luna_versions_continue_20261019/REPORT.md:52-70"
+  },
+  {
+   "version": "v24_obligations (Qwen)",
+   "date": "2026-10-17",
+   "benchmark": "fixtures9 (3 buggy)",
+   "n_tasks": 9,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "executable spec obligations (predicates) + witnessed hypotheses",
+   "concept_role": "input-selection",
+   "concept_info_source": "spec + execution/tool",
+   "arms": {
+    "concept": 0,
+    "other": {
+     "text_hyp": 0,
+     "toolinput": 0,
+     "witness_only": 3
+    }
+   },
+   "metric": "bug tasks with generated inputs /3",
+   "fa": null,
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "mechanism diagnostic",
+   "registered_verdict": "invalid",
+   "verdict_text": "interface failure: contract 0/9, generation 0/54",
+   "mechanism_note": "output-interface infeasibility, not a concept null",
+   "source": "trickcatcher_linefacts/analysis/v24_obligations_results.md:9-23; trickcatcher_linefacts/analysis/v24_obligations_results.md:67-73"
+  },
+  {
+   "version": "v26_proporacle",
+   "date": "2026-10-18",
+   "benchmark": "pilot20 (fixed 12-input pools)",
+   "n_tasks": 20,
+   "model": "Qwen2.5-Coder-7B",
+   "model_tier": "weak",
+   "concept_kind": "property / metamorphic relation as executable oracle",
+   "concept_role": "oracle",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 0.148,
+    "plain": 0.213,
+    "other": {
+     "metamorphic": 0.179,
+     "exact_code": 0.197,
+     "tasks_confirmed": {
+      "property": 6,
+      "metamorphic": 4,
+      "exact_spec": 8,
+      "exact_code": 8
+     },
+     "diag16_precision": {
+      "property": 0.307,
+      "metamorphic": 0.225,
+      "exact_spec": 0.473
+     }
+    }
+   },
+   "metric": "oracle precision on pilot20 (concept = property, plain = exact_spec)",
+   "fa": {
+    "concept": 92,
+    "plain": 48,
+    "metamorphic": 78
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "primary",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "property/metamorphic do not beat exact on precision and confirm fewer tasks",
+   "mechanism_note": "19% of Qwen properties fail on the reference output",
+   "source": "trickcatcher_linefacts/analysis/v26_proporacle_results.md:13-20; trickcatcher_linefacts/analysis/v26_proporacle_results.md:37-42"
+  },
+  {
+   "version": "v27_codexoracle (+v28 no-tool recheck)",
+   "date": "2026-10-18",
+   "benchmark": "pilot20 (fixed pools)",
+   "n_tasks": 20,
+   "model": "Codex gpt-5.6-luna (low)",
+   "model_tier": "strong",
+   "concept_kind": "property / metamorphic relation as executable oracle, strict prompt",
+   "concept_role": "oracle",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 1.0,
+    "plain": 0.9,
+    "other": {
+     "property_orig": 0.34,
+     "exact_orig": 0.76,
+     "metamorphic_strict": 1.0,
+     "tasks_confirmed": {
+      "property_strict": 8,
+      "exact_spec_strict": 8,
+      "metamorphic_strict": 4
+     },
+     "diag16": {
+      "property_strict": 0.79,
+      "exact_spec": 0.86
+     },
+     "v28_no_tools": {
+      "property_strict": "1.00 (10/0)",
+      "exact_spec": "0.84 (16/3)",
+      "metamorphic_strict": 0.73
+     }
+    }
+   },
+   "metric": "oracle precision on pilot20 (concept = property strict, plain = exact_spec strict)",
+   "fa": {
+    "concept": 0,
+    "plain": 2
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "registered question was model vs prompt; concept-vs-exact is descriptive",
+   "registered_verdict": "no signal",
+   "verdict_text": "tasks 8 vs 8; property strict 0 FA vs 2; exact has more TPs without tools (16 vs 10)",
+   "mechanism_note": "oracle failure is model-limited; strict property oracle sound for a capable model; v27 Codex may have used shell (v28 rechecked without tools)",
+   "source": "trickcatcher_linefacts/analysis/v27_codexoracle_results.md:10-17; trickcatcher_linefacts/analysis/v27_codexoracle_results.md:29-37; trickcatcher_linefacts/analysis/v28_codexflow_results.md:32-40"
+  },
+  {
+   "version": "v28_codexflow (full pipeline)",
+   "date": "2026-10-18",
+   "benchmark": "pilot20",
+   "n_tasks": 20,
+   "model": "Codex gpt-5.6-luna (low, tools disabled)",
+   "model_tier": "strong",
+   "concept_kind": "v21_flowtools arms (concept/hypothesis/flow tools)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "spec + code + execution/tool",
+   "arms": {
+    "concept": 16,
+    "plain": 16,
+    "placebo": 16,
+    "other": {
+     "concept_hyp": 17,
+     "toolinput": 17,
+     "flow_input": 17,
+     "agent_tools": 16,
+     "fixed_tools": 16,
+     "input_hyp": 16
+    }
+   },
+   "metric": "confirmed tasks /20 (concept = concept+input+hyp)",
+   "fa": {
+    "concept": 3,
+    "plain": 2,
+    "placebo": 2
+   },
+   "paired": "concept+input+hyp vs toolinput 0/1, vs plain 1/1, vs placebo+input 1/1; concept+hyp vs plain 1/0",
+   "placebo_controlled": true,
+   "registration": "primary (v21 amendment-1 rule)",
+   "registered_verdict": "ceiling",
+   "verdict_text": "all arms 16-17/20; no added value",
+   "mechanism_note": "strong model removes oracle bottleneck; every arm incl. plain at ceiling; HumanEval memorization plausible",
+   "source": "trickcatcher_linefacts/analysis/v28_codexflow_results.md:9-27"
+  },
+  {
+   "version": "v29_vibepass",
+   "date": "2026-10-19",
+   "benchmark": "VibePass 66",
+   "n_tasks": 66,
+   "model": "Codex gpt-5.6-luna (low, tools disabled)",
+   "model_tier": "strong",
+   "concept_kind": "v21_flowtools arms",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "spec + code + execution/tool",
+   "arms": {
+    "concept": 9,
+    "plain": 7,
+    "placebo": 6,
+    "other": {
+     "toolinput": 8,
+     "flow_input": 8,
+     "witness_only": 0
+    }
+   },
+   "metric": "confirmed tasks /66 (concept = concept+input+hyp)",
+   "fa": {
+    "concept": "5 inputs / 3 tasks",
+    "plain": "4 / 4",
+    "placebo": "6 / 6",
+    "toolinput": "1 / 1"
+   },
+   "paired": "vs toolinput 1-0, vs plain 3-1, vs placebo+input 3-0 (FA higher, rule not passed)",
+   "placebo_controlled": true,
+   "registration": "primary (v21 amendment-1 rule)",
+   "registered_verdict": "invalid",
+   "verdict_text": "INVALID: prompts contained the _plus test field (canonical + contract + hidden inputs)",
+   "mechanism_note": "reference leak; numbers unusable",
+   "source": "trickcatcher_linefacts/analysis/v29_vibepass_results.md:3-5; trickcatcher_linefacts/analysis/v29_vibepass_results.md:14-32"
+  },
+  {
+   "version": "v31_faulttemplate",
+   "date": "2026-10-20",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "Qwen3.5-35B-A3B",
+   "model_tier": "weak",
+   "concept_kind": "fault type (ManySStuBs) + site from surviving mutants + alternative output + per-type input templates",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "code + execution/tool + external taxonomy",
+   "arms": {
+    "concept": 18,
+    "plain": 15,
+    "other": {
+     "template_only_discovery_noLLM": 11,
+     "template_random_discovery_noLLM": 9,
+     "witness_only": 0
+    }
+   },
+   "metric": "confirmed tasks /33 (K=1)",
+   "fa": {
+    "concept": "27 tests / 11 tasks",
+    "plain": "32 tests / 14 tasks"
+   },
+   "paired": "4-1 (p~.38); win 103 = plain schema failure, otherwise 3-1",
+   "placebo_controlled": false,
+   "registration": "primary (wins > losses vs plain AND FA tests <= plain)",
+   "registered_verdict": "rule met (weak)",
+   "verdict_text": "rule met",
+   "mechanism_note": "no placebo; ranking ~= random templates (11 vs 9); mixed attribution",
+   "source": "trickcatcher_linefacts/analysis/v31_faulttemplate_results.md:7-31"
+  },
+  {
+   "version": "v34_ftplacebo",
+   "date": "2026-10-20",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "Qwen3.5-35B-A3B",
+   "model_tier": "weak",
+   "concept_kind": "v31 fault concept vs the same template inputs without concept content",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "code + execution/tool + external taxonomy",
+   "arms": {
+    "concept": 18,
+    "plain": 15,
+    "placebo": 12,
+    "other": {
+     "discovery_tasks": {
+      "concept": 20,
+      "plain": 19,
+      "placebo": 16
+     }
+    }
+   },
+   "metric": "confirmed tasks /33 (K=1)",
+   "fa": {
+    "concept": "27 tests / 11 tasks",
+    "plain": "32 / 14",
+    "placebo": "23 / 14"
+   },
+   "paired": "primary vs placebo 8-2 (p~.11); placebo vs plain 2-5; discovery concept vs placebo 6-2",
+   "placebo_controlled": true,
+   "registration": "primary (vs placebo: wins > losses AND FA tests <= placebo)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "rule NOT met: FA tests 27 > 23 (tasks with FA 11 vs 14, precision .67 vs .66)",
+   "mechanism_note": "concept inputs expose the bug in 11/33; in 5/8 wins no concept input exposes it; 0/16 confirmed tests reuse concept inputs -> framing effect; placebo hit 16k-token limit 5x",
+   "source": "trickcatcher_linefacts/analysis/v34_ftplacebo_results.md:8-22; trickcatcher_linefacts/analysis/v34_ftplacebo_results.md:40-48"
+  },
+  {
+   "version": "v53_sonnet_tester",
+   "date": "2026-10-24",
+   "benchmark": "vibepass_half (6 Qwen-failure tasks)",
+   "n_tasks": 6,
+   "model": "Claude Sonnet",
+   "model_tier": "strong",
+   "concept_kind": "v34 fault concept (byte-identical prompts)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "code + execution/tool + external taxonomy",
+   "arms": {
+    "concept": 5,
+    "plain": 5,
+    "placebo": 5,
+    "other": {
+     "confirmed_tests": {
+      "concept": 25,
+      "plain": 18,
+      "placebo": 24
+     },
+     "qwen_v34_same_tasks": {
+      "concept": 2,
+      "plain": 3,
+      "placebo": 1
+     }
+    }
+   },
+   "metric": "confirmed tasks /6",
+   "fa": {
+    "concept": 0,
+    "plain": 0,
+    "placebo": 0
+   },
+   "paired": "0/0 everywhere",
+   "placebo_controlled": true,
+   "registration": "exploratory pilot, signal rule (concept >= plain+2 and >= placebo+2, FA <= plain)",
+   "registered_verdict": "no signal",
+   "verdict_text": "no signal (all arms 5/6)",
+   "mechanism_note": "strong writer at ceiling; extra tests come from template inputs (placebo = concept), not concept content",
+   "source": "trickcatcher_linefacts/analysis/v53_sonnet_tester/RESULTS.md:7-17; trickcatcher_linefacts/analysis/v53_sonnet_tester/PREREG.md:32-34"
+  },
+  {
+   "version": "v36_llm_localize",
+   "date": "2026-10-20",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "Qwen2.5-Coder-32B",
+   "model_tier": "weak",
+   "concept_kind": "CFG (code relation) given to LLM for fault localization",
+   "concept_role": "localization",
+   "concept_info_source": "code (static tool)",
+   "arms": {
+    "concept": 2,
+    "plain": 3,
+    "other": {
+     "hit@3_of14": {
+      "cfg": 6,
+      "code": 6
+     },
+     "hit@1_of14": {
+      "cfg": 3,
+      "code": 3
+     },
+     "mutant_rank1_v35": 6
+    }
+   },
+   "metric": "tasks with a bug-revealing input /33 (concept = code+CFG, plain = code only)",
+   "fa": null,
+   "paired": "gate on 19 CFG-supported PUTs: exposure cfg vs code 1-2; hit@3 5 vs 5",
+   "placebo_controlled": false,
+   "registration": "primary gate",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "CFG adds nothing",
+   "mechanism_note": "about half of proposed inputs contract-invalid; localization is not the bottleneck",
+   "source": "trickcatcher_linefacts/analysis/v36_llm_localize/RESULTS.md:7-20"
+  },
+  {
+   "version": "v40_concept_agent (Astra, retry3)",
+   "date": "2026-10-21",
+   "benchmark": "fixtures8 (6 buggy)",
+   "n_tasks": 8,
+   "model": "Qwen2.5-Coder-32B",
+   "model_tier": "weak",
+   "concept_kind": "supplied authored Astra concept/binding/gap package",
+   "concept_role": "revision/identification + input generation",
+   "concept_info_source": "spec (authored) + execution/tool",
+   "arms": {
+    "concept": 6,
+    "plain": 6,
+    "other": {
+     "concept_committed": 6,
+     "revealing_final_inputs_of12": {
+      "CA": 11,
+      "GA": 10,
+      "CC": 11
+     },
+     "novel_exposing_outside_pool": {
+      "CA": 25,
+      "GA": 19,
+      "CC": 15
+     }
+    }
+   },
+   "metric": "buggy fixtures with a revealing input /6 (concept = concept_adaptive, plain = generic_adaptive checklist)",
+   "fa": {
+    "concept": "0 final unsupported bug flags",
+    "plain": 0
+   },
+   "paired": "CA-only task wins 0 / losses 0 on E1/E2/E4/E5",
+   "placebo_controlled": false,
+   "registration": "primary (capability + incremental-concept gates)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "capability fail, incremental concept fail, combined package no-go",
+   "mechanism_note": "inputs fine in every arm; concept arm fails to retain correct hypotheses (E2/E4 0/2) and to reject wrong binding (E3)",
+   "source": "trickcatcher_linefacts/analysis/v40_retry3_20261021/REPORT.md:3; trickcatcher_linefacts/analysis/v40_retry3_20261021/REPORT.md:19-32; trickcatcher_linefacts/analysis/v40_retry3_20261021/REPORT.md:69-77; trickcatcher_linefacts/analysis/v40_retry3_20261021/REPORT.md:89-102"
+  },
+  {
+   "version": "v41_iorel",
+   "date": "2026-10-21",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "none(CPU)",
+   "model_tier": "none",
+   "concept_kind": "observed I/O metamorphic relations (minority behaviour) package",
+   "concept_role": "input-selection",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 11,
+    "random": 8.94,
+    "other": {
+     "C1_sampling_reach": 22,
+     "median_lift": 0.38,
+     "tasks_without_relation": "8/22"
+    }
+   },
+   "metric": "C2: tasks where shown package (<=32 inputs) exposes the bug /33",
+   "fa": null,
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "primary (C2 >= 17 and median lift >= 2)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "no-go",
+   "mechanism_note": "sampling alone reaches bugs in 22/33; relations select only slightly better than random -> oracle/selection is the bottleneck",
+   "source": "trickcatcher_linefacts/analysis/v41_iorel/RESULTS.md:6-16"
+  },
+  {
+   "version": "v42_mutoracle",
+   "date": "2026-10-21",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "none(CPU)",
+   "model_tier": "none",
+   "concept_kind": "surviving-mutant disagreement questions",
+   "concept_role": "input-selection (oracle questions)",
+   "concept_info_source": "code + execution/tool",
+   "arms": {
+    "concept": 15,
+    "random": 13.32,
+    "other": {
+     "D1": 15,
+     "D1_uncapped": 19,
+     "median_lift": 0.62,
+     "valid_questions_mutant_right_PUT_right_neither": "52/335/46"
+    }
+   },
+   "metric": "D2: package has a confirmed exposing input /33",
+   "fa": null,
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "primary (D1 >= 17 and median lift >= 2)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "no-go",
+   "mechanism_note": "PUT is right on 77% of questions; mutants rarely equal the fix",
+   "source": "trickcatcher_linefacts/analysis/v42_mutoracle/RESULTS.md:6-16"
+  },
+  {
+   "version": "v43_concept_identify",
+   "date": "2026-10-22",
+   "benchmark": "fixtures8",
+   "n_tasks": 8,
+   "model": "Qwen2.5-Coder-32B",
+   "model_tier": "weak",
+   "concept_kind": "global 7-concept/17-operator binding vocabulary + finite-pool tool contrasts",
+   "concept_role": "revision/identification",
+   "concept_info_source": "spec + execution/tool",
+   "arms": {
+    "concept": 2,
+    "plain": 1
+   },
+   "metric": "strict complete binding + truthful judgment /8 (concept = tool final, plain = raw final)",
+   "fa": null,
+   "paired": "1 tool-only win (E5) / 0 losses; gate needs >=2",
+   "placebo_controlled": false,
+   "registration": "primary gate",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "no-go (registered package readiness)",
+   "mechanism_note": "closed candidate set and all-or-nothing admission block repair; E7/E8 semantic failures remain",
+   "source": "trickcatcher_linefacts/analysis/v43_concept_identify_20261021/REPORT.md:3; trickcatcher_linefacts/analysis/v43_concept_identify_20261021/REPORT.md:26-37"
+  },
+  {
+   "version": "v44_concept_matrix",
+   "date": "2026-10-21",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "none(CPU)",
+   "model_tier": "none",
+   "concept_kind": "6 kinds: input class, spec boundary, coverage arcs, surviving mutants (input); MR, output property (oracle)",
+   "concept_role": "input-selection + oracle",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 21,
+    "random": 21.36,
+    "other": {
+     "best_instance_vs_random_instance": {
+      "class": "20 vs 10.1",
+      "boundary": "14 vs 6.6",
+      "coverage": "9 vs 7.0",
+      "mutants": "19 vs 14.5"
+     },
+     "MR_accurate": "145/260, flags 3 tasks",
+     "property_accurate": "50/66, flags 1 task",
+     "unreachable_tasks": 11
+    }
+   },
+   "metric": "union of input kinds (best instance) tasks exposing /33 vs matched random",
+   "fa": {
+    "concept": "MR 3,877 + property 1,251 FA inputs from inaccurate oracles"
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "primary (union >= 22 and >= matched random + 3)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "no-go",
+   "mechanism_note": "kinds partition the input space but do not concentrate bugs; perfect instance pick doubles coverage vs a random instance",
+   "source": "trickcatcher_linefacts/analysis/v44_concept_matrix/RESULTS.md:6-23"
+  },
+  {
+   "version": "v45_mutjudge",
+   "date": "2026-10-22",
+   "benchmark": "vibepass_half (607 questions; 15 D1 tasks possible)",
+   "n_tasks": 15,
+   "model": "Qwen2.5-Coder-32B",
+   "model_tier": "weak",
+   "concept_kind": "fault concept added to a binary PUT-vs-mutant judge",
+   "concept_role": "oracle",
+   "concept_info_source": "code + execution/tool",
+   "arms": {
+    "concept": 1,
+    "plain": 2,
+    "other": {
+     "code": 0,
+     "precision": {
+      "concept": 0.08,
+      "binary": 0.18,
+      "code": 0.0
+     }
+    }
+   },
+   "metric": "confirmed tasks /15 (plain = binary spec-only judge)",
+   "fa": {
+    "concept": "12 FA questions / 9 tasks",
+    "plain": "14 / 9"
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "primary (registered verdict 'close')",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "close; later audit: invalid instrument (in-head judge, abstention-biased prompt, no program-variant oracle)",
+   "mechanism_note": "model abstains 66-83%; code and fault concept increase abstention",
+   "source": "trickcatcher_linefacts/analysis/v45_mutjudge/RESULTS.md:7-16; trickcatcher_linefacts/analysis/v45_mutjudge/RESULTS.md:29-44"
+  },
+  {
+   "version": "v47_concept_select",
+   "date": "2026-10-22",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "Qwen2.5-Coder-32B",
+   "model_tier": "weak",
+   "concept_kind": "LLM picks 3 concept instances from a frozen tool menu",
+   "concept_role": "input-selection",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 16,
+    "random": 18.25,
+    "other": {
+     "spec_only": 15,
+     "spec_only_random3": 17.96,
+     "first3": 18,
+     "kind_matched": {
+      "spec+code": 17.06,
+      "spec-only": 15.66
+     },
+     "perfect_menu": {
+      "spec+code": 23,
+      "spec-only": 22
+     }
+    }
+   },
+   "metric": "covered@3 /33 (concept = spec+code picks)",
+   "fa": null,
+   "paired": "p vs random3 .96 (spec+code), .99 (spec-only)",
+   "placebo_controlled": false,
+   "registration": "primary (covered@3 >= random3+3 and >= 0.5 x perfect)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "no-go (picks below random)",
+   "mechanism_note": "kind-matched random ~= model: no instance skill within kind; the menu carries the coverage",
+   "source": "trickcatcher_linefacts/analysis/v47_concept_select/RESULTS.md:6-17"
+  },
+  {
+   "version": "v48_e2e_oracle",
+   "date": "2026-10-23",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "Qwen2.5-Coder-32B (picks) + Qwen32B TC-full variants (oracle)",
+   "model_tier": "weak",
+   "concept_kind": "v47 concept-instance picks scored end-to-end",
+   "concept_role": "input-selection",
+   "concept_info_source": "execution/tool + spec",
+   "arms": {
+    "concept": 6,
+    "random": 6.37,
+    "other": {
+     "llm_spec": 6,
+     "first3": 6,
+     "heuristic": 6,
+     "all_menu": 6,
+     "kind_matched": 6.22,
+     "menu_matched": 6.38,
+     "pool_matched": 5.87
+    }
+   },
+   "metric": "confirmed tasks /33 (vote rule, cap 20)",
+   "fa": {
+    "concept": 152,
+    "random": 146.37
+   },
+   "paired": "every arm confirms the same 6 tasks",
+   "placebo_controlled": false,
+   "registration": "primary (>= each control + 2/3, FA <= random3)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "NO-GO",
+   "mechanism_note": "oracle binds: common-mode 9, no valid variant 7, no exposing input 7",
+   "source": "trickcatcher_linefacts/analysis/v48_e2e_oracle/RESULTS.md:8-26; trickcatcher_linefacts/analysis/v48_e2e_oracle/RESULTS.md:28-37"
+  },
+  {
+   "version": "v49_defn_oracle",
+   "date": "2026-10-23",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "Qwen2.5-Coder-32B",
+   "model_tier": "weak",
+   "concept_kind": "definitional ENUMERATE/CHECK/AGGREGATE headings for brute-force spec oracle programs",
+   "concept_role": "oracle",
+   "concept_info_source": "spec + external taxonomy",
+   "arms": {
+    "concept": 12,
+    "plain": 5,
+    "other": {
+     "brute_matched_no_concept": 10,
+     "tc": 1,
+     "tc_native_rule": 7,
+     "valid_programs": {
+      "defn": 93,
+      "brute": 78
+     }
+    }
+   },
+   "metric": "confirmed tasks /33 (quorum rule, cap 20); control of record = brute (same prompt minus concept headings)",
+   "fa": {
+    "concept": 145,
+    "brute": 100,
+    "plain": 86
+   },
+   "paired": "primary defn vs brute margin 2 (tasks 103, 124) on 2 problems; both-eligible tasks 10 vs 10, FA 99 vs 100",
+   "placebo_controlled": false,
+   "registration": "primary (defn >= brute+3 on >= 3 problems, FA <=)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "concept NO-GO; family effect report-only",
+   "mechanism_note": "concept only raises valid-program yield (23 vs 18 eligible tasks); real gain is the spec brute-force family (precision ~.6, common-mode 3-5% vs TC 28%)",
+   "source": "trickcatcher_linefacts/analysis/v49_defn_oracle/RESULTS.md:8-27"
+  },
+  {
+   "version": "v50_binding_revision",
+   "date": "2026-10-24",
+   "benchmark": "fixtures8",
+   "n_tasks": 8,
+   "model": "Qwen2.5-Coder-32B",
+   "model_tier": "weak",
+   "concept_kind": "spec relation bindings revised with a tool feedback table",
+   "concept_role": "revision/identification",
+   "concept_info_source": "spec + execution/tool",
+   "arms": {
+    "concept": 2,
+    "plain": 2,
+    "other": {
+     "label_neutral": {
+      "tool": 3,
+      "raw": 3
+     }
+    }
+   },
+   "metric": "strict episode success /8 (concept = tool feedback, plain = raw)",
+   "fa": null,
+   "paired": "0 tool-only wins / 0 raw-only losses (two independent reviews, one arm-masked)",
+   "placebo_controlled": false,
+   "registration": "primary gate (>=2 tool-only wins, 0 raw-only, E7/E8 correct)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "NO-GO",
+   "mechanism_note": "normative-status confusion: correct mismatch prose but spec relation left unknown/rejected; E8 both invent first(xs)",
+   "source": "trickcatcher_linefacts/analysis/v50_binding_revision_20261023/RESULTS.md:3-11"
+  },
+  {
+   "version": "v51_latent_concept",
+   "date": "2026-10-23",
+   "benchmark": "VibePass (v41 pool, 22 PUTs / 17 problems; probes trained on MBPP+)",
+   "n_tasks": 22,
+   "model": "Qwen2.5-Coder-1.5B (frozen hidden states, CPU)",
+   "model_tier": "weak",
+   "concept_kind": "7 discrepancy concepts as bottleneck (TYPE/BOOL_FLIP/ORDER/SIZE/NUM_NEAR/NUM_FAR/CONTENT)",
+   "concept_role": "oracle",
+   "concept_info_source": "hidden-state",
+   "arms": {
+    "concept": 0.495,
+    "plain": 0.476,
+    "placebo": 0.385,
+    "other": {
+     "verbal": 0.441,
+     "intrinsic_NLL": 0.65,
+     "surface": 0.496,
+     "MBPP+_val": {
+      "direct": 0.626,
+      "CBM": 0.627,
+      "placebo": 0.631
+     }
+    }
+   },
+   "metric": "macro AUC over 17 problems (concept = CBM, plain = direct probe)",
+   "fa": null,
+   "paired": "CBM vs direct 10/7 p=.63; CBM vs placebo 11/6 p=.33; direct vs intrinsic 3/14 p=.013",
+   "placebo_controlled": true,
+   "registration": "primary",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "NO-GO",
+   "mechanism_note": "CBM ~ chance; B-C > 0 only because placebo is below chance; NUM_NEAR is 52% of bugs and the weakest probe (.78)",
+   "source": "trickcatcher_linefacts/analysis/v51_latent_concept/RESULTS.md:19-46"
+  },
+  {
+   "version": "v52_sonnet_defn",
+   "date": "2026-10-24",
+   "benchmark": "vibepass_half (6 Qwen-failure tasks), k=3",
+   "n_tasks": 6,
+   "model": "Claude Sonnet",
+   "model_tier": "strong",
+   "concept_kind": "v49 definitional ENUMERATE/CHECK/AGGREGATE headings",
+   "concept_role": "oracle",
+   "concept_info_source": "spec + external taxonomy",
+   "arms": {
+    "concept": 5,
+    "other": {
+     "brute_matched_no_concept": 4,
+     "qwen_defn_k3": 1,
+     "qwen_brute_k3": 0,
+     "correct_assertions": {
+      "defn": 62,
+      "brute": 44
+     }
+    }
+   },
+   "metric": "confirmed tasks /6",
+   "fa": {
+    "concept": 56,
+    "brute": 56
+   },
+   "paired": "identical on every task except 65 (defn 1, brute 0)",
+   "placebo_controlled": false,
+   "registration": "exploratory pilot (signal only)",
+   "registered_verdict": "no signal",
+   "verdict_text": "1-task difference is not evidence",
+   "mechanism_note": "task 65 = enumeration-space effect (defn enumerates statement objects, brute 26^n times out); all FA are invalid inputs",
+   "source": "trickcatcher_linefacts/analysis/v52_sonnet_defn/RESULTS.md:7-17; trickcatcher_linefacts/out/analysis/v52_sonnet_defn/score.json (totals)"
+  },
+  {
+   "version": "v53_validity_smallscope Stage 1",
+   "date": "2026-10-24",
+   "benchmark": "vibepass_half33 (24 problems; 32,311 task-input rows)",
+   "n_tasks": 33,
+   "model": "Claude Sonnet",
+   "model_tier": "strong",
+   "concept_kind": "RANGE/RELATION/STRUCTURE validity taxonomy, line by line",
+   "concept_role": "validity",
+   "concept_info_source": "spec + external taxonomy",
+   "arms": {
+    "concept": 1.0,
+    "plain": 1.0,
+    "other": {
+     "lines_untyped": 1.0,
+     "numeric_tool": 0.144
+    }
+   },
+   "metric": "invalid-input recall (12,842 invalid); plain = open F1b-style prompt",
+   "fa": {
+    "concept": "0 valid / 0 exposing rejected",
+    "plain": "0 / 0",
+    "downstream_Sonnet_defn_FA": "56 -> 0 for every LLM arm"
+   },
+   "paired": "concept/lines/open acceptance masks identical on all 32,311 rows",
+   "placebo_controlled": false,
+   "registration": "primary (concept - open recall >= +.10)",
+   "registered_verdict": "ceiling",
+   "verdict_text": "not promising (margin 0)",
+   "mechanism_note": "any Sonnet prompt translates spec constraints exactly; taxonomy adds nothing over open or untyped extraction",
+   "source": "trickcatcher_linefacts/analysis/v53_validity_smallscope/RESULTS.md:7-18"
+  },
+  {
+   "version": "v53_validity_smallscope Stage 2",
+   "date": "2026-10-24",
+   "benchmark": "vibepass_half33",
+   "n_tasks": 33,
+   "model": "Claude Sonnet (inputs + defn k=3 oracle + open filter)",
+   "model_tier": "strong",
+   "concept_kind": "small-scope DIMENSION scopes, exhaustive enumeration <=300 inputs",
+   "concept_role": "input-selection (input generation)",
+   "concept_info_source": "spec",
+   "arms": {
+    "concept": 18,
+    "plain": 24,
+    "random": 21,
+    "other": {
+     "typed": 17,
+     "universe": 22,
+     "universe_or_scope": 24,
+     "universe_or_plain": 24,
+     "precision": {
+      "scope": 0.97,
+      "plain": 0.96
+     }
+    }
+   },
+   "metric": "confirmed tasks /33 (random = random_small v41 pool size<=10)",
+   "fa": {
+    "concept": 8,
+    "plain": 15,
+    "random": 0
+   },
+   "paired": "scope - plain = -6 (plain-only 56,61,65,66,77,131; scope-only none); scope - typed = +1; scope - random_small = -3",
+   "placebo_controlled": false,
+   "registration": "primary (PREREG_STAGE2 + self-review amendment 1)",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "not promising",
+   "mechanism_note": "exhaustiveness shrinks sizes to <=6 while bugs need size 7-10; 168/171 reach comes from LLM generation, not the concept",
+   "source": "trickcatcher_linefacts/analysis/v53_validity_smallscope/RESULTS_STAGE2.md:7-20"
+  },
+  {
+   "version": "v54_sonnet_mutconcept",
+   "date": "2026-10-24",
+   "benchmark": "vibepass_half (6 Qwen-failure tasks), k=3",
+   "n_tasks": 6,
+   "model": "Claude Sonnet",
+   "model_tier": "strong",
+   "concept_kind": "surviving-mutant fault concept (before->after edits) in TC variant prompt",
+   "concept_role": "oracle",
+   "concept_info_source": "code + execution/tool",
+   "arms": {
+    "concept": 6,
+    "plain": 6,
+    "other": {
+     "right_programs": {
+      "tc_concept": "16/18",
+      "tc": "18/18"
+     },
+     "consensus": {
+      "tc_concept": 5,
+      "tc": 6
+     }
+    }
+   },
+   "metric": "confirmed tasks /6 (concept = tc_concept, plain = tc)",
+   "fa": {
+    "concept": 0,
+    "plain": 3
+   },
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "exploratory pilot (signal >= +3 tasks or >= 6 more right programs)",
+   "registered_verdict": "ceiling",
+   "verdict_text": "no measurable concept effect (ceiling)",
+   "mechanism_note": "writer strength is the effect; no shown mutant edit was ever applied",
+   "source": "trickcatcher_linefacts/analysis/v54_sonnet_mutconcept/RESULTS.md:7-23"
+  },
+  {
+   "version": "Sol6.1 concept probe",
+   "date": "2026-10-24",
+   "benchmark": "fixtures6 (E2,E3,E4,E6,E7,E8)",
+   "n_tasks": 6,
+   "model": "GPT-6.1 Sol (low)",
+   "model_tier": "strong",
+   "concept_kind": "7 global concept cards with operational axes",
+   "concept_role": "revision/identification",
+   "concept_info_source": "spec (authored)",
+   "arms": {
+    "concept": 6,
+    "plain": 6
+   },
+   "metric": "episodes handled correctly /6 (plain = generic reasoning checklist)",
+   "fa": {
+    "concept": 0,
+    "plain": 0
+   },
+   "paired": "concept-only 0, generic-only 0",
+   "placebo_controlled": false,
+   "registration": "preregistered probe",
+   "registered_verdict": "ceiling",
+   "verdict_text": "concept advantage NOT SHOWN",
+   "mechanism_note": "generic checklist already at ceiling on the historical Qwen failure types",
+   "source": "trickcatcher_linefacts/analysis/sol61_concept_probe_20261024/REPORT.md:1-6; trickcatcher_linefacts/analysis/sol61_concept_probe_20261024/REPORT.md:27-34"
+  },
+  {
+   "version": "v33_lunachain30",
+   "date": "2026-10-20",
+   "benchmark": "HumanEval dev30",
+   "n_tasks": 30,
+   "model": "GPT-5.6 Luna (low)",
+   "model_tier": "strong",
+   "concept_kind": "five-stage chain: spec obligation -> behavior -> hypothesis -> input -> revise",
+   "concept_role": "hint-to-test-writer (hypothesis-to-input)",
+   "concept_info_source": "spec + code",
+   "arms": {
+    "concept": 8,
+    "plain": 21,
+    "other": {
+     "any_stage": {
+      "chain": 8,
+      "direct": 26
+     },
+     "random_equal_input_mean": {
+      "chain": 8.0,
+      "direct": 8.37
+     }
+    }
+   },
+   "metric": "final-retained task detection /30 (plain = direct)",
+   "fa": null,
+   "paired": "chain-only 0, direct-only 18",
+   "placebo_controlled": false,
+   "registration": "registered max-budget comparison",
+   "registered_verdict": "NO-GO",
+   "verdict_text": "do not promote the hard-gated chain",
+   "mechanism_note": "14 tasks terminal unknown/abstain at S3, 7 blocked by interface; chain has no unique discovery",
+   "source": "trickcatcher_linefacts/analysis/v33_lunachain30_results.md:7-10; trickcatcher_linefacts/analysis/v33_lunachain30_results.md:20-26; trickcatcher_linefacts/analysis/v33_lunachain30_results.md:34"
+  },
+  {
+   "version": "concept-binding ablation (E4)",
+   "date": "2026-10-22",
+   "benchmark": "fixture E4, 2 contexts",
+   "n_tasks": 1,
+   "model": "Qwen2.5-Coder-32B",
+   "model_tier": "weak",
+   "concept_kind": "supplied concept packet (binding incl. allowed_outcome)",
+   "concept_role": "revision/identification",
+   "concept_info_source": "spec (authored)",
+   "arms": {
+    "concept": 0,
+    "plain": 1,
+    "other": {
+     "A1_drop_allowed_outcome": 0
+    }
+   },
+   "metric": "contexts that retain the correct hypothesis /2 (plain = packet removed)",
+   "fa": null,
+   "paired": "packet removal fixed concept_adaptive, not concept_committed",
+   "placebo_controlled": false,
+   "registration": "primary (PREREG + amendment 1)",
+   "registered_verdict": "no signal",
+   "verdict_text": "inconclusive",
+   "mechanism_note": "packet normative content leaks into the prediction slot ('return None')",
+   "source": "trickcatcher_linefacts/analysis/concept_binding_ablation_20261022/REPORT.md:1-10"
+  },
+  {
+   "version": "hybrid C1 (PBT_EdgeCases)",
+   "date": "2026-10-10",
+   "benchmark": "TrickCatcher EvalPlus PUTs (50)",
+   "n_tasks": 50,
+   "model": "Claude Sonnet (subagents)",
+   "model_tier": "strong",
+   "concept_kind": "disagreement-input hints (diff_ebt)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "execution/tool",
+   "arms": {
+    "concept": 42,
+    "placebo": 33,
+    "other": {
+     "hybrid_diff": 42,
+     "hybrid_generic": 42,
+     "placebo_reference_value": 37.5
+    }
+   },
+   "metric": "detected PUTs /50 (1 sample per arm)",
+   "fa": {
+    "concept": "8 units fail on PUT and fixed solution",
+    "other_EBT_arms": "1-3"
+   },
+   "paired": "vs plain EBT 5/2 p=.45 (sample a), 7/1 p=.07 (sample b); vs generic checklist 5/2 p=.45; vs rnd placebo 9/0 p=.004; A/A plain 4/1",
+   "placebo_controlled": true,
+   "registration": "post-hoc recheck (unregistered)",
+   "registered_verdict": "no signal",
+   "verdict_text": "significant only vs a harmful placebo (33 vs 37.5)",
+   "mechanism_note": "hybrid diff = hybrid generic; noise level (A/A 4/1) comparable to effect",
+   "source": "memory/hybrid-c1-verdict.md:11-24 (data on origin/claude/ecstatic-davinci-dgzehr PBT_EdgeCases/hybrid/)"
+  },
+  {
+   "version": "CoverUp_concept seed 1",
+   "date": "2026-10-08",
+   "benchmark": "CoverUp Python modules (57 with mutation results, 58 with coverage)",
+   "n_tasks": 57,
+   "model": "Gemini 2.5 Flash (thinking 0)",
+   "model_tier": "strong",
+   "concept_kind": "testing concepts at code sites (concept / concept_reason)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "code",
+   "arms": {
+    "concept": 47.7,
+    "plain": 46.9,
+    "placebo": 45.2,
+    "other": {
+     "concept_no_reason": 47.7,
+     "ide": 45.3,
+     "coverage": {
+      "concept_reason": 67.4,
+      "coverup": 69.2,
+      "placebo_reason": 66.4
+     }
+    }
+   },
+   "metric": "mutation score % (module mean; concept = concept_reason, plain = stock CoverUp)",
+   "fa": null,
+   "paired": "concept_reason vs placebo_reason 27/17 n=44 p=.445 (Wilcoxon); concept vs coverup 18/22 p=.868; concept_reason vs coverup 23/24 p=.912",
+   "placebo_controlled": true,
+   "registration": "planned main run (seed 1 only)",
+   "registered_verdict": "no signal",
+   "verdict_text": "no arm differs (all p >= .33)",
+   "mechanism_note": "per-module SD 15-22 pp; concept arms slightly lower coverage than stock",
+   "source": "CoverUp_concept/out/main/summary.md:3-21; memory/coverup-concept-verdict.md:11"
+  },
+  {
+   "version": "CoverUp site-hint smoke",
+   "date": "2026-10-08",
+   "benchmark": "CoverUp string_utils + flutils (53 functions, 337 target mutants)",
+   "n_tasks": 53,
+   "model": "Gemini 2.5 Flash",
+   "model_tier": "strong",
+   "concept_kind": "site hints (weak lines + suggested literal inputs)",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "code + execution/tool",
+   "arms": {
+    "concept": 178,
+    "plain": 129,
+    "placebo": 82
+   },
+   "metric": "target mutants killed /337",
+   "fa": null,
+   "paired": "mutant-level hint vs control 83/34 p=6.8e-6, vs placebo 103/7; function-level (24 hinted functions) hint vs control 3/6 p=.5",
+   "placebo_controlled": true,
+   "registration": "smoke (unregistered)",
+   "registered_verdict": "invalid",
+   "verdict_text": "artifact: 45 extra kills from one function where control/placebo replies were truncated at 8192 tokens; mutant-level tests invalid (A/A 13/0)",
+   "mechanism_note": "clustered mutants + truncation + hint arm wrote ~60% more tests",
+   "source": "CoverUp_concept/out/smoke_sitehint/summary.md; memory/coverup-concept-verdict.md:13-18"
+  },
+  {
+   "version": "ULT C1-C8 tag probe",
+   "date": "2026-10-10",
+   "benchmark": "ULT_Lite (6 functions)",
+   "n_tasks": 6,
+   "model": "Claude Sonnet 5.5",
+   "model_tier": "strong",
+   "concept_kind": "C1-C8 concept tags in the prompt",
+   "concept_role": "hint-to-test-writer",
+   "concept_info_source": "code",
+   "arms": {
+    "concept": 79.2,
+    "plain": 79.5,
+    "other": {
+     "BCov@5": {
+      "concept": 90.8,
+      "plain": 90.3
+     }
+    }
+   },
+   "metric": "Mut@5 (%)",
+   "fa": null,
+   "paired": null,
+   "placebo_controlled": false,
+   "registration": "user-requested probe",
+   "registered_verdict": "no signal",
+   "verdict_text": "null; arm dropped",
+   "mechanism_note": "tagged and blind agents wrote nearly identical tests; self-report credited tags unreliably",
+   "source": "memory/ult-concept-status.md:22-27"
+  }
+ ],
+ "skipped": [
+  {
+   "name": "pilot (5 initial arms: plain/concept/placebo/coverage/toolinput)",
+   "reason": "no per-arm numbers recorded in the sources read (design-stage pilot)"
+  },
+  {
+   "name": "v3c / v3m / v3mm / v4 / v4c / v5 / v6 offline hint layer",
+   "reason": "pick-vs-random numbers folded into the v3m2 hint-layer row (arms.other)"
+  },
+  {
+   "name": "v5 (Hypothesis when stuck) / CrossHair",
+   "reason": "input-finding tool variants, no concept-vs-control comparison"
+  },
+  {
+   "name": "rank-3 trigger inference",
+   "reason": "offline explanatory analysis, no control arm and no LLM run"
+  },
+  {
+   "name": "witness-only",
+   "reason": "control baseline only (used as a control in other rows)"
+  },
+  {
+   "name": "tc-full / tc_full_v2, onlydoc, advdoc, ghep-b1, v11 paper baselines (SymPrompt, ACH, CoverUp, MuTAP)",
+   "reason": "paper-baseline comparisons, not concept vs matched control"
+  },
+  {
+   "name": "v16_behavior_ready",
+   "reason": "concept gate 0/20, generation stopped; D_IO unmeasured"
+  },
+  {
+   "name": "v17_templates",
+   "reason": "concept gate 2/20, generation stopped; D_IO unmeasured"
+  },
+  {
+   "name": "synthetic interface probe (RESULTS 11.51)",
+   "reason": "interface capability probe, no concept-vs-control"
+  },
+  {
+   "name": "v20_groundedflow",
+   "reason": "CPU inventory only, no arms"
+  },
+  {
+   "name": "v21_qwenchain / v22",
+   "reason": "interface failure, no D_IO and no baseline arms"
+  },
+  {
+   "name": "v25_interface_gate (Qwen and Luna)",
+   "reason": "no task outputs (endpoint offline) / Luna gate A failed before any arm comparison"
+  },
+  {
+   "name": "Luna chain probe (RESULTS 11.69)",
+   "reason": "model comparison (Luna vs Qwen), not concept vs control"
+  },
+  {
+   "name": "v32_qwenchain_or30",
+   "reason": "feasibility run without baseline arms"
+  },
+  {
+   "name": "v32_scope_support",
+   "reason": "protocol stop at gate B before any comparison"
+  },
+  {
+   "name": "v35_concept_ceiling",
+   "reason": "CPU ceiling gate without a control arm"
+  },
+  {
+   "name": "v37_mokav_gate / v38_specalt_gate / v39_specalt_vibepass",
+   "reason": "second-version (mutant / spec-program) gates, no concept-vs-control comparison"
+  },
+  {
+   "name": "v46_mutoracle_fixed",
+   "reason": "not scored (no RESULTS/score.json; only judge/ and programs/ caches)"
+  },
+  {
+   "name": "claim-role Phase A / OBS-null probe",
+   "reason": "label audit / renderer ablation, not concept vs control"
+  },
+  {
+   "name": "concept mechanism audit 2026-10-24",
+   "reason": "re-audit of saved data (v34/v47/v49/v50/v53); totals cross-checked, no new comparison"
+  }
+ ],
+ "notes": "One row per concept-vs-control comparison (some versions split: gen2 direct/generator; rank-2 offline/LLM; Luna retest v23/v24; v53 Stage 1/2). registered_verdict is normalized to {GO, NO-GO, no signal, rule met (weak), ceiling, invalid}; the exact wording is in verdict_text and the decision basis in 'registration' (primary/secondary/exploratory/report-only). 'rule not met' and 'not promising' map to NO-GO except where every arm saturates (ceiling). Early (v3m2..v11) rows had sign-test primaries, not GO rules: a significant primary is 'rule met (weak)'. P-fb has null verdict (report-only). arms: concept = primary concept arm; plain/placebo/random = the matched control named in metric; hybrid arms map concept-hybrid/plain-hybrid/placebo-hybrid. model_tier: weak = Qwen family (7B, 1.5B, 32B, Qwen3.5-35B-A3B); strong = Codex/Luna/Sol/Sonnet/Gemini 2.5 Flash (Gemini is not in the coordinator's list; classed strong as a non-Qwen hosted model); none = CPU-only selection/ceiling. Cross-check: concept_mechanism_20261024/HISTORICAL_MECHANISM_ROWS.json is per-task (v34/v47/v49 only); its totals match (v34 fault-template 18 tasks / 27 FA tests; v47 covered@3 16/15; v49 defn 12 / brute 10, FA 145/100). v52 numbers match out/analysis/v52_sonnet_defn/score.json totals. v29 and v24 (Qwen) are kept as invalid rows. Numbers are copied from the cited files; none recomputed."
+}

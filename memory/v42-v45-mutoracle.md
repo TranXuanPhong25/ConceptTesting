@@ -31,3 +31,12 @@ endpoint serves one request at a time. 8 client workers livelocked it, so oracle
 1200 s timeout (f000e3d, 9e3f9e9; a vLLM restart had left a 3600 s client hanging). Alone on the server it does ~38 calls/h.
 The tunnel went offline about 18:55. Cached: TC 492/620 (tc 250, tc_concept 242; up to task 132), judge 1/1821. Rerun
 `generate` to resume from the cache. The other session's v48 orchestrator waits for tc 310 and reads it read-only.
+
+**v46 RESULT (2026-10-24): close.**
+- Neither concept pair passes. Confirmed tasks / precision: `tc` 5 / .37, `tc_concept` 2 / .26 (46 vs 136 tests,
+  so the concept made Qwen variants more common-mode), `dpp` 7 / .48.
+- Repaired judge: binary 11, code 10, concept 10 (same set as code), precision .13–.14, FA ~170–190. Reach is up from
+  v45 (2/0/1), but the judge picks mutant/neither/invalid on PUT-right questions.
+- On the 6 Qwen-failed tasks of v54 (ex-v53_sonnet_mutconcept): Qwen k = 10 gets 0/6 (47 valid variants, only 5
+  differ from the PUT); Sonnet k = 3 gets 6/6. The model binds, not the concept.
+- Mutant concept closed on both the selection side (v42) and the oracle side (v46) for Qwen. See [[v54-sonnet-mutconcept]].

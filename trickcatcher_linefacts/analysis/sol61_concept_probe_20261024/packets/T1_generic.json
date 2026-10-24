@@ -1,0 +1,80 @@
+{
+  "instruction": "Solve this one task using only the packet below. Do not use any tools, filesystem, execution, network, or other agents. Do not inspect the repository. Treat the initial hypothesis and reasoning guide as fallible. Return one final answer, preferably a JSON object, at most450words: requirement; implementation_hypothesis; initial_hypothesis_decision (keep/revise/withdraw/unknown) and reason; judgment (mismatch/no_mismatch/unknown) and reason; evidence IDs; up to2 inputs as full positional Python tuple literals, each naming two competing behavior predictions and its purpose. Predictions are hypothetical, not trusted expected values/assertions. Do not claim to have executed inputs. Unknown/abstention is allowed when justified.",
+  "task_packet": {
+    "task": "T1",
+    "spec": "Return the number of integers in xs that are greater than or equal to limit. xs is a list of integers and limit is an integer.",
+    "code": "def f(xs, limit):\n                                                                                                                                    \n    return sum(1 for x in xs if x > limit)\n",
+    "base_tests": "assert f([1, 3], 2) == 1",
+    "initial_hypothesis": "Occurrence bằng limit bị bỏ khỏi count; khi không có equality case thì strict/inclusive comparison có thể cho cùng output.",
+    "observations": [
+      {
+        "input": "([2], 3)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "0",
+        "output_capture": "literal",
+        "id": "O1"
+      },
+      {
+        "input": "([1, 3], 2)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "1",
+        "output_capture": "literal",
+        "id": "O2"
+      },
+      {
+        "input": "([0, 1, 2], 2)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "0",
+        "output_capture": "literal",
+        "id": "O3"
+      },
+      {
+        "input": "([1, 2, 3], 2)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "1",
+        "output_capture": "literal",
+        "id": "O4"
+      },
+      {
+        "input": "([2, 2, 2], 2)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "0",
+        "output_capture": "literal",
+        "id": "O5"
+      },
+      {
+        "input": "([2, 3, 4], 3)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "1",
+        "output_capture": "literal",
+        "id": "O6"
+      },
+      {
+        "input": "([1, 2, 3, 4], 3)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "1",
+        "output_capture": "literal",
+        "id": "O7"
+      }
+    ],
+    "evidence_ids": [
+      "original_spec",
+      "source_return",
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7"
+    ]
+  },
+  "reasoning_guide": "General reasoning checklist (not a per-task answer or oracle):\n1. Read the complete specification before deciding what the implementation should do. Identify the function's arguments, stated input domain and required result. Distinguish explicit statements from assumptions that would need additional information.\n2. Read the implementation in execution order. Explain the returned expression and how intermediate computations can affect it. Avoid inferring an output change merely because an operation appears somewhere in the code.\n3. Inspect each recorded execution carefully. Keep the input, return value and exception category distinct. A recorded implementation output is evidence about that implementation, not automatically a required result.\n4. Reassess the initial hypothesis as a fallible suggestion. Keep claims that are still supported, narrow overly broad claims and withdraw contradicted claims. A later observation may concern only part of the initial explanation.\n5. Connect the final reasoning to specific specification clauses, source expressions or observation identifiers. Explain which facts support your conclusion and which questions remain unresolved. Avoid adding facts absent from the packet.\n6. Propose small, valid inputs whose predicted observations would distinguish the competing explanations you describe. Explain what each test would resolve. If the supplied observations already decide the issue, identify that evidence rather than claim a new execution.\n7. Keep the final judgment consistent with the reasoning. Distinguish demonstrated mismatch, no supported mismatch and missing specification information. Respect uncertainty without discarding clear evidence.\nUse this checklist where helpful. Agreement with code does not validate a requirement; sampled agreement is not a universal proof."
+}

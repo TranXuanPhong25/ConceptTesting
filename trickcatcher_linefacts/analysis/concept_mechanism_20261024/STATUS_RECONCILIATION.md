@@ -1,0 +1,11 @@
+# Status reconciliation — 2026-10-24
+
+**v50:** old RESULTS/memory ended at prepared/waiting/launched; local state and generation inventory now establish completed generation, not pending launch. Full pinned verification and review of all24 replies are complete. Registered semantic verdict NO-GO: zero tool-only wins, E8 handling fails. Both label-compatible and label-neutral readings agree on the gate. Transport has24known received completions, zero unknown completion attempts and25successful metadata calls. Updated original RESULTS retains earlier waiting history.
+
+**v53 validity:** 72 answers already existed but had not been scored in the root run directory. Independent review verified source/protocol/transcripts before original CPU scoring. All33cases/99model-arm evaluations completed, with pre/post hashes unchanged. Independent reference audit resolves all32,311task-input rows, with no skipped/load/resource errors. Original primary verdict not promising: concept/open/lines all have100%invalid recall and0valid/exposing rejections; taxonomy adds zero measured margin. Original RESULTS/CHANGELOG now record the evaluation.
+
+**Scoring process accounting:** an initial Popen launch was terminated by the tool sandbox before creating a scoring status or producing log content. No scorer/worker had started according to its journal; no model request was possible. A tracked exec-session invocation then completed once. Its launch is documented by `v53_score_attempt2.log` and `v53_score_status.json` under the audit output folder. No original answer or scorer source was edited, and no efficacy rerun was used to choose a result.
+
+**What these updates do not establish:** v50 is not concept-vs-no-concept or transfer evidence; v53 is validity filtering on a fixed dev universe. Neither gives a positive gate for a generic concept-guided input pipeline. The original v34/v35/v47/v49 verdicts remain unchanged.
+
+**Lifecycle:** no v50 controller was restarted. At the initial narrow ownership check no v50 revision runner or v53 scorer was active. The audit's only live workload was the tracked CPU scoring process, which has exited successfully. No API/model budget or held-out cohort was used by the audit.

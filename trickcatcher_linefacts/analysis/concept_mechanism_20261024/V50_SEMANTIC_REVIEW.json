@@ -1,0 +1,2173 @@
+{
+  "review_date": "2026-10-24",
+  "rubric": "trickcatcher_linefacts/analysis/v50_binding_revision_20261023/EVALUATION.md",
+  "review_scope": "all 8 initial and 16 final raw responses plus every rejected/unknown binding and prose",
+  "blinding": "Episode-wise deterministic A/B masking before reveal; E1 previously unmasked during schema inspection; one reviewer, root adjudication agrees on E2 sensitivity.",
+  "integrity": "Root pinned interpreter revision.verify(full=True) PASS; generation inventory all match.",
+  "denominators": {
+    "initial": 8,
+    "final_raw": 8,
+    "final_tool": 8
+  },
+  "strict_final_successes": {
+    "raw": [
+      "E4",
+      "E7"
+    ],
+    "tool": [
+      "E4",
+      "E7"
+    ]
+  },
+  "label_neutral_final_successes": {
+    "raw": [
+      "E2",
+      "E4",
+      "E7"
+    ],
+    "tool": [
+      "E2",
+      "E4",
+      "E7"
+    ]
+  },
+  "genuine_tool_only_semantic_wins": 0,
+  "raw_only_semantic_losses": 0,
+  "e7_tool_correct": true,
+  "e8_tool_correct": false,
+  "invented_requirement_episodes": {
+    "raw": [
+      "E8"
+    ],
+    "tool": [
+      "E8"
+    ]
+  },
+  "registered_verdict": "NO-GO",
+  "known_received_task_usage": {
+    "prompt_tokens": 49800,
+    "total_tokens": 56235,
+    "completion_tokens": 6435
+  },
+  "dollar_cost": "unknown",
+  "transport_unknown_usage": "root transport audit; not inferred from response count",
+  "records": [
+    {
+      "episode": "E1",
+      "stage": "initial",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E1__initial.json",
+      "artifact_sha256": "6f77429402152a2c0ec10f8c05a73323c4a2f3fe02ab1b0b7e28d38bff89b9e7",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E1.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Preserve the number of occurrences of each value, including duplicates.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "required_subset_container",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted list containing every integer from xs.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": true
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "order_policy",
+            "relation": "ascending",
+            "arguments": [],
+            "spec_quote": "Return a sorted list containing every integer from xs.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "true_optional_property_invalid_binding",
+          "endorsed": true
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": null,
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": null,
+      "reason": null,
+      "evidence": null,
+      "evidence_ids_mechanically_valid": null,
+      "manual_finding": "Correct conservation rule rejected despite truthful duplicate-loss prose; no justified executable primary relation. Tool subset/duplicate claim is false.",
+      "review_success_strict": null,
+      "review_success_label_neutral": null,
+      "review_success_ambiguity": null
+    },
+    {
+      "episode": "E1",
+      "stage": "final_raw",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E1__final_raw.json",
+      "artifact_sha256": "b90cf5e864849de73c7b1b65cf68a8eef4ffec6b587d1e154ca6c6272a2651a9",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E1.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Preserve the number of occurrences of each value, including duplicates.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "required_subset_container",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted list containing every integer from xs.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "order_policy",
+            "relation": "ascending",
+            "arguments": [],
+            "spec_quote": "Return a sorted list containing every integer from xs.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "true_optional_property_invalid_binding",
+          "endorsed": true
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code does not preserve the number of occurrences of each value, as it uses set(xs) which removes duplicates. It does not fully satisfy the requirement to return a list containing every integer from xs, including duplicates.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "O10",
+        "O11",
+        "O12",
+        "O13"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Correct conservation rule rejected despite truthful duplicate-loss prose; no justified executable primary relation. Tool subset/duplicate claim is false.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E1",
+      "stage": "final_tool",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E1__final_tool.json",
+      "artifact_sha256": "035c5b7e0da5043f425275128afe534ea6f543ed762b5fb5350123f74649d0ef",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E1.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Preserve the number of occurrences of each value, including duplicates.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted list containing every integer from xs.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "order_policy",
+            "relation": "ascending",
+            "arguments": [],
+            "spec_quote": "Return a sorted list containing every integer from xs.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "true_optional_property_invalid_binding",
+          "endorsed": true
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code does not preserve the number of occurrences of each value, as it uses set(xs) which removes duplicates. It also does not fully satisfy the 'required_subset_container' relation as it removes duplicates, but it does satisfy the 'ascending' relation as the output is sorted.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "O10",
+        "O11",
+        "O12",
+        "O13"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Correct conservation rule rejected despite truthful duplicate-loss prose; no justified executable primary relation. Tool subset/duplicate claim is false.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E2",
+      "stage": "initial",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E2__initial.json",
+      "artifact_sha256": "e279ebf6a640b5a5e75d7d4767a13abde1b025f936233bfca3d9f1e1664514b4",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E2.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "quantified_decision",
+            "relation": "count_gt",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": false,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "quantified_decision",
+            "relation": "count_ge",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": false,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": true
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": true,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": null,
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": null,
+      "reason": null,
+      "evidence": null,
+      "evidence_ids_mechanically_valid": null,
+      "manual_finding": "Correct required relation and truthful equality-boundary explanation; concrete quantified_decision label incompatible with frozen eligible_contribution mapping.",
+      "review_success_strict": null,
+      "review_success_label_neutral": null,
+      "review_success_ambiguity": null
+    },
+    {
+      "episode": "E2",
+      "stage": "final_raw",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E2__final_raw.json",
+      "artifact_sha256": "17204da9cdeda0c07209188b510017f4c32cf315aa413fe373142f66b02f2835",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E2.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "quantified_decision",
+            "relation": "count_gt",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": false,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "quantified_decision",
+            "relation": "count_ge",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": false,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": true
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": true,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code counts the number of integers in xs that are strictly greater than limit, whereas the spec requires counting integers that are greater than or equal to limit.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Correct required relation and truthful equality-boundary explanation; concrete quantified_decision label incompatible with frozen eligible_contribution mapping.",
+      "review_success_strict": false,
+      "review_success_label_neutral": true,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": true,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E2",
+      "stage": "final_tool",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E2__final_tool.json",
+      "artifact_sha256": "bf5100b70224d53ecb5e398dc157e7bb3c70f403c04481b9eaab2ade75535d84",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E2.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "quantified_decision",
+            "relation": "count_gt",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": false,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "quantified_decision",
+            "relation": "count_ge",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": false,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": true
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return the number of integers in xs that are greater than or equal to limit.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": true,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code counts the number of integers in xs that are strictly greater than limit, not greater than or equal to limit as specified. This is evident from the observations where the output is incorrect for cases where elements are equal to the limit.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Correct required relation and truthful equality-boundary explanation; concrete quantified_decision label incompatible with frozen eligible_contribution mapping.",
+      "review_success_strict": false,
+      "review_success_label_neutral": true,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": true,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E3",
+      "stage": "initial",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E3__initial.json",
+      "artifact_sha256": "f4a7aab38ad7539f9cdeac96158dba4274a6542a34ee19d457eb0aa95842e82d",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E3.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "membership_inclusion",
+            "relation": "required_subset_container",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Return True exactly when every value in required is present in container. Extra values in container are allowed.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Return True exactly when every value in required is present in container. Extra values in container are allowed.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Both arguments are lists of integers; duplicate values do not affect membership.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": null,
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": null,
+      "reason": null,
+      "evidence": null,
+      "evidence_ids_mechanically_valid": null,
+      "manual_finding": "Required subset relation unknown in both arms. Raw falsely describes O5/O6/O8 as subset cases; tool falsely describes set equality as including duplicates.",
+      "review_success_strict": null,
+      "review_success_label_neutral": null,
+      "review_success_ambiguity": null
+    },
+    {
+      "episode": "E3",
+      "stage": "final_raw",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E3__final_raw.json",
+      "artifact_sha256": "7788ef3129065eb43f3652bf523381df960187b62bcee0a1050fbdfc7c826301",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E3.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "membership_inclusion",
+            "relation": "required_subset_container",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Return True exactly when every value in required is present in container. Extra values in container are allowed.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Return True exactly when every value in required is present in container. Extra values in container are allowed.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Both arguments are lists of integers; duplicate values do not affect membership.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code uses set equality to determine the output, which does not match the requirement that every value in required must be present in container, allowing extra values in container. Observations O3, O5, O6, and O8 show that the code incorrectly returns False when required is a subset of container with extra values in container.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Required subset relation unknown in both arms. Raw falsely describes O5/O6/O8 as subset cases; tool falsely describes set equality as including duplicates.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": "O5/O6/O8 are not required-subset-of-container cases"
+    },
+    {
+      "episode": "E3",
+      "stage": "final_tool",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E3__final_tool.json",
+      "artifact_sha256": "53edb06a97ced0caea2d93607f5fd8b3955068b1cf0756447c4947f073d323ef",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E3.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "membership_inclusion",
+            "relation": "required_subset_container",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Return True exactly when every value in required is present in container. Extra values in container are allowed.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Return True exactly when every value in required is present in container. Extra values in container are allowed.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "container",
+              "required"
+            ],
+            "spec_quote": "Both arguments are lists of integers; duplicate values do not affect membership.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code uses set equality to determine the output, which means it will only return True when both lists contain exactly the same elements, including duplicates. This does not match the spec, which allows for extra values in the container.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Required subset relation unknown in both arms. Raw falsely describes O5/O6/O8 as subset cases; tool falsely describes set equality as including duplicates.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": "set equality does not include duplicate multiplicity"
+    },
+    {
+      "episode": "E4",
+      "stage": "initial",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E4__initial.json",
+      "artifact_sha256": "c84071fa8694f00fb2036a61a1d82c866440c4399b377edda00aa7e227acc274",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E4.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_selection",
+            "relation": "min_positive_none",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": true
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "required_subset_container",
+            "arguments": [
+              "ys",
+              "xs"
+            ],
+            "spec_quote": "xs may be any list of integers, including an empty list.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "quantified_decision",
+            "relation": "any_even",
+            "arguments": [
+              "ys"
+            ],
+            "spec_quote": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": true,
+      "required_relation_coverage_strict_label_compatible": true,
+      "implementation_judgment": null,
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": null,
+      "reason": null,
+      "evidence": null,
+      "evidence_ids_mechanically_valid": null,
+      "manual_finding": "Correct requirement retained; both finals remove unsupported local ys candidates and correctly explain ValueError vs None.",
+      "review_success_strict": null,
+      "review_success_label_neutral": null,
+      "review_success_ambiguity": null
+    },
+    {
+      "episode": "E4",
+      "stage": "final_raw",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E4__final_raw.json",
+      "artifact_sha256": "e7bd38b3660bc6950192c4e63a819ca9063c2b9f62c51e1075a2ec03b150c23e",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E4.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_selection",
+            "relation": "min_positive_none",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": true
+        }
+      ],
+      "required_relation_coverage_label_neutral": true,
+      "required_relation_coverage_strict_label_compatible": true,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code raises a ValueError when no strictly positive integer exists, which does not match the spec requirement to return None in such cases. Observations O1, O2, O5, O6, and O7 demonstrate this mismatch.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O5",
+        "O6",
+        "O7"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Correct requirement retained; both finals remove unsupported local ys candidates and correctly explain ValueError vs None.",
+      "review_success_strict": true,
+      "review_success_label_neutral": true,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": true,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E4",
+      "stage": "final_tool",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E4__final_tool.json",
+      "artifact_sha256": "55fa1de865db8df984e390bdeafc88013f64a0bd9593deb93f6a842a4a3a63a1",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E4.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_selection",
+            "relation": "min_positive_none",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the smallest strictly positive integer in xs, or None if no strictly positive integer exists.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": true
+        }
+      ],
+      "required_relation_coverage_label_neutral": true,
+      "required_relation_coverage_strict_label_compatible": true,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code raises a ValueError when there are no strictly positive integers in the list, which does not match the spec requirement to return None in such cases. Observations O1, O2, O5, O6, and O7 demonstrate this mismatch.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O5",
+        "O6",
+        "O7"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Correct requirement retained; both finals remove unsupported local ys candidates and correctly explain ValueError vs None.",
+      "review_success_strict": true,
+      "review_success_label_neutral": true,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": true,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E5",
+      "stage": "initial",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E5__initial.json",
+      "artifact_sha256": "15f851f7a44209d408883873b5591849b8c82587ddaa0b18d176b67ce8096e50",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E5.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "sum_le_limit",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return True exactly when the sum of xs is at most limit.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "xs is any list of integers; no restriction is imposed on its length.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "limit"
+            ],
+            "spec_quote": "limit is an integer.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": null,
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": null,
+      "reason": null,
+      "evidence": null,
+      "evidence_ids_mechanically_valid": null,
+      "manual_finding": "Required relation unknown in raw, rejected in tool, despite correct length-guard prose. Both emit fourth item outside cap.",
+      "review_success_strict": null,
+      "review_success_label_neutral": null,
+      "review_success_ambiguity": null
+    },
+    {
+      "episode": "E5",
+      "stage": "final_raw",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E5__final_raw.json",
+      "artifact_sha256": "29e4dc06480929e4db5629179f6c57a9a04bdb39f58f484b6dd5522691ab3ff7",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E5.json",
+      "parseable": true,
+      "envelope_valid": false,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "sum_le_limit",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return True exactly when the sum of xs is at most limit.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "xs is any list of integers; no restriction is imposed on its length.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "limit"
+            ],
+            "spec_quote": "limit is an integer.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        },
+        {
+          "index": 3,
+          "binding": {
+            "id": "binding4",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "xs is any list of integers; no restriction is imposed on its length.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": false,
+          "schema_errors": [
+            {
+              "path": [],
+              "rule": "item_budget_exceeded"
+            }
+          ],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code incorrectly imposes a length condition on the list xs, returning False when the length of xs is greater than 2, which is not specified in the requirements.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Required relation unknown in raw, rejected in tool, despite correct length-guard prose. Both emit fourth item outside cap.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E5",
+      "stage": "final_tool",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E5__final_tool.json",
+      "artifact_sha256": "a3e1bcaecb8dd5c836adaa905c1044e9478e7ec537faf12351efb3dae56411f8",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E5.json",
+      "parseable": true,
+      "envelope_valid": false,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "sum_le_limit",
+            "arguments": [
+              "xs",
+              "limit"
+            ],
+            "spec_quote": "Return True exactly when the sum of xs is at most limit.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "xs is any list of integers; no restriction is imposed on its length.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "limit"
+            ],
+            "spec_quote": "limit is an integer.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        },
+        {
+          "index": 3,
+          "binding": {
+            "id": "binding4",
+            "concept": "quantified_decision",
+            "relation": "unknown",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "xs is any list of integers; no restriction is imposed on its length.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": false,
+          "schema_errors": [
+            {
+              "path": [],
+              "rule": "item_budget_exceeded"
+            }
+          ],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The implementation incorrectly adds a condition that returns False if the length of xs is greater than 2, which is not specified in the original spec.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Required relation unknown in raw, rejected in tool, despite correct length-guard prose. Both emit fourth item outside cap.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E6",
+      "stage": "initial",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E6__initial.json",
+      "artifact_sha256": "dbc7a6007b732004acc695e0bd12c35e633433dc533b3987854e305eeab74a53",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E6.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "sum_gt_one",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": null,
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": null,
+      "reason": null,
+      "evidence": null,
+      "evidence_ids_mechanically_valid": null,
+      "manual_finding": "Tool introduces correct sum_positive operator but does not justify it. Raw lacks full required relation; no endorsed full eligibility/multiplicity requirement.",
+      "review_success_strict": null,
+      "review_success_label_neutral": null,
+      "review_success_ambiguity": null
+    },
+    {
+      "episode": "E6",
+      "stage": "final_raw",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E6__final_raw.json",
+      "artifact_sha256": "fb453d6a90a8da57ae3e42e8428fd9b229a39d168d7def594787baf65c4403f4",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E6.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "sum_gt_one",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code sums only integers greater than 1, excluding 1 and all non-positive integers, which does not match the spec that requires summing all strictly positive integers including repeated occurrences.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "O10",
+        "O11",
+        "O12",
+        "O13",
+        "O14",
+        "O15"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Tool introduces correct sum_positive operator but does not justify it. Raw lacks full required relation; no endorsed full eligibility/multiplicity requirement.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E6",
+      "stage": "final_tool",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E6__final_tool.json",
+      "artifact_sha256": "37ea305b179f0282c41d43fabb93fa6ff7e3f2d262c0da52d9846fe5c04d99df",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E6.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_contribution",
+            "relation": "sum_gt_one",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "rejected"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "eligible_contribution",
+            "relation": "sum_positive",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the sum of all strictly positive integers in xs. Exclude zero and negative integers. Include repeated positive occurrences.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "observed_mismatch",
+      "expected_judgment": "observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code sums only integers greater than 1, excluding 1 and all non-positive integers, which does not match the requirement to sum all strictly positive integers including 1.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "O10",
+        "O11",
+        "O12",
+        "O13",
+        "O14",
+        "O15"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Tool introduces correct sum_positive operator but does not justify it. Raw lacks full required relation; no endorsed full eligibility/multiplicity requirement.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E7",
+      "stage": "initial",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E7__initial.json",
+      "artifact_sha256": "91382e02fb6aa076a3af38176d77996e3705c66f52d0e3d6432bb087ffb0dffe",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E7.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": false
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "order_policy",
+            "relation": "ascending",
+            "arguments": [],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "true_optional_property_invalid_binding",
+          "endorsed": true
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": null,
+      "expected_judgment": "no_observed_mismatch",
+      "judgment_enum_correct": null,
+      "reason": null,
+      "evidence": null,
+      "evidence_ids_mechanically_valid": null,
+      "manual_finding": "Both finals justify executable conservation relation and truthfully report no mismatch; optional ascending binding has invalid arity and is not repaired.",
+      "review_success_strict": null,
+      "review_success_label_neutral": null,
+      "review_success_ambiguity": null
+    },
+    {
+      "episode": "E7",
+      "stage": "final_raw",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E7__final_raw.json",
+      "artifact_sha256": "cc43ba6e6b00538ef0379a61c7f3f5b48d1960a4573aa86aa27328cb477ec8c5",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E7.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": true
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "order_policy",
+            "relation": "ascending",
+            "arguments": [],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "true_optional_property_invalid_binding",
+          "endorsed": true
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": true,
+      "required_relation_coverage_strict_label_compatible": true,
+      "implementation_judgment": "no_observed_mismatch",
+      "expected_judgment": "no_observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code sorts the list xs and returns it, which aligns with the requirement to return a sorted copy of xs. The observations show that the function preserves duplicate occurrences and maintains the correct order, thus satisfying the requirements.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Both finals justify executable conservation relation and truthfully report no mismatch; optional ascending binding has invalid arity and is not repaired.",
+      "review_success_strict": true,
+      "review_success_label_neutral": true,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": true,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E7",
+      "stage": "final_tool",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E7__final_tool.json",
+      "artifact_sha256": "26ad7976025317498eeeb281e89ed41acff539a2430850e71deee4fc6fa50704",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E7.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "occurrence_conservation",
+            "relation": "preserve_occurrences",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": true,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "correct_required_relation",
+          "endorsed": true
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "order_policy",
+            "relation": "ascending",
+            "arguments": [],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "true_optional_property_invalid_binding",
+          "endorsed": true
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "membership_inclusion",
+            "relation": "equal_sets",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return a sorted copy of xs, preserving every duplicate occurrence.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "not_a_required_relation_for_this_output",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": true,
+      "required_relation_coverage_strict_label_compatible": true,
+      "implementation_judgment": "no_observed_mismatch",
+      "expected_judgment": "no_observed_mismatch",
+      "judgment_enum_correct": true,
+      "reason": "The code sorts the list xs and returns it, which aligns with the requirement to return a sorted copy of xs. The observations show that the duplicates are preserved, justifying the 'preserve_occurrences' relation. The 'ascending' relation is also satisfied as the output is always in ascending order. The 'equal_sets' relation is not directly relevant to the requirement and thus remains unknown.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Both finals justify executable conservation relation and truthfully report no mismatch; optional ascending binding has invalid arity and is not repaired.",
+      "review_success_strict": true,
+      "review_success_label_neutral": true,
+      "review_success_ambiguity": null,
+      "truthful_required_explanation": true,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E8",
+      "stage": "initial",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E8__initial.json",
+      "artifact_sha256": "3b1d3b65b993c5d721e431c9389c1777d0adcfd06924127edcea219a0e75a6aa",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E8.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_selection",
+            "relation": "first",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the first suitable value from xs. xs is a list of integers.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "unjustified_due_to_ambiguous_spec",
+          "endorsed": true
+        },
+        {
+          "index": 1,
+          "binding": {
+            "id": "binding2",
+            "concept": "defined_outcome",
+            "relation": "unknown",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the first suitable value from xs. xs is a list of integers.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        },
+        {
+          "index": 2,
+          "binding": {
+            "id": "binding3",
+            "concept": "unknown",
+            "relation": "unknown",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the first suitable value from xs. xs is a list of integers.",
+            "spec_status": "unknown"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": false,
+          "required_facet_match": false,
+          "concept_label_compatible": null,
+          "manual_normative_assessment": "unresolved",
+          "endorsed": false
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": null,
+      "expected_judgment": "unknown",
+      "judgment_enum_correct": null,
+      "reason": null,
+      "evidence": null,
+      "evidence_ids_mechanically_valid": null,
+      "manual_finding": "Both endorse unconditional first relation and no mismatch; undefined suitability not acknowledged, invented requirement.",
+      "review_success_strict": null,
+      "review_success_label_neutral": null,
+      "review_success_ambiguity": false
+    },
+    {
+      "episode": "E8",
+      "stage": "final_raw",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E8__final_raw.json",
+      "artifact_sha256": "87fd8f52b46f3da7ff659c2cd7de0f091b9225e78cbfc81c93c258a6bc87437b",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E8.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_selection",
+            "relation": "first",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the first suitable value from xs. xs is a list of integers.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "unjustified_due_to_ambiguous_spec",
+          "endorsed": true
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "no_observed_mismatch",
+      "expected_judgment": "unknown",
+      "judgment_enum_correct": false,
+      "reason": "The code correctly implements the requirement to return the first suitable value from the list xs. The function returns the first element of the list if it is not empty, and None if the list is empty, which aligns with the spec.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "O10"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Both endorse unconditional first relation and no mismatch; undefined suitability not acknowledged, invented requirement.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": false,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": null
+    },
+    {
+      "episode": "E8",
+      "stage": "final_tool",
+      "artifact_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/artifacts/E8__final_tool.json",
+      "artifact_sha256": "561a63895ead3c0c915dd2ec9e85a1c87bc24c403ca55cfd8e56d296b9623221",
+      "context_path": "trickcatcher_linefacts/out/pipelines/v50_binding_revision/humaneval/revision8/prepared/E8.json",
+      "parseable": true,
+      "envelope_valid": true,
+      "binding_items": [
+        {
+          "index": 0,
+          "binding": {
+            "id": "binding1",
+            "concept": "eligible_selection",
+            "relation": "first",
+            "arguments": [
+              "xs"
+            ],
+            "spec_quote": "Return the first suitable value from xs. xs is a list of integers.",
+            "spec_status": "justified"
+          },
+          "schema_admitted": true,
+          "schema_errors": [],
+          "known_input_roles_and_arity_executable": true,
+          "required_facet_match": false,
+          "concept_label_compatible": true,
+          "manual_normative_assessment": "unjustified_due_to_ambiguous_spec",
+          "endorsed": true
+        }
+      ],
+      "required_relation_coverage_label_neutral": false,
+      "required_relation_coverage_strict_label_compatible": false,
+      "implementation_judgment": "no_observed_mismatch",
+      "expected_judgment": "unknown",
+      "judgment_enum_correct": false,
+      "reason": "The code correctly implements the requirement to return the first suitable value from the list xs. The observations show that the function returns the first element of the list or None if the list is empty, which aligns with the specified behavior.",
+      "evidence": [
+        "original_spec",
+        "source_return",
+        "O1",
+        "O2",
+        "O3",
+        "O4",
+        "O5",
+        "O6",
+        "O7",
+        "O8",
+        "O9",
+        "O10"
+      ],
+      "evidence_ids_mechanically_valid": true,
+      "manual_finding": "Both endorse unconditional first relation and no mismatch; undefined suitability not acknowledged, invented requirement.",
+      "review_success_strict": false,
+      "review_success_label_neutral": false,
+      "review_success_ambiguity": false,
+      "truthful_required_explanation": false,
+      "reason_failure_detail": null
+    }
+  ]
+}

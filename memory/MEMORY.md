@@ -1,4 +1,9 @@
 - [Shared memory README](README.md) — how Claude + Codex read/write this folder (format, rules)
+- [v60 native pathfault implementation](v60-pathfault-complete.md) — partial;17behavioral witnesses on1/6cases,scorer provisional,P2/P4 incomplete
+- [Pathfault completion plan](pathfault-completion-plan.md) — v57 generation complete but0/6solver witnesses; scorer→support/obligations→integration→v58, plan only
+- [v57 path-aware fault construction](v57-pathfault.md) — deeper a/b implemented; Z3 joint constraints + exact replay,34engineeringtests; no efficacy run
+- [UTGen / UTDebug assessment](utgen-debug-assessment.md) — trained-test baseline and attack/oracle distinction; concept benefit unproven
+- [Concept mechanism assessment and execution](concept-mechanism-assessment.md) — audit+contract done; v50 NO-GO, v53 taxonomy null; conditional new generator not activated
 - [HANDOFF 2026-10-14](../HANDOFF-2026-10-14.md) — READ FIRST when resuming: results, running jobs, next steps
 - [LineFacts relational research](linefacts-relational-research.md) — 9 primary papers; grounded obligation graph và conditional metamorphic concepts, proposal only
 - [LineFacts new trials](linefacts-new-trials.md) — B3/B4/repaired v14/v15 complete; no concept promotion, all queues ended
@@ -50,7 +55,7 @@
 - [Check version tree first](check-version-tree-before-proposing.md) — before any new direction, name the earlier v-number that tried the core idea + result; v31 repeated v7 MUTANT
 - [v36 LLM localization](v36-llm-localize.md) — 2026-10-20 Qwen2.5-Coder-32B code vs CFG: no-go; CFG adds nothing, bug-revealing inputs 2–3/33
 - [v41 observed I/O relations](v41-iorel.md) — 2026-10-21 CPU ceiling no-go (C2 11/33, lift 0.38); sampling alone reaches bugs 22/33 → oracle/selection is the bottleneck
-- [v42/v45 mutant oracle](v42-v45-mutoracle.md) — v42 CPU no-go (D1 15/33, lift .62); v45 (ex-v43_mutjudge) in-head judge invalid instrument (no program-variant oracle, "unsure" exit); proper-oracle ceiling 8/15 (≥3 progs 4)
+- [v42/v45/v46 mutant oracle](v42-v45-mutoracle.md) — v42 CPU no-go (D1 15/33, lift .62); v45 judge invalid instrument; v46 (TC variants + repaired judge) close: tc 5 vs tc_concept 2, judge 10–11 tasks prec .14, concept = code
 - [v44 concept matrix](v44-concept-matrix.md) — 2026-10-21 6 kinds × tool methods: no-go (union 21 vs random 21.4); perfect pick doubles class coverage vs random instance; 11 tasks unreachable
 
 - [v32 scope/support](linefacts-v32-scope-support.md) — 48 CPU pass;fresh Luna Atrue/Bfalse,f06 signature block;scope fix exercised,support model promotion untested
@@ -66,3 +71,17 @@
 - [v43 concept-identification tools](v43-concept-identify.md) — complete18+6blocked;raw1/8tool2/8,onewin/no-go,0newPUT,callbackhandled
 - [v7–v47 implementation audit](v7-v47-implementation-audit.md) — retrospective inventory; fidelity, generality, interface and control limits; no new inference
 - [v47 concept selection](v47-concept-select.md) — 2026-10-22 LLM picks from tool menus no-go (16/15 vs random 18); new methods +2 tasks (56, 89)
+- [v48/v49 e2e + definitional oracle](v48-v49-e2e-defn.md) — v48 NO-GO: all arms ≈6/33, oracle binds (common-mode 9, no valid variant 7); v49 concept NO-GO (+2 only via valid yield), family effect: brute-force spec oracle ≈2× TC tasks, prec .6; rules→R7
+- [Round novelty](round-novelty.md) — 2026-10-23 blog-analog round split on v11 dev: NO SIGNAL (matched 35.5 vs 20.5 p=.15); concept R2 re-finds tool-witness bugs
+- [v50 binding revision](v50-binding-revision.md) — terminal reviewed NO-GO:0tool-only semantic wins; E8 invents rule, normative-status failures persist
+- [Latent concept oracle proposal](latent-concept-oracle-proposal.md) — 2026-10-23 lit search: concept-bottleneck probes on hidden states as per-input oracle; proposal only
+- [v51 latent concept](v51-latent-concept.md) — 2026-10-23 Qwen-1.5B hidden-state probes + concept bottleneck on VibePass: NO-GO (direct .48, CBM .50, intrinsic NLL .65); concepts ≈ placebo even on MBPP+
+- [v54 Sonnet mutant concept](v54-sonnet-mutconcept.md) — 2026-10-24 (ex-v53_sonnet_mutconcept) Sonnet TC variants on 6 Qwen-failed tasks: 6/6 both arms (ceiling), concept no gain; writer strength is the effect
+- [Sol6.1 concept probe](sol61-concept-probe.md) — complete6pairs: generic6/6 concept6/6,0concept wins; native low, no Qwen/PUT
+- [v53 Sonnet tester](v53-sonnet-tester.md) — 2026-10-24 Sonnet in v34 loop, 6 tasks: all arms 5/6 FA 0 → no concept signal (strong model at ceiling; placebo = concept)
+- [v53 validity/smallscope](v53-validity-smallscope.md) — Stage1 concept=lines=open (ceiling); Stage2 small-scope concept 18/33 < plain Sonnet gen 24/33 (not promising); Sonnet pipeline 24/33 prec .96
+- [Subagents: Sonnet only](subagents-sonnet-only.md) — every Agent call uses model sonnet (reviewers + helpers too); never Opus/default
+- [v55 Codex interpretation](v55-codex-interpretation.md) — Codex writer/reviewer override; paired protocol/runner prepared, routing and read-only Git blockers, no outcomes
+- [v56 fresh LCB](v56-lcb-fresh.md) — conditional mining PREREG/infrastructure audit; no fresh cohort/outcomes, v55 prerequisite blocked
+- [v59 blind concept](v59-blind-concept.md) — 2026-10-24 fault concept as only PUT info for code-blind Sonnet: no signal (concept 1 = blind 1 < placebo 2 < code 3 /6); concept form lossy
+- [Concept effect synthesis](concept-effect-synthesis.md) — 2026-10-24 64 rows: no LLM GO; weak=placebo, strong=ceiling; definitional oracle family the only robust effect (v56 confirms)

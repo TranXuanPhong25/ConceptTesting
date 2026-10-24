@@ -1,0 +1,4432 @@
+{
+  "manifest": {
+    "request_sha256": "0bf780d9fe582c0b6978ea215b9ea9d0f3764fce716f217dc0cd8191a8d5620a",
+    "config": {
+      "max_seq_len": 6,
+      "max_shapes": 32,
+      "max_paths": 128,
+      "max_hypotheses": 48,
+      "models_per_hypothesis": 2,
+      "solver_timeout_ms": 750,
+      "case_timeout_seconds": 60,
+      "int_bound": 1000,
+      "online_enabled": false
+    },
+    "source_files_sha256": {
+      "__init__.py": "79c2ead17fb809669b40c120de5ed58f446fc9f8f674f723dedf1c738420c412",
+      "construction.py": "7ece9e49b0116fb83c0c8f08cd91bd38b3245063cff74306e0c4c8f7662b43af",
+      "deep_run.py": "438f1ace4a59d08c115dd8ec79f26feb880b946d8c57ec1c15594660f541ebd5",
+      "evaluate.py": "3ab597080689eee026bddeb5f3d56d48d1e2081a05712a7b9ec64582ed53b2be",
+      "explain_differences.py": "40d0f38a0f4b34ebdf473c25cb4885c2b332add758e3ec15d5c02494e65ac01b",
+      "facts.py": "7f090ce4c486e408afa5a2bc12b96af6276d93dbfc4b949da41305d917cfe7ca",
+      "freeze_constants.py": "07bb799025535f6ebdc2b67f0f78ac3c415306668396de3f975a5fd1c4842eb4",
+      "fuzz_validity.py": "3ca6c32077803723388ca0fa5221fc3d4473c1677bbffabc0c70b29ed543b816",
+      "gen_evaluation.py": "62ac50d208fbeabc1d7bfea91b5de18486fe0f611c2f46945b5284f9efc0abd8",
+      "gen_inputs.py": "3da33387f98dee01bb3d0e913cddb10d8515f1ffa79d4467b8dfe51a7a9d8f9c",
+      "gen_prompts.py": "7d9f58449b357300247150c5fe1a6e2781dc55b21e9a76b314f028becb57ce15",
+      "generate.py": "2ce2ed7505cdcc9f7c5519bc0273e75ba23e49743bf09b32e51dc9ec9d0ea4e4",
+      "generator_worker.py": "eef8efb9244e59bda395163861b84f21ab0ee6b3e28df557467dc5230b77bfc1",
+      "hypotheses.py": "6a929ef61fd30b70188244b44eb90acce78126af508325fb98d6a176c874c11f",
+      "hypothesis_replay.py": "9d17902c26f6190b8e402344923c437d958fdd7687b2efc202ea92e8ae09632f",
+      "legacy_templates.py": "962d552b341539433082a4df3b4e4a6e0fe26ae6b7a72f52651716dcd416843d",
+      "llm_client.py": "57f60036216273b6547cd15f5233481a260b92442bd4cb7f9357f3dcb89b2892",
+      "offline.py": "e7fee80053478100470bd1e187be74a42e5005c1ed13d5a17b8f1d39f22724c2",
+      "offline_client.py": "5a7c2398e1954daae0fa5555dfa983c93c0e8257b24fd9b2bf5ff064c7644081",
+      "offline_metrics_v3m.py": "836d9dc9fcb7296962ed453cdfcffe8dd1b188271d04844b4bbef7d67f6b0306",
+      "oracle_b01.py": "9d1db781dc98da5ac70873d8e70474d400ce42d1a5e04afa55831bcd82680017",
+      "paths.py": "1a0ec0d21903c9ee32e9c78d41e46358f338c4a61ebfc151e2931a7cd22aa855",
+      "precond_prompts.py": "61ccbeab840efa7d758673ea645834e99191d6bf7adbcb77904056cdfe5e936b",
+      "preconditions.py": "2a064ccf34a4db41902c6ec6b6b3f2c4c7f3021ed090bc4ad4ee751b22290ab0",
+      "prompts.py": "21aa123714545915bcb66c8ebe842df43f7c285d540e72422bbdbf04c8c7996b",
+      "public_adapter.py": "240f5cddf2a5713bad334e1b39e878a50bc9aa1086673e8eeff96726c40223bf",
+      "replay_worker.py": "bf25248fae48a692dca1682ad0ff7866ae77361ae1316e6a0f90d1a974d094a3",
+      "run.py": "6642375982bb756dd1c3c7549d428603f48e522d2f835c54d58866c48e7c53a4",
+      "run_gen.py": "69c1579fc6bd9228e2fa9cbe8d6e0d105f1b245585b58a84a6d1e319b27143d8",
+      "run_v4.py": "e20405f203b2fec93a3b55496d051ca1854e9326acaf7fff82afbcc6c096e7aa",
+      "run_v6.py": "3d766ccea7d4849b11b5e789137e304b447f38aab93d5b5636fb1940c272478b",
+      "spec_facts.py": "a2d9cb159bfb1c62d26dcf0af56b71811c6aaf26b8f8e648c84fe3ac77d48c4b",
+      "symbolic.py": "5360b87db032e3cdc091203d0169eb9e6ab96c892605ea61d4b67ab837491a5e",
+      "test_equivalence.py": "57e495087b07acea69b3809f04ec32574bf4ac88e9d9ab3109f0aa90ffcc6773",
+      "test_pathfault.py": "66543665cc0e7c2f96973a08e560e3b728759302f019ee263d3b1145c9d0f83e",
+      "tracer.py": "cd97203eff99a4eb0caae88ef96d73eb0940c56b22f67f5293261fc324cdd1db",
+      "v4_evaluation.py": "34c95645c6bc7cfd7e4ec2cb5dbe9387fe9b4da785670254a70bd7708bbaee0b",
+      "v4_facts.py": "f6a44e8e14fd0cfc5792c9e9c4f94a27825c8c3ad369621f6710584947ce52ce",
+      "v4_offline.py": "31fa9560eb8177e062e006ae3e44c872c12e1ef14a612fe49c59004f12d7bb81",
+      "v4_prompts.py": "e1780e69a4e730f7abf2387a1aa08f2bb532bda324bf1f4fb196549442419552",
+      "v4_runtime.py": "3334be2cb116a466e0874339347f275c9c8da52994d1262894fe1136a7790ccb",
+      "v4_strategies.py": "9f3aa4a4a9d8e1406afffa0931921b1145959da65383ea7fe6466c0490af6664",
+      "v4_tools.py": "7c778d5e3aaa92e32f74da5e8339831c5d5f3f85fae4f90ddea8f13fc1cebb4e",
+      "v4_worker.py": "490196d5e5928d81273d4340a93434d14a994fffef8a366c8cc287ba7262c09c",
+      "v8_strict_est.py": "14ea2787f64ec0dc4a22164ffb3df929a046094b018deedf54aefd279199e50c"
+    },
+    "solver_version": "5.3.1.0",
+    "python": "3.12.13 (main, Mar 10 2026, 18:17:25) [Clang 21.1.4 ]",
+    "request_visibility": "caller attests all examples are public; unknown/evaluator fields rejected",
+    "scope": "engineering preparation, no independent bug labels or model calls"
+  },
+  "result": {
+    "case_id": "authored-joint-multiplicity",
+    "hypotheses": [
+      {
+        "hypothesis": {
+          "id": "a3d29b54f05b282c",
+          "span": [
+            4,
+            19,
+            4,
+            24
+          ],
+          "node_kind": "BinOp",
+          "before": "k + 2",
+          "after": "k - 2",
+          "family": "OPERATOR",
+          "facets": [
+            "OPERATOR"
+          ],
+          "meaning": "a different arithmetic or Boolean operator can change behavior",
+          "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+          "origin": "ast_catalog",
+          "objective": "reach exact AST site AND local value changes AND final output changes",
+          "spec_binding": "unverified"
+        },
+        "status": "verified_behavioral_difference",
+        "inputs": [
+          {
+            "arguments": "([-984], 3)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "1"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": false,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "int",
+                "repr": "5"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "Not(arg1 <= 0)",
+              "Not(arg1 <= 0)",
+              "Not(-1 == arg1)"
+            ],
+            "local_infection_predicates": [
+              "Not(arg1 <= 0)"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    1
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "5"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": false
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "arguments": "([0], 3)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "1"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": false,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "int",
+                "repr": "5"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "Not(arg1 <= 0)",
+              "Not(arg1 <= 0)",
+              "Not(-1 == arg1)"
+            ],
+            "local_infection_predicates": [
+              "Not(arg1 <= 0)"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    1
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "5"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": false
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "issues": [],
+        "queries": 11,
+        "solver_unknown": 0,
+        "unsat_queries": 9,
+        "rejected_models": [],
+        "shape_count": 2,
+        "normative_validity": "unknown_spec_validation_required",
+        "elapsed_seconds": 0.0867,
+        "base_status": "not_distinguished_by_public_inputs",
+        "base_observations": [
+          {
+            "arguments": "([1, 2], 5)",
+            "put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "alternative": {
+              "type": "int",
+              "repr": "0"
+            }
+          }
+        ]
+      },
+      {
+        "hypothesis": {
+          "id": "402062315f636d4c",
+          "span": [
+            5,
+            11,
+            5,
+            18
+          ],
+          "node_kind": "Call",
+          "before": "len(xs)",
+          "after": "len(set(xs))",
+          "family": "MULTIPLICITY",
+          "facets": [
+            "MULTIPLICITY"
+          ],
+          "meaning": "duplicate values distinguish counting occurrences from distinct values",
+          "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+          "origin": "ast_catalog",
+          "objective": "reach exact AST site AND local value changes AND final output changes",
+          "spec_binding": "unverified"
+        },
+        "status": "verified_behavioral_difference",
+        "inputs": [
+          {
+            "arguments": "([0, 0, 0], 1)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "1"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "0"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": false,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "int",
+                "repr": "3"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "Not(arg1 <= 0)",
+              "Not(arg1 <= 0)",
+              "1 == arg1"
+            ],
+            "local_infection_predicates": [
+              "And(Not(arg1 <= 0),\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    3
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "3"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": false
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "arguments": "([0, 0, 0, 0], 2)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "1"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "0"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": false,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "int",
+                "repr": "4"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "Not(arg1 <= 0)",
+              "Not(arg1 <= 0)",
+              "2 == arg1"
+            ],
+            "local_infection_predicates": [
+              "And(Not(arg1 <= 0),\n    Not(3 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0) +\n        If(And(Not(arg0_3 == arg0_0),\n               Not(arg0_3 == arg0_1),\n               Not(arg0_3 == arg0_2)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1,\n       arg0_0 == arg0_2,\n       arg0_0 == arg0_3,\n       arg0_1 == arg0_2,\n       arg0_1 == arg0_3,\n       arg0_2 == arg0_3))"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    4
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "4"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": false
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "issues": [],
+        "queries": 27,
+        "solver_unknown": 0,
+        "unsat_queries": 24,
+        "rejected_models": [],
+        "shape_count": 5,
+        "normative_validity": "unknown_spec_validation_required",
+        "elapsed_seconds": 0.1185,
+        "base_status": "not_distinguished_by_public_inputs",
+        "base_observations": [
+          {
+            "arguments": "([1, 2], 5)",
+            "put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "alternative": {
+              "type": "int",
+              "repr": "0"
+            }
+          }
+        ]
+      },
+      {
+        "hypothesis": {
+          "id": "e75bb8f77380e621",
+          "span": [
+            6,
+            19,
+            6,
+            31
+          ],
+          "node_kind": "Call",
+          "before": "len(set(xs))",
+          "after": "len(xs)",
+          "family": "MULTIPLICITY",
+          "facets": [
+            "MULTIPLICITY"
+          ],
+          "meaning": "duplicate values distinguish counting occurrences from distinct values",
+          "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+          "origin": "ast_catalog",
+          "objective": "reach exact AST site AND local value changes AND final output changes",
+          "spec_binding": "unverified"
+        },
+        "status": "verified_behavioral_difference",
+        "inputs": [
+          {
+            "arguments": "([0, 0, 0], 1)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "1"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "3"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "int",
+                "repr": "1"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "Not(arg1 <= 0)",
+              "Not(arg1 <= 0)",
+              "1 == arg1"
+            ],
+            "local_infection_predicates": [
+              "And(Not(arg1 <= 0),\n    1 == arg1,\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    3
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "3"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "3"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "arguments": "([0, 0, -1], 1)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "2"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "3"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "int",
+                "repr": "2"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "Not(arg1 <= 0)",
+              "Not(arg1 <= 0)",
+              "1 == arg1"
+            ],
+            "local_infection_predicates": [
+              "And(Not(arg1 <= 0),\n    1 == arg1,\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    3
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "2"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "2"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "3"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "int",
+                      "repr": "3"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "issues": [],
+        "queries": 11,
+        "solver_unknown": 0,
+        "unsat_queries": 9,
+        "rejected_models": [],
+        "shape_count": 4,
+        "normative_validity": "unknown_spec_validation_required",
+        "elapsed_seconds": 0.1015,
+        "base_status": "not_distinguished_by_public_inputs",
+        "base_observations": [
+          {
+            "arguments": "([1, 2], 5)",
+            "put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "alternative": {
+              "type": "int",
+              "repr": "0"
+            }
+          }
+        ]
+      },
+      {
+        "hypothesis": {
+          "id": "3419ac7c970f412d",
+          "span": [
+            3,
+            7,
+            3,
+            12
+          ],
+          "node_kind": "Compare",
+          "before": "k > 0",
+          "after": "k >= 0",
+          "family": "BOUNDARY",
+          "facets": [
+            "BOUNDARY",
+            "ORDER_TIE"
+          ],
+          "meaning": "equality at a relational boundary can change the decision",
+          "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+          "origin": "ast_catalog",
+          "objective": "reach exact AST site AND local value changes AND final output changes",
+          "spec_binding": "unverified"
+        },
+        "status": "verified_behavioral_difference",
+        "inputs": [
+          {
+            "arguments": "([0, 0], 0)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "1"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": false,
+                "predicate": "k > 0"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "bool",
+                "repr": "False"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "arg1 <= 0"
+            ],
+            "local_infection_predicates": [
+              "And((arg1 <= 0) == (0 <= arg1), 0 == arg1)"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    2
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "bool",
+                      "repr": "False"
+                    },
+                    "branches": []
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": false
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "bool",
+                      "repr": "True"
+                    },
+                    "branches": []
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "issues": [],
+        "queries": 64,
+        "solver_unknown": 0,
+        "unsat_queries": 62,
+        "rejected_models": [],
+        "shape_count": 7,
+        "normative_validity": "unknown_spec_validation_required",
+        "elapsed_seconds": 0.1268,
+        "base_status": "not_distinguished_by_public_inputs",
+        "base_observations": [
+          {
+            "arguments": "([1, 2], 5)",
+            "put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "alternative": {
+              "type": "int",
+              "repr": "0"
+            }
+          }
+        ]
+      },
+      {
+        "hypothesis": {
+          "id": "9a04e1e3f3f184a2",
+          "span": [
+            5,
+            11,
+            5,
+            30
+          ],
+          "node_kind": "Compare",
+          "before": "len(xs) == required",
+          "after": "len(xs) != required",
+          "family": "OPERATOR",
+          "facets": [
+            "OPERATOR"
+          ],
+          "meaning": "a different arithmetic or Boolean operator can change behavior",
+          "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+          "origin": "ast_catalog",
+          "objective": "reach exact AST site AND local value changes AND final output changes",
+          "spec_binding": "unverified"
+        },
+        "status": "verified_behavioral_difference",
+        "inputs": [
+          {
+            "arguments": "([0], 1)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "1"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": false,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "bool",
+                "repr": "False"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "Not(arg1 <= 0)",
+              "Not(arg1 <= 0)",
+              "Not(-1 == arg1)"
+            ],
+            "local_infection_predicates": [
+              "Not(arg1 <= 0)"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    1
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "bool",
+                      "repr": "False"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": false
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "bool",
+                      "repr": "True"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "arguments": "([0, 0], 1)",
+            "predicted_put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "predicted_alternative": {
+              "type": "int",
+              "repr": "1"
+            },
+            "put_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": false,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "alternative_path": [
+              {
+                "line": 3,
+                "value": true,
+                "predicate": "k > 0"
+              },
+              {
+                "line": 5,
+                "value": true,
+                "predicate": "len(xs) == required"
+              }
+            ],
+            "predicted_site_values": [
+              {
+                "type": "bool",
+                "repr": "False"
+              }
+            ],
+            "path_predicates": [
+              "True",
+              "Not(arg1 <= 0)",
+              "Not(arg1 <= 0)",
+              "Not(0 == arg1)"
+            ],
+            "local_infection_predicates": [
+              "Not(arg1 <= 0)"
+            ],
+            "domain": {
+              "shape": [
+                [
+                  "list",
+                  [
+                    "int",
+                    2
+                  ]
+                ],
+                [
+                  "int",
+                  null
+                ]
+              ],
+              "int_bound": 1000,
+              "max_seq_len": 6
+            },
+            "verification": "exact_site_path_and_output_verified",
+            "observations": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "bool",
+                      "repr": "False"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": false
+                  }
+                ]
+              },
+              "alternative": {
+                "status": "ok",
+                "output": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "site_events": [
+                  {
+                    "value": {
+                      "type": "bool",
+                      "repr": "True"
+                    },
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      }
+                    ]
+                  }
+                ],
+                "branches": [
+                  {
+                    "line": 3,
+                    "value": true
+                  },
+                  {
+                    "line": 5,
+                    "value": true
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "issues": [],
+        "queries": 17,
+        "solver_unknown": 0,
+        "unsat_queries": 14,
+        "rejected_models": [],
+        "shape_count": 3,
+        "normative_validity": "unknown_spec_validation_required",
+        "elapsed_seconds": 0.0948,
+        "base_status": "already_distinguished_by_public_inputs",
+        "base_observations": [
+          {
+            "arguments": "([1, 2], 5)",
+            "put": {
+              "type": "int",
+              "repr": "0"
+            },
+            "alternative": {
+              "type": "int",
+              "repr": "2"
+            }
+          }
+        ]
+      }
+    ],
+    "issues": [],
+    "catalog_count": 5,
+    "imported_count": 0,
+    "processed_count": 5,
+    "status_counts": {
+      "verified_behavioral_difference": 5
+    },
+    "family_registry": {
+      "BOUNDARY": "equality at a relational boundary can change the decision",
+      "OPERATOR": "a different arithmetic or Boolean operator can change behavior",
+      "VALUE": "a different value at this expression can change behavior",
+      "CALL": "a different pure function can change behavior",
+      "MISSING_CASE": "a low-cardinality input class remains untested (not a repair claim)",
+      "LOOP_CARDINALITY": "a range endpoint changes the number of executed iterations",
+      "INDEX_SELECTION": "a neighboring index selects a different valid element",
+      "STATE_ACCUMULATION": "overwriting and accumulating diverge after repeated updates",
+      "ORDER_TIE": "equal operands distinguish strict from inclusive ordering",
+      "MULTIPLICITY": "duplicate values distinguish counting occurrences from distinct values"
+    },
+    "missing_case_scope": "legacy low-cardinality transforms and symbolic shape enumeration; not a synthesized missing branch",
+    "legacy_control_inputs": [
+      "([], 5)",
+      "([1], 5)",
+      "([1, 1], 5)",
+      "([0, 2], 5)",
+      "([-1, 2], 5)",
+      "([1, 0], 5)",
+      "([1, -1], 5)",
+      "([1, 2], 0)",
+      "([1, 2], 1)",
+      "([1, 2], -1)",
+      "([1, 2, 2], 5)",
+      "([2, 2], 5)",
+      "([3, 2], 5)",
+      "([1, 3], 5)",
+      "([1, 2], 4)",
+      "([1, 2], 6)",
+      "([1, 2], 2)",
+      "([1, 2], 3)",
+      "([2, 1], 5)",
+      "([1, -2], 5)",
+      "([1, 2], -5)",
+      "([1, 2, 3], 5)",
+      "([1, 4], 5)",
+      "([1, 2], 7)"
+    ],
+    "prompts": {
+      "plain": {
+        "source": "def f(xs, k):\n    \"\"\"If k > 0 and len(xs) == k + 2, count all elements including duplicates; otherwise return zero.\"\"\"\n    if k > 0:\n        required = k + 2\n        if len(xs) == required:\n            return len(set(xs))\n    return 0\n",
+        "entry": "f",
+        "public_examples": [
+          {
+            "arguments": "([1, 2], 5)",
+            "expected": "0"
+          }
+        ],
+        "spec": "If k > 0 and len(xs) == k + 2, count all elements including duplicates; otherwise return zero.",
+        "oracle_instruction": "Derive expected outputs from the specification. Tool outputs are observations, not oracle values.",
+        "instruction": "Generate valid bug-revealing tests with spec-derived expected outputs."
+      },
+      "concept": {
+        "source": "def f(xs, k):\n    \"\"\"If k > 0 and len(xs) == k + 2, count all elements including duplicates; otherwise return zero.\"\"\"\n    if k > 0:\n        required = k + 2\n        if len(xs) == required:\n            return len(set(xs))\n    return 0\n",
+        "entry": "f",
+        "public_examples": [
+          {
+            "arguments": "([1, 2], 5)",
+            "expected": "0"
+          }
+        ],
+        "spec": "If k > 0 and len(xs) == k + 2, count all elements including duplicates; otherwise return zero.",
+        "oracle_instruction": "Derive expected outputs from the specification. Tool outputs are observations, not oracle values.",
+        "instruction": "Use each source-bound fault concept as a test obligation: reach its AST site, activate the local distinction and propagate it to output, while satisfying the specification domain. These are unverified hypotheses. Propose valid new tests and say which obligation they exercise.",
+        "evidence": [
+          {
+            "rank": 1,
+            "hypothesis": {
+              "id": "a3d29b54f05b282c",
+              "span": [
+                4,
+                19,
+                4,
+                24
+              ],
+              "node_kind": "BinOp",
+              "before": "k + 2",
+              "after": "k - 2",
+              "family": "OPERATOR",
+              "facets": [
+                "OPERATOR"
+              ],
+              "meaning": "a different arithmetic or Boolean operator can change behavior",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "not_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "0"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([-984], 3)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "5"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "Not(-1 == arg1)"
+                ],
+                "local_infection_predicates": [
+                  "Not(arg1 <= 0)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        1
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "5"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "arguments": "([0], 3)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "5"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "Not(-1 == arg1)"
+                ],
+                "local_infection_predicates": [
+                  "Not(arg1 <= 0)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        1
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "5"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "rank": 2,
+            "hypothesis": {
+              "id": "402062315f636d4c",
+              "span": [
+                5,
+                11,
+                5,
+                18
+              ],
+              "node_kind": "Call",
+              "before": "len(xs)",
+              "after": "len(set(xs))",
+              "family": "MULTIPLICITY",
+              "facets": [
+                "MULTIPLICITY"
+              ],
+              "meaning": "duplicate values distinguish counting occurrences from distinct values",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "not_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "0"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([0, 0, 0], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "3"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "1 == arg1"
+                ],
+                "local_infection_predicates": [
+                  "And(Not(arg1 <= 0),\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        3
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "3"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "arguments": "([0, 0, 0, 0], 2)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "4"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "2 == arg1"
+                ],
+                "local_infection_predicates": [
+                  "And(Not(arg1 <= 0),\n    Not(3 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0) +\n        If(And(Not(arg0_3 == arg0_0),\n               Not(arg0_3 == arg0_1),\n               Not(arg0_3 == arg0_2)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1,\n       arg0_0 == arg0_2,\n       arg0_0 == arg0_3,\n       arg0_1 == arg0_2,\n       arg0_1 == arg0_3,\n       arg0_2 == arg0_3))"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        4
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "4"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "rank": 3,
+            "hypothesis": {
+              "id": "e75bb8f77380e621",
+              "span": [
+                6,
+                19,
+                6,
+                31
+              ],
+              "node_kind": "Call",
+              "before": "len(set(xs))",
+              "after": "len(xs)",
+              "family": "MULTIPLICITY",
+              "facets": [
+                "MULTIPLICITY"
+              ],
+              "meaning": "duplicate values distinguish counting occurrences from distinct values",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "not_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "0"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([0, 0, 0], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "3"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "1"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "1 == arg1"
+                ],
+                "local_infection_predicates": [
+                  "And(Not(arg1 <= 0),\n    1 == arg1,\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        3
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          },
+                          {
+                            "line": 5,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "3"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "3"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          },
+                          {
+                            "line": 5,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "arguments": "([0, 0, -1], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "2"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "3"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "2"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "1 == arg1"
+                ],
+                "local_infection_predicates": [
+                  "And(Not(arg1 <= 0),\n    1 == arg1,\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        3
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "2"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "2"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          },
+                          {
+                            "line": 5,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "3"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "3"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          },
+                          {
+                            "line": 5,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "rank": 4,
+            "hypothesis": {
+              "id": "3419ac7c970f412d",
+              "span": [
+                3,
+                7,
+                3,
+                12
+              ],
+              "node_kind": "Compare",
+              "before": "k > 0",
+              "after": "k >= 0",
+              "family": "BOUNDARY",
+              "facets": [
+                "BOUNDARY",
+                "ORDER_TIE"
+              ],
+              "meaning": "equality at a relational boundary can change the decision",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "not_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "0"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([0, 0], 0)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": false,
+                    "predicate": "k > 0"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "bool",
+                    "repr": "False"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "arg1 <= 0"
+                ],
+                "local_infection_predicates": [
+                  "And((arg1 <= 0) == (0 <= arg1), 0 == arg1)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        2
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "False"
+                        },
+                        "branches": []
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "True"
+                        },
+                        "branches": []
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "rank": 5,
+            "hypothesis": {
+              "id": "9a04e1e3f3f184a2",
+              "span": [
+                5,
+                11,
+                5,
+                30
+              ],
+              "node_kind": "Compare",
+              "before": "len(xs) == required",
+              "after": "len(xs) != required",
+              "family": "OPERATOR",
+              "facets": [
+                "OPERATOR"
+              ],
+              "meaning": "a different arithmetic or Boolean operator can change behavior",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "already_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "2"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([0], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "bool",
+                    "repr": "False"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "Not(-1 == arg1)"
+                ],
+                "local_infection_predicates": [
+                  "Not(arg1 <= 0)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        1
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "False"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "True"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "arguments": "([0, 0], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "bool",
+                    "repr": "False"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "Not(0 == arg1)"
+                ],
+                "local_infection_predicates": [
+                  "Not(arg1 <= 0)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        2
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "False"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "True"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "equal_evidence_raw": {
+        "source": "def f(xs, k):\n    \"\"\"If k > 0 and len(xs) == k + 2, count all elements including duplicates; otherwise return zero.\"\"\"\n    if k > 0:\n        required = k + 2\n        if len(xs) == required:\n            return len(set(xs))\n    return 0\n",
+        "entry": "f",
+        "public_examples": [
+          {
+            "arguments": "([1, 2], 5)",
+            "expected": "0"
+          }
+        ],
+        "spec": "If k > 0 and len(xs) == k + 2, count all elements including duplicates; otherwise return zero.",
+        "oracle_instruction": "Derive expected outputs from the specification. Tool outputs are observations, not oracle values.",
+        "instruction": "Inspect the complete raw tool evidence and produce valid new tests with expected outputs from the specification. Tool observations and candidate edits do not establish correct behavior.",
+        "evidence": [
+          {
+            "rank": 1,
+            "hypothesis": {
+              "id": "a3d29b54f05b282c",
+              "span": [
+                4,
+                19,
+                4,
+                24
+              ],
+              "node_kind": "BinOp",
+              "before": "k + 2",
+              "after": "k - 2",
+              "family": "OPERATOR",
+              "facets": [
+                "OPERATOR"
+              ],
+              "meaning": "a different arithmetic or Boolean operator can change behavior",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "not_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "0"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([-984], 3)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "5"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "Not(-1 == arg1)"
+                ],
+                "local_infection_predicates": [
+                  "Not(arg1 <= 0)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        1
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "5"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "arguments": "([0], 3)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "5"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "Not(-1 == arg1)"
+                ],
+                "local_infection_predicates": [
+                  "Not(arg1 <= 0)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        1
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "5"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "rank": 2,
+            "hypothesis": {
+              "id": "402062315f636d4c",
+              "span": [
+                5,
+                11,
+                5,
+                18
+              ],
+              "node_kind": "Call",
+              "before": "len(xs)",
+              "after": "len(set(xs))",
+              "family": "MULTIPLICITY",
+              "facets": [
+                "MULTIPLICITY"
+              ],
+              "meaning": "duplicate values distinguish counting occurrences from distinct values",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "not_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "0"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([0, 0, 0], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "3"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "1 == arg1"
+                ],
+                "local_infection_predicates": [
+                  "And(Not(arg1 <= 0),\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        3
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "3"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "arguments": "([0, 0, 0, 0], 2)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "4"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "2 == arg1"
+                ],
+                "local_infection_predicates": [
+                  "And(Not(arg1 <= 0),\n    Not(3 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0) +\n        If(And(Not(arg0_3 == arg0_0),\n               Not(arg0_3 == arg0_1),\n               Not(arg0_3 == arg0_2)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1,\n       arg0_0 == arg0_2,\n       arg0_0 == arg0_3,\n       arg0_1 == arg0_2,\n       arg0_1 == arg0_3,\n       arg0_2 == arg0_3))"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        4
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "4"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "rank": 3,
+            "hypothesis": {
+              "id": "e75bb8f77380e621",
+              "span": [
+                6,
+                19,
+                6,
+                31
+              ],
+              "node_kind": "Call",
+              "before": "len(set(xs))",
+              "after": "len(xs)",
+              "family": "MULTIPLICITY",
+              "facets": [
+                "MULTIPLICITY"
+              ],
+              "meaning": "duplicate values distinguish counting occurrences from distinct values",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "not_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "0"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([0, 0, 0], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "3"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "1"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "1 == arg1"
+                ],
+                "local_infection_predicates": [
+                  "And(Not(arg1 <= 0),\n    1 == arg1,\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        3
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "1"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          },
+                          {
+                            "line": 5,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "3"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "3"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          },
+                          {
+                            "line": 5,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "arguments": "([0, 0, -1], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "2"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "3"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "int",
+                    "repr": "2"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "1 == arg1"
+                ],
+                "local_infection_predicates": [
+                  "And(Not(arg1 <= 0),\n    1 == arg1,\n    Not(2 ==\n        If(arg0_1 == arg0_0, 0, 1) +\n        If(And(Not(arg0_2 == arg0_0), Not(arg0_2 == arg0_1)),\n           1,\n           0)),\n    Or(arg0_0 == arg0_1, arg0_0 == arg0_2, arg0_1 == arg0_2))"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        3
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "2"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "2"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          },
+                          {
+                            "line": 5,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "3"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "int",
+                          "repr": "3"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          },
+                          {
+                            "line": 5,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "rank": 4,
+            "hypothesis": {
+              "id": "3419ac7c970f412d",
+              "span": [
+                3,
+                7,
+                3,
+                12
+              ],
+              "node_kind": "Compare",
+              "before": "k > 0",
+              "after": "k >= 0",
+              "family": "BOUNDARY",
+              "facets": [
+                "BOUNDARY",
+                "ORDER_TIE"
+              ],
+              "meaning": "equality at a relational boundary can change the decision",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "not_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "0"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([0, 0], 0)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": false,
+                    "predicate": "k > 0"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "bool",
+                    "repr": "False"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "arg1 <= 0"
+                ],
+                "local_infection_predicates": [
+                  "And((arg1 <= 0) == (0 <= arg1), 0 == arg1)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        2
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "False"
+                        },
+                        "branches": []
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "True"
+                        },
+                        "branches": []
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "rank": 5,
+            "hypothesis": {
+              "id": "9a04e1e3f3f184a2",
+              "span": [
+                5,
+                11,
+                5,
+                30
+              ],
+              "node_kind": "Compare",
+              "before": "len(xs) == required",
+              "after": "len(xs) != required",
+              "family": "OPERATOR",
+              "facets": [
+                "OPERATOR"
+              ],
+              "meaning": "a different arithmetic or Boolean operator can change behavior",
+              "epistemic_status": "behavioral_hypothesis_not_validated_repair",
+              "origin": "ast_catalog",
+              "objective": "reach exact AST site AND local value changes AND final output changes",
+              "spec_binding": "unverified"
+            },
+            "base_status": "already_distinguished_by_public_inputs",
+            "base_observations": [
+              {
+                "arguments": "([1, 2], 5)",
+                "put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "alternative": {
+                  "type": "int",
+                  "repr": "2"
+                }
+              }
+            ],
+            "construction_status": "verified_behavioral_difference",
+            "limitations": [],
+            "inputs": [
+              {
+                "arguments": "([0], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "bool",
+                    "repr": "False"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "Not(-1 == arg1)"
+                ],
+                "local_infection_predicates": [
+                  "Not(arg1 <= 0)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        1
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "False"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "True"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "arguments": "([0, 0], 1)",
+                "predicted_put": {
+                  "type": "int",
+                  "repr": "0"
+                },
+                "predicted_alternative": {
+                  "type": "int",
+                  "repr": "1"
+                },
+                "put_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": false,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "alternative_path": [
+                  {
+                    "line": 3,
+                    "value": true,
+                    "predicate": "k > 0"
+                  },
+                  {
+                    "line": 5,
+                    "value": true,
+                    "predicate": "len(xs) == required"
+                  }
+                ],
+                "predicted_site_values": [
+                  {
+                    "type": "bool",
+                    "repr": "False"
+                  }
+                ],
+                "path_predicates": [
+                  "True",
+                  "Not(arg1 <= 0)",
+                  "Not(arg1 <= 0)",
+                  "Not(0 == arg1)"
+                ],
+                "local_infection_predicates": [
+                  "Not(arg1 <= 0)"
+                ],
+                "domain": {
+                  "shape": [
+                    [
+                      "list",
+                      [
+                        "int",
+                        2
+                      ]
+                    ],
+                    [
+                      "int",
+                      null
+                    ]
+                  ],
+                  "int_bound": 1000,
+                  "max_seq_len": 6
+                },
+                "verification": "exact_site_path_and_output_verified",
+                "observations": {
+                  "status": "ok",
+                  "put": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "0"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "False"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": false
+                      }
+                    ]
+                  },
+                  "alternative": {
+                    "status": "ok",
+                    "output": {
+                      "type": "int",
+                      "repr": "1"
+                    },
+                    "site_events": [
+                      {
+                        "value": {
+                          "type": "bool",
+                          "repr": "True"
+                        },
+                        "branches": [
+                          {
+                            "line": 3,
+                            "value": true
+                          }
+                        ]
+                      }
+                    ],
+                    "branches": [
+                      {
+                        "line": 3,
+                        "value": true
+                      },
+                      {
+                        "line": 5,
+                        "value": true
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "inputs_only": {
+        "source": "def f(xs, k):\n    \"\"\"If k > 0 and len(xs) == k + 2, count all elements including duplicates; otherwise return zero.\"\"\"\n    if k > 0:\n        required = k + 2\n        if len(xs) == required:\n            return len(set(xs))\n    return 0\n",
+        "entry": "f",
+        "public_examples": [
+          {
+            "arguments": "([1, 2], 5)",
+            "expected": "0"
+          }
+        ],
+        "spec": "If k > 0 and len(xs) == k + 2, count all elements including duplicates; otherwise return zero.",
+        "oracle_instruction": "Derive expected outputs from the specification. Tool outputs are observations, not oracle values.",
+        "inputs": [
+          "([-984], 3)",
+          "([0], 3)",
+          "([0, 0, 0], 1)",
+          "([0, 0, 0, 0], 2)",
+          "([0, 0, -1], 1)",
+          "([0, 0], 0)",
+          "([0], 1)",
+          "([0, 0], 1)"
+        ],
+        "instruction": "Consider these candidate inputs and generate valid tests; inputs are not validated against the specification."
+      },
+      "witness_only": {
+        "arguments": [
+          "([1, 2], 5)"
+        ],
+        "uses_llm": false
+      }
+    },
+    "expected_output_source": "none; observation-only preparation"
+  }
+}

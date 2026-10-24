@@ -74,3 +74,32 @@ guarded detached launch+same-thread callback AFTER a real endpoint window exists
 Secret endpoint file is outside repository, under private concepttester_v50_temporary
 state directory. Old launcher must not restart. TEMP_ENDPOINT_STATUS.json records
 the exact blocker. Frozen source/pools/evaluator unchanged.
+
+## Launcher_b armed — 2026-10-24 10:36+07 (Claude session concepttester-d0)
+
+User supplied a new Qwen32B endpoint (live: model qwen2.5-coder-32b-instruct, ctx 8192; URL only in a chmod600
+file under ~/.local/state/concepttester_qwen32/), chose "run v50", and — told that the v46 resume loop of another
+session had already picked up the same endpoint (~745 judge calls left, ~25 s each) — chose WAIT for v46 to finish.
+v49 blocker of 2026-10-23 is gone (v49.done 23:15). Codex5h helper 100%. revision8/ unchanged (no approval/status).
+Detached ~/.local/state/concepttester_v50_b/launcher.sh (copy of the 2026-10-23 launcher; old launcher and
+launch_temporary.py not used): every 5 min ≤ 30 h, launches once only when no v46_resume.sh / v46 or v49 generate
+process runs and no other process carries the endpoint host in its environment, the endpoint lists the model with
+ctx 8192 and the quota helper is > 15; then approve.py (same fields, new authorization text) writes
+launch_approval.json (window +26 h) and `revision run` runs once; run.log URL-redacted. After completion: the
+post-generation steps above (inventory, clean-context semantic review per EVALUATION.md, RESULTS/memory/commit).
+
+## Launched on a dedicated endpoint — 2026-10-24 10:42+07 (Claude session concepttester-d0)
+
+User supplied a second, dedicated Qwen32B endpoint and said "cho v50 chạy". Launcher_b was killed before any launch
+(marked superseded; it never wrote an approval). ~/.local/state/concepttester_v50_c/launcher.sh: no other process
+with the endpoint host in its environment, model ctx 8192, Codex5h helper 100% → approve.py wrote launch_approval.json
+(sha 38f48ce1…, window +26 h) and `revision run` started 03:42:04Z (status running; preflight /models passed,
+server.json written; first slot E3__initial in flight). URL only in a chmod600 file outside the repo.
+
+## Terminal review — 2026-10-24 (mechanism-plan execution)
+
+This supersedes the launch/pending post-generation state above. All24responses received, generation frozen; exact
+pinned full verifier and generation inventory PASS. Independent semantic review all24rawresponses complete:
+0tool-onlysemanticwins,0raw-onlylosses,E7pass/E8failboth; strict2/8each,label-neutral3/8each. Registered NO-GO.
+Transport24received/24known,0unknowncompletionattempts,25successfulmetadatarequests. Results and scoped annotations:
+RESULTS.md and ../concept_mechanism_20261024/V50_SEMANTIC_REVIEW.md/.json. No controller restart, new calls or promotion.

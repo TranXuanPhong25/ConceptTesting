@@ -1468,3 +1468,12 @@ TYPE/BOOL/SIZE. Probe đọc tốt concept dạng output (≥ .92) nhưng NUM_NE
 chỉ vì placebo rơi dưới chance. Top-3 của mọi arm ≤ chọn ngẫu nhiên (11.7/22); con số surface 16/22 là artifact do
 hòa score. Không chạy 7B. [Report](analysis/v51_latent_concept/RESULTS.md),
 [PREREG + amendment 1](analysis/v51_latent_concept/PREREG.md).
+
+## 2026-10-24 Sol6.1 native concept probe (separate from v50)
+
+User-requested12clean-context gpt-6.1-sol/low agents,6seen cases×generic/concept.
+Same full saved evidence; generic checklist versus global concept cards. Independent
+review:6/6versus6/6,0concept-only wins,0false alarms,1justified ambiguous abstention
+each. Concept advantage NOT SHOWN; stronger-model capability on this diagnostic,
+not controlled Qwen comparison.0Qwen/PUT calls. Read
+[full report](analysis/sol61_concept_probe_20261024/REPORT.md).

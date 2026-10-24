@@ -1,0 +1,98 @@
+{
+  "instruction": "Solve this one task using only the packet below. Do not use any tools, filesystem, execution, network, or other agents. Do not inspect the repository. Treat the initial hypothesis and reasoning guide as fallible. Return one final answer, preferably a JSON object, at most450words: requirement; implementation_hypothesis; initial_hypothesis_decision (keep/revise/withdraw/unknown) and reason; judgment (mismatch/no_mismatch/unknown) and reason; evidence IDs; up to2 inputs as full positional Python tuple literals, each naming two competing behavior predictions and its purpose. Predictions are hypothetical, not trusted expected values/assertions. Do not claim to have executed inputs. Unknown/abstention is allowed when justified.",
+  "task_packet": {
+    "task": "T5",
+    "spec": "Return a sorted copy of xs, preserving every duplicate occurrence. xs is a list of integers.",
+    "code": "def f(xs):\n                                                                                                  \n    temporary = set(xs)\n    return sorted(xs)\n",
+    "base_tests": "assert f([2, 1]) == [1, 2]",
+    "initial_hypothesis": "Local set conversion làm output mất duplicate occurrences.",
+    "observations": [
+      {
+        "input": "([2, 1],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[1, 2]",
+        "output_capture": "literal",
+        "id": "O1"
+      },
+      {
+        "input": "([2, 2],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[2, 2]",
+        "output_capture": "literal",
+        "id": "O2"
+      },
+      {
+        "input": "([2, 1, 2],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[1, 2, 2]",
+        "output_capture": "literal",
+        "id": "O3"
+      },
+      {
+        "input": "([3, 3, 3],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[3, 3, 3]",
+        "output_capture": "literal",
+        "id": "O4"
+      },
+      {
+        "input": "([1, 2, 2, 3],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[1, 2, 2, 3]",
+        "output_capture": "literal",
+        "id": "O5"
+      },
+      {
+        "input": "([3, 3, 2, 1],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[1, 2, 3, 3]",
+        "output_capture": "literal",
+        "id": "O6"
+      },
+      {
+        "input": "([4, 4, 4, 4],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[4, 4, 4, 4]",
+        "output_capture": "literal",
+        "id": "O7"
+      },
+      {
+        "input": "([1, 2, 2, 3, 3],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[1, 2, 2, 3, 3]",
+        "output_capture": "literal",
+        "id": "O8"
+      },
+      {
+        "input": "([1, 2, 2, 3, 3, 3],)",
+        "execution_status": "ok",
+        "exception_type": null,
+        "output": "[1, 2, 2, 3, 3, 3]",
+        "output_capture": "literal",
+        "id": "O9"
+      }
+    ],
+    "evidence_ids": [
+      "original_spec",
+      "source_return",
+      "O1",
+      "O2",
+      "O3",
+      "O4",
+      "O5",
+      "O6",
+      "O7",
+      "O8",
+      "O9"
+    ]
+  },
+  "reasoning_guide": "General concept vocabulary (not a per-task binding or oracle):\n1. Occurrence conservation: distinguish an item value from each occurrence. Bind the required output content and multiplicity policy from the spec. Compare absence, one occurrence and repeated occurrences; ordering is a separate obligation.\n2. Membership inclusion: identify which collection supplies required values and which must contain them. Distinguish inclusion from equality and set membership from multiplicity. Vary extras or missing required members while holding the other role fixed.\n3. Quantified decision: identify the predicate and whether all, any or another quantifier is required. Consider no witnesses, one witness and mixed witnesses/counterexamples. Bind empty-domain behavior from the spec.\n4. Eligible contribution: identify eligibility, each occurrence's weight, aggregation and any final comparison. Separate eligibility boundaries, repeated contributions and irrelevant elements; do not assume cardinality is the aggregate.\n5. Order policy: identify the ordering relation, direction and any stated tie policy. Separate ordering from content conservation. Vary permutation or ties only when their meaning is specified.\n6. Eligible selection: bind both eligibility and selection/rank rule, then any empty-case policy. First and minimum need not coincide; unspecified eligibility remains unspecified rather than being learned from code.\n7. Defined outcome: distinguish normal values, declared sentinels, specified exceptions and unresolved execution. Bind allowed outcomes to the declared domain, including degenerate cases when specified.\nUse only applicable concepts. Agreement with code does not validate a requirement; sampled agreement is not a universal proof."
+}
