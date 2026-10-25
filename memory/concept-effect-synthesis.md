@@ -13,3 +13,5 @@ spec-only brute force (v49 10–12/33 prec .6 vs TC 7 .23; Sonnet Stage 2 24/33 
 **Why:** user asked to try all three directions (info-bearing concept = [[v59-blind-concept]]; definitional oracle;
 empirical study). **How to apply:** thesis framing = empirical map + definitional oracle family pending v56 fresh-cohort
 confirmation (other session, Codex; v55 interpretation concept on the oracle). See [[thesis-concept-requirement]].
+
+2026-10-25 update: [[v64-haiku-plainoracle]] — with Haiku, plain-impl oracle 25/33 (.96) beats defn = brute 21 (1.00), paired 4–0 (brute-force abstention). The definitional-family effect of §4 does not survive a stronger writer; it is a precision-vs-abstention trade-off.

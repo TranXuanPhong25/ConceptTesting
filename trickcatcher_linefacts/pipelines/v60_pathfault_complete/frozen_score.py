@@ -37,7 +37,7 @@ def audit_freeze(root: Path) -> dict[str, Any]:
             "ok": not missing and not mismatches}
 
 
-def raw_final_slots(root: Path, case_ids: list[str]) -> list[dict[str, Any]]:
+def raw_final_slots(root: Path, case_ids: list[str], arms=ARMS) -> list[dict[str, Any]]:
     """Return exactly one six-item primary slot list per case/arm.
 
     The source is raw `response.json`, before any replay/parser feedback. A failed
@@ -45,7 +45,7 @@ def raw_final_slots(root: Path, case_ids: list[str]) -> list[dict[str, Any]]:
     """
     rows: list[dict[str, Any]] = []
     for case_id in case_ids:
-        for arm in ARMS:
+        for arm in arms:
             path = root / case_id / arm / "final" / "response.json"
             if not path.exists():
                 rows.extend({"case_id": case_id, "arm": arm, "position": i,
@@ -141,9 +141,9 @@ def label_slots(slots: list[dict[str, Any]], evaluate: Callable[[str, tuple[Any,
     return out
 
 
-def summarize(rows: list[dict[str, Any]]) -> dict[str, Any]:
+def summarize(rows: list[dict[str, Any]],arms=ARMS) -> dict[str, Any]:
     result: dict[str, Any] = {}
-    for arm in ARMS:
+    for arm in arms:
         selected = [r for r in rows if r["arm"] == arm]
         labels = Counter(r.get("label_status", "unlabeled") for r in selected)
         valid=[r for r in selected if r.get('label_status') in {'confirmed','input_discrepancy_wrong_expected','passing_test','false_alarm'}]

@@ -1,0 +1,280 @@
+{
+  "rows": [
+    {
+      "case_id": "61",
+      "proposals": 3,
+      "admitted": 1,
+      "rejected": [
+        {
+          "index": 0,
+          "reason": "ValueError:predicate_type:incompatible_int_str"
+        },
+        {
+          "index": 1,
+          "reason": "ValueError:predicate_type:incompatible_str_int"
+        }
+      ],
+      "normalizations": [
+        {
+          "index": 0,
+          "mode": "legacy",
+          "raw_sha256": "34ec08fd469bfe516ff9e18d4a8d02ed749735126114e0989ccd1ba63a286e97",
+          "rewrites": [
+            {
+              "path": "$.items[0]",
+              "rewrite": "gt"
+            }
+          ],
+          "status": "admission_rejected",
+          "compiled_index": 0,
+          "compiled_sha256": "15c563f974e63503d9b5de5d27058d48b61b18868e60af6c7f94b777217e9baf",
+          "reason": "ValueError:predicate_type:incompatible_int_str"
+        }
+      ],
+      "records": [
+        {
+          "hypothesis_id": "06bbb40e9d024eb5",
+          "public_status": "public_regression",
+          "issues": [
+            "public_regression"
+          ],
+          "runs": 0,
+          "realized": 0,
+          "sensitive": 0
+        }
+      ],
+      "candidates": 0,
+      "native_executions": 2,
+      "gate": {
+        "case_id": "61",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_validity": "unverified",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.1575009790249169
+    },
+    {
+      "case_id": "66",
+      "proposals": 3,
+      "admitted": 0,
+      "rejected": [
+        {
+          "index": 0,
+          "reason": "ValueError:none_expression_not_abstention"
+        },
+        {
+          "index": 1,
+          "reason": "ValueError:none_expression_not_abstention"
+        },
+        {
+          "index": 2,
+          "reason": "ValueError:none_expression_not_abstention"
+        }
+      ],
+      "normalizations": [],
+      "records": [],
+      "candidates": 0,
+      "native_executions": 0,
+      "gate": {
+        "case_id": "66",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_validity": "unverified",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.00902253296226263
+    },
+    {
+      "case_id": "124",
+      "proposals": 3,
+      "admitted": 3,
+      "rejected": [],
+      "normalizations": [],
+      "records": [
+        {
+          "hypothesis_id": "cc0345e469d6ee6d",
+          "public_status": "passed",
+          "issues": [
+            "query_candidate_or_deadline_cap",
+            "query_or_candidate_cap"
+          ],
+          "runs": 6,
+          "realized": 6,
+          "sensitive": 0
+        },
+        {
+          "hypothesis_id": "988668135e6c6bd9",
+          "public_status": "public_regression",
+          "issues": [
+            "public_regression"
+          ],
+          "runs": 0,
+          "realized": 0,
+          "sensitive": 0
+        },
+        {
+          "hypothesis_id": "b611affbe98d19ed",
+          "public_status": "passed",
+          "issues": [
+            "query_candidate_or_deadline_cap",
+            "query_or_candidate_cap"
+          ],
+          "runs": 16,
+          "realized": 16,
+          "sensitive": 0
+        }
+      ],
+      "candidates": 22,
+      "native_executions": 250,
+      "gate": {
+        "case_id": "124",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "3997e55c2c1ce0a0f4feb60b2ef71befe5cea2ec71b356376840ceeef5bf89da",
+        "semantic_truth": "unverified",
+        "input_validity": "unverified",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 10.95297376299277
+    },
+    {
+      "case_id": "58",
+      "proposals": 0,
+      "admitted": 0,
+      "rejected": [],
+      "normalizations": [],
+      "records": [],
+      "candidates": 0,
+      "native_executions": 0,
+      "gate": {
+        "case_id": "58",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_validity": "unverified",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.017058783210814
+    },
+    {
+      "case_id": "131",
+      "proposals": 3,
+      "admitted": 0,
+      "rejected": [
+        {
+          "index": 0,
+          "reason": "SyntaxError:invalid syntax (<unknown>, line 1)"
+        },
+        {
+          "index": 1,
+          "reason": "ValueError:none_expression_not_abstention"
+        },
+        {
+          "index": 2,
+          "reason": "ValueError:none_expression_not_abstention"
+        }
+      ],
+      "normalizations": [
+        {
+          "index": 1,
+          "mode": "legacy",
+          "raw_sha256": "fab4de422551ddd867242f707deb528caddee6e6c6cd7452e1e90dee81f1d54c",
+          "rewrites": [
+            {
+              "path": "$.items[0]",
+              "rewrite": "ne"
+            },
+            {
+              "path": "$.items[1]",
+              "rewrite": "ne"
+            }
+          ],
+          "status": "admission_rejected",
+          "compiled_index": 1,
+          "compiled_sha256": "78d50835d36dd11f743f79b331c40ca44263c4a0c51e178c36d2b4f71443e238",
+          "reason": "ValueError:none_expression_not_abstention"
+        }
+      ],
+      "records": [],
+      "candidates": 0,
+      "native_executions": 0,
+      "gate": {
+        "case_id": "131",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_validity": "unverified",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.007968582911416888
+    },
+    {
+      "case_id": "85",
+      "proposals": 3,
+      "admitted": 2,
+      "rejected": [
+        {
+          "index": 0,
+          "reason": "SyntaxError:invalid syntax (<unknown>, line 1)"
+        }
+      ],
+      "normalizations": [],
+      "records": [
+        {
+          "hypothesis_id": "07e21b36f874a376",
+          "public_status": "no_alternative",
+          "issues": [
+            "no_alternative"
+          ],
+          "runs": 0,
+          "realized": 0,
+          "sensitive": 0
+        },
+        {
+          "hypothesis_id": "f0849d9d597402a7",
+          "public_status": "no_alternative",
+          "issues": [
+            "no_alternative"
+          ],
+          "runs": 0,
+          "realized": 0,
+          "sensitive": 0
+        }
+      ],
+      "candidates": 0,
+      "native_executions": 0,
+      "gate": {
+        "case_id": "85",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_validity": "unverified",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.016483208863064647
+    }
+  ],
+  "gate_passed": false,
+  "case_count": 6,
+  "actual_new_model_calls": 0,
+  "private_label_reads": 0,
+  "old_response_count_reused": 6,
+  "native_executions": 252,
+  "source_and_origin_unchanged": true,
+  "new_writer_schema_exercised": "authored_fixtures_only",
+  "interpretation": "engineering_replay_not_replication_or_efficacy"
+}

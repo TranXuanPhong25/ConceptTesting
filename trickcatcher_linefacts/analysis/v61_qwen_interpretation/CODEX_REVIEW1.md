@@ -1,0 +1,19 @@
+Đã review read-only: v49 preflight đạt **33/33 tasks**, cả **165 defn records** khớp prompt/parameter digest. Không sửa file hay gọi model/HTTP. Tại snapshot, output root v61 chưa tồn tại.
+
+**MUST-FIX**
+
+- [run.py:108](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:108): Freeze bỏ sót v49 task records chứa PUT outcomes, các helper v59/v53, evaluator data và v41 reference results; chúng có thể đổi mà guard vẫn qua. v49 preflight không hash chính task record. **Fix:** freeze toàn bộ dependencies/artifacts được đọc và kiểm tra lại trước khi lưu score, kể cả program files trong lúc score chạy.
+
+**SHOULD-FIX**
+
+- [run.py:58](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:58): Reuse toàn bộ defn là control hợp lý **nếu model/runtime tương đương**; alias + context 8192 chưa chứng minh điều đó. Digest chỉ xác nhận prompt/params. **Fix:** lưu provenance đã sanitize về weights revision, tokenizer, quantization và serving configuration; ghi rõ đây là historical control.
+- [run.py:184](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:184): Thiếu usage và abstention summary như PREREG hứa; common-mode giảm cũng có thể do ít programs finish. **Fix:** report token usage, timeout/no-quorum counts, finishing support và common-mode rate trên shared support, giữ nguyên registered verdict.
+- [run.py:115](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:115): Freeze chỉ kiểm tra file mới tồn tại; external thiếu được hash thành `None`, malformed records/checks chưa bị chặn. `ready=None` sau đó gây unpack crash. **Fix:** preflight schema/digest, external existence, open-check parsing và v49 readiness trước freeze/reference work.
+
+**NOTES**
+
+- [run.py:42](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:42), [run.py:201](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:201): Prompts, seed schemes, k=5, params, resource-tolerant/strict validity, quorum, cap20, common-mode và per-problem-net/FA conditions khớp **v61 PREREG**. **Fix:** không cần; đây là adaptation của v55, vốn còn có precision floor `.95`.
+- [run.py:43](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:43): Không thấy PUT body/reference/hidden tests trong prompts; chỉ spec, public tests và signature. Tuy nhiên `tasks()` qua FTRun vẫn load evaluator data vào memory trước score. **Fix:** dùng public-only loader cho generation để thực thi chặt câu “references only in score”.
+- [run.py:25](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:25): Không thấy write sang v59/v53/v49/v48: execution/reference contexts và official root đều trỏ v61; `O.score_inputs` chỉ đọc. **Fix:** không cần.
+- [run.py:133](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:133), [run.py:175](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:175): Zero-valid và empty-input cases xử lý được; sibling grouping/net đúng. Saved Stage2 cho thấy 39/58 có pool rỗng, 69/70 và 73/74 không có exposing inputs; v61 không kiểm tra được interpretation recovery trên các tasks đó. **Fix:** giới hạn kết luận vào fixed pool, report reach rõ.
+- [run.py:154](/home/phong/dev/ConceptTester/trickcatcher_linefacts/analysis/v61_qwen_interpretation/run.py:154): Common-mode gọi official checks ngoài cap20, có thể tốn nhiều subprocesses; cache được chia sẻ giữa families cho mỗi task/input. **Fix:** report số checks/thời gian; giữ checks đầy đủ theo định nghĩa đã đăng ký.

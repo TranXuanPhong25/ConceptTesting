@@ -1,0 +1,8 @@
+# v73 terminal
+
+4paidstreamingcalls complete viaNearAI,actual$0.00062757,0unknown/failure.
+GPT-OSSraw85correctnarrowfailure+counterexample;raw124wrongoffbyone/editbreaks
+publicexample;full2explicitabstentions.3publicnativeprogramreplays,0privateoracle.
+AuditPASS60frozenfiles;price recomputation exact.19authoredtests passed.
+Samev72prompts;8192total+reasoninglow differs fromQwenbudget,so notmatchedcompute.
+Process exited;noactivejob/automaticcalls. ReadRESULTS.mdforcaveatsandreceipts.

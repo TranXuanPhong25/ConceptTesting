@@ -1,0 +1,60 @@
+{
+  "case_id": "61",
+  "proposals": 3,
+  "admitted": 1,
+  "rejected": [
+    {
+      "index": 0,
+      "reason": "ValueError:predicate_type:incompatible_int_str"
+    },
+    {
+      "index": 1,
+      "reason": "ValueError:predicate_type:incompatible_str_int"
+    }
+  ],
+  "normalizations": [
+    {
+      "index": 0,
+      "mode": "legacy",
+      "raw_sha256": "34ec08fd469bfe516ff9e18d4a8d02ed749735126114e0989ccd1ba63a286e97",
+      "rewrites": [
+        {
+          "path": "$.items[0]",
+          "rewrite": "gt"
+        }
+      ],
+      "status": "admission_rejected",
+      "compiled_index": 0,
+      "compiled_sha256": "15c563f974e63503d9b5de5d27058d48b61b18868e60af6c7f94b777217e9baf",
+      "reason": "ValueError:predicate_type:incompatible_int_str"
+    }
+  ],
+  "records": [
+    {
+      "hypothesis_id": "06bbb40e9d024eb5",
+      "public_status": "public_regression",
+      "issues": [
+        "public_regression"
+      ],
+      "runs": 0,
+      "realized": 0,
+      "sensitive": 0,
+      "domain_pruned_shapes": 0,
+      "domain_mismatches": 0
+    }
+  ],
+  "candidates": 0,
+  "native_executions": 2,
+  "gate": {
+    "case_id": "61",
+    "passed": false,
+    "delivered_sensitive": [],
+    "reason": "no_usable_delivered_evidence",
+    "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "semantic_truth": "unverified",
+    "input_domain_binding": "d1b917b697498698002a7c3632e965dbfe7bb84ca1f097ea7f2aaf4274b4eaac",
+    "input_validity": "explicit_constraints_checked",
+    "private_data_used": false
+  },
+  "elapsed_seconds": 0.17161551187746227
+}

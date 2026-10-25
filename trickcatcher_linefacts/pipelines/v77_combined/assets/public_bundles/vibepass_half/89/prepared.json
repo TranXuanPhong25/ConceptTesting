@@ -1,0 +1,408 @@
+{
+  "baseline": {
+    "task": 89,
+    "entry": "maximumSumQueries",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def maximumSumQueries(self, nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n        n = len(nums1)\n        m = len(queries)\n\n        pairs = []\n        for i in range(n):\n            pairs.append((nums1[i], nums2[i]))\n\n        sorted_pairs = sorted(pairs, key=lambda x: x[0], reverse=True)\n\n        query_indices = sorted(range(m), key=lambda k: queries[k][0], reverse=True)\n\n        ans = [-1] * m\n        \n        y_values = []\n        sums = []\n        \n        pair_idx = 0\n        for q_idx in query_indices:\n            x_i, y_i = queries[q_idx]\n            \n            while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i:\n                num1, num2 = sorted_pairs[pair_idx]\n                current_sum = num1 + num2\n                \n                # Maintain y_values and sums in a way that for a given y, we have the max sum\n                # If there's a previous entry with y_prev >= y_i and sum_prev >= current_sum,\n                # then the current entry is redundant.\n                # If there's a previous entry with y_prev < y_i and sum_prev <= current_sum,\n                # then the previous entry is redundant.\n                \n                # Find insertion point for y_values\n                low, high = 0, len(y_values)\n                insert_pos = len(y_values)\n                while low < high:\n                    mid = (low + high) // 2\n                    if y_values[mid] >= y_i:\n                        insert_pos = mid\n                        high = mid\n                    else:\n                        low = mid + 1\n\n                # Check for redundancy before insertion\n                if insert_pos < len(y_values) and sums[insert_pos] >= current_sum:\n                    pair_idx += 1\n                    continue\n                \n                # Remove redundant elements after the insertion point\n                while insert_pos < len(y_values) and sums[insert_pos] <= current_sum:\n                    y_values.pop(insert_pos)\n                    sums.pop(insert_pos)\n                \n                y_values.insert(insert_pos, y_i)\n                sums.insert(insert_pos, current_sum)\n                \n                pair_idx += 1\n\n            # Find the maximum sum for the current query y_i\n            low, high = 0, len(y_values)\n            best_sum = -1\n            while low < high:\n                mid = (low + high) // 2\n                if y_values[mid] >= y_i:\n                    best_sum = max(best_sum, sums[mid])\n                    low = mid + 1\n                else:\n                    high = mid\n            \n            ans[q_idx] = best_sum\n        \n        return ans\n\nimport copy\n\ndef maximumSumQueries(nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n    'You are given two 0-indexed integer arrays nums1 and nums2, each of length n, and a 1-indexed 2D array queries where queries[i] = [x_i, y_i].\\nFor the i^th query, find the maximum value of nums1[j] + nums2[j] among all indices j (0 <= j < n), where nums1[j] >= x_i and nums2[j] >= y_i, or -1 if there is no j satisfying the constraints.\\nReturn an array answer where answer[i] is the answer to the i^th query.\\n \\nExample 1:\\n\\nInput: nums1 = [4,3,1,2], nums2 = [2,4,9,5], queries = [[4,1],[1,3],[2,5]]\\nOutput: [6,10,7]\\nExplanation: \\nFor the 1st query x_i = 4 and y_i = 1, we can select index j = 0 since nums1[j] >= 4 and nums2[j] >= 1. The sum nums1[j] + nums2[j] is 6, and we can show that 6 is the maximum we can obtain.\\n\\nFor the 2nd query x_i = 1 and y_i = 3, we can select index j = 2 since nums1[j] >= 1 and nums2[j] >= 3. The sum nums1[j] + nums2[j] is 10, and we can show that 10 is the maximum we can obtain. \\n\\nFor the 3rd query x_i = 2 and y_i = 5, we can select index j = 3 since nums1[j] >= 2 and nums2[j] >= 5. The sum nums1[j] + nums2[j] is 7, and we can show that 7 is the maximum we can obtain.\\n\\nTherefore, we return [6,10,7].\\n\\nExample 2:\\n\\nInput: nums1 = [3,2,5], nums2 = [2,3,4], queries = [[4,4],[3,2],[1,1]]\\nOutput: [9,9,9]\\nExplanation: For this example, we can use index j = 2 for all the queries since it satisfies the constraints for each query.\\n\\nExample 3:\\n\\nInput: nums1 = [2,1], nums2 = [2,3], queries = [[3,3]]\\nOutput: [-1]\\nExplanation: There is one query in this example with x_i = 3 and y_i = 3. For every index, j, either nums1[j] < x_i or nums2[j] < y_i. Hence, there is no solution. \\n\\n \\nConstraints:\\n\\nnums1.length == nums2.length \\nn == nums1.length \\n1 <= n <= 10^5\\n1 <= nums1[i], nums2[i] <= 10^9 \\n1 <= queries.length <= 10^5\\nqueries[i].length == 2\\nx_i == queries[i][1]\\ny_i == queries[i][2]\\n1 <= x_i, y_i <= 10^9'\n    return Solution().maximumSumQueries(*copy.deepcopy((nums1, nums2, queries)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]]), [6, 10, 7], 0.0)\n    assert _heldout_same(candidate([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]]), [9, 9, 9], 0.0)\n    assert _heldout_same(candidate([2, 1], [2, 3], [[3, 3]]), [-1], 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 101,
+        "text": "Branch coverage (C2): the False branch of `y_values[mid] >= y_i` (line 101) is never taken by the existing tests.",
+        "cell": [
+          113,
+          "F"
+        ],
+        "witness": 11,
+        "reached": true,
+        "witness_call": "maximumSumQueries([4], [4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]])",
+        "block": 101,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 105,
+        "text": "Statement coverage (C1): line 105 (starting with `high = mid`) is never executed by the existing tests.",
+        "lines": [
+          105
+        ],
+        "witness": 11,
+        "reached": true,
+        "witness_call": "maximumSumQueries([4], [4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]])",
+        "block": 105,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 84,
+        "k": 86,
+        "family": "BCR",
+        "extended": true,
+        "text": "Mutation (BCR): the mutant `continue` -> `break` at line 84 survives: no existing test distinguishes them.",
+        "witness": 5,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "maximumSumQueries([2, 4, 9, 5], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+        "block": 82,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n\n    def maximumSumQueries(self, nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n        n = len(nums1)\n        m = len(queries)\n        pairs = []\n        for i in range(n):\n            pairs.append((nums1[i], nums2[i]))\n        sorted_pairs = sorted(pairs, key=lambda x: x[0], reverse=True)\n        query_indices = sorted(range(m), key=lambda k: queries[k][0], reverse=True)\n        ans = [-1] * m\n        y_values = []\n        sums = []\n        pair_idx = 0\n        for q_idx in query_indices:\n            x_i, y_i = queries[q_idx]\n            while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i:\n                num1, num2 = sorted_pairs[pair_idx]\n                current_sum = num1 + num2\n                low, high = (0, len(y_values))\n                insert_pos = len(y_values)\n                while low < high:\n                    mid = (low + high) // 2\n                    if y_values[mid] >= y_i:\n                        insert_pos = mid\n                        high = mid\n                    else:\n                        low = mid + 1\n                if insert_pos < len(y_values) and sums[insert_pos] >= current_sum:\n                    pair_idx += 1\n                    break\n                while insert_pos < len(y_values) and sums[insert_pos] <= current_sum:\n                    y_values.pop(insert_pos)\n                    sums.pop(insert_pos)\n                y_values.insert(insert_pos, y_i)\n                sums.insert(insert_pos, current_sum)\n                pair_idx += 1\n            low, high = (0, len(y_values))\n            best_sum = -1\n            while low < high:\n                mid = (low + high) // 2\n                if y_values[mid] >= y_i:\n                    best_sum = max(best_sum, sums[mid])\n                    low = mid + 1\n                else:\n                    high = mid\n            ans[q_idx] = best_sum\n        return ans\nimport copy\n\ndef maximumSumQueries(nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n    \"\"\"You are given two 0-indexed integer arrays nums1 and nums2, each of length n, and a 1-indexed 2D array queries where queries[i] = [x_i, y_i].\nFor the i^th query, find the maximum value of nums1[j] + nums2[j] among all indices j (0 <= j < n), where nums1[j] >= x_i and nums2[j] >= y_i, or -1 if there is no j satisfying the constraints.\nReturn an array answer where answer[i] is the answer to the i^th query.\n \nExample 1:\n\nInput: nums1 = [4,3,1,2], nums2 = [2,4,9,5], queries = [[4,1],[1,3],[2,5]]\nOutput: [6,10,7]\nExplanation: \nFor the 1st query x_i = 4 and y_i = 1, we can select index j = 0 since nums1[j] >= 4 and nums2[j] >= 1. The sum nums1[j] + nums2[j] is 6, and we can show that 6 is the maximum we can obtain.\n\nFor the 2nd query x_i = 1 and y_i = 3, we can select index j = 2 since nums1[j] >= 1 and nums2[j] >= 3. The sum nums1[j] + nums2[j] is 10, and we can show that 10 is the maximum we can obtain. \n\nFor the 3rd query x_i = 2 and y_i = 5, we can select index j = 3 since nums1[j] >= 2 and nums2[j] >= 5. The sum nums1[j] + nums2[j] is 7, and we can show that 7 is the maximum we can obtain.\n\nTherefore, we return [6,10,7].\n\nExample 2:\n\nInput: nums1 = [3,2,5], nums2 = [2,3,4], queries = [[4,4],[3,2],[1,1]]\nOutput: [9,9,9]\nExplanation: For this example, we can use index j = 2 for all the queries since it satisfies the constraints for each query.\n\nExample 3:\n\nInput: nums1 = [2,1], nums2 = [2,3], queries = [[3,3]]\nOutput: [-1]\nExplanation: There is one query in this example with x_i = 3 and y_i = 3. For every index, j, either nums1[j] < x_i or nums2[j] < y_i. Hence, there is no solution. \n\n \nConstraints:\n\nnums1.length == nums2.length \nn == nums1.length \n1 <= n <= 10^5\n1 <= nums1[i], nums2[i] <= 10^9 \n1 <= queries.length <= 10^5\nqueries[i].length == 2\nx_i == queries[i][1]\ny_i == queries[i][2]\n1 <= x_i, y_i <= 10^9\"\"\"\n    return Solution().maximumSumQueries(*copy.deepcopy((nums1, nums2, queries)))"
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 82,
+        "text": "Condition coverage (C3): the sub-condition `insert_pos < len(y_values)` of the decision at line 82 is both True and False in the existing tests.",
+        "cells": [
+          [
+            69,
+            "T"
+          ],
+          [
+            69,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 56,
+        "text": "Statement coverage (C1): line 56 (`pair_idx = 0`) is executed by the existing tests.",
+        "lines": [
+          56
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 60,
+        "k": 74,
+        "family": "ZIL",
+        "extended": true,
+        "text": "Mutation (ZIL): the mutant `while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i` -> `skip the loop body` at line 60 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n\n    def maximumSumQueries(self, nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n        n = len(nums1)\n        m = len(queries)\n        pairs = []\n        for i in range(n):\n            pairs.append((nums1[i], nums2[i]))\n        sorted_pairs = sorted(pairs, key=lambda x: x[0], reverse=True)\n        query_indices = sorted(range(m), key=lambda k: queries[k][0], reverse=True)\n        ans = [-1] * m\n        y_values = []\n        sums = []\n        pair_idx = 0\n        for q_idx in query_indices:\n            x_i, y_i = queries[q_idx]\n            while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i:\n                break\n            low, high = (0, len(y_values))\n            best_sum = -1\n            while low < high:\n                mid = (low + high) // 2\n                if y_values[mid] >= y_i:\n                    best_sum = max(best_sum, sums[mid])\n                    low = mid + 1\n                else:\n                    high = mid\n            ans[q_idx] = best_sum\n        return ans\nimport copy\n\ndef maximumSumQueries(nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n    \"\"\"You are given two 0-indexed integer arrays nums1 and nums2, each of length n, and a 1-indexed 2D array queries where queries[i] = [x_i, y_i].\nFor the i^th query, find the maximum value of nums1[j] + nums2[j] among all indices j (0 <= j < n), where nums1[j] >= x_i and nums2[j] >= y_i, or -1 if there is no j satisfying the constraints.\nReturn an array answer where answer[i] is the answer to the i^th query.\n \nExample 1:\n\nInput: nums1 = [4,3,1,2], nums2 = [2,4,9,5], queries = [[4,1],[1,3],[2,5]]\nOutput: [6,10,7]\nExplanation: \nFor the 1st query x_i = 4 and y_i = 1, we can select index j = 0 since nums1[j] >= 4 and nums2[j] >= 1. The sum nums1[j] + nums2[j] is 6, and we can show that 6 is the maximum we can obtain.\n\nFor the 2nd query x_i = 1 and y_i = 3, we can select index j = 2 since nums1[j] >= 1 and nums2[j] >= 3. The sum nums1[j] + nums2[j] is 10, and we can show that 10 is the maximum we can obtain. \n\nFor the 3rd query x_i = 2 and y_i = 5, we can select index j = 3 since nums1[j] >= 2 and nums2[j] >= 5. The sum nums1[j] + nums2[j] is 7, and we can show that 7 is the maximum we can obtain.\n\nTherefore, we return [6,10,7].\n\nExample 2:\n\nInput: nums1 = [3,2,5], nums2 = [2,3,4], queries = [[4,4],[3,2],[1,1]]\nOutput: [9,9,9]\nExplanation: For this example, we can use index j = 2 for all the queries since it satisfies the constraints for each query.\n\nExample 3:\n\nInput: nums1 = [2,1], nums2 = [2,3], queries = [[3,3]]\nOutput: [-1]\nExplanation: There is one query in this example with x_i = 3 and y_i = 3. For every index, j, either nums1[j] < x_i or nums2[j] < y_i. Hence, there is no solution. \n\n \nConstraints:\n\nnums1.length == nums2.length \nn == nums1.length \n1 <= n <= 10^5\n1 <= nums1[i], nums2[i] <= 10^9 \n1 <= queries.length <= 10^5\nqueries[i].length == 2\nx_i == queries[i][1]\ny_i == queries[i][2]\n1 <= x_i, y_i <= 10^9\"\"\"\n    return Solution().maximumSumQueries(*copy.deepcopy((nums1, nums2, queries)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the False branch of `y_values[mid] >= y_i` (line 101) is never taken by the existing tests.",
+      "Statement coverage (C1): line 105 (starting with `high = mid`) is never executed by the existing tests.",
+      "Mutation (BCR): the mutant `continue` -> `break` at line 84 survives: no existing test distinguishes them."
+    ],
+    "placebo_facts": [
+      "Condition coverage (C3): the sub-condition `insert_pos < len(y_values)` of the decision at line 82 is both True and False in the existing tests.",
+      "Statement coverage (C1): line 56 (`pair_idx = 0`) is executed by the existing tests.",
+      "Mutation (ZIL): the mutant `while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i` -> `skip the loop body` at line 60 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "maximumSumQueries([4], [4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4], [4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([2, 4, 9, 5], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]]), ([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]]), ([2, 1], [2, 3], [[3, 3]])]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12), st.lists(st.integers(min_value=-10, max_value=200), max_size=12), st.lists(st.lists(st.integers(min_value=-10, max_value=200), max_size=12), max_size=12)))\n",
+    "strategy_sha256": "6170d30e983fe91f2096d665e7a76969bdd62b206184caf193c1339b0e459778",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 89,
+    "entry": "maximumSumQueries",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def maximumSumQueries(self, nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n        n = len(nums1)\n        m = len(queries)\n\n        pairs = []\n        for i in range(n):\n            pairs.append((nums1[i], nums2[i]))\n\n        sorted_pairs = sorted(pairs, key=lambda x: x[0], reverse=True)\n\n        query_indices = sorted(range(m), key=lambda k: queries[k][0], reverse=True)\n\n        ans = [-1] * m\n        \n        y_values = []\n        sums = []\n        \n        pair_idx = 0\n        for q_idx in query_indices:\n            x_i, y_i = queries[q_idx]\n            \n            while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i:\n                num1, num2 = sorted_pairs[pair_idx]\n                current_sum = num1 + num2\n                \n                # Maintain y_values and sums in a way that for a given y, we have the max sum\n                # If there's a previous entry with y_prev >= y_i and sum_prev >= current_sum,\n                # then the current entry is redundant.\n                # If there's a previous entry with y_prev < y_i and sum_prev <= current_sum,\n                # then the previous entry is redundant.\n                \n                # Find insertion point for y_values\n                low, high = 0, len(y_values)\n                insert_pos = len(y_values)\n                while low < high:\n                    mid = (low + high) // 2\n                    if y_values[mid] >= y_i:\n                        insert_pos = mid\n                        high = mid\n                    else:\n                        low = mid + 1\n\n                # Check for redundancy before insertion\n                if insert_pos < len(y_values) and sums[insert_pos] >= current_sum:\n                    pair_idx += 1\n                    continue\n                \n                # Remove redundant elements after the insertion point\n                while insert_pos < len(y_values) and sums[insert_pos] <= current_sum:\n                    y_values.pop(insert_pos)\n                    sums.pop(insert_pos)\n                \n                y_values.insert(insert_pos, y_i)\n                sums.insert(insert_pos, current_sum)\n                \n                pair_idx += 1\n\n            # Find the maximum sum for the current query y_i\n            low, high = 0, len(y_values)\n            best_sum = -1\n            while low < high:\n                mid = (low + high) // 2\n                if y_values[mid] >= y_i:\n                    best_sum = max(best_sum, sums[mid])\n                    low = mid + 1\n                else:\n                    high = mid\n            \n            ans[q_idx] = best_sum\n        \n        return ans\n\nimport copy\n\ndef maximumSumQueries(nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n    'You are given two 0-indexed integer arrays nums1 and nums2, each of length n, and a 1-indexed 2D array queries where queries[i] = [x_i, y_i].\\nFor the i^th query, find the maximum value of nums1[j] + nums2[j] among all indices j (0 <= j < n), where nums1[j] >= x_i and nums2[j] >= y_i, or -1 if there is no j satisfying the constraints.\\nReturn an array answer where answer[i] is the answer to the i^th query.\\n \\nExample 1:\\n\\nInput: nums1 = [4,3,1,2], nums2 = [2,4,9,5], queries = [[4,1],[1,3],[2,5]]\\nOutput: [6,10,7]\\nExplanation: \\nFor the 1st query x_i = 4 and y_i = 1, we can select index j = 0 since nums1[j] >= 4 and nums2[j] >= 1. The sum nums1[j] + nums2[j] is 6, and we can show that 6 is the maximum we can obtain.\\n\\nFor the 2nd query x_i = 1 and y_i = 3, we can select index j = 2 since nums1[j] >= 1 and nums2[j] >= 3. The sum nums1[j] + nums2[j] is 10, and we can show that 10 is the maximum we can obtain. \\n\\nFor the 3rd query x_i = 2 and y_i = 5, we can select index j = 3 since nums1[j] >= 2 and nums2[j] >= 5. The sum nums1[j] + nums2[j] is 7, and we can show that 7 is the maximum we can obtain.\\n\\nTherefore, we return [6,10,7].\\n\\nExample 2:\\n\\nInput: nums1 = [3,2,5], nums2 = [2,3,4], queries = [[4,4],[3,2],[1,1]]\\nOutput: [9,9,9]\\nExplanation: For this example, we can use index j = 2 for all the queries since it satisfies the constraints for each query.\\n\\nExample 3:\\n\\nInput: nums1 = [2,1], nums2 = [2,3], queries = [[3,3]]\\nOutput: [-1]\\nExplanation: There is one query in this example with x_i = 3 and y_i = 3. For every index, j, either nums1[j] < x_i or nums2[j] < y_i. Hence, there is no solution. \\n\\n \\nConstraints:\\n\\nnums1.length == nums2.length \\nn == nums1.length \\n1 <= n <= 10^5\\n1 <= nums1[i], nums2[i] <= 10^9 \\n1 <= queries.length <= 10^5\\nqueries[i].length == 2\\nx_i == queries[i][1]\\ny_i == queries[i][2]\\n1 <= x_i, y_i <= 10^9'\n    return Solution().maximumSumQueries(*copy.deepcopy((nums1, nums2, queries)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]]), [6, 10, 7], 0.0)\n    assert _heldout_same(candidate([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]]), [9, 9, 9], 0.0)\n    assert _heldout_same(candidate([2, 1], [2, 3], [[3, 3]]), [-1], 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 101,
+        "text": "Branch coverage (C2): the False branch of `y_values[mid] >= y_i` (line 101) is never taken by the existing tests.",
+        "cell": [
+          113,
+          "F"
+        ],
+        "witness": 11,
+        "reached": true,
+        "witness_call": "maximumSumQueries([4], [4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]])",
+        "block": 101,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 75,
+        "fault_type": "BOUNDARY",
+        "text": "Fault-type adequacy at L75: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if y_values[mid] >= y_i:`. The public tests do not distinguish 1 surviving alternatives (`>= y_i` -> `> y_i`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 1,
+        "distinguished": 1,
+        "alternatives": [
+          "`>= y_i` -> `> y_i`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def maximumSumQueries(self, nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n        n = len(nums1)\n        m = len(queries)\n\n        pairs = []\n        for i in range(n):\n            pairs.append((nums1[i], nums2[i]))\n\n        sorted_pairs = sorted(pairs, key=lambda x: x[0], reverse=True)\n\n        query_indices = sorted(range(m), key=lambda k: queries[k][0], reverse=True)\n\n        ans = [-1] * m\n        \n        y_values = []\n        sums = []\n        \n        pair_idx = 0\n        for q_idx in query_indices:\n            x_i, y_i = queries[q_idx]\n            \n            while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i:\n                num1, num2 = sorted_pairs[pair_idx]\n                current_sum = num1 + num2\n                \n                # Maintain y_values and sums in a way that for a given y, we have the max sum\n                # If there's a previous entry with y_prev >= y_i and sum_prev >= current_sum,\n                # then the current entry is redundant.\n                # If there's a previous entry with y_prev < y_i and sum_prev <= current_sum,\n                # then the previous entry is redundant.\n                \n                # Find insertion point for y_values\n                low, high = 0, len(y_values)\n                insert_pos = len(y_values)\n                while low < high:\n                    mid = (low + high) // 2\n                    if y_values[mid] > y_i:\n                        insert_pos = mid\n                        high = mid\n                    else:\n                        low = mid + 1\n\n                # Check for redundancy before insertion\n                if insert_pos < len(y_values) and sums[insert_pos] >= current_sum:\n                    pair_idx += 1\n                    continue\n                \n                # Remove redundant elements after the insertion point\n                while insert_pos < len(y_values) and sums[insert_pos] <= current_sum:\n                    y_values.pop(insert_pos)\n                    sums.pop(insert_pos)\n                \n                y_values.insert(insert_pos, y_i)\n                sums.insert(insert_pos, current_sum)\n                \n                pair_idx += 1\n\n            # Find the maximum sum for the current query y_i\n            low, high = 0, len(y_values)\n            best_sum = -1\n            while low < high:\n                mid = (low + high) // 2\n                if y_values[mid] >= y_i:\n                    best_sum = max(best_sum, sums[mid])\n                    low = mid + 1\n                else:\n                    high = mid\n            \n            ans[q_idx] = best_sum\n        \n        return ans\n\nimport copy\n\ndef maximumSumQueries(nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n    'You are given two 0-indexed integer arrays nums1 and nums2, each of length n, and a 1-indexed 2D array queries where queries[i] = [x_i, y_i].\\nFor the i^th query, find the maximum value of nums1[j] + nums2[j] among all indices j (0 <= j < n), where nums1[j] >= x_i and nums2[j] >= y_i, or -1 if there is no j satisfying the constraints.\\nReturn an array answer where answer[i] is the answer to the i^th query.\\n \\nExample 1:\\n\\nInput: nums1 = [4,3,1,2], nums2 = [2,4,9,5], queries = [[4,1],[1,3],[2,5]]\\nOutput: [6,10,7]\\nExplanation: \\nFor the 1st query x_i = 4 and y_i = 1, we can select index j = 0 since nums1[j] >= 4 and nums2[j] >= 1. The sum nums1[j] + nums2[j] is 6, and we can show that 6 is the maximum we can obtain.\\n\\nFor the 2nd query x_i = 1 and y_i = 3, we can select index j = 2 since nums1[j] >= 1 and nums2[j] >= 3. The sum nums1[j] + nums2[j] is 10, and we can show that 10 is the maximum we can obtain. \\n\\nFor the 3rd query x_i = 2 and y_i = 5, we can select index j = 3 since nums1[j] >= 2 and nums2[j] >= 5. The sum nums1[j] + nums2[j] is 7, and we can show that 7 is the maximum we can obtain.\\n\\nTherefore, we return [6,10,7].\\n\\nExample 2:\\n\\nInput: nums1 = [3,2,5], nums2 = [2,3,4], queries = [[4,4],[3,2],[1,1]]\\nOutput: [9,9,9]\\nExplanation: For this example, we can use index j = 2 for all the queries since it satisfies the constraints for each query.\\n\\nExample 3:\\n\\nInput: nums1 = [2,1], nums2 = [2,3], queries = [[3,3]]\\nOutput: [-1]\\nExplanation: There is one query in this example with x_i = 3 and y_i = 3. For every index, j, either nums1[j] < x_i or nums2[j] < y_i. Hence, there is no solution. \\n\\n \\nConstraints:\\n\\nnums1.length == nums2.length \\nn == nums1.length \\n1 <= n <= 10^5\\n1 <= nums1[i], nums2[i] <= 10^9 \\n1 <= queries.length <= 10^5\\nqueries[i].length == 2\\nx_i == queries[i][1]\\ny_i == queries[i][2]\\n1 <= x_i, y_i <= 10^9'\n    return Solution().maximumSumQueries(*copy.deepcopy((nums1, nums2, queries)))\n"
+        ],
+        "reached": true,
+        "witness_call": "maximumSumQueries([4, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+        "block": 75,
+        "witness": 41
+      },
+      {
+        "kind": "STMT",
+        "line": 105,
+        "text": "Statement coverage (C1): line 105 (starting with `high = mid`) is never executed by the existing tests.",
+        "lines": [
+          105
+        ],
+        "witness": 11,
+        "reached": true,
+        "witness_call": "maximumSumQueries([4], [4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]])",
+        "block": 105,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 82,
+        "text": "Condition coverage (C3): the sub-condition `insert_pos < len(y_values)` of the decision at line 82 is both True and False in the existing tests.",
+        "cells": [
+          [
+            69,
+            "T"
+          ],
+          [
+            69,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 56,
+        "text": "Statement coverage (C1): line 56 (`pair_idx = 0`) is executed by the existing tests.",
+        "lines": [
+          56
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 60,
+        "k": 74,
+        "family": "ZIL",
+        "extended": true,
+        "text": "Mutation (ZIL): the mutant `while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i` -> `skip the loop body` at line 60 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n\n    def maximumSumQueries(self, nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n        n = len(nums1)\n        m = len(queries)\n        pairs = []\n        for i in range(n):\n            pairs.append((nums1[i], nums2[i]))\n        sorted_pairs = sorted(pairs, key=lambda x: x[0], reverse=True)\n        query_indices = sorted(range(m), key=lambda k: queries[k][0], reverse=True)\n        ans = [-1] * m\n        y_values = []\n        sums = []\n        pair_idx = 0\n        for q_idx in query_indices:\n            x_i, y_i = queries[q_idx]\n            while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i:\n                break\n            low, high = (0, len(y_values))\n            best_sum = -1\n            while low < high:\n                mid = (low + high) // 2\n                if y_values[mid] >= y_i:\n                    best_sum = max(best_sum, sums[mid])\n                    low = mid + 1\n                else:\n                    high = mid\n            ans[q_idx] = best_sum\n        return ans\nimport copy\n\ndef maximumSumQueries(nums1: List[int], nums2: List[int], queries: List[List[int]]) -> List[int]:\n    \"\"\"You are given two 0-indexed integer arrays nums1 and nums2, each of length n, and a 1-indexed 2D array queries where queries[i] = [x_i, y_i].\nFor the i^th query, find the maximum value of nums1[j] + nums2[j] among all indices j (0 <= j < n), where nums1[j] >= x_i and nums2[j] >= y_i, or -1 if there is no j satisfying the constraints.\nReturn an array answer where answer[i] is the answer to the i^th query.\n \nExample 1:\n\nInput: nums1 = [4,3,1,2], nums2 = [2,4,9,5], queries = [[4,1],[1,3],[2,5]]\nOutput: [6,10,7]\nExplanation: \nFor the 1st query x_i = 4 and y_i = 1, we can select index j = 0 since nums1[j] >= 4 and nums2[j] >= 1. The sum nums1[j] + nums2[j] is 6, and we can show that 6 is the maximum we can obtain.\n\nFor the 2nd query x_i = 1 and y_i = 3, we can select index j = 2 since nums1[j] >= 1 and nums2[j] >= 3. The sum nums1[j] + nums2[j] is 10, and we can show that 10 is the maximum we can obtain. \n\nFor the 3rd query x_i = 2 and y_i = 5, we can select index j = 3 since nums1[j] >= 2 and nums2[j] >= 5. The sum nums1[j] + nums2[j] is 7, and we can show that 7 is the maximum we can obtain.\n\nTherefore, we return [6,10,7].\n\nExample 2:\n\nInput: nums1 = [3,2,5], nums2 = [2,3,4], queries = [[4,4],[3,2],[1,1]]\nOutput: [9,9,9]\nExplanation: For this example, we can use index j = 2 for all the queries since it satisfies the constraints for each query.\n\nExample 3:\n\nInput: nums1 = [2,1], nums2 = [2,3], queries = [[3,3]]\nOutput: [-1]\nExplanation: There is one query in this example with x_i = 3 and y_i = 3. For every index, j, either nums1[j] < x_i or nums2[j] < y_i. Hence, there is no solution. \n\n \nConstraints:\n\nnums1.length == nums2.length \nn == nums1.length \n1 <= n <= 10^5\n1 <= nums1[i], nums2[i] <= 10^9 \n1 <= queries.length <= 10^5\nqueries[i].length == 2\nx_i == queries[i][1]\ny_i == queries[i][2]\n1 <= x_i, y_i <= 10^9\"\"\"\n    return Solution().maximumSumQueries(*copy.deepcopy((nums1, nums2, queries)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the False branch of `y_values[mid] >= y_i` (line 101) is never taken by the existing tests.",
+      "Fault-type adequacy at L75: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if y_values[mid] >= y_i:`. The public tests do not distinguish 1 surviving alternatives (`>= y_i` -> `> y_i`). Exercise this behaviour and determine the required result from the specification.",
+      "Statement coverage (C1): line 105 (starting with `high = mid`) is never executed by the existing tests."
+    ],
+    "placebo_facts": [
+      "Condition coverage (C3): the sub-condition `insert_pos < len(y_values)` of the decision at line 82 is both True and False in the existing tests.",
+      "Statement coverage (C1): line 56 (`pair_idx = 0`) is executed by the existing tests.",
+      "Mutation (ZIL): the mutant `while pair_idx < n and sorted_pairs[pair_idx][0] >= x_i` -> `skip the loop body` at line 60 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "maximumSumQueries([4], [4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([2, 4, 9, 5], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([2, 3], [2, 1], [[3, 3]])",
+      "maximumSumQueries([49999, 49999], [2, 3], [[3, 3]])",
+      "maximumSumQueries([-3007, -2007, -5007], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 0, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3], [2, 3, 4], [3, 2, 5])",
+      "maximumSumQueries([2, 1], [-1, -1], [[3, 3]])",
+      "maximumSumQueries([3, 2, 5], [-2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 5], [0, 0, 0], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2], [2, 4, 9, 5])",
+      "maximumSumQueries([2, 1], [[3, 3]], [2, 3])",
+      "maximumSumQueries([4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]], [2, 4, 9, 5])",
+      "maximumSumQueries([2, 1], [2, 3], [2, 1])",
+      "maximumSumQueries([4, 3, 1, 2], [[4, 1], [1, 3], [2, 5]], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[1, 4], [1, 3], [2, 5]])",
+      "maximumSumQueries([], [2, 3], [[3, 3]])",
+      "maximumSumQueries([4, 3, 1, 2, 4], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5, 2]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1], [4, 4]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[0, 1], [0, 3], [2, 0]])",
+      "maximumSumQueries([4, 3], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 2], [2, 3], [[3, 3]])",
+      "maximumSumQueries([4, 4, 4, 4], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 3, 3], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([1, 1], [2, 3], [[3, 3]])",
+      "maximumSumQueries([1, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([1, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 1, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 1, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 1], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 2], [[3, 3]])",
+      "maximumSumQueries([2, 1], [1, 3], [[3, 3]])",
+      "maximumSumQueries([4, 3, 1, 1], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 5], [2, 2, 2], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 1], [[3, 3]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [1, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 2, 2, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [1, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 1, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 1, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 1], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 1, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 1], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [3, 3], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 4], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 1], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 2]])",
+      "maximumSumQueries([4, 3, 1], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1, 1], [2, 3], [[3, 3]])",
+      "maximumSumQueries([3, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([2, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([5, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 1], [2, 3], [[3, 3]])",
+      "maximumSumQueries([2, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 2, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 4, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 3, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 4], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 2, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 6], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 3, 3], [[3, 3]])",
+      "maximumSumQueries([2, 1], [3, 3], [[3, 3]])",
+      "maximumSumQueries([3, 2, 2], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 3], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 5], [3, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 4], [[3, 3]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 2, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [3, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 4, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 3], [[3, 3, 3]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 3, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 3], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 5, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 5], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 2, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 2], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 8, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 10, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 2, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 4], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 6], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5, 5]])",
+      "maximumSumQueries([1, 2, 3, 4], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([2, 3, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([1, 2], [2, 3], [[3, 3]])",
+      "maximumSumQueries([2, 1, 3, 4], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([5, 2, 3], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [3, 2], [[3, 3]])",
+      "maximumSumQueries([3, 2, 5], [4, 3, 2], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 5, 9], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [5, 9, 4, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[1, 1], [3, 2], [4, 4]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[1, 3], [2, 5], [4, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[2, 5], [1, 3], [4, 1]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [2, 3], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [3, 1], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [5, 2]])",
+      "maximumSumQueries([2, 3, 1, 4], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2, 5], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5, 6], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1, 3], [2, 3], [[3, 3]])",
+      "maximumSumQueries([6, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([5, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 1], [2, 3], [[3, 3]])",
+      "maximumSumQueries([4, 5, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 4, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 3], [2, 3], [[3, 3]])",
+      "maximumSumQueries([4, 3, 3, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 7], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 3], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 3, 4], [[3, 3]])",
+      "maximumSumQueries([4, 3, 1, 4], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4, 5], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [4, 3], [[3, 3]])",
+      "maximumSumQueries([4, 3, 1, 2], [5, 4, 9, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5, 10], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [4, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 5], [[3, 3]])",
+      "maximumSumQueries([4, 3, 1, 2], [4, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 5, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 3], [[3, 3, 4]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 6, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 6], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([2, 1], [2, 3], [[2, 3]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 11, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 7, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 7], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4, 5], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 3], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[3, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2, 4], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1, 5], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [1, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[0, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1, 2]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3, 4], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [0, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [0, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5, 6]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [1, 5]])",
+      "maximumSumQueries([3, 1, 2, 4], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([2, 5, 3], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 2, 1], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([5, 3, 2], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [4, 9, 5, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [3, 4, 2], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([4, 3, 1, 2], [9, 5, 4, 2], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 9, 5], [[4, 1], [1, 3], [2, 5]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 3, 4], [[4, 4], [3, 2], [1, 1]])",
+      "maximumSumQueries([3, 2, 5], [2, 3, 4], [[3, 2], [1, 1], [4, 4]])",
+      "maximumSumQueries([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [2, 5], [1, 3]])"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([4, 3, 1, 2], [2, 4, 9, 5], [[4, 1], [1, 3], [2, 5]]), ([3, 2, 5], [2, 3, 4], [[4, 4], [3, 2], [1, 1]]), ([2, 1], [2, 3], [[3, 3]])]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12), st.lists(st.integers(min_value=-10, max_value=200), max_size=12), st.lists(st.lists(st.integers(min_value=-10, max_value=200), max_size=12), max_size=12)))\n",
+    "strategy_sha256": "6170d30e983fe91f2096d665e7a76969bdd62b206184caf193c1339b0e459778",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 105,
+    "survivors": 17
+  }
+}

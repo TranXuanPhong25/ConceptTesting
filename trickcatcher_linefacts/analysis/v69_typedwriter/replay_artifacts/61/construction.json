@@ -1,0 +1,113 @@
+{
+  "case_id": "61",
+  "records": [
+    {
+      "hypothesis": {
+        "site_id": "271965bc5bf450f8",
+        "family": "Incorrect range for iteration",
+        "required_relation": "Iterate over all characters in the caption",
+        "observed_relation": "Iterate from 1 to n (inclusive)",
+        "priority": 1,
+        "trigger": {
+          "op": "literal",
+          "value": true
+        },
+        "event_predicate": {
+          "op": "literal",
+          "value": true
+        },
+        "alternative": "range(n)",
+        "alternative_rationale": "The spec requires iterating over all characters in the caption, which means the loop should run from 0 to n-1. The current code iterates from 1 to n, which skips the first character. Changing the range to 'range(n)' ensures that all characters are processed, aligning with the spec.",
+        "spec_quote": "You are given a string caption of length n. A good caption is a string where every character appears in groups of at least 3 consecutive occurrences.",
+        "site": {
+          "id": "271965bc5bf450f8",
+          "span": [
+            49,
+            17,
+            49,
+            32
+          ],
+          "kind": "Call",
+          "scope": [
+            "Solution@36",
+            "minCostGoodCaption@37"
+          ],
+          "code": "range(1, n + 1)"
+        },
+        "source_sha256": "6145feeb540355615c527742c39303d48a2e3afdf025c2ca8011a7ebfb83eda3",
+        "semantic_status": "unverified",
+        "source_binding": "verified",
+        "spec_quote_status": "present",
+        "id": "06bbb40e9d024eb5"
+      },
+      "public_consistency": {
+        "status": "public_regression",
+        "rows": [
+          {
+            "example": 0,
+            "program": "put",
+            "seed": 20261024,
+            "repeat": 0,
+            "normal": true,
+            "matches": true,
+            "observation": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "str",
+                  "repr": "'cccc'"
+                },
+                "site_events": [],
+                "branches": [],
+                "capture": {
+                  "events_truncated": false,
+                  "branches_truncated": false,
+                  "capture_error": false
+                }
+              }
+            }
+          },
+          {
+            "example": 0,
+            "program": "alternative",
+            "seed": 20261024,
+            "repeat": 0,
+            "normal": true,
+            "matches": false,
+            "observation": {
+              "status": "ok",
+              "put": {
+                "status": "ok",
+                "output": {
+                  "type": "str",
+                  "repr": "'zzzz'"
+                },
+                "site_events": [],
+                "branches": [],
+                "capture": {
+                  "events_truncated": false,
+                  "branches_truncated": false,
+                  "capture_error": false
+                }
+              }
+            }
+          }
+        ],
+        "native_executions": 2,
+        "semantic_truth": "unverified"
+      },
+      "construction": {
+        "status": "blocked_public_consistency",
+        "issues": [
+          "public_regression"
+        ]
+      },
+      "runs": []
+    }
+  ],
+  "native_executions": 2,
+  "candidates_tested": 0,
+  "remaining_semantic_status": "unverified",
+  "private_data_used": false
+}

@@ -1,0 +1,259 @@
+{
+  "baseline": {
+    "task": 46,
+    "entry": "makeStringGood",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def makeStringGood(self, s: str) -> int:\n        import sys\n        from math import inf\n        data = s\n        if not data:\n            data = \"\"\n        cnt = [0]*26\n        for ch in data:\n            if 'a' <= ch <= 'z':\n                cnt[ord(ch)-97] += 1\n        n = sum(cnt)\n        ans = inf\n        for k in range(1,27):\n            if k > 26: break\n            f1 = n//k\n            candidates = set()\n            if f1 >= 1:\n                candidates.add(f1)\n            candidates.add(max(1, f1+1))\n            for f in candidates:\n                if f <= 0: continue\n                if k*f < 1: continue\n                if k*f > n + 20000: pass\n                INF = 10**18\n                dp_prev = [ [INF]*(f+1) for _ in range(k+1) ]\n                dp_prev[0][0] = 0\n                for pos in range(26):\n                    dp_next = [ [INF]*(f+1) for _ in range(k+1) ]\n                    for used in range(0, k+1):\n                        base_row = dp_prev[used]\n                        # two options: not choose this pos or choose it\n                        for is_target in (0,1):\n                            if used + is_target > k: continue\n                            D = f if is_target==1 else 0\n                            # buckets by cap\n                            buckets = [[] for _ in range(f+1)]\n                            any_entry = False\n                            for y in range(0, f+1):\n                                v = base_row[y]\n                                if v >= INF: continue\n                                used_from_carry = y if y <= D else D\n                                need_after_carry = D - used_from_carry\n                                if need_after_carry <= 0:\n                                    used_from_local = 0\n                                else:\n                                    used_from_local = cnt[pos] if cnt[pos] <= need_after_carry else need_after_carry\n                                inserts = need_after_carry - used_from_local\n                                if inserts < 0: inserts = 0\n                                leftover_local = cnt[pos] - used_from_local\n                                cap = leftover_local if leftover_local < f else f\n                                if pos == 25:\n                                    cap = 0\n                                val = v + inserts + leftover_local\n                                buckets[cap].append(val)\n                                any_entry = True\n                            if not any_entry:\n                                continue\n                            curmin = INF\n                            tgt_row = dp_next[used+is_target]\n                            for x in range(f, -1, -1):\n                                if buckets[x]:\n                                    m = buckets[x][0]\n                                    if len(buckets[x])>1:\n                                        for vv in buckets[x][1:]:\n                                            if vv < m: m = vv\n                                    if m < curmin:\n                                        curmin = m\n                                if curmin < tgt_row[x]:\n                                    tgt_row[x] = curmin\n                    dp_prev = dp_next\n                final = dp_prev[k][0]\n                if final < ans:\n                    ans = final\n        if ans == inf:\n            ans = 0\n        return ans\n\nif __name__ == \"__main__\":\n    import sys, re\n    data = sys.stdin.read()\n    if not data:\n        print(0)\n    else:\n        m = re.search(r\"[a-z]+\", data)\n        s = m.group(0) if m else \"\"\n        sol = Solution()\n        print(sol.makeStringGood(s))\n\nimport copy\n\ndef makeStringGood(s: str) -> int:\n    'You are given a string s.\\nA string t is called good if all characters of t occur the same number of times.\\nYou can perform the following operations any number of times:\\n\\nDelete a character from s.\\nInsert a character in s.\\nChange a character in s to its next letter in the alphabet.\\n\\nNote that you cannot change \\'z\\' to \\'a\\' using the third operation.\\nReturn the minimum number of operations required to make s good.\\n \\nExample 1:\\n\\nInput: s = \"acab\"\\nOutput: 1\\nExplanation:\\nWe can make s good by deleting one occurrence of character \\'a\\'.\\n\\nExample 2:\\n\\nInput: s = \"wddw\"\\nOutput: 0\\nExplanation:\\nWe do not need to perform any operations since s is initially good.\\n\\nExample 3:\\n\\nInput: s = \"aaabc\"\\nOutput: 2\\nExplanation:\\nWe can make s good by applying these operations:\\n\\nChange one occurrence of \\'a\\' to \\'b\\'\\nInsert one occurrence of \\'c\\' into s\\n\\n\\n \\nConstraints:\\n\\n3 <= s.length <= 2 * 10^4\\ns contains only lowercase English letters.'\n    return Solution().makeStringGood(*copy.deepcopy((s,)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate('acab'), 1, 0.0)\n    assert _heldout_same(candidate('wddw'), 0, 0.0)\n    assert _heldout_same(candidate('aaabc'), 2, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 41,
+        "text": "Branch coverage (C2): the True branch of `not data` (line 41) is never taken by the existing tests.",
+        "cell": [
+          4,
+          "T"
+        ],
+        "witness": 14,
+        "reached": true,
+        "witness_call": "makeStringGood('')",
+        "block": 41,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 42,
+        "text": "Statement coverage (C1): line 42 (starting with `data = \"\"`) is never executed by the existing tests.",
+        "lines": [
+          42
+        ],
+        "witness": 14,
+        "reached": true,
+        "witness_call": "makeStringGood('')",
+        "block": 42,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 55,
+        "k": 181,
+        "family": "SDL",
+        "extended": true,
+        "text": "Mutation (SDL): the mutant `candidates.add(max(1, f1 + 1))` -> `pass` at line 55 survives: no existing test distinguishes them.",
+        "witness": 0,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "makeStringGood('acab!')",
+        "block": 55,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def makeStringGood(self, s: str) -> int:\n        import sys\n        from math import inf\n        data = s\n        if not data:\n            data = ''\n        cnt = [0] * 26\n        for ch in data:\n            if 'a' <= ch <= 'z':\n                cnt[ord(ch) - 97] += 1\n        n = sum(cnt)\n        ans = inf\n        for k in range(1, 27):\n            if k > 26:\n                break\n            f1 = n // k\n            candidates = set()\n            if f1 >= 1:\n                candidates.add(f1)\n            pass\n            for f in candidates:\n                if f <= 0:\n                    continue\n                if k * f < 1:\n                    continue\n                if k * f > n + 20000:\n                    pass\n                INF = 10 ** 18\n                dp_prev = [[INF] * (f + 1) for _ in range(k + 1)]\n                dp_prev[0][0] = 0\n                for pos in range(26):\n                    dp_next = [[INF] * (f + 1) for _ in range(k + 1)]\n                    for used in range(0, k + 1):\n                        base_row = dp_prev[used]\n                        for is_target in (0, 1):\n                            if used + is_target > k:\n                                continue\n                            D = f if is_target == 1 else 0\n                            buckets = [[] for _ in range(f + 1)]\n                            any_entry = False\n                            for y in range(0, f + 1):\n                                v = base_row[y]\n                                if v >= INF:\n                                    continue\n                                used_from_carry = y if y <= D else D\n                                need_after_carry = D - used_from_carry\n                                if need_after_carry <= 0:\n                                    used_from_local = 0\n                                else:\n                                    used_from_local = cnt[pos] if cnt[pos] <= need_after_carry else need_after_carry\n                                inserts = need_after_carry - used_from_local\n                                if inserts < 0:\n                                    inserts = 0\n                                leftover_local = cnt[pos] - used_from_local\n                                cap = leftover_local if leftover_local < f else f\n                                if pos == 25:\n                                    cap = 0\n                                val = v + inserts + leftover_local\n                                buckets[cap].append(val)\n                                any_entry = True\n                            if not any_entry:\n                                continue\n                            curmin = INF\n                            tgt_row = dp_next[used + is_target]\n                            for x in range(f, -1, -1):\n                                if buckets[x]:\n                                    m = buckets[x][0]\n                                    if len(buckets[x]) > 1:\n                                        for vv in buckets[x][1:]:\n                                            if vv < m:\n                                                m = vv\n                                    if m < curmin:\n                                        curmin = m\n                                if curmin < tgt_row[x]:\n                                    tgt_row[x] = curmin\n                    dp_prev = dp_next\n                final = dp_prev[k][0]\n                if final < ans:\n                    ans = final\n        if ans == inf:\n            ans = 0\n        return ans\nif __name__ == '__main__':\n    import sys, re\n    data = sys.stdin.read()\n    if not data:\n        print(0)\n    else:\n        m = re.search('[a-z]+', data)\n        s = m.group(0) if m else ''\n        sol = Solution()\n        print(sol.makeStringGood(s))\nimport copy\n\ndef makeStringGood(s: str) -> int:\n    \"\"\"You are given a string s.\nA string t is called good if all characters of t occur the same number of times.\nYou can perform the following operations any number of times:\n\nDelete a character from s.\nInsert a character in s.\nChange a character in s to its next letter in the alphabet.\n\nNote that you cannot change 'z' to 'a' using the third operation.\nReturn the minimum number of operations required to make s good.\n \nExample 1:\n\nInput: s = \"acab\"\nOutput: 1\nExplanation:\nWe can make s good by deleting one occurrence of character 'a'.\n\nExample 2:\n\nInput: s = \"wddw\"\nOutput: 0\nExplanation:\nWe do not need to perform any operations since s is initially good.\n\nExample 3:\n\nInput: s = \"aaabc\"\nOutput: 2\nExplanation:\nWe can make s good by applying these operations:\n\nChange one occurrence of 'a' to 'b'\nInsert one occurrence of 'c' into s\n\n\n \nConstraints:\n\n3 <= s.length <= 2 * 10^4\ns contains only lowercase English letters.\"\"\"\n    return Solution().makeStringGood(*copy.deepcopy((s,)))"
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 76,
+        "text": "Branch coverage (C2): the True and False branches of `v >= INF` (line 76) are taken by the existing tests.",
+        "cells": [
+          [
+            82,
+            "T"
+          ],
+          [
+            82,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 57,
+        "text": "Statement coverage (C1): line 57 (`if f <= 0: continue`) is executed by the existing tests.",
+        "lines": [
+          57
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 43,
+        "k": 5,
+        "family": "AOR",
+        "extended": false,
+        "text": "Mutation (AOR): the mutant `[0] * 26` -> `[0] + 26` at line 43 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def makeStringGood(self, s: str) -> int:\n        import sys\n        from math import inf\n        data = s\n        if not data:\n            data = ''\n        cnt = [0] + 26\n        for ch in data:\n            if 'a' <= ch <= 'z':\n                cnt[ord(ch) - 97] += 1\n        n = sum(cnt)\n        ans = inf\n        for k in range(1, 27):\n            if k > 26:\n                break\n            f1 = n // k\n            candidates = set()\n            if f1 >= 1:\n                candidates.add(f1)\n            candidates.add(max(1, f1 + 1))\n            for f in candidates:\n                if f <= 0:\n                    continue\n                if k * f < 1:\n                    continue\n                if k * f > n + 20000:\n                    pass\n                INF = 10 ** 18\n                dp_prev = [[INF] * (f + 1) for _ in range(k + 1)]\n                dp_prev[0][0] = 0\n                for pos in range(26):\n                    dp_next = [[INF] * (f + 1) for _ in range(k + 1)]\n                    for used in range(0, k + 1):\n                        base_row = dp_prev[used]\n                        for is_target in (0, 1):\n                            if used + is_target > k:\n                                continue\n                            D = f if is_target == 1 else 0\n                            buckets = [[] for _ in range(f + 1)]\n                            any_entry = False\n                            for y in range(0, f + 1):\n                                v = base_row[y]\n                                if v >= INF:\n                                    continue\n                                used_from_carry = y if y <= D else D\n                                need_after_carry = D - used_from_carry\n                                if need_after_carry <= 0:\n                                    used_from_local = 0\n                                else:\n                                    used_from_local = cnt[pos] if cnt[pos] <= need_after_carry else need_after_carry\n                                inserts = need_after_carry - used_from_local\n                                if inserts < 0:\n                                    inserts = 0\n                                leftover_local = cnt[pos] - used_from_local\n                                cap = leftover_local if leftover_local < f else f\n                                if pos == 25:\n                                    cap = 0\n                                val = v + inserts + leftover_local\n                                buckets[cap].append(val)\n                                any_entry = True\n                            if not any_entry:\n                                continue\n                            curmin = INF\n                            tgt_row = dp_next[used + is_target]\n                            for x in range(f, -1, -1):\n                                if buckets[x]:\n                                    m = buckets[x][0]\n                                    if len(buckets[x]) > 1:\n                                        for vv in buckets[x][1:]:\n                                            if vv < m:\n                                                m = vv\n                                    if m < curmin:\n                                        curmin = m\n                                if curmin < tgt_row[x]:\n                                    tgt_row[x] = curmin\n                    dp_prev = dp_next\n                final = dp_prev[k][0]\n                if final < ans:\n                    ans = final\n        if ans == inf:\n            ans = 0\n        return ans\nif __name__ == '__main__':\n    import sys, re\n    data = sys.stdin.read()\n    if not data:\n        print(0)\n    else:\n        m = re.search('[a-z]+', data)\n        s = m.group(0) if m else ''\n        sol = Solution()\n        print(sol.makeStringGood(s))\nimport copy\n\ndef makeStringGood(s: str) -> int:\n    \"\"\"You are given a string s.\nA string t is called good if all characters of t occur the same number of times.\nYou can perform the following operations any number of times:\n\nDelete a character from s.\nInsert a character in s.\nChange a character in s to its next letter in the alphabet.\n\nNote that you cannot change 'z' to 'a' using the third operation.\nReturn the minimum number of operations required to make s good.\n \nExample 1:\n\nInput: s = \"acab\"\nOutput: 1\nExplanation:\nWe can make s good by deleting one occurrence of character 'a'.\n\nExample 2:\n\nInput: s = \"wddw\"\nOutput: 0\nExplanation:\nWe do not need to perform any operations since s is initially good.\n\nExample 3:\n\nInput: s = \"aaabc\"\nOutput: 2\nExplanation:\nWe can make s good by applying these operations:\n\nChange one occurrence of 'a' to 'b'\nInsert one occurrence of 'c' into s\n\n\n \nConstraints:\n\n3 <= s.length <= 2 * 10^4\ns contains only lowercase English letters.\"\"\"\n    return Solution().makeStringGood(*copy.deepcopy((s,)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the True branch of `not data` (line 41) is never taken by the existing tests.",
+      "Statement coverage (C1): line 42 (starting with `data = \"\"`) is never executed by the existing tests.",
+      "Mutation (SDL): the mutant `candidates.add(max(1, f1 + 1))` -> `pass` at line 55 survives: no existing test distinguishes them."
+    ],
+    "placebo_facts": [
+      "Branch coverage (C2): the True and False branches of `v >= INF` (line 76) are taken by the existing tests.",
+      "Statement coverage (C1): line 57 (`if f <= 0: continue`) is executed by the existing tests.",
+      "Mutation (AOR): the mutant `[0] * 26` -> `[0] + 26` at line 43 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "makeStringGood('')",
+      "makeStringGood('')",
+      "makeStringGood('acab!')"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([('acab',), ('wddw',), ('aaabc',)]), st.tuples(st.text(alphabet='abc', max_size=24)))\n",
+    "strategy_sha256": "406629d6f1ceeed174acda02919f1576ac5488299024f8fb669ca4218faa56be",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 46,
+    "entry": "makeStringGood",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def makeStringGood(self, s: str) -> int:\n        import sys\n        from math import inf\n        data = s\n        if not data:\n            data = \"\"\n        cnt = [0]*26\n        for ch in data:\n            if 'a' <= ch <= 'z':\n                cnt[ord(ch)-97] += 1\n        n = sum(cnt)\n        ans = inf\n        for k in range(1,27):\n            if k > 26: break\n            f1 = n//k\n            candidates = set()\n            if f1 >= 1:\n                candidates.add(f1)\n            candidates.add(max(1, f1+1))\n            for f in candidates:\n                if f <= 0: continue\n                if k*f < 1: continue\n                if k*f > n + 20000: pass\n                INF = 10**18\n                dp_prev = [ [INF]*(f+1) for _ in range(k+1) ]\n                dp_prev[0][0] = 0\n                for pos in range(26):\n                    dp_next = [ [INF]*(f+1) for _ in range(k+1) ]\n                    for used in range(0, k+1):\n                        base_row = dp_prev[used]\n                        # two options: not choose this pos or choose it\n                        for is_target in (0,1):\n                            if used + is_target > k: continue\n                            D = f if is_target==1 else 0\n                            # buckets by cap\n                            buckets = [[] for _ in range(f+1)]\n                            any_entry = False\n                            for y in range(0, f+1):\n                                v = base_row[y]\n                                if v >= INF: continue\n                                used_from_carry = y if y <= D else D\n                                need_after_carry = D - used_from_carry\n                                if need_after_carry <= 0:\n                                    used_from_local = 0\n                                else:\n                                    used_from_local = cnt[pos] if cnt[pos] <= need_after_carry else need_after_carry\n                                inserts = need_after_carry - used_from_local\n                                if inserts < 0: inserts = 0\n                                leftover_local = cnt[pos] - used_from_local\n                                cap = leftover_local if leftover_local < f else f\n                                if pos == 25:\n                                    cap = 0\n                                val = v + inserts + leftover_local\n                                buckets[cap].append(val)\n                                any_entry = True\n                            if not any_entry:\n                                continue\n                            curmin = INF\n                            tgt_row = dp_next[used+is_target]\n                            for x in range(f, -1, -1):\n                                if buckets[x]:\n                                    m = buckets[x][0]\n                                    if len(buckets[x])>1:\n                                        for vv in buckets[x][1:]:\n                                            if vv < m: m = vv\n                                    if m < curmin:\n                                        curmin = m\n                                if curmin < tgt_row[x]:\n                                    tgt_row[x] = curmin\n                    dp_prev = dp_next\n                final = dp_prev[k][0]\n                if final < ans:\n                    ans = final\n        if ans == inf:\n            ans = 0\n        return ans\n\nif __name__ == \"__main__\":\n    import sys, re\n    data = sys.stdin.read()\n    if not data:\n        print(0)\n    else:\n        m = re.search(r\"[a-z]+\", data)\n        s = m.group(0) if m else \"\"\n        sol = Solution()\n        print(sol.makeStringGood(s))\n\nimport copy\n\ndef makeStringGood(s: str) -> int:\n    'You are given a string s.\\nA string t is called good if all characters of t occur the same number of times.\\nYou can perform the following operations any number of times:\\n\\nDelete a character from s.\\nInsert a character in s.\\nChange a character in s to its next letter in the alphabet.\\n\\nNote that you cannot change \\'z\\' to \\'a\\' using the third operation.\\nReturn the minimum number of operations required to make s good.\\n \\nExample 1:\\n\\nInput: s = \"acab\"\\nOutput: 1\\nExplanation:\\nWe can make s good by deleting one occurrence of character \\'a\\'.\\n\\nExample 2:\\n\\nInput: s = \"wddw\"\\nOutput: 0\\nExplanation:\\nWe do not need to perform any operations since s is initially good.\\n\\nExample 3:\\n\\nInput: s = \"aaabc\"\\nOutput: 2\\nExplanation:\\nWe can make s good by applying these operations:\\n\\nChange one occurrence of \\'a\\' to \\'b\\'\\nInsert one occurrence of \\'c\\' into s\\n\\n\\n \\nConstraints:\\n\\n3 <= s.length <= 2 * 10^4\\ns contains only lowercase English letters.'\n    return Solution().makeStringGood(*copy.deepcopy((s,)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate('acab'), 1, 0.0)\n    assert _heldout_same(candidate('wddw'), 0, 0.0)\n    assert _heldout_same(candidate('aaabc'), 2, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 41,
+        "text": "Branch coverage (C2): the True branch of `not data` (line 41) is never taken by the existing tests.",
+        "cell": [
+          4,
+          "T"
+        ],
+        "witness": 14,
+        "reached": true,
+        "witness_call": "makeStringGood('')",
+        "block": 41,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 49,
+        "fault_type": "BOUNDARY",
+        "text": "Fault-type adequacy at L49: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `for k in range(1,27):`. The public tests do not distinguish 2 surviving alternatives (`1` -> `2`; `27` -> `28`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 2,
+        "distinguished": 1,
+        "alternatives": [
+          "`1` -> `2`",
+          "`27` -> `28`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def makeStringGood(self, s: str) -> int:\n        import sys\n        from math import inf\n        data = s\n        if not data:\n            data = \"\"\n        cnt = [0]*26\n        for ch in data:\n            if 'a' <= ch <= 'z':\n                cnt[ord(ch)-97] += 1\n        n = sum(cnt)\n        ans = inf\n        for k in range(2,27):\n            if k > 26: break\n            f1 = n//k\n            candidates = set()\n            if f1 >= 1:\n                candidates.add(f1)\n            candidates.add(max(1, f1+1))\n            for f in candidates:\n                if f <= 0: continue\n                if k*f < 1: continue\n                if k*f > n + 20000: pass\n                INF = 10**18\n                dp_prev = [ [INF]*(f+1) for _ in range(k+1) ]\n                dp_prev[0][0] = 0\n                for pos in range(26):\n                    dp_next = [ [INF]*(f+1) for _ in range(k+1) ]\n                    for used in range(0, k+1):\n                        base_row = dp_prev[used]\n                        # two options: not choose this pos or choose it\n                        for is_target in (0,1):\n                            if used + is_target > k: continue\n                            D = f if is_target==1 else 0\n                            # buckets by cap\n                            buckets = [[] for _ in range(f+1)]\n                            any_entry = False\n                            for y in range(0, f+1):\n                                v = base_row[y]\n                                if v >= INF: continue\n                                used_from_carry = y if y <= D else D\n                                need_after_carry = D - used_from_carry\n                                if need_after_carry <= 0:\n                                    used_from_local = 0\n                                else:\n                                    used_from_local = cnt[pos] if cnt[pos] <= need_after_carry else need_after_carry\n                                inserts = need_after_carry - used_from_local\n                                if inserts < 0: inserts = 0\n                                leftover_local = cnt[pos] - used_from_local\n                                cap = leftover_local if leftover_local < f else f\n                                if pos == 25:\n                                    cap = 0\n                                val = v + inserts + leftover_local\n                                buckets[cap].append(val)\n                                any_entry = True\n                            if not any_entry:\n                                continue\n                            curmin = INF\n                            tgt_row = dp_next[used+is_target]\n                            for x in range(f, -1, -1):\n                                if buckets[x]:\n                                    m = buckets[x][0]\n                                    if len(buckets[x])>1:\n                                        for vv in buckets[x][1:]:\n                                            if vv < m: m = vv\n                                    if m < curmin:\n                                        curmin = m\n                                if curmin < tgt_row[x]:\n                                    tgt_row[x] = curmin\n                    dp_prev = dp_next\n                final = dp_prev[k][0]\n                if final < ans:\n                    ans = final\n        if ans == inf:\n            ans = 0\n        return ans\n\nif __name__ == \"__main__\":\n    import sys, re\n    data = sys.stdin.read()\n    if not data:\n        print(0)\n    else:\n        m = re.search(r\"[a-z]+\", data)\n        s = m.group(0) if m else \"\"\n        sol = Solution()\n        print(sol.makeStringGood(s))\n\nimport copy\n\ndef makeStringGood(s: str) -> int:\n    'You are given a string s.\\nA string t is called good if all characters of t occur the same number of times.\\nYou can perform the following operations any number of times:\\n\\nDelete a character from s.\\nInsert a character in s.\\nChange a character in s to its next letter in the alphabet.\\n\\nNote that you cannot change \\'z\\' to \\'a\\' using the third operation.\\nReturn the minimum number of operations required to make s good.\\n \\nExample 1:\\n\\nInput: s = \"acab\"\\nOutput: 1\\nExplanation:\\nWe can make s good by deleting one occurrence of character \\'a\\'.\\n\\nExample 2:\\n\\nInput: s = \"wddw\"\\nOutput: 0\\nExplanation:\\nWe do not need to perform any operations since s is initially good.\\n\\nExample 3:\\n\\nInput: s = \"aaabc\"\\nOutput: 2\\nExplanation:\\nWe can make s good by applying these operations:\\n\\nChange one occurrence of \\'a\\' to \\'b\\'\\nInsert one occurrence of \\'c\\' into s\\n\\n\\n \\nConstraints:\\n\\n3 <= s.length <= 2 * 10^4\\ns contains only lowercase English letters.'\n    return Solution().makeStringGood(*copy.deepcopy((s,)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def makeStringGood(self, s: str) -> int:\n        import sys\n        from math import inf\n        data = s\n        if not data:\n            data = \"\"\n        cnt = [0]*26\n        for ch in data:\n            if 'a' <= ch <= 'z':\n                cnt[ord(ch)-97] += 1\n        n = sum(cnt)\n        ans = inf\n        for k in range(1,28):\n            if k > 26: break\n            f1 = n//k\n            candidates = set()\n            if f1 >= 1:\n                candidates.add(f1)\n            candidates.add(max(1, f1+1))\n            for f in candidates:\n                if f <= 0: continue\n                if k*f < 1: continue\n                if k*f > n + 20000: pass\n                INF = 10**18\n                dp_prev = [ [INF]*(f+1) for _ in range(k+1) ]\n                dp_prev[0][0] = 0\n                for pos in range(26):\n                    dp_next = [ [INF]*(f+1) for _ in range(k+1) ]\n                    for used in range(0, k+1):\n                        base_row = dp_prev[used]\n                        # two options: not choose this pos or choose it\n                        for is_target in (0,1):\n                            if used + is_target > k: continue\n                            D = f if is_target==1 else 0\n                            # buckets by cap\n                            buckets = [[] for _ in range(f+1)]\n                            any_entry = False\n                            for y in range(0, f+1):\n                                v = base_row[y]\n                                if v >= INF: continue\n                                used_from_carry = y if y <= D else D\n                                need_after_carry = D - used_from_carry\n                                if need_after_carry <= 0:\n                                    used_from_local = 0\n                                else:\n                                    used_from_local = cnt[pos] if cnt[pos] <= need_after_carry else need_after_carry\n                                inserts = need_after_carry - used_from_local\n                                if inserts < 0: inserts = 0\n                                leftover_local = cnt[pos] - used_from_local\n                                cap = leftover_local if leftover_local < f else f\n                                if pos == 25:\n                                    cap = 0\n                                val = v + inserts + leftover_local\n                                buckets[cap].append(val)\n                                any_entry = True\n                            if not any_entry:\n                                continue\n                            curmin = INF\n                            tgt_row = dp_next[used+is_target]\n                            for x in range(f, -1, -1):\n                                if buckets[x]:\n                                    m = buckets[x][0]\n                                    if len(buckets[x])>1:\n                                        for vv in buckets[x][1:]:\n                                            if vv < m: m = vv\n                                    if m < curmin:\n                                        curmin = m\n                                if curmin < tgt_row[x]:\n                                    tgt_row[x] = curmin\n                    dp_prev = dp_next\n                final = dp_prev[k][0]\n                if final < ans:\n                    ans = final\n        if ans == inf:\n            ans = 0\n        return ans\n\nif __name__ == \"__main__\":\n    import sys, re\n    data = sys.stdin.read()\n    if not data:\n        print(0)\n    else:\n        m = re.search(r\"[a-z]+\", data)\n        s = m.group(0) if m else \"\"\n        sol = Solution()\n        print(sol.makeStringGood(s))\n\nimport copy\n\ndef makeStringGood(s: str) -> int:\n    'You are given a string s.\\nA string t is called good if all characters of t occur the same number of times.\\nYou can perform the following operations any number of times:\\n\\nDelete a character from s.\\nInsert a character in s.\\nChange a character in s to its next letter in the alphabet.\\n\\nNote that you cannot change \\'z\\' to \\'a\\' using the third operation.\\nReturn the minimum number of operations required to make s good.\\n \\nExample 1:\\n\\nInput: s = \"acab\"\\nOutput: 1\\nExplanation:\\nWe can make s good by deleting one occurrence of character \\'a\\'.\\n\\nExample 2:\\n\\nInput: s = \"wddw\"\\nOutput: 0\\nExplanation:\\nWe do not need to perform any operations since s is initially good.\\n\\nExample 3:\\n\\nInput: s = \"aaabc\"\\nOutput: 2\\nExplanation:\\nWe can make s good by applying these operations:\\n\\nChange one occurrence of \\'a\\' to \\'b\\'\\nInsert one occurrence of \\'c\\' into s\\n\\n\\n \\nConstraints:\\n\\n3 <= s.length <= 2 * 10^4\\ns contains only lowercase English letters.'\n    return Solution().makeStringGood(*copy.deepcopy((s,)))\n"
+        ],
+        "reached": true,
+        "witness_call": "makeStringGood('aaaa')",
+        "block": 49,
+        "witness": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 42,
+        "text": "Statement coverage (C1): line 42 (starting with `data = \"\"`) is never executed by the existing tests.",
+        "lines": [
+          42
+        ],
+        "witness": 14,
+        "reached": true,
+        "witness_call": "makeStringGood('')",
+        "block": 42,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 76,
+        "text": "Branch coverage (C2): the True and False branches of `v >= INF` (line 76) are taken by the existing tests.",
+        "cells": [
+          [
+            82,
+            "T"
+          ],
+          [
+            82,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 57,
+        "text": "Statement coverage (C1): line 57 (`if f <= 0: continue`) is executed by the existing tests.",
+        "lines": [
+          57
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 43,
+        "k": 5,
+        "family": "AOR",
+        "extended": false,
+        "text": "Mutation (AOR): the mutant `[0] * 26` -> `[0] + 26` at line 43 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def makeStringGood(self, s: str) -> int:\n        import sys\n        from math import inf\n        data = s\n        if not data:\n            data = ''\n        cnt = [0] + 26\n        for ch in data:\n            if 'a' <= ch <= 'z':\n                cnt[ord(ch) - 97] += 1\n        n = sum(cnt)\n        ans = inf\n        for k in range(1, 27):\n            if k > 26:\n                break\n            f1 = n // k\n            candidates = set()\n            if f1 >= 1:\n                candidates.add(f1)\n            candidates.add(max(1, f1 + 1))\n            for f in candidates:\n                if f <= 0:\n                    continue\n                if k * f < 1:\n                    continue\n                if k * f > n + 20000:\n                    pass\n                INF = 10 ** 18\n                dp_prev = [[INF] * (f + 1) for _ in range(k + 1)]\n                dp_prev[0][0] = 0\n                for pos in range(26):\n                    dp_next = [[INF] * (f + 1) for _ in range(k + 1)]\n                    for used in range(0, k + 1):\n                        base_row = dp_prev[used]\n                        for is_target in (0, 1):\n                            if used + is_target > k:\n                                continue\n                            D = f if is_target == 1 else 0\n                            buckets = [[] for _ in range(f + 1)]\n                            any_entry = False\n                            for y in range(0, f + 1):\n                                v = base_row[y]\n                                if v >= INF:\n                                    continue\n                                used_from_carry = y if y <= D else D\n                                need_after_carry = D - used_from_carry\n                                if need_after_carry <= 0:\n                                    used_from_local = 0\n                                else:\n                                    used_from_local = cnt[pos] if cnt[pos] <= need_after_carry else need_after_carry\n                                inserts = need_after_carry - used_from_local\n                                if inserts < 0:\n                                    inserts = 0\n                                leftover_local = cnt[pos] - used_from_local\n                                cap = leftover_local if leftover_local < f else f\n                                if pos == 25:\n                                    cap = 0\n                                val = v + inserts + leftover_local\n                                buckets[cap].append(val)\n                                any_entry = True\n                            if not any_entry:\n                                continue\n                            curmin = INF\n                            tgt_row = dp_next[used + is_target]\n                            for x in range(f, -1, -1):\n                                if buckets[x]:\n                                    m = buckets[x][0]\n                                    if len(buckets[x]) > 1:\n                                        for vv in buckets[x][1:]:\n                                            if vv < m:\n                                                m = vv\n                                    if m < curmin:\n                                        curmin = m\n                                if curmin < tgt_row[x]:\n                                    tgt_row[x] = curmin\n                    dp_prev = dp_next\n                final = dp_prev[k][0]\n                if final < ans:\n                    ans = final\n        if ans == inf:\n            ans = 0\n        return ans\nif __name__ == '__main__':\n    import sys, re\n    data = sys.stdin.read()\n    if not data:\n        print(0)\n    else:\n        m = re.search('[a-z]+', data)\n        s = m.group(0) if m else ''\n        sol = Solution()\n        print(sol.makeStringGood(s))\nimport copy\n\ndef makeStringGood(s: str) -> int:\n    \"\"\"You are given a string s.\nA string t is called good if all characters of t occur the same number of times.\nYou can perform the following operations any number of times:\n\nDelete a character from s.\nInsert a character in s.\nChange a character in s to its next letter in the alphabet.\n\nNote that you cannot change 'z' to 'a' using the third operation.\nReturn the minimum number of operations required to make s good.\n \nExample 1:\n\nInput: s = \"acab\"\nOutput: 1\nExplanation:\nWe can make s good by deleting one occurrence of character 'a'.\n\nExample 2:\n\nInput: s = \"wddw\"\nOutput: 0\nExplanation:\nWe do not need to perform any operations since s is initially good.\n\nExample 3:\n\nInput: s = \"aaabc\"\nOutput: 2\nExplanation:\nWe can make s good by applying these operations:\n\nChange one occurrence of 'a' to 'b'\nInsert one occurrence of 'c' into s\n\n\n \nConstraints:\n\n3 <= s.length <= 2 * 10^4\ns contains only lowercase English letters.\"\"\"\n    return Solution().makeStringGood(*copy.deepcopy((s,)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the True branch of `not data` (line 41) is never taken by the existing tests.",
+      "Fault-type adequacy at L49: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `for k in range(1,27):`. The public tests do not distinguish 2 surviving alternatives (`1` -> `2`; `27` -> `28`). Exercise this behaviour and determine the required result from the specification.",
+      "Statement coverage (C1): line 42 (starting with `data = \"\"`) is never executed by the existing tests."
+    ],
+    "placebo_facts": [
+      "Branch coverage (C2): the True and False branches of `v >= INF` (line 76) are taken by the existing tests.",
+      "Statement coverage (C1): line 57 (`if f <= 0: continue`) is executed by the existing tests.",
+      "Mutation (AOR): the mutant `[0] * 26` -> `[0] + 26` at line 43 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "makeStringGood('')",
+      "makeStringGood('acab!')",
+      "makeStringGood(' ')",
+      "makeStringGood('a')",
+      "makeStringGood('  ')",
+      "makeStringGood('wddw9')",
+      "makeStringGood('aaabc ')",
+      "makeStringGood('Aaabc')",
+      "makeStringGood('wddwwddw')",
+      "makeStringGood('w')",
+      "makeStringGood('c')",
+      "makeStringGood('aaaa')",
+      "makeStringGood('wwww')",
+      "makeStringGood('aaaaa')",
+      "makeStringGood('aaab')",
+      "makeStringGood('acabb')",
+      "makeStringGood('wddww')",
+      "makeStringGood('aaabcc')",
+      "makeStringGood('wwdw')",
+      "makeStringGood('baca')",
+      "makeStringGood('cbaaa')",
+      "makeStringGood('bcaa')",
+      "makeStringGood('caaba')"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([('acab',), ('wddw',), ('aaabc',)]), st.tuples(st.text(alphabet='abc', max_size=24)))\n",
+    "strategy_sha256": "406629d6f1ceeed174acda02919f1576ac5488299024f8fb669ca4218faa56be",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 191,
+    "survivors": 72
+  }
+}

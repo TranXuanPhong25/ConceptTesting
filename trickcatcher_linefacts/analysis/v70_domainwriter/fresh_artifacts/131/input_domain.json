@@ -1,0 +1,67 @@
+{
+  "binding_sha256": "50d4be67f1ff13c82e72b89d6dfd0a40144a3e0127d174530bce039b58b5e2d3",
+  "rules": [
+    {
+      "quote": "1 <= s.length <= 10^5",
+      "line": 28,
+      "binding_sha256": "50d4be67f1ff13c82e72b89d6dfd0a40144a3e0127d174530bce039b58b5e2d3",
+      "rule": {
+        "kind": "numeric",
+        "comparisons": [
+          {
+            "operator": "le",
+            "left": {
+              "kind": "constant",
+              "value": 1
+            },
+            "right": {
+              "kind": "length",
+              "arg": 0
+            }
+          },
+          {
+            "operator": "le",
+            "left": {
+              "kind": "length",
+              "arg": 0
+            },
+            "right": {
+              "kind": "constant",
+              "value": 100000
+            }
+          }
+        ],
+        "each_arg": null
+      }
+    },
+    {
+      "quote": "s consists of digits only.",
+      "line": 29,
+      "binding_sha256": "50d4be67f1ff13c82e72b89d6dfd0a40144a3e0127d174530bce039b58b5e2d3",
+      "rule": {
+        "kind": "alphabet",
+        "args": [
+          0
+        ],
+        "codepoints": [
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57
+        ]
+      }
+    }
+  ],
+  "unsupported": [],
+  "status": "complete",
+  "coverage": "closed_explicit_grammar",
+  "argument_count": 1,
+  "private_data_used": false,
+  "semantic_scope": "declared_input_constraints_only_not_output_correctness"
+}

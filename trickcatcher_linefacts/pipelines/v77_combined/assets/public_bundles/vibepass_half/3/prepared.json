@@ -1,0 +1,303 @@
+{
+  "baseline": {
+    "task": 3,
+    "entry": "findMaximumLength",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 0\n\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 1\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        \n        return length\n\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    'You are given a 0-indexed integer array nums.\\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\\nA subarray is a contiguous non-empty sequence of elements within an array.\\n \\nExample 1:\\n\\nInput: nums = [5,2,2]\\nOutput: 1\\nExplanation: This array with length 3 is not non-decreasing.\\nWe have two ways to make the array length two.\\nFirst, choosing subarray [2,2] converts the array to [5,4].\\nSecond, choosing subarray [5,2] converts the array to [7,2].\\nIn these two ways the array is not non-decreasing.\\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \\nSo the answer is 1.\\n\\nExample 2:\\n\\nInput: nums = [1,2,3,4]\\nOutput: 4\\nExplanation: The array is non-decreasing. So the answer is 4.\\n\\nExample 3:\\n\\nInput: nums = [4,3,2,6]\\nOutput: 3\\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^5'\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([5, 2, 2]), 1, 0.0)\n    assert _heldout_same(candidate([1, 2, 3, 4]), 4, 0.0)\n    assert _heldout_same(candidate([4, 3, 2, 6]), 3, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 40,
+        "k": 6,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `0` -> `1` at line 40 survives: no existing test distinguishes them.",
+        "witness": 1,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "findMaximumLength([4, 4, 4, 4])",
+        "block": 40,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 1\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 1\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        return length\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    \"\"\"You are given a 0-indexed integer array nums.\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\nA subarray is a contiguous non-empty sequence of elements within an array.\n \nExample 1:\n\nInput: nums = [5,2,2]\nOutput: 1\nExplanation: This array with length 3 is not non-decreasing.\nWe have two ways to make the array length two.\nFirst, choosing subarray [2,2] converts the array to [5,4].\nSecond, choosing subarray [5,2] converts the array to [7,2].\nIn these two ways the array is not non-decreasing.\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \nSo the answer is 1.\n\nExample 2:\n\nInput: nums = [1,2,3,4]\nOutput: 4\nExplanation: The array is non-decreasing. So the answer is 4.\n\nExample 3:\n\nInput: nums = [4,3,2,6]\nOutput: 3\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^5\"\"\"\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))"
+      },
+      {
+        "kind": "DU",
+        "line": 49,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `length` at line 38 never reaches its use at line 49 in the existing tests.",
+        "cell": [
+          -2,
+          "du|37|length|38|49|c-use"
+        ],
+        "witness": 0,
+        "reached": true,
+        "witness_call": "findMaximumLength([-5, -2, -2])",
+        "block": 49,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 39,
+        "k": 5,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `0` -> `-1` at line 39 survives: no existing test distinguishes them.",
+        "witness": 14,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "findMaximumLength([-1, -2, -3, -4])",
+        "block": 39,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = -1\n        current_sum_being_formed = 0\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 1\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        return length\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    \"\"\"You are given a 0-indexed integer array nums.\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\nA subarray is a contiguous non-empty sequence of elements within an array.\n \nExample 1:\n\nInput: nums = [5,2,2]\nOutput: 1\nExplanation: This array with length 3 is not non-decreasing.\nWe have two ways to make the array length two.\nFirst, choosing subarray [2,2] converts the array to [5,4].\nSecond, choosing subarray [5,2] converts the array to [7,2].\nIn these two ways the array is not non-decreasing.\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \nSo the answer is 1.\n\nExample 2:\n\nInput: nums = [1,2,3,4]\nOutput: 4\nExplanation: The array is non-decreasing. So the answer is 4.\n\nExample 3:\n\nInput: nums = [4,3,2,6]\nOutput: 3\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^5\"\"\"\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))"
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 45,
+        "k": 12,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `1` -> `2` at line 45 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 0\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 2\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        return length\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    \"\"\"You are given a 0-indexed integer array nums.\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\nA subarray is a contiguous non-empty sequence of elements within an array.\n \nExample 1:\n\nInput: nums = [5,2,2]\nOutput: 1\nExplanation: This array with length 3 is not non-decreasing.\nWe have two ways to make the array length two.\nFirst, choosing subarray [2,2] converts the array to [5,4].\nSecond, choosing subarray [5,2] converts the array to [7,2].\nIn these two ways the array is not non-decreasing.\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \nSo the answer is 1.\n\nExample 2:\n\nInput: nums = [1,2,3,4]\nOutput: 4\nExplanation: The array is non-decreasing. So the answer is 4.\n\nExample 3:\n\nInput: nums = [4,3,2,6]\nOutput: 3\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^5\"\"\"\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))"
+      },
+      {
+        "kind": "DU",
+        "line": 46,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `current_sum_being_formed` at line 43 reaches its use at line 46 in the existing tests.",
+        "cell": [
+          -2,
+          "du|37|current_sum_being_formed|43|46|c-use"
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 45,
+        "k": 13,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `1` -> `0` at line 45 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 0\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 0\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        return length\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    \"\"\"You are given a 0-indexed integer array nums.\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\nA subarray is a contiguous non-empty sequence of elements within an array.\n \nExample 1:\n\nInput: nums = [5,2,2]\nOutput: 1\nExplanation: This array with length 3 is not non-decreasing.\nWe have two ways to make the array length two.\nFirst, choosing subarray [2,2] converts the array to [5,4].\nSecond, choosing subarray [5,2] converts the array to [7,2].\nIn these two ways the array is not non-decreasing.\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \nSo the answer is 1.\n\nExample 2:\n\nInput: nums = [1,2,3,4]\nOutput: 4\nExplanation: The array is non-decreasing. So the answer is 4.\n\nExample 3:\n\nInput: nums = [4,3,2,6]\nOutput: 3\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^5\"\"\"\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))"
+      }
+    ],
+    "concept_facts": [
+      "Mutation (CRP constant): the mutant `0` -> `1` at line 40 survives: no existing test distinguishes them.",
+      "Def-use pair (all-uses, c-use): the value assigned to `length` at line 38 never reaches its use at line 49 in the existing tests.",
+      "Mutation (CRP constant): the mutant `0` -> `-1` at line 39 survives: no existing test distinguishes them."
+    ],
+    "placebo_facts": [
+      "Mutation (CRP constant): the mutant `1` -> `2` at line 45 is killed: an existing test distinguishes them.",
+      "Def-use pair (all-uses, c-use): the value assigned to `current_sum_being_formed` at line 43 reaches its use at line 46 in the existing tests.",
+      "Mutation (CRP constant): the mutant `1` -> `0` at line 45 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "findMaximumLength([4, 4, 4, 4])",
+      "findMaximumLength([-5, -2, -2])",
+      "findMaximumLength([-1, -2, -3, -4])"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([5, 2, 2],), ([1, 2, 3, 4],), ([4, 3, 2, 6],)]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12)))\n",
+    "strategy_sha256": "9e31edb3a151674315223aadbb80e21c413fe3de46f78fb8572153c79e9f3308",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 3,
+    "entry": "findMaximumLength",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 0\n\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 1\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        \n        return length\n\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    'You are given a 0-indexed integer array nums.\\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\\nA subarray is a contiguous non-empty sequence of elements within an array.\\n \\nExample 1:\\n\\nInput: nums = [5,2,2]\\nOutput: 1\\nExplanation: This array with length 3 is not non-decreasing.\\nWe have two ways to make the array length two.\\nFirst, choosing subarray [2,2] converts the array to [5,4].\\nSecond, choosing subarray [5,2] converts the array to [7,2].\\nIn these two ways the array is not non-decreasing.\\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \\nSo the answer is 1.\\n\\nExample 2:\\n\\nInput: nums = [1,2,3,4]\\nOutput: 4\\nExplanation: The array is non-decreasing. So the answer is 4.\\n\\nExample 3:\\n\\nInput: nums = [4,3,2,6]\\nOutput: 3\\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^5'\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([5, 2, 2]), 1, 0.0)\n    assert _heldout_same(candidate([1, 2, 3, 4]), 4, 0.0)\n    assert _heldout_same(candidate([4, 3, 2, 6]), 3, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "DU",
+        "line": 49,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `length` at line 38 never reaches its use at line 49 in the existing tests.",
+        "cell": [
+          -2,
+          "du|37|length|38|49|c-use"
+        ],
+        "witness": 0,
+        "reached": true,
+        "witness_call": "findMaximumLength([-5, -2, -2])",
+        "block": 49,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 44,
+        "fault_type": "BOUNDARY",
+        "text": "Fault-type adequacy at L44: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if current_sum_being_formed >= last_sum_of_previous_segment:`. The public tests do not distinguish 1 surviving alternatives (`>= last_sum_of_previous_segment` -> `> last_sum_of_previous_segment`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 1,
+        "distinguished": 1,
+        "alternatives": [
+          "`>= last_sum_of_previous_segment` -> `> last_sum_of_previous_segment`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 0\n\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed > last_sum_of_previous_segment:\n                length += 1\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        \n        return length\n\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    'You are given a 0-indexed integer array nums.\\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\\nA subarray is a contiguous non-empty sequence of elements within an array.\\n \\nExample 1:\\n\\nInput: nums = [5,2,2]\\nOutput: 1\\nExplanation: This array with length 3 is not non-decreasing.\\nWe have two ways to make the array length two.\\nFirst, choosing subarray [2,2] converts the array to [5,4].\\nSecond, choosing subarray [5,2] converts the array to [7,2].\\nIn these two ways the array is not non-decreasing.\\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \\nSo the answer is 1.\\n\\nExample 2:\\n\\nInput: nums = [1,2,3,4]\\nOutput: 4\\nExplanation: The array is non-decreasing. So the answer is 4.\\n\\nExample 3:\\n\\nInput: nums = [4,3,2,6]\\nOutput: 3\\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^5'\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))\n"
+        ],
+        "reached": true,
+        "witness_call": "findMaximumLength([5, 5, 5])",
+        "block": 44,
+        "witness": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 40,
+        "fault_type": "VALUE",
+        "text": "Fault-type adequacy at L40: wrong value: wrong variable, constant or assigned value. Behaviour: `current_sum_being_formed = 0`. The public tests do not distinguish 1 surviving alternatives (`0` -> `1`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 1,
+        "distinguished": 1,
+        "alternatives": [
+          "`0` -> `1`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 1\n\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 1\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        \n        return length\n\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    'You are given a 0-indexed integer array nums.\\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\\nA subarray is a contiguous non-empty sequence of elements within an array.\\n \\nExample 1:\\n\\nInput: nums = [5,2,2]\\nOutput: 1\\nExplanation: This array with length 3 is not non-decreasing.\\nWe have two ways to make the array length two.\\nFirst, choosing subarray [2,2] converts the array to [5,4].\\nSecond, choosing subarray [5,2] converts the array to [7,2].\\nIn these two ways the array is not non-decreasing.\\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \\nSo the answer is 1.\\n\\nExample 2:\\n\\nInput: nums = [1,2,3,4]\\nOutput: 4\\nExplanation: The array is non-decreasing. So the answer is 4.\\n\\nExample 3:\\n\\nInput: nums = [4,3,2,6]\\nOutput: 3\\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^5'\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))\n"
+        ],
+        "reached": true,
+        "witness_call": "findMaximumLength([5, 5, 5])",
+        "block": 40,
+        "witness": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 45,
+        "k": 12,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `1` -> `2` at line 45 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 0\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 2\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        return length\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    \"\"\"You are given a 0-indexed integer array nums.\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\nA subarray is a contiguous non-empty sequence of elements within an array.\n \nExample 1:\n\nInput: nums = [5,2,2]\nOutput: 1\nExplanation: This array with length 3 is not non-decreasing.\nWe have two ways to make the array length two.\nFirst, choosing subarray [2,2] converts the array to [5,4].\nSecond, choosing subarray [5,2] converts the array to [7,2].\nIn these two ways the array is not non-decreasing.\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \nSo the answer is 1.\n\nExample 2:\n\nInput: nums = [1,2,3,4]\nOutput: 4\nExplanation: The array is non-decreasing. So the answer is 4.\n\nExample 3:\n\nInput: nums = [4,3,2,6]\nOutput: 3\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^5\"\"\"\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))"
+      },
+      {
+        "kind": "DU",
+        "line": 46,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `current_sum_being_formed` at line 43 reaches its use at line 46 in the existing tests.",
+        "cell": [
+          -2,
+          "du|37|current_sum_being_formed|43|46|c-use"
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 45,
+        "k": 13,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `1` -> `0` at line 45 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def findMaximumLength(self, nums: List[int]) -> int:\n        length = 0\n        last_sum_of_previous_segment = 0\n        current_sum_being_formed = 0\n        for num in nums:\n            current_sum_being_formed += num\n            if current_sum_being_formed >= last_sum_of_previous_segment:\n                length += 0\n                last_sum_of_previous_segment = current_sum_being_formed\n                current_sum_being_formed = 0\n        return length\nimport copy\n\ndef findMaximumLength(nums: List[int]) -> int:\n    \"\"\"You are given a 0-indexed integer array nums.\nYou can perform any number of operations, where each operation involves selecting a subarray of the array and replacing it with the sum of its elements. For example, if the given array is [1,3,5,6] and you select subarray [3,5] the array will convert to [1,8,6].\nReturn the maximum length of a non-decreasing array that can be made after applying operations.\nA subarray is a contiguous non-empty sequence of elements within an array.\n \nExample 1:\n\nInput: nums = [5,2,2]\nOutput: 1\nExplanation: This array with length 3 is not non-decreasing.\nWe have two ways to make the array length two.\nFirst, choosing subarray [2,2] converts the array to [5,4].\nSecond, choosing subarray [5,2] converts the array to [7,2].\nIn these two ways the array is not non-decreasing.\nAnd if we choose subarray [5,2,2] and replace it with [9] it becomes non-decreasing. \nSo the answer is 1.\n\nExample 2:\n\nInput: nums = [1,2,3,4]\nOutput: 4\nExplanation: The array is non-decreasing. So the answer is 4.\n\nExample 3:\n\nInput: nums = [4,3,2,6]\nOutput: 3\nExplanation: Replacing [3,2] with [5] converts the given array to [4,5,6] that is non-decreasing.\nBecause the given array is not non-decreasing, the maximum possible answer is 3.\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^5\"\"\"\n    return Solution().findMaximumLength(*copy.deepcopy((nums,)))"
+      }
+    ],
+    "concept_facts": [
+      "Def-use pair (all-uses, c-use): the value assigned to `length` at line 38 never reaches its use at line 49 in the existing tests.",
+      "Fault-type adequacy at L44: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if current_sum_being_formed >= last_sum_of_previous_segment:`. The public tests do not distinguish 1 surviving alternatives (`>= last_sum_of_previous_segment` -> `> last_sum_of_previous_segment`). Exercise this behaviour and determine the required result from the specification.",
+      "Fault-type adequacy at L40: wrong value: wrong variable, constant or assigned value. Behaviour: `current_sum_being_formed = 0`. The public tests do not distinguish 1 surviving alternatives (`0` -> `1`). Exercise this behaviour and determine the required result from the specification."
+    ],
+    "placebo_facts": [
+      "Mutation (CRP constant): the mutant `1` -> `2` at line 45 is killed: an existing test distinguishes them.",
+      "Def-use pair (all-uses, c-use): the value assigned to `current_sum_being_formed` at line 43 reaches its use at line 46 in the existing tests.",
+      "Mutation (CRP constant): the mutant `1` -> `0` at line 45 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "findMaximumLength([4, 4, 4, 4])",
+      "findMaximumLength([-5, -2, -2])",
+      "findMaximumLength([-1, -2, -3, -4])",
+      "findMaximumLength([0, 0, 0, 0])",
+      "findMaximumLength([5])",
+      "findMaximumLength([])",
+      "findMaximumLength([2, 2])",
+      "findMaximumLength([1, 2, 3, 4, 1])",
+      "findMaximumLength([5, 5, 5])",
+      "findMaximumLength([1, 1, 1, 1])",
+      "findMaximumLength([1, 2, 2])",
+      "findMaximumLength([1, 3, 2, 6])",
+      "findMaximumLength([5, 1, 2])",
+      "findMaximumLength([1, 1, 3, 4])",
+      "findMaximumLength([4, 1, 2, 6])",
+      "findMaximumLength([5, 2, 1])",
+      "findMaximumLength([1, 2, 1, 4])",
+      "findMaximumLength([4, 3, 1, 6])",
+      "findMaximumLength([1, 2, 3, 1])",
+      "findMaximumLength([4, 3, 2, 1])",
+      "findMaximumLength([1, 2, 3])",
+      "findMaximumLength([4, 3, 2])",
+      "findMaximumLength([5, 2, 2, 2])",
+      "findMaximumLength([1, 2, 3, 4, 4])",
+      "findMaximumLength([4, 3, 2, 6, 6])",
+      "findMaximumLength([4, 2, 2])",
+      "findMaximumLength([3, 3, 2, 6])",
+      "findMaximumLength([6, 2, 2])",
+      "findMaximumLength([2, 2, 3, 4])",
+      "findMaximumLength([5, 3, 2, 6])",
+      "findMaximumLength([2, 2, 2])",
+      "findMaximumLength([2, 3, 2, 6])",
+      "findMaximumLength([4, 2, 2, 6])",
+      "findMaximumLength([5, 3, 2])",
+      "findMaximumLength([1, 3, 3, 4])",
+      "findMaximumLength([4, 4, 2, 6])",
+      "findMaximumLength([1, 2, 2, 4])",
+      "findMaximumLength([5, 2, 3])",
+      "findMaximumLength([1, 2, 4, 4])",
+      "findMaximumLength([4, 3, 3, 6])",
+      "findMaximumLength([1, 2, 3, 3])",
+      "findMaximumLength([4, 3, 2, 5])",
+      "findMaximumLength([1, 2, 3, 5])",
+      "findMaximumLength([4, 3, 2, 7])",
+      "findMaximumLength([1, 2, 3, 2])",
+      "findMaximumLength([4, 3, 2, 2])",
+      "findMaximumLength([5, 5, 2])",
+      "findMaximumLength([2, 2, 5])",
+      "findMaximumLength([2, 3, 4, 6])",
+      "findMaximumLength([6, 2, 3, 4])",
+      "findMaximumLength([4, 2, 3, 1])",
+      "findMaximumLength([6, 3, 2, 4])",
+      "findMaximumLength([5, 2, 2, 6])",
+      "findMaximumLength([1, 2, 3, 4, 5])",
+      "findMaximumLength([4, 3, 2, 6, 7])",
+      "findMaximumLength([7, 2, 2])",
+      "findMaximumLength([3, 2, 3, 4])",
+      "findMaximumLength([6, 3, 2, 6])",
+      "findMaximumLength([3, 2, 2])",
+      "findMaximumLength([5, 4, 2])",
+      "findMaximumLength([1, 4, 3, 4])",
+      "findMaximumLength([4, 5, 2, 6])",
+      "findMaximumLength([5, 2, 4])",
+      "findMaximumLength([1, 2, 5, 4])",
+      "findMaximumLength([4, 3, 4, 6])",
+      "findMaximumLength([1, 2, 3, 6])",
+      "findMaximumLength([4, 3, 2, 8])",
+      "findMaximumLength([4, 3, 2, 4])",
+      "findMaximumLength([2, 3, 4, 1])",
+      "findMaximumLength([3, 2, 6, 4])",
+      "findMaximumLength([6, 4, 3, 2])",
+      "findMaximumLength([1, 2, 3, 3, 4])",
+      "findMaximumLength([4, 3, 2, 2, 6])"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([5, 2, 2],), ([1, 2, 3, 4],), ([4, 3, 2, 6],)]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12)))\n",
+    "strategy_sha256": "9e31edb3a151674315223aadbb80e21c413fe3de46f78fb8572153c79e9f3308",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 20,
+    "survivors": 7
+  }
+}

@@ -73,3 +73,10 @@ public-seeded tool pool). A thesis claim on the definitional oracle should wait 
 - Defensible as a method contribution only if v56 confirms the definitional-oracle family on fresh tasks, or if v59-type
   concepts (information the writer lacks) show a signal.
 - Not defensible: "LLMs write better tests when given concepts derived from the code they already see".
+
+## 6. Open directions tried on Qwen (2026-10-25, Codex reviews, no Claude subagents)
+- **v60 behaviour-fact concept** (code-blind Qwen generator; FACT lines extracted from the PUT): concept 12, spec-fact
+  placebo 13, PUT source 10, blind 5 /33, FA 0 → **no signal**. Any fact block helps (+7 vs blind); PUT content does not.
+- **v61 interpretation concept** (v55 design, Qwen oracle families): defn 12, interp 11, placebo 12 /33, FA 108/104/104,
+  common-mode problems 2/2/2 → **no-go**.
+Both open directions close with the same pattern: placebo-matched, the concept content adds nothing.

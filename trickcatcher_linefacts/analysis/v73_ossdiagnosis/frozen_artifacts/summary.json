@@ -1,0 +1,99 @@
+{
+  "rows": [
+    {
+      "case_id": "85",
+      "arm": "raw_known",
+      "error": null,
+      "cost_usd": "0.00016524",
+      "provider": "Near AI",
+      "assessment": {
+        "simple_schema_valid": true,
+        "analysis": "The implementation treats a value that occurs only once by setting `max_gap = n` and then returning `ceil(max_gap/2)`. This assumes the farthest distance a wave must travel is `n`, but on a circular array the maximum distance from a single source to the farthest index is actually `n\u20111` (the number of steps around the circle) and the time needed is the ceiling of half that distance, i.e. `ceil((n\u20111)/2)`. For even `n` both formulas happen to give the same result, but for odd `n` they differ. Consequently, when the optimal target value appears exactly once in an array of odd length, the function overestimates the required seconds. For example, with `nums = [1,2,3,4,5]` (all distinct, `n = 5`) the correct answer is `2` seconds (a value can spread to both sides each second, covering the whole circle in two steps), but the code returns `ceil(5/2) = 3`. The bug lies in the branch `if len(positions) == 1: max_gap = n` which should instead use `max_gap = n - 1` (or compute the actual maximal circular distance) before applying the ceiling division.",
+        "semantic_status": "unreviewed"
+      }
+    },
+    {
+      "case_id": "85",
+      "arm": "full_known",
+      "error": null,
+      "cost_usd": "0.00012699",
+      "provider": "Near AI",
+      "assessment": {
+        "compiler_admitted": 0,
+        "compiler_rejected": [],
+        "response_contract": {
+          "status": "valid",
+          "explicit_abstention": true,
+          "response_sha256": "f90265d49365330c9185fc1031cc9c2683a4e52f0ec29f117ec12535327efd51",
+          "error": null
+        },
+        "semantic_status": "unreviewed",
+        "compiled": {
+          "schema": "v71_claim_trigger_edit",
+          "mode": "writer",
+          "receipts": [],
+          "semantic_truth": "unverified",
+          "response_contract": {
+            "status": "valid",
+            "explicit_abstention": true,
+            "response_sha256": "f90265d49365330c9185fc1031cc9c2683a4e52f0ec29f117ec12535327efd51",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "case_id": "124",
+      "arm": "full_known",
+      "error": null,
+      "cost_usd": "0.00013854",
+      "provider": "Near AI",
+      "assessment": {
+        "compiler_admitted": 0,
+        "compiler_rejected": [],
+        "response_contract": {
+          "status": "valid",
+          "explicit_abstention": true,
+          "response_sha256": "a4c899957252ed2b05cd9c5f28711ceca898bc41273e1d75160cc8bce0987bb2",
+          "error": null
+        },
+        "semantic_status": "unreviewed",
+        "compiled": {
+          "schema": "v71_claim_trigger_edit",
+          "mode": "writer",
+          "receipts": [],
+          "semantic_truth": "unverified",
+          "response_contract": {
+            "status": "valid",
+            "explicit_abstention": true,
+            "response_sha256": "a4c899957252ed2b05cd9c5f28711ceca898bc41273e1d75160cc8bce0987bb2",
+            "error": null
+          }
+        }
+      }
+    },
+    {
+      "case_id": "124",
+      "arm": "raw_known",
+      "error": null,
+      "cost_usd": "0.0001968",
+      "provider": "Near AI",
+      "assessment": {
+        "simple_schema_valid": true,
+        "analysis": "The implementation builds the earliest possible matching prefix of *word2* in *word1* (the `left_idx` array) and then tries to place the single allowed mismatch at each possible position `t`. For each candidate mismatch it picks the smallest index `mi` after the matched prefix and checks the condition `jAfter[mi + 1] <= t + 1` before constructing the rest of the sequence. The `jAfter` array is intended to tell how many characters of *word2* are still needed after a given position in *word1*, but the way it is filled (decrementing `j` when a character matches) and the inequality used (`<= t + 1`) appear to be off\u2011by\u2011one. In particular, when the mismatch is placed at position `t`, the suffix that must be matched starts at `t+1` in *word2*, so the correct check should be `jAfter[mi + 1] <= t` (or an equivalent formulation). Because of the stricter `<= t + 1` test, the code can incorrectly reject a candidate `mi` that actually allows the remaining suffix to be matched, returning an empty array even though a valid sequence exists. This would violate the specification by failing to return the lexicographically smallest valid index sequence for some inputs. An example that triggers the bug would be a case where the earliest possible mismatch index `mi` leaves exactly `t+1` characters of *word2* unmatched in the suffix, which the current condition treats as insufficient. The bug hypothesis is therefore an off\u2011by\u2011one error in the suffix\u2011feasibility check.",
+        "semantic_status": "unreviewed"
+      }
+    }
+  ],
+  "completed": true,
+  "stop_reason": null,
+  "paid_dispatches": 4,
+  "known_cost_receipts": 4,
+  "unknown_cost_attempts": 0,
+  "actual_known_cost_usd": "0.00062757",
+  "model": "openai/gpt-oss-120b",
+  "new_model_calls": 4,
+  "native_calls": 0,
+  "private_labels_read": 0,
+  "finished_utc": "2026-10-25T11:17:59.194477+00:00"
+}

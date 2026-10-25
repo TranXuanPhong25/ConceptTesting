@@ -1,0 +1,294 @@
+{
+  "baseline": {
+    "task": 124,
+    "entry": "validSequence",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        \n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        \n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        \n        # Try mismatch at earliest possible position t\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        \n        if lenpref == m:\n            return left_idx\n        return []\n\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    'You are given two strings word1 and word2.\\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\\nA sequence of indices seq is called valid if:\\n\\nThe indices are sorted in ascending order.\\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\\n\\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\\n \\nExample 1:\\n\\nInput: word1 = \"vbcca\", word2 = \"abc\"\\nOutput: [0,1,2]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\\n\\nChange word1[0] to \\'a\\'.\\nword1[1] is already \\'b\\'.\\nword1[2] is already \\'c\\'.\\n\\n\\nExample 2:\\n\\nInput: word1 = \"bacdc\", word2 = \"abc\"\\nOutput: [1,2,4]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\\n\\nword1[1] is already \\'a\\'.\\nChange word1[2] to \\'b\\'.\\nword1[4] is already \\'c\\'.\\n\\n\\nExample 3:\\n\\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\\nOutput: []\\nExplanation:\\nThere is no valid sequence of indices.\\n\\nExample 4:\\n\\nInput: word1 = \"abc\", word2 = \"ab\"\\nOutput: [0,1]\\n\\n \\nConstraints:\\n\\n1 <= word2.length < word1.length <= 3 * 10^5\\nword1 and word2 consist only of lowercase English letters.'\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate('vbcca', 'abc'), [0, 1, 2], 0.0)\n    assert _heldout_same(candidate('bacdc', 'abc'), [1, 2, 4], 0.0)\n    assert _heldout_same(candidate('aaaaaa', 'aaabc'), [], 0.0)\n    assert _heldout_same(candidate('abc', 'ab'), [0, 1], 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 62,
+        "text": "Condition coverage (C3): the sub-condition `j > 0` of the decision at line 62 is never False in the existing tests.",
+        "cell": [
+          46,
+          "F"
+        ],
+        "witness": 19,
+        "reached": true,
+        "witness_call": "validSequence('aaaaaa', 'a')",
+        "block": 62,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 72,
+        "text": "Statement coverage (C1): line 72 (starting with `continue`) is never executed by the existing tests.",
+        "lines": [
+          72
+        ],
+        "witness": 2,
+        "reached": true,
+        "witness_call": "validSequence('b', 'bacdc')",
+        "block": 71,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 67,
+        "k": 36,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `m - 1` -> `m - 0` at line 67 survives: no existing test distinguishes them.",
+        "witness": 22,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "validSequence('aaaaaa', '')",
+        "block": 67,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        max_t = min(m - 0, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        if lenpref == m:\n            return left_idx\n        return []\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    \"\"\"You are given two strings word1 and word2.\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\nA sequence of indices seq is called valid if:\n\nThe indices are sorted in ascending order.\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\n\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\n \nExample 1:\n\nInput: word1 = \"vbcca\", word2 = \"abc\"\nOutput: [0,1,2]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\n\nChange word1[0] to 'a'.\nword1[1] is already 'b'.\nword1[2] is already 'c'.\n\n\nExample 2:\n\nInput: word1 = \"bacdc\", word2 = \"abc\"\nOutput: [1,2,4]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\n\nword1[1] is already 'a'.\nChange word1[2] to 'b'.\nword1[4] is already 'c'.\n\n\nExample 3:\n\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\nOutput: []\nExplanation:\nThere is no valid sequence of indices.\n\nExample 4:\n\nInput: word1 = \"abc\", word2 = \"ab\"\nOutput: [0,1]\n\n \nConstraints:\n\n1 <= word2.length < word1.length <= 3 * 10^5\nword1 and word2 consist only of lowercase English letters.\"\"\"\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))"
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 69,
+        "text": "Branch coverage (C2): the True and False branches of `t == 0` (line 69) are taken by the existing tests.",
+        "cells": [
+          [
+            67,
+            "T"
+          ],
+          [
+            67,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 84,
+        "text": "Statement coverage (C1): line 84 (`pos = lst[idx]`) is executed by the existing tests.",
+        "lines": [
+          84
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 61,
+        "k": 25,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `n - 1` -> `n - 0` at line 61 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 0, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        if lenpref == m:\n            return left_idx\n        return []\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    \"\"\"You are given two strings word1 and word2.\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\nA sequence of indices seq is called valid if:\n\nThe indices are sorted in ascending order.\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\n\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\n \nExample 1:\n\nInput: word1 = \"vbcca\", word2 = \"abc\"\nOutput: [0,1,2]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\n\nChange word1[0] to 'a'.\nword1[1] is already 'b'.\nword1[2] is already 'c'.\n\n\nExample 2:\n\nInput: word1 = \"bacdc\", word2 = \"abc\"\nOutput: [1,2,4]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\n\nword1[1] is already 'a'.\nChange word1[2] to 'b'.\nword1[4] is already 'c'.\n\n\nExample 3:\n\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\nOutput: []\nExplanation:\nThere is no valid sequence of indices.\n\nExample 4:\n\nInput: word1 = \"abc\", word2 = \"ab\"\nOutput: [0,1]\n\n \nConstraints:\n\n1 <= word2.length < word1.length <= 3 * 10^5\nword1 and word2 consist only of lowercase English letters.\"\"\"\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))"
+      }
+    ],
+    "concept_facts": [
+      "Condition coverage (C3): the sub-condition `j > 0` of the decision at line 62 is never False in the existing tests.",
+      "Statement coverage (C1): line 72 (starting with `continue`) is never executed by the existing tests.",
+      "Mutation (CRP constant): the mutant `m - 1` -> `m - 0` at line 67 survives: no existing test distinguishes them."
+    ],
+    "placebo_facts": [
+      "Branch coverage (C2): the True and False branches of `t == 0` (line 69) are taken by the existing tests.",
+      "Statement coverage (C1): line 84 (`pos = lst[idx]`) is executed by the existing tests.",
+      "Mutation (CRP constant): the mutant `n - 1` -> `n - 0` at line 61 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "validSequence('aaaaaa', 'a')",
+      "validSequence('b', 'bacdc')",
+      "validSequence('aaaaaa', '')"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([('vbcca', 'abc'), ('bacdc', 'abc'), ('aaaaaa', 'aaabc'), ('abc', 'ab')]), st.tuples(st.text(alphabet='abcv', max_size=24), st.text(alphabet='abc', max_size=24)))\n",
+    "strategy_sha256": "d04118fce5de95c6974b137800d7bd08bed6fa47d3b1d7a86b3acecf1c2e0811",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 124,
+    "entry": "validSequence",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        \n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        \n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        \n        # Try mismatch at earliest possible position t\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        \n        if lenpref == m:\n            return left_idx\n        return []\n\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    'You are given two strings word1 and word2.\\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\\nA sequence of indices seq is called valid if:\\n\\nThe indices are sorted in ascending order.\\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\\n\\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\\n \\nExample 1:\\n\\nInput: word1 = \"vbcca\", word2 = \"abc\"\\nOutput: [0,1,2]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\\n\\nChange word1[0] to \\'a\\'.\\nword1[1] is already \\'b\\'.\\nword1[2] is already \\'c\\'.\\n\\n\\nExample 2:\\n\\nInput: word1 = \"bacdc\", word2 = \"abc\"\\nOutput: [1,2,4]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\\n\\nword1[1] is already \\'a\\'.\\nChange word1[2] to \\'b\\'.\\nword1[4] is already \\'c\\'.\\n\\n\\nExample 3:\\n\\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\\nOutput: []\\nExplanation:\\nThere is no valid sequence of indices.\\n\\nExample 4:\\n\\nInput: word1 = \"abc\", word2 = \"ab\"\\nOutput: [0,1]\\n\\n \\nConstraints:\\n\\n1 <= word2.length < word1.length <= 3 * 10^5\\nword1 and word2 consist only of lowercase English letters.'\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate('vbcca', 'abc'), [0, 1, 2], 0.0)\n    assert _heldout_same(candidate('bacdc', 'abc'), [1, 2, 4], 0.0)\n    assert _heldout_same(candidate('aaaaaa', 'aaabc'), [], 0.0)\n    assert _heldout_same(candidate('abc', 'ab'), [0, 1], 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 62,
+        "text": "Condition coverage (C3): the sub-condition `j > 0` of the decision at line 62 is never False in the existing tests.",
+        "cell": [
+          46,
+          "F"
+        ],
+        "witness": 19,
+        "reached": true,
+        "witness_call": "validSequence('aaaaaa', 'a')",
+        "block": 62,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 69,
+        "fault_type": "BOUNDARY",
+        "text": "Fault-type adequacy at L69: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `last = -1 if t == 0 else left_idx[t - 1]`. The public tests do not distinguish 1 surviving alternatives (`1` -> `2`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 1,
+        "distinguished": 1,
+        "alternatives": [
+          "`1` -> `2`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        \n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        \n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        \n        # Try mismatch at earliest possible position t\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 2]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        \n        if lenpref == m:\n            return left_idx\n        return []\n\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    'You are given two strings word1 and word2.\\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\\nA sequence of indices seq is called valid if:\\n\\nThe indices are sorted in ascending order.\\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\\n\\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\\n \\nExample 1:\\n\\nInput: word1 = \"vbcca\", word2 = \"abc\"\\nOutput: [0,1,2]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\\n\\nChange word1[0] to \\'a\\'.\\nword1[1] is already \\'b\\'.\\nword1[2] is already \\'c\\'.\\n\\n\\nExample 2:\\n\\nInput: word1 = \"bacdc\", word2 = \"abc\"\\nOutput: [1,2,4]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\\n\\nword1[1] is already \\'a\\'.\\nChange word1[2] to \\'b\\'.\\nword1[4] is already \\'c\\'.\\n\\n\\nExample 3:\\n\\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\\nOutput: []\\nExplanation:\\nThere is no valid sequence of indices.\\n\\nExample 4:\\n\\nInput: word1 = \"abc\", word2 = \"ab\"\\nOutput: [0,1]\\n\\n \\nConstraints:\\n\\n1 <= word2.length < word1.length <= 3 * 10^5\\nword1 and word2 consist only of lowercase English letters.'\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))\n"
+        ],
+        "reached": true,
+        "witness_call": "validSequence('aaaaaa', 'aaab')",
+        "block": 69,
+        "witness": 17
+      },
+      {
+        "kind": "STMT",
+        "line": 72,
+        "text": "Statement coverage (C1): line 72 (starting with `continue`) is never executed by the existing tests.",
+        "lines": [
+          72
+        ],
+        "witness": 2,
+        "reached": true,
+        "witness_call": "validSequence('b', 'bacdc')",
+        "block": 71,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 69,
+        "text": "Branch coverage (C2): the True and False branches of `t == 0` (line 69) are taken by the existing tests.",
+        "cells": [
+          [
+            67,
+            "T"
+          ],
+          [
+            67,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 84,
+        "text": "Statement coverage (C1): line 84 (`pos = lst[idx]`) is executed by the existing tests.",
+        "lines": [
+          84
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 61,
+        "k": 25,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `n - 1` -> `n - 0` at line 61 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 0, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        if lenpref == m:\n            return left_idx\n        return []\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    \"\"\"You are given two strings word1 and word2.\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\nA sequence of indices seq is called valid if:\n\nThe indices are sorted in ascending order.\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\n\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\n \nExample 1:\n\nInput: word1 = \"vbcca\", word2 = \"abc\"\nOutput: [0,1,2]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\n\nChange word1[0] to 'a'.\nword1[1] is already 'b'.\nword1[2] is already 'c'.\n\n\nExample 2:\n\nInput: word1 = \"bacdc\", word2 = \"abc\"\nOutput: [1,2,4]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\n\nword1[1] is already 'a'.\nChange word1[2] to 'b'.\nword1[4] is already 'c'.\n\n\nExample 3:\n\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\nOutput: []\nExplanation:\nThere is no valid sequence of indices.\n\nExample 4:\n\nInput: word1 = \"abc\", word2 = \"ab\"\nOutput: [0,1]\n\n \nConstraints:\n\n1 <= word2.length < word1.length <= 3 * 10^5\nword1 and word2 consist only of lowercase English letters.\"\"\"\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))"
+      }
+    ],
+    "concept_facts": [
+      "Condition coverage (C3): the sub-condition `j > 0` of the decision at line 62 is never False in the existing tests.",
+      "Fault-type adequacy at L69: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `last = -1 if t == 0 else left_idx[t - 1]`. The public tests do not distinguish 1 surviving alternatives (`1` -> `2`). Exercise this behaviour and determine the required result from the specification.",
+      "Statement coverage (C1): line 72 (starting with `continue`) is never executed by the existing tests."
+    ],
+    "placebo_facts": [
+      "Branch coverage (C2): the True and False branches of `t == 0` (line 69) are taken by the existing tests.",
+      "Statement coverage (C1): line 84 (`pos = lst[idx]`) is executed by the existing tests.",
+      "Mutation (CRP constant): the mutant `n - 1` -> `n - 0` at line 61 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "validSequence('aaaaaa', 'a')",
+      "validSequence('b', 'bacdc')",
+      "validSequence('aaaaaa', '')",
+      "validSequence('  ', 'aaabc')",
+      "validSequence('aaaaaa9', 'aaabc')",
+      "validSequence(' bacdc', 'abc')",
+      "validSequence('BACDC', 'abc')",
+      "validSequence('-bacdc', 'abc')",
+      "validSequence('vbcca', '  ')",
+      "validSequence('aaaaaa', 'aaabc9')",
+      "validSequence('aaaaaa', ' aaabc')",
+      "validSequence('vbcca', 'v')",
+      "validSequence('bacdc', 'abc!')",
+      "validSequence('bacdc', 'Abc')",
+      "validSequence('aaaaaa', 'aaaaaa')",
+      "validSequence('abc', 'ab ')",
+      "validSequence('', 'abc')",
+      "validSequence('bacdc', 'a')",
+      "validSequence('ab', 'abc')",
+      "validSequence('vbcca', 'cba')",
+      "validSequence('aaaaaa', 'aaabc ')",
+      "validSequence('accbv', 'abc')",
+      "validSequence('vbccavbcca', 'abc')",
+      "validSequence('a', 'aaaaaa')",
+      "validSequence('bac', 'abc')",
+      "validSequence('vvvvv', 'abc')",
+      "validSequence('bbbbb', 'abc')",
+      "validSequence('aaa', 'ab')",
+      "validSequence('vbcca', 'ab')",
+      "validSequence('bacdc', 'ab')",
+      "validSequence('aaaaaa', 'aa')",
+      "validSequence('abc', 'aa')",
+      "validSequence('vbcca', 'aaa')",
+      "validSequence('bacdc', 'aaa')",
+      "validSequence('aaaaaa', 'aaaaa')",
+      "validSequence('vbcc', 'abc')",
+      "validSequence('bacd', 'abc')",
+      "validSequence('aaaaa', 'aaabc')",
+      "validSequence('vbccaa', 'abc')",
+      "validSequence('bacdcc', 'abc')",
+      "validSequence('aaaaaaa', 'aaabc')",
+      "validSequence('abcc', 'ab')",
+      "validSequence('aaaaaa', 'aaab')",
+      "validSequence('vbcca', 'abcc')",
+      "validSequence('bacdc', 'abcc')",
+      "validSequence('aaaaaa', 'aaabcc')",
+      "validSequence('abc', 'abb')",
+      "validSequence('vvcca', 'abc')",
+      "validSequence('bbcdc', 'abc')",
+      "validSequence('aac', 'ab')",
+      "validSequence('cdcab', 'abc')",
+      "validSequence('cba', 'ab')",
+      "validSequence('vbcca', 'aac')",
+      "validSequence('bacdc', 'aac')",
+      "validSequence('bacdc', 'cba')",
+      "validSequence('aaaaaa', 'cbaaa')",
+      "validSequence('abc', 'ba')",
+      "validSequence('abccv', 'abc')",
+      "validSequence('cacdb', 'abc')",
+      "validSequence('aaaaaa', 'caaba')"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([('vbcca', 'abc'), ('bacdc', 'abc'), ('aaaaaa', 'aaabc'), ('abc', 'ab')]), st.tuples(st.text(alphabet='abcv', max_size=24), st.text(alphabet='abc', max_size=24)))\n",
+    "strategy_sha256": "d04118fce5de95c6974b137800d7bd08bed6fa47d3b1d7a86b3acecf1c2e0811",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 117,
+    "survivors": 18
+  }
+}

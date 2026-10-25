@@ -97,3 +97,11 @@ The 6 accepted Codex calls (defn samples of batches 0–1) and the unresolved `d
 scored or mixed (writer pairing). Everything else (arms, inputs, filter, scorer, decision rule) is unchanged; the Codex
 review gate is replaced by this amendment (review by Claude). Haiku is a weaker writer than Codex/Sonnet: results are a
 trial ("chạy thử"), not comparable to the Sonnet 24/33 pipeline.
+
+## Amendment H2 (2026-10-25, Claude; all 264 answers in, before any execution or outcome)
+33/33 Haiku subagents finished; transcripts: only Read of `split/` prompt files and Write of `answers/` files (0
+violations). 8 answers in 3 calls (defn_1_2: 3, interpretation_1_0: 2, placebo_2_0: 3) were written to a sibling
+problem's file of the same call (each file defined exactly one other problem's entrypoint; within each call the
+misplacements form a permutation). They were moved to the file of the problem whose entrypoint they define
+(deterministic, by entrypoint name, no content change; originals kept in `out/.../misplaced/`). After this all 264
+answers pass `validate_answer`. No answer was regenerated.

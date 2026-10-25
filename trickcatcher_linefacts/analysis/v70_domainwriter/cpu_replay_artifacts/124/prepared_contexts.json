@@ -1,0 +1,1476 @@
+{
+  "plain": {
+    "source": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        \n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        \n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        \n        # Try mismatch at earliest possible position t\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        \n        if lenpref == m:\n            return left_idx\n        return []\n\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    'You are given two strings word1 and word2.\\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\\nA sequence of indices seq is called valid if:\\n\\nThe indices are sorted in ascending order.\\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\\n\\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\\n \\nExample 1:\\n\\nInput: word1 = \"vbcca\", word2 = \"abc\"\\nOutput: [0,1,2]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\\n\\nChange word1[0] to \\'a\\'.\\nword1[1] is already \\'b\\'.\\nword1[2] is already \\'c\\'.\\n\\n\\nExample 2:\\n\\nInput: word1 = \"bacdc\", word2 = \"abc\"\\nOutput: [1,2,4]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\\n\\nword1[1] is already \\'a\\'.\\nChange word1[2] to \\'b\\'.\\nword1[4] is already \\'c\\'.\\n\\n\\nExample 3:\\n\\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\\nOutput: []\\nExplanation:\\nThere is no valid sequence of indices.\\n\\nExample 4:\\n\\nInput: word1 = \"abc\", word2 = \"ab\"\\nOutput: [0,1]\\n\\n \\nConstraints:\\n\\n1 <= word2.length < word1.length <= 3 * 10^5\\nword1 and word2 consist only of lowercase English letters.'\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))\n",
+    "entry": "validSequence",
+    "public_examples": [
+      {
+        "arguments": "('vbcca', 'abc')",
+        "expected": "[0, 1, 2]"
+      },
+      {
+        "arguments": "('bacdc', 'abc')",
+        "expected": "[1, 2, 4]"
+      },
+      {
+        "arguments": "('aaaaaa', 'aaabc')",
+        "expected": "[]"
+      },
+      {
+        "arguments": "('abc', 'ab')",
+        "expected": "[0, 1]"
+      }
+    ],
+    "spec": "You are given two strings word1 and word2.\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\nA sequence of indices seq is called valid if:\n\nThe indices are sorted in ascending order.\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\n\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\n \nExample 1:\n\nInput: word1 = \"vbcca\", word2 = \"abc\"\nOutput: [0,1,2]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\n\nChange word1[0] to 'a'.\nword1[1] is already 'b'.\nword1[2] is already 'c'.\n\n\nExample 2:\n\nInput: word1 = \"bacdc\", word2 = \"abc\"\nOutput: [1,2,4]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\n\nword1[1] is already 'a'.\nChange word1[2] to 'b'.\nword1[4] is already 'c'.\n\n\nExample 3:\n\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\nOutput: []\nExplanation:\nThere is no valid sequence of indices.\n\nExample 4:\n\nInput: word1 = \"abc\", word2 = \"ab\"\nOutput: [0,1]\n\n \nConstraints:\n\n1 <= word2.length < word1.length <= 3 * 10^5\nword1 and word2 consist only of lowercase English letters.",
+    "known_bug_premise": "The target code is incorrect, as guaranteed by this frozen known-bug development cohort.",
+    "instruction": "Generate valid tests. Compute expected outputs from specification; observed PUT/alternative outputs are not oracle answers. Respect original domain."
+  },
+  "explicit_pattern": {
+    "entry": "validSequence",
+    "public_examples": [
+      {
+        "arguments": "('vbcca', 'abc')",
+        "expected": "[0, 1, 2]"
+      },
+      {
+        "arguments": "('bacdc', 'abc')",
+        "expected": "[1, 2, 4]"
+      },
+      {
+        "arguments": "('aaaaaa', 'aaabc')",
+        "expected": "[]"
+      },
+      {
+        "arguments": "('abc', 'ab')",
+        "expected": "[0, 1]"
+      }
+    ],
+    "known_bug_premise": "The target code is incorrect, as guaranteed by this frozen known-bug development cohort.",
+    "instruction": "\nYou are given a Python function `validSequence(word1: str, word2: str)` to solve the following task:\n\n## Task\nYou are given two strings word1 and word2.\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\nA sequence of indices seq is called valid if:\n\nThe indices are sorted in ascending order.\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\n\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\n \nExample 1:\n\nInput: word1 = \"vbcca\", word2 = \"abc\"\nOutput: [0,1,2]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\n\nChange word1[0] to 'a'.\nword1[1] is already 'b'.\nword1[2] is already 'c'.\n\n\nExample 2:\n\nInput: word1 = \"bacdc\", word2 = \"abc\"\nOutput: [1,2,4]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\n\nword1[1] is already 'a'.\nChange word1[2] to 'b'.\nword1[4] is already 'c'.\n\n\nExample 3:\n\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\nOutput: []\nExplanation:\nThere is no valid sequence of indices.\n\nExample 4:\n\nInput: word1 = \"abc\", word2 = \"ab\"\nOutput: [0,1]\n\n \nConstraints:\n\n1 <= word2.length < word1.length <= 3 * 10^5\nword1 and word2 consist only of lowercase English letters.\n\n## Code Solution:\n```\nfrom string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        \n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        \n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        \n        # Try mismatch at earliest possible position t\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        \n        if lenpref == m:\n            return left_idx\n        return []\n\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    'You are given two strings word1 and word2.\\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\\nA sequence of indices seq is called valid if:\\n\\nThe indices are sorted in ascending order.\\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\\n\\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\\n \\nExample 1:\\n\\nInput: word1 = \"vbcca\", word2 = \"abc\"\\nOutput: [0,1,2]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\\n\\nChange word1[0] to \\'a\\'.\\nword1[1] is already \\'b\\'.\\nword1[2] is already \\'c\\'.\\n\\n\\nExample 2:\\n\\nInput: word1 = \"bacdc\", word2 = \"abc\"\\nOutput: [1,2,4]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\\n\\nword1[1] is already \\'a\\'.\\nChange word1[2] to \\'b\\'.\\nword1[4] is already \\'c\\'.\\n\\n\\nExample 3:\\n\\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\\nOutput: []\\nExplanation:\\nThere is no valid sequence of indices.\\n\\nExample 4:\\n\\nInput: word1 = \"abc\", word2 = \"ab\"\\nOutput: [0,1]\\n\\n \\nConstraints:\\n\\n1 <= word2.length < word1.length <= 3 * 10^5\\nword1 and word2 consist only of lowercase English letters.'\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))\n\n```\nThe code solution I have provided to you is **incorrect**. Your job is to give feedback by generating a unit test that \n1. Is **valid** input based on the task description, i.e., an acceptable input consistent with task description that a correct program should be able to execute.\n2. The output enclosed in ```.``` and is **faithful** to the task description, i.e., the output of the unit test is consistent with what a correct program would return.\n3. **Breaks** the given code, i.e., does **not** execute to the **correct** output and brings out its mistakes and vulnerabilities.\n\nProvide a reasoning for your answer and identify a general hypothesis or rationale identifying the cause of error. Then provide input and output of the unit test consistent with the pattern (hypotheis) you have identified.\nNote:\n- that you MUST directly write ALL input arguments of the function in the correct order. Skip writing any names of arguments.\n- you MUST enclose the unit test inputs and outputs in ```.```\n\n\nRespond as one JSON object {\"hypothesis\":\"...\", \"error_pattern\":\"...\", \"tests\":[{\"arguments\":\"positional tuple literal\", \"expected\":\"literal\"}], \"reason\":\"...\"}. Up to six tests. Preserve the hypothesis/pattern/valid-input/spec-output reasoning requirements above. Compute expected outputs from specification; observed PUT/alternative outputs are not oracle answers. Respect original domain.",
+    "baseline_provenance": {
+      "author_source_sha256": "3d10cbf083e2228bd699079bd922ae4a48ebb2444cbddc31b538c8bcf829cffe",
+      "adaptation": "preserve original instructions through output-format marker; replace Markdown format with common JSON test schema and up-to-six cap",
+      "known_bug_premise": "retained for frozen known-bug dev cohort only",
+      "trained_UTGen": false
+    }
+  },
+  "concept": {
+    "source": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        \n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        \n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        \n        # Try mismatch at earliest possible position t\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        \n        if lenpref == m:\n            return left_idx\n        return []\n\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    'You are given two strings word1 and word2.\\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\\nA sequence of indices seq is called valid if:\\n\\nThe indices are sorted in ascending order.\\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\\n\\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\\n \\nExample 1:\\n\\nInput: word1 = \"vbcca\", word2 = \"abc\"\\nOutput: [0,1,2]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\\n\\nChange word1[0] to \\'a\\'.\\nword1[1] is already \\'b\\'.\\nword1[2] is already \\'c\\'.\\n\\n\\nExample 2:\\n\\nInput: word1 = \"bacdc\", word2 = \"abc\"\\nOutput: [1,2,4]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\\n\\nword1[1] is already \\'a\\'.\\nChange word1[2] to \\'b\\'.\\nword1[4] is already \\'c\\'.\\n\\n\\nExample 3:\\n\\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\\nOutput: []\\nExplanation:\\nThere is no valid sequence of indices.\\n\\nExample 4:\\n\\nInput: word1 = \"abc\", word2 = \"ab\"\\nOutput: [0,1]\\n\\n \\nConstraints:\\n\\n1 <= word2.length < word1.length <= 3 * 10^5\\nword1 and word2 consist only of lowercase English letters.'\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))\n",
+    "entry": "validSequence",
+    "public_examples": [
+      {
+        "arguments": "('vbcca', 'abc')",
+        "expected": "[0, 1, 2]"
+      },
+      {
+        "arguments": "('bacdc', 'abc')",
+        "expected": "[1, 2, 4]"
+      },
+      {
+        "arguments": "('aaaaaa', 'aaabc')",
+        "expected": "[]"
+      },
+      {
+        "arguments": "('abc', 'ab')",
+        "expected": "[0, 1]"
+      }
+    ],
+    "spec": "You are given two strings word1 and word2.\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\nA sequence of indices seq is called valid if:\n\nThe indices are sorted in ascending order.\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\n\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\n \nExample 1:\n\nInput: word1 = \"vbcca\", word2 = \"abc\"\nOutput: [0,1,2]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\n\nChange word1[0] to 'a'.\nword1[1] is already 'b'.\nword1[2] is already 'c'.\n\n\nExample 2:\n\nInput: word1 = \"bacdc\", word2 = \"abc\"\nOutput: [1,2,4]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\n\nword1[1] is already 'a'.\nChange word1[2] to 'b'.\nword1[4] is already 'c'.\n\n\nExample 3:\n\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\nOutput: []\nExplanation:\nThere is no valid sequence of indices.\n\nExample 4:\n\nInput: word1 = \"abc\", word2 = \"ab\"\nOutput: [0,1]\n\n \nConstraints:\n\n1 <= word2.length < word1.length <= 3 * 10^5\nword1 and word2 consist only of lowercase English letters.",
+    "known_bug_premise": "The target code is incorrect, as guaranteed by this frozen known-bug development cohort.",
+    "instruction": "Use source-bound concept obligations and verify reach/local distinction/propagation. Compute expected outputs from specification; observed PUT/alternative outputs are not oracle answers. Respect original domain.",
+    "evidence": [
+      {
+        "hypothesis": {
+          "site_id": "abafb9c5de8becc0",
+          "family": "Index Validation",
+          "required_relation": "The code should validate that the indices form a valid sequence where the characters at these indices in word1 can be changed to make it almost equal to word2.",
+          "observed_relation": "The code breaks the loop if k == len(lst) which might not correctly handle the case where a single character change is needed.",
+          "priority": 2,
+          "trigger": {
+            "op": "and",
+            "items": [
+              {
+                "op": "lt",
+                "left": {
+                  "op": "input",
+                  "arg": 0
+                },
+                "right": {
+                  "op": "input",
+                  "arg": 1
+                }
+              },
+              {
+                "op": "lt",
+                "left": {
+                  "op": "len",
+                  "value": {
+                    "op": "input",
+                    "arg": 0
+                  }
+                },
+                "right": {
+                  "op": "literal",
+                  "value": 3
+                }
+              }
+            ]
+          },
+          "event_predicate": {
+            "op": "literal",
+            "value": true
+          },
+          "alternative": "k >= len(lst)",
+          "alternative_rationale": "Changing the condition to k >= len(lst) ensures that the loop continues to check for the next possible index, which is necessary to handle the case where a single character change is needed to make word1 almost equal to word2.",
+          "spec_quote": "Concatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.",
+          "site": {
+            "id": "abafb9c5de8becc0",
+            "span": [
+              52,
+              15,
+              52,
+              28
+            ],
+            "kind": "Compare",
+            "scope": [
+              "Solution@39",
+              "validSequence@40"
+            ],
+            "code": "k == len(lst)"
+          },
+          "source_sha256": "bf099eb0e2193f7cdeff11fda00e3729d006a241870e64ba925ad7460d77b7c5",
+          "semantic_status": "unverified",
+          "source_binding": "verified",
+          "spec_quote_status": "present",
+          "id": "cc0345e469d6ee6d"
+        },
+        "construction": {
+          "queries": 18,
+          "solver_unknown": 0,
+          "issues": [],
+          "domain": {
+            "integer": [
+              -16,
+              16
+            ],
+            "input_profiles": [
+              {
+                "kind": "str",
+                "alphabet": [
+                  97,
+                  98,
+                  99,
+                  100,
+                  101,
+                  102,
+                  103,
+                  104,
+                  105,
+                  106,
+                  107,
+                  108,
+                  109,
+                  110,
+                  111,
+                  112,
+                  113,
+                  114,
+                  115,
+                  116,
+                  117,
+                  118,
+                  119,
+                  120,
+                  121,
+                  122
+                ],
+                "alphabet_origin": "public_example_character_categories"
+              },
+              {
+                "kind": "str",
+                "alphabet": [
+                  97,
+                  98,
+                  99,
+                  100,
+                  101,
+                  102,
+                  103,
+                  104,
+                  105,
+                  106,
+                  107,
+                  108,
+                  109,
+                  110,
+                  111,
+                  112,
+                  113,
+                  114,
+                  115,
+                  116,
+                  117,
+                  118,
+                  119,
+                  120,
+                  121,
+                  122
+                ],
+                "alphabet_origin": "public_example_character_categories"
+              }
+            ],
+            "max_length": 6,
+            "nested_width": 2
+          },
+          "public_domain": {
+            "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+            "rules": [
+              {
+                "quote": "1 <= word2.length < word1.length <= 3 * 10^5",
+                "line": 49,
+                "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+                "rule": {
+                  "kind": "numeric",
+                  "comparisons": [
+                    {
+                      "operator": "le",
+                      "left": {
+                        "kind": "constant",
+                        "value": 1
+                      },
+                      "right": {
+                        "kind": "length",
+                        "arg": 1
+                      }
+                    },
+                    {
+                      "operator": "lt",
+                      "left": {
+                        "kind": "length",
+                        "arg": 1
+                      },
+                      "right": {
+                        "kind": "length",
+                        "arg": 0
+                      }
+                    },
+                    {
+                      "operator": "le",
+                      "left": {
+                        "kind": "length",
+                        "arg": 0
+                      },
+                      "right": {
+                        "kind": "multiply",
+                        "left": {
+                          "kind": "constant",
+                          "value": 3
+                        },
+                        "right": {
+                          "kind": "constant",
+                          "value": 100000
+                        }
+                      }
+                    }
+                  ],
+                  "each_arg": null
+                }
+              },
+              {
+                "quote": "word1 and word2 consist only of lowercase English letters.",
+                "line": 50,
+                "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+                "rule": {
+                  "kind": "alphabet",
+                  "args": [
+                    0,
+                    1
+                  ],
+                  "codepoints": [
+                    97,
+                    98,
+                    99,
+                    100,
+                    101,
+                    102,
+                    103,
+                    104,
+                    105,
+                    106,
+                    107,
+                    108,
+                    109,
+                    110,
+                    111,
+                    112,
+                    113,
+                    114,
+                    115,
+                    116,
+                    117,
+                    118,
+                    119,
+                    120,
+                    121,
+                    122
+                  ]
+                }
+              }
+            ],
+            "unsupported": [],
+            "status": "complete",
+            "coverage": "closed_explicit_grammar",
+            "argument_count": 2,
+            "private_data_used": false,
+            "semantic_scope": "declared_input_constraints_only_not_output_correctness"
+          },
+          "domain_pruned_shapes": 34,
+          "domain_mismatches": 0,
+          "status": "bounded_search_no_equivalence_claim"
+        },
+        "public_consistency": {
+          "status": "passed",
+          "native_executions": 32,
+          "semantic_truth": "unverified",
+          "scope": "finite_public_examples_only"
+        },
+        "witnesses": [
+          {
+            "arguments": "('ja', 'm')",
+            "predicate_realized": true,
+            "site_realized": true,
+            "event_realized": true,
+            "event_unknown": false,
+            "stable": true,
+            "normal": true,
+            "output_sensitivity": false,
+            "bug_truth": "unknown",
+            "domain_check": {
+              "passed": true,
+              "status": "passed_explicit_constraints",
+              "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+              "coverage": "complete"
+            },
+            "native_executions": 8,
+            "observed_outputs": {
+              "put": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              },
+              "alternative": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "arguments": "('ia', 'j')",
+            "predicate_realized": true,
+            "site_realized": true,
+            "event_realized": true,
+            "event_unknown": false,
+            "stable": true,
+            "normal": true,
+            "output_sensitivity": false,
+            "bug_truth": "unknown",
+            "domain_check": {
+              "passed": true,
+              "status": "passed_explicit_constraints",
+              "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+              "coverage": "complete"
+            },
+            "native_executions": 8,
+            "observed_outputs": {
+              "put": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              },
+              "alternative": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "hypothesis": {
+          "site_id": "ff1838d9c1951e67",
+          "family": "Index Calculation",
+          "required_relation": "The code should find the lexicographically smallest sequence of indices where the characters at these indices in word1 can be changed to make it almost equal to word2.",
+          "observed_relation": "The code calculates max_t as min(m - 1, lenpref) which might not always ensure the lexicographically smallest sequence.",
+          "priority": 2,
+          "trigger": {
+            "op": "and",
+            "items": [
+              {
+                "op": "lt",
+                "left": {
+                  "op": "input",
+                  "arg": 0
+                },
+                "right": {
+                  "op": "input",
+                  "arg": 1
+                }
+              },
+              {
+                "op": "lt",
+                "left": {
+                  "op": "len",
+                  "value": {
+                    "op": "input",
+                    "arg": 0
+                  }
+                },
+                "right": {
+                  "op": "literal",
+                  "value": 3
+                }
+              }
+            ]
+          },
+          "event_predicate": {
+            "op": "literal",
+            "value": true
+          },
+          "alternative": "min(m, lenpref)",
+          "alternative_rationale": "Changing max_t to min(m, lenpref) ensures that the loop runs up to the length of word2, which is necessary to find the lexicographically smallest sequence of indices.",
+          "spec_quote": "Concatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.",
+          "site": {
+            "id": "ff1838d9c1951e67",
+            "span": [
+              67,
+              16,
+              67,
+              35
+            ],
+            "kind": "Call",
+            "scope": [
+              "Solution@39",
+              "validSequence@40"
+            ],
+            "code": "min(m - 1, lenpref)"
+          },
+          "source_sha256": "bf099eb0e2193f7cdeff11fda00e3729d006a241870e64ba925ad7460d77b7c5",
+          "semantic_status": "unverified",
+          "source_binding": "verified",
+          "spec_quote_status": "present",
+          "id": "b611affbe98d19ed"
+        },
+        "construction": {
+          "queries": 18,
+          "solver_unknown": 0,
+          "issues": [],
+          "domain": {
+            "integer": [
+              -16,
+              16
+            ],
+            "input_profiles": [
+              {
+                "kind": "str",
+                "alphabet": [
+                  97,
+                  98,
+                  99,
+                  100,
+                  101,
+                  102,
+                  103,
+                  104,
+                  105,
+                  106,
+                  107,
+                  108,
+                  109,
+                  110,
+                  111,
+                  112,
+                  113,
+                  114,
+                  115,
+                  116,
+                  117,
+                  118,
+                  119,
+                  120,
+                  121,
+                  122
+                ],
+                "alphabet_origin": "public_example_character_categories"
+              },
+              {
+                "kind": "str",
+                "alphabet": [
+                  97,
+                  98,
+                  99,
+                  100,
+                  101,
+                  102,
+                  103,
+                  104,
+                  105,
+                  106,
+                  107,
+                  108,
+                  109,
+                  110,
+                  111,
+                  112,
+                  113,
+                  114,
+                  115,
+                  116,
+                  117,
+                  118,
+                  119,
+                  120,
+                  121,
+                  122
+                ],
+                "alphabet_origin": "public_example_character_categories"
+              }
+            ],
+            "max_length": 6,
+            "nested_width": 2
+          },
+          "public_domain": {
+            "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+            "rules": [
+              {
+                "quote": "1 <= word2.length < word1.length <= 3 * 10^5",
+                "line": 49,
+                "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+                "rule": {
+                  "kind": "numeric",
+                  "comparisons": [
+                    {
+                      "operator": "le",
+                      "left": {
+                        "kind": "constant",
+                        "value": 1
+                      },
+                      "right": {
+                        "kind": "length",
+                        "arg": 1
+                      }
+                    },
+                    {
+                      "operator": "lt",
+                      "left": {
+                        "kind": "length",
+                        "arg": 1
+                      },
+                      "right": {
+                        "kind": "length",
+                        "arg": 0
+                      }
+                    },
+                    {
+                      "operator": "le",
+                      "left": {
+                        "kind": "length",
+                        "arg": 0
+                      },
+                      "right": {
+                        "kind": "multiply",
+                        "left": {
+                          "kind": "constant",
+                          "value": 3
+                        },
+                        "right": {
+                          "kind": "constant",
+                          "value": 100000
+                        }
+                      }
+                    }
+                  ],
+                  "each_arg": null
+                }
+              },
+              {
+                "quote": "word1 and word2 consist only of lowercase English letters.",
+                "line": 50,
+                "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+                "rule": {
+                  "kind": "alphabet",
+                  "args": [
+                    0,
+                    1
+                  ],
+                  "codepoints": [
+                    97,
+                    98,
+                    99,
+                    100,
+                    101,
+                    102,
+                    103,
+                    104,
+                    105,
+                    106,
+                    107,
+                    108,
+                    109,
+                    110,
+                    111,
+                    112,
+                    113,
+                    114,
+                    115,
+                    116,
+                    117,
+                    118,
+                    119,
+                    120,
+                    121,
+                    122
+                  ]
+                }
+              }
+            ],
+            "unsupported": [],
+            "status": "complete",
+            "coverage": "closed_explicit_grammar",
+            "argument_count": 2,
+            "private_data_used": false,
+            "semantic_scope": "declared_input_constraints_only_not_output_correctness"
+          },
+          "domain_pruned_shapes": 34,
+          "domain_mismatches": 0,
+          "status": "bounded_search_no_equivalence_claim"
+        },
+        "public_consistency": {
+          "status": "passed",
+          "native_executions": 32,
+          "semantic_truth": "unverified",
+          "scope": "finite_public_examples_only"
+        },
+        "witnesses": [
+          {
+            "arguments": "('ia', 'j')",
+            "predicate_realized": true,
+            "site_realized": true,
+            "event_realized": true,
+            "event_unknown": false,
+            "stable": true,
+            "normal": true,
+            "output_sensitivity": false,
+            "bug_truth": "unknown",
+            "domain_check": {
+              "passed": true,
+              "status": "passed_explicit_constraints",
+              "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+              "coverage": "complete"
+            },
+            "native_executions": 8,
+            "observed_outputs": {
+              "put": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              },
+              "alternative": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "arguments": "('fa', 'x')",
+            "predicate_realized": true,
+            "site_realized": true,
+            "event_realized": true,
+            "event_unknown": false,
+            "stable": true,
+            "normal": true,
+            "output_sensitivity": false,
+            "bug_truth": "unknown",
+            "domain_check": {
+              "passed": true,
+              "status": "passed_explicit_constraints",
+              "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+              "coverage": "complete"
+            },
+            "native_executions": 8,
+            "observed_outputs": {
+              "put": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              },
+              "alternative": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "equal_evidence_raw": {
+    "source": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        \n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        \n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        \n        # Try mismatch at earliest possible position t\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        \n        if lenpref == m:\n            return left_idx\n        return []\n\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    'You are given two strings word1 and word2.\\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\\nA sequence of indices seq is called valid if:\\n\\nThe indices are sorted in ascending order.\\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\\n\\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\\n \\nExample 1:\\n\\nInput: word1 = \"vbcca\", word2 = \"abc\"\\nOutput: [0,1,2]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\\n\\nChange word1[0] to \\'a\\'.\\nword1[1] is already \\'b\\'.\\nword1[2] is already \\'c\\'.\\n\\n\\nExample 2:\\n\\nInput: word1 = \"bacdc\", word2 = \"abc\"\\nOutput: [1,2,4]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\\n\\nword1[1] is already \\'a\\'.\\nChange word1[2] to \\'b\\'.\\nword1[4] is already \\'c\\'.\\n\\n\\nExample 3:\\n\\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\\nOutput: []\\nExplanation:\\nThere is no valid sequence of indices.\\n\\nExample 4:\\n\\nInput: word1 = \"abc\", word2 = \"ab\"\\nOutput: [0,1]\\n\\n \\nConstraints:\\n\\n1 <= word2.length < word1.length <= 3 * 10^5\\nword1 and word2 consist only of lowercase English letters.'\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))\n",
+    "entry": "validSequence",
+    "public_examples": [
+      {
+        "arguments": "('vbcca', 'abc')",
+        "expected": "[0, 1, 2]"
+      },
+      {
+        "arguments": "('bacdc', 'abc')",
+        "expected": "[1, 2, 4]"
+      },
+      {
+        "arguments": "('aaaaaa', 'aaabc')",
+        "expected": "[]"
+      },
+      {
+        "arguments": "('abc', 'ab')",
+        "expected": "[0, 1]"
+      }
+    ],
+    "spec": "You are given two strings word1 and word2.\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\nA sequence of indices seq is called valid if:\n\nThe indices are sorted in ascending order.\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\n\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\n \nExample 1:\n\nInput: word1 = \"vbcca\", word2 = \"abc\"\nOutput: [0,1,2]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\n\nChange word1[0] to 'a'.\nword1[1] is already 'b'.\nword1[2] is already 'c'.\n\n\nExample 2:\n\nInput: word1 = \"bacdc\", word2 = \"abc\"\nOutput: [1,2,4]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\n\nword1[1] is already 'a'.\nChange word1[2] to 'b'.\nword1[4] is already 'c'.\n\n\nExample 3:\n\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\nOutput: []\nExplanation:\nThere is no valid sequence of indices.\n\nExample 4:\n\nInput: word1 = \"abc\", word2 = \"ab\"\nOutput: [0,1]\n\n \nConstraints:\n\n1 <= word2.length < word1.length <= 3 * 10^5\nword1 and word2 consist only of lowercase English letters.",
+    "known_bug_premise": "The target code is incorrect, as guaranteed by this frozen known-bug development cohort.",
+    "instruction": "Use the complete tool evidence to generate tests. Compute expected outputs from specification; observed PUT/alternative outputs are not oracle answers. Respect original domain.",
+    "evidence": [
+      {
+        "hypothesis": {
+          "site_id": "abafb9c5de8becc0",
+          "family": "Index Validation",
+          "required_relation": "The code should validate that the indices form a valid sequence where the characters at these indices in word1 can be changed to make it almost equal to word2.",
+          "observed_relation": "The code breaks the loop if k == len(lst) which might not correctly handle the case where a single character change is needed.",
+          "priority": 2,
+          "trigger": {
+            "op": "and",
+            "items": [
+              {
+                "op": "lt",
+                "left": {
+                  "op": "input",
+                  "arg": 0
+                },
+                "right": {
+                  "op": "input",
+                  "arg": 1
+                }
+              },
+              {
+                "op": "lt",
+                "left": {
+                  "op": "len",
+                  "value": {
+                    "op": "input",
+                    "arg": 0
+                  }
+                },
+                "right": {
+                  "op": "literal",
+                  "value": 3
+                }
+              }
+            ]
+          },
+          "event_predicate": {
+            "op": "literal",
+            "value": true
+          },
+          "alternative": "k >= len(lst)",
+          "alternative_rationale": "Changing the condition to k >= len(lst) ensures that the loop continues to check for the next possible index, which is necessary to handle the case where a single character change is needed to make word1 almost equal to word2.",
+          "spec_quote": "Concatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.",
+          "site": {
+            "id": "abafb9c5de8becc0",
+            "span": [
+              52,
+              15,
+              52,
+              28
+            ],
+            "kind": "Compare",
+            "scope": [
+              "Solution@39",
+              "validSequence@40"
+            ],
+            "code": "k == len(lst)"
+          },
+          "source_sha256": "bf099eb0e2193f7cdeff11fda00e3729d006a241870e64ba925ad7460d77b7c5",
+          "semantic_status": "unverified",
+          "source_binding": "verified",
+          "spec_quote_status": "present",
+          "id": "cc0345e469d6ee6d"
+        },
+        "construction": {
+          "queries": 18,
+          "solver_unknown": 0,
+          "issues": [],
+          "domain": {
+            "integer": [
+              -16,
+              16
+            ],
+            "input_profiles": [
+              {
+                "kind": "str",
+                "alphabet": [
+                  97,
+                  98,
+                  99,
+                  100,
+                  101,
+                  102,
+                  103,
+                  104,
+                  105,
+                  106,
+                  107,
+                  108,
+                  109,
+                  110,
+                  111,
+                  112,
+                  113,
+                  114,
+                  115,
+                  116,
+                  117,
+                  118,
+                  119,
+                  120,
+                  121,
+                  122
+                ],
+                "alphabet_origin": "public_example_character_categories"
+              },
+              {
+                "kind": "str",
+                "alphabet": [
+                  97,
+                  98,
+                  99,
+                  100,
+                  101,
+                  102,
+                  103,
+                  104,
+                  105,
+                  106,
+                  107,
+                  108,
+                  109,
+                  110,
+                  111,
+                  112,
+                  113,
+                  114,
+                  115,
+                  116,
+                  117,
+                  118,
+                  119,
+                  120,
+                  121,
+                  122
+                ],
+                "alphabet_origin": "public_example_character_categories"
+              }
+            ],
+            "max_length": 6,
+            "nested_width": 2
+          },
+          "public_domain": {
+            "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+            "rules": [
+              {
+                "quote": "1 <= word2.length < word1.length <= 3 * 10^5",
+                "line": 49,
+                "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+                "rule": {
+                  "kind": "numeric",
+                  "comparisons": [
+                    {
+                      "operator": "le",
+                      "left": {
+                        "kind": "constant",
+                        "value": 1
+                      },
+                      "right": {
+                        "kind": "length",
+                        "arg": 1
+                      }
+                    },
+                    {
+                      "operator": "lt",
+                      "left": {
+                        "kind": "length",
+                        "arg": 1
+                      },
+                      "right": {
+                        "kind": "length",
+                        "arg": 0
+                      }
+                    },
+                    {
+                      "operator": "le",
+                      "left": {
+                        "kind": "length",
+                        "arg": 0
+                      },
+                      "right": {
+                        "kind": "multiply",
+                        "left": {
+                          "kind": "constant",
+                          "value": 3
+                        },
+                        "right": {
+                          "kind": "constant",
+                          "value": 100000
+                        }
+                      }
+                    }
+                  ],
+                  "each_arg": null
+                }
+              },
+              {
+                "quote": "word1 and word2 consist only of lowercase English letters.",
+                "line": 50,
+                "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+                "rule": {
+                  "kind": "alphabet",
+                  "args": [
+                    0,
+                    1
+                  ],
+                  "codepoints": [
+                    97,
+                    98,
+                    99,
+                    100,
+                    101,
+                    102,
+                    103,
+                    104,
+                    105,
+                    106,
+                    107,
+                    108,
+                    109,
+                    110,
+                    111,
+                    112,
+                    113,
+                    114,
+                    115,
+                    116,
+                    117,
+                    118,
+                    119,
+                    120,
+                    121,
+                    122
+                  ]
+                }
+              }
+            ],
+            "unsupported": [],
+            "status": "complete",
+            "coverage": "closed_explicit_grammar",
+            "argument_count": 2,
+            "private_data_used": false,
+            "semantic_scope": "declared_input_constraints_only_not_output_correctness"
+          },
+          "domain_pruned_shapes": 34,
+          "domain_mismatches": 0,
+          "status": "bounded_search_no_equivalence_claim"
+        },
+        "public_consistency": {
+          "status": "passed",
+          "native_executions": 32,
+          "semantic_truth": "unverified",
+          "scope": "finite_public_examples_only"
+        },
+        "witnesses": [
+          {
+            "arguments": "('ja', 'm')",
+            "predicate_realized": true,
+            "site_realized": true,
+            "event_realized": true,
+            "event_unknown": false,
+            "stable": true,
+            "normal": true,
+            "output_sensitivity": false,
+            "bug_truth": "unknown",
+            "domain_check": {
+              "passed": true,
+              "status": "passed_explicit_constraints",
+              "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+              "coverage": "complete"
+            },
+            "native_executions": 8,
+            "observed_outputs": {
+              "put": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              },
+              "alternative": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "arguments": "('ia', 'j')",
+            "predicate_realized": true,
+            "site_realized": true,
+            "event_realized": true,
+            "event_unknown": false,
+            "stable": true,
+            "normal": true,
+            "output_sensitivity": false,
+            "bug_truth": "unknown",
+            "domain_check": {
+              "passed": true,
+              "status": "passed_explicit_constraints",
+              "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+              "coverage": "complete"
+            },
+            "native_executions": 8,
+            "observed_outputs": {
+              "put": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              },
+              "alternative": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      },
+      {
+        "hypothesis": {
+          "site_id": "ff1838d9c1951e67",
+          "family": "Index Calculation",
+          "required_relation": "The code should find the lexicographically smallest sequence of indices where the characters at these indices in word1 can be changed to make it almost equal to word2.",
+          "observed_relation": "The code calculates max_t as min(m - 1, lenpref) which might not always ensure the lexicographically smallest sequence.",
+          "priority": 2,
+          "trigger": {
+            "op": "and",
+            "items": [
+              {
+                "op": "lt",
+                "left": {
+                  "op": "input",
+                  "arg": 0
+                },
+                "right": {
+                  "op": "input",
+                  "arg": 1
+                }
+              },
+              {
+                "op": "lt",
+                "left": {
+                  "op": "len",
+                  "value": {
+                    "op": "input",
+                    "arg": 0
+                  }
+                },
+                "right": {
+                  "op": "literal",
+                  "value": 3
+                }
+              }
+            ]
+          },
+          "event_predicate": {
+            "op": "literal",
+            "value": true
+          },
+          "alternative": "min(m, lenpref)",
+          "alternative_rationale": "Changing max_t to min(m, lenpref) ensures that the loop runs up to the length of word2, which is necessary to find the lexicographically smallest sequence of indices.",
+          "spec_quote": "Concatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.",
+          "site": {
+            "id": "ff1838d9c1951e67",
+            "span": [
+              67,
+              16,
+              67,
+              35
+            ],
+            "kind": "Call",
+            "scope": [
+              "Solution@39",
+              "validSequence@40"
+            ],
+            "code": "min(m - 1, lenpref)"
+          },
+          "source_sha256": "bf099eb0e2193f7cdeff11fda00e3729d006a241870e64ba925ad7460d77b7c5",
+          "semantic_status": "unverified",
+          "source_binding": "verified",
+          "spec_quote_status": "present",
+          "id": "b611affbe98d19ed"
+        },
+        "construction": {
+          "queries": 18,
+          "solver_unknown": 0,
+          "issues": [],
+          "domain": {
+            "integer": [
+              -16,
+              16
+            ],
+            "input_profiles": [
+              {
+                "kind": "str",
+                "alphabet": [
+                  97,
+                  98,
+                  99,
+                  100,
+                  101,
+                  102,
+                  103,
+                  104,
+                  105,
+                  106,
+                  107,
+                  108,
+                  109,
+                  110,
+                  111,
+                  112,
+                  113,
+                  114,
+                  115,
+                  116,
+                  117,
+                  118,
+                  119,
+                  120,
+                  121,
+                  122
+                ],
+                "alphabet_origin": "public_example_character_categories"
+              },
+              {
+                "kind": "str",
+                "alphabet": [
+                  97,
+                  98,
+                  99,
+                  100,
+                  101,
+                  102,
+                  103,
+                  104,
+                  105,
+                  106,
+                  107,
+                  108,
+                  109,
+                  110,
+                  111,
+                  112,
+                  113,
+                  114,
+                  115,
+                  116,
+                  117,
+                  118,
+                  119,
+                  120,
+                  121,
+                  122
+                ],
+                "alphabet_origin": "public_example_character_categories"
+              }
+            ],
+            "max_length": 6,
+            "nested_width": 2
+          },
+          "public_domain": {
+            "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+            "rules": [
+              {
+                "quote": "1 <= word2.length < word1.length <= 3 * 10^5",
+                "line": 49,
+                "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+                "rule": {
+                  "kind": "numeric",
+                  "comparisons": [
+                    {
+                      "operator": "le",
+                      "left": {
+                        "kind": "constant",
+                        "value": 1
+                      },
+                      "right": {
+                        "kind": "length",
+                        "arg": 1
+                      }
+                    },
+                    {
+                      "operator": "lt",
+                      "left": {
+                        "kind": "length",
+                        "arg": 1
+                      },
+                      "right": {
+                        "kind": "length",
+                        "arg": 0
+                      }
+                    },
+                    {
+                      "operator": "le",
+                      "left": {
+                        "kind": "length",
+                        "arg": 0
+                      },
+                      "right": {
+                        "kind": "multiply",
+                        "left": {
+                          "kind": "constant",
+                          "value": 3
+                        },
+                        "right": {
+                          "kind": "constant",
+                          "value": 100000
+                        }
+                      }
+                    }
+                  ],
+                  "each_arg": null
+                }
+              },
+              {
+                "quote": "word1 and word2 consist only of lowercase English letters.",
+                "line": 50,
+                "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+                "rule": {
+                  "kind": "alphabet",
+                  "args": [
+                    0,
+                    1
+                  ],
+                  "codepoints": [
+                    97,
+                    98,
+                    99,
+                    100,
+                    101,
+                    102,
+                    103,
+                    104,
+                    105,
+                    106,
+                    107,
+                    108,
+                    109,
+                    110,
+                    111,
+                    112,
+                    113,
+                    114,
+                    115,
+                    116,
+                    117,
+                    118,
+                    119,
+                    120,
+                    121,
+                    122
+                  ]
+                }
+              }
+            ],
+            "unsupported": [],
+            "status": "complete",
+            "coverage": "closed_explicit_grammar",
+            "argument_count": 2,
+            "private_data_used": false,
+            "semantic_scope": "declared_input_constraints_only_not_output_correctness"
+          },
+          "domain_pruned_shapes": 34,
+          "domain_mismatches": 0,
+          "status": "bounded_search_no_equivalence_claim"
+        },
+        "public_consistency": {
+          "status": "passed",
+          "native_executions": 32,
+          "semantic_truth": "unverified",
+          "scope": "finite_public_examples_only"
+        },
+        "witnesses": [
+          {
+            "arguments": "('ia', 'j')",
+            "predicate_realized": true,
+            "site_realized": true,
+            "event_realized": true,
+            "event_unknown": false,
+            "stable": true,
+            "normal": true,
+            "output_sensitivity": false,
+            "bug_truth": "unknown",
+            "domain_check": {
+              "passed": true,
+              "status": "passed_explicit_constraints",
+              "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+              "coverage": "complete"
+            },
+            "native_executions": 8,
+            "observed_outputs": {
+              "put": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              },
+              "alternative": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "arguments": "('fa', 'x')",
+            "predicate_realized": true,
+            "site_realized": true,
+            "event_realized": true,
+            "event_unknown": false,
+            "stable": true,
+            "normal": true,
+            "output_sensitivity": false,
+            "bug_truth": "unknown",
+            "domain_check": {
+              "passed": true,
+              "status": "passed_explicit_constraints",
+              "binding_sha256": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+              "coverage": "complete"
+            },
+            "native_executions": 8,
+            "observed_outputs": {
+              "put": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              },
+              "alternative": {
+                "type": "list",
+                "items": [
+                  {
+                    "type": "int",
+                    "repr": "0"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "inputs_only": {
+    "source": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nimport bisect\n\nclass Solution:\n    def validSequence(self, word1: str, word2: str) -> List[int]:\n        n = len(word1)\n        m = len(word2)\n        pos_lists = [[] for _ in range(26)]\n        for i, ch in enumerate(word1):\n            pos_lists[ord(ch) - 97].append(i)\n        \n        left_idx = []\n        prev = -1\n        for j in range(m):\n            lst = pos_lists[ord(word2[j]) - 97]\n            k = bisect.bisect_right(lst, prev)\n            if k == len(lst):\n                break\n            prev = lst[k]\n            left_idx.append(prev)\n        lenpref = len(left_idx)\n        \n        jAfter = [0] * (n + 1)\n        j = m\n        jAfter[n] = m\n        for i in range(n - 1, -1, -1):\n            if j > 0 and word1[i] == word2[j - 1]:\n                j -= 1\n            jAfter[i] = j\n        \n        # Try mismatch at earliest possible position t\n        max_t = min(m - 1, lenpref)\n        for t in range(max_t + 1):\n            last = -1 if t == 0 else left_idx[t - 1]\n            mi = last + 1\n            if mi >= n:\n                continue\n            if jAfter[mi + 1] <= t + 1:\n                res = []\n                if t > 0:\n                    res.extend(left_idx[:t])\n                res.append(mi)\n                pos = mi\n                for k in range(t + 1, m):\n                    lst = pos_lists[ord(word2[k]) - 97]\n                    idx = bisect.bisect_right(lst, pos)\n                    if idx == len(lst):\n                        return []\n                    pos = lst[idx]\n                    res.append(pos)\n                return res\n        \n        if lenpref == m:\n            return left_idx\n        return []\n\nimport copy\n\ndef validSequence(word1: str, word2: str) -> List[int]:\n    'You are given two strings word1 and word2.\\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\\nA sequence of indices seq is called valid if:\\n\\nThe indices are sorted in ascending order.\\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\\n\\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\\n \\nExample 1:\\n\\nInput: word1 = \"vbcca\", word2 = \"abc\"\\nOutput: [0,1,2]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\\n\\nChange word1[0] to \\'a\\'.\\nword1[1] is already \\'b\\'.\\nword1[2] is already \\'c\\'.\\n\\n\\nExample 2:\\n\\nInput: word1 = \"bacdc\", word2 = \"abc\"\\nOutput: [1,2,4]\\nExplanation:\\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\\n\\nword1[1] is already \\'a\\'.\\nChange word1[2] to \\'b\\'.\\nword1[4] is already \\'c\\'.\\n\\n\\nExample 3:\\n\\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\\nOutput: []\\nExplanation:\\nThere is no valid sequence of indices.\\n\\nExample 4:\\n\\nInput: word1 = \"abc\", word2 = \"ab\"\\nOutput: [0,1]\\n\\n \\nConstraints:\\n\\n1 <= word2.length < word1.length <= 3 * 10^5\\nword1 and word2 consist only of lowercase English letters.'\n    return Solution().validSequence(*copy.deepcopy((word1, word2)))\n",
+    "entry": "validSequence",
+    "public_examples": [
+      {
+        "arguments": "('vbcca', 'abc')",
+        "expected": "[0, 1, 2]"
+      },
+      {
+        "arguments": "('bacdc', 'abc')",
+        "expected": "[1, 2, 4]"
+      },
+      {
+        "arguments": "('aaaaaa', 'aaabc')",
+        "expected": "[]"
+      },
+      {
+        "arguments": "('abc', 'ab')",
+        "expected": "[0, 1]"
+      }
+    ],
+    "spec": "You are given two strings word1 and word2.\nA string x is called almost equal to y if you can change at most one character in x to make it identical to y.\nA sequence of indices seq is called valid if:\n\nThe indices are sorted in ascending order.\nConcatenating the characters at these indices in word1 in the same order results in a string that is almost equal to word2.\n\nReturn an array of size word2.length representing the lexicographically smallest valid sequence of indices. If no such sequence of indices exists, return an empty array.\nNote that the answer must represent the lexicographically smallest array, not the corresponding string formed by those indices.\n \nExample 1:\n\nInput: word1 = \"vbcca\", word2 = \"abc\"\nOutput: [0,1,2]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [0, 1, 2]:\n\nChange word1[0] to 'a'.\nword1[1] is already 'b'.\nword1[2] is already 'c'.\n\n\nExample 2:\n\nInput: word1 = \"bacdc\", word2 = \"abc\"\nOutput: [1,2,4]\nExplanation:\nThe lexicographically smallest valid sequence of indices is [1, 2, 4]:\n\nword1[1] is already 'a'.\nChange word1[2] to 'b'.\nword1[4] is already 'c'.\n\n\nExample 3:\n\nInput: word1 = \"aaaaaa\", word2 = \"aaabc\"\nOutput: []\nExplanation:\nThere is no valid sequence of indices.\n\nExample 4:\n\nInput: word1 = \"abc\", word2 = \"ab\"\nOutput: [0,1]\n\n \nConstraints:\n\n1 <= word2.length < word1.length <= 3 * 10^5\nword1 and word2 consist only of lowercase English letters.",
+    "known_bug_premise": "The target code is incorrect, as guaranteed by this frozen known-bug development cohort.",
+    "instruction": "Consider supplied input candidates when generating valid tests. Compute expected outputs from specification; observed PUT/alternative outputs are not oracle answers. Respect original domain.",
+    "inputs": [
+      "('ja', 'm')",
+      "('ia', 'j')",
+      "('fa', 'x')"
+    ]
+  }
+}

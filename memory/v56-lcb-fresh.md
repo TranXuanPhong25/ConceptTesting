@@ -1,6 +1,6 @@
 ---
 name: v56-lcb-fresh
-description: Fresh LCB cohort conditional PREREG and infrastructure audit only; Task A/transport blocks mining and evaluation
+description: 2026-10-25 mining done on Qwen-32B: fresh LCB cohort 11/60 buggy PUTs (wrong-output only); pipeline arms not frozen/run
 metadata:
   type: project
 ---
@@ -21,3 +21,10 @@ no enlargement if yield/result is weak. Codex PUT fallback is authorized but
 must be documented; never invent a writer cutoff or post-cutoff guarantee.
 Held-out remains unrun. Summary at `analysis/SUMMARY_v48_v55.md` explicitly
 marks A/B incomplete. Git commit/push also blocked by read-only `.git`.
+
+2026-10-25 (Claude): user instruction replaced the v55 gate (Amendment 1). Mined
+with `mine.py` on Qwen2.5-Coder-32B-AWQ: 120 calls (1 read_error), attempts
+public_fail 60 / hidden_pass 36 / hidden_fail 15 / timeout_only 8. Cohort
+11/60 problems (easy2 med6 hard3), all wrong-output. Next: user picks the
+pipeline-arm writer (Codex quota risk, Qwen-32B, Haiku), then a freeze
+amendment before any arm run. Cap reached; do not mine more.

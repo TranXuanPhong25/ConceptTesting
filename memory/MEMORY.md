@@ -1,4 +1,7 @@
 - [Shared memory README](README.md) — how Claude + Codex read/write this folder (format, rules)
+- [v63 scopeguard continuation](v63-scopeguard.md) — complete/audited108responses;pattern1/6vsconcept0/6;57nativewitnesses but weakhypotheses,447667tokens
+- [v62 pathfault contract repair](v62-pathfault-contractfix.md) — stopped on empty-scope verifier IndexError; v63 continuation reuses6writers/5checkpoints;30min monitoring
+- [v61 integrated pathfault](v61-pathfault-integrated.md) — terminal108responses/scored;18/18hypotheses rejected,0concept witnesses;interface failure,not efficacy test
 - [v60 native pathfault implementation](v60-pathfault-complete.md) — partial;17behavioral witnesses on1/6cases,scorer provisional,P2/P4 incomplete
 - [Pathfault completion plan](pathfault-completion-plan.md) — v57 generation complete but0/6solver witnesses; scorer→support/obligations→integration→v58, plan only
 - [v57 path-aware fault construction](v57-pathfault.md) — deeper a/b implemented; Z3 joint constraints + exact replay,34engineeringtests; no efficacy run
@@ -82,6 +85,23 @@
 - [v53 validity/smallscope](v53-validity-smallscope.md) — Stage1 concept=lines=open (ceiling); Stage2 small-scope concept 18/33 < plain Sonnet gen 24/33 (not promising); Sonnet pipeline 24/33 prec .96
 - [Subagents: Sonnet only](subagents-sonnet-only.md) — every Agent call uses model sonnet (reviewers + helpers too); never Opus/default
 - [v55 Codex interpretation](v55-codex-interpretation.md) — Codex writer/reviewer override; paired protocol/runner prepared, routing and read-only Git blockers, no outcomes
-- [v56 fresh LCB](v56-lcb-fresh.md) — conditional mining PREREG/infrastructure audit; no fresh cohort/outcomes, v55 prerequisite blocked
+- [v56 fresh LCB](v56-lcb-fresh.md) — 2026-10-25 complete: 11 fresh tasks, concept defn 5 vs brute 6 (0–1) NO-GO, FA 5 vs 47; family 4–2 NO-GO
 - [v59 blind concept](v59-blind-concept.md) — 2026-10-24 fault concept as only PUT info for code-blind Sonnet: no signal (concept 1 = blind 1 < placebo 2 < code 3 /6); concept form lossy
-- [Concept effect synthesis](concept-effect-synthesis.md) — 2026-10-24 64 rows: no LLM GO; weak=placebo, strong=ceiling; definitional oracle family the only robust effect (v56 confirms)
+- [Concept effect synthesis](concept-effect-synthesis.md) — 2026-10-24 64 rows: no LLM GO; weak=placebo, strong=ceiling; definitional oracle family effect was Qwen-only: v64 Haiku reverses it; v56 fresh LCB not replicated
+- [v55h Haiku interpretation](v55h-haiku-interpretation.md) — 2026-10-25 oracle interpretation concept, Haiku writer: all arms 21/33 0 FA identical → not promising; oracle at ceiling
+- [v60/v61 Qwen open directions](v60-v61-qwen-open-directions.md) — 2026-10-25 behaviour facts no signal (12 vs placebo 13), interpretation no-go (11 vs 12/12); Codex review, no Claude subagents
+- [v64 Haiku plain-impl oracle](v64-haiku-plainoracle.md) — 2026-10-25 plain-impl 25/33 prec .96 vs defn=brute 21 prec 1.0; paired 4–0 plain (brute abstains); v49 family effect reverses, registered inconclusive
+- [v65 evidence gate repair](v65-evidencegate.md) — hypothesis/public consistency/selection/gate fixed;88CPUtests,no model run,oracle deferred
+- [v66 symbolicpath](v66-symbolicpath.md) — v57 completed via CrossHair; CPU diag PASS 5/6 (84/268 hyp verified, 0 replay rejects); case58 0; no model/efficacy
+- [v67 evidence gate prepare diagnostic](v67-evidencegate-prepare.md) — complete6writers;gate0/6,2publicpasses/0candidates;writer+string-order blockers,no oracle change
+- [v69 typed writer](v69-typedwriter.md) — compiler/string-order repair;114tests,CPU22realized/0sensitive,gate0/6;domain and fresh-writer gaps
+- [v70 domain-aware writer](v70-domainwriter.md) — 133tests,CPU8valid/0sensitive;fresh4root-schema failures+2abstentions,gate0/6
+- [v71 writer response contract](v71-writercontract.md) — 142tests;fresh6/6validschema but allabstain,gate0/6;domainfixed,nohypotheses
+- [v68 symbolicgen](v68-symbolicgen.md) — v66 evidence in v57 Qwen 4-arm protocol: NOT PROMISING (concept 1 = plain 1 = raw 1, inputs_only 0 /6); model copies PUT output as expected
+- [v72 writer burden diagnostic](v72-diagnosisprobe.md) — raw2prose/full2abstain;trace/oracleerrors,1usefulinput;4calls complete
+- [v72 symdiff](v72-symdiff.md) — CrossHair PUT vs Haiku plain-impl gate STOP: 0/10 v64-unreachable confirmed; solver 12/33 with ≤5 inputs, adds nothing to 25/33
+- [v73 GPT-OSS diagnosis](v73-ossdiagnosis.md) — NearAI4calls$0.00062757;raw85correct/raw124wrong,full2abstain
+- [v74 GPT-OSS concept select](v74-oss-select.md) — 2026-10-25 v47 replay with GPT-OSS-120B: no-go 15/14 vs random 18.25 (Qwen 16/15); not a model-size limit, $0.0156
+- [v76 matched two-model protocol](v76-ossmodel.md) — prepared only; GPT-OSS/DeepSeek separate, 297 slots and $3/model; no launch/commit
+- [v75 DeepSeek concept select](v75-deepseek-select.md) — 2026-10-25 DeepSeek-V4-Flash relace, 65k cap: no-go 17/15 vs random 18.25/17.96 (9/66 still empty); 3 models ≈ random
+- [v77 combined v11+v31](v77-combined.md) — prepared only, HE113/VP33 K3; two models separate, task-major paired prefix and <=$10/model caps

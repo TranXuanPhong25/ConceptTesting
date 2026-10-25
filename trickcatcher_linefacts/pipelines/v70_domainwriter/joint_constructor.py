@@ -1,0 +1,202 @@
+"""Compositional input solving + native exact-site verification.
+
+Supports scalar int/bool, strings and homogeneous depth-two integer sequences.
+Shape bounds are search bounds, never inferred normative input constraints.
+"""
+import ast
+import itertools
+import time
+import z3
+from .predicates import validate,evaluate,symbolic,local_names,SymbolicString,SymbolicTuple
+from .construction import replay
+
+
+def profile(examples):
+    def kind(values,depth=0):
+        types={type(x) for x in values}
+        if len(types)!=1:raise ValueError('heterogeneous_type_profile')
+        t=type(values[0])
+        if t in (int,bool):return {'kind':t.__name__}
+        if t is str:
+            observed={ord(c)for s in values for c in s};alphabet=set(observed)
+            for low,high in ((48,57),(65,90),(97,122)):
+                if any(low<=c<=high for c in observed):alphabet.update(range(low,high+1))
+            return {'kind':'str','alphabet':sorted(alphabet or set(range(97,123))),
+                    'alphabet_origin':'public_example_character_categories'if observed else 'empty_example_search_fallback'}
+        if t in (list,tuple) and depth<2:
+            children=[x for xs in values for x in xs]
+            if not children:raise ValueError('empty_only_element_type')
+            return {'kind':t.__name__,'element':kind(children,depth+1)}
+        raise ValueError('unsupported_input_type')
+    if not examples or any(len(x)!=len(examples[0]) for x in examples):raise ValueError('input_arity')
+    return [kind([x[i] for x in examples]) for i in range(len(examples[0]))]
+
+
+def solve_inputs(examples,predicate,deadline,max_candidates=64,max_queries=64,domain=None):
+    from .predicate_compiler import check_types
+    from .domain_constraints import constraints,check_domain
+    signature=profile(examples);validate(predicate,len(signature))
+    check_types(predicate,signature)
+    containers=[i for i,k in enumerate(signature) if k['kind'] in ('str','list','tuple')]
+    # Enumerate bounded joint shapes; limit is explicit and reported.
+    shapes=itertools.product(range(0,7),repeat=len(containers))
+    result=[];queries=0;unknown=0;issues=set();seen=set();pruned_shapes=0;domain_mismatches=0
+    if domain is not None and domain['status']=='incomplete':raise ValueError('incomplete_input_domain')
+    for sizes in shapes:
+        if time.monotonic()>=deadline:issues.add('deadline');break
+        if queries>=max_queries or len(result)>=max_candidates:issues.add('query_or_candidate_cap');break
+        shape=dict(zip(containers,sizes));variables=[];bounds=[]
+        def value(k,name,length=None):
+            if k['kind']=='int':
+                x=z3.Int(name);bounds.extend([x>=-16,x<=16]);variables.append(x);return x
+            if k['kind']=='bool':
+                x=z3.Bool(name);variables.append(x);return x
+            if k['kind']=='str':
+                xs=[z3.Int(f'{name}_{i}') for i in range(length)]
+                for x in xs:bounds.append(z3.Or(*[x==code for code in k['alphabet']]));variables.append(x)
+                return SymbolicString(xs)
+            if k['kind'] in ('list','tuple'):
+                n=length if length is not None else 2
+                xs=[value(k['element'],f'{name}_{i}',2 if k['element']['kind']in ('list','tuple','str') else None) for i in range(n)]
+                return SymbolicTuple(xs) if k['kind']=='tuple' else xs
+            raise ValueError('input_sort')
+        try:
+            args=[value(k,f'arg{i}',shape.get(i)) for i,k in enumerate(signature)]
+            domain_conditions=constraints(domain,args,symbolic=True)if domain is not None else []
+            # Shape constraints simplify without a solver query, so forbidden
+            # empty/length shapes cannot consume the model/native budgets.
+            if any(condition is False or isinstance(condition,z3.BoolRef)and z3.is_false(z3.simplify(condition))for condition in domain_conditions):
+                pruned_shapes+=1;continue
+            solver=z3.Solver();solver.set(timeout=max(1,min(100,int((deadline-time.monotonic())*1000))))
+            solver.add(*bounds,*domain_conditions,symbolic(predicate,args))
+            def concrete(v,k):
+                if k['kind']=='int':return model.eval(v,model_completion=True).as_long()
+                if k['kind']=='bool':return z3.is_true(model.eval(v,model_completion=True))
+                if k['kind']=='str':return ''.join(chr(model.eval(x,model_completion=True).as_long()) for x in v)
+                seq=[concrete(x,k['element']) for x in v]
+                return tuple(seq) if k['kind']=='tuple' else seq
+            for _ in range(4):
+                if queries>=max_queries or len(result)>=max_candidates or time.monotonic()>=deadline:
+                    issues.add('query_candidate_or_deadline_cap');break
+                queries+=1;status=solver.check()
+                if status==z3.unknown:unknown+=1;break
+                if status!=z3.sat:break
+                model=solver.model()
+                candidate=tuple(concrete(v,k) for v,k in zip(args,signature))
+                if domain is not None and not check_domain(domain,candidate)['passed']:
+                    domain_mismatches+=1;issues.add('symbolic_concrete_domain_mismatch')
+                elif evaluate(predicate,candidate) is not True:issues.add('symbolic_concrete_predicate_mismatch')
+                else:
+                    key=repr(candidate)
+                    if key not in seen:seen.add(key);result.append(candidate)
+                solver.add(z3.Or(*[v!=model.eval(v,model_completion=True)for v in variables]))
+        except (ValueError,TypeError,z3.Z3Exception) as exc:issues.add(str(exc)[:120])
+    return {'inputs':result,'queries':queries,'solver_unknown':unknown,'issues':sorted(issues),
+            'domain':{'integer':[-16,16],'input_profiles':signature,'max_length':6,'nested_width':2},
+            'public_domain':domain,'domain_pruned_shapes':pruned_shapes,'domain_mismatches':domain_mismatches,
+            'status':'bounded_search_no_equivalence_claim'}
+
+
+def verify_input(request,h,args,config,deadline):
+    from .semantic_contract import admit
+    from .domain_constraints import public_domain,check_domain
+    # Revalidate public binding and replacement before executing any hypothesis payload.
+    raw={k:h[k]for k in ('site_id','family','required_relation','observed_relation','spec_quote','trigger','priority','alternative','event_predicate')}
+    if 'alternative_rationale' in h:raw['alternative_rationale']=h['alternative_rationale']
+    checked,errors=admit(request,[raw])
+    if errors or not checked or checked[0]!=h:raise ValueError('hypothesis_integrity')
+    domain_check=check_domain(public_domain(request),args)
+    if not domain_check['passed']:
+        return {'arguments':repr(args),'predicate_realized':False,'site_realized':False,
+                'event_realized':False,'event_unknown':True,'stable':False,'normal':False,
+                'output_sensitivity':'unknown','observations':[],'native_executions':0,
+                'status':'invalid_input_domain','domain_check':domain_check,'bug_truth':'unknown'}
+    # Module initialization is outside the current function-event certificate.
+    # Keep the admitted claim visible, but never invent an input-trigger witness.
+    if not h['site']['scope']:
+        return {'arguments':repr(args),'predicate_realized':False,'site_realized':False,
+                'event_realized':False,'event_unknown':True,'stable':False,'normal':False,
+                'output_sensitivity':'unknown','observations':[],'native_executions':0,
+                'status':'unsupported_module_scope','bug_truth':'unknown'}
+    try:input_realized=evaluate(h['trigger'],args)is True
+    except (ValueError,KeyError,TypeError,IndexError,ZeroDivisionError):
+        return {'arguments':repr(args),'predicate_realized':False,'site_realized':False,'event_realized':False,
+                'event_unknown':True,'stable':False,'normal':False,'output_sensitivity':'unknown',
+                'observations':[],'native_executions':0,'status':'unsupported_input_predicate','bug_truth':'unknown'}
+    tree=ast.parse(request['source']);target=next(n for n in ast.walk(tree)if isinstance(n,ast.expr)and [n.lineno,n.col_offset,n.end_lineno,n.end_col_offset]==h['site']['span'])
+    alternative={'span':h['site']['span'],'node_kind':type(target).__name__,'before':ast.unparse(target),'after':h['alternative']or ast.unparse(target)}
+    observed=[];names=sorted(local_names(h['event_predicate']))
+    for seed in config['repeat_seeds']:
+        for _ in range(config['repeats_per_program_seed']):
+            observed.append(replay(request['source'],request['entry'],args,alternative,deadline=deadline,seed=seed,
+                                   observe_only=h['alternative']is None,observation_names=names))
+    first=observed[0];put=first.get('put',{});alt=first.get('alternative',{})
+    stable=len({repr(o)for o in observed})==1
+    frame=h['site']['scope'][-1].rsplit('@',1)[0]
+    events=[e for e in put.get('site_events',[])if e.get('function')==frame]
+    event_realized=False
+    event_unknown=any(any(program.get('capture',{}).values())for observation in observed
+                      for program in (observation.get('put',{}),observation.get('alternative',{})))
+    for e in events:
+        values={}
+        try:
+            def decode(encoded):
+                if 'repr'in encoded:return ast.literal_eval(encoded['repr'])
+                if encoded.get('type')in ('list','tuple')and 'items'in encoded:
+                    items=[decode(x)for x in encoded['items']]
+                    return tuple(items)if encoded['type']=='tuple'else items
+                raise ValueError('unsupported_local_capture')
+            for name,encoded in e.get('locals',{}).items():
+                values[name]=decode(encoded)
+            if evaluate(h['event_predicate'],args,values)is True:event_realized=True
+        except (ValueError,KeyError,IndexError,TypeError,ZeroDivisionError):event_unknown=True
+    normal=first.get('status')=='ok' and put.get('status')=='ok'
+    realized=stable and normal and bool(events)and event_realized and input_realized and not event_unknown
+    sensitivity='unknown'
+    if realized and h['alternative']is not None and alt.get('status')=='ok' and alt.get('site_events'):
+        sensitivity=put.get('output')!=alt.get('output') and [e['value']for e in events]!=[e['value']for e in alt['site_events']]
+    return {'arguments':repr(args),'predicate_realized':input_realized,'site_realized':bool(events),
+            'event_realized':event_realized,'event_unknown':event_unknown,'stable':stable,'normal':normal,
+            'output_sensitivity':sensitivity,'bug_truth':'unknown','observations':observed,
+            'domain_check':domain_check,
+            'native_executions':len(observed)*(2 if h['alternative']is not None else 1)}
+
+
+def construct_case(request,hypotheses,config):
+    from .evidence_gate import check_public_examples
+    from .domain_constraints import public_domain
+    examples=[ast.literal_eval(e['arguments']) for e in request['public_examples']]
+    deadline=time.monotonic()+config['max_case_seconds']
+    domain=public_domain(request)
+    execution_count=0;candidate_count=0;records=[];tree=ast.parse(request['source'])
+    selected=hypotheses[:3]
+    for index,h in enumerate(selected):
+        remaining=len(selected)-index
+        # Public validation and search share the same case budget. A weak first
+        # hypothesis cannot consume every slot reserved for later hypotheses.
+        execution_allowance=(256-execution_count)//remaining
+        candidate_allowance=(64-candidate_count)//remaining
+        hypothesis_deadline=min(deadline,time.monotonic()+max(0,deadline-time.monotonic())/remaining)
+        consistency=check_public_examples(request,h,config,hypothesis_deadline,execution_allowance)
+        execution_count+=consistency['native_executions']
+        execution_allowance-=consistency['native_executions']
+        if consistency['status']!='passed':
+            records.append({'hypothesis':h,'public_consistency':consistency,
+                            'construction':{'status':'blocked_public_consistency','issues':[consistency['status']]},'runs':[]})
+            continue
+        try:solved=solve_inputs(examples,h['trigger'],hypothesis_deadline,max_candidates=candidate_allowance,domain=domain)
+        except (ValueError,TypeError,z3.Z3Exception)as exc:
+            records.append({'hypothesis':h,'public_consistency':consistency,'construction':{'status':'unsupported_input_profile_or_predicate','issues':[str(exc)[:120]]},'runs':[]})
+            continue
+        runs=[]
+        for args in solved['inputs']:
+            variants=2 if h['alternative']is not None else 1
+            needed=variants*len(config['repeat_seeds'])*config['repeats_per_program_seed']
+            if candidate_count>=64 or needed>execution_allowance or time.monotonic()>=hypothesis_deadline:break
+            candidate_count+=1
+            verified=verify_input(request,h,args,config,hypothesis_deadline)
+            execution_count+=verified['native_executions'];execution_allowance-=verified['native_executions'];runs.append(verified)
+        records.append({'hypothesis':h,'public_consistency':consistency,'construction':{k:v for k,v in solved.items() if k!='inputs'},'runs':runs})
+    return {'case_id':request['case_id'],'records':records,'native_executions':execution_count,
+            'candidates_tested':candidate_count,'input_domain':domain,
+            'remaining_semantic_status':'unverified','private_data_used':False}

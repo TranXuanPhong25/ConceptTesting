@@ -1,0 +1,12 @@
+{
+  "case_id": "124",
+  "arm": "raw_known",
+  "error": null,
+  "cost_usd": "0.0001968",
+  "provider": "Near AI",
+  "assessment": {
+    "simple_schema_valid": true,
+    "analysis": "The implementation builds the earliest possible matching prefix of *word2* in *word1* (the `left_idx` array) and then tries to place the single allowed mismatch at each possible position `t`. For each candidate mismatch it picks the smallest index `mi` after the matched prefix and checks the condition `jAfter[mi + 1] <= t + 1` before constructing the rest of the sequence. The `jAfter` array is intended to tell how many characters of *word2* are still needed after a given position in *word1*, but the way it is filled (decrementing `j` when a character matches) and the inequality used (`<= t + 1`) appear to be off\u2011by\u2011one. In particular, when the mismatch is placed at position `t`, the suffix that must be matched starts at `t+1` in *word2*, so the correct check should be `jAfter[mi + 1] <= t` (or an equivalent formulation). Because of the stricter `<= t + 1` test, the code can incorrectly reject a candidate `mi` that actually allows the remaining suffix to be matched, returning an empty array even though a valid sequence exists. This would violate the specification by failing to return the lexicographically smallest valid index sequence for some inputs. An example that triggers the bug would be a case where the earliest possible mismatch index `mi` leaves exactly `t+1` characters of *word2* unmatched in the suffix, which the current condition treats as insufficient. The bug hypothesis is therefore an off\u2011by\u2011one error in the suffix\u2011feasibility check.",
+    "semantic_status": "unreviewed"
+  }
+}

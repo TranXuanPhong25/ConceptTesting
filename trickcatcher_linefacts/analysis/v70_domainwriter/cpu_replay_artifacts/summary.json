@@ -1,0 +1,292 @@
+{
+  "rows": [
+    {
+      "case_id": "61",
+      "proposals": 3,
+      "admitted": 1,
+      "rejected": [
+        {
+          "index": 0,
+          "reason": "ValueError:predicate_type:incompatible_int_str"
+        },
+        {
+          "index": 1,
+          "reason": "ValueError:predicate_type:incompatible_str_int"
+        }
+      ],
+      "normalizations": [
+        {
+          "index": 0,
+          "mode": "legacy",
+          "raw_sha256": "34ec08fd469bfe516ff9e18d4a8d02ed749735126114e0989ccd1ba63a286e97",
+          "rewrites": [
+            {
+              "path": "$.items[0]",
+              "rewrite": "gt"
+            }
+          ],
+          "status": "admission_rejected",
+          "compiled_index": 0,
+          "compiled_sha256": "15c563f974e63503d9b5de5d27058d48b61b18868e60af6c7f94b777217e9baf",
+          "reason": "ValueError:predicate_type:incompatible_int_str"
+        }
+      ],
+      "records": [
+        {
+          "hypothesis_id": "06bbb40e9d024eb5",
+          "public_status": "public_regression",
+          "issues": [
+            "public_regression"
+          ],
+          "runs": 0,
+          "realized": 0,
+          "sensitive": 0,
+          "domain_pruned_shapes": 0,
+          "domain_mismatches": 0
+        }
+      ],
+      "candidates": 0,
+      "native_executions": 2,
+      "gate": {
+        "case_id": "61",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_domain_binding": "d1b917b697498698002a7c3632e965dbfe7bb84ca1f097ea7f2aaf4274b4eaac",
+        "input_validity": "explicit_constraints_checked",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.17161551187746227
+    },
+    {
+      "case_id": "66",
+      "proposals": 3,
+      "admitted": 0,
+      "rejected": [
+        {
+          "index": 0,
+          "reason": "ValueError:none_expression_not_abstention"
+        },
+        {
+          "index": 1,
+          "reason": "ValueError:none_expression_not_abstention"
+        },
+        {
+          "index": 2,
+          "reason": "ValueError:none_expression_not_abstention"
+        }
+      ],
+      "normalizations": [],
+      "records": [],
+      "candidates": 0,
+      "native_executions": 0,
+      "gate": {
+        "case_id": "66",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_domain_binding": "e5c806257889ccccb29477e351813c1b400a49b1bbf394b883ea57561d42886b",
+        "input_validity": "explicit_constraints_checked",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.013642346020787954
+    },
+    {
+      "case_id": "124",
+      "proposals": 3,
+      "admitted": 3,
+      "rejected": [],
+      "normalizations": [],
+      "records": [
+        {
+          "hypothesis_id": "cc0345e469d6ee6d",
+          "public_status": "passed",
+          "issues": [],
+          "runs": 4,
+          "realized": 4,
+          "sensitive": 0,
+          "domain_pruned_shapes": 34,
+          "domain_mismatches": 0
+        },
+        {
+          "hypothesis_id": "988668135e6c6bd9",
+          "public_status": "public_regression",
+          "issues": [
+            "public_regression"
+          ],
+          "runs": 0,
+          "realized": 0,
+          "sensitive": 0,
+          "domain_pruned_shapes": 0,
+          "domain_mismatches": 0
+        },
+        {
+          "hypothesis_id": "b611affbe98d19ed",
+          "public_status": "passed",
+          "issues": [],
+          "runs": 4,
+          "realized": 4,
+          "sensitive": 0,
+          "domain_pruned_shapes": 34,
+          "domain_mismatches": 0
+        }
+      ],
+      "candidates": 8,
+      "native_executions": 138,
+      "gate": {
+        "case_id": "124",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "6fafc9f02f4736381e1f1b2e8e9bc8bc4f53f1935882dc17bc231957d66a00a7",
+        "semantic_truth": "unverified",
+        "input_domain_binding": "a4705049f3f381544f890207d5580afb761fc90cd6e3de70e6360086fc6c1b80",
+        "input_validity": "explicit_constraints_checked",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 7.996014228789136
+    },
+    {
+      "case_id": "58",
+      "proposals": 0,
+      "admitted": 0,
+      "rejected": [],
+      "normalizations": [],
+      "records": [],
+      "candidates": 0,
+      "native_executions": 0,
+      "gate": {
+        "case_id": "58",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_domain_binding": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+        "input_validity": "explicit_constraints_checked",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.01644853106699884
+    },
+    {
+      "case_id": "131",
+      "proposals": 3,
+      "admitted": 0,
+      "rejected": [
+        {
+          "index": 0,
+          "reason": "SyntaxError:invalid syntax (<unknown>, line 1)"
+        },
+        {
+          "index": 1,
+          "reason": "ValueError:none_expression_not_abstention"
+        },
+        {
+          "index": 2,
+          "reason": "ValueError:none_expression_not_abstention"
+        }
+      ],
+      "normalizations": [
+        {
+          "index": 1,
+          "mode": "legacy",
+          "raw_sha256": "fab4de422551ddd867242f707deb528caddee6e6c6cd7452e1e90dee81f1d54c",
+          "rewrites": [
+            {
+              "path": "$.items[0]",
+              "rewrite": "ne"
+            },
+            {
+              "path": "$.items[1]",
+              "rewrite": "ne"
+            }
+          ],
+          "status": "admission_rejected",
+          "compiled_index": 1,
+          "compiled_sha256": "78d50835d36dd11f743f79b331c40ca44263c4a0c51e178c36d2b4f71443e238",
+          "reason": "ValueError:none_expression_not_abstention"
+        }
+      ],
+      "records": [],
+      "candidates": 0,
+      "native_executions": 0,
+      "gate": {
+        "case_id": "131",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_domain_binding": "50d4be67f1ff13c82e72b89d6dfd0a40144a3e0127d174530bce039b58b5e2d3",
+        "input_validity": "explicit_constraints_checked",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.012817617040127516
+    },
+    {
+      "case_id": "85",
+      "proposals": 3,
+      "admitted": 2,
+      "rejected": [
+        {
+          "index": 0,
+          "reason": "SyntaxError:invalid syntax (<unknown>, line 1)"
+        }
+      ],
+      "normalizations": [],
+      "records": [
+        {
+          "hypothesis_id": "07e21b36f874a376",
+          "public_status": "no_alternative",
+          "issues": [
+            "no_alternative"
+          ],
+          "runs": 0,
+          "realized": 0,
+          "sensitive": 0,
+          "domain_pruned_shapes": 0,
+          "domain_mismatches": 0
+        },
+        {
+          "hypothesis_id": "f0849d9d597402a7",
+          "public_status": "no_alternative",
+          "issues": [
+            "no_alternative"
+          ],
+          "runs": 0,
+          "realized": 0,
+          "sensitive": 0,
+          "domain_pruned_shapes": 0,
+          "domain_mismatches": 0
+        }
+      ],
+      "candidates": 0,
+      "native_executions": 0,
+      "gate": {
+        "case_id": "85",
+        "passed": false,
+        "delivered_sensitive": [],
+        "reason": "no_usable_delivered_evidence",
+        "evidence_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "semantic_truth": "unverified",
+        "input_domain_binding": "07de44c08816f7ec956b02aac20d53c0407da0e724dda097de629b45365b536b",
+        "input_validity": "explicit_constraints_checked",
+        "private_data_used": false
+      },
+      "elapsed_seconds": 0.015659183962270617
+    }
+  ],
+  "gate_passed": false,
+  "case_count": 6,
+  "actual_new_model_calls": 0,
+  "private_label_reads": 0,
+  "old_response_count_reused": 6,
+  "native_executions": 140,
+  "source_and_origin_unchanged": true,
+  "new_writer_schema_exercised": "authored_fixtures_only",
+  "interpretation": "engineering_replay_not_replication_or_efficacy"
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "v69_claim_trigger_edit",
+  "mode": "legacy",
+  "receipts": [
+    {
+      "index": 0,
+      "mode": "legacy",
+      "raw_sha256": "34ec08fd469bfe516ff9e18d4a8d02ed749735126114e0989ccd1ba63a286e97",
+      "rewrites": [
+        {
+          "path": "$.items[0]",
+          "rewrite": "gt"
+        }
+      ],
+      "status": "admission_rejected",
+      "compiled_index": 0,
+      "compiled_sha256": "15c563f974e63503d9b5de5d27058d48b61b18868e60af6c7f94b777217e9baf",
+      "reason": "ValueError:predicate_type:incompatible_int_str"
+    },
+    {
+      "index": 1,
+      "mode": "legacy",
+      "raw_sha256": "5a52448611a7982cc6ed69f65195d852725b925c3f941a17b43b843a12b94e07",
+      "rewrites": [],
+      "status": "admission_rejected",
+      "compiled_index": 1,
+      "compiled_sha256": "5a52448611a7982cc6ed69f65195d852725b925c3f941a17b43b843a12b94e07",
+      "reason": "ValueError:predicate_type:incompatible_str_int"
+    },
+    {
+      "index": 2,
+      "mode": "legacy",
+      "raw_sha256": "5f73bf18e9c23c09bd078370808b90d4b7f938727e9f6154451b0ef049f84118",
+      "rewrites": [],
+      "status": "admitted",
+      "compiled_index": 2,
+      "compiled_sha256": "5f73bf18e9c23c09bd078370808b90d4b7f938727e9f6154451b0ef049f84118",
+      "hypothesis_id": "06bbb40e9d024eb5"
+    }
+  ],
+  "semantic_truth": "unverified"
+}

@@ -42,7 +42,11 @@ def main():
             raise ValueError("arguments_not_tuple")
         namespace = {"__name__": "__v60_score__"}
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-            exec(compile(job["source"], "<v60-score>", "exec"), namespace)
+            try:exec(compile(job["source"], "<v60-score>", "exec"), namespace)
+            except Deadline:raise
+            except BaseException as exc:
+                result={'status':'unresolved','reason':'module_load:'+type(exc).__name__}
+                Path(sys.argv[2]).write_text(json.dumps(result)+'\n');return
             if job.get('kind')=='contract':
                 checker=namespace.get('is_valid_test')
                 if checker is None: raise ValueError('missing_validity_checker')

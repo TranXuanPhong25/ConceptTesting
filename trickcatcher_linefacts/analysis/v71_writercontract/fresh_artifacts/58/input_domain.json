@@ -1,0 +1,180 @@
+{
+  "binding_sha256": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+  "rules": [
+    {
+      "quote": "1 <= side <= 10^9",
+      "line": 33,
+      "binding_sha256": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+      "rule": {
+        "kind": "numeric",
+        "comparisons": [
+          {
+            "operator": "le",
+            "left": {
+              "kind": "constant",
+              "value": 1
+            },
+            "right": {
+              "kind": "argument",
+              "arg": 0
+            }
+          },
+          {
+            "operator": "le",
+            "left": {
+              "kind": "argument",
+              "arg": 0
+            },
+            "right": {
+              "kind": "constant",
+              "value": 1000000000
+            }
+          }
+        ],
+        "each_arg": null
+      }
+    },
+    {
+      "quote": "4 <= points.length <= min(4 * side, 15 * 10^3)",
+      "line": 34,
+      "binding_sha256": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+      "rule": {
+        "kind": "numeric",
+        "comparisons": [
+          {
+            "operator": "le",
+            "left": {
+              "kind": "constant",
+              "value": 4
+            },
+            "right": {
+              "kind": "length",
+              "arg": 1
+            }
+          },
+          {
+            "operator": "le",
+            "left": {
+              "kind": "length",
+              "arg": 1
+            },
+            "right": {
+              "kind": "min",
+              "items": [
+                {
+                  "kind": "multiply",
+                  "left": {
+                    "kind": "constant",
+                    "value": 4
+                  },
+                  "right": {
+                    "kind": "argument",
+                    "arg": 0
+                  }
+                },
+                {
+                  "kind": "multiply",
+                  "left": {
+                    "kind": "constant",
+                    "value": 15
+                  },
+                  "right": {
+                    "kind": "constant",
+                    "value": 1000
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "each_arg": null
+      }
+    },
+    {
+      "quote": "points[i] == [xi, yi]",
+      "line": 35,
+      "binding_sha256": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+      "rule": {
+        "kind": "point_shape",
+        "arg": 1,
+        "width": 2
+      }
+    },
+    {
+      "quote": "The input is generated such that:",
+      "line": 36,
+      "binding_sha256": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+      "rule": {
+        "kind": "header"
+      }
+    },
+    {
+      "quote": "points[i] lies on the boundary of the square.",
+      "line": 38,
+      "binding_sha256": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+      "supporting_quote": "corners at (0, 0), (0, side), (side, 0), and (side, side)",
+      "rule": {
+        "kind": "square_boundary",
+        "arg": 1,
+        "side_arg": 0
+      }
+    },
+    {
+      "quote": "All points[i] are unique.",
+      "line": 39,
+      "binding_sha256": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+      "rule": {
+        "kind": "unique",
+        "arg": 1
+      }
+    },
+    {
+      "quote": "4 <= k <= min(25, points.length)",
+      "line": 42,
+      "binding_sha256": "e469cac689b5f0ef0c9421da63406e4d37c9e81de72f3658fa9e419b88fb8864",
+      "rule": {
+        "kind": "numeric",
+        "comparisons": [
+          {
+            "operator": "le",
+            "left": {
+              "kind": "constant",
+              "value": 4
+            },
+            "right": {
+              "kind": "argument",
+              "arg": 2
+            }
+          },
+          {
+            "operator": "le",
+            "left": {
+              "kind": "argument",
+              "arg": 2
+            },
+            "right": {
+              "kind": "min",
+              "items": [
+                {
+                  "kind": "constant",
+                  "value": 25
+                },
+                {
+                  "kind": "length",
+                  "arg": 1
+                }
+              ]
+            }
+          }
+        ],
+        "each_arg": null
+      }
+    }
+  ],
+  "unsupported": [],
+  "status": "complete",
+  "coverage": "closed_explicit_grammar",
+  "argument_count": 3,
+  "private_data_used": false,
+  "semantic_scope": "declared_input_constraints_only_not_output_correctness"
+}
