@@ -102,6 +102,12 @@
 - [v72 symdiff](v72-symdiff.md) — CrossHair PUT vs Haiku plain-impl gate STOP: 0/10 v64-unreachable confirmed; solver 12/33 with ≤5 inputs, adds nothing to 25/33
 - [v73 GPT-OSS diagnosis](v73-ossdiagnosis.md) — NearAI4calls$0.00062757;raw85correct/raw124wrong,full2abstain
 - [v74 GPT-OSS concept select](v74-oss-select.md) — 2026-10-25 v47 replay with GPT-OSS-120B: no-go 15/14 vs random 18.25 (Qwen 16/15); not a model-size limit, $0.0156
-- [v76 matched two-model protocol](v76-ossmodel.md) — prepared only; GPT-OSS/DeepSeek separate, 297 slots and $3/model; no launch/commit
+- [v76 GPT-OSS matched protocol](v76-ossmodel.md) — 2026-10-26 GPT-OSS-120B v34 loop: rule NOT met, concept 6 = plain 6 < placebo 9, 1–4, FP 56 vs 33; $0.069; DeepSeek cancelled
 - [v75 DeepSeek concept select](v75-deepseek-select.md) — 2026-10-25 DeepSeek-V4-Flash relace, 65k cap: no-go 17/15 vs random 18.25/17.96 (9/66 still empty); 3 models ≈ random
 - [v77 combined v11+v31](v77-combined.md) — prepared only, HE113/VP33 K3; two models separate, task-major paired prefix and <=$10/model caps
+- [KITE vs template paper](kite-vs-template-paper.md) — 2026-10-25 KITE no code/repeats v31; agentic-pbt pattern swap NO-GO after $0 audit (score flat across patterns, $5.8/call)
+- [concept coder.md directions](concept-coder-note-directions.md) — 2026-10-25 ~17/20 directions already tried; untried: learned selection ($0 v44 replay first), PBT-Bench, concept training
+- [Python bug concept base](python-bug-concept-base.md) — external Python patterns → where/how/what cards, provenance and local BM25 retrieval
+- [v78 learned concept selection](v78-learned-select.md) — 2026-10-26 grouped CPU replay NO-GO: context18 vs random18.25/prior20.5; spec-only21=context-free; 33 PUTs/24 problems, $0 API
+
+- [v79 DeepSeek diagnosis](v79-deepseekdiagnosis.md) — original+authorized retry both Relace429;0responses,2unknowncharges,$0.04899 reserved,no more calls

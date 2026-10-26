@@ -1896,3 +1896,13 @@ User-approved new direction ("đồng ý"). Concept-bottleneck probes on frozen 
 trained on MBPP+ mutants (tool-labelled discrepancy concepts), tested on the saved v41 VibePass pool; controls are the
 direct probe, a placebo bottleneck, and verbal/likelihood/surface baselines. CPU only, $0. Full registration and
 decision rule: [analysis/v51_latent_concept/PREREG.md](analysis/v51_latent_concept/PREREG.md).
+
+
+## 2026-10-26 — v78 CPU learned concept selection, before new policy outcomes
+
+User explicitly authorizes direction1 ("làm cái 1 đi"). Frozen v47 33-task menus, cached-only label reconstruction,
+leave-one-task-out logistic selection vs exact random3/per-kind random, first3, training-only kind/subtype priors,
+and context-removed logistic. Exact tie expectations and distinct-input-cost-conditioned random controls; no
+API/GPU/new program execution or CASCADE reproduction. Protocol and prospective go/no-go rule:
+[analysis/v78_learned_select/PREREG.md](analysis/v78_learned_select/PREREG.md). Independent implementation review
+and source freeze required before reconstructing labels/policy outcomes; reused cohort is exploratory.

@@ -1477,3 +1477,17 @@ review:6/6versus6/6,0concept-only wins,0false alarms,1justified ambiguous absten
 each. Concept advantage NOT SHOWN; stronger-model capability on this diagnostic,
 not controlled Qwen comparison.0Qwen/PUT calls. Read
 [full report](analysis/sol61_concept_probe_20261024/REPORT.md).
+
+
+## 2026-10-26 v78 learned concept selection — NO-GO (CPU, $0 API)
+
+Frozen v47 menus, supervised logistic selector with spec/code context versus context-removed logistic and
+training-only kind/subtype priors. Initial pre-label integrity stop revealed33 PUTs but24 specification groups;
+prospective amendment and fresh independent review enforce whole-problem holdout/group-balanced training/bootstrap.
+Primary context18 vs random18.25, context-removed19, kind prior19.05, subtype prior20.5, perfect23. Secondary
+spec-only21 equals context-removed21/subtype21 on every PUT's reach. Primary also uses~10% more distinct inputs
+than random; its cost-conditioned random reaches17.57. All primary promotion gates fail. Stop this package;
+no tuning/data expansion.11 synthetic tests pass, all historical v47 metrics replay,1743 parent hashes unchanged;
+0 API/new program execution,no GPU. Input-exposure reach only,not assertion correctness or CASCADE online efficacy.
+[Report](analysis/v78_learned_select/RESULTS.md), [saved data](analysis/v78_learned_select/RESULTS.json),
+[prospective protocol/amendments](analysis/v78_learned_select/PREREG.md).

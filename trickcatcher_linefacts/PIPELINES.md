@@ -613,3 +613,7 @@ All executable source links and function names can be checked in [FUNCTION_INDEX
 - **v40_concept_agent** (2026-10-21): Astra7relationcatalog + seen8/3arm selective-revision diagnostic; best-v7/v30ports, CPU12/audit/sourcefreeze pass. Endpointmodels404,0Qwentaskcalls/all72notattempted; waitingliveendpoint, noefficacyclaim. See analysis/v40_concept_agent_20261021/REPORT.md.
 
 - **v43_concept_identify** (2026-10-22): COMPLETE18responses/6blocked; rawbinding+judgment1/8/tool2/8,1semanticwin/0loss butgate>=2+valid8 unmet, NO-GO.78reusedrows/0newPUT;60source/deps/parentinventories/auditsPASS. Readiness1fail preserved+prospectiveengineeringamendment. See analysis/v43_concept_identify_20261021/REPORT.md.
+
+- **v78_learned_select** (2026-10-26): saved v47 menu → group-held-out supervised selection;33 PUTs/24 specification groups. Context18 vs random18.25, context-removed19, subtype prior20.5; secondary21=context-free. Registered NO-GO,11 synthetic tests,1743 cache fingerprints verified,0 API/new program execution. [Results](analysis/v78_learned_select/RESULTS.md), [version tree](analysis/v78_learned_select/VERSION_TREE.md).
+
+- **v79_deepseekdiagnosis** (2026-10-26): v72(Qwen) → v73(GPT-OSS) → v79(DeepSeek/Relace) four-prompt diagnosis replay. Original and user-authorized retry each stop on first upstream429;0responses,2unknowncharges,$0.04898572 reserved, no reasoning/concept result. [Results](analysis/v79_deepseekdiagnosis/RESULTS.md).

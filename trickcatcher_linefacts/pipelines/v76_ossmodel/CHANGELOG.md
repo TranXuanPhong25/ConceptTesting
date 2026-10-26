@@ -79,3 +79,9 @@ Other sessions' analysis folders and memory notes were not edited.
 The following is historical; amendment A and commands above take precedence.
 
 
+
+## 2026-10-26 — GPT-OSS-120B run complete (DeepSeek cancelled by the user before launch)
+
+297/297 calls, $0.0686, generation frozen then scored. Confirmed tasks /33: plain 6, fault-template 6,
+template-placebo 9. Primary fault-template vs template-placebo: 1 win – 4 losses, FP tests 56 vs 33 →
+**rule not met**. Schema errors 7/8/10 per arm. Output: out/pipelines/v76_ossmodel/humaneval/faulttemplate/gpt-oss-120b/vibepass_half/.
