@@ -111,3 +111,7 @@
 - [v78 learned concept selection](v78-learned-select.md) — 2026-10-26 grouped CPU replay NO-GO: context18 vs random18.25/prior20.5; spec-only21=context-free; 33 PUTs/24 problems, $0 API
 
 - [v79 DeepSeek diagnosis](v79-deepseekdiagnosis.md) — original+authorized retry both Relace429;0responses,2unknowncharges,$0.04899 reserved,no more calls
+
+- [v80 DeepSeek providers](v80-deepseekproviders.md) — Reka raw/full85 supported, DeepInfra raw85 correct(extra key);3answers/8slots,timeout+429,$0.005286 known plus unknowns
+
+- [v81 DeepInfra HumanEval quarter](v81-deepinfra-quarter.md) — launched fixed28/113dev,two actual arms combined/original,K1,$4.20cap; inspect CURRENT_RUN/STATUS before action

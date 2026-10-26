@@ -1,0 +1,356 @@
+{
+  "baseline": {
+    "task": 69,
+    "entry": "minDifference",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i+1] != -1:\n                val = abs(nums[i] - nums[i+1])\n                if val > d_fixed:\n                    d_fixed = val\n        \n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if (i > 0 and nums[i-1] == -1) or (i < n - 1 and nums[i+1] == -1):\n                    S_set.add(nums[i])\n        \n        if not S_set:\n            return d_fixed\n        \n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i+1] == -1:\n                has_adj_minus1 = True\n                break\n        \n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i-1] != -1 and nums[i+1] != -1:\n                single_minus1_pairs.append((nums[i-1], nums[i+1]))\n        \n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        \n        m = len(base_intervals)\n        inf = 2000000001\n        \n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = b_L - d, b_R_other + d\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            \n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i+1] = curr_R\n                else:\n                    pre_min_R[i+1] = pre_min_R[i]\n            \n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i+1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i+1]\n                \n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = -inf, inf\n                else:\n                    L1, R1 = intervals[k-1][0], pre_min_R[k]\n                \n                if k == m:\n                    L2, R2 = -inf, inf\n                else:\n                    L2, R2 = intervals[m-1][0], suf_min_R[k]\n                \n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n\n        low, high = d_fixed, 1000000000\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\n\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    'You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\\nReturn the minimum possible difference.\\n \\nExample 1:\\n\\nInput: nums = [1,2,-1,10,8]\\nOutput: 4\\nExplanation:\\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\\nThe absolute differences between adjacent elements are:\\n\\n|1 - 2| == 1\\n|2 - 6| == 4\\n|6 - 10| == 4\\n|10 - 8| == 2\\n\\n\\nExample 2:\\n\\nInput: nums = [-1,-1,-1]\\nOutput: 0\\nExplanation:\\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\\n\\nExample 3:\\n\\nInput: nums = [-1,10,-1,8]\\nOutput: 1\\nExplanation:\\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\\n\\n \\nConstraints:\\n\\n2 <= nums.length <= 10^5\\nnums[i] is either -1 or in the range [1, 10^9].'\n    return Solution().minDifference(*copy.deepcopy((nums,)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([1, 2, -1, 10, 8]), 4, 0.0)\n    assert _heldout_same(candidate([-1, -1, -1]), 0, 0.0)\n    assert _heldout_same(candidate([-1, 10, -1, 8]), 1, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 65,
+        "text": "Condition coverage (C3): the sub-condition `nums[i - 1] != -1` of the decision at line 65 is never False in the existing tests.",
+        "cell": [
+          72,
+          "F"
+        ],
+        "witness": 49,
+        "reached": true,
+        "witness_call": "minDifference([-1, -1, 8, 10])",
+        "block": 65,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 118,
+        "text": "Statement coverage (C1): lines 118-122 (starting with `if k == 0 or k == m:`) are never executed by the existing tests.",
+        "lines": [
+          118,
+          119,
+          120,
+          121,
+          122
+        ],
+        "witness": 6,
+        "reached": true,
+        "witness_call": "minDifference([0, -1, -1])",
+        "block": 118,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 42,
+        "k": 190,
+        "family": "ZIL",
+        "extended": true,
+        "text": "Mutation (ZIL): the mutant `for i in range(n - 1)` -> `skip the loop body` at line 42 survives: no existing test distinguishes them.",
+        "witness": 0,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "minDifference([2, 3, 0, 11, 9])",
+        "block": 42,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            break\n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if i > 0 and nums[i - 1] == -1 or (i < n - 1 and nums[i + 1] == -1):\n                    S_set.add(nums[i])\n        if not S_set:\n            return d_fixed\n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i + 1] == -1:\n                has_adj_minus1 = True\n                break\n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i - 1] != -1 and (nums[i + 1] != -1):\n                single_minus1_pairs.append((nums[i - 1], nums[i + 1]))\n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        m = len(base_intervals)\n        inf = 2000000001\n\n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = (b_L - d, b_R_other + d)\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i + 1] = curr_R\n                else:\n                    pre_min_R[i + 1] = pre_min_R[i]\n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i + 1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i + 1]\n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = (-inf, inf)\n                else:\n                    L1, R1 = (intervals[k - 1][0], pre_min_R[k])\n                if k == m:\n                    L2, R2 = (-inf, inf)\n                else:\n                    L2, R2 = (intervals[m - 1][0], suf_min_R[k])\n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n        low, high = (d_fixed, 1000000000)\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    \"\"\"You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\nReturn the minimum possible difference.\n \nExample 1:\n\nInput: nums = [1,2,-1,10,8]\nOutput: 4\nExplanation:\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\nThe absolute differences between adjacent elements are:\n\n|1 - 2| == 1\n|2 - 6| == 4\n|6 - 10| == 4\n|10 - 8| == 2\n\n\nExample 2:\n\nInput: nums = [-1,-1,-1]\nOutput: 0\nExplanation:\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\n\nExample 3:\n\nInput: nums = [-1,10,-1,8]\nOutput: 1\nExplanation:\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\n\n \nConstraints:\n\n2 <= nums.length <= 10^5\nnums[i] is either -1 or in the range [1, 10^9].\"\"\"\n    return Solution().minDifference(*copy.deepcopy((nums,)))"
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 99,
+        "text": "Branch coverage (C2): the True and False branches of `curr_R < suf_min_R[i + 1]` (line 99) are taken by the existing tests.",
+        "cells": [
+          [
+            146,
+            "T"
+          ],
+          [
+            146,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 86,
+        "text": "Statement coverage (C1): line 86 (`pre_min_R = [0] * (m + 1)`) is executed by the existing tests.",
+        "lines": [
+          86
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 58,
+        "k": 12,
+        "family": "AOR",
+        "extended": false,
+        "text": "Mutation (AOR): the mutant `n - 1` -> `n + 1` at line 58 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i + 1] != -1:\n                val = abs(nums[i] - nums[i + 1])\n                if val > d_fixed:\n                    d_fixed = val\n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if i > 0 and nums[i - 1] == -1 or (i < n - 1 and nums[i + 1] == -1):\n                    S_set.add(nums[i])\n        if not S_set:\n            return d_fixed\n        has_adj_minus1 = False\n        for i in range(n + 1):\n            if nums[i] == -1 and nums[i + 1] == -1:\n                has_adj_minus1 = True\n                break\n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i - 1] != -1 and (nums[i + 1] != -1):\n                single_minus1_pairs.append((nums[i - 1], nums[i + 1]))\n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        m = len(base_intervals)\n        inf = 2000000001\n\n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = (b_L - d, b_R_other + d)\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i + 1] = curr_R\n                else:\n                    pre_min_R[i + 1] = pre_min_R[i]\n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i + 1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i + 1]\n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = (-inf, inf)\n                else:\n                    L1, R1 = (intervals[k - 1][0], pre_min_R[k])\n                if k == m:\n                    L2, R2 = (-inf, inf)\n                else:\n                    L2, R2 = (intervals[m - 1][0], suf_min_R[k])\n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n        low, high = (d_fixed, 1000000000)\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    \"\"\"You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\nReturn the minimum possible difference.\n \nExample 1:\n\nInput: nums = [1,2,-1,10,8]\nOutput: 4\nExplanation:\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\nThe absolute differences between adjacent elements are:\n\n|1 - 2| == 1\n|2 - 6| == 4\n|6 - 10| == 4\n|10 - 8| == 2\n\n\nExample 2:\n\nInput: nums = [-1,-1,-1]\nOutput: 0\nExplanation:\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\n\nExample 3:\n\nInput: nums = [-1,10,-1,8]\nOutput: 1\nExplanation:\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\n\n \nConstraints:\n\n2 <= nums.length <= 10^5\nnums[i] is either -1 or in the range [1, 10^9].\"\"\"\n    return Solution().minDifference(*copy.deepcopy((nums,)))"
+      }
+    ],
+    "concept_facts": [
+      "Condition coverage (C3): the sub-condition `nums[i - 1] != -1` of the decision at line 65 is never False in the existing tests.",
+      "Statement coverage (C1): lines 118-122 (starting with `if k == 0 or k == m:`) are never executed by the existing tests.",
+      "Mutation (ZIL): the mutant `for i in range(n - 1)` -> `skip the loop body` at line 42 survives: no existing test distinguishes them."
+    ],
+    "placebo_facts": [
+      "Branch coverage (C2): the True and False branches of `curr_R < suf_min_R[i + 1]` (line 99) are taken by the existing tests.",
+      "Statement coverage (C1): line 86 (`pre_min_R = [0] * (m + 1)`) is executed by the existing tests.",
+      "Mutation (AOR): the mutant `n - 1` -> `n + 1` at line 58 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "minDifference([-1, -1, 8, 10])",
+      "minDifference([0, -1, -1])",
+      "minDifference([2, 3, 0, 11, 9])"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([1, 2, -1, 10, 8],), ([-1, -1, -1],), ([-1, 10, -1, 8],)]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12)))\n",
+    "strategy_sha256": "39b525d2c20294e6e2b8fc4bacd9f159844346e7f771570b753c42a8e3c8b7a7",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 69,
+    "entry": "minDifference",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i+1] != -1:\n                val = abs(nums[i] - nums[i+1])\n                if val > d_fixed:\n                    d_fixed = val\n        \n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if (i > 0 and nums[i-1] == -1) or (i < n - 1 and nums[i+1] == -1):\n                    S_set.add(nums[i])\n        \n        if not S_set:\n            return d_fixed\n        \n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i+1] == -1:\n                has_adj_minus1 = True\n                break\n        \n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i-1] != -1 and nums[i+1] != -1:\n                single_minus1_pairs.append((nums[i-1], nums[i+1]))\n        \n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        \n        m = len(base_intervals)\n        inf = 2000000001\n        \n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = b_L - d, b_R_other + d\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            \n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i+1] = curr_R\n                else:\n                    pre_min_R[i+1] = pre_min_R[i]\n            \n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i+1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i+1]\n                \n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = -inf, inf\n                else:\n                    L1, R1 = intervals[k-1][0], pre_min_R[k]\n                \n                if k == m:\n                    L2, R2 = -inf, inf\n                else:\n                    L2, R2 = intervals[m-1][0], suf_min_R[k]\n                \n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n\n        low, high = d_fixed, 1000000000\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\n\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    'You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\\nReturn the minimum possible difference.\\n \\nExample 1:\\n\\nInput: nums = [1,2,-1,10,8]\\nOutput: 4\\nExplanation:\\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\\nThe absolute differences between adjacent elements are:\\n\\n|1 - 2| == 1\\n|2 - 6| == 4\\n|6 - 10| == 4\\n|10 - 8| == 2\\n\\n\\nExample 2:\\n\\nInput: nums = [-1,-1,-1]\\nOutput: 0\\nExplanation:\\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\\n\\nExample 3:\\n\\nInput: nums = [-1,10,-1,8]\\nOutput: 1\\nExplanation:\\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\\n\\n \\nConstraints:\\n\\n2 <= nums.length <= 10^5\\nnums[i] is either -1 or in the range [1, 10^9].'\n    return Solution().minDifference(*copy.deepcopy((nums,)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([1, 2, -1, 10, 8]), 4, 0.0)\n    assert _heldout_same(candidate([-1, -1, -1]), 0, 0.0)\n    assert _heldout_same(candidate([-1, 10, -1, 8]), 1, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 65,
+        "text": "Condition coverage (C3): the sub-condition `nums[i - 1] != -1` of the decision at line 65 is never False in the existing tests.",
+        "cell": [
+          72,
+          "F"
+        ],
+        "witness": 49,
+        "reached": true,
+        "witness_call": "minDifference([-1, -1, 8, 10])",
+        "block": 65,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 51,
+        "fault_type": "OPERATOR",
+        "text": "Fault-type adequacy at L51: wrong operator: relational, arithmetic, boolean or negation operator, or break/continue. Behaviour: `if (i > 0 and nums[i-1] == -1) or (i < n - 1 and nums[i+1] == -1):`. The public tests do not distinguish 6 surviving alternatives (`(i > 0 and nums[i-1] == -1)` -> `(i > 0 or nums[i-1] == -1)`; `== -1` -> `!= -1`; `-1` -> `+1`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 6,
+        "distinguished": 5,
+        "alternatives": [
+          "`(i > 0 and nums[i-1] == -1)` -> `(i > 0 or nums[i-1] == -1)`",
+          "`== -1` -> `!= -1`",
+          "`-1` -> `+1`",
+          "`i+1` -> `i - 1`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i+1] != -1:\n                val = abs(nums[i] - nums[i+1])\n                if val > d_fixed:\n                    d_fixed = val\n        \n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if (i > 0 or nums[i-1] == -1) or (i < n - 1 and nums[i+1] == -1):\n                    S_set.add(nums[i])\n        \n        if not S_set:\n            return d_fixed\n        \n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i+1] == -1:\n                has_adj_minus1 = True\n                break\n        \n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i-1] != -1 and nums[i+1] != -1:\n                single_minus1_pairs.append((nums[i-1], nums[i+1]))\n        \n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        \n        m = len(base_intervals)\n        inf = 2000000001\n        \n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = b_L - d, b_R_other + d\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            \n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i+1] = curr_R\n                else:\n                    pre_min_R[i+1] = pre_min_R[i]\n            \n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i+1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i+1]\n                \n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = -inf, inf\n                else:\n                    L1, R1 = intervals[k-1][0], pre_min_R[k]\n                \n                if k == m:\n                    L2, R2 = -inf, inf\n                else:\n                    L2, R2 = intervals[m-1][0], suf_min_R[k]\n                \n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n\n        low, high = d_fixed, 1000000000\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\n\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    'You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\\nReturn the minimum possible difference.\\n \\nExample 1:\\n\\nInput: nums = [1,2,-1,10,8]\\nOutput: 4\\nExplanation:\\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\\nThe absolute differences between adjacent elements are:\\n\\n|1 - 2| == 1\\n|2 - 6| == 4\\n|6 - 10| == 4\\n|10 - 8| == 2\\n\\n\\nExample 2:\\n\\nInput: nums = [-1,-1,-1]\\nOutput: 0\\nExplanation:\\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\\n\\nExample 3:\\n\\nInput: nums = [-1,10,-1,8]\\nOutput: 1\\nExplanation:\\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\\n\\n \\nConstraints:\\n\\n2 <= nums.length <= 10^5\\nnums[i] is either -1 or in the range [1, 10^9].'\n    return Solution().minDifference(*copy.deepcopy((nums,)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i+1] != -1:\n                val = abs(nums[i] - nums[i+1])\n                if val > d_fixed:\n                    d_fixed = val\n        \n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if (i > 0 and nums[i-1] != -1) or (i < n - 1 and nums[i+1] == -1):\n                    S_set.add(nums[i])\n        \n        if not S_set:\n            return d_fixed\n        \n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i+1] == -1:\n                has_adj_minus1 = True\n                break\n        \n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i-1] != -1 and nums[i+1] != -1:\n                single_minus1_pairs.append((nums[i-1], nums[i+1]))\n        \n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        \n        m = len(base_intervals)\n        inf = 2000000001\n        \n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = b_L - d, b_R_other + d\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            \n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i+1] = curr_R\n                else:\n                    pre_min_R[i+1] = pre_min_R[i]\n            \n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i+1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i+1]\n                \n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = -inf, inf\n                else:\n                    L1, R1 = intervals[k-1][0], pre_min_R[k]\n                \n                if k == m:\n                    L2, R2 = -inf, inf\n                else:\n                    L2, R2 = intervals[m-1][0], suf_min_R[k]\n                \n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n\n        low, high = d_fixed, 1000000000\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\n\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    'You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\\nReturn the minimum possible difference.\\n \\nExample 1:\\n\\nInput: nums = [1,2,-1,10,8]\\nOutput: 4\\nExplanation:\\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\\nThe absolute differences between adjacent elements are:\\n\\n|1 - 2| == 1\\n|2 - 6| == 4\\n|6 - 10| == 4\\n|10 - 8| == 2\\n\\n\\nExample 2:\\n\\nInput: nums = [-1,-1,-1]\\nOutput: 0\\nExplanation:\\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\\n\\nExample 3:\\n\\nInput: nums = [-1,10,-1,8]\\nOutput: 1\\nExplanation:\\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\\n\\n \\nConstraints:\\n\\n2 <= nums.length <= 10^5\\nnums[i] is either -1 or in the range [1, 10^9].'\n    return Solution().minDifference(*copy.deepcopy((nums,)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i+1] != -1:\n                val = abs(nums[i] - nums[i+1])\n                if val > d_fixed:\n                    d_fixed = val\n        \n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if (i > 0 and nums[i-1] == +1) or (i < n - 1 and nums[i+1] == -1):\n                    S_set.add(nums[i])\n        \n        if not S_set:\n            return d_fixed\n        \n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i+1] == -1:\n                has_adj_minus1 = True\n                break\n        \n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i-1] != -1 and nums[i+1] != -1:\n                single_minus1_pairs.append((nums[i-1], nums[i+1]))\n        \n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        \n        m = len(base_intervals)\n        inf = 2000000001\n        \n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = b_L - d, b_R_other + d\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            \n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i+1] = curr_R\n                else:\n                    pre_min_R[i+1] = pre_min_R[i]\n            \n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i+1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i+1]\n                \n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = -inf, inf\n                else:\n                    L1, R1 = intervals[k-1][0], pre_min_R[k]\n                \n                if k == m:\n                    L2, R2 = -inf, inf\n                else:\n                    L2, R2 = intervals[m-1][0], suf_min_R[k]\n                \n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n\n        low, high = d_fixed, 1000000000\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\n\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    'You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\\nReturn the minimum possible difference.\\n \\nExample 1:\\n\\nInput: nums = [1,2,-1,10,8]\\nOutput: 4\\nExplanation:\\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\\nThe absolute differences between adjacent elements are:\\n\\n|1 - 2| == 1\\n|2 - 6| == 4\\n|6 - 10| == 4\\n|10 - 8| == 2\\n\\n\\nExample 2:\\n\\nInput: nums = [-1,-1,-1]\\nOutput: 0\\nExplanation:\\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\\n\\nExample 3:\\n\\nInput: nums = [-1,10,-1,8]\\nOutput: 1\\nExplanation:\\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\\n\\n \\nConstraints:\\n\\n2 <= nums.length <= 10^5\\nnums[i] is either -1 or in the range [1, 10^9].'\n    return Solution().minDifference(*copy.deepcopy((nums,)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i+1] != -1:\n                val = abs(nums[i] - nums[i+1])\n                if val > d_fixed:\n                    d_fixed = val\n        \n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if (i > 0 and nums[i-1] == -1) or (i < n - 1 and nums[i - 1] == -1):\n                    S_set.add(nums[i])\n        \n        if not S_set:\n            return d_fixed\n        \n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i+1] == -1:\n                has_adj_minus1 = True\n                break\n        \n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i-1] != -1 and nums[i+1] != -1:\n                single_minus1_pairs.append((nums[i-1], nums[i+1]))\n        \n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        \n        m = len(base_intervals)\n        inf = 2000000001\n        \n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = b_L - d, b_R_other + d\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            \n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i+1] = curr_R\n                else:\n                    pre_min_R[i+1] = pre_min_R[i]\n            \n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i+1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i+1]\n                \n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = -inf, inf\n                else:\n                    L1, R1 = intervals[k-1][0], pre_min_R[k]\n                \n                if k == m:\n                    L2, R2 = -inf, inf\n                else:\n                    L2, R2 = intervals[m-1][0], suf_min_R[k]\n                \n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n\n        low, high = d_fixed, 1000000000\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\n\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    'You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\\nReturn the minimum possible difference.\\n \\nExample 1:\\n\\nInput: nums = [1,2,-1,10,8]\\nOutput: 4\\nExplanation:\\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\\nThe absolute differences between adjacent elements are:\\n\\n|1 - 2| == 1\\n|2 - 6| == 4\\n|6 - 10| == 4\\n|10 - 8| == 2\\n\\n\\nExample 2:\\n\\nInput: nums = [-1,-1,-1]\\nOutput: 0\\nExplanation:\\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\\n\\nExample 3:\\n\\nInput: nums = [-1,10,-1,8]\\nOutput: 1\\nExplanation:\\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\\n\\n \\nConstraints:\\n\\n2 <= nums.length <= 10^5\\nnums[i] is either -1 or in the range [1, 10^9].'\n    return Solution().minDifference(*copy.deepcopy((nums,)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i+1] != -1:\n                val = abs(nums[i] - nums[i+1])\n                if val > d_fixed:\n                    d_fixed = val\n        \n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if (i > 0 and nums[i-1] == -1) or (i < n - 1 and nums[i+1] != -1):\n                    S_set.add(nums[i])\n        \n        if not S_set:\n            return d_fixed\n        \n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i+1] == -1:\n                has_adj_minus1 = True\n                break\n        \n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i-1] != -1 and nums[i+1] != -1:\n                single_minus1_pairs.append((nums[i-1], nums[i+1]))\n        \n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        \n        m = len(base_intervals)\n        inf = 2000000001\n        \n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = b_L - d, b_R_other + d\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            \n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i+1] = curr_R\n                else:\n                    pre_min_R[i+1] = pre_min_R[i]\n            \n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i+1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i+1]\n                \n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = -inf, inf\n                else:\n                    L1, R1 = intervals[k-1][0], pre_min_R[k]\n                \n                if k == m:\n                    L2, R2 = -inf, inf\n                else:\n                    L2, R2 = intervals[m-1][0], suf_min_R[k]\n                \n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n\n        low, high = d_fixed, 1000000000\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\n\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    'You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\\nReturn the minimum possible difference.\\n \\nExample 1:\\n\\nInput: nums = [1,2,-1,10,8]\\nOutput: 4\\nExplanation:\\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\\nThe absolute differences between adjacent elements are:\\n\\n|1 - 2| == 1\\n|2 - 6| == 4\\n|6 - 10| == 4\\n|10 - 8| == 2\\n\\n\\nExample 2:\\n\\nInput: nums = [-1,-1,-1]\\nOutput: 0\\nExplanation:\\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\\n\\nExample 3:\\n\\nInput: nums = [-1,10,-1,8]\\nOutput: 1\\nExplanation:\\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\\n\\n \\nConstraints:\\n\\n2 <= nums.length <= 10^5\\nnums[i] is either -1 or in the range [1, 10^9].'\n    return Solution().minDifference(*copy.deepcopy((nums,)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i+1] != -1:\n                val = abs(nums[i] - nums[i+1])\n                if val > d_fixed:\n                    d_fixed = val\n        \n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if (i > 0 and nums[i-1] == -1) or (i < n - 1 and nums[i+1] == +1):\n                    S_set.add(nums[i])\n        \n        if not S_set:\n            return d_fixed\n        \n        has_adj_minus1 = False\n        for i in range(n - 1):\n            if nums[i] == -1 and nums[i+1] == -1:\n                has_adj_minus1 = True\n                break\n        \n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i-1] != -1 and nums[i+1] != -1:\n                single_minus1_pairs.append((nums[i-1], nums[i+1]))\n        \n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        \n        m = len(base_intervals)\n        inf = 2000000001\n        \n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = b_L - d, b_R_other + d\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            \n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i+1] = curr_R\n                else:\n                    pre_min_R[i+1] = pre_min_R[i]\n            \n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i+1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i+1]\n                \n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = -inf, inf\n                else:\n                    L1, R1 = intervals[k-1][0], pre_min_R[k]\n                \n                if k == m:\n                    L2, R2 = -inf, inf\n                else:\n                    L2, R2 = intervals[m-1][0], suf_min_R[k]\n                \n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n\n        low, high = d_fixed, 1000000000\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\n\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    'You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\\nReturn the minimum possible difference.\\n \\nExample 1:\\n\\nInput: nums = [1,2,-1,10,8]\\nOutput: 4\\nExplanation:\\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\\nThe absolute differences between adjacent elements are:\\n\\n|1 - 2| == 1\\n|2 - 6| == 4\\n|6 - 10| == 4\\n|10 - 8| == 2\\n\\n\\nExample 2:\\n\\nInput: nums = [-1,-1,-1]\\nOutput: 0\\nExplanation:\\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\\n\\nExample 3:\\n\\nInput: nums = [-1,10,-1,8]\\nOutput: 1\\nExplanation:\\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\\n\\n \\nConstraints:\\n\\n2 <= nums.length <= 10^5\\nnums[i] is either -1 or in the range [1, 10^9].'\n    return Solution().minDifference(*copy.deepcopy((nums,)))\n"
+        ],
+        "reached": true,
+        "witness_call": "minDifference([1, -1, -1, 10, 8])",
+        "block": 51,
+        "witness": 14
+      },
+      {
+        "kind": "STMT",
+        "line": 118,
+        "text": "Statement coverage (C1): lines 118-122 (starting with `if k == 0 or k == m:`) are never executed by the existing tests.",
+        "lines": [
+          118,
+          119,
+          120,
+          121,
+          122
+        ],
+        "witness": 6,
+        "reached": true,
+        "witness_call": "minDifference([0, -1, -1])",
+        "block": 118,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 99,
+        "text": "Branch coverage (C2): the True and False branches of `curr_R < suf_min_R[i + 1]` (line 99) are taken by the existing tests.",
+        "cells": [
+          [
+            146,
+            "T"
+          ],
+          [
+            146,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 86,
+        "text": "Statement coverage (C1): line 86 (`pre_min_R = [0] * (m + 1)`) is executed by the existing tests.",
+        "lines": [
+          86
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 58,
+        "k": 12,
+        "family": "AOR",
+        "extended": false,
+        "text": "Mutation (AOR): the mutant `n - 1` -> `n + 1` at line 58 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\n\nclass Solution:\n\n    def minDifference(self, nums: List[int]) -> int:\n        n = len(nums)\n        d_fixed = 0\n        for i in range(n - 1):\n            if nums[i] != -1 and nums[i + 1] != -1:\n                val = abs(nums[i] - nums[i + 1])\n                if val > d_fixed:\n                    d_fixed = val\n        S_set = set()\n        for i in range(n):\n            if nums[i] != -1:\n                if i > 0 and nums[i - 1] == -1 or (i < n - 1 and nums[i + 1] == -1):\n                    S_set.add(nums[i])\n        if not S_set:\n            return d_fixed\n        has_adj_minus1 = False\n        for i in range(n + 1):\n            if nums[i] == -1 and nums[i + 1] == -1:\n                has_adj_minus1 = True\n                break\n        single_minus1_pairs = []\n        for i in range(1, n - 1):\n            if nums[i] == -1 and nums[i - 1] != -1 and (nums[i + 1] != -1):\n                single_minus1_pairs.append((nums[i - 1], nums[i + 1]))\n        base_intervals_set = set()\n        for s in S_set:\n            base_intervals_set.add((s, s))\n        for a, b in single_minus1_pairs:\n            base_intervals_set.add((max(a, b), min(a, b)))\n        base_intervals = sorted(list(base_intervals_set))\n        m = len(base_intervals)\n        inf = 2000000001\n\n        def check(d):\n            intervals = []\n            for b_L, b_R_other in base_intervals:\n                L, R = (b_L - d, b_R_other + d)\n                if L > R:\n                    return False\n                intervals.append((L, R))\n            pre_min_R = [0] * (m + 1)\n            pre_min_R[0] = inf\n            for i in range(m):\n                curr_R = intervals[i][1]\n                if curr_R < pre_min_R[i]:\n                    pre_min_R[i + 1] = curr_R\n                else:\n                    pre_min_R[i + 1] = pre_min_R[i]\n            suf_min_R = [0] * (m + 1)\n            suf_min_R[m] = inf\n            for i in range(m - 1, -1, -1):\n                curr_R = intervals[i][1]\n                if curr_R < suf_min_R[i + 1]:\n                    suf_min_R[i] = curr_R\n                else:\n                    suf_min_R[i] = suf_min_R[i + 1]\n            for k in range(m + 1):\n                if k == 0:\n                    L1, R1 = (-inf, inf)\n                else:\n                    L1, R1 = (intervals[k - 1][0], pre_min_R[k])\n                if k == m:\n                    L2, R2 = (-inf, inf)\n                else:\n                    L2, R2 = (intervals[m - 1][0], suf_min_R[k])\n                if L1 <= R1 and L2 <= R2:\n                    if not has_adj_minus1:\n                        return True\n                    if k == 0 or k == m:\n                        return True\n                    if max(0, L1 - R2, L2 - R1) <= d:\n                        return True\n            return False\n        low, high = (d_fixed, 1000000000)\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if check(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans\nimport copy\n\ndef minDifference(nums: List[int]) -> int:\n    \"\"\"You are given an array of integers nums. Some values in nums are missing and are denoted by -1.\nYou can choose a pair of positive integers (x, y) exactly once and replace each missing element with either x or y.\nYou need to minimize the maximum absolute difference between adjacent elements of nums after replacements.\nReturn the minimum possible difference.\n \nExample 1:\n\nInput: nums = [1,2,-1,10,8]\nOutput: 4\nExplanation:\nBy choosing the pair as (6, 7), nums can be changed to [1, 2, 6, 10, 8].\nThe absolute differences between adjacent elements are:\n\n|1 - 2| == 1\n|2 - 6| == 4\n|6 - 10| == 4\n|10 - 8| == 2\n\n\nExample 2:\n\nInput: nums = [-1,-1,-1]\nOutput: 0\nExplanation:\nBy choosing the pair as (4, 4), nums can be changed to [4, 4, 4].\n\nExample 3:\n\nInput: nums = [-1,10,-1,8]\nOutput: 1\nExplanation:\nBy choosing the pair as (11, 9), nums can be changed to [11, 10, 9, 8].\n\n \nConstraints:\n\n2 <= nums.length <= 10^5\nnums[i] is either -1 or in the range [1, 10^9].\"\"\"\n    return Solution().minDifference(*copy.deepcopy((nums,)))"
+      }
+    ],
+    "concept_facts": [
+      "Condition coverage (C3): the sub-condition `nums[i - 1] != -1` of the decision at line 65 is never False in the existing tests.",
+      "Fault-type adequacy at L51: wrong operator: relational, arithmetic, boolean or negation operator, or break/continue. Behaviour: `if (i > 0 and nums[i-1] == -1) or (i < n - 1 and nums[i+1] == -1):`. The public tests do not distinguish 6 surviving alternatives (`(i > 0 and nums[i-1] == -1)` -> `(i > 0 or nums[i-1] == -1)`; `== -1` -> `!= -1`; `-1` -> `+1`). Exercise this behaviour and determine the required result from the specification.",
+      "Statement coverage (C1): lines 118-122 (starting with `if k == 0 or k == m:`) are never executed by the existing tests."
+    ],
+    "placebo_facts": [
+      "Branch coverage (C2): the True and False branches of `curr_R < suf_min_R[i + 1]` (line 99) are taken by the existing tests.",
+      "Statement coverage (C1): line 86 (`pre_min_R = [0] * (m + 1)`) is executed by the existing tests.",
+      "Mutation (AOR): the mutant `n - 1` -> `n + 1` at line 58 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "minDifference([-1, -1, 8, 10])",
+      "minDifference([0, -1, -1])",
+      "minDifference([2, 3, 0, 11, 9])",
+      "minDifference([1, 1, 1, 1, 1])",
+      "minDifference([-1])",
+      "minDifference([1, 2, -1, 10, 8, 1])",
+      "minDifference([1, 10, -1, 8])",
+      "minDifference([])",
+      "minDifference([-1, -1])",
+      "minDifference([0, -1])",
+      "minDifference([10, 8, 2, 1, -1])",
+      "minDifference([8, -1, 10, -1, 8])",
+      "minDifference([-993, 10, -1, 8])",
+      "minDifference([8, 10, -1, 2, 1])",
+      "minDifference([-1, -1, -1, -1])",
+      "minDifference([0, 2, -1, 10, 8])",
+      "minDifference([0, 10, -1, 8])",
+      "minDifference([1, -1, -1])",
+      "minDifference([-1, 2, -1, 10, 8])",
+      "minDifference([1, 0, -1, 10, 8])",
+      "minDifference([-1, 0, -1])",
+      "minDifference([-1, 0, -1, 8])",
+      "minDifference([1, 1, -1, 10, 8])",
+      "minDifference([-1, 1, -1])",
+      "minDifference([-1, 1, -1, 8])",
+      "minDifference([1, -1, -1, 10, 8])",
+      "minDifference([-1, -1, -1, 8])",
+      "minDifference([1, 2, 0, 10, 8])",
+      "minDifference([-1, -1, 0])",
+      "minDifference([-1, 10, 0, 8])",
+      "minDifference([1, 2, 1, 10, 8])",
+      "minDifference([-1, -1, 1])",
+      "minDifference([-1, 10, 1, 8])",
+      "minDifference([1, 2, -1, 0, 8])",
+      "minDifference([-1, 10, -1, 0])",
+      "minDifference([1, 2, -1, 1, 8])",
+      "minDifference([-1, 10, -1, 1])",
+      "minDifference([1, 2, -1, -1, 8])",
+      "minDifference([-1, 10, -1, -1])",
+      "minDifference([1, 2, -1, 10, 0])",
+      "minDifference([1, 2, -1, 10, 1])",
+      "minDifference([1, 2, -1, 10, -1])",
+      "minDifference([1, 2, -1, 10])",
+      "minDifference([-1, 10, -1])",
+      "minDifference([1, 2, -1, 10, 8, 8])",
+      "minDifference([-1, 10, -1, 8, 8])",
+      "minDifference([-2, -1, -1])",
+      "minDifference([-2, 10, -1, 8])",
+      "minDifference([2, 2, -1, 10, 8])",
+      "minDifference([2, -1, -1])",
+      "minDifference([2, 10, -1, 8])",
+      "minDifference([-1, -2, -1])",
+      "minDifference([-1, 9, -1, 8])",
+      "minDifference([1, 3, -1, 10, 8])",
+      "minDifference([-1, 11, -1, 8])",
+      "minDifference([-1, 2, -1])",
+      "minDifference([-1, 2, -1, 8])",
+      "minDifference([1, 2, -2, 10, 8])",
+      "minDifference([-1, -1, -2])",
+      "minDifference([-1, 10, -2, 8])",
+      "minDifference([1, 2, 2, 10, 8])",
+      "minDifference([-1, -1, 2])",
+      "minDifference([-1, 10, 2, 8])",
+      "minDifference([1, 2, -1, 9, 8])",
+      "minDifference([-1, 10, -1, 7])",
+      "minDifference([1, 2, -1, 11, 8])",
+      "minDifference([-1, 10, -1, 9])",
+      "minDifference([1, 2, -1, 2, 8])",
+      "minDifference([-1, 10, -1, 2])",
+      "minDifference([1, 2, -1, 10, 7])",
+      "minDifference([1, 2, -1, 10, 9])",
+      "minDifference([1, 2, -1, 10, 2])",
+      "minDifference([-1, 1, 2, 8, 10])",
+      "minDifference([8, -1, 10, -1])",
+      "minDifference([1, -2, -1, 10, 8])",
+      "minDifference([-1, -10, -1, 8])",
+      "minDifference([1, 2, -1, -10, 8])",
+      "minDifference([-1, 10, -1, -8])",
+      "minDifference([1, 2, -1, 10, -8])",
+      "minDifference([8, 2, -1, 10, 1])",
+      "minDifference([8, 10, -1, -1])",
+      "minDifference([1, 2, -1, 10, 8, 11])",
+      "minDifference([-1, -1, -1, 0])",
+      "minDifference([-1, 10, -1, 8, 11])",
+      "minDifference([-2, 2, -1, 10, 8])",
+      "minDifference([3, 2, -1, 10, 8])",
+      "minDifference([-3, -1, -1])",
+      "minDifference([-3, 10, -1, 8])",
+      "minDifference([1, 4, -1, 10, 8])",
+      "minDifference([-1, 12, -1, 8])",
+      "minDifference([-1, -3, -1])",
+      "minDifference([-1, 8, -1, 8])",
+      "minDifference([1, 2, -3, 10, 8])",
+      "minDifference([-1, -1, -3])",
+      "minDifference([-1, 10, -3, 8])",
+      "minDifference([1, 2, -1, 12, 8])",
+      "minDifference([-1, 10, -1, 10])",
+      "minDifference([1, 2, -1, 8, 8])",
+      "minDifference([-1, 10, -1, 6])",
+      "minDifference([1, 2, -1, 10, 10])",
+      "minDifference([1, 2, -1, 10, 6])",
+      "minDifference([2, -1, 10, 8, 1])",
+      "minDifference([10, -1, 8, -1])",
+      "minDifference([10, 8, -1, -1])",
+      "minDifference([1, 2, -1, -1, 10, 8])",
+      "minDifference([-1, 10, 8])"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([1, 2, -1, 10, 8],), ([-1, -1, -1],), ([-1, 10, -1, 8],)]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12)))\n",
+    "strategy_sha256": "39b525d2c20294e6e2b8fc4bacd9f159844346e7f771570b753c42a8e3c8b7a7",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 221,
+    "survivors": 106
+  }
+}

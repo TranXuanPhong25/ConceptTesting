@@ -1,0 +1,304 @@
+{
+ "baseline": {
+  "task": 59,
+  "entry": "largest_prime_factor",
+  "put": "\n\ndef largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n    largest = 1\n    while n % 2 == 0:\n        largest = 2\n        n = n // 2\n    # n is odd at this point.\n    while n % 3 == 0:\n        largest = 3\n        n = n // 3\n    while n % 5 == 0:\n        largest = 5\n        n = n // 5\n    # n is not a multiple of 2, 3, or 5 at this point.\n    while n % 6 == 0:\n        largest = 6\n        n = n // 6\n    while n % 7 == 0:\n        largest = 7\n        n = n // 7\n    while n % 9 == 0:\n        largest = 9\n        n = n // 9\n    # n is not a multiple of 2, 3, 5, 6, 7, or 9 at this point.\n    while n % 11 == 0:\n        largest = 11\n        n = n // 11\n    while n % 13 == 0:\n        largest = 13\n        n = n // 13\n    while n % 17 == 0:\n        largest = 17\n        n = n // 17\n    while n % 19 == 0:\n        largest = 19\n        n = n // 19\n    # n is not a multiple of 2, 3, 5, 6, 7, 9, 11, 13, 17, or 19 at this point.\n    # If n is greater than 1, it is a prime greater than largest.\n    if n > 1:\n        return n\n    return largest\n",
+  "base": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate(15) == 5\n    assert candidate(27) == 3\n    assert candidate(63) == 7\n    assert candidate(330) == 11\n    assert candidate(13195) == 29\n\n",
+  "concept_facts": [
+   "Branch coverage (C2): the True branch of `n % 19 == 0` (line 41) is never taken by the existing tests.",
+   "Statement coverage (C1): lines 42-43 (starting with `largest = 19`) are never executed by the existing tests.",
+   "Mutation (CRP constant): the mutant `2` -> `1` at line 12 survives: no existing test distinguishes them."
+  ],
+  "concept_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 41,
+    "text": "Branch coverage (C2): the True branch of `n % 19 == 0` (line 41) is never taken by the existing tests.",
+    "cell": [
+     67,
+     "T"
+    ],
+    "witness": 36,
+    "reached": true,
+    "witness_call": "largest_prime_factor(1007)",
+    "block": 41,
+    "g_demote": false,
+    "tier": 0
+   },
+   {
+    "kind": "STMT",
+    "line": 42,
+    "text": "Statement coverage (C1): lines 42-43 (starting with `largest = 19`) are never executed by the existing tests.",
+    "lines": [
+     42,
+     43
+    ],
+    "witness": 36,
+    "reached": true,
+    "witness_call": "largest_prime_factor(1007)",
+    "block": 42,
+    "g_demote": false,
+    "tier": 0
+   },
+   {
+    "kind": "MUTANT",
+    "line": 12,
+    "k": 18,
+    "family": "CRP constant",
+    "extended": false,
+    "text": "Mutation (CRP constant): the mutant `2` -> `1` at line 12 survives: no existing test distinguishes them.",
+    "witness": 4,
+    "boundary": false,
+    "reached": true,
+    "witness_call": "largest_prime_factor(8)",
+    "block": 12,
+    "g_demote": false,
+    "tier": 0,
+    "mutant_src": "def largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n    largest = 1\n    while n % 2 == 0:\n        largest = 1\n        n = n // 2\n    while n % 3 == 0:\n        largest = 3\n        n = n // 3\n    while n % 5 == 0:\n        largest = 5\n        n = n // 5\n    while n % 6 == 0:\n        largest = 6\n        n = n // 6\n    while n % 7 == 0:\n        largest = 7\n        n = n // 7\n    while n % 9 == 0:\n        largest = 9\n        n = n // 9\n    while n % 11 == 0:\n        largest = 11\n        n = n // 11\n    while n % 13 == 0:\n        largest = 13\n        n = n // 13\n    while n % 17 == 0:\n        largest = 17\n        n = n // 17\n    while n % 19 == 0:\n        largest = 19\n        n = n // 19\n    if n > 1:\n        return n\n    return largest"
+   }
+  ],
+  "placebo_facts": [
+   "Branch coverage (C2): the True and False branches of `n % 2 == 0` (line 11) are taken by the existing tests.",
+   "Statement coverage (C1): line 34 (`n = n // 11`) is executed by the existing tests.",
+   "Mutation (CRP constant): the mutant `n // 3` -> `n // 4` at line 17 is killed: an existing test distinguishes them."
+  ],
+  "tool_inputs": [
+   "largest_prime_factor(1007)",
+   "largest_prime_factor(8)"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 11,
+    "text": "Branch coverage (C2): the True and False branches of `n % 2 == 0` (line 11) are taken by the existing tests.",
+    "cells": [
+     [
+      4,
+      "T"
+     ],
+     [
+      4,
+      "F"
+     ]
+    ]
+   },
+   {
+    "kind": "STMT",
+    "line": 34,
+    "text": "Statement coverage (C1): line 34 (`n = n // 11`) is executed by the existing tests.",
+    "lines": [
+     34
+    ]
+   },
+   {
+    "kind": "MUTANT",
+    "line": 17,
+    "k": 92,
+    "family": "CRP constant",
+    "extended": false,
+    "text": "Mutation (CRP constant): the mutant `n // 3` -> `n // 4` at line 17 is killed: an existing test distinguishes them.",
+    "mutant_src": "def largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n    largest = 1\n    while n % 2 == 0:\n        largest = 2\n        n = n // 2\n    while n % 3 == 0:\n        largest = 3\n        n = n // 4\n    while n % 5 == 0:\n        largest = 5\n        n = n // 5\n    while n % 6 == 0:\n        largest = 6\n        n = n // 6\n    while n % 7 == 0:\n        largest = 7\n        n = n // 7\n    while n % 9 == 0:\n        largest = 9\n        n = n // 9\n    while n % 11 == 0:\n        largest = 11\n        n = n // 11\n    while n % 13 == 0:\n        largest = 13\n        n = n // 13\n    while n % 17 == 0:\n        largest = 17\n        n = n // 17\n    while n % 19 == 0:\n        largest = 19\n        n = n // 19\n    if n > 1:\n        return n\n    return largest"
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(n):\n    return isinstance(n, int)\n\ndef P1(n):\n    return P1_m(n)\n\ndef P2_m(n):\n    return n > 1\n\ndef P2(n):\n    return P2_m(n)\n\ndef P3_m(n):\n    return not all((n % i != 0 for i in range(2, int(n ** 0.5) + 1)))\n\ndef P3(n):\n    return P3_m(n)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True\n",
+  "valid_sha256": "c9e3279922587665375330589ad2db8210391b4c93c67212cbd6042cc58d118e",
+  "strategy_src": "def strategy():\n    return st.tuples(st.from_type(int))\n",
+  "strategy_sha256": "d9fe9fb1ffc3cff0a655e471d23160b0a82c457cba3968c744899a3e1c4ed02d",
+  "strategy_fallback": true,
+  "mining_summary": {
+   "task": 59,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "8eb95384ff9e6f27a6c994c61d28ea6a29f8e239e13ae2372722594f7a5ffe7e",
+   "candidates": 3,
+   "confirmed": 3,
+   "coded": 3,
+   "surviving": 3,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "c9e3279922587665375330589ad2db8210391b4c93c67212cbd6042cc58d118e",
+   "seed": 20261069,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 59,
+  "entry": "largest_prime_factor",
+  "put": "\n\ndef largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n    largest = 1\n    while n % 2 == 0:\n        largest = 2\n        n = n // 2\n    # n is odd at this point.\n    while n % 3 == 0:\n        largest = 3\n        n = n // 3\n    while n % 5 == 0:\n        largest = 5\n        n = n // 5\n    # n is not a multiple of 2, 3, or 5 at this point.\n    while n % 6 == 0:\n        largest = 6\n        n = n // 6\n    while n % 7 == 0:\n        largest = 7\n        n = n // 7\n    while n % 9 == 0:\n        largest = 9\n        n = n // 9\n    # n is not a multiple of 2, 3, 5, 6, 7, or 9 at this point.\n    while n % 11 == 0:\n        largest = 11\n        n = n // 11\n    while n % 13 == 0:\n        largest = 13\n        n = n // 13\n    while n % 17 == 0:\n        largest = 17\n        n = n // 17\n    while n % 19 == 0:\n        largest = 19\n        n = n // 19\n    # n is not a multiple of 2, 3, 5, 6, 7, 9, 11, 13, 17, or 19 at this point.\n    # If n is greater than 1, it is a prime greater than largest.\n    if n > 1:\n        return n\n    return largest\n",
+  "base": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate(15) == 5\n    assert candidate(27) == 3\n    assert candidate(63) == 7\n    assert candidate(330) == 11\n    assert candidate(13195) == 29\n\n",
+  "concept_facts": [
+   "Branch coverage (C2): the True branch of `n % 19 == 0` (line 41) is never taken by the existing tests.",
+   "Fault-type adequacy at L10: wrong value: wrong variable, constant or assigned value. Behaviour: `largest = 1`. The public tests do not distinguish 2 surviving alternatives (`largest = 1` -> `largest = None`; `1` -> `2`). Exercise this behaviour and determine the required result from the specification.",
+   "Statement coverage (C1): lines 42-43 (starting with `largest = 19`) are never executed by the existing tests."
+  ],
+  "concept_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 41,
+    "text": "Branch coverage (C2): the True branch of `n % 19 == 0` (line 41) is never taken by the existing tests.",
+    "cell": [
+     67,
+     "T"
+    ],
+    "witness": 36,
+    "reached": true,
+    "witness_call": "largest_prime_factor(1007)",
+    "block": 41,
+    "g_demote": false,
+    "tier": 0
+   },
+   {
+    "kind": "FAULT",
+    "line": 10,
+    "fault_type": "VALUE",
+    "text": "Fault-type adequacy at L10: wrong value: wrong variable, constant or assigned value. Behaviour: `largest = 1`. The public tests do not distinguish 2 surviving alternatives (`largest = 1` -> `largest = None`; `1` -> `2`). Exercise this behaviour and determine the required result from the specification.",
+    "survivors": 2,
+    "distinguished": 2,
+    "alternatives": [
+     "`largest = 1` -> `largest = None`",
+     "`1` -> `2`"
+    ],
+    "alternative_sources": [
+     "\n\ndef largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n    largest = None\n    while n % 2 == 0:\n        largest = 2\n        n = n // 2\n    # n is odd at this point.\n    while n % 3 == 0:\n        largest = 3\n        n = n // 3\n    while n % 5 == 0:\n        largest = 5\n        n = n // 5\n    # n is not a multiple of 2, 3, or 5 at this point.\n    while n % 6 == 0:\n        largest = 6\n        n = n // 6\n    while n % 7 == 0:\n        largest = 7\n        n = n // 7\n    while n % 9 == 0:\n        largest = 9\n        n = n // 9\n    # n is not a multiple of 2, 3, 5, 6, 7, or 9 at this point.\n    while n % 11 == 0:\n        largest = 11\n        n = n // 11\n    while n % 13 == 0:\n        largest = 13\n        n = n // 13\n    while n % 17 == 0:\n        largest = 17\n        n = n // 17\n    while n % 19 == 0:\n        largest = 19\n        n = n // 19\n    # n is not a multiple of 2, 3, 5, 6, 7, 9, 11, 13, 17, or 19 at this point.\n    # If n is greater than 1, it is a prime greater than largest.\n    if n > 1:\n        return n\n    return largest\n",
+     "\n\ndef largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n    largest = 2\n    while n % 2 == 0:\n        largest = 2\n        n = n // 2\n    # n is odd at this point.\n    while n % 3 == 0:\n        largest = 3\n        n = n // 3\n    while n % 5 == 0:\n        largest = 5\n        n = n // 5\n    # n is not a multiple of 2, 3, or 5 at this point.\n    while n % 6 == 0:\n        largest = 6\n        n = n // 6\n    while n % 7 == 0:\n        largest = 7\n        n = n // 7\n    while n % 9 == 0:\n        largest = 9\n        n = n // 9\n    # n is not a multiple of 2, 3, 5, 6, 7, or 9 at this point.\n    while n % 11 == 0:\n        largest = 11\n        n = n // 11\n    while n % 13 == 0:\n        largest = 13\n        n = n // 13\n    while n % 17 == 0:\n        largest = 17\n        n = n // 17\n    while n % 19 == 0:\n        largest = 19\n        n = n // 19\n    # n is not a multiple of 2, 3, 5, 6, 7, 9, 11, 13, 17, or 19 at this point.\n    # If n is greater than 1, it is a prime greater than largest.\n    if n > 1:\n        return n\n    return largest\n"
+    ],
+    "reached": true,
+    "witness_call": "largest_prime_factor(1)",
+    "block": 10,
+    "witness": 0
+   },
+   {
+    "kind": "STMT",
+    "line": 42,
+    "text": "Statement coverage (C1): lines 42-43 (starting with `largest = 19`) are never executed by the existing tests.",
+    "lines": [
+     42,
+     43
+    ],
+    "witness": 36,
+    "reached": true,
+    "witness_call": "largest_prime_factor(1007)",
+    "block": 42,
+    "g_demote": false,
+    "tier": 0
+   }
+  ],
+  "placebo_facts": [
+   "Branch coverage (C2): the True and False branches of `n % 2 == 0` (line 11) are taken by the existing tests.",
+   "Statement coverage (C1): line 34 (`n = n // 11`) is executed by the existing tests.",
+   "Mutation (CRP constant): the mutant `n // 3` -> `n // 4` at line 17 is killed: an existing test distinguishes them."
+  ],
+  "tool_inputs": [
+   "largest_prime_factor(1007)",
+   "largest_prime_factor(8)",
+   "largest_prime_factor(8007)",
+   "largest_prime_factor(100000000000000004)",
+   "largest_prime_factor(26)",
+   "largest_prime_factor(100000000000000003007)",
+   "largest_prime_factor(7007)",
+   "largest_prime_factor(28)",
+   "largest_prime_factor(27007)",
+   "largest_prime_factor(62)",
+   "largest_prime_factor(20)",
+   "largest_prime_factor(13194)",
+   "largest_prime_factor(13195007)",
+   "largest_prime_factor(18007)",
+   "largest_prime_factor(331007)",
+   "largest_prime_factor(1)",
+   "largest_prime_factor(14)",
+   "largest_prime_factor(329)",
+   "largest_prime_factor(16)",
+   "largest_prime_factor(64)",
+   "largest_prime_factor(331)",
+   "largest_prime_factor(13196)",
+   "largest_prime_factor(2)",
+   "largest_prime_factor(9)",
+   "largest_prime_factor(10)",
+   "largest_prime_factor(11)",
+   "largest_prime_factor(12)",
+   "largest_prime_factor(17)",
+   "largest_prime_factor(18)",
+   "largest_prime_factor(19)",
+   "largest_prime_factor(29)",
+   "largest_prime_factor(65)",
+   "largest_prime_factor(332)",
+   "largest_prime_factor(13197)",
+   "largest_prime_factor(13)",
+   "largest_prime_factor(25)",
+   "largest_prime_factor(61)",
+   "largest_prime_factor(328)",
+   "largest_prime_factor(13193)"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 11,
+    "text": "Branch coverage (C2): the True and False branches of `n % 2 == 0` (line 11) are taken by the existing tests.",
+    "cells": [
+     [
+      4,
+      "T"
+     ],
+     [
+      4,
+      "F"
+     ]
+    ]
+   },
+   {
+    "kind": "STMT",
+    "line": 34,
+    "text": "Statement coverage (C1): line 34 (`n = n // 11`) is executed by the existing tests.",
+    "lines": [
+     34
+    ]
+   },
+   {
+    "kind": "MUTANT",
+    "line": 17,
+    "k": 92,
+    "family": "CRP constant",
+    "extended": false,
+    "text": "Mutation (CRP constant): the mutant `n // 3` -> `n // 4` at line 17 is killed: an existing test distinguishes them.",
+    "mutant_src": "def largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n    largest = 1\n    while n % 2 == 0:\n        largest = 2\n        n = n // 2\n    while n % 3 == 0:\n        largest = 3\n        n = n // 4\n    while n % 5 == 0:\n        largest = 5\n        n = n // 5\n    while n % 6 == 0:\n        largest = 6\n        n = n // 6\n    while n % 7 == 0:\n        largest = 7\n        n = n // 7\n    while n % 9 == 0:\n        largest = 9\n        n = n // 9\n    while n % 11 == 0:\n        largest = 11\n        n = n // 11\n    while n % 13 == 0:\n        largest = 13\n        n = n // 13\n    while n % 17 == 0:\n        largest = 17\n        n = n // 17\n    while n % 19 == 0:\n        largest = 19\n        n = n // 19\n    if n > 1:\n        return n\n    return largest"
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(n):\n    return isinstance(n, int)\n\ndef P1(n):\n    return P1_m(n)\n\ndef P2_m(n):\n    return n > 1\n\ndef P2(n):\n    return P2_m(n)\n\ndef P3_m(n):\n    return not all((n % i != 0 for i in range(2, int(n ** 0.5) + 1)))\n\ndef P3(n):\n    return P3_m(n)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True\n",
+  "valid_sha256": "c9e3279922587665375330589ad2db8210391b4c93c67212cbd6042cc58d118e",
+  "strategy_src": "def strategy():\n    return st.tuples(st.from_type(int))\n",
+  "strategy_sha256": "d9fe9fb1ffc3cff0a655e471d23160b0a82c457cba3968c744899a3e1c4ed02d",
+  "strategy_fallback": true,
+  "mining_summary": {
+   "task": 59,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "8eb95384ff9e6f27a6c994c61d28ea6a29f8e239e13ae2372722594f7a5ffe7e",
+   "candidates": 3,
+   "confirmed": 3,
+   "coded": 3,
+   "surviving": 3,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "c9e3279922587665375330589ad2db8210391b4c93c67212cbd6042cc58d118e",
+   "seed": 20261069,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 94,
+  "survivors": 39
+ }
+}

@@ -1,0 +1,354 @@
+{
+  "rows": [
+    {
+      "route": "reka",
+      "arm": "raw_known",
+      "arguments": "([1,2,1,2,3,4,3],)",
+      "expected": "2",
+      "edit": null,
+      "reasoning": "For value1 at indices0,2 on a7-cycle, every index is within2 edges of one of these indices. At1second indices4,5 remain outside. Values2/3 also have largest gaps5, singleton4 gap7: none can fill in1. Minimum2.",
+      "domain": {
+        "passed": true,
+        "status": "passed_explicit_constraints",
+        "binding_sha256": "07de44c08816f7ec956b02aac20d53c0407da0e724dda097de629b45365b536b",
+        "coverage": "complete"
+      },
+      "observed": {
+        "status": "ok",
+        "put": {
+          "status": "ok",
+          "output": {
+            "type": "int",
+            "repr": "3"
+          },
+          "site_events": [],
+          "branches": [],
+          "capture": {
+            "events_truncated": false,
+            "branches_truncated": false,
+            "capture_error": false
+          }
+        }
+      },
+      "put_disagrees_with_spec": true
+    },
+    {
+      "route": "reka",
+      "arm": "full_known",
+      "arguments": "([1,2,3,4,5],)",
+      "expected": "2",
+      "edit": {
+        "span": [
+          75,
+          29,
+          75,
+          51
+        ],
+        "node_kind": "Call",
+        "before": "math.ceil(max_gap / 2)",
+        "after": "max_gap // 2"
+      },
+      "reasoning": "All values unique on a5-cycle. One target initially covers1 position; at1step can cover at most3, at2steps all5. Minimum2. This is the model-described all-distinct odd-length5 family.",
+      "domain": {
+        "passed": true,
+        "status": "passed_explicit_constraints",
+        "binding_sha256": "07de44c08816f7ec956b02aac20d53c0407da0e724dda097de629b45365b536b",
+        "coverage": "complete"
+      },
+      "observed": {
+        "status": "ok",
+        "put": {
+          "status": "ok",
+          "output": {
+            "type": "int",
+            "repr": "3"
+          },
+          "site_events": [
+            {
+              "value": {
+                "type": "int",
+                "repr": "3"
+              },
+              "branch_count": 7,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            },
+            {
+              "value": {
+                "type": "int",
+                "repr": "3"
+              },
+              "branch_count": 8,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            },
+            {
+              "value": {
+                "type": "int",
+                "repr": "3"
+              },
+              "branch_count": 9,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            },
+            {
+              "value": {
+                "type": "int",
+                "repr": "3"
+              },
+              "branch_count": 10,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            },
+            {
+              "value": {
+                "type": "int",
+                "repr": "3"
+              },
+              "branch_count": 11,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            }
+          ],
+          "branches": [
+            {
+              "line": 44,
+              "value": false
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            }
+          ],
+          "capture": {
+            "events_truncated": false,
+            "branches_truncated": false,
+            "capture_error": false
+          }
+        },
+        "alternative": {
+          "status": "ok",
+          "output": {
+            "type": "int",
+            "repr": "2"
+          },
+          "site_events": [
+            {
+              "value": {
+                "type": "int",
+                "repr": "2"
+              },
+              "branch_count": 7,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            },
+            {
+              "value": {
+                "type": "int",
+                "repr": "2"
+              },
+              "branch_count": 8,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            },
+            {
+              "value": {
+                "type": "int",
+                "repr": "2"
+              },
+              "branch_count": 9,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            },
+            {
+              "value": {
+                "type": "int",
+                "repr": "2"
+              },
+              "branch_count": 10,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            },
+            {
+              "value": {
+                "type": "int",
+                "repr": "2"
+              },
+              "branch_count": 11,
+              "function": "minimumSeconds",
+              "function_line": 40,
+              "locals": {}
+            }
+          ],
+          "branches": [
+            {
+              "line": 44,
+              "value": false
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 50,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            },
+            {
+              "line": 58,
+              "value": true
+            }
+          ],
+          "capture": {
+            "events_truncated": false,
+            "branches_truncated": false,
+            "capture_error": false
+          }
+        }
+      },
+      "put_disagrees_with_spec": true,
+      "model_edit_matches_spec": true
+    },
+    {
+      "route": "deepinfra_fp8",
+      "arm": "raw_known",
+      "arguments": "([1,2,3],)",
+      "expected": "1",
+      "edit": null,
+      "reasoning": "Three unequal values on a3-cycle; both other positions neighbour initial1, so all can choose1 in one simultaneous step. Not initially equal, minimum1.",
+      "domain": {
+        "passed": true,
+        "status": "passed_explicit_constraints",
+        "binding_sha256": "07de44c08816f7ec956b02aac20d53c0407da0e724dda097de629b45365b536b",
+        "coverage": "complete"
+      },
+      "observed": {
+        "status": "ok",
+        "put": {
+          "status": "ok",
+          "output": {
+            "type": "int",
+            "repr": "2"
+          },
+          "site_events": [],
+          "branches": [],
+          "capture": {
+            "events_truncated": false,
+            "branches_truncated": false,
+            "capture_error": false
+          }
+        }
+      },
+      "put_disagrees_with_spec": true
+    },
+    {
+      "route": "deepinfra_fp8",
+      "arm": "raw_known",
+      "arguments": "([1,2,3,1,4],)",
+      "expected": "1",
+      "edit": null,
+      "reasoning": "Value1 starts at0,3 on a5-cycle. Their closed one-step neighbourhoods cover0,1,2,3,4. Not already equal, minimum1.",
+      "domain": {
+        "passed": true,
+        "status": "passed_explicit_constraints",
+        "binding_sha256": "07de44c08816f7ec956b02aac20d53c0407da0e724dda097de629b45365b536b",
+        "coverage": "complete"
+      },
+      "observed": {
+        "status": "ok",
+        "put": {
+          "status": "ok",
+          "output": {
+            "type": "int",
+            "repr": "2"
+          },
+          "site_events": [],
+          "branches": [],
+          "capture": {
+            "events_truncated": false,
+            "branches_truncated": false,
+            "capture_error": false
+          }
+        }
+      },
+      "put_disagrees_with_spec": true
+    }
+  ],
+  "native_replay_operations": 4,
+  "native_program_executions": 5,
+  "new_model_calls": 0,
+  "private_reference_calls": 0,
+  "all_provider_outputs_unchanged": true
+}

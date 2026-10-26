@@ -1,0 +1,264 @@
+{
+  "baseline": {
+    "task": 141,
+    "entry": "maxWeight",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport collections\nfrom typing import List\n\nclass Solution:\n    def maxWeight(self, pizzas: List[int]) -> int:\n        n = len(pizzas)\n        pizzas.sort()  # Sort pizzas in ascending order\n\n        total_weight = 0\n        k = n // 4  # Number of days\n\n        # Determine the count of odd-numbered and even-numbered days.\n        # Days are 1-indexed: 1, 2, 3, ..., k.\n        num_odd_days = (k + 1) // 2\n        num_even_days = k // 2\n\n        # The n/2 smallest pizzas are used for W and X roles (non-contributing).\n        # The n/2 largest pizzas are used for Y and Z roles (contributing).\n        # These n/2 largest pizzas are: pizzas[n//2], ..., pizzas[n-1].\n\n        # From these n/2 pizzas, we identify two groups of k pizzas each:\n        # 1. Z-role candidates: pizzas[n//2 + k : n]\n        #    These are the k largest pizzas among the n/2 contributing pizzas.\n        # 2. Y-role candidates: pizzas[n//2 : n//2 + k]\n        #    These are the k smallest pizzas among the n/2 contributing pizzas.\n\n        # To maximize the total sum:\n        # On odd days (where we gain Z), we select the largest available Z-candidate pizzas.\n        # The largest Z-candidate pizzas are at the end of the `pizzas` array.\n        for i in range(num_odd_days):\n            # pizzas[n - 1 - i] accesses the largest, second-largest, etc., pizzas.\n            total_weight += pizzas[n - 1 - i]\n\n        # On even days (where we gain Y), we select the largest available Y-candidate pizzas.\n        # The largest Y-candidate pizzas are at the end of the `Y-role candidates` slice.\n        # This slice is pizzas[n//2 : n//2 + k].\n        # The elements are pizzas[n//2 + k - 1], pizzas[n//2 + k - 2], etc.\n        for i in range(num_even_days):\n            total_weight += pizzas[n // 2 + k - 1 - i]\n\n        return total_weight\n\nimport copy\n\ndef maxWeight(pizzas: List[int]) -> int:\n    'You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the i^th pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\\n\\nOn odd-numbered days (1-indexed), you gain a weight of Z.\\nOn even-numbered days, you gain a weight of Y.\\n\\nFind the maximum total weight you can gain by eating all pizzas optimally.\\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\\n \\nExample 1:\\n\\nInput: pizzas = [1,2,3,4,5,6,7,8]\\nOutput: 14\\nExplanation:\\n\\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\\n\\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\\n\\nExample 2:\\n\\nInput: pizzas = [2,1,1,1,1,1,1,1]\\nOutput: 3\\nExplanation:\\n\\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\\n\\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\\n\\n \\nConstraints:\\n\\n4 <= n == pizzas.length <= 2 * 10^5\\n1 <= pizzas[i] <= 10^5\\nn is a multiple of 4.'\n    return Solution().maxWeight(*copy.deepcopy((pizzas,)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([1, 2, 3, 4, 5, 6, 7, 8]), 14, 0.0)\n    assert _heldout_same(candidate([2, 1, 1, 1, 1, 1, 1, 1]), 3, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 49,
+        "k": 15,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `(k + 1) // 2` -> `(k + 1) // 3` at line 49 survives: no existing test distinguishes them.",
+        "witness": 1,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "maxWeight([1, 1, 1, 1, 1, 1, 1])",
+        "block": 49,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport collections\nfrom typing import List\n\nclass Solution:\n\n    def maxWeight(self, pizzas: List[int]) -> int:\n        n = len(pizzas)\n        pizzas.sort()\n        total_weight = 0\n        k = n // 4\n        num_odd_days = (k + 1) // 3\n        num_even_days = k // 2\n        for i in range(num_odd_days):\n            total_weight += pizzas[n - 1 - i]\n        for i in range(num_even_days):\n            total_weight += pizzas[n // 2 + k - 1 - i]\n        return total_weight\nimport copy\n\ndef maxWeight(pizzas: List[int]) -> int:\n    \"\"\"You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the i^th pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\n\nOn odd-numbered days (1-indexed), you gain a weight of Z.\nOn even-numbered days, you gain a weight of Y.\n\nFind the maximum total weight you can gain by eating all pizzas optimally.\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\n \nExample 1:\n\nInput: pizzas = [1,2,3,4,5,6,7,8]\nOutput: 14\nExplanation:\n\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\n\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\n\nExample 2:\n\nInput: pizzas = [2,1,1,1,1,1,1,1]\nOutput: 3\nExplanation:\n\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\n\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\n\n \nConstraints:\n\n4 <= n == pizzas.length <= 2 * 10^5\n1 <= pizzas[i] <= 10^5\nn is a multiple of 4.\"\"\"\n    return Solution().maxWeight(*copy.deepcopy((pizzas,)))"
+      },
+      {
+        "kind": "DU",
+        "line": 76,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `total_weight` at line 67 never reaches its use at line 76 in the existing tests.",
+        "cell": [
+          -2,
+          "du|40|total_weight|67|76|c-use"
+        ],
+        "witness": 1,
+        "reached": true,
+        "witness_call": "maxWeight([1, 1, 1, 1, 1, 1, 1])",
+        "block": 76,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 45,
+        "k": 13,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `n // 4` -> `n // 3` at line 45 survives: no existing test distinguishes them.",
+        "witness": 1,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "maxWeight([1, 1, 1, 1, 1, 1, 1])",
+        "block": 45,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport collections\nfrom typing import List\n\nclass Solution:\n\n    def maxWeight(self, pizzas: List[int]) -> int:\n        n = len(pizzas)\n        pizzas.sort()\n        total_weight = 0\n        k = n // 3\n        num_odd_days = (k + 1) // 2\n        num_even_days = k // 2\n        for i in range(num_odd_days):\n            total_weight += pizzas[n - 1 - i]\n        for i in range(num_even_days):\n            total_weight += pizzas[n // 2 + k - 1 - i]\n        return total_weight\nimport copy\n\ndef maxWeight(pizzas: List[int]) -> int:\n    \"\"\"You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the i^th pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\n\nOn odd-numbered days (1-indexed), you gain a weight of Z.\nOn even-numbered days, you gain a weight of Y.\n\nFind the maximum total weight you can gain by eating all pizzas optimally.\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\n \nExample 1:\n\nInput: pizzas = [1,2,3,4,5,6,7,8]\nOutput: 14\nExplanation:\n\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\n\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\n\nExample 2:\n\nInput: pizzas = [2,1,1,1,1,1,1,1]\nOutput: 3\nExplanation:\n\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\n\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\n\n \nConstraints:\n\n4 <= n == pizzas.length <= 2 * 10^5\n1 <= pizzas[i] <= 10^5\nn is a multiple of 4.\"\"\"\n    return Solution().maxWeight(*copy.deepcopy((pizzas,)))"
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 45,
+        "k": 12,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `n // 4` -> `n // 5` at line 45 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport collections\nfrom typing import List\n\nclass Solution:\n\n    def maxWeight(self, pizzas: List[int]) -> int:\n        n = len(pizzas)\n        pizzas.sort()\n        total_weight = 0\n        k = n // 5\n        num_odd_days = (k + 1) // 2\n        num_even_days = k // 2\n        for i in range(num_odd_days):\n            total_weight += pizzas[n - 1 - i]\n        for i in range(num_even_days):\n            total_weight += pizzas[n // 2 + k - 1 - i]\n        return total_weight\nimport copy\n\ndef maxWeight(pizzas: List[int]) -> int:\n    \"\"\"You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the i^th pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\n\nOn odd-numbered days (1-indexed), you gain a weight of Z.\nOn even-numbered days, you gain a weight of Y.\n\nFind the maximum total weight you can gain by eating all pizzas optimally.\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\n \nExample 1:\n\nInput: pizzas = [1,2,3,4,5,6,7,8]\nOutput: 14\nExplanation:\n\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\n\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\n\nExample 2:\n\nInput: pizzas = [2,1,1,1,1,1,1,1]\nOutput: 3\nExplanation:\n\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\n\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\n\n \nConstraints:\n\n4 <= n == pizzas.length <= 2 * 10^5\n1 <= pizzas[i] <= 10^5\nn is a multiple of 4.\"\"\"\n    return Solution().maxWeight(*copy.deepcopy((pizzas,)))"
+      },
+      {
+        "kind": "DU",
+        "line": 50,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `k` at line 45 reaches its use at line 50 in the existing tests.",
+        "cell": [
+          -2,
+          "du|40|k|45|50|c-use"
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 49,
+        "k": 16,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `(k + 1) // 2` -> `(k + 1) // 1` at line 49 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport collections\nfrom typing import List\n\nclass Solution:\n\n    def maxWeight(self, pizzas: List[int]) -> int:\n        n = len(pizzas)\n        pizzas.sort()\n        total_weight = 0\n        k = n // 4\n        num_odd_days = (k + 1) // 1\n        num_even_days = k // 2\n        for i in range(num_odd_days):\n            total_weight += pizzas[n - 1 - i]\n        for i in range(num_even_days):\n            total_weight += pizzas[n // 2 + k - 1 - i]\n        return total_weight\nimport copy\n\ndef maxWeight(pizzas: List[int]) -> int:\n    \"\"\"You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the i^th pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\n\nOn odd-numbered days (1-indexed), you gain a weight of Z.\nOn even-numbered days, you gain a weight of Y.\n\nFind the maximum total weight you can gain by eating all pizzas optimally.\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\n \nExample 1:\n\nInput: pizzas = [1,2,3,4,5,6,7,8]\nOutput: 14\nExplanation:\n\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\n\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\n\nExample 2:\n\nInput: pizzas = [2,1,1,1,1,1,1,1]\nOutput: 3\nExplanation:\n\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\n\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\n\n \nConstraints:\n\n4 <= n == pizzas.length <= 2 * 10^5\n1 <= pizzas[i] <= 10^5\nn is a multiple of 4.\"\"\"\n    return Solution().maxWeight(*copy.deepcopy((pizzas,)))"
+      }
+    ],
+    "concept_facts": [
+      "Mutation (CRP constant): the mutant `(k + 1) // 2` -> `(k + 1) // 3` at line 49 survives: no existing test distinguishes them.",
+      "Def-use pair (all-uses, c-use): the value assigned to `total_weight` at line 67 never reaches its use at line 76 in the existing tests.",
+      "Mutation (CRP constant): the mutant `n // 4` -> `n // 3` at line 45 survives: no existing test distinguishes them."
+    ],
+    "placebo_facts": [
+      "Mutation (CRP constant): the mutant `n // 4` -> `n // 5` at line 45 is killed: an existing test distinguishes them.",
+      "Def-use pair (all-uses, c-use): the value assigned to `k` at line 45 reaches its use at line 50 in the existing tests.",
+      "Mutation (CRP constant): the mutant `(k + 1) // 2` -> `(k + 1) // 1` at line 49 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "maxWeight([1, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([1, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([1, 1, 1, 1, 1, 1, 1])"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([1, 2, 3, 4, 5, 6, 7, 8],), ([2, 1, 1, 1, 1, 1, 1, 1],)]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12)))\n",
+    "strategy_sha256": "ba66a5cdf80cb41632e95696a8adaf0c3578af8fb48e10e141ba9359dbe9e69e",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 141,
+    "entry": "maxWeight",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport collections\nfrom typing import List\n\nclass Solution:\n    def maxWeight(self, pizzas: List[int]) -> int:\n        n = len(pizzas)\n        pizzas.sort()  # Sort pizzas in ascending order\n\n        total_weight = 0\n        k = n // 4  # Number of days\n\n        # Determine the count of odd-numbered and even-numbered days.\n        # Days are 1-indexed: 1, 2, 3, ..., k.\n        num_odd_days = (k + 1) // 2\n        num_even_days = k // 2\n\n        # The n/2 smallest pizzas are used for W and X roles (non-contributing).\n        # The n/2 largest pizzas are used for Y and Z roles (contributing).\n        # These n/2 largest pizzas are: pizzas[n//2], ..., pizzas[n-1].\n\n        # From these n/2 pizzas, we identify two groups of k pizzas each:\n        # 1. Z-role candidates: pizzas[n//2 + k : n]\n        #    These are the k largest pizzas among the n/2 contributing pizzas.\n        # 2. Y-role candidates: pizzas[n//2 : n//2 + k]\n        #    These are the k smallest pizzas among the n/2 contributing pizzas.\n\n        # To maximize the total sum:\n        # On odd days (where we gain Z), we select the largest available Z-candidate pizzas.\n        # The largest Z-candidate pizzas are at the end of the `pizzas` array.\n        for i in range(num_odd_days):\n            # pizzas[n - 1 - i] accesses the largest, second-largest, etc., pizzas.\n            total_weight += pizzas[n - 1 - i]\n\n        # On even days (where we gain Y), we select the largest available Y-candidate pizzas.\n        # The largest Y-candidate pizzas are at the end of the `Y-role candidates` slice.\n        # This slice is pizzas[n//2 : n//2 + k].\n        # The elements are pizzas[n//2 + k - 1], pizzas[n//2 + k - 2], etc.\n        for i in range(num_even_days):\n            total_weight += pizzas[n // 2 + k - 1 - i]\n\n        return total_weight\n\nimport copy\n\ndef maxWeight(pizzas: List[int]) -> int:\n    'You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the i^th pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\\n\\nOn odd-numbered days (1-indexed), you gain a weight of Z.\\nOn even-numbered days, you gain a weight of Y.\\n\\nFind the maximum total weight you can gain by eating all pizzas optimally.\\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\\n \\nExample 1:\\n\\nInput: pizzas = [1,2,3,4,5,6,7,8]\\nOutput: 14\\nExplanation:\\n\\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\\n\\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\\n\\nExample 2:\\n\\nInput: pizzas = [2,1,1,1,1,1,1,1]\\nOutput: 3\\nExplanation:\\n\\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\\n\\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\\n\\n \\nConstraints:\\n\\n4 <= n == pizzas.length <= 2 * 10^5\\n1 <= pizzas[i] <= 10^5\\nn is a multiple of 4.'\n    return Solution().maxWeight(*copy.deepcopy((pizzas,)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([1, 2, 3, 4, 5, 6, 7, 8]), 14, 0.0)\n    assert _heldout_same(candidate([2, 1, 1, 1, 1, 1, 1, 1]), 3, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "DU",
+        "line": 76,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `total_weight` at line 67 never reaches its use at line 76 in the existing tests.",
+        "cell": [
+          -2,
+          "du|40|total_weight|67|76|c-use"
+        ],
+        "witness": 1,
+        "reached": true,
+        "witness_call": "maxWeight([1, 1, 1, 1, 1, 1, 1])",
+        "block": 76,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 45,
+        "k": 12,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `n // 4` -> `n // 5` at line 45 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport collections\nfrom typing import List\n\nclass Solution:\n\n    def maxWeight(self, pizzas: List[int]) -> int:\n        n = len(pizzas)\n        pizzas.sort()\n        total_weight = 0\n        k = n // 5\n        num_odd_days = (k + 1) // 2\n        num_even_days = k // 2\n        for i in range(num_odd_days):\n            total_weight += pizzas[n - 1 - i]\n        for i in range(num_even_days):\n            total_weight += pizzas[n // 2 + k - 1 - i]\n        return total_weight\nimport copy\n\ndef maxWeight(pizzas: List[int]) -> int:\n    \"\"\"You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the i^th pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\n\nOn odd-numbered days (1-indexed), you gain a weight of Z.\nOn even-numbered days, you gain a weight of Y.\n\nFind the maximum total weight you can gain by eating all pizzas optimally.\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\n \nExample 1:\n\nInput: pizzas = [1,2,3,4,5,6,7,8]\nOutput: 14\nExplanation:\n\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\n\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\n\nExample 2:\n\nInput: pizzas = [2,1,1,1,1,1,1,1]\nOutput: 3\nExplanation:\n\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\n\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\n\n \nConstraints:\n\n4 <= n == pizzas.length <= 2 * 10^5\n1 <= pizzas[i] <= 10^5\nn is a multiple of 4.\"\"\"\n    return Solution().maxWeight(*copy.deepcopy((pizzas,)))"
+      },
+      {
+        "kind": "DU",
+        "line": 50,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `k` at line 45 reaches its use at line 50 in the existing tests.",
+        "cell": [
+          -2,
+          "du|40|k|45|50|c-use"
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 49,
+        "k": 16,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `(k + 1) // 2` -> `(k + 1) // 1` at line 49 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport collections\nfrom typing import List\n\nclass Solution:\n\n    def maxWeight(self, pizzas: List[int]) -> int:\n        n = len(pizzas)\n        pizzas.sort()\n        total_weight = 0\n        k = n // 4\n        num_odd_days = (k + 1) // 1\n        num_even_days = k // 2\n        for i in range(num_odd_days):\n            total_weight += pizzas[n - 1 - i]\n        for i in range(num_even_days):\n            total_weight += pizzas[n // 2 + k - 1 - i]\n        return total_weight\nimport copy\n\ndef maxWeight(pizzas: List[int]) -> int:\n    \"\"\"You are given an integer array pizzas of size n, where pizzas[i] represents the weight of the i^th pizza. Every day, you eat exactly 4 pizzas. Due to your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z, where W <= X <= Y <= Z, you gain the weight of only 1 pizza!\n\nOn odd-numbered days (1-indexed), you gain a weight of Z.\nOn even-numbered days, you gain a weight of Y.\n\nFind the maximum total weight you can gain by eating all pizzas optimally.\nNote: It is guaranteed that n is a multiple of 4, and each pizza can be eaten only once.\n \nExample 1:\n\nInput: pizzas = [1,2,3,4,5,6,7,8]\nOutput: 14\nExplanation:\n\nOn day 1, you eat pizzas at indices [1, 2, 4, 7] = [2, 3, 5, 8]. You gain a weight of 8.\nOn day 2, you eat pizzas at indices [0, 3, 5, 6] = [1, 4, 6, 7]. You gain a weight of 6.\n\nThe total weight gained after eating all the pizzas is 8 + 6 = 14.\n\nExample 2:\n\nInput: pizzas = [2,1,1,1,1,1,1,1]\nOutput: 3\nExplanation:\n\nOn day 1, you eat pizzas at indices [4, 5, 6, 0] = [1, 1, 1, 2]. You gain a weight of 2.\nOn day 2, you eat pizzas at indices [1, 2, 3, 7] = [1, 1, 1, 1]. You gain a weight of 1.\n\nThe total weight gained after eating all the pizzas is 2 + 1 = 3.\n\n \nConstraints:\n\n4 <= n == pizzas.length <= 2 * 10^5\n1 <= pizzas[i] <= 10^5\nn is a multiple of 4.\"\"\"\n    return Solution().maxWeight(*copy.deepcopy((pizzas,)))"
+      }
+    ],
+    "concept_facts": [
+      "Def-use pair (all-uses, c-use): the value assigned to `total_weight` at line 67 never reaches its use at line 76 in the existing tests."
+    ],
+    "placebo_facts": [
+      "Mutation (CRP constant): the mutant `n // 4` -> `n // 5` at line 45 is killed: an existing test distinguishes them.",
+      "Def-use pair (all-uses, c-use): the value assigned to `k` at line 45 reaches its use at line 50 in the existing tests.",
+      "Mutation (CRP constant): the mutant `(k + 1) // 2` -> `(k + 1) // 1` at line 49 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "maxWeight([1, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([2, 1, 1, -1, 1, 1, 1, 1])",
+      "maxWeight([0, 0, 0, 0, 0, 0, 0, 0])",
+      "maxWeight([2])",
+      "maxWeight([-1007, -2007, -3007, -4007, -5007, -6007, -7007, -8007])",
+      "maxWeight([-2, -1, -1, -1, -1, -1, -1, -1])",
+      "maxWeight([2, 1, 1, 1007, 1, 1, 1, 1])",
+      "maxWeight([1, 1, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([2, 2, 2, 2, 2, 2, 2, 2])",
+      "maxWeight([1, 1, 3, 4, 5, 6, 7, 8])",
+      "maxWeight([1, 2, 1, 4, 5, 6, 7, 8])",
+      "maxWeight([1, 2, 3, 1, 5, 6, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 1, 6, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 1, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 1, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 7, 1])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 7, 8, 8])",
+      "maxWeight([2, 1, 1, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([2, 2, 3, 4, 5, 6, 7, 8])",
+      "maxWeight([3, 1, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([1, 3, 3, 4, 5, 6, 7, 8])",
+      "maxWeight([2, 2, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([1, 2, 2, 4, 5, 6, 7, 8])",
+      "maxWeight([1, 2, 4, 4, 5, 6, 7, 8])",
+      "maxWeight([2, 1, 2, 1, 1, 1, 1, 1])",
+      "maxWeight([1, 2, 3, 3, 5, 6, 7, 8])",
+      "maxWeight([1, 2, 3, 5, 5, 6, 7, 8])",
+      "maxWeight([2, 1, 1, 2, 1, 1, 1, 1])",
+      "maxWeight([1, 2, 3, 2, 5, 6, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 4, 6, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 6, 6, 7, 8])",
+      "maxWeight([2, 1, 1, 1, 2, 1, 1, 1])",
+      "maxWeight([1, 2, 3, 4, 2, 6, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 5, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 7, 7, 8])",
+      "maxWeight([2, 1, 1, 1, 1, 2, 1, 1])",
+      "maxWeight([1, 2, 3, 4, 5, 2, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 6, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 8, 8])",
+      "maxWeight([2, 1, 1, 1, 1, 1, 2, 1])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 2, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 7, 7])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 7, 9])",
+      "maxWeight([2, 1, 1, 1, 1, 1, 1, 2])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 7, 2])",
+      "maxWeight([1, 1, 1, 1, 1, 1, 1, 2])",
+      "maxWeight([8, 7, 6, 5, 4, 3, 2, 1])",
+      "maxWeight([8, 2, 3, 4, 5, 6, 7, 1])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 7, 8, 9])",
+      "maxWeight([2, 1, 1, 1, 1, 1, 1, 1, 3])",
+      "maxWeight([3, 2, 3, 4, 5, 6, 7, 8])",
+      "maxWeight([4, 1, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([1, 4, 3, 4, 5, 6, 7, 8])",
+      "maxWeight([2, 3, 1, 1, 1, 1, 1, 1])",
+      "maxWeight([1, 2, 5, 4, 5, 6, 7, 8])",
+      "maxWeight([2, 1, 3, 1, 1, 1, 1, 1])",
+      "maxWeight([1, 2, 3, 6, 5, 6, 7, 8])",
+      "maxWeight([2, 1, 1, 3, 1, 1, 1, 1])",
+      "maxWeight([1, 2, 3, 4, 7, 6, 7, 8])",
+      "maxWeight([2, 1, 1, 1, 3, 1, 1, 1])",
+      "maxWeight([1, 2, 3, 4, 3, 6, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 8, 7, 8])",
+      "maxWeight([2, 1, 1, 1, 1, 3, 1, 1])",
+      "maxWeight([1, 2, 3, 4, 5, 4, 7, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 9, 8])",
+      "maxWeight([2, 1, 1, 1, 1, 1, 3, 1])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 5, 8])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 7, 10])",
+      "maxWeight([2, 1, 1, 1, 1, 1, 1, 3])",
+      "maxWeight([1, 2, 3, 4, 5, 6, 7, 6])",
+      "maxWeight([2, 3, 4, 5, 6, 7, 8, 1])",
+      "maxWeight([1, 2, 3, 4, 5, 5, 6, 7, 8])"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([1, 2, 3, 4, 5, 6, 7, 8],), ([2, 1, 1, 1, 1, 1, 1, 1],)]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12)))\n",
+    "strategy_sha256": "ba66a5cdf80cb41632e95696a8adaf0c3578af8fb48e10e141ba9359dbe9e69e",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 34,
+    "survivors": 8
+  }
+}

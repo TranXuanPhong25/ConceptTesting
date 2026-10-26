@@ -1,0 +1,620 @@
+{
+ "baseline": {
+  "task": 128,
+  "entry": "prod_signs",
+  "put": "\ndef prod_signs(arr):\n    \"\"\"\n    You are given an array arr of integers and you need to return\n    sum of magnitudes of integers multiplied by product of all signs\n    of each number in the array, represented by 1, -1 or 0.\n    Note: return None for empty arr.\n\n    Example:\n    >>> prod_signs([1, 2, 2, -4]) == -9\n    >>> prod_signs([0, 1]) == 0\n    >>> prod_signs([]) == None\n    \"\"\"\n    if len(arr) == 0:\n        return None\n    else:\n        # if all positive, return sum of all\n        if all(x > 0 for x in arr):\n            return sum(arr)\n        # if all negative, return sum of all\n        elif all(x < 0 for x in arr):\n            return -sum(arr)\n        # if all 0, return 0\n        elif all(x == 0 for x in arr):\n            return 0\n        # if not all positive or negative or 0, return sum of abs(x) * product of signs\n        else:\n            product_signs = 1\n            for i in range(len(arr)):\n                if arr[i] > 0:\n                    product_signs *= 1\n                elif arr[i] < 0:\n                    product_signs *= -1\n                else:\n                    product_signs *= 0\n            return sum([abs(x) * product_signs for x in arr])\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert True, \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate([1, 2, 2, -4]) == -9\n    assert candidate([0, 1]) == 0\n    assert candidate([1, 1, 1, 2, 3, -1, 1]) == -10\n    assert candidate([]) == None\n    assert candidate([2, 4,1, 2, -1, -1, 9]) == 20\n    assert candidate([-1, 1, -1, 1]) == 4\n    assert candidate([-1, 1, 1, 1]) == -4\n    assert candidate([-1, 1, 1, 0]) == 0\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n\n",
+  "concept_facts": [
+   "Branch coverage (C2): the True branch of `all((x < 0 for x in arr))` (line 21) is never taken by the existing tests.",
+   "Mutation (ROR): the mutant `x > 0` -> `x < 0` at line 18 survives: no existing test distinguishes them.",
+   "Boundary value: at line 14, `len(arr)` was never equal to 1 (next to the constant 0 in `len(arr) == 0`)."
+  ],
+  "concept_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 21,
+    "text": "Branch coverage (C2): the True branch of `all((x < 0 for x in arr))` (line 21) is never taken by the existing tests.",
+    "cell": [
+     13,
+     "T"
+    ],
+    "witness": 3,
+    "reached": true,
+    "witness_call": "prod_signs([-1007, -1007, -1007, -1007])",
+    "block": 21,
+    "g_demote": false,
+    "guard_line": 21,
+    "guard_forced": false,
+    "guard_class": "differ",
+    "guard_counts": {
+     "same": 31,
+     "necessary": 0,
+     "differ": 19
+    },
+    "tier": 0
+   },
+   {
+    "kind": "MUTANT",
+    "line": 18,
+    "k": 4,
+    "family": "ROR",
+    "extended": false,
+    "text": "Mutation (ROR): the mutant `x > 0` -> `x < 0` at line 18 survives: no existing test distinguishes them.",
+    "witness": 3,
+    "boundary": false,
+    "reached": true,
+    "witness_call": "prod_signs([-1007, -1007, -1007, -1007])",
+    "block": 18,
+    "g_demote": false,
+    "tier": 0,
+    "mutant_src": "def prod_signs(arr):\n    \"\"\"\n    You are given an array arr of integers and you need to return\n    sum of magnitudes of integers multiplied by product of all signs\n    of each number in the array, represented by 1, -1 or 0.\n    Note: return None for empty arr.\n\n    Example:\n    >>> prod_signs([1, 2, 2, -4]) == -9\n    >>> prod_signs([0, 1]) == 0\n    >>> prod_signs([]) == None\n    \"\"\"\n    if len(arr) == 0:\n        return None\n    elif all((x < 0 for x in arr)):\n        return sum(arr)\n    elif all((x < 0 for x in arr)):\n        return -sum(arr)\n    elif all((x == 0 for x in arr)):\n        return 0\n    else:\n        product_signs = 1\n        for i in range(len(arr)):\n            if arr[i] > 0:\n                product_signs *= 1\n            elif arr[i] < 0:\n                product_signs *= -1\n            else:\n                product_signs *= 0\n        return sum([abs(x) * product_signs for x in arr])"
+   },
+   {
+    "kind": "BOUND",
+    "line": 14,
+    "cell": [
+     2,
+     "eqc|1|0|1|True"
+    ],
+    "witness": 5,
+    "text": "Boundary value: at line 14, `len(arr)` was never equal to 1 (next to the constant 0 in `len(arr) == 0`).",
+    "reached": true,
+    "witness_call": "prod_signs([-1])",
+    "block": 14,
+    "g_demote": false,
+    "tier": 0
+   }
+  ],
+  "placebo_facts": [
+   "Branch coverage (C2): the True and False branches of `arr[i] > 0` (line 30) are taken by the existing tests.",
+   "Mutation (ZIL): the mutant `for i in range(len(arr))` -> `skip the loop body` at line 29 is killed: an existing test distinguishes them.",
+   "Boundary value: at line 30, `arr[i]` was sometimes equal to 0 (the constant in `arr[i] > 0`) and sometimes not."
+  ],
+  "tool_inputs": [
+   "prod_signs([-1007, -1007, -1007, -1007])",
+   "prod_signs([-1])"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 30,
+    "text": "Branch coverage (C2): the True and False branches of `arr[i] > 0` (line 30) are taken by the existing tests.",
+    "cells": [
+     [
+      27,
+      "T"
+     ],
+     [
+      27,
+      "F"
+     ]
+    ]
+   },
+   {
+    "kind": "MUTANT",
+    "line": 29,
+    "k": 40,
+    "family": "ZIL",
+    "extended": true,
+    "text": "Mutation (ZIL): the mutant `for i in range(len(arr))` -> `skip the loop body` at line 29 is killed: an existing test distinguishes them.",
+    "mutant_src": "def prod_signs(arr):\n    \"\"\"\n    You are given an array arr of integers and you need to return\n    sum of magnitudes of integers multiplied by product of all signs\n    of each number in the array, represented by 1, -1 or 0.\n    Note: return None for empty arr.\n\n    Example:\n    >>> prod_signs([1, 2, 2, -4]) == -9\n    >>> prod_signs([0, 1]) == 0\n    >>> prod_signs([]) == None\n    \"\"\"\n    if len(arr) == 0:\n        return None\n    elif all((x > 0 for x in arr)):\n        return sum(arr)\n    elif all((x < 0 for x in arr)):\n        return -sum(arr)\n    elif all((x == 0 for x in arr)):\n        return 0\n    else:\n        product_signs = 1\n        for i in range(len(arr)):\n            break\n        return sum([abs(x) * product_signs for x in arr])"
+   },
+   {
+    "kind": "BOUND",
+    "line": 30,
+    "text": "Boundary value: at line 30, `arr[i]` was sometimes equal to 0 (the constant in `arr[i] > 0`) and sometimes not.",
+    "cells": [
+     [
+      27,
+      "eqc|26|0|0|True"
+     ],
+     [
+      27,
+      "eqc|26|0|0|False"
+     ]
+    ]
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(arr):\n    return isinstance(arr, list)\n\ndef P1(arr):\n    return P1_m(arr)\n\ndef P2_m(arr):\n    return all((isinstance(x, int) for x in arr))\n\ndef P2(arr):\n    return P2_m(arr)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+  "valid_sha256": "e92a7663f3ce17959750e9926674fce557b547c2171f3f2502500f35c3c5da6f",
+  "strategy_src": "def strategy():\n    return st.lists(st.integers(), min_size=0)\n",
+  "strategy_sha256": "6403180cada47eb6f4a9d30f3e5f6af2f3a081dfd34b01e2c0f2a259816e150d",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 128,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "e978fab60867fbd0df153c22fca726b15ca39b25fe557c87e852fe00c8615ee1",
+   "candidates": 6,
+   "confirmed": 6,
+   "coded": 6,
+   "surviving": 2,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [
+    {
+     "id": "P3",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P3",
+       "index": 0,
+       "source": "base",
+       "input_repr": "(([1, 2, 2, -4],), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    },
+    {
+     "id": "P4",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P4",
+       "index": 0,
+       "source": "base",
+       "input_repr": "(([1, 2, 2, -4],), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    },
+    {
+     "id": "P5",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P5",
+       "index": 1,
+       "source": "base",
+       "input_repr": "(([0, 1],), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    },
+    {
+     "id": "P6",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P6",
+       "index": 0,
+       "source": "base",
+       "input_repr": "(([1, 2, 2, -4],), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    }
+   ],
+   "valid_sha256": "e92a7663f3ce17959750e9926674fce557b547c2171f3f2502500f35c3c5da6f",
+   "seed": 20261138,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 128,
+  "entry": "prod_signs",
+  "put": "\ndef prod_signs(arr):\n    \"\"\"\n    You are given an array arr of integers and you need to return\n    sum of magnitudes of integers multiplied by product of all signs\n    of each number in the array, represented by 1, -1 or 0.\n    Note: return None for empty arr.\n\n    Example:\n    >>> prod_signs([1, 2, 2, -4]) == -9\n    >>> prod_signs([0, 1]) == 0\n    >>> prod_signs([]) == None\n    \"\"\"\n    if len(arr) == 0:\n        return None\n    else:\n        # if all positive, return sum of all\n        if all(x > 0 for x in arr):\n            return sum(arr)\n        # if all negative, return sum of all\n        elif all(x < 0 for x in arr):\n            return -sum(arr)\n        # if all 0, return 0\n        elif all(x == 0 for x in arr):\n            return 0\n        # if not all positive or negative or 0, return sum of abs(x) * product of signs\n        else:\n            product_signs = 1\n            for i in range(len(arr)):\n                if arr[i] > 0:\n                    product_signs *= 1\n                elif arr[i] < 0:\n                    product_signs *= -1\n                else:\n                    product_signs *= 0\n            return sum([abs(x) * product_signs for x in arr])\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert True, \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate([1, 2, 2, -4]) == -9\n    assert candidate([0, 1]) == 0\n    assert candidate([1, 1, 1, 2, 3, -1, 1]) == -10\n    assert candidate([]) == None\n    assert candidate([2, 4,1, 2, -1, -1, 9]) == 20\n    assert candidate([-1, 1, -1, 1]) == 4\n    assert candidate([-1, 1, 1, 1]) == -4\n    assert candidate([-1, 1, 1, 0]) == 0\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n\n",
+  "concept_facts": [
+   "Branch coverage (C2): the True branch of `all((x < 0 for x in arr))` (line 21) is never taken by the existing tests.",
+   "Fault-type adequacy at L22: wrong operator: relational, arithmetic, boolean or negation operator, or break/continue. Behaviour: `return -sum(arr)`. The public tests do not distinguish 1 surviving alternatives (`-sum(arr)` -> `+sum(arr)`). Exercise this behaviour and determine the required result from the specification.",
+   "Boundary value: at line 14, `len(arr)` was never equal to 1 (next to the constant 0 in `len(arr) == 0`)."
+  ],
+  "concept_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 21,
+    "text": "Branch coverage (C2): the True branch of `all((x < 0 for x in arr))` (line 21) is never taken by the existing tests.",
+    "cell": [
+     13,
+     "T"
+    ],
+    "witness": 3,
+    "reached": true,
+    "witness_call": "prod_signs([-1007, -1007, -1007, -1007])",
+    "block": 21,
+    "g_demote": false,
+    "guard_line": 21,
+    "guard_forced": false,
+    "guard_class": "differ",
+    "guard_counts": {
+     "same": 31,
+     "necessary": 0,
+     "differ": 19
+    },
+    "tier": 0
+   },
+   {
+    "kind": "FAULT",
+    "line": 22,
+    "fault_type": "OPERATOR",
+    "text": "Fault-type adequacy at L22: wrong operator: relational, arithmetic, boolean or negation operator, or break/continue. Behaviour: `return -sum(arr)`. The public tests do not distinguish 1 surviving alternatives (`-sum(arr)` -> `+sum(arr)`). Exercise this behaviour and determine the required result from the specification.",
+    "survivors": 1,
+    "distinguished": 1,
+    "alternatives": [
+     "`-sum(arr)` -> `+sum(arr)`"
+    ],
+    "alternative_sources": [
+     "\ndef prod_signs(arr):\n    \"\"\"\n    You are given an array arr of integers and you need to return\n    sum of magnitudes of integers multiplied by product of all signs\n    of each number in the array, represented by 1, -1 or 0.\n    Note: return None for empty arr.\n\n    Example:\n    >>> prod_signs([1, 2, 2, -4]) == -9\n    >>> prod_signs([0, 1]) == 0\n    >>> prod_signs([]) == None\n    \"\"\"\n    if len(arr) == 0:\n        return None\n    else:\n        # if all positive, return sum of all\n        if all(x > 0 for x in arr):\n            return sum(arr)\n        # if all negative, return sum of all\n        elif all(x < 0 for x in arr):\n            return +sum(arr)\n        # if all 0, return 0\n        elif all(x == 0 for x in arr):\n            return 0\n        # if not all positive or negative or 0, return sum of abs(x) * product of signs\n        else:\n            product_signs = 1\n            for i in range(len(arr)):\n                if arr[i] > 0:\n                    product_signs *= 1\n                elif arr[i] < 0:\n                    product_signs *= -1\n                else:\n                    product_signs *= 0\n            return sum([abs(x) * product_signs for x in arr])\n\n"
+    ],
+    "reached": true,
+    "witness_call": "prod_signs([-1])",
+    "block": 22,
+    "witness": 3
+   },
+   {
+    "kind": "BOUND",
+    "line": 14,
+    "cell": [
+     2,
+     "eqc|1|0|1|True"
+    ],
+    "witness": 5,
+    "text": "Boundary value: at line 14, `len(arr)` was never equal to 1 (next to the constant 0 in `len(arr) == 0`).",
+    "reached": true,
+    "witness_call": "prod_signs([-1])",
+    "block": 14,
+    "g_demote": false,
+    "tier": 0
+   }
+  ],
+  "placebo_facts": [
+   "Branch coverage (C2): the True and False branches of `arr[i] > 0` (line 30) are taken by the existing tests.",
+   "Mutation (ZIL): the mutant `for i in range(len(arr))` -> `skip the loop body` at line 29 is killed: an existing test distinguishes them.",
+   "Boundary value: at line 30, `arr[i]` was sometimes equal to 0 (the constant in `arr[i] > 0`) and sometimes not."
+  ],
+  "tool_inputs": [
+   "prod_signs([-1007, -1007, -1007, -1007])",
+   "prod_signs([-1])",
+   "prod_signs([100000000000000003, 100000000000000003])",
+   "prod_signs([0, 0, 0, 0])",
+   "prod_signs([7, 1])",
+   "prod_signs([0, -1])",
+   "prod_signs([2, 2, 2, 2, 2, 2, 2])",
+   "prod_signs([-1, -1, 1, 2, 2, 4, 9])",
+   "prod_signs([0, 0, 0, 1, 2, -2, 0])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 9, 2])",
+   "prod_signs([1007, 2007, 2007, -3993])",
+   "prod_signs([1, 2, 0, -4])",
+   "prod_signs([1])",
+   "prod_signs([0])",
+   "prod_signs([2])",
+   "prod_signs([1, 2])",
+   "prod_signs([0, 0])",
+   "prod_signs([1, 1])",
+   "prod_signs([2, 4])",
+   "prod_signs([-1, 1])",
+   "prod_signs([1, 1, 1, 1])",
+   "prod_signs([1, 1, 1, 1, 1, 1, 1])",
+   "prod_signs([-1, -1, -1, -1])",
+   "prod_signs([0, 2, 2, -4])",
+   "prod_signs([0, 1, 1, 2, 3, -1, 1])",
+   "prod_signs([0, 4, 1, 2, -1, -1, 9])",
+   "prod_signs([0, 1, -1, 1])",
+   "prod_signs([0, 1, 1, 1])",
+   "prod_signs([0, 1, 1, 0])",
+   "prod_signs([1, 4, 1, 2, -1, -1, 9])",
+   "prod_signs([1, 1, -1, 1])",
+   "prod_signs([1, 1, 1, 0])",
+   "prod_signs([-1, 2, 2, -4])",
+   "prod_signs([-1, 1, 1, 2, 3, -1, 1])",
+   "prod_signs([-1, 4, 1, 2, -1, -1, 9])",
+   "prod_signs([1, 0, 2, -4])",
+   "prod_signs([1, 0, 1, 2, 3, -1, 1])",
+   "prod_signs([2, 0, 1, 2, -1, -1, 9])",
+   "prod_signs([-1, 0, -1, 1])",
+   "prod_signs([-1, 0, 1, 1])",
+   "prod_signs([-1, 0, 1, 0])",
+   "prod_signs([1, 1, 2, -4])",
+   "prod_signs([2, 1, 1, 2, -1, -1, 9])",
+   "prod_signs([1, -1, 2, -4])",
+   "prod_signs([1, -1, 1, 2, 3, -1, 1])",
+   "prod_signs([2, -1, 1, 2, -1, -1, 9])",
+   "prod_signs([-1, -1, -1, 1])",
+   "prod_signs([-1, -1, 1, 1])",
+   "prod_signs([-1, -1, 1, 0])",
+   "prod_signs([1, 1, 0, 2, 3, -1, 1])",
+   "prod_signs([2, 4, 0, 2, -1, -1, 9])",
+   "prod_signs([-1, 1, 0, 1])",
+   "prod_signs([-1, 1, 0, 0])",
+   "prod_signs([1, 2, 1, -4])",
+   "prod_signs([1, 2, -1, -4])",
+   "prod_signs([1, 1, -1, 2, 3, -1, 1])",
+   "prod_signs([2, 4, -1, 2, -1, -1, 9])",
+   "prod_signs([-1, 1, -1, 0])",
+   "prod_signs([1, 2, 2, 0])",
+   "prod_signs([1, 1, 1, 0, 3, -1, 1])",
+   "prod_signs([2, 4, 1, 0, -1, -1, 9])",
+   "prod_signs([1, 2, 2, 1])",
+   "prod_signs([1, 1, 1, 1, 3, -1, 1])",
+   "prod_signs([2, 4, 1, 1, -1, -1, 9])",
+   "prod_signs([1, 2, 2, -1])",
+   "prod_signs([1, 1, 1, -1, 3, -1, 1])",
+   "prod_signs([2, 4, 1, -1, -1, -1, 9])",
+   "prod_signs([-1, 1, -1, -1])",
+   "prod_signs([-1, 1, 1, -1])",
+   "prod_signs([1, 1, 1, 2, 0, -1, 1])",
+   "prod_signs([2, 4, 1, 2, 0, -1, 9])",
+   "prod_signs([1, 1, 1, 2, 1, -1, 1])",
+   "prod_signs([2, 4, 1, 2, 1, -1, 9])",
+   "prod_signs([1, 1, 1, 2, -1, -1, 1])",
+   "prod_signs([1, 1, 1, 2, 3, 0, 1])",
+   "prod_signs([2, 4, 1, 2, -1, 0, 9])",
+   "prod_signs([1, 1, 1, 2, 3, 1, 1])",
+   "prod_signs([2, 4, 1, 2, -1, 1, 9])",
+   "prod_signs([1, 1, 1, 2, 3, -1, 0])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 0])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 1])",
+   "prod_signs([1, 1, 1, 2, 3, -1, -1])",
+   "prod_signs([2, 4, 1, 2, -1, -1, -1])",
+   "prod_signs([1, 2, 2])",
+   "prod_signs([1, 1, 1, 2, 3, -1])",
+   "prod_signs([2, 4, 1, 2, -1, -1])",
+   "prod_signs([-1, 1, -1])",
+   "prod_signs([-1, 1, 1])",
+   "prod_signs([1, 2, 2, -4, -4])",
+   "prod_signs([0, 1, 1])",
+   "prod_signs([1, 1, 1, 2, 3, -1, 1, 1])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 9, 9])",
+   "prod_signs([-1, 1, -1, 1, 1])",
+   "prod_signs([-1, 1, 1, 1, 1])",
+   "prod_signs([-1, 1, 1, 0, 0])",
+   "prod_signs([-2, 1, -1, 1])",
+   "prod_signs([-2, 1, 1, 1])",
+   "prod_signs([-2, 1, 1, 0])",
+   "prod_signs([2, 2, 2, -4])",
+   "prod_signs([2, 1, 1, 2, 3, -1, 1])",
+   "prod_signs([3, 4, 1, 2, -1, -1, 9])",
+   "prod_signs([2, 1])",
+   "prod_signs([2, 1, -1, 1])",
+   "prod_signs([2, 1, 1, 1])",
+   "prod_signs([2, 1, 1, 0])",
+   "prod_signs([2, 3, 1, 2, -1, -1, 9])",
+   "prod_signs([1, 3, 2, -4])",
+   "prod_signs([0, 2])",
+   "prod_signs([1, 2, 1, 2, 3, -1, 1])",
+   "prod_signs([2, 5, 1, 2, -1, -1, 9])",
+   "prod_signs([-1, 2, -1, 1])",
+   "prod_signs([-1, 2, 1, 1])",
+   "prod_signs([-1, 2, 1, 0])",
+   "prod_signs([2, 2, 1, 2, -1, -1, 9])",
+   "prod_signs([-1, 1, -2, 1])",
+   "prod_signs([1, 2, 3, -4])",
+   "prod_signs([1, 1, 2, 2, 3, -1, 1])",
+   "prod_signs([2, 4, 2, 2, -1, -1, 9])",
+   "prod_signs([-1, 1, 2, 1])",
+   "prod_signs([-1, 1, 2, 0])",
+   "prod_signs([1, 2, 2, -5])",
+   "prod_signs([1, 2, 2, -3])",
+   "prod_signs([1, 1, 1, 3, 3, -1, 1])",
+   "prod_signs([2, 4, 1, 3, -1, -1, 9])",
+   "prod_signs([-1, 1, -1, 2])",
+   "prod_signs([-1, 1, 1, 2])",
+   "prod_signs([1, 2, 2, 2])",
+   "prod_signs([1, 1, 1, 2, 2, -1, 1])",
+   "prod_signs([2, 4, 1, 2, -2, -1, 9])",
+   "prod_signs([1, 1, 1, 2, 4, -1, 1])",
+   "prod_signs([2, 4, 1, 2, 2, -1, 9])",
+   "prod_signs([1, 1, 1, 2, 3, -2, 1])",
+   "prod_signs([2, 4, 1, 2, -1, -2, 9])",
+   "prod_signs([1, 1, 1, 2, 3, 2, 1])",
+   "prod_signs([2, 4, 1, 2, -1, 2, 9])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 8])",
+   "prod_signs([1, 1, 1, 2, 3, -1, 2])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 10])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 2])",
+   "prod_signs([-4, 1, 2, 2])",
+   "prod_signs([-1, 1, 1, 1, 1, 2, 3])",
+   "prod_signs([-4, 2, 2, 1])",
+   "prod_signs([1, 0])",
+   "prod_signs([1, -1, 3, 2, 1, 1, 1])",
+   "prod_signs([9, -1, -1, 2, 1, 4, 2])",
+   "prod_signs([1, -1, 1, -1])",
+   "prod_signs([1, 1, 1, -1])",
+   "prod_signs([0, 1, 1, -1])",
+   "prod_signs([-2, 4, 1, 2, -1, -1, 9])",
+   "prod_signs([1, -2, 2, -4])",
+   "prod_signs([2, -4, 1, 2, -1, -1, 9])",
+   "prod_signs([1, 2, -2, -4])",
+   "prod_signs([1, 2, 2, 4])",
+   "prod_signs([1, 1, 1, -2, 3, -1, 1])",
+   "prod_signs([2, 4, 1, -2, -1, -1, 9])",
+   "prod_signs([1, 1, 1, 2, -3, -1, 1])",
+   "prod_signs([2, 4, 1, 2, -1, -1, -9])",
+   "prod_signs([9, 4, 1, 2, -1, -1, 2])",
+   "prod_signs([1, 1, -1, -1])",
+   "prod_signs([1, 2, 2, -4, 3])",
+   "prod_signs([0, 1, 2])",
+   "prod_signs([1, 1, 1, 2, 3, -1, 1, 4])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 9, 10])",
+   "prod_signs([-1, 1, -1, 1, 2])",
+   "prod_signs([-1, 1, 1, 1, 2])",
+   "prod_signs([-1, 1, 1, 0, 2])",
+   "prod_signs([-5, 2, 2, -4])",
+   "prod_signs([-2, 1, 1, 2, 3, -1, 1])",
+   "prod_signs([3, 2, 2, -4])",
+   "prod_signs([3, 1, 1, 2, 3, -1, 1])",
+   "prod_signs([4, 4, 1, 2, -1, -1, 9])",
+   "prod_signs([-2, 1])",
+   "prod_signs([-3, 1, -1, 1])",
+   "prod_signs([-3, 1, 1, 1])",
+   "prod_signs([-3, 1, 1, 0])",
+   "prod_signs([1, 4, 2, -4])",
+   "prod_signs([0, 3])",
+   "prod_signs([1, 3, 1, 2, 3, -1, 1])",
+   "prod_signs([2, 6, 1, 2, -1, -1, 9])",
+   "prod_signs([-1, 3, -1, 1])",
+   "prod_signs([-1, 3, 1, 1])",
+   "prod_signs([-1, 3, 1, 0])",
+   "prod_signs([1, 2, 4, -4])",
+   "prod_signs([1, 1, 3, 2, 3, -1, 1])",
+   "prod_signs([2, 4, 3, 2, -1, -1, 9])",
+   "prod_signs([-1, 1, 3, 1])",
+   "prod_signs([-1, 1, 3, 0])",
+   "prod_signs([-1, 1, -3, 1])",
+   "prod_signs([1, 2, 2, -2])",
+   "prod_signs([1, 1, 1, 4, 3, -1, 1])",
+   "prod_signs([2, 4, 1, 4, -1, -1, 9])",
+   "prod_signs([-1, 1, -1, 3])",
+   "prod_signs([-1, 1, 1, 3])",
+   "prod_signs([1, 2, 2, -6])",
+   "prod_signs([-1, 1, 1, -2])",
+   "prod_signs([1, 1, 1, 2, 5, -1, 1])",
+   "prod_signs([2, 4, 1, 2, -3, -1, 9])",
+   "prod_signs([1, 1, 1, 2, 3, -3, 1])",
+   "prod_signs([2, 4, 1, 2, -1, -3, 9])",
+   "prod_signs([1, 1, 1, 2, 3, -1, 3])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 11])",
+   "prod_signs([2, 4, 1, 2, -1, -1, 7])",
+   "prod_signs([2, 2, -4, 1])",
+   "prod_signs([1, 1, 2, 3, -1, 1, 1])",
+   "prod_signs([4, 1, 2, -1, -1, 9, 2])",
+   "prod_signs([1, 1, 0, -1])",
+   "prod_signs([2, 2, 1, -4])",
+   "prod_signs([3, 2, 1, 1, 1, 1, -1])",
+   "prod_signs([9, 4, 2, 2, 1, -1, -1])",
+   "prod_signs([1, 2, -4])",
+   "prod_signs([1, 2, 3, -1])",
+   "prod_signs([2, 4, 1, -1, 9])",
+   "prod_signs([-1, 1, 0])"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 30,
+    "text": "Branch coverage (C2): the True and False branches of `arr[i] > 0` (line 30) are taken by the existing tests.",
+    "cells": [
+     [
+      27,
+      "T"
+     ],
+     [
+      27,
+      "F"
+     ]
+    ]
+   },
+   {
+    "kind": "MUTANT",
+    "line": 29,
+    "k": 40,
+    "family": "ZIL",
+    "extended": true,
+    "text": "Mutation (ZIL): the mutant `for i in range(len(arr))` -> `skip the loop body` at line 29 is killed: an existing test distinguishes them.",
+    "mutant_src": "def prod_signs(arr):\n    \"\"\"\n    You are given an array arr of integers and you need to return\n    sum of magnitudes of integers multiplied by product of all signs\n    of each number in the array, represented by 1, -1 or 0.\n    Note: return None for empty arr.\n\n    Example:\n    >>> prod_signs([1, 2, 2, -4]) == -9\n    >>> prod_signs([0, 1]) == 0\n    >>> prod_signs([]) == None\n    \"\"\"\n    if len(arr) == 0:\n        return None\n    elif all((x > 0 for x in arr)):\n        return sum(arr)\n    elif all((x < 0 for x in arr)):\n        return -sum(arr)\n    elif all((x == 0 for x in arr)):\n        return 0\n    else:\n        product_signs = 1\n        for i in range(len(arr)):\n            break\n        return sum([abs(x) * product_signs for x in arr])"
+   },
+   {
+    "kind": "BOUND",
+    "line": 30,
+    "text": "Boundary value: at line 30, `arr[i]` was sometimes equal to 0 (the constant in `arr[i] > 0`) and sometimes not.",
+    "cells": [
+     [
+      27,
+      "eqc|26|0|0|True"
+     ],
+     [
+      27,
+      "eqc|26|0|0|False"
+     ]
+    ]
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(arr):\n    return isinstance(arr, list)\n\ndef P1(arr):\n    return P1_m(arr)\n\ndef P2_m(arr):\n    return all((isinstance(x, int) for x in arr))\n\ndef P2(arr):\n    return P2_m(arr)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+  "valid_sha256": "e92a7663f3ce17959750e9926674fce557b547c2171f3f2502500f35c3c5da6f",
+  "strategy_src": "def strategy():\n    return st.lists(st.integers(), min_size=0)\n",
+  "strategy_sha256": "6403180cada47eb6f4a9d30f3e5f6af2f3a081dfd34b01e2c0f2a259816e150d",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 128,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "e978fab60867fbd0df153c22fca726b15ca39b25fe557c87e852fe00c8615ee1",
+   "candidates": 6,
+   "confirmed": 6,
+   "coded": 6,
+   "surviving": 2,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [
+    {
+     "id": "P3",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P3",
+       "index": 0,
+       "source": "base",
+       "input_repr": "(([1, 2, 2, -4],), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    },
+    {
+     "id": "P4",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P4",
+       "index": 0,
+       "source": "base",
+       "input_repr": "(([1, 2, 2, -4],), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    },
+    {
+     "id": "P5",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P5",
+       "index": 1,
+       "source": "base",
+       "input_repr": "(([0, 1],), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    },
+    {
+     "id": "P6",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P6",
+       "index": 0,
+       "source": "base",
+       "input_repr": "(([1, 2, 2, -4],), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    }
+   ],
+   "valid_sha256": "e92a7663f3ce17959750e9926674fce557b547c2171f3f2502500f35c3c5da6f",
+   "seed": 20261138,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 35,
+  "survivors": 9
+ }
+}

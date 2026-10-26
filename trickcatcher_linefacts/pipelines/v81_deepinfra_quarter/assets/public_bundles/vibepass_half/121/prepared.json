@@ -1,0 +1,257 @@
+{
+  "baseline": {
+    "task": 121,
+    "entry": "minimumPossibleSum",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10**9 + 7\n\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n\n        if n <= k:\n            return n * (n + 1) // 2 % MOD\n\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start + end) // 2\n        return (sum1 + sum2) % MOD\n\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"You are given positive integers n and target.\\nAn array nums is beautiful if it meets the following conditions:\\n\\nnums.length == n.\\nnums consists of pairwise distinct positive integers.\\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\\n\\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\\n \\nExample 1:\\n\\nInput: n = 2, target = 3\\nOutput: 4\\nExplanation: We can see that nums = [1,3] is beautiful.\\n- The array nums has length n = 2.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\\n\\nExample 2:\\n\\nInput: n = 3, target = 3\\nOutput: 8\\nExplanation: We can see that nums = [1,3,4] is beautiful.\\n- The array nums has length n = 3.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\\n\\nExample 3:\\n\\nInput: n = 1, target = 1\\nOutput: 1\\nExplanation: We can see, that nums = [1] is beautiful.\\n\\n \\nConstraints:\\n\\n1 <= n <= 10^9\\n1 <= target <= 10^9\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate(2, 3), 4, 0.0)\n    assert _heldout_same(candidate(3, 3), 8, 0.0)\n    assert _heldout_same(candidate(1, 1), 1, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 40,
+        "text": "Branch coverage (C2): the True branch of `target % 2 == 0` (line 40) is never taken by the existing tests.",
+        "cell": [
+          4,
+          "T"
+        ],
+        "witness": 0,
+        "reached": true,
+        "witness_call": "minimumPossibleSum(2, 2)",
+        "block": 40,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 41,
+        "text": "Statement coverage (C1): line 41 (starting with `k = target // 2 - 1`) is never executed by the existing tests.",
+        "lines": [
+          41
+        ],
+        "witness": 0,
+        "reached": true,
+        "witness_call": "minimumPossibleSum(2, 2)",
+        "block": 41,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 46,
+        "k": 53,
+        "family": "AOR",
+        "extended": false,
+        "text": "Mutation (AOR): the mutant `n * (n + 1)` -> `n + (n + 1)` at line 46 survives: no existing test distinguishes them.",
+        "witness": 4,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "minimumPossibleSum(2, 3007)",
+        "block": 45,
+        "g_demote": false,
+        "guard_line": 45,
+        "guard_forced": false,
+        "guard_class": "differ",
+        "guard_counts": {
+          "same": 11,
+          "necessary": 0,
+          "differ": 61
+        },
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10 ** 9 + 7\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n        if n <= k:\n            return (n + (n + 1)) // 2 % MOD\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start + end) // 2\n        return (sum1 + sum2) % MOD\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"\"\"You are given positive integers n and target.\nAn array nums is beautiful if it meets the following conditions:\n\nnums.length == n.\nnums consists of pairwise distinct positive integers.\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\n\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\n \nExample 1:\n\nInput: n = 2, target = 3\nOutput: 4\nExplanation: We can see that nums = [1,3] is beautiful.\n- The array nums has length n = 2.\n- The array nums consists of pairwise distinct positive integers.\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\n\nExample 2:\n\nInput: n = 3, target = 3\nOutput: 8\nExplanation: We can see that nums = [1,3,4] is beautiful.\n- The array nums has length n = 3.\n- The array nums consists of pairwise distinct positive integers.\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\n\nExample 3:\n\nInput: n = 1, target = 1\nOutput: 1\nExplanation: We can see, that nums = [1] is beautiful.\n\n \nConstraints:\n\n1 <= n <= 10^9\n1 <= target <= 10^9\"\"\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))"
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "DU",
+        "line": 53,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `start` at line 50 reaches its use at line 53 in the existing tests.",
+        "cell": [
+          -2,
+          "du|37|start|50|53|c-use"
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 49,
+        "text": "Statement coverage (C1): line 49 (`need = n - k`) is executed by the existing tests.",
+        "lines": [
+          49
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 53,
+        "k": 50,
+        "family": "AOR",
+        "extended": false,
+        "text": "Mutation (AOR): the mutant `start + end` -> `start - end` at line 53 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10 ** 9 + 7\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n        if n <= k:\n            return n * (n + 1) // 2 % MOD\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start - end) // 2\n        return (sum1 + sum2) % MOD\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"\"\"You are given positive integers n and target.\nAn array nums is beautiful if it meets the following conditions:\n\nnums.length == n.\nnums consists of pairwise distinct positive integers.\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\n\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\n \nExample 1:\n\nInput: n = 2, target = 3\nOutput: 4\nExplanation: We can see that nums = [1,3] is beautiful.\n- The array nums has length n = 2.\n- The array nums consists of pairwise distinct positive integers.\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\n\nExample 2:\n\nInput: n = 3, target = 3\nOutput: 8\nExplanation: We can see that nums = [1,3,4] is beautiful.\n- The array nums has length n = 3.\n- The array nums consists of pairwise distinct positive integers.\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\n\nExample 3:\n\nInput: n = 1, target = 1\nOutput: 1\nExplanation: We can see, that nums = [1] is beautiful.\n\n \nConstraints:\n\n1 <= n <= 10^9\n1 <= target <= 10^9\"\"\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the True branch of `target % 2 == 0` (line 40) is never taken by the existing tests.",
+      "Statement coverage (C1): line 41 (starting with `k = target // 2 - 1`) is never executed by the existing tests.",
+      "Mutation (AOR): the mutant `n * (n + 1)` -> `n + (n + 1)` at line 46 survives: no existing test distinguishes them."
+    ],
+    "placebo_facts": [
+      "Def-use pair (all-uses, c-use): the value assigned to `start` at line 50 reaches its use at line 53 in the existing tests.",
+      "Statement coverage (C1): line 49 (`need = n - k`) is executed by the existing tests.",
+      "Mutation (AOR): the mutant `start + end` -> `start - end` at line 53 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "minimumPossibleSum(2, 2)",
+      "minimumPossibleSum(2, 2)",
+      "minimumPossibleSum(2, 3007)"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([(2, 3), (3, 3), (1, 1)]), st.tuples(st.integers(min_value=-10, max_value=200), st.integers(min_value=-10, max_value=200)))\n",
+    "strategy_sha256": "ec6c5f21789b728b8376e1c24fe16339390ea35240090dd23245ab8175126a3b",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 121,
+    "entry": "minimumPossibleSum",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10**9 + 7\n\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n\n        if n <= k:\n            return n * (n + 1) // 2 % MOD\n\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start + end) // 2\n        return (sum1 + sum2) % MOD\n\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"You are given positive integers n and target.\\nAn array nums is beautiful if it meets the following conditions:\\n\\nnums.length == n.\\nnums consists of pairwise distinct positive integers.\\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\\n\\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\\n \\nExample 1:\\n\\nInput: n = 2, target = 3\\nOutput: 4\\nExplanation: We can see that nums = [1,3] is beautiful.\\n- The array nums has length n = 2.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\\n\\nExample 2:\\n\\nInput: n = 3, target = 3\\nOutput: 8\\nExplanation: We can see that nums = [1,3,4] is beautiful.\\n- The array nums has length n = 3.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\\n\\nExample 3:\\n\\nInput: n = 1, target = 1\\nOutput: 1\\nExplanation: We can see, that nums = [1] is beautiful.\\n\\n \\nConstraints:\\n\\n1 <= n <= 10^9\\n1 <= target <= 10^9\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate(2, 3), 4, 0.0)\n    assert _heldout_same(candidate(3, 3), 8, 0.0)\n    assert _heldout_same(candidate(1, 1), 1, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 40,
+        "text": "Branch coverage (C2): the True branch of `target % 2 == 0` (line 40) is never taken by the existing tests.",
+        "cell": [
+          4,
+          "T"
+        ],
+        "witness": 0,
+        "reached": true,
+        "witness_call": "minimumPossibleSum(2, 2)",
+        "block": 40,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 46,
+        "fault_type": "OPERATOR",
+        "text": "Fault-type adequacy at L46: wrong operator: relational, arithmetic, boolean or negation operator, or break/continue. Behaviour: `return n * (n + 1) // 2 % MOD`. The public tests do not distinguish 4 surviving alternatives (`n * (n + 1) // 2 % MOD` -> `n * (n + 1) // 2 / MOD`; `n * (n + 1) // 2` -> `n * (n + 1) / 2`; `n * (n + 1)` -> `n / (n + 1)`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 4,
+        "distinguished": 4,
+        "alternatives": [
+          "`n * (n + 1) // 2 % MOD` -> `n * (n + 1) // 2 / MOD`",
+          "`n * (n + 1) // 2` -> `n * (n + 1) / 2`",
+          "`n * (n + 1)` -> `n / (n + 1)`",
+          "`(n + 1)` -> `(n - 1)`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10**9 + 7\n\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n\n        if n <= k:\n            return n * (n + 1) // 2 / MOD\n\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start + end) // 2\n        return (sum1 + sum2) % MOD\n\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"You are given positive integers n and target.\\nAn array nums is beautiful if it meets the following conditions:\\n\\nnums.length == n.\\nnums consists of pairwise distinct positive integers.\\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\\n\\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\\n \\nExample 1:\\n\\nInput: n = 2, target = 3\\nOutput: 4\\nExplanation: We can see that nums = [1,3] is beautiful.\\n- The array nums has length n = 2.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\\n\\nExample 2:\\n\\nInput: n = 3, target = 3\\nOutput: 8\\nExplanation: We can see that nums = [1,3,4] is beautiful.\\n- The array nums has length n = 3.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\\n\\nExample 3:\\n\\nInput: n = 1, target = 1\\nOutput: 1\\nExplanation: We can see, that nums = [1] is beautiful.\\n\\n \\nConstraints:\\n\\n1 <= n <= 10^9\\n1 <= target <= 10^9\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10**9 + 7\n\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n\n        if n <= k:\n            return n * (n + 1) / 2 % MOD\n\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start + end) // 2\n        return (sum1 + sum2) % MOD\n\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"You are given positive integers n and target.\\nAn array nums is beautiful if it meets the following conditions:\\n\\nnums.length == n.\\nnums consists of pairwise distinct positive integers.\\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\\n\\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\\n \\nExample 1:\\n\\nInput: n = 2, target = 3\\nOutput: 4\\nExplanation: We can see that nums = [1,3] is beautiful.\\n- The array nums has length n = 2.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\\n\\nExample 2:\\n\\nInput: n = 3, target = 3\\nOutput: 8\\nExplanation: We can see that nums = [1,3,4] is beautiful.\\n- The array nums has length n = 3.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\\n\\nExample 3:\\n\\nInput: n = 1, target = 1\\nOutput: 1\\nExplanation: We can see, that nums = [1] is beautiful.\\n\\n \\nConstraints:\\n\\n1 <= n <= 10^9\\n1 <= target <= 10^9\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10**9 + 7\n\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n\n        if n <= k:\n            return n / (n + 1) // 2 % MOD\n\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start + end) // 2\n        return (sum1 + sum2) % MOD\n\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"You are given positive integers n and target.\\nAn array nums is beautiful if it meets the following conditions:\\n\\nnums.length == n.\\nnums consists of pairwise distinct positive integers.\\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\\n\\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\\n \\nExample 1:\\n\\nInput: n = 2, target = 3\\nOutput: 4\\nExplanation: We can see that nums = [1,3] is beautiful.\\n- The array nums has length n = 2.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\\n\\nExample 2:\\n\\nInput: n = 3, target = 3\\nOutput: 8\\nExplanation: We can see that nums = [1,3,4] is beautiful.\\n- The array nums has length n = 3.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\\n\\nExample 3:\\n\\nInput: n = 1, target = 1\\nOutput: 1\\nExplanation: We can see, that nums = [1] is beautiful.\\n\\n \\nConstraints:\\n\\n1 <= n <= 10^9\\n1 <= target <= 10^9\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nclass Solution:\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10**9 + 7\n\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n\n        if n <= k:\n            return n * (n - 1) // 2 % MOD\n\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start + end) // 2\n        return (sum1 + sum2) % MOD\n\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"You are given positive integers n and target.\\nAn array nums is beautiful if it meets the following conditions:\\n\\nnums.length == n.\\nnums consists of pairwise distinct positive integers.\\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\\n\\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\\n \\nExample 1:\\n\\nInput: n = 2, target = 3\\nOutput: 4\\nExplanation: We can see that nums = [1,3] is beautiful.\\n- The array nums has length n = 2.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\\n\\nExample 2:\\n\\nInput: n = 3, target = 3\\nOutput: 8\\nExplanation: We can see that nums = [1,3,4] is beautiful.\\n- The array nums has length n = 3.\\n- The array nums consists of pairwise distinct positive integers.\\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\\n\\nExample 3:\\n\\nInput: n = 1, target = 1\\nOutput: 1\\nExplanation: We can see, that nums = [1] is beautiful.\\n\\n \\nConstraints:\\n\\n1 <= n <= 10^9\\n1 <= target <= 10^9\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))\n"
+        ],
+        "reached": true,
+        "witness_call": "minimumPossibleSum(1, 3)",
+        "block": 46,
+        "witness": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 41,
+        "text": "Statement coverage (C1): line 41 (starting with `k = target // 2 - 1`) is never executed by the existing tests.",
+        "lines": [
+          41
+        ],
+        "witness": 0,
+        "reached": true,
+        "witness_call": "minimumPossibleSum(2, 2)",
+        "block": 41,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "DU",
+        "line": 53,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `start` at line 50 reaches its use at line 53 in the existing tests.",
+        "cell": [
+          -2,
+          "du|37|start|50|53|c-use"
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 49,
+        "text": "Statement coverage (C1): line 49 (`need = n - k`) is executed by the existing tests.",
+        "lines": [
+          49
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 53,
+        "k": 50,
+        "family": "AOR",
+        "extended": false,
+        "text": "Mutation (AOR): the mutant `start + end` -> `start - end` at line 53 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\n\nclass Solution:\n\n    def minimumPossibleSum(self, n: int, target: int) -> int:\n        MOD = 10 ** 9 + 7\n        if target % 2 == 0:\n            k = target // 2 - 1\n        else:\n            k = target // 2\n        if n <= k:\n            return n * (n + 1) // 2 % MOD\n        sum1 = k * (k + 1) // 2\n        need = n - k\n        start = target\n        end = target + need - 1\n        cnt = need\n        sum2 = cnt * (start - end) // 2\n        return (sum1 + sum2) % MOD\nimport copy\n\ndef minimumPossibleSum(n: int, target: int) -> int:\n    \"\"\"You are given positive integers n and target.\nAn array nums is beautiful if it meets the following conditions:\n\nnums.length == n.\nnums consists of pairwise distinct positive integers.\nThere doesn't exist two distinct indices, i and j, in the range [0, n - 1], such that nums[i] + nums[j] == target.\n\nReturn the minimum possible sum that a beautiful array could have modulo 10^9 + 7.\n \nExample 1:\n\nInput: n = 2, target = 3\nOutput: 4\nExplanation: We can see that nums = [1,3] is beautiful.\n- The array nums has length n = 2.\n- The array nums consists of pairwise distinct positive integers.\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\nIt can be proven that 4 is the minimum possible sum that a beautiful array could have.\n\nExample 2:\n\nInput: n = 3, target = 3\nOutput: 8\nExplanation: We can see that nums = [1,3,4] is beautiful.\n- The array nums has length n = 3.\n- The array nums consists of pairwise distinct positive integers.\n- There doesn't exist two distinct indices, i and j, with nums[i] + nums[j] == 3.\nIt can be proven that 8 is the minimum possible sum that a beautiful array could have.\n\nExample 3:\n\nInput: n = 1, target = 1\nOutput: 1\nExplanation: We can see, that nums = [1] is beautiful.\n\n \nConstraints:\n\n1 <= n <= 10^9\n1 <= target <= 10^9\"\"\"\n    return Solution().minimumPossibleSum(*copy.deepcopy((n, target)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the True branch of `target % 2 == 0` (line 40) is never taken by the existing tests.",
+      "Fault-type adequacy at L46: wrong operator: relational, arithmetic, boolean or negation operator, or break/continue. Behaviour: `return n * (n + 1) // 2 % MOD`. The public tests do not distinguish 4 surviving alternatives (`n * (n + 1) // 2 % MOD` -> `n * (n + 1) // 2 / MOD`; `n * (n + 1) // 2` -> `n * (n + 1) / 2`; `n * (n + 1)` -> `n / (n + 1)`). Exercise this behaviour and determine the required result from the specification.",
+      "Statement coverage (C1): line 41 (starting with `k = target // 2 - 1`) is never executed by the existing tests."
+    ],
+    "placebo_facts": [
+      "Def-use pair (all-uses, c-use): the value assigned to `start` at line 50 reaches its use at line 53 in the existing tests.",
+      "Statement coverage (C1): line 49 (`need = n - k`) is executed by the existing tests.",
+      "Mutation (AOR): the mutant `start + end` -> `start - end` at line 53 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "minimumPossibleSum(2, 2)",
+      "minimumPossibleSum(2, 3007)",
+      "minimumPossibleSum(0, 1)",
+      "minimumPossibleSum(-1, 3)",
+      "minimumPossibleSum(3, -3)",
+      "minimumPossibleSum(2, 0)",
+      "minimumPossibleSum(3, 2)",
+      "minimumPossibleSum(49999, 3)",
+      "minimumPossibleSum(100000000000000003, 3)",
+      "minimumPossibleSum(100000000000000003, 10)",
+      "minimumPossibleSum(1, 10)",
+      "minimumPossibleSum(1, 3)",
+      "minimumPossibleSum(2, 1)",
+      "minimumPossibleSum(3, 1)",
+      "minimumPossibleSum(4, 3)",
+      "minimumPossibleSum(2, 4)",
+      "minimumPossibleSum(3, 4)",
+      "minimumPossibleSum(1, 2)",
+      "minimumPossibleSum(5, 3)",
+      "minimumPossibleSum(2, 5)",
+      "minimumPossibleSum(3, 5)"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([(2, 3), (3, 3), (1, 1)]), st.tuples(st.integers(min_value=-10, max_value=200), st.integers(min_value=-10, max_value=200)))\n",
+    "strategy_sha256": "ec6c5f21789b728b8376e1c24fe16339390ea35240090dd23245ab8175126a3b",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 51,
+    "survivors": 24
+  }
+}
