@@ -1,0 +1,52 @@
+{
+  "task_id": "HumanEval/99",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: def closest_integer(value):\\n3:     '''\\n4:     Create a function that takes a value (string) representing a number\\n5:     and returns the closest integer to it. If the number is equidistant\\n6:     from two integers, round it away from zero.\\n7: \\n8:     Examples\\n9:     >>> closest_integer(\\\"10\\\")\\n10:     10\\n11:     >>> closest_integer(\\\"15.3\\\")\\n12:     15\\n13: \\n14:     Note:\\n15:     Rounding away from zero means that if the given number is equidistant\\n16:     from two integers, the one you should return is the one that is the\\n17:     farthest from zero. For example closest_integer(\\\"14.5\\\") should\\n18:     return 15 and closest_integer(\\\"-14.5\\\") should return -15.\\n19:     '''\\n20:     if '.' in value:\\n21:         value = float(value)\\n22:         if value % 1 == 0.5:\\n23:             if value > 0:\\n24:                 return int(value + 1)\\n25:             else:\\n26:                 return int(value - 1)\\n27:         else:\\n28:             return int(round(value))\\n29:     else:\\n30:         return int(value)\\n31: \", \"reference\": \"\\ndef closest_integer(value):\\n    '''\\n    Create a function that takes a value (string) representing a number\\n    and returns the closest integer to it. If the number is equidistant\\n    from two integers, round it away from zero.\\n\\n    Examples\\n    >>> closest_integer(\\\"10\\\")\\n    10\\n    >>> closest_integer(\\\"15.3\\\")\\n    15\\n\\n    Note:\\n    Rounding away from zero means that if the given number is equidistant\\n    from two integers, the one you should return is the one that is the\\n    farthest from zero. For example closest_integer(\\\"14.5\\\") should\\n    return 15 and closest_integer(\\\"-14.5\\\") should return -15.\\n    '''\\n\\n\\n    def rounding(val):\\n        if abs(val - int(val)) != 0.5:\\n            return round(val)\\n        if val > 0:\\n            return int(val) + 1\\n        else:\\n            return int(val) - 1\\n    return rounding(float(value))\\n\\n\", \"validated_witness\": null, \"cards\": [{\"key\": \"K0\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}, {\"key\": \"K1\", \"title\": \"Rounding or pre-rounding uses a different tie or threshold policy\", \"where\": \"round or another rounding transformation is used before a comparison or as part of an output conversion.\", \"how\": \"Python round uses its documented tie behavior; rounding before classification can also move values across thresholds.\", \"what\": \"A tie rounds in the wrong direction or a near-threshold value is assigned to the wrong class.\", \"test\": \"Use {values} at exact ties and immediately around {threshold}, with both signs if allowed.\"}, {\"key\": \"K2\", \"title\": \"Numeric conversion loses required value or precision\", \"where\": \"int or float conversion is applied to values whose exact numeric value must be preserved or rounded under a specified policy.\", \"how\": \"int truncates fractional values toward zero; float conversion can also round exact integer or decimal inputs before later arithmetic.\", \"what\": \"The result is numerically changed rather than merely represented in another type.\", \"test\": \"Use admissible fractional and large exact {values} through {cast_site}, including values beyond exact binary-float integer precision where allowed.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 28, \"where\": \"return int(round(value)) for non-tie cases\", \"how\": \"Python's round() uses banker's rounding (ties to even), violating the spec's 'round away from zero' requirement for non-tie cases near .5.\", \"what\": \"Input '2.5' returns 2 instead of 3; input '3.5' returns 4 instead of 4 (correct by chance), but '2.5' fails the away-from-zero contract.\"}, {\"key\": \"B1\", \"card\": \"K2\", \"line\": 21, \"where\": \"float(value)\", \"how\": \"int truncates fractional values toward zero; float conversion can also round exact integer or decimal inputs before later arithmetic.\", \"what\": \"The result is numerically changed rather than merely represented in another type.\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 22, \"where\": \"value % 1 == 0.5\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}, {\"key\": \"B3\", \"card\": \"K2\", \"line\": 21, \"where\": \"value = float(value) converts string to float\", \"how\": \"Converting large integer strings to float loses precision due to binary floating-point representation limits before rounding logic executes.\", \"what\": \"Input '1000000000000000001' returns 1000000000000000000 instead of the exact integer, losing the last digit.\"}, {\"key\": \"B4\", \"card\": \"K0\", \"line\": 22, \"where\": \"if value % 1 == 0.5 checks for exact tie\", \"how\": \"Floating-point modulo arithmetic may not yield exactly 0.5 for values that are mathematically equidistant due to representation errors.\", \"what\": \"Input '1.5' might fail the equality check and fall through to round(), potentially returning 2 instead of 2 (correct) or 1 (incorrect) depending on bit representation.\"}, {\"key\": \"B5\", \"card\": \"K1\", \"line\": 28, \"where\": \"round(value)\", \"how\": \"Python round uses its documented tie behavior; rounding before classification can also move values across thresholds.\", \"what\": \"A tie rounds in the wrong direction or a near-threshold value is assigned to the wrong class.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.branch-boundary-contract",
+      "K1": "py.rounding-policy",
+      "K2": "py.numeric-cast-loss"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.rounding-policy"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.numeric-cast-loss"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 2,
+        "concept_id": "py.branch-boundary-contract"
+      },
+      "B3": {
+        "system": "v3",
+        "rank": 1,
+        "concept_id": "py.numeric-cast-loss"
+      },
+      "B4": {
+        "system": "v3",
+        "rank": 2,
+        "concept_id": "py.branch-boundary-contract"
+      },
+      "B5": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.rounding-policy"
+      }
+    }
+  }
+}

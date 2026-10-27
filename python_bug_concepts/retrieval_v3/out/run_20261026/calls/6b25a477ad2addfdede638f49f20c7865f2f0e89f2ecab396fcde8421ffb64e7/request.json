@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: def words_string(s):\\n3:     \\\"\\\"\\\"\\n4:     You will be given a string of words separated by commas or spaces. Your task is\\n5:     to split the string into words and return an array of the words.\\n6:     \\n7:     For example:\\n8:     words_string(\\\"Hi, my name is John\\\") == [\\\"Hi\\\", \\\"my\\\", \\\"name\\\", \\\"is\\\", \\\"John\\\"]\\n9:     words_string(\\\"One, two, three, four, five, six\\\") == [\\\"One\\\", \\\"two\\\", \\\"three\\\", \\\"four\\\", \\\"five\\\", \\\"six\\\"]\\n10:     \\\"\\\"\\\"\\n11:     # Use the split() function in Python which splits a string into a list where each word is a list item.\\n12:     # The split() function splits a string into a list where each word is a list item. The words are determined by splitting at each occurrence of a white space.\\n13:     return s.replace(',', '').split()\", \"reference\": \"\\ndef words_string(s):\\n    \\\"\\\"\\\"\\n    You will be given a string of words separated by commas or spaces. Your task is\\n    to split the string into words and return an array of the words.\\n    \\n    For example:\\n    words_string(\\\"Hi, my name is John\\\") == [\\\"Hi\\\", \\\"my\\\", \\\"name\\\", \\\"is\\\", \\\"John\\\"]\\n    words_string(\\\"One, two, three, four, five, six\\\") == [\\\"One\\\", \\\"two\\\", \\\"three\\\", \\\"four\\\", \\\"five\\\", \\\"six\\\"]\\n    \\\"\\\"\\\"\\n\\n    words = (s.replace(\\\",\\\", \\\" \\\")).split()\\n    return [word for word in words if word != \\\"\\\"]\\n\\n\", \"validated_witness\": {\"args\": [\"a,b\"], \"expected\": {\"status\": \"ok\", \"value\": [\"a\", \"b\"], \"type\": \"list\", \"repr\": \"['a', 'b']\"}, \"actual\": {\"status\": \"ok\", \"value\": [\"ab\"], \"type\": \"list\", \"repr\": \"['ab']\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}, {\"key\": \"K1\", \"title\": \"Splitting and joining changes delimiter or whitespace structure\", \"where\": \"split, replace or join is used to parse or reconstruct a string with specified delimiters or spacing.\", \"how\": \"Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.\", \"what\": \"Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored.\", \"test\": \"Use {text} with repeated separators, leading/trailing separators and adjacent non-space-separated tokens.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 13, \"where\": \"s.replace(',', '').split() removes commas then splits on whitespace\", \"how\": \"Deleting commas merges adjacent tokens that were comma-separated without spaces, violating the delimiter contract.\", \"what\": \"Input 'a,b' yields ['ab'] instead of ['a', 'b']; adjacent comma-separated words merge incorrectly.\"}, {\"key\": \"B1\", \"card\": \"K1\", \"line\": 13, \"where\": \"s.replace(',', '').split()\", \"how\": \"Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.\", \"what\": \"Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored.\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 13, \"where\": \"s.replace(',', '')\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314301,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 1265,
+    "context_limit": 8192
+  }
+}

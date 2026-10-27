@@ -1,0 +1,325 @@
+{
+  "baseline": {
+    "task": 132,
+    "entry": "countNonDecreasingSubarrays",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nfrom array import array\n\nclass Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n\n        nge = [n] * n\n        st = []\n        for i, v in enumerate(nums):\n            while st and v > nums[st[-1]]:\n                nge[st.pop()] = i\n            st.append(i)\n\n        pref = array('Q', [0] * (n + 1))\n        for i in range(n):\n            pref[i + 1] = pref[i] + nums[i]\n\n        S = array('Q', [0] * n)\n        for i in range(n):\n            j = nge[i]\n            S[i] = (j - i - 1) * nums[i] - (pref[j] - pref[i + 1])\n\n        bits = n.bit_length() + 1\n        up = [array('I', [n] * (n + 1)) for _ in range(bits)]\n        sumS = [array('Q', [0] * (n + 1)) for _ in range(bits)]\n        last = [array('I', [0] * (n + 1)) for _ in range(bits)]\n\n        for i in range(n):\n            up[0][i] = nge[i]\n            sumS[0][i] = S[i]\n            last[0][i] = i\n        up[0][n] = n\n        sumS[0][n] = 0\n        last[0][n] = n\n\n        for b in range(1, bits):\n            up_bm1 = up[b - 1]\n            up_b = up[b]\n            sum_bm1 = sumS[b - 1]\n            sum_b = sumS[b]\n            last_bm1 = last[b - 1]\n            last_b = last[b]\n            for i in range(n + 1):\n                mid = up_bm1[i]\n                up_b[i] = up_bm1[mid]\n                sum_b[i] = sum_bm1[i] + sum_bm1[mid]\n                if mid != n:\n                    last_b[i] = last_bm1[mid]\n                else:\n                    last_b[i] = last_bm1[i]\n\n        def cost_query(l: int, R: int) -> int:\n            B = R + 1\n            cur = l\n            total = 0\n            last_included = -1\n            for b in range(bits - 1, -1, -1):\n                if cur < n:\n                    nxt = up[b][cur]\n                    if nxt <= B:\n                        total += sumS[b][cur]\n                        last_included = last[b][cur]\n                        cur = nxt\n            base = last_included if last_included != -1 else l\n            total += (R - base) * nums[base] - (pref[R + 1] - pref[base + 1])\n            return total\n\n        ans = 0\n        r = 0\n        for l in range(n):\n            while r < n and cost_query(l, r) <= k:\n                r += 1\n            ans += r - l\n            if r == l:\n                r += 1\n        return ans\n\nimport copy\n\ndef countNonDecreasingSubarrays(nums: List[int], k: int) -> int:\n    'You are given an array nums of n integers and an integer k.\\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\\nReturn the number of subarrays that you can make non-decreasing \\u200b\\u200b\\u200b\\u200b\\u200bafter performing at most k operations.\\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\\n \\nExample 1:\\n\\nInput: nums = [6,3,1,2,4,4], k = 7\\nOutput: 17\\nExplanation:\\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\\n\\nExample 2:\\n\\nInput: nums = [6,3,1,3,6], k = 4\\nOutput: 12\\nExplanation:\\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\\n\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^9\\n1 <= k <= 10^9'\n    return Solution().countNonDecreasingSubarrays(*copy.deepcopy((nums, k)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([6, 3, 1, 2, 4, 4], 7), 17, 0.0)\n    assert _heldout_same(candidate([6, 3, 1, 3, 6], 4), 12, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 112,
+        "text": "Branch coverage (C2): the True branch of `r == l` (line 112) is never taken by the existing tests.",
+        "cell": [
+          196,
+          "T"
+        ],
+        "witness": 6,
+        "reached": true,
+        "witness_call": "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], -7)",
+        "block": 112,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 113,
+        "text": "Statement coverage (C1): line 113 (starting with `r += 1`) is never executed by the existing tests.",
+        "lines": [
+          113
+        ],
+        "witness": 6,
+        "reached": true,
+        "witness_call": "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], -7)",
+        "block": 113,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 57,
+        "k": 152,
+        "family": "OIL",
+        "extended": true,
+        "text": "Mutation (OIL): the mutant `for i in range(n)` -> `execute at most its first iteration` at line 57 survives: no existing test distinguishes them.",
+        "witness": 2,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 5)",
+        "block": 57,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "def __mut_one__(it):\n    for x in it:\n        yield x\n        return\nfrom string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nfrom array import array\n\nclass Solution:\n\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n        nge = [n] * n\n        st = []\n        for i, v in enumerate(nums):\n            while st and v > nums[st[-1]]:\n                nge[st.pop()] = i\n            st.append(i)\n        pref = array('Q', [0] * (n + 1))\n        for i in range(n):\n            pref[i + 1] = pref[i] + nums[i]\n        S = array('Q', [0] * n)\n        for i in __mut_one__(range(n)):\n            j = nge[i]\n            S[i] = (j - i - 1) * nums[i] - (pref[j] - pref[i + 1])\n        bits = n.bit_length() + 1\n        up = [array('I', [n] * (n + 1)) for _ in range(bits)]\n        sumS = [array('Q', [0] * (n + 1)) for _ in range(bits)]\n        last = [array('I', [0] * (n + 1)) for _ in range(bits)]\n        for i in range(n):\n            up[0][i] = nge[i]\n            sumS[0][i] = S[i]\n            last[0][i] = i\n        up[0][n] = n\n        sumS[0][n] = 0\n        last[0][n] = n\n        for b in range(1, bits):\n            up_bm1 = up[b - 1]\n            up_b = up[b]\n            sum_bm1 = sumS[b - 1]\n            sum_b = sumS[b]\n            last_bm1 = last[b - 1]\n            last_b = last[b]\n            for i in range(n + 1):\n                mid = up_bm1[i]\n                up_b[i] = up_bm1[mid]\n                sum_b[i] = sum_bm1[i] + sum_bm1[mid]\n                if mid != n:\n                    last_b[i] = last_bm1[mid]\n                else:\n                    last_b[i] = last_bm1[i]\n\n        def cost_query(l: int, R: int) -> int:\n            B = R + 1\n            cur = l\n            total = 0\n            last_included = -1\n            for b in range(bits - 1, -1, -1):\n                if cur < n:\n                    nxt = up[b][cur]\n                    if nxt <= B:\n                        total += sumS[b][cur]\n                        last_included = last[b][cur]\n                        cur = nxt\n            base = last_included if last_included != -1 else l\n            total += (R - base) * nums[base] - (pref[R + 1] - pref[base + 1])\n            return total\n        ans = 0\n        r = 0\n        for l in range(n):\n            while r < n and cost_query(l, r) <= k:\n                r += 1\n            ans += r - l\n            if r == l:\n                r += 1\n        return ans\nimport copy\n\ndef countNonDecreasingSubarrays(nums: List[int], k: int) -> int:\n    \"\"\"You are given an array nums of n integers and an integer k.\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\nReturn the number of subarrays that you can make non-decreasing \\u200b\\u200b\\u200b\\u200b\\u200bafter performing at most k operations.\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\n \nExample 1:\n\nInput: nums = [6,3,1,2,4,4], k = 7\nOutput: 17\nExplanation:\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\n\nExample 2:\n\nInput: nums = [6,3,1,3,6], k = 4\nOutput: 12\nExplanation:\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\n\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^9\n1 <= k <= 10^9\"\"\"\n    return Solution().countNonDecreasingSubarrays(*copy.deepcopy((nums, k)))"
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 98,
+        "text": "Branch coverage (C2): the True and False branches of `nxt <= B` (line 98) are taken by the existing tests.",
+        "cells": [
+          [
+            146,
+            "T"
+          ],
+          [
+            146,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 84,
+        "text": "Statement coverage (C1): line 84 (`sum_b[i] = sum_bm1[i] + sum_bm1[mid]`) is executed by the existing tests.",
+        "lines": [
+          84
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 95,
+        "k": 109,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `bits - 1` -> `bits - 0` at line 95 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nfrom array import array\n\nclass Solution:\n\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n        nge = [n] * n\n        st = []\n        for i, v in enumerate(nums):\n            while st and v > nums[st[-1]]:\n                nge[st.pop()] = i\n            st.append(i)\n        pref = array('Q', [0] * (n + 1))\n        for i in range(n):\n            pref[i + 1] = pref[i] + nums[i]\n        S = array('Q', [0] * n)\n        for i in range(n):\n            j = nge[i]\n            S[i] = (j - i - 1) * nums[i] - (pref[j] - pref[i + 1])\n        bits = n.bit_length() + 1\n        up = [array('I', [n] * (n + 1)) for _ in range(bits)]\n        sumS = [array('Q', [0] * (n + 1)) for _ in range(bits)]\n        last = [array('I', [0] * (n + 1)) for _ in range(bits)]\n        for i in range(n):\n            up[0][i] = nge[i]\n            sumS[0][i] = S[i]\n            last[0][i] = i\n        up[0][n] = n\n        sumS[0][n] = 0\n        last[0][n] = n\n        for b in range(1, bits):\n            up_bm1 = up[b - 1]\n            up_b = up[b]\n            sum_bm1 = sumS[b - 1]\n            sum_b = sumS[b]\n            last_bm1 = last[b - 1]\n            last_b = last[b]\n            for i in range(n + 1):\n                mid = up_bm1[i]\n                up_b[i] = up_bm1[mid]\n                sum_b[i] = sum_bm1[i] + sum_bm1[mid]\n                if mid != n:\n                    last_b[i] = last_bm1[mid]\n                else:\n                    last_b[i] = last_bm1[i]\n\n        def cost_query(l: int, R: int) -> int:\n            B = R + 1\n            cur = l\n            total = 0\n            last_included = -1\n            for b in range(bits - 0, -1, -1):\n                if cur < n:\n                    nxt = up[b][cur]\n                    if nxt <= B:\n                        total += sumS[b][cur]\n                        last_included = last[b][cur]\n                        cur = nxt\n            base = last_included if last_included != -1 else l\n            total += (R - base) * nums[base] - (pref[R + 1] - pref[base + 1])\n            return total\n        ans = 0\n        r = 0\n        for l in range(n):\n            while r < n and cost_query(l, r) <= k:\n                r += 1\n            ans += r - l\n            if r == l:\n                r += 1\n        return ans\nimport copy\n\ndef countNonDecreasingSubarrays(nums: List[int], k: int) -> int:\n    \"\"\"You are given an array nums of n integers and an integer k.\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\nReturn the number of subarrays that you can make non-decreasing \\u200b\\u200b\\u200b\\u200b\\u200bafter performing at most k operations.\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\n \nExample 1:\n\nInput: nums = [6,3,1,2,4,4], k = 7\nOutput: 17\nExplanation:\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\n\nExample 2:\n\nInput: nums = [6,3,1,3,6], k = 4\nOutput: 12\nExplanation:\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\n\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^9\n1 <= k <= 10^9\"\"\"\n    return Solution().countNonDecreasingSubarrays(*copy.deepcopy((nums, k)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the True branch of `r == l` (line 112) is never taken by the existing tests.",
+      "Statement coverage (C1): line 113 (starting with `r += 1`) is never executed by the existing tests.",
+      "Mutation (OIL): the mutant `for i in range(n)` -> `execute at most its first iteration` at line 57 survives: no existing test distinguishes them."
+    ],
+    "placebo_facts": [
+      "Branch coverage (C2): the True and False branches of `nxt <= B` (line 98) are taken by the existing tests.",
+      "Statement coverage (C1): line 84 (`sum_b[i] = sum_bm1[i] + sum_bm1[mid]`) is executed by the existing tests.",
+      "Mutation (CRP constant): the mutant `bits - 1` -> `bits - 0` at line 95 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], -7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], -7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 5)"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([6, 3, 1, 2, 4, 4], 7), ([6, 3, 1, 3, 6], 4)]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12), st.integers(min_value=-10, max_value=200)))\n",
+    "strategy_sha256": "bdc054dca4b0736b395432b29cfb4ba6800a6c8a28952db21e475d626f6fbeac",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 132,
+    "entry": "countNonDecreasingSubarrays",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nfrom array import array\n\nclass Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n\n        nge = [n] * n\n        st = []\n        for i, v in enumerate(nums):\n            while st and v > nums[st[-1]]:\n                nge[st.pop()] = i\n            st.append(i)\n\n        pref = array('Q', [0] * (n + 1))\n        for i in range(n):\n            pref[i + 1] = pref[i] + nums[i]\n\n        S = array('Q', [0] * n)\n        for i in range(n):\n            j = nge[i]\n            S[i] = (j - i - 1) * nums[i] - (pref[j] - pref[i + 1])\n\n        bits = n.bit_length() + 1\n        up = [array('I', [n] * (n + 1)) for _ in range(bits)]\n        sumS = [array('Q', [0] * (n + 1)) for _ in range(bits)]\n        last = [array('I', [0] * (n + 1)) for _ in range(bits)]\n\n        for i in range(n):\n            up[0][i] = nge[i]\n            sumS[0][i] = S[i]\n            last[0][i] = i\n        up[0][n] = n\n        sumS[0][n] = 0\n        last[0][n] = n\n\n        for b in range(1, bits):\n            up_bm1 = up[b - 1]\n            up_b = up[b]\n            sum_bm1 = sumS[b - 1]\n            sum_b = sumS[b]\n            last_bm1 = last[b - 1]\n            last_b = last[b]\n            for i in range(n + 1):\n                mid = up_bm1[i]\n                up_b[i] = up_bm1[mid]\n                sum_b[i] = sum_bm1[i] + sum_bm1[mid]\n                if mid != n:\n                    last_b[i] = last_bm1[mid]\n                else:\n                    last_b[i] = last_bm1[i]\n\n        def cost_query(l: int, R: int) -> int:\n            B = R + 1\n            cur = l\n            total = 0\n            last_included = -1\n            for b in range(bits - 1, -1, -1):\n                if cur < n:\n                    nxt = up[b][cur]\n                    if nxt <= B:\n                        total += sumS[b][cur]\n                        last_included = last[b][cur]\n                        cur = nxt\n            base = last_included if last_included != -1 else l\n            total += (R - base) * nums[base] - (pref[R + 1] - pref[base + 1])\n            return total\n\n        ans = 0\n        r = 0\n        for l in range(n):\n            while r < n and cost_query(l, r) <= k:\n                r += 1\n            ans += r - l\n            if r == l:\n                r += 1\n        return ans\n\nimport copy\n\ndef countNonDecreasingSubarrays(nums: List[int], k: int) -> int:\n    'You are given an array nums of n integers and an integer k.\\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\\nReturn the number of subarrays that you can make non-decreasing \\u200b\\u200b\\u200b\\u200b\\u200bafter performing at most k operations.\\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\\n \\nExample 1:\\n\\nInput: nums = [6,3,1,2,4,4], k = 7\\nOutput: 17\\nExplanation:\\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\\n\\nExample 2:\\n\\nInput: nums = [6,3,1,3,6], k = 4\\nOutput: 12\\nExplanation:\\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\\n\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^9\\n1 <= k <= 10^9'\n    return Solution().countNonDecreasingSubarrays(*copy.deepcopy((nums, k)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate([6, 3, 1, 2, 4, 4], 7), 17, 0.0)\n    assert _heldout_same(candidate([6, 3, 1, 3, 6], 4), 12, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 112,
+        "text": "Branch coverage (C2): the True branch of `r == l` (line 112) is never taken by the existing tests.",
+        "cell": [
+          196,
+          "T"
+        ],
+        "witness": 6,
+        "reached": true,
+        "witness_call": "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], -7)",
+        "block": 112,
+        "g_demote": false,
+        "tier": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 95,
+        "fault_type": "CALL",
+        "text": "Fault-type adequacy at L95: wrong call: wrong function, method or argument. Behaviour: `for b in range(bits - 1, -1, -1):`. The public tests do not distinguish 3 surviving alternatives (`range(bits - 1, -1, -1)` -> `range(-1, -1)`; `range(bits - 1, -1, -1)` -> `range(bits - 1, -1)`; `range(bits - 1, -1, -1)` -> `range(bits - 1, -1, )`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 3,
+        "distinguished": 3,
+        "alternatives": [
+          "`range(bits - 1, -1, -1)` -> `range(-1, -1)`",
+          "`range(bits - 1, -1, -1)` -> `range(bits - 1, -1)`",
+          "`range(bits - 1, -1, -1)` -> `range(bits - 1, -1, )`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nfrom array import array\n\nclass Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n\n        nge = [n] * n\n        st = []\n        for i, v in enumerate(nums):\n            while st and v > nums[st[-1]]:\n                nge[st.pop()] = i\n            st.append(i)\n\n        pref = array('Q', [0] * (n + 1))\n        for i in range(n):\n            pref[i + 1] = pref[i] + nums[i]\n\n        S = array('Q', [0] * n)\n        for i in range(n):\n            j = nge[i]\n            S[i] = (j - i - 1) * nums[i] - (pref[j] - pref[i + 1])\n\n        bits = n.bit_length() + 1\n        up = [array('I', [n] * (n + 1)) for _ in range(bits)]\n        sumS = [array('Q', [0] * (n + 1)) for _ in range(bits)]\n        last = [array('I', [0] * (n + 1)) for _ in range(bits)]\n\n        for i in range(n):\n            up[0][i] = nge[i]\n            sumS[0][i] = S[i]\n            last[0][i] = i\n        up[0][n] = n\n        sumS[0][n] = 0\n        last[0][n] = n\n\n        for b in range(1, bits):\n            up_bm1 = up[b - 1]\n            up_b = up[b]\n            sum_bm1 = sumS[b - 1]\n            sum_b = sumS[b]\n            last_bm1 = last[b - 1]\n            last_b = last[b]\n            for i in range(n + 1):\n                mid = up_bm1[i]\n                up_b[i] = up_bm1[mid]\n                sum_b[i] = sum_bm1[i] + sum_bm1[mid]\n                if mid != n:\n                    last_b[i] = last_bm1[mid]\n                else:\n                    last_b[i] = last_bm1[i]\n\n        def cost_query(l: int, R: int) -> int:\n            B = R + 1\n            cur = l\n            total = 0\n            last_included = -1\n            for b in range(-1, -1):\n                if cur < n:\n                    nxt = up[b][cur]\n                    if nxt <= B:\n                        total += sumS[b][cur]\n                        last_included = last[b][cur]\n                        cur = nxt\n            base = last_included if last_included != -1 else l\n            total += (R - base) * nums[base] - (pref[R + 1] - pref[base + 1])\n            return total\n\n        ans = 0\n        r = 0\n        for l in range(n):\n            while r < n and cost_query(l, r) <= k:\n                r += 1\n            ans += r - l\n            if r == l:\n                r += 1\n        return ans\n\nimport copy\n\ndef countNonDecreasingSubarrays(nums: List[int], k: int) -> int:\n    'You are given an array nums of n integers and an integer k.\\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\\nReturn the number of subarrays that you can make non-decreasing \\u200b\\u200b\\u200b\\u200b\\u200bafter performing at most k operations.\\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\\n \\nExample 1:\\n\\nInput: nums = [6,3,1,2,4,4], k = 7\\nOutput: 17\\nExplanation:\\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\\n\\nExample 2:\\n\\nInput: nums = [6,3,1,3,6], k = 4\\nOutput: 12\\nExplanation:\\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\\n\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^9\\n1 <= k <= 10^9'\n    return Solution().countNonDecreasingSubarrays(*copy.deepcopy((nums, k)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nfrom array import array\n\nclass Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n\n        nge = [n] * n\n        st = []\n        for i, v in enumerate(nums):\n            while st and v > nums[st[-1]]:\n                nge[st.pop()] = i\n            st.append(i)\n\n        pref = array('Q', [0] * (n + 1))\n        for i in range(n):\n            pref[i + 1] = pref[i] + nums[i]\n\n        S = array('Q', [0] * n)\n        for i in range(n):\n            j = nge[i]\n            S[i] = (j - i - 1) * nums[i] - (pref[j] - pref[i + 1])\n\n        bits = n.bit_length() + 1\n        up = [array('I', [n] * (n + 1)) for _ in range(bits)]\n        sumS = [array('Q', [0] * (n + 1)) for _ in range(bits)]\n        last = [array('I', [0] * (n + 1)) for _ in range(bits)]\n\n        for i in range(n):\n            up[0][i] = nge[i]\n            sumS[0][i] = S[i]\n            last[0][i] = i\n        up[0][n] = n\n        sumS[0][n] = 0\n        last[0][n] = n\n\n        for b in range(1, bits):\n            up_bm1 = up[b - 1]\n            up_b = up[b]\n            sum_bm1 = sumS[b - 1]\n            sum_b = sumS[b]\n            last_bm1 = last[b - 1]\n            last_b = last[b]\n            for i in range(n + 1):\n                mid = up_bm1[i]\n                up_b[i] = up_bm1[mid]\n                sum_b[i] = sum_bm1[i] + sum_bm1[mid]\n                if mid != n:\n                    last_b[i] = last_bm1[mid]\n                else:\n                    last_b[i] = last_bm1[i]\n\n        def cost_query(l: int, R: int) -> int:\n            B = R + 1\n            cur = l\n            total = 0\n            last_included = -1\n            for b in range(bits - 1, -1):\n                if cur < n:\n                    nxt = up[b][cur]\n                    if nxt <= B:\n                        total += sumS[b][cur]\n                        last_included = last[b][cur]\n                        cur = nxt\n            base = last_included if last_included != -1 else l\n            total += (R - base) * nums[base] - (pref[R + 1] - pref[base + 1])\n            return total\n\n        ans = 0\n        r = 0\n        for l in range(n):\n            while r < n and cost_query(l, r) <= k:\n                r += 1\n            ans += r - l\n            if r == l:\n                r += 1\n        return ans\n\nimport copy\n\ndef countNonDecreasingSubarrays(nums: List[int], k: int) -> int:\n    'You are given an array nums of n integers and an integer k.\\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\\nReturn the number of subarrays that you can make non-decreasing \\u200b\\u200b\\u200b\\u200b\\u200bafter performing at most k operations.\\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\\n \\nExample 1:\\n\\nInput: nums = [6,3,1,2,4,4], k = 7\\nOutput: 17\\nExplanation:\\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\\n\\nExample 2:\\n\\nInput: nums = [6,3,1,3,6], k = 4\\nOutput: 12\\nExplanation:\\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\\n\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^9\\n1 <= k <= 10^9'\n    return Solution().countNonDecreasingSubarrays(*copy.deepcopy((nums, k)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nfrom array import array\n\nclass Solution:\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n\n        nge = [n] * n\n        st = []\n        for i, v in enumerate(nums):\n            while st and v > nums[st[-1]]:\n                nge[st.pop()] = i\n            st.append(i)\n\n        pref = array('Q', [0] * (n + 1))\n        for i in range(n):\n            pref[i + 1] = pref[i] + nums[i]\n\n        S = array('Q', [0] * n)\n        for i in range(n):\n            j = nge[i]\n            S[i] = (j - i - 1) * nums[i] - (pref[j] - pref[i + 1])\n\n        bits = n.bit_length() + 1\n        up = [array('I', [n] * (n + 1)) for _ in range(bits)]\n        sumS = [array('Q', [0] * (n + 1)) for _ in range(bits)]\n        last = [array('I', [0] * (n + 1)) for _ in range(bits)]\n\n        for i in range(n):\n            up[0][i] = nge[i]\n            sumS[0][i] = S[i]\n            last[0][i] = i\n        up[0][n] = n\n        sumS[0][n] = 0\n        last[0][n] = n\n\n        for b in range(1, bits):\n            up_bm1 = up[b - 1]\n            up_b = up[b]\n            sum_bm1 = sumS[b - 1]\n            sum_b = sumS[b]\n            last_bm1 = last[b - 1]\n            last_b = last[b]\n            for i in range(n + 1):\n                mid = up_bm1[i]\n                up_b[i] = up_bm1[mid]\n                sum_b[i] = sum_bm1[i] + sum_bm1[mid]\n                if mid != n:\n                    last_b[i] = last_bm1[mid]\n                else:\n                    last_b[i] = last_bm1[i]\n\n        def cost_query(l: int, R: int) -> int:\n            B = R + 1\n            cur = l\n            total = 0\n            last_included = -1\n            for b in range(bits - 1, -1, ):\n                if cur < n:\n                    nxt = up[b][cur]\n                    if nxt <= B:\n                        total += sumS[b][cur]\n                        last_included = last[b][cur]\n                        cur = nxt\n            base = last_included if last_included != -1 else l\n            total += (R - base) * nums[base] - (pref[R + 1] - pref[base + 1])\n            return total\n\n        ans = 0\n        r = 0\n        for l in range(n):\n            while r < n and cost_query(l, r) <= k:\n                r += 1\n            ans += r - l\n            if r == l:\n                r += 1\n        return ans\n\nimport copy\n\ndef countNonDecreasingSubarrays(nums: List[int], k: int) -> int:\n    'You are given an array nums of n integers and an integer k.\\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\\nReturn the number of subarrays that you can make non-decreasing \\u200b\\u200b\\u200b\\u200b\\u200bafter performing at most k operations.\\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\\n \\nExample 1:\\n\\nInput: nums = [6,3,1,2,4,4], k = 7\\nOutput: 17\\nExplanation:\\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\\n\\nExample 2:\\n\\nInput: nums = [6,3,1,3,6], k = 4\\nOutput: 12\\nExplanation:\\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\\n\\n \\nConstraints:\\n\\n1 <= nums.length <= 10^5\\n1 <= nums[i] <= 10^9\\n1 <= k <= 10^9'\n    return Solution().countNonDecreasingSubarrays(*copy.deepcopy((nums, k)))\n"
+        ],
+        "reached": true,
+        "witness_call": "countNonDecreasingSubarrays([6, 3, 1, 1, 4, 4], 7)",
+        "block": 95,
+        "witness": 6
+      },
+      {
+        "kind": "STMT",
+        "line": 113,
+        "text": "Statement coverage (C1): line 113 (starting with `r += 1`) is never executed by the existing tests.",
+        "lines": [
+          113
+        ],
+        "witness": 6,
+        "reached": true,
+        "witness_call": "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], -7)",
+        "block": 113,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 98,
+        "text": "Branch coverage (C2): the True and False branches of `nxt <= B` (line 98) are taken by the existing tests.",
+        "cells": [
+          [
+            146,
+            "T"
+          ],
+          [
+            146,
+            "F"
+          ]
+        ]
+      },
+      {
+        "kind": "STMT",
+        "line": 84,
+        "text": "Statement coverage (C1): line 84 (`sum_b[i] = sum_bm1[i] + sum_bm1[mid]`) is executed by the existing tests.",
+        "lines": [
+          84
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 95,
+        "k": 109,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `bits - 1` -> `bits - 0` at line 95 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nfrom typing import List\nfrom array import array\n\nclass Solution:\n\n    def countNonDecreasingSubarrays(self, nums: List[int], k: int) -> int:\n        n = len(nums)\n        if n == 0:\n            return 0\n        nge = [n] * n\n        st = []\n        for i, v in enumerate(nums):\n            while st and v > nums[st[-1]]:\n                nge[st.pop()] = i\n            st.append(i)\n        pref = array('Q', [0] * (n + 1))\n        for i in range(n):\n            pref[i + 1] = pref[i] + nums[i]\n        S = array('Q', [0] * n)\n        for i in range(n):\n            j = nge[i]\n            S[i] = (j - i - 1) * nums[i] - (pref[j] - pref[i + 1])\n        bits = n.bit_length() + 1\n        up = [array('I', [n] * (n + 1)) for _ in range(bits)]\n        sumS = [array('Q', [0] * (n + 1)) for _ in range(bits)]\n        last = [array('I', [0] * (n + 1)) for _ in range(bits)]\n        for i in range(n):\n            up[0][i] = nge[i]\n            sumS[0][i] = S[i]\n            last[0][i] = i\n        up[0][n] = n\n        sumS[0][n] = 0\n        last[0][n] = n\n        for b in range(1, bits):\n            up_bm1 = up[b - 1]\n            up_b = up[b]\n            sum_bm1 = sumS[b - 1]\n            sum_b = sumS[b]\n            last_bm1 = last[b - 1]\n            last_b = last[b]\n            for i in range(n + 1):\n                mid = up_bm1[i]\n                up_b[i] = up_bm1[mid]\n                sum_b[i] = sum_bm1[i] + sum_bm1[mid]\n                if mid != n:\n                    last_b[i] = last_bm1[mid]\n                else:\n                    last_b[i] = last_bm1[i]\n\n        def cost_query(l: int, R: int) -> int:\n            B = R + 1\n            cur = l\n            total = 0\n            last_included = -1\n            for b in range(bits - 0, -1, -1):\n                if cur < n:\n                    nxt = up[b][cur]\n                    if nxt <= B:\n                        total += sumS[b][cur]\n                        last_included = last[b][cur]\n                        cur = nxt\n            base = last_included if last_included != -1 else l\n            total += (R - base) * nums[base] - (pref[R + 1] - pref[base + 1])\n            return total\n        ans = 0\n        r = 0\n        for l in range(n):\n            while r < n and cost_query(l, r) <= k:\n                r += 1\n            ans += r - l\n            if r == l:\n                r += 1\n        return ans\nimport copy\n\ndef countNonDecreasingSubarrays(nums: List[int], k: int) -> int:\n    \"\"\"You are given an array nums of n integers and an integer k.\nFor each subarray of nums, you can apply up to k operations on it. In each operation, you increment any element of the subarray by 1.\nNote that each subarray is considered independently, meaning changes made to one subarray do not persist to another.\nReturn the number of subarrays that you can make non-decreasing \\u200b\\u200b\\u200b\\u200b\\u200bafter performing at most k operations.\nAn array is said to be non-decreasing if each element is greater than or equal to its previous element, if it exists.\n \nExample 1:\n\nInput: nums = [6,3,1,2,4,4], k = 7\nOutput: 17\nExplanation:\nOut of all 21 possible subarrays of nums, only the subarrays [6, 3, 1], [6, 3, 1, 2], [6, 3, 1, 2, 4] and [6, 3, 1, 2, 4, 4] cannot be made non-decreasing after applying up to k = 7 operations. Thus, the number of non-decreasing subarrays is 21 - 4 = 17.\n\nExample 2:\n\nInput: nums = [6,3,1,3,6], k = 4\nOutput: 12\nExplanation:\nThe subarray [3, 1, 3, 6] along with all subarrays of nums with three or fewer elements, except [6, 3, 1], can be made non-decreasing after k operations. There are 5 subarrays of a single element, 4 subarrays of two elements, and 2 subarrays of three elements except [6, 3, 1], so there are 1 + 5 + 4 + 2 = 12 subarrays that can be made non-decreasing.\n\n \nConstraints:\n\n1 <= nums.length <= 10^5\n1 <= nums[i] <= 10^9\n1 <= k <= 10^9\"\"\"\n    return Solution().countNonDecreasingSubarrays(*copy.deepcopy((nums, k)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the True branch of `r == l` (line 112) is never taken by the existing tests.",
+      "Fault-type adequacy at L95: wrong call: wrong function, method or argument. Behaviour: `for b in range(bits - 1, -1, -1):`. The public tests do not distinguish 3 surviving alternatives (`range(bits - 1, -1, -1)` -> `range(-1, -1)`; `range(bits - 1, -1, -1)` -> `range(bits - 1, -1)`; `range(bits - 1, -1, -1)` -> `range(bits - 1, -1, )`). Exercise this behaviour and determine the required result from the specification.",
+      "Statement coverage (C1): line 113 (starting with `r += 1`) is never executed by the existing tests."
+    ],
+    "placebo_facts": [
+      "Branch coverage (C2): the True and False branches of `nxt <= B` (line 98) are taken by the existing tests.",
+      "Statement coverage (C1): line 84 (`sum_b[i] = sum_bm1[i] + sum_bm1[mid]`) is executed by the existing tests.",
+      "Mutation (CRP constant): the mutant `bits - 1` -> `bits - 0` at line 95 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], -7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 5)",
+      "countNonDecreasingSubarrays([], 7)",
+      "countNonDecreasingSubarrays([6], 4)",
+      "countNonDecreasingSubarrays([50001, 50001, 50001, 50001, 50001], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, -1], 7)",
+      "countNonDecreasingSubarrays([-6, -3, -1, -3, -6], 4)",
+      "countNonDecreasingSubarrays([5, 2, 0, 1, 3, 3], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 6], 0)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 6)",
+      "countNonDecreasingSubarrays([-1, 2, 0, 1, 3, 3], 7)",
+      "countNonDecreasingSubarrays([0, 4, 2, 1, 3, 6], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4, 6], 7)",
+      "countNonDecreasingSubarrays([4, 4, 2, 1, 3, 6], 7)",
+      "countNonDecreasingSubarrays([100000000000000003, -100000000000000003007, 100000000000000003, 100000000000000003, 100000000000000003], 4)",
+      "countNonDecreasingSubarrays([1, 2, 3, 4, 4, 6], 7)",
+      "countNonDecreasingSubarrays([6, 6, 6, 6, 6, 6], 7)",
+      "countNonDecreasingSubarrays([6, 6, 6, 6, 6], 4)",
+      "countNonDecreasingSubarrays([1, 3, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([1, 3, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 1, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 1, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 1, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 1, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 1, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 1], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 1], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 6], 1)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 1)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 6, 6], 4)",
+      "countNonDecreasingSubarrays([5, 3, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([5, 3, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([7, 3, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([7, 3, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([2, 3, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([2, 3, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 2, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 2, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 4, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 4, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 2, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 2, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 4, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 3, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 5], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 5, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 7], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 2, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 2], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 3], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 6], 3)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 5], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 6], 5)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 2], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 6], 2)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 8)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 2)",
+      "countNonDecreasingSubarrays([6, 6, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 6, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([1, 3, 3, 6, 6], 4)",
+      "countNonDecreasingSubarrays([4, 3, 1, 2, 4, 6], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4, 7], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 6, 7], 4)",
+      "countNonDecreasingSubarrays([8, 3, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([8, 3, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([4, 3, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([4, 3, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 5, 1, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 5, 1, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 3, 2, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 3, 3, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 4, 4, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 5, 6], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 6, 4], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 8], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 4], 4)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 6], 7)",
+      "countNonDecreasingSubarrays([6, 3, 1, 3, 6], 6)",
+      "countNonDecreasingSubarrays([6, 3, 1, 2, 4, 4], 9)",
+      "countNonDecreasingSubarrays([3, 1, 2, 4, 4, 6], 7)",
+      "countNonDecreasingSubarrays([3, 1, 3, 6, 6], 4)",
+      "countNonDecreasingSubarrays([6, 4, 4, 3, 2, 1], 7)",
+      "countNonDecreasingSubarrays([6, 6, 3, 3, 1], 4)"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([([6, 3, 1, 2, 4, 4], 7), ([6, 3, 1, 3, 6], 4)]), st.tuples(st.lists(st.integers(min_value=-10, max_value=200), max_size=12), st.integers(min_value=-10, max_value=200)))\n",
+    "strategy_sha256": "bdc054dca4b0736b395432b29cfb4ba6800a6c8a28952db21e475d626f6fbeac",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 200,
+    "survivors": 50
+  }
+}

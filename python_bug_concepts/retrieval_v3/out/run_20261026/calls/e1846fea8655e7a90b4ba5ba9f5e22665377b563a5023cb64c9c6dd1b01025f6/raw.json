@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-ae04afce9aaf53eb",
+  "object": "chat.completion",
+  "created": 1793027679,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"selected\":[{\"id\":\"C135\",\"line\":10,\"where\":\"max = 0 initializes accumulator to fixed sentinel\",\"how\":\"Assumes all valid list elements are >= 0; negative inputs never update max\",\"what\":\"Returns 0 for lists like [-5, -2] instead of -2\"}],\"abstain_reason\":\"\"}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 3139,
+    "total_tokens": 3212,
+    "completion_tokens": 73,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

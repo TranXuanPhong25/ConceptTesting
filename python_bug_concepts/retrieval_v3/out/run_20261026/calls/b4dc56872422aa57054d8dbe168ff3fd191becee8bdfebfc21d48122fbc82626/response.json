@@ -1,0 +1,44 @@
+{
+  "request_sha256": "b4dc56872422aa57054d8dbe168ff3fd191becee8bdfebfc21d48122fbc82626",
+  "stage": "judge",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 2,\n      \"reason\": \"Correctly identifies the branch boundary bug where equality to 1 returns an invalid integer.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Line 16 is the fault site returning 1 instead of 0.0 for input 1.0.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Line 12 is a valid precondition check, not the source of the decimal part bug.\"\n    }\n  ]\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 1015,
+    "total_tokens": 1216,
+    "completion_tokens": 201,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 43.67894275509752,
+  "parsed": {
+    "cards": [
+      {
+        "key": "K0",
+        "grade": 2,
+        "reason": "Correctly identifies the branch boundary bug where equality to 1 returns an invalid integer."
+      }
+    ],
+    "bindings": [
+      {
+        "key": "B0",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Line 16 is the fault site returning 1 instead of 0.0 for input 1.0."
+      },
+      {
+        "key": "B1",
+        "where": 0,
+        "how": 0,
+        "what": 0,
+        "reason": "Line 12 is a valid precondition check, not the source of the decimal part bug."
+      }
+    ]
+  }
+}

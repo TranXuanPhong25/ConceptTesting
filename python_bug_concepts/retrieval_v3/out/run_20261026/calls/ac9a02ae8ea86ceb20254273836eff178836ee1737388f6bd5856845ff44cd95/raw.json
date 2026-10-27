@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-bd2e912eb7cc6c42",
+  "object": "chat.completion",
+  "created": 1793027691,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C133\",\n      \"line\": 13,\n      \"where\": \"if n < 10 and (n % 11 == 0 or n % 13 == 0): return 1\",\n      \"how\": \"Assumes single-digit multiples of 11/13 contain digit 7; 0 is a multiple but contains no 7.\",\n      \"what\": \"Input n=11 returns 1 (wrong) instead of 0; spec requires counting 7s in numbers < n.\"\n    },\n    {\n      \"id\": \"C133\",\n      \"line\": 16,\n      \"where\": \"elif n < 100 and (n % 11 == 0 or n % 13 == 0): return 2\",\n      \"how\": \"Assumes all double-digit multiples of 11/13 contain exactly two 7s; 11, 22, 33 do not.\",\n      \"what\": \"Input n=12 returns 2 (wrong) instead of 0; spec requires counting 7s in numbers < n.\"\n    },\n    {\n      \"id\": \"C024\",\n      \"line\": 19,\n      \"where\": \"nums = [x for x in range(1, n) if x % 11 == 0 or x % 13 == 0]\",\n      \"how\": \"range(1, n) excludes n, but spec says 'less than n' which matches; however, logic for n=11 fails earlier.\",\n      \"what\": \"Input n=11 returns 1 via line 13 instead of 0; range logic is correct but short-circuited.\"\n    }\n  ],\n  \"abstain_reason\": \"\"\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 3372,
+    "total_tokens": 3795,
+    "completion_tokens": 423,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

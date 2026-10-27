@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: from typing import List, Tuple\\n2: \\n3: \\n4: def rolling_max(numbers: List[int]) -> List[int]:\\n5:     \\\"\\\"\\\" From a given list of integers, generate a list of rolling maximum element found until given moment\\n6:     in the sequence.\\n7:     >>> rolling_max([1, 2, 3, 2, 3, 4, 2])\\n8:     [1, 2, 3, 3, 3, 4, 4]\\n9:     \\\"\\\"\\\"\\n10:     max_so_far = 0\\n11:     result = []\\n12:     for i, n in enumerate(numbers):\\n13:         if n > max_so_far:\\n14:             max_so_far = n\\n15:         result.append(max_so_far)\\n16:     return result\\n17: \", \"reference\": \"from typing import List, Tuple\\n\\n\\ndef rolling_max(numbers: List[int]) -> List[int]:\\n    \\\"\\\"\\\" From a given list of integers, generate a list of rolling maximum element found until given moment\\n    in the sequence.\\n    >>> rolling_max([1, 2, 3, 2, 3, 4, 2])\\n    [1, 2, 3, 3, 3, 4, 4]\\n    \\\"\\\"\\\"\\n\\n    return [max(numbers[:(i+1)]) for i in range(len(numbers))]\\n\\n\", \"validated_witness\": {\"args\": [[-3, -1]], \"expected\": {\"status\": \"ok\", \"value\": [-3, -1], \"type\": \"list\", \"repr\": \"[-3, -1]\"}, \"actual\": {\"status\": \"ok\", \"value\": [0, 0], \"type\": \"list\", \"repr\": \"[0, 0]\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"A fixed extremum sentinel excludes valid values\", \"where\": \"A manual minimum or maximum accumulator starts at a fixed constant and updates by comparison.\", \"how\": \"If every valid candidate lies beyond the sentinel on the wrong side, no candidate replaces it.\", \"what\": \"The returned extremum or selected object is the sentinel rather than an eligible input.\", \"test\": \"Supply {values} all below the initial maximum or above the initial minimum, including a single valid candidate.\"}, {\"key\": \"K1\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 13, \"where\": \"n > max_so_far\", \"how\": \"If every valid candidate lies beyond the sentinel on the wrong side, no candidate replaces it.\", \"what\": \"The returned extremum or selected object is the sentinel rather than an eligible input.\"}, {\"key\": \"B1\", \"card\": \"K1\", \"line\": 13, \"where\": \"Strict inequality 'n > max_so_far' updates the rolling maximum\", \"how\": \"Assumes strict increase is required to update; equal values do not trigger an update, though the current max is correct\", \"what\": \"Input [3, 3] returns [3, 3] correctly; this hypothesis is weak as the logic holds for equality, but C135 is the primary fault\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 10, \"where\": \"max_so_far initialized to 0, a fixed sentinel for rolling maximum\", \"how\": \"Assumes all input integers are non-negative; negative numbers are ignored as they never exceed the sentinel\", \"what\": \"Input [-5, -2] returns [0, 0] instead of [-5, -2]\"}, {\"key\": \"B3\", \"card\": \"K1\", \"line\": 13, \"where\": \"n > max_so_far\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314209,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 1330,
+    "context_limit": 8192
+  }
+}

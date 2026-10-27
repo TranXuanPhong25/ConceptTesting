@@ -1,0 +1,78 @@
+{
+  "task_id": "HumanEval/15",
+  "split": "audit",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "68b391559f351e4cfc0608164a2ee34fe12bef8cbfab8b58ae8c95724c2fa325",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C162\",\n      \"line\": 17,\n      \"where\": \"Recursive call string_sequence(n - 1) lacks a guard for negative n\",\n      \"how\": \"The base case only handles n==0; negative inputs recurse indefinitely without termination\",\n      \"what\": \"Input n=-1 raises RecursionError instead of returning an empty string or handling the domain\"\n    },\n    {\n      \"id\": \"C133\",\n      \"line\": 12,\n      \"where\": \"Base case guard if n == 0 excludes negative inputs from the specification\",\n      \"how\": \"The specification implies a sequence from 0 to n; negative n should likely return empty, but code recurses\",\n      \"what\": \"Input n=-1 causes infinite recursion instead of returning '' or raising a clear ValueError\"\n    }\n  ],\n  \"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3183,
+      "total_tokens": 3399,
+      "completion_tokens": 216,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 34.7868067168165,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C162",
+          "line": 17,
+          "where": "Recursive call string_sequence(n - 1) lacks a guard for negative n",
+          "how": "The base case only handles n==0; negative inputs recurse indefinitely without termination",
+          "what": "Input n=-1 raises RecursionError instead of returning an empty string or handling the domain"
+        },
+        {
+          "id": "C133",
+          "line": 12,
+          "where": "Base case guard if n == 0 excludes negative inputs from the specification",
+          "how": "The specification implies a sequence from 0 to n; negative n should likely return empty, but code recurses",
+          "what": "Input n=-1 causes infinite recursion instead of returning '' or raising a clear ValueError"
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.recursive-base-progress",
+      "line": 17,
+      "where": "Recursive call string_sequence(n - 1) lacks a guard for negative n",
+      "how": "The base case only handles n==0; negative inputs recurse indefinitely without termination",
+      "what": "Input n=-1 raises RecursionError instead of returning an empty string or handling the domain",
+      "line_normalized_from_string": false
+    },
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 12,
+      "where": "Base case guard if n == 0 excludes negative inputs from the specification",
+      "how": "The specification implies a sequence from 0 to n; negative n should likely return empty, but code recurses",
+      "what": "Input n=-1 causes infinite recursion instead of returning '' or raising a clear ValueError",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.recursive-base-progress",
+      "line": 17,
+      "where": "string_sequence(n - 1)",
+      "how": "A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.",
+      "what": "A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract."
+    },
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 12,
+      "where": "n == 0",
+      "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+      "what": "A valid boundary input takes a branch whose result or rejection violates the specification."
+    }
+  ]
+}

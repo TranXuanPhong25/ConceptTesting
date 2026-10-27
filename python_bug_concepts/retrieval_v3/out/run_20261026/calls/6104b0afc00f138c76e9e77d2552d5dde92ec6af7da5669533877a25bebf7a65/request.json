@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"encrypt\", \"source\": \"\\ndef encrypt(s):\\n    \\\"\\\"\\\"Create a function encrypt that takes a string as an argument and\\n    returns a string encrypted with the alphabet being rotated. \\n    The alphabet should be rotated in a manner such that the letters \\n    shift down by two multiplied to two places.\\n    For example:\\n    encrypt('hi') returns 'lm'\\n    encrypt('asdfghjkl') returns 'ewhjklnop'\\n    encrypt('gf') returns 'kj'\\n    encrypt('et') returns 'ix'\\n    \\\"\\\"\\\"\\n    result = \\\"\\\"\\n    alphabet = \\\"abcdefghijklmnopqrstuvwxyz\\\"\\n    for char in s:\\n        result += alphabet[(alphabet.index(char.lower()) + 2*2) % 26]\\n    return result\\n\", \"concept_hints\": [{\"title\": \"index(value) is mistaken for the current occurrence position\", \"where\": \"A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.\", \"how\": \"index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.\", \"what\": \"The wrong occurrence is selected or positional conditions follow value equality.\", \"test\": \"Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions.\"}, {\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}, {\"title\": \"Sequence indexing crosses the valid positive or negative boundary\", \"where\": \"A sequence is indexed with a computed or hard-coded integer.\", \"how\": \"Direct indexing rejects indices at or above length and below negative length instead of clamping like a slice.\", \"what\": \"IndexError replaces the required value or documented invalid-input handling.\", \"test\": \"Use {sequence} of length n and exercise {index_expression} at n, -n-1 and on an empty sequence.\"}]}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314389,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 623,
+    "context_limit": 8192
+  }
+}

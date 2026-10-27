@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-b838e907d9177423",
+  "object": "chat.completion",
+  "created": 1793037607,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 0,\n      \"reason\": \"The code fails on non-letters, not due to Unicode vs ASCII range mismatches.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"The actual bug is missing non-alpha handling, not Unicode predicate scope.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 918,
+    "total_tokens": 1046,
+    "completion_tokens": 128,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

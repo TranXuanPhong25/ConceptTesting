@@ -1,0 +1,85 @@
+{
+  "task_id": "HumanEval/63",
+  "split": "development",
+  "arm": "blind",
+  "response": {
+    "request_sha256": "d86e6a4f814110e0295f4457fd28607433ee8c28afb02fc2a1d15c9656d1105e",
+    "stage": "judge",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 0,\n      \"reason\": \"Boundary logic is correct; the actual failure is recursion depth, not a branch mismatch.\"\n    },\n    {\n      \"key\": \"K1\",\n      \"grade\": 3,\n      \"reason\": \"Correctly identifies that deep recursion without memoization causes stack overflow for large inputs.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Accurately links line 24 recursion to stack overflow for large valid inputs.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Correctly explains that lack of memoization causes stack overflow for moderate inputs.\"\n    },\n    {\n      \"key\": \"B2\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Line 17 is correct; no boundary bug exists, only a recursion depth issue.\"\n    }\n  ]\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 2082,
+      "total_tokens": 2380,
+      "completion_tokens": 298,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 42.08361162804067,
+    "parsed": {
+      "cards": [
+        {
+          "key": "K0",
+          "grade": 0,
+          "reason": "Boundary logic is correct; the actual failure is recursion depth, not a branch mismatch."
+        },
+        {
+          "key": "K1",
+          "grade": 3,
+          "reason": "Correctly identifies that deep recursion without memoization causes stack overflow for large inputs."
+        }
+      ],
+      "bindings": [
+        {
+          "key": "B0",
+          "where": 1,
+          "how": 1,
+          "what": 1,
+          "reason": "Accurately links line 24 recursion to stack overflow for large valid inputs."
+        },
+        {
+          "key": "B1",
+          "where": 1,
+          "how": 1,
+          "what": 1,
+          "reason": "Correctly explains that lack of memoization causes stack overflow for moderate inputs."
+        },
+        {
+          "key": "B2",
+          "where": 0,
+          "how": 0,
+          "what": 0,
+          "reason": "Line 17 is correct; no boundary bug exists, only a recursion depth issue."
+        }
+      ]
+    }
+  },
+  "valid_schema": true,
+  "mapping": {
+    "cards": {
+      "K0": "py.branch-boundary-contract",
+      "K1": "py.recursive-base-progress"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.recursive-base-progress"
+      },
+      "B1": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.recursive-base-progress"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.branch-boundary-contract"
+      }
+    }
+  }
+}

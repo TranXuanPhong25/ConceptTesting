@@ -1,0 +1,332 @@
+{
+ "baseline": {
+  "task": 109,
+  "entry": "move_one_ball",
+  "put": "\ndef move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n    \n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n    \n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n                \n    \"\"\"\n    if len(arr) == 0:\n        return True\n    if len(arr) == 1:\n        return True\n    if arr[0] > arr[1]:\n        return False\n    if arr[0] == arr[1]:\n        return move_one_ball(arr[1:])\n    else:\n        return move_one_ball(arr[1:]) or move_one_ball(arr[2:])\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate([3, 4, 5, 1, 2])==True, \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate([3, 5, 10, 1, 2])==True\n    assert candidate([4, 3, 1, 2])==False\n    # Check some edge cases that are easy to work out by hand.\n    assert candidate([3, 5, 4, 1, 2])==False, \"This prints if this assert fails 2 (also good for debugging!)\"\n    assert candidate([])==True\n",
+  "concept_facts": [
+   "Mutation (CRP constant): the mutant `len(arr) == 1` -> `len(arr) == 2` at line 31 survives: no existing test distinguishes them."
+  ],
+  "concept_meta": [
+   {
+    "kind": "MUTANT",
+    "line": 31,
+    "k": 7,
+    "family": "CRP constant",
+    "extended": false,
+    "text": "Mutation (CRP constant): the mutant `len(arr) == 1` -> `len(arr) == 2` at line 31 survives: no existing test distinguishes them.",
+    "witness": 2,
+    "boundary": true,
+    "reached": true,
+    "witness_call": "move_one_ball([3, 5, 10, 1, -2007])",
+    "block": 31,
+    "g_demote": false,
+    "tier": 0,
+    "mutant_src": "def move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n    \n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n    \n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n                \n    \"\"\"\n    if len(arr) == 0:\n        return True\n    if len(arr) == 2:\n        return True\n    if arr[0] > arr[1]:\n        return False\n    if arr[0] == arr[1]:\n        return move_one_ball(arr[1:])\n    else:\n        return move_one_ball(arr[1:]) or move_one_ball(arr[2:])"
+   }
+  ],
+  "placebo_facts": [
+   "Mutation (SIR): the mutant `arr[1:]` -> `arr[:]` at line 38 is killed: an existing test distinguishes them."
+  ],
+  "tool_inputs": [
+   "move_one_ball([3, 5, 10, 1, -2007])"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "MUTANT",
+    "line": 38,
+    "k": 25,
+    "family": "SIR",
+    "extended": true,
+    "text": "Mutation (SIR): the mutant `arr[1:]` -> `arr[:]` at line 38 is killed: an existing test distinguishes them.",
+    "mutant_src": "def move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n    \n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n    \n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n                \n    \"\"\"\n    if len(arr) == 0:\n        return True\n    if len(arr) == 1:\n        return True\n    if arr[0] > arr[1]:\n        return False\n    if arr[0] == arr[1]:\n        return move_one_ball(arr[1:])\n    else:\n        return move_one_ball(arr[:]) or move_one_ball(arr[2:])"
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(arr):\n    return isinstance(arr, list)\n\ndef P1(arr):\n    return P1_m(arr)\n\ndef P2_m(arr):\n    return all((isinstance(x, int) for x in arr))\n\ndef P2(arr):\n    return P2_m(arr)\n\ndef P3_m(arr):\n    return len(arr) == len(set(arr))\n\ndef P3(arr):\n    return P3_m(arr)\n\ndef P4_m(arr):\n    return isinstance(len(arr), int) and len(arr) >= 0\n\ndef P4(arr):\n    return P4_m(arr)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True and P4(*args, **kwargs) is True\n",
+  "valid_sha256": "0d1087da8c99c30a1e5556aa42bf108e41fa8d35fee5ad0d63938897db036520",
+  "strategy_src": "def strategy():\n    return st.lists(st.integers(), unique=True, min_size=0, max_size=100)\n",
+  "strategy_sha256": "d0151e4e2766fb70dfdc1642c07ba7946eed335537380174f5719e3006ec8ae9",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 109,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "9b736460e890f5f327ef2facaccc7049057a2b0018658767aa4b6a8b44ae01b3",
+   "candidates": 7,
+   "confirmed": 7,
+   "coded": 4,
+   "surviving": 4,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [
+    {
+     "id": "P5",
+     "reason": "code_rejected",
+     "error": "only builtin calls are allowed"
+    },
+    {
+     "id": "P6",
+     "reason": "code_rejected",
+     "error": "only builtin calls are allowed"
+    },
+    {
+     "id": "P7",
+     "reason": "code_rejected",
+     "error": "only builtin calls are allowed"
+    }
+   ],
+   "dropped_verifier": [],
+   "valid_sha256": "0d1087da8c99c30a1e5556aa42bf108e41fa8d35fee5ad0d63938897db036520",
+   "seed": 20261119,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 109,
+  "entry": "move_one_ball",
+  "put": "\ndef move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n    \n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n    \n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n                \n    \"\"\"\n    if len(arr) == 0:\n        return True\n    if len(arr) == 1:\n        return True\n    if arr[0] > arr[1]:\n        return False\n    if arr[0] == arr[1]:\n        return move_one_ball(arr[1:])\n    else:\n        return move_one_ball(arr[1:]) or move_one_ball(arr[2:])\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate([3, 4, 5, 1, 2])==True, \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate([3, 5, 10, 1, 2])==True\n    assert candidate([4, 3, 1, 2])==False\n    # Check some edge cases that are easy to work out by hand.\n    assert candidate([3, 5, 4, 1, 2])==False, \"This prints if this assert fails 2 (also good for debugging!)\"\n    assert candidate([])==True\n",
+  "concept_facts": [
+   "Fault-type adequacy at L31: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if len(arr) == 1:`. The public tests do not distinguish 1 surviving alternatives (`1` -> `2`). Exercise this behaviour and determine the required result from the specification.",
+   "Fault-type adequacy at L33: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if arr[0] > arr[1]:`. The public tests do not distinguish 1 surviving alternatives (`> arr[1]` -> `>= arr[1]`). Exercise this behaviour and determine the required result from the specification.",
+   "Fault-type adequacy at L36: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `return move_one_ball(arr[1:])`. The public tests do not distinguish 1 surviving alternatives (`1` -> `2`). Exercise this behaviour and determine the required result from the specification."
+  ],
+  "concept_meta": [
+   {
+    "kind": "FAULT",
+    "line": 31,
+    "fault_type": "BOUNDARY",
+    "text": "Fault-type adequacy at L31: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if len(arr) == 1:`. The public tests do not distinguish 1 surviving alternatives (`1` -> `2`). Exercise this behaviour and determine the required result from the specification.",
+    "survivors": 1,
+    "distinguished": 1,
+    "alternatives": [
+     "`1` -> `2`"
+    ],
+    "alternative_sources": [
+     "\ndef move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n    \n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n    \n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n                \n    \"\"\"\n    if len(arr) == 0:\n        return True\n    if len(arr) == 2:\n        return True\n    if arr[0] > arr[1]:\n        return False\n    if arr[0] == arr[1]:\n        return move_one_ball(arr[1:])\n    else:\n        return move_one_ball(arr[1:]) or move_one_ball(arr[2:])\n\n"
+    ],
+    "reached": true,
+    "witness_call": "move_one_ball([3])",
+    "block": 31,
+    "witness": 0
+   },
+   {
+    "kind": "FAULT",
+    "line": 33,
+    "fault_type": "BOUNDARY",
+    "text": "Fault-type adequacy at L33: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if arr[0] > arr[1]:`. The public tests do not distinguish 1 surviving alternatives (`> arr[1]` -> `>= arr[1]`). Exercise this behaviour and determine the required result from the specification.",
+    "survivors": 1,
+    "distinguished": 1,
+    "alternatives": [
+     "`> arr[1]` -> `>= arr[1]`"
+    ],
+    "alternative_sources": [
+     "\ndef move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n    \n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n    \n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n                \n    \"\"\"\n    if len(arr) == 0:\n        return True\n    if len(arr) == 1:\n        return True\n    if arr[0] >= arr[1]:\n        return False\n    if arr[0] == arr[1]:\n        return move_one_ball(arr[1:])\n    else:\n        return move_one_ball(arr[1:]) or move_one_ball(arr[2:])\n\n"
+    ],
+    "reached": true,
+    "witness_call": "move_one_ball([3, 3, 3, 3, 3])",
+    "block": 33,
+    "witness": 5
+   },
+   {
+    "kind": "FAULT",
+    "line": 36,
+    "fault_type": "BOUNDARY",
+    "text": "Fault-type adequacy at L36: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `return move_one_ball(arr[1:])`. The public tests do not distinguish 1 surviving alternatives (`1` -> `2`). Exercise this behaviour and determine the required result from the specification.",
+    "survivors": 1,
+    "distinguished": 1,
+    "alternatives": [
+     "`1` -> `2`"
+    ],
+    "alternative_sources": [
+     "\ndef move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n    \n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n    \n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n                \n    \"\"\"\n    if len(arr) == 0:\n        return True\n    if len(arr) == 1:\n        return True\n    if arr[0] > arr[1]:\n        return False\n    if arr[0] == arr[1]:\n        return move_one_ball(arr[2:])\n    else:\n        return move_one_ball(arr[1:]) or move_one_ball(arr[2:])\n\n"
+    ],
+    "reached": true,
+    "witness_call": "move_one_ball([3, 3, 1, 2])",
+    "block": 36,
+    "witness": 31
+   }
+  ],
+  "placebo_facts": [
+   "Mutation (SIR): the mutant `arr[1:]` -> `arr[:]` at line 38 is killed: an existing test distinguishes them."
+  ],
+  "tool_inputs": [
+   "move_one_ball([3, 5, 10, 1, -2007])",
+   "move_one_ball([2, 4, 3, 0, 1])",
+   "move_one_ball([3])",
+   "move_one_ball([4])",
+   "move_one_ball([3, 4])",
+   "move_one_ball([3, 5])",
+   "move_one_ball([4, 3])",
+   "move_one_ball([3, 3, 3, 3, 3])",
+   "move_one_ball([4, 4, 4, 4])",
+   "move_one_ball([1, 4, 5, 1, 2])",
+   "move_one_ball([1, 5, 10, 1, 2])",
+   "move_one_ball([1, 3, 1, 2])",
+   "move_one_ball([1, 5, 4, 1, 2])",
+   "move_one_ball([3, 1, 5, 1, 2])",
+   "move_one_ball([3, 1, 10, 1, 2])",
+   "move_one_ball([4, 1, 1, 2])",
+   "move_one_ball([3, 1, 4, 1, 2])",
+   "move_one_ball([3, 4, 1, 1, 2])",
+   "move_one_ball([3, 5, 1, 1, 2])",
+   "move_one_ball([4, 3, 1, 1])",
+   "move_one_ball([3, 4, 5, 1, 1])",
+   "move_one_ball([3, 5, 10, 1, 1])",
+   "move_one_ball([3, 5, 4, 1, 1])",
+   "move_one_ball([3, 4, 5, 1])",
+   "move_one_ball([3, 5, 10, 1])",
+   "move_one_ball([4, 3, 1])",
+   "move_one_ball([3, 5, 4, 1])",
+   "move_one_ball([3, 4, 5, 1, 2, 2])",
+   "move_one_ball([3, 5, 10, 1, 2, 2])",
+   "move_one_ball([4, 3, 1, 2, 2])",
+   "move_one_ball([3, 5, 4, 1, 2, 2])",
+   "move_one_ball([2, 4, 5, 1, 2])",
+   "move_one_ball([2, 5, 10, 1, 2])",
+   "move_one_ball([3, 3, 1, 2])",
+   "move_one_ball([2, 5, 4, 1, 2])",
+   "move_one_ball([4, 4, 5, 1, 2])",
+   "move_one_ball([4, 5, 10, 1, 2])",
+   "move_one_ball([5, 3, 1, 2])",
+   "move_one_ball([4, 5, 4, 1, 2])",
+   "move_one_ball([2, 3, 1, 2])",
+   "move_one_ball([3, 3, 5, 1, 2])",
+   "move_one_ball([3, 4, 10, 1, 2])",
+   "move_one_ball([4, 2, 1, 2])",
+   "move_one_ball([3, 4, 4, 1, 2])",
+   "move_one_ball([3, 5, 5, 1, 2])",
+   "move_one_ball([3, 6, 10, 1, 2])",
+   "move_one_ball([4, 4, 1, 2])",
+   "move_one_ball([3, 6, 4, 1, 2])",
+   "move_one_ball([3, 2, 5, 1, 2])",
+   "move_one_ball([3, 2, 10, 1, 2])",
+   "move_one_ball([3, 2, 4, 1, 2])",
+   "move_one_ball([3, 5, 9, 1, 2])",
+   "move_one_ball([3, 5, 3, 1, 2])",
+   "move_one_ball([3, 4, 6, 1, 2])",
+   "move_one_ball([3, 5, 11, 1, 2])",
+   "move_one_ball([4, 3, 2, 2])",
+   "move_one_ball([3, 4, 2, 1, 2])",
+   "move_one_ball([3, 5, 2, 1, 2])",
+   "move_one_ball([3, 4, 5, 2, 2])",
+   "move_one_ball([3, 5, 10, 2, 2])",
+   "move_one_ball([4, 3, 1, 3])",
+   "move_one_ball([3, 5, 4, 2, 2])",
+   "move_one_ball([3, 4, 5, 1, 3])",
+   "move_one_ball([3, 5, 10, 1, 3])",
+   "move_one_ball([3, 5, 4, 1, 3])",
+   "move_one_ball([3, 3, 10, 1, 2])",
+   "move_one_ball([3, 3, 4, 1, 2])",
+   "move_one_ball([1, 2, 3, 4, 5])",
+   "move_one_ball([1, 2, 3, 5, 10])",
+   "move_one_ball([1, 2, 3, 4])",
+   "move_one_ball([2, 1, 5, 4, 3])",
+   "move_one_ball([2, 1, 10, 5, 3])",
+   "move_one_ball([2, 1, 3, 4])",
+   "move_one_ball([2, 1, 4, 5, 3])",
+   "move_one_ball([2, 4, 5, 1, 3])",
+   "move_one_ball([2, 5, 10, 1, 3])",
+   "move_one_ball([2, 3, 1, 4])",
+   "move_one_ball([2, 5, 4, 1, 3])",
+   "move_one_ball([3, 4, 5, 1, 2, 6])",
+   "move_one_ball([3, 5, 10, 1, 2, 11])",
+   "move_one_ball([4, 3, 1, 2, 5])",
+   "move_one_ball([3, 5, 4, 1, 2, 6])",
+   "move_one_ball([5, 4, 5, 1, 2])",
+   "move_one_ball([5, 5, 10, 1, 2])",
+   "move_one_ball([6, 3, 1, 2])",
+   "move_one_ball([5, 5, 4, 1, 2])",
+   "move_one_ball([3, 6, 5, 1, 2])",
+   "move_one_ball([3, 7, 10, 1, 2])",
+   "move_one_ball([4, 5, 1, 2])",
+   "move_one_ball([3, 7, 4, 1, 2])",
+   "move_one_ball([3, 4, 7, 1, 2])",
+   "move_one_ball([3, 5, 12, 1, 2])",
+   "move_one_ball([4, 3, 3, 2])",
+   "move_one_ball([3, 5, 6, 1, 2])",
+   "move_one_ball([3, 4, 3, 1, 2])",
+   "move_one_ball([3, 5, 8, 1, 2])",
+   "move_one_ball([3, 4, 5, 3, 2])",
+   "move_one_ball([3, 5, 10, 3, 2])",
+   "move_one_ball([4, 3, 1, 4])",
+   "move_one_ball([3, 5, 4, 3, 2])",
+   "move_one_ball([3, 4, 5, 1, 4])",
+   "move_one_ball([3, 5, 10, 1, 4])",
+   "move_one_ball([3, 5, 4, 1, 4])",
+   "move_one_ball([4, 5, 1, 2, 3])",
+   "move_one_ball([5, 10, 1, 2, 3])",
+   "move_one_ball([3, 1, 2, 4])",
+   "move_one_ball([5, 4, 1, 2, 3])",
+   "move_one_ball([5, 4, 3, 2, 1])",
+   "move_one_ball([10, 5, 3, 2, 1])",
+   "move_one_ball([4, 3, 2, 1])",
+   "move_one_ball([3, 4, 5, 5, 1, 2])",
+   "move_one_ball([3, 5, 10, 10, 1, 2])",
+   "move_one_ball([4, 3, 1, 1, 2])",
+   "move_one_ball([3, 5, 4, 4, 1, 2])"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "MUTANT",
+    "line": 38,
+    "k": 25,
+    "family": "SIR",
+    "extended": true,
+    "text": "Mutation (SIR): the mutant `arr[1:]` -> `arr[:]` at line 38 is killed: an existing test distinguishes them.",
+    "mutant_src": "def move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n    \n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n    \n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n                \n    \"\"\"\n    if len(arr) == 0:\n        return True\n    if len(arr) == 1:\n        return True\n    if arr[0] > arr[1]:\n        return False\n    if arr[0] == arr[1]:\n        return move_one_ball(arr[1:])\n    else:\n        return move_one_ball(arr[:]) or move_one_ball(arr[2:])"
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(arr):\n    return isinstance(arr, list)\n\ndef P1(arr):\n    return P1_m(arr)\n\ndef P2_m(arr):\n    return all((isinstance(x, int) for x in arr))\n\ndef P2(arr):\n    return P2_m(arr)\n\ndef P3_m(arr):\n    return len(arr) == len(set(arr))\n\ndef P3(arr):\n    return P3_m(arr)\n\ndef P4_m(arr):\n    return isinstance(len(arr), int) and len(arr) >= 0\n\ndef P4(arr):\n    return P4_m(arr)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True and P4(*args, **kwargs) is True\n",
+  "valid_sha256": "0d1087da8c99c30a1e5556aa42bf108e41fa8d35fee5ad0d63938897db036520",
+  "strategy_src": "def strategy():\n    return st.lists(st.integers(), unique=True, min_size=0, max_size=100)\n",
+  "strategy_sha256": "d0151e4e2766fb70dfdc1642c07ba7946eed335537380174f5719e3006ec8ae9",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 109,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "9b736460e890f5f327ef2facaccc7049057a2b0018658767aa4b6a8b44ae01b3",
+   "candidates": 7,
+   "confirmed": 7,
+   "coded": 4,
+   "surviving": 4,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [
+    {
+     "id": "P5",
+     "reason": "code_rejected",
+     "error": "only builtin calls are allowed"
+    },
+    {
+     "id": "P6",
+     "reason": "code_rejected",
+     "error": "only builtin calls are allowed"
+    },
+    {
+     "id": "P7",
+     "reason": "code_rejected",
+     "error": "only builtin calls are allowed"
+    }
+   ],
+   "dropped_verifier": [],
+   "valid_sha256": "0d1087da8c99c30a1e5556aa42bf108e41fa8d35fee5ad0d63938897db036520",
+   "seed": 20261119,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 20,
+  "survivors": 5
+ }
+}

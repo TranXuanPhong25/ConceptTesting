@@ -1,0 +1,56 @@
+{
+  "task_id": "HumanEval/49",
+  "split": "development",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "ef7c449c28ad87c51f0eb8efc2e6978da71638b1ff7f58a8c6ebe24ed288964c",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C024\",\n      \"line\": 17,\n      \"where\": \"for _ in range(n): iterates n times to compute 2^n mod p\",\n      \"how\": \"range(n) excludes n, so the loop runs n times; however, for n=0 it runs 0 times returning 1, which is correct, but the docstring implies 2^n logic which is O(n) and fails for large n due to TLE, not range boundary.\",\n      \"what\": \"For large n (e.g., 100000), the function times out or hangs instead of returning the result efficiently, violating the implicit performance contract of modular exponentiation.\"\n    }\n  ],\n  \"abstain_reason\": \"The implementation correctly computes 2^n mod p for small inputs including n=0. The primary fault is algorithmic inefficiency (O(n) vs O(log n)) causing timeouts for large inputs, which is not explicitly covered by the provided catalog concepts (C024 describes range boundary logic, not performance). No other catalog concept precisely matches the 'inefficient algorithm' fault.\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3058,
+      "total_tokens": 3318,
+      "completion_tokens": 260,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 40.39360109902918,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C024",
+          "line": 17,
+          "where": "for _ in range(n): iterates n times to compute 2^n mod p",
+          "how": "range(n) excludes n, so the loop runs n times; however, for n=0 it runs 0 times returning 1, which is correct, but the docstring implies 2^n logic which is O(n) and fails for large n due to TLE, not range boundary.",
+          "what": "For large n (e.g., 100000), the function times out or hangs instead of returning the result efficiently, violating the implicit performance contract of modular exponentiation."
+        }
+      ],
+      "abstain_reason": "The implementation correctly computes 2^n mod p for small inputs including n=0. The primary fault is algorithmic inefficiency (O(n) vs O(log n)) causing timeouts for large inputs, which is not explicitly covered by the provided catalog concepts (C024 describes range boundary logic, not performance). No other catalog concept precisely matches the 'inefficient algorithm' fault."
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.range-exclusive-stop",
+      "line": 17,
+      "where": "for _ in range(n): iterates n times to compute 2^n mod p",
+      "how": "range(n) excludes n, so the loop runs n times; however, for n=0 it runs 0 times returning 1, which is correct, but the docstring implies 2^n logic which is O(n) and fails for large n due to TLE, not range boundary.",
+      "what": "For large n (e.g., 100000), the function times out or hangs instead of returning the result efficiently, violating the implicit performance contract of modular exponentiation.",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.range-exclusive-stop",
+      "line": 17,
+      "where": "range(n)",
+      "how": "range includes start and excludes stop, with direction determined by step.",
+      "what": "A required endpoint is never visited or an interval is unexpectedly empty."
+    }
+  ]
+}

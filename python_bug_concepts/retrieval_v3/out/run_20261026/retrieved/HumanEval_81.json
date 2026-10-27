@@ -1,0 +1,85 @@
+{
+  "task_id": "HumanEval/81",
+  "split": "audit",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "744b69bf5712d205b0ba870579fcf7aad3d70bc4e573e7210b1d1f26a816adb8",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n\"selected\": [\n{\n\"id\": \"C146\",\n\"line\": 32,\n\"where\": \"grade = round(grade, 1) before threshold comparisons\",\n\"how\": \"Rounding to one decimal changes values near thresholds (e.g., 3.75 becomes 3.8), shifting them into incorrect grade buckets.\",\n\"what\": \"Input 3.75 yields 'A' instead of 'A-'; input 3.35 yields 'A-' instead of 'B+'.\"\n},\n{\n\"id\": \"C133\",\n\"line\": 33,\n\"where\": \"if grade == 4.0: letter_grades[i] = 'A+'\",\n\"how\": \"Exact equality check fails for values that round to 4.0 (e.g., 4.04) or float approximations, bypassing the intended A+ assignment.\",\n\"what\": \"Input 4.04 yields 'A' instead of 'A+'; input 4.000000000000001 yields 'A' instead of 'A+'.\"\n}\n],\n\"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3996,
+      "total_tokens": 4262,
+      "completion_tokens": 266,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 44.9492052400019,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C146",
+          "line": 32,
+          "where": "grade = round(grade, 1) before threshold comparisons",
+          "how": "Rounding to one decimal changes values near thresholds (e.g., 3.75 becomes 3.8), shifting them into incorrect grade buckets.",
+          "what": "Input 3.75 yields 'A' instead of 'A-'; input 3.35 yields 'A-' instead of 'B+'."
+        },
+        {
+          "id": "C133",
+          "line": 33,
+          "where": "if grade == 4.0: letter_grades[i] = 'A+'",
+          "how": "Exact equality check fails for values that round to 4.0 (e.g., 4.04) or float approximations, bypassing the intended A+ assignment.",
+          "what": "Input 4.04 yields 'A' instead of 'A+'; input 4.000000000000001 yields 'A' instead of 'A+'."
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.rounding-policy",
+      "line": 32,
+      "where": "grade = round(grade, 1) before threshold comparisons",
+      "how": "Rounding to one decimal changes values near thresholds (e.g., 3.75 becomes 3.8), shifting them into incorrect grade buckets.",
+      "what": "Input 3.75 yields 'A' instead of 'A-'; input 3.35 yields 'A-' instead of 'B+'.",
+      "line_normalized_from_string": false
+    },
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 33,
+      "where": "if grade == 4.0: letter_grades[i] = 'A+'",
+      "how": "Exact equality check fails for values that round to 4.0 (e.g., 4.04) or float approximations, bypassing the intended A+ assignment.",
+      "what": "Input 4.04 yields 'A' instead of 'A+'; input 4.000000000000001 yields 'A' instead of 'A+'.",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.rounding-policy",
+      "line": 32,
+      "where": "round(grade, 1)",
+      "how": "Python round uses its documented tie behavior; rounding before classification can also move values across thresholds.",
+      "what": "A tie rounds in the wrong direction or a near-threshold value is assigned to the wrong class."
+    },
+    {
+      "concept_id": "py.index-out-of-bounds",
+      "line": 34,
+      "where": "letter_grades[i]",
+      "how": "Direct indexing rejects indices at or above length and below negative length instead of clamping like a slice.",
+      "what": "IndexError replaces the required value or documented invalid-input handling."
+    },
+    {
+      "concept_id": "py.empty-singleton-shortcut",
+      "line": 28,
+      "where": "not grades",
+      "how": "A small-input shortcut or guard can omit a valid case or skip work that is still required.",
+      "what": "A valid small input is rejected or returns a shortcut value inconsistent with the specification."
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+{
+ "baseline": {
+  "task": 15,
+  "entry": "string_sequence",
+  "put": "\n\ndef string_sequence(n: int) -> str:\n    \"\"\" Return a string containing space-delimited numbers starting from 0 upto n inclusive.\n    >>> string_sequence(0)\n    '0'\n    >>> string_sequence(5)\n    '0 1 2 3 4 5'\n    \"\"\"\n\n    # Base case\n    if n == 0:\n        return \"0\"\n\n    # Recursive case\n    else:\n        return string_sequence(n - 1) + \" \" + str(n)\n\n",
+  "base": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate(0) == '0'\n    assert candidate(3) == '0 1 2 3'\n    assert candidate(10) == '0 1 2 3 4 5 6 7 8 9 10'\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `n` of size or value 1000 or more (the largest in the existing tests is 10); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `n` of size or value 1000 or more (the largest in the existing tests is 10); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     1500
+    ],
+    "witness_call": "string_sequence(1500)"
+   }
+  ],
+  "placebo_facts": [],
+  "tool_inputs": [
+   "string_sequence(1500)"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(n):\n    return isinstance(n, int)\n\ndef P1(n):\n    return P1_m(n)\n\ndef P2_m(n):\n    return n >= 0\n\ndef P2(n):\n    return P2_m(n)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+  "valid_sha256": "85f8cc6bd0725205f07115ce3cb4379657a82e0629b048dadcaa4031492172a8",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.tuples(st.integers(min_value=0))\n",
+  "strategy_sha256": "97b560f9282b2e3839426d55a60d6dae2b2ead1b9aca22d922ad9563fda0b8e1",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 15,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "826af4c45d465089352c63affa82f7ebf8e0d6ea09d81c76ab2faf0cba108bd2",
+   "candidates": 2,
+   "confirmed": 2,
+   "coded": 2,
+   "surviving": 2,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "85f8cc6bd0725205f07115ce3cb4379657a82e0629b048dadcaa4031492172a8",
+   "seed": 20261025,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 15,
+  "entry": "string_sequence",
+  "put": "\n\ndef string_sequence(n: int) -> str:\n    \"\"\" Return a string containing space-delimited numbers starting from 0 upto n inclusive.\n    >>> string_sequence(0)\n    '0'\n    >>> string_sequence(5)\n    '0 1 2 3 4 5'\n    \"\"\"\n\n    # Base case\n    if n == 0:\n        return \"0\"\n\n    # Recursive case\n    else:\n        return string_sequence(n - 1) + \" \" + str(n)\n\n",
+  "base": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate(0) == '0'\n    assert candidate(3) == '0 1 2 3'\n    assert candidate(10) == '0 1 2 3 4 5 6 7 8 9 10'\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `n` of size or value 1000 or more (the largest in the existing tests is 10); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `n` of size or value 1000 or more (the largest in the existing tests is 10); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     1500
+    ],
+    "witness_call": "string_sequence(1500)"
+   }
+  ],
+  "placebo_facts": [],
+  "tool_inputs": [
+   "string_sequence(1500)",
+   "string_sequence(1)",
+   "string_sequence(2)",
+   "string_sequence(9)",
+   "string_sequence(4)",
+   "string_sequence(11)",
+   "string_sequence(5)",
+   "string_sequence(12)",
+   "string_sequence(8)"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(n):\n    return isinstance(n, int)\n\ndef P1(n):\n    return P1_m(n)\n\ndef P2_m(n):\n    return n >= 0\n\ndef P2(n):\n    return P2_m(n)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+  "valid_sha256": "85f8cc6bd0725205f07115ce3cb4379657a82e0629b048dadcaa4031492172a8",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.tuples(st.integers(min_value=0))\n",
+  "strategy_sha256": "97b560f9282b2e3839426d55a60d6dae2b2ead1b9aca22d922ad9563fda0b8e1",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 15,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "826af4c45d465089352c63affa82f7ebf8e0d6ea09d81c76ab2faf0cba108bd2",
+   "candidates": 2,
+   "confirmed": 2,
+   "coded": 2,
+   "surviving": 2,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "85f8cc6bd0725205f07115ce3cb4379657a82e0629b048dadcaa4031492172a8",
+   "seed": 20261025,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 10,
+  "survivors": 0
+ }
+}

@@ -1,0 +1,56 @@
+{
+  "task_id": "HumanEval/2",
+  "split": "audit",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "55845f721e811dfe2ab31ccf696f566c1c1233c8d82567767a5ae6e499255067",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C133\",\n      \"line\": 16,\n      \"where\": \"if number == 1: return 1\",\n      \"how\": \"The special case returns 1 for input 1.0, but the spec requires the decimal part (0.0) for any integer.\",\n      \"what\": \"Input 1.0 returns 1.0 instead of 0.0, violating the contract that the result must be smaller than 1.\"\n    }\n  ],\n  \"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3080,
+      "total_tokens": 3215,
+      "completion_tokens": 135,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 15.655306756030768,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C133",
+          "line": 16,
+          "where": "if number == 1: return 1",
+          "how": "The special case returns 1 for input 1.0, but the spec requires the decimal part (0.0) for any integer.",
+          "what": "Input 1.0 returns 1.0 instead of 0.0, violating the contract that the result must be smaller than 1."
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 16,
+      "where": "if number == 1: return 1",
+      "how": "The special case returns 1 for input 1.0, but the spec requires the decimal part (0.0) for any integer.",
+      "what": "Input 1.0 returns 1.0 instead of 0.0, violating the contract that the result must be smaller than 1.",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 12,
+      "where": "number >= 0",
+      "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+      "what": "A valid boundary input takes a branch whose result or rejection violates the specification."
+    }
+  ]
+}

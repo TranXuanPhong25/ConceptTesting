@@ -1,0 +1,1405 @@
+[
+  {
+    "schema_version": 1,
+    "id": "py.branch-boundary-contract",
+    "title": "A branch boundary or equality special case disagrees with the specification",
+    "language": "python",
+    "category": "logic",
+    "aliases": [
+      "comparison boundary",
+      "threshold",
+      "off by one",
+      "equality case",
+      "biên so sánh",
+      "nhánh đặc biệt"
+    ],
+    "where": {
+      "summary": "A numeric comparison controls a branch, filter or early return at a threshold or equality case.",
+      "ast_nodes": [
+        "Compare"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A numeric comparison controls a branch, filter or early return at a threshold or equality case."
+    },
+    "how": {
+      "mechanism": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+      "trigger_template": "Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}."
+    },
+    "what": {
+      "observable_failure": "A valid boundary input takes a branch whose result or rejection violates the specification.",
+      "oracle_template": "Under {contract}, check the required result at each boundary; do not infer the expected result from the implementation guard."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:comparisons"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "comparison_site",
+      "contract",
+      "location",
+      "target",
+      "threshold"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.empty-singleton-shortcut",
+    "title": "An empty or singleton shortcut changes the required result",
+    "language": "python",
+    "category": "logic",
+    "aliases": [
+      "empty input",
+      "singleton",
+      "length one",
+      "small input guard",
+      "rỗng",
+      "một phần tử"
+    ],
+    "where": {
+      "summary": "Code branches on sequence truthiness or length zero, one or two before the general computation.",
+      "ast_nodes": [
+        "Compare"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Code branches on sequence truthiness or length zero, one or two before the general computation."
+    },
+    "how": {
+      "mechanism": "A small-input shortcut or guard can omit a valid case or skip work that is still required.",
+      "trigger_template": "Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs."
+    },
+    "what": {
+      "observable_failure": "A valid small input is rejected or returns a shortcut value inconsistent with the specification.",
+      "oracle_template": "Under {contract}, derive the required result for each allowed small size and check the shortcut independently."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:truth",
+      "python:sequence-operations"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "contract",
+      "inputs",
+      "location",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.extremum-initial-sentinel",
+    "title": "A fixed extremum sentinel excludes valid values",
+    "language": "python",
+    "category": "numeric",
+    "aliases": [
+      "max initialized zero",
+      "min sentinel",
+      "all negative",
+      "extremum",
+      "khởi tạo max min"
+    ],
+    "where": {
+      "summary": "A manual minimum or maximum accumulator starts at a fixed constant and updates by comparison.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A manual minimum or maximum accumulator starts at a fixed constant and updates by comparison."
+    },
+    "how": {
+      "mechanism": "If every valid candidate lies beyond the sentinel on the wrong side, no candidate replaces it.",
+      "trigger_template": "Supply {values} all below the initial maximum or above the initial minimum, including a single valid candidate."
+    },
+    "what": {
+      "observable_failure": "The returned extremum or selected object is the sentinel rather than an eligible input.",
+      "oracle_template": "Under {contract}, assert the selected value is eligible and agrees with the required extremum."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:extrema"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "contract",
+      "location",
+      "target",
+      "values"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.empty-reduction-domain",
+    "title": "Filtering leaves an empty input for a reduction without a default",
+    "language": "python",
+    "category": "iteration",
+    "aliases": [
+      "max empty",
+      "min empty",
+      "empty filter",
+      "ValueError",
+      "reduction rỗng"
+    ],
+    "where": {
+      "summary": "min or max is applied to a collection that can become empty, possibly after filtering.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: min or max is applied to a collection that can become empty, possibly after filtering."
+    },
+    "how": {
+      "mechanism": "Without a default, min and max reject an empty iterable instead of producing an application sentinel.",
+      "trigger_template": "Choose admissible {input} whose filter retains no candidates, including all-rejected or empty cases allowed by the spec."
+    },
+    "what": {
+      "observable_failure": "The reduction raises instead of returning the required empty-result value.",
+      "oracle_template": "Under {contract}, check the specified empty-result behavior and a nonempty control case."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:extrema"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "contract",
+      "input",
+      "location",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.set-order-loss",
+    "title": "Set conversion loses ordering required by the output contract",
+    "language": "python",
+    "category": "iteration",
+    "aliases": [
+      "set order",
+      "sorted unique",
+      "list(set)",
+      "preserve order",
+      "mất thứ tự"
+    ],
+    "where": {
+      "summary": "A set is converted or iterated into an output sequence without restoring the required order.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A set is converted or iterated into an output sequence without restoring the required order."
+    },
+    "how": {
+      "mechanism": "Sets represent unique members and do not provide the sorted or original sequence order required by many APIs.",
+      "trigger_template": "Use {values} whose required order differs from a possible set iteration order, including out-of-order distinct inputs."
+    },
+    "what": {
+      "observable_failure": "Output members may be correct while their order violates the specification.",
+      "oracle_template": "Under {ordering_contract}, compare the complete ordered sequence, not just its set of elements."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:sets"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "ordering_contract",
+      "target",
+      "values"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.first-occurrence-position",
+    "title": "index(value) is mistaken for the current occurrence position",
+    "language": "python",
+    "category": "iteration",
+    "aliases": [
+      "list.index duplicate",
+      "str.index",
+      "enumerate",
+      "value position",
+      "index first occurrence",
+      "giá trị và vị trí"
+    ],
+    "where": {
+      "summary": "A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A traversal recovers positions through sequence.index(value) or compares values to stand in for positions."
+    },
+    "how": {
+      "mechanism": "index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.",
+      "trigger_template": "Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions."
+    },
+    "what": {
+      "observable_failure": "The wrong occurrence is selected or positional conditions follow value equality.",
+      "oracle_template": "Under {position_contract}, assert results using explicit occurrence indices rather than first-match lookup."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:sequence-operations",
+      "v2python:enumerate"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "position_contract",
+      "target",
+      "values"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.text-normalization-contract",
+    "title": "Normalization changes text that the specification requires preserving",
+    "language": "python",
+    "category": "strings",
+    "aliases": [
+      "lowercase preserve case",
+      "strip whitespace",
+      "replace removes characters",
+      "normalization",
+      "đổi chữ hoa thường",
+      "mất khoảng trắng"
+    ],
+    "where": {
+      "summary": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: lower, upper, casefold, strip or replace transforms input text before the required operation."
+    },
+    "how": {
+      "mechanism": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+      "trigger_template": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+    },
+    "what": {
+      "observable_failure": "Required original text is altered or a distinction specified by the task disappears.",
+      "oracle_template": "Under {text_contract}, assert exact retained text and the required equivalence or distinction between the paired inputs."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:normalization",
+      "v2python:strip",
+      "v2python:strip-replace"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "normalization_site",
+      "target",
+      "text_contract",
+      "texts"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.unicode-text-byte-domain",
+    "title": "Byte encoding is mistaken for Unicode character processing",
+    "language": "python",
+    "category": "strings",
+    "aliases": [
+      "encode ascii",
+      "UTF-8 byte length",
+      "Unicode characters",
+      "len encode",
+      "độ dài ký tự byte"
+    ],
+    "where": {
+      "summary": "Code encodes a str and counts, indexes or deduplicates the resulting bytes, or forces an ASCII encoding.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Code encodes a str and counts, indexes or deduplicates the resulting bytes, or forces an ASCII encoding."
+    },
+    "how": {
+      "mechanism": "Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.",
+      "trigger_template": "Use {text} containing admissible non-ASCII characters, including a multibyte character repeated once."
+    },
+    "what": {
+      "observable_failure": "Character length or distinct-character count is wrong, or encoding rejects a valid string.",
+      "oracle_template": "Under {character_contract}, distinguish code points, graphemes and encoded bytes and check the required domain."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:encode"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "character_contract",
+      "location",
+      "target",
+      "text"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.ascii-unicode-classification",
+    "title": "ASCII ranges and Unicode character predicates classify different domains",
+    "language": "python",
+    "category": "strings",
+    "aliases": [
+      "ASCII Unicode",
+      "isalpha isupper isdigit",
+      "a-z A-Z",
+      "ascii_letters",
+      "phân loại ký tự"
+    ],
+    "where": {
+      "summary": "A character test uses ASCII ranges or an ASCII character table where Unicode predicates may be required, or vice versa.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A character test uses ASCII ranges or an ASCII character table where Unicode predicates may be required, or vice versa."
+    },
+    "how": {
+      "mechanism": "Methods such as isalpha, isupper and isdigit cover Unicode classes beyond literal ASCII ranges.",
+      "trigger_template": "Use {characters} from the allowed domain, including letters or digits outside ASCII when the spec allows them."
+    },
+    "what": {
+      "observable_failure": "A valid character is missed or an out-of-domain character is accepted.",
+      "oracle_template": "Under {classification_contract}, check the exact permitted alphabet and Unicode category policy."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:character-classes"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "characters",
+      "classification_contract",
+      "location",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.split-join-separator-loss",
+    "title": "Splitting and joining changes delimiter or whitespace structure",
+    "language": "python",
+    "category": "strings",
+    "aliases": [
+      "split join whitespace",
+      "delimiter loss",
+      "replace comma empty",
+      "split separators",
+      "mất dấu phân cách"
+    ],
+    "where": {
+      "summary": "split, replace or join is used to parse or reconstruct a string with specified delimiters or spacing.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: split, replace or join is used to parse or reconstruct a string with specified delimiters or spacing."
+    },
+    "how": {
+      "mechanism": "Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.",
+      "trigger_template": "Use {text} with repeated separators, leading/trailing separators and adjacent non-space-separated tokens."
+    },
+    "what": {
+      "observable_failure": "Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored.",
+      "oracle_template": "Under {tokenization_contract}, assert both token contents and any required separator preservation."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:split",
+      "v2python:strip-replace"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "target",
+      "text",
+      "tokenization_contract"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.numeric-cast-loss",
+    "title": "Numeric conversion loses required value or precision",
+    "language": "python",
+    "category": "numeric",
+    "aliases": [
+      "int float truncation",
+      "int(x+1)",
+      "fraction loss",
+      "numeric conversion",
+      "ép kiểu mất phần lẻ"
+    ],
+    "where": {
+      "summary": "int or float conversion is applied to values whose exact numeric value must be preserved or rounded under a specified policy.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: int or float conversion is applied to values whose exact numeric value must be preserved or rounded under a specified policy."
+    },
+    "how": {
+      "mechanism": "int truncates fractional values toward zero; float conversion can also round exact integer or decimal inputs before later arithmetic.",
+      "trigger_template": "Use admissible fractional and large exact {values} through {cast_site}, including values beyond exact binary-float integer precision where allowed."
+    },
+    "what": {
+      "observable_failure": "The result is numerically changed rather than merely represented in another type.",
+      "oracle_template": "Under {numeric_contract}, compare exact required values and separately check the specified return type."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:integer-conversion",
+      "v2python:numeric-types"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "cast_site",
+      "location",
+      "numeric_contract",
+      "target",
+      "values"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.shortcircuit-boolean-result",
+    "title": "A boolean-looking and/or return leaks a non-bool operand",
+    "language": "python",
+    "category": "logic",
+    "aliases": [
+      "return list and condition",
+      "short circuit bool",
+      "and returns operand",
+      "trả về bool sai kiểu"
+    ],
+    "where": {
+      "summary": "A predicate returns an and/or expression containing a possibly non-boolean operand.",
+      "ast_nodes": [
+        "Compare"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A predicate returns an and/or expression containing a possibly non-boolean operand."
+    },
+    "how": {
+      "mechanism": "and and or return selected operands rather than converting the result to bool.",
+      "trigger_template": "Use {falsy_operand}, such as an empty collection, in the short-circuit path of {predicate}."
+    },
+    "what": {
+      "observable_failure": "The predicate returns a collection or other non-bool value instead of the required boolean.",
+      "oracle_template": "Under {return_contract}, check both value and exact return type where the contract requires bool."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:boolean-operators"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "falsy_operand",
+      "location",
+      "predicate",
+      "return_contract",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.quantifier-scope",
+    "title": "Checking one element or aggregate misses an all/any requirement",
+    "language": "python",
+    "category": "logic",
+    "aliases": [
+      "all any",
+      "only last element",
+      "every prefix",
+      "all elements",
+      "quantifier",
+      "kiểm tra mọi phần tử"
+    ],
+    "where": {
+      "summary": "A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.",
+      "ast_nodes": [
+        "Compare"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition."
+    },
+    "how": {
+      "mechanism": "Universal and existential conditions differ from testing one representative element or only the final aggregate.",
+      "trigger_template": "Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees."
+    },
+    "what": {
+      "observable_failure": "A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.",
+      "oracle_template": "Under {quantified_contract}, check mixed true/false cases and the specified empty-input convention."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:quantifiers"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "quantified_contract",
+      "sequence",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.rounding-policy",
+    "title": "Rounding or pre-rounding uses a different tie or threshold policy",
+    "language": "python",
+    "category": "numeric",
+    "aliases": [
+      "round ties",
+      "round half away from zero",
+      "pre rounding",
+      "round threshold",
+      "làm tròn"
+    ],
+    "where": {
+      "summary": "round or another rounding transformation is used before a comparison or as part of an output conversion.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: round or another rounding transformation is used before a comparison or as part of an output conversion."
+    },
+    "how": {
+      "mechanism": "Python round uses its documented tie behavior; rounding before classification can also move values across thresholds.",
+      "trigger_template": "Use {values} at exact ties and immediately around {threshold}, with both signs if allowed."
+    },
+    "what": {
+      "observable_failure": "A tie rounds in the wrong direction or a near-threshold value is assigned to the wrong class.",
+      "oracle_template": "Under {rounding_contract}, assert the required tie rule and the required order of rounding and comparison."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:rounding"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "rounding_contract",
+      "target",
+      "threshold",
+      "values"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.signed-modulo-domain",
+    "title": "Modulo on a signed value is mistaken for magnitude digit extraction",
+    "language": "python",
+    "category": "numeric",
+    "aliases": [
+      "negative modulo",
+      "signed digit",
+      "a % 10",
+      "abs digits",
+      "modulo số âm"
+    ],
+    "where": {
+      "summary": "Modulo extracts digits or residues from values that may be negative.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Modulo extracts digits or residues from values that may be negative."
+    },
+    "how": {
+      "mechanism": "Python remainder follows the divisor sign and need not equal the corresponding digit of the absolute magnitude.",
+      "trigger_template": "Use positive and negative {values} with the same magnitude and nonzero remainder."
+    },
+    "what": {
+      "observable_failure": "A digit or sign-sensitive result differs from the specification.",
+      "oracle_template": "Under {remainder_contract}, distinguish mathematical remainder from digits of abs(value)."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:numeric-types"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "remainder_contract",
+      "target",
+      "values"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.tie-break-selection",
+    "title": "An extremum selection handles equal scores or duplicate candidates incorrectly",
+    "language": "python",
+    "category": "iteration",
+    "aliases": [
+      "max key tie",
+      "stable sort",
+      "first occurrence",
+      "tie break",
+      "đồng hạng"
+    ],
+    "where": {
+      "summary": "Code selects an extremum by key, score or repeated comparison and the specification defines tie behavior.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Code selects an extremum by key, score or repeated comparison and the specification defines tie behavior."
+    },
+    "how": {
+      "mechanism": "Strict/non-strict updates and stable selection order decide which equal-scoring item survives.",
+      "trigger_template": "Supply {candidates} with equal best scores but distinguishable positions or secondary keys."
+    },
+    "what": {
+      "observable_failure": "The selected item has the right score but violates first/last or secondary-order tie policy.",
+      "oracle_template": "Under {tie_contract}, assert the exact chosen candidate, not only its score."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:extrema",
+      "python:list-sort"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "candidates",
+      "location",
+      "target",
+      "tie_contract"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.lexicographic-numeric-order",
+    "title": "Textual ordering is used where numeric or domain ordering is required",
+    "language": "python",
+    "category": "logic",
+    "aliases": [
+      "lexicographic numeric",
+      "string comparison numbers",
+      "str(a) < str(b)",
+      "thứ tự từ điển và số"
+    ],
+    "where": {
+      "summary": "Values are compared as strings or labels while the specification defines numeric or another nonlexical order.",
+      "ast_nodes": [
+        "Compare"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Values are compared as strings or labels while the specification defines numeric or another nonlexical order."
+    },
+    "how": {
+      "mechanism": "String comparisons follow lexicographic code-point ordering rather than numeric magnitude or an external rank.",
+      "trigger_template": "Use {values} whose lexical order differs from the required numeric or domain order."
+    },
+    "what": {
+      "observable_failure": "The wrong maximum, minimum, interval order or selected value is returned.",
+      "oracle_template": "Under {ordering_contract}, compare using the required value interpretation while preserving the required return representation."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:comparisons"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "ordering_contract",
+      "target",
+      "values"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.absolute-difference",
+    "title": "A signed subtraction is returned where a magnitude is required",
+    "language": "python",
+    "category": "numeric",
+    "aliases": [
+      "absolute difference",
+      "distance signed subtraction",
+      "abs missing",
+      "hiệu tuyệt đối"
+    ],
+    "where": {
+      "summary": "An output is computed by subtracting two values and the specification asks for absolute difference or magnitude.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: An output is computed by subtracting two values and the specification asks for absolute difference or magnitude."
+    },
+    "how": {
+      "mechanism": "Subtraction changes sign when operands are swapped; magnitude does not.",
+      "trigger_template": "Use admissible {left_value} and {right_value} in both relative orders."
+    },
+    "what": {
+      "observable_failure": "A required nonnegative distance is negative or changes sign under swapped operands.",
+      "oracle_template": "Under {distance_contract}, assert required nonnegativity and the specified absolute difference."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:numeric-types"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "distance_contract",
+      "left_value",
+      "location",
+      "right_value",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.aggregation-scope",
+    "title": "Aggregation uses the wrong region, grouping or unit",
+    "language": "python",
+    "category": "numeric",
+    "aliases": [
+      "prefix sum",
+      "running balance",
+      "sum groups",
+      "flatten aggregation",
+      "phạm vi tổng hợp"
+    ],
+    "where": {
+      "summary": "sum, len or another fold aggregates a whole input or counts outer items while the specification requires prefixes, separate groups, filtered occurrences or a different unit.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: sum, len or another fold aggregates a whole input or counts outer items while the specification requires prefixes, separate groups, filtered occurrences or a different unit."
+    },
+    "how": {
+      "mechanism": "A whole-input total loses intermediate or per-group information, and counting outer items does not compute a required weighted or nested total such as all characters.",
+      "trigger_template": "Use {groups_or_prefixes} with the same total but different required intermediate or per-group behavior."
+    },
+    "what": {
+      "observable_failure": "Equal totals produce an invalid equivalence and a required intermediate condition or grouped result is lost.",
+      "oracle_template": "Under {aggregation_contract}, compare the required sequence of intermediate values or per-group results."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:sum",
+      "python:sequence-operations"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "aggregation_contract",
+      "groups_or_prefixes",
+      "location",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.integer-division-precision",
+    "title": "True division routes exact integer arithmetic through finite-precision floats",
+    "language": "python",
+    "category": "numeric",
+    "aliases": [
+      "integer true division",
+      "large int float precision",
+      "rational exact",
+      "chia số nguyên mất chính xác"
+    ],
+    "where": {
+      "summary": "Integer-valued arithmetic uses / and later tests integrality, compares exactly or converts the result to int.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Integer-valued arithmetic uses / and later tests integrality, compares exactly or converts the result to int."
+    },
+    "how": {
+      "mechanism": "True division can produce a finite-precision floating result where arbitrary-precision integer arithmetic was required.",
+      "trigger_template": "Use admissible large {integers} and exact divisibility boundaries at {division_site}."
+    },
+    "what": {
+      "observable_failure": "An exact integer value or integrality decision is changed by floating precision.",
+      "oracle_template": "Under {integer_contract}, compare with exact integer or rational arithmetic and check required result types."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:numeric-types"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "division_site",
+      "integer_contract",
+      "integers",
+      "location",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.literal-classification-domain",
+    "title": "A literal classification table omits or admits values outside the required class",
+    "language": "python",
+    "category": "logic",
+    "aliases": [
+      "literal character table",
+      "missing digit vowel",
+      "count characters",
+      "finite alphabet",
+      "thiếu ký tự trong bảng"
+    ],
+    "where": {
+      "summary": "A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.",
+      "ast_nodes": [
+        "Compare"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table."
+    },
+    "how": {
+      "mechanism": "A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.",
+      "trigger_template": "Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}."
+    },
+    "what": {
+      "observable_failure": "A required member is ignored or an invalid member is accepted in the returned predicate or count.",
+      "oracle_template": "Under {classification_contract}, assert the specified classification for every relevant member and a contrasting non-member."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:membership",
+      "v2python:character-classes"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "classification_contract",
+      "classification_domain",
+      "classification_site",
+      "location",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.numeric-text-width",
+    "title": "Numeric conversion loses text width or zero digits that the contract preserves",
+    "language": "python",
+    "category": "strings",
+    "aliases": [
+      "int string leading zeros",
+      "binary width",
+      "reverse digits zeros",
+      "digit representation",
+      "mất chữ số không"
+    ],
+    "where": {
+      "summary": "Digit text is parsed to an integer and later rendered or counted as though its original representation were preserved.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Digit text is parsed to an integer and later rendered or counted as though its original representation were preserved."
+    },
+    "how": {
+      "mechanism": "Numeric values do not retain leading-zero width; transformations such as reversal can turn significant trailing zero digits into discarded leading zeros.",
+      "trigger_template": "Use admissible {digit_text} with leading zeros or a numeric input whose reversal starts with zeros, then exercise {conversion_path}."
+    },
+    "what": {
+      "observable_failure": "Output width or digit multiplicity changes even when the numeric conversion itself is valid.",
+      "oracle_template": "Under {representation_contract}, assert the required digit sequence, width and zero count separately from numeric value."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:integer-conversion"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "conversion_path",
+      "digit_text",
+      "location",
+      "representation_contract",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.presence-frequency-confusion",
+    "title": "Presence or first-position state is used where occurrence counts are required",
+    "language": "python",
+    "category": "mapping",
+    "aliases": [
+      "presence frequency",
+      "toggle duplicates",
+      "membership not count",
+      "remaining occurrences",
+      "đếm số lần xuất hiện"
+    ],
+    "where": {
+      "summary": "Membership, a set, a one-entry-per-value dictionary or toggled presence state stands in for repeated occurrences.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Membership, a set, a one-entry-per-value dictionary or toggled presence state stands in for repeated occurrences."
+    },
+    "how": {
+      "mechanism": "A presence bit or first stored position cannot represent arbitrary multiplicity or remaining occurrence counts.",
+      "trigger_template": "Use {values} repeated at least three times or at distinct paired positions and vary multiplicity while preserving the set of values."
+    },
+    "what": {
+      "observable_failure": "Required duplicate items disappear, rejected repeats reappear, or one occurrence is reused as several distinct ones.",
+      "oracle_template": "Under {multiplicity_contract}, assert exact occurrence counts and distinct index use rather than membership alone."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:membership",
+      "python:dict",
+      "python:sequence-operations"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "multiplicity_contract",
+      "target",
+      "values"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.index-origin-domain",
+    "title": "A position, stride or coordinate is interpreted in the wrong domain",
+    "language": "python",
+    "category": "iteration",
+    "aliases": [
+      "index origin",
+      "stride parity",
+      "range step two",
+      "alphabet ord versus index",
+      "degree index",
+      "gốc chỉ số bước nhảy"
+    ],
+    "where": {
+      "summary": "Positions, length-derived indices, strides or character ordinals are used as offsets, parity selectors or derived values.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Positions, length-derived indices, strides or character ordinals are used as offsets, parity selectors or derived values."
+    },
+    "how": {
+      "mechanism": "Zero/one-based origins, stride alignment and coordinate versus value domains are distinct; the same numeric expression need not represent the required position or rank.",
+      "trigger_template": "Use admissible {positions_or_values} at the first/last position and opposite parity or origin, including repeated characters when ordinal rank is required."
+    },
+    "what": {
+      "observable_failure": "The wrong positions, multiplier, alphabet rank or stride class determine the result.",
+      "oracle_template": "Under {position_contract}, bind the required origin, unit and stride explicitly and assert the exact selected positions or derived values."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:sequence-operations",
+      "python:range",
+      "v2python:enumerate",
+      "v2python:character-ordinal"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "position_contract",
+      "positions_or_values",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.first-match-vs-optimum",
+    "title": "An early qualifying candidate is returned instead of the best eligible candidate",
+    "language": "python",
+    "category": "iteration",
+    "aliases": [
+      "first match not minimum",
+      "first even versus smallest",
+      "early return optimum",
+      "trả ứng viên đầu thay vì tốt nhất"
+    ],
+    "where": {
+      "summary": "A loop or search returns the first qualifying element while the specification requires an optimum over eligible candidates.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A loop or search returns the first qualifying element while the specification requires an optimum over eligible candidates."
+    },
+    "how": {
+      "mechanism": "Existence of an eligible candidate does not imply that it is minimal, maximal or closest among all eligible candidates.",
+      "trigger_template": "Place a worse but eligible {first_candidate} before a better {later_candidate}, with an ineligible global extremum if filtering is required."
+    },
+    "what": {
+      "observable_failure": "The returned candidate qualifies but is not the required optimum.",
+      "oracle_template": "Under {selection_contract}, check eligibility first and then the optimum and tie policy over all eligible candidates."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:extrema"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "first_candidate",
+      "later_candidate",
+      "location",
+      "selection_contract",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.observation-after-transform",
+    "title": "A decision reads transformed state instead of the required original state",
+    "language": "python",
+    "category": "state",
+    "aliases": [
+      "sort before endpoint decision",
+      "predicate after mutation",
+      "original state lost",
+      "đọc trạng thái sau biến đổi"
+    ],
+    "where": {
+      "summary": "A sort, reversal or mutation occurs before reading values that the specification defines from the original input.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A sort, reversal or mutation occurs before reading values that the specification defines from the original input."
+    },
+    "how": {
+      "mechanism": "Even an independent copy changes after mutation; observing it later does not recover the original endpoints or order.",
+      "trigger_template": "Choose {input} whose decision-relevant original values change under {transformation}, then follow {observation_site}."
+    },
+    "what": {
+      "observable_failure": "A branch is selected from transformed rather than original state and returns the wrong result.",
+      "oracle_template": "Under {observation_contract}, compare the decision against saved original values and separately check output transformation."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "python:list-sort",
+      "python:assignment-alias"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "input",
+      "location",
+      "observation_contract",
+      "observation_site",
+      "target",
+      "transformation"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.fixed-chunk-run",
+    "title": "Fixed literal replacement is mistaken for replacement of a maximal run",
+    "language": "python",
+    "category": "strings",
+    "aliases": [
+      "replace triple spaces",
+      "fixed chunk maximal run",
+      "repeated whitespace",
+      "thay cả chuỗi liên tiếp"
+    ],
+    "where": {
+      "summary": "replace is applied to a fixed repeated literal while the contract describes an arbitrary-length run.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: replace is applied to a fixed repeated literal while the contract describes an arbitrary-length run."
+    },
+    "how": {
+      "mechanism": "Literal replacement handles matched non-overlapping chunks; it does not automatically consume the entire maximal run.",
+      "trigger_template": "Use {text} with run lengths just below, equal to, one above and twice {chunk_length}."
+    },
+    "what": {
+      "observable_failure": "Extra characters remain or multiple replacement markers appear where one run marker is required.",
+      "oracle_template": "Under {run_contract}, assert exact output for each complete maximal run and its boundaries."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:strip-replace"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "chunk_length",
+      "location",
+      "run_contract",
+      "target",
+      "text"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.regex-fullmatch-boundary",
+    "title": "A regex end anchor accepts a terminal newline where full-string validation is required",
+    "language": "python",
+    "category": "strings",
+    "aliases": [
+      "regex dollar newline",
+      "re.match fullmatch",
+      "terminal newline validation",
+      "regex khớp toàn bộ"
+    ],
+    "where": {
+      "summary": "A validator uses match/search with a dollar end anchor as though it proved complete-string membership.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A validator uses match/search with a dollar end anchor as though it proved complete-string membership."
+    },
+    "how": {
+      "mechanism": "The dollar anchor can match immediately before a terminal newline; fullmatch requires the entire string to match.",
+      "trigger_template": "Append a terminal newline and other trailing characters to {valid_text} at {validation_site}."
+    },
+    "what": {
+      "observable_failure": "An invalid extra-character suffix is accepted or the required full-string policy is violated.",
+      "oracle_template": "Under {validation_contract}, assert complete consumption and the required newline and trailing-character policy."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:regex-anchors",
+      "v2python:regex-fullmatch"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "location",
+      "target",
+      "valid_text",
+      "validation_contract",
+      "validation_site"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.digit-place-extraction",
+    "title": "A fixed decimal division is mistaken for extracting the leading digit of any-width input",
+    "language": "python",
+    "category": "numeric",
+    "aliases": [
+      "leading digit",
+      "n // 10",
+      "multi digit prefix",
+      "first digit extraction",
+      "lấy chữ số đầu"
+    ],
+    "where": {
+      "summary": "Integer division by a fixed power of ten is used as the first digit of numbers of unrestricted width.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: Integer division by a fixed power of ten is used as the first digit of numbers of unrestricted width."
+    },
+    "how": {
+      "mechanism": "Division by ten removes one trailing digit and can leave a multi-digit prefix; it does not always select exactly the leading digit.",
+      "trigger_template": "Use {numbers} of two, three and more digits with leading-digit classes that differ from the remaining prefix."
+    },
+    "what": {
+      "observable_failure": "Digit classification or arithmetic uses the prefix as if it were a single leading digit.",
+      "oracle_template": "Under {digit_contract}, assert the exact required leading/last digit and supported magnitude and sign domains."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:numeric-types"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "digit_contract",
+      "location",
+      "numbers",
+      "target"
+    ]
+  },
+  {
+    "schema_version": 1,
+    "id": "py.recursive-base-progress",
+    "title": "Recursive calls fail to reach a valid base case or exceed supported stack depth",
+    "language": "python",
+    "category": "scope",
+    "aliases": [
+      "recursive missing base case",
+      "RecursionError",
+      "recursive progress",
+      "đệ quy thiếu điều kiện dừng"
+    ],
+    "where": {
+      "summary": "A function calls itself with smaller, unchanged or expanding arguments while base guards cover only part of the valid domain.",
+      "ast_nodes": [
+        "Call",
+        "BinOp"
+      ],
+      "preconditions": [
+        "The specification requires the distinction described below; the source operation alone does not establish a fault."
+      ],
+      "location_template": "At {location} in {target}, inspect: A function calls itself with smaller, unchanged or expanding arguments while base guards cover only part of the valid domain."
+    },
+    "how": {
+      "mechanism": "A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.",
+      "trigger_template": "Use the smallest allowed {base_boundary} missing from the guards and an admissible {depth_input} under {execution_contract}."
+    },
+    "what": {
+      "observable_failure": "A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.",
+      "oracle_template": "Under {termination_contract}, assert correct base outputs and completion for the supported input domain without changing interpreter limits to hide the issue."
+    },
+    "applicability_notes": [
+      "Synthesized language/API contract risk. The referenced documentation establishes Python semantics; task-specific expectations must come from the target specification. This is a conditional review candidate, not a confirmed bug."
+    ],
+    "pattern_ids": [
+      "v2python:recursion-limit"
+    ],
+    "evidence_status": "curated_hypothesis",
+    "required_bindings": [
+      "base_boundary",
+      "depth_input",
+      "execution_contract",
+      "location",
+      "target",
+      "termination_contract"
+    ]
+  }
+]

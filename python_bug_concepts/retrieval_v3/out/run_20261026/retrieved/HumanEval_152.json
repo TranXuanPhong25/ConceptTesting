@@ -1,0 +1,70 @@
+{
+  "task_id": "HumanEval/152",
+  "split": "audit",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "c850aa2504144cedc263d014bf55a784bb0298a04922b99babc9bc04ee98544d",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n\"selected\": [\n{\n\"id\": \"C150\",\n\"line\": 19,\n\"where\": \"result.append(game[i] - guess[i]) computes signed difference instead of absolute difference\",\n\"how\": \"Subtraction yields negative values when guess exceeds score; specification requires non-negative magnitude\",\n\"what\": \"Input [1, 2] vs [2, 1] returns [-1, 1] instead of [1, 1]; negative values appear in output\"\n}\n],\n\"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3528,
+      "total_tokens": 3651,
+      "completion_tokens": 123,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 36.181335943052545,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C150",
+          "line": 19,
+          "where": "result.append(game[i] - guess[i]) computes signed difference instead of absolute difference",
+          "how": "Subtraction yields negative values when guess exceeds score; specification requires non-negative magnitude",
+          "what": "Input [1, 2] vs [2, 1] returns [-1, 1] instead of [1, 1]; negative values appear in output"
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.absolute-difference",
+      "line": 19,
+      "where": "result.append(game[i] - guess[i]) computes signed difference instead of absolute difference",
+      "how": "Subtraction yields negative values when guess exceeds score; specification requires non-negative magnitude",
+      "what": "Input [1, 2] vs [2, 1] returns [-1, 1] instead of [1, 1]; negative values appear in output",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.absolute-difference",
+      "line": 19,
+      "where": "game[i] - guess[i]",
+      "how": "Subtraction changes sign when operands are swapped; magnitude does not.",
+      "what": "A required nonnegative distance is negative or changes sign under swapped operands."
+    },
+    {
+      "concept_id": "py.index-origin-domain",
+      "line": 19,
+      "where": "game[i]",
+      "how": "Zero/one-based origins, stride alignment and coordinate versus value domains are distinct; the same numeric expression need not represent the required position or rank.",
+      "what": "The wrong positions, multiplier, alphabet rank or stride class determine the result."
+    },
+    {
+      "concept_id": "py.index-out-of-bounds",
+      "line": 19,
+      "where": "game[i]",
+      "how": "Direct indexing rejects indices at or above length and below negative length instead of clamping like a slice.",
+      "what": "IndexError replaces the required value or documented invalid-input handling."
+    }
+  ]
+}

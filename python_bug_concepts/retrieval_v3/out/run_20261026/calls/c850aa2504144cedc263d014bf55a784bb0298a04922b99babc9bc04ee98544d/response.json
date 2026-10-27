@@ -1,0 +1,31 @@
+{
+  "request_sha256": "c850aa2504144cedc263d014bf55a784bb0298a04922b99babc9bc04ee98544d",
+  "stage": "retrieve",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n\"selected\": [\n{\n\"id\": \"C150\",\n\"line\": 19,\n\"where\": \"result.append(game[i] - guess[i]) computes signed difference instead of absolute difference\",\n\"how\": \"Subtraction yields negative values when guess exceeds score; specification requires non-negative magnitude\",\n\"what\": \"Input [1, 2] vs [2, 1] returns [-1, 1] instead of [1, 1]; negative values appear in output\"\n}\n],\n\"abstain_reason\": \"\"\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 3528,
+    "total_tokens": 3651,
+    "completion_tokens": 123,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 36.181335943052545,
+  "parsed": {
+    "selected": [
+      {
+        "id": "C150",
+        "line": 19,
+        "where": "result.append(game[i] - guess[i]) computes signed difference instead of absolute difference",
+        "how": "Subtraction yields negative values when guess exceeds score; specification requires non-negative magnitude",
+        "what": "Input [1, 2] vs [2, 1] returns [-1, 1] instead of [1, 1]; negative values appear in output"
+      }
+    ],
+    "abstain_reason": ""
+  }
+}

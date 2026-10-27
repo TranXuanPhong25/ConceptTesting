@@ -1,0 +1,70 @@
+{
+  "task_id": "HumanEval/161",
+  "split": "development",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "230ffba0711523752a173d85991810a8e2a0a2caf038c9831a86908b96cdeb1f",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\"selected\":[{\"id\":\"C141\",\"line\":16,\"where\":\"c in string.ascii_letters for c in s\",\"how\":\"string.ascii_letters covers only ASCII letters, while spec implies all Unicode letters via isalpha.\",\"what\":\"Non-ASCII letters like 'é' are ignored; 'a1é' returns '1éa' instead of 'A1É'.\"}],\"abstain_reason\":\"\"}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3304,
+      "total_tokens": 3392,
+      "completion_tokens": 88,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 51.28150467900559,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C141",
+          "line": 16,
+          "where": "c in string.ascii_letters for c in s",
+          "how": "string.ascii_letters covers only ASCII letters, while spec implies all Unicode letters via isalpha.",
+          "what": "Non-ASCII letters like 'é' are ignored; 'a1é' returns '1éa' instead of 'A1É'."
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.ascii-unicode-classification",
+      "line": 16,
+      "where": "c in string.ascii_letters for c in s",
+      "how": "string.ascii_letters covers only ASCII letters, while spec implies all Unicode letters via isalpha.",
+      "what": "Non-ASCII letters like 'é' are ignored; 'a1é' returns '1éa' instead of 'A1É'.",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.ascii-unicode-classification",
+      "line": 16,
+      "where": "string.ascii_letters",
+      "how": "Methods such as isalpha, isupper and isdigit cover Unicode classes beyond literal ASCII ranges.",
+      "what": "A valid character is missed or an out-of-domain character is accepted."
+    },
+    {
+      "concept_id": "py.quantifier-scope",
+      "line": 15,
+      "where": "any(\n        c in string.ascii_letters for c in s)",
+      "how": "Universal and existential conditions differ from testing one representative element or only the final aggregate.",
+      "what": "A required all-elements, any-element or intermediate-prefix condition is classified incorrectly."
+    },
+    {
+      "concept_id": "py.slice-boundary-normalization",
+      "line": 16,
+      "where": "s[::-1]",
+      "how": "Slices clamp bounds, interpret negatives relative to length and exclude the stop position.",
+      "what": "An invalid request silently yields an empty or truncated result."
+    }
+  ]
+}

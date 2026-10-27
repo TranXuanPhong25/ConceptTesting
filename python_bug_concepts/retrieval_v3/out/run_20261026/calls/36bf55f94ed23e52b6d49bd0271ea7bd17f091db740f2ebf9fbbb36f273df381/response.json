@@ -1,0 +1,30 @@
+{
+  "request_sha256": "36bf55f94ed23e52b6d49bd0271ea7bd17f091db740f2ebf9fbbb36f273df381",
+  "stage": "retrieve",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n\"selected\": [\n{\n\"id\": \"C162\",\n\"line\": 15,\n\"where\": \"Recursive call sum_product(numbers[1:]) without explicit depth limit\",\n\"how\": \"Linear recursion depth grows with input size; large lists exceed interpreter stack limit before base case is reached.\",\n\"what\": \"Large valid input lists raise RecursionError instead of returning the correct sum and product tuple.\"\n}\n]\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 3442,
+    "total_tokens": 3540,
+    "completion_tokens": 98,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 35.035069515928626,
+  "parsed": {
+    "selected": [
+      {
+        "id": "C162",
+        "line": 15,
+        "where": "Recursive call sum_product(numbers[1:]) without explicit depth limit",
+        "how": "Linear recursion depth grows with input size; large lists exceed interpreter stack limit before base case is reached.",
+        "what": "Large valid input lists raise RecursionError instead of returning the correct sum and product tuple."
+      }
+    ]
+  }
+}

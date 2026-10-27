@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: \\n3: def fizz_buzz(n: int):\\n4:     \\\"\\\"\\\"Return the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\\n5:     >>> fizz_buzz(50)\\n6:     0\\n7:     >>> fizz_buzz(78)\\n8:     2\\n9:     >>> fizz_buzz(79)\\n10:     3\\n11:     \\\"\\\"\\\"\\n12:     # single digit numbers divisible by 11 or 13 always contain a 7\\n13:     if n < 10 and (n % 11 == 0 or n % 13 == 0):\\n14:         return 1\\n15:     # double digit numbers divisible by 11 or 13 always contain a 7\\n16:     elif n < 100 and (n % 11 == 0 or n % 13 == 0):\\n17:         return 2\\n18:     else:\\n19:         nums = [x for x in range(1, n) if x % 11 == 0 or x % 13 == 0]\\n20:         return sum([str(x).count(\\\"7\\\") for x in nums])\", \"reference\": \"\\n\\ndef fizz_buzz(n: int):\\n    \\\"\\\"\\\"Return the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\\n    >>> fizz_buzz(50)\\n    0\\n    >>> fizz_buzz(78)\\n    2\\n    >>> fizz_buzz(79)\\n    3\\n    \\\"\\\"\\\"\\n\\n    cnt = 0\\n    for i in range(n):\\n        if i % 11 == 0 or i % 13 == 0:\\n            cnt += len(list(filter(lambda c: c == \\\"7\\\", str(i))))\\n    return cnt\\n\\n\", \"validated_witness\": {\"args\": [11], \"expected\": {\"status\": \"ok\", \"value\": 0, \"type\": \"int\", \"repr\": \"0\"}, \"actual\": {\"status\": \"ok\", \"value\": 2, \"type\": \"int\", \"repr\": \"2\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"range excludes its stop boundary\", \"where\": \"A loop uses range to enumerate a contract-defined interval.\", \"how\": \"range includes start and excludes stop, with direction determined by step.\", \"what\": \"A required endpoint is never visited or an interval is unexpectedly empty.\", \"test\": \"Choose {start} and {stop} that differ by one; also check an equal-endpoint interval.\"}, {\"key\": \"K1\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}, {\"key\": \"K2\", \"title\": \"Modulo on a signed value is mistaken for magnitude digit extraction\", \"where\": \"Modulo extracts digits or residues from values that may be negative.\", \"how\": \"Python remainder follows the divisor sign and need not equal the corresponding digit of the absolute magnitude.\", \"what\": \"A digit or sign-sensitive result differs from the specification.\", \"test\": \"Use positive and negative {values} with the same magnitude and nonzero remainder.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 13, \"where\": \"n < 10\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}, {\"key\": \"B1\", \"card\": \"K2\", \"line\": 13, \"where\": \"n % 11\", \"how\": \"Python remainder follows the divisor sign and need not equal the corresponding digit of the absolute magnitude.\", \"what\": \"A digit or sign-sensitive result differs from the specification.\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 19, \"where\": \"range(1, n)\", \"how\": \"range includes start and excludes stop, with direction determined by step.\", \"what\": \"A required endpoint is never visited or an interval is unexpectedly empty.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314236,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 1378,
+    "context_limit": 8192
+  }
+}

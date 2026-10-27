@@ -1,0 +1,54 @@
+{
+  "task_id": "HumanEval/50",
+  "split": "development",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "490b22e6abf89fbea6c8b2d481dbfea74febc333ebcc1eae6134ea935d6e6c5d",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C141\",\n      \"line\": 7,\n      \"where\": \"encode_shift shifts all characters using 'a' offset without checking if ch is a lowercase letter\",\n      \"how\": \"Assumes input contains only lowercase ASCII letters; non-lowercase chars (e.g., 'A', '1') are shifted incorrectly\",\n      \"what\": \"Input 'A' becomes 'F' instead of 'A'; input '1' becomes '6' instead of '1'\"\n    },\n    {\n      \"id\": \"C141\",\n      \"line\": 16,\n      \"where\": \"decode_shift applies shift logic only if ch.isalpha() is true\",\n      \"how\": \"Relies on Unicode-aware isalpha() which accepts non-ASCII letters, but the shift math assumes ASCII 'a' range\",\n      \"what\": \"Input 'é' (encoded) fails to decode correctly because ord('é') - ord('a') is not a valid 0-25 index\"\n    }\n  ],\n  \"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3091,
+      "total_tokens": 3345,
+      "completion_tokens": 254,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 41.281582618132234,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C141",
+          "line": 7,
+          "where": "encode_shift shifts all characters using 'a' offset without checking if ch is a lowercase letter",
+          "how": "Assumes input contains only lowercase ASCII letters; non-lowercase chars (e.g., 'A', '1') are shifted incorrectly",
+          "what": "Input 'A' becomes 'F' instead of 'A'; input '1' becomes '6' instead of '1'"
+        },
+        {
+          "id": "C141",
+          "line": 16,
+          "where": "decode_shift applies shift logic only if ch.isalpha() is true",
+          "how": "Relies on Unicode-aware isalpha() which accepts non-ASCII letters, but the shift math assumes ASCII 'a' range",
+          "what": "Input 'é' (encoded) fails to decode correctly because ord('é') - ord('a') is not a valid 0-25 index"
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [],
+  "schema_error": "duplicate_concept",
+  "baseline": [
+    {
+      "concept_id": "py.ascii-unicode-classification",
+      "line": 17,
+      "where": "ch.isalpha()",
+      "how": "Methods such as isalpha, isupper and isdigit cover Unicode classes beyond literal ASCII ranges.",
+      "what": "A valid character is missed or an out-of-domain character is accepted."
+    }
+  ]
+}

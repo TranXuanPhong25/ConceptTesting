@@ -1,0 +1,68 @@
+{
+  "task_id": "HumanEval/57",
+  "split": "audit",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "c02c57654523008486a0e18b013ebfb6f07d7e83552e3956dc369a8fb5695daa",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n\"selected\": [\n{\n\"id\": \"C133\",\n\"line\": 15,\n\"where\": \"direction = 1 if l[0] < l[1] else -1\",\n\"how\": \"Strict inequality treats equal adjacent elements as decreasing, violating the non-strict monotonic contract.\",\n\"what\": \"Input [1, 1, 2] returns False instead of True because the first pair is misclassified as decreasing.\"\n},\n{\n\"id\": \"C133\",\n\"line\": 18,\n\"where\": \"if l[i] < l[i-1]: return False\",\n\"how\": \"Strict inequality rejects equal elements in an increasing sequence, violating the non-strict monotonic contract.\",\n\"what\": \"Input [1, 2, 2, 3] returns False instead of True because the second pair is misclassified as a violation.\"\n}\n],\n\"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3552,
+      "total_tokens": 3765,
+      "completion_tokens": 213,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 38.89025979512371,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C133",
+          "line": 15,
+          "where": "direction = 1 if l[0] < l[1] else -1",
+          "how": "Strict inequality treats equal adjacent elements as decreasing, violating the non-strict monotonic contract.",
+          "what": "Input [1, 1, 2] returns False instead of True because the first pair is misclassified as decreasing."
+        },
+        {
+          "id": "C133",
+          "line": 18,
+          "where": "if l[i] < l[i-1]: return False",
+          "how": "Strict inequality rejects equal elements in an increasing sequence, violating the non-strict monotonic contract.",
+          "what": "Input [1, 2, 2, 3] returns False instead of True because the second pair is misclassified as a violation."
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [],
+  "schema_error": "duplicate_concept",
+  "baseline": [
+    {
+      "concept_id": "py.empty-singleton-shortcut",
+      "line": 12,
+      "where": "len(l) <= 1",
+      "how": "A small-input shortcut or guard can omit a valid case or skip work that is still required.",
+      "what": "A valid small input is rejected or returns a shortcut value inconsistent with the specification."
+    },
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 12,
+      "where": "len(l) <= 1",
+      "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+      "what": "A valid boundary input takes a branch whose result or rejection violates the specification."
+    },
+    {
+      "concept_id": "py.negative-index-sentinel",
+      "line": 18,
+      "where": "l[i-1]",
+      "how": "Negative indexing selects from the end instead of rejecting the sentinel.",
+      "what": "The last element is returned for a missing item."
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "task_id": "HumanEval/58",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: \\n3: def common(l1: list, l2: list):\\n4:     \\\"\\\"\\\"Return sorted unique common elements for two lists.\\n5:     >>> common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121])\\n6:     [1, 5, 653]\\n7:     >>> common([5, 3, 2, 8], [3, 2])\\n8:     [2, 3]\\n9: \\n10:     \\\"\\\"\\\"\\n11:     return list(set(l1).intersection(l2))\", \"reference\": \"\\n\\ndef common(l1: list, l2: list):\\n    \\\"\\\"\\\"Return sorted unique common elements for two lists.\\n    >>> common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121])\\n    [1, 5, 653]\\n    >>> common([5, 3, 2, 8], [3, 2])\\n    [2, 3]\\n\\n    \\\"\\\"\\\"\\n\\n    return sorted(list(set(l1).intersection(set(l2))))\\n\\n\", \"validated_witness\": {\"args\": [[1, 10, 5], [5, 1, 10]], \"expected\": {\"status\": \"ok\", \"value\": [1, 5, 10], \"type\": \"list\", \"repr\": \"[1, 5, 10]\"}, \"actual\": {\"status\": \"ok\", \"value\": [1, 10, 5], \"type\": \"list\", \"repr\": \"[1, 10, 5]\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Set conversion loses ordering required by the output contract\", \"where\": \"A set is converted or iterated into an output sequence without restoring the required order.\", \"how\": \"Sets represent unique members and do not provide the sorted or original sequence order required by many APIs.\", \"what\": \"Output members may be correct while their order violates the specification.\", \"test\": \"Use {values} whose required order differs from a possible set iteration order, including out-of-order distinct inputs.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 11, \"where\": \"set(l1)\", \"how\": \"Sets represent unique members and do not provide the sorted or original sequence order required by many APIs.\", \"what\": \"Output members may be correct while their order violates the specification.\"}, {\"key\": \"B1\", \"card\": \"K0\", \"line\": 11, \"where\": \"return list(set(l1).intersection(l2))\", \"how\": \"set.intersection returns an unordered set; converting to list does not sort, violating the 'sorted' contract.\", \"what\": \"Input [5,3,2,8] and [3,2] yields [3,2] or [2,3] instead of the required sorted [2,3].\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.set-order-loss"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.set-order-loss"
+      },
+      "B1": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.set-order-loss"
+      }
+    }
+  }
+}

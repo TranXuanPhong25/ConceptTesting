@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"pluck\", \"source\": \"\\ndef pluck(arr):\\n    \\\"\\\"\\\"\\n    \\\"Given an array representing a branch of a tree that has non-negative integer nodes\\n    your task is to pluck one of the nodes and return it.\\n    The plucked node should be the node with the smallest even value.\\n    If multiple nodes with the same smallest even value are found return the node that has smallest index.\\n\\n    The plucked node should be returned in a list, [ smalest_value, its index ],\\n    If there are no even values or the given array is empty, return [].\\n\\n    Example 1:\\n        Input: [4,2,3]\\n        Output: [2, 1]\\n        Explanation: 2 has the smallest even value, and 2 has the smallest index.\\n\\n    Example 2:\\n        Input: [1,2,3]\\n        Output: [2, 1]\\n        Explanation: 2 has the smallest even value, and 2 has the smallest index. \\n\\n    Example 3:\\n        Input: []\\n        Output: []\\n    \\n    Example 4:\\n        Input: [5, 0, 3, 0, 4, 2]\\n        Output: [0, 1]\\n        Explanation: 0 is the smallest value, but  there are two zeros,\\n                     so we will choose the first zero, which has the smallest index.\\n\\n    Constraints:\\n        * 1 <= nodes.length <= 10000\\n        * 0 <= node.value\\n    \\\"\\\"\\\"\\n    if len(arr) == 0:\\n        return []\\n\\n    min_value = min(arr)\\n    if min_value % 2 == 0:\\n        return [min_value, arr.index(min_value)]\\n\\n    for index, item in enumerate(arr):\\n        if item % 2 == 0:\\n            return [item, index]\\n\\n    return []\\n\", \"concept_hints\": [{\"title\": \"A position, stride or coordinate is interpreted in the wrong domain\", \"where\": \"Positions, length-derived indices, strides or character ordinals are used as offsets, parity selectors or derived values.\", \"how\": \"Zero/one-based origins, stride alignment and coordinate versus value domains are distinct; the same numeric expression need not represent the required position or rank.\", \"what\": \"The wrong positions, multiplier, alphabet rank or stride class determine the result.\", \"test\": \"Use admissible {positions_or_values} at the first/last position and opposite parity or origin, including repeated characters when ordinal rank is required.\"}, {\"title\": \"index(value) is mistaken for the current occurrence position\", \"where\": \"A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.\", \"how\": \"index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.\", \"what\": \"The wrong occurrence is selected or positional conditions follow value equality.\", \"test\": \"Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions.\"}, {\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}]}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314368,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 920,
+    "context_limit": 8192
+  }
+}

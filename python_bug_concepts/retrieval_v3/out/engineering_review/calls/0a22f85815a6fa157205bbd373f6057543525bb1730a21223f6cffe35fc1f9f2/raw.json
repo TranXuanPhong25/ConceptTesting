@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-840dcb83dde91dca",
+  "object": "chat.completion",
+  "created": 1793026843,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"must_fix\": [\n    \"Leakage in 'judge' function: The prompt explicitly instructs the model to 'Use the reference implementation and validated example only as grading evidence' and to grade based on 'actual bug mechanism'. This forces the model to use the ground truth (reference/witness) to evaluate the concept, conflating 'retrieval quality' with 'oracle correctness'. This invalidates the blinded nature of the evaluation and creates a circular dependency where the model is graded on its ability to match the reference, not on the intrinsic utility of the retrieved concept.\",\n    \"Leakage in 'judge' function: The prompt instructs the model to 'Never assume a concept is good because its title sounds related' and to grade '0 irrelevant or wrong mechanism'. Without a strict, deterministic definition of 'wrong mechanism' independent of the reference, the model will hallucinate a 'wrong' label based on the reference implementation, effectively using the reference as the sole ground truth for the concept's validity, which is a data leakage from the evaluation target to the grader.\",\n    \"Lifecycle/State Flaw in 'judge' function: The function uses `random.Random` seeded by the task code hash to shuffle IDs and bindings. While deterministic, this approach is fragile if the task code changes (e.g., whitespace normalization differences) or if the `hashlib` implementation varies across environments. More critically, the shuffling of `ids` and `items` inside the function means the mapping between `key` (K0, B0) and the actual concept/binding is non-deterministic relative to the input order unless the hash is perfectly stable, risking inconsistent grading for the same input across runs.\",\n    \"Scoring Flaw in 'judge' function: The schema requires 'reason' to be 'one precise sentence' and <=20 words. This constraint is too restrictive for complex bug mechanisms (Grade 2/3), likely forcing the model to truncate valid reasoning or output invalid JSON, leading to high false-negative rates in the 'validate_judge' function.\",\n    \"Parsing Flaw in 'parse_retrieval': The function checks `row.get(\"\n\n\n  ],\n  \"limits\": [\n    \"The 'judge' prompt relies on the model's internal reasoning to distinguish between 'contextually applicable' (Grade 1) and 'actual bug mechanism' (Grade 2) without providing a formal definition of 'actual bug' independent of the reference. This introduces high variance in grading.\",\n    \"The 'utility' prompt instructs the model to 'reject [hints] if inconsistent with the spec'. This creates a high bar for the model to act as a spec validator, which may lead to the model discarding valid hints that are merely phrased differently than the spec, reducing the utility of the retrieval arm.\",\n    \"The 'judge' function passes `validated_witness` to the model. If the witness is a 'false positive' (a test that passes but doesn't actually prove the bug), the model may incorrectly grade a concept as 'Grade 0' or 'Grade 1' based on a flawed witness, propagating errors in the ground truth.\",\n    \"The 'parse_retrieval' function assumes `CODE_TO_CARD` is a global constant. If the catalog changes or is loaded dynamically, this function will fail or return incorrect IDs, breaking the pipeline.\"\n  ],\n  \"verdict\": \"FAIL\"\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 2743,
+    "total_tokens": 3461,
+    "completion_tokens": 718,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

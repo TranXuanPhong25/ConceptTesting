@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: \\n3: def strlen(string: str) -> int:\\n4:     \\\"\\\"\\\" Return length of given string\\n5:     >>> strlen('')\\n6:     0\\n7:     >>> strlen('abc')\\n8:     3\\n9:     \\\"\\\"\\\"\\n10:     if not isinstance(string, str):\\n11:         return 0\\n12:     return len(string.encode('ascii'))\", \"reference\": \"\\n\\ndef strlen(string: str) -> int:\\n    \\\"\\\"\\\" Return length of given string\\n    >>> strlen('')\\n    0\\n    >>> strlen('abc')\\n    3\\n    \\\"\\\"\\\"\\n\\n    return len(string)\\n\\n\", \"validated_witness\": {\"args\": [\"é\"], \"expected\": {\"status\": \"ok\", \"value\": 1, \"type\": \"int\", \"repr\": \"1\"}, \"actual\": {\"status\": \"error\", \"error_type\": \"UnicodeEncodeError\", \"message\": \"'ascii' codec can't encode character '\\\\xe9' in position 0: ordinal not in range(128)\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Byte encoding is mistaken for Unicode character processing\", \"where\": \"Code encodes a str and counts, indexes or deduplicates the resulting bytes, or forces an ASCII encoding.\", \"how\": \"Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.\", \"what\": \"Character length or distinct-character count is wrong, or encoding rejects a valid string.\", \"test\": \"Use {text} containing admissible non-ASCII characters, including a multibyte character repeated once.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 12, \"where\": \"string.encode('ascii')\", \"how\": \"Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.\", \"what\": \"Character length or distinct-character count is wrong, or encoding rejects a valid string.\"}, {\"key\": \"B1\", \"card\": \"K0\", \"line\": 12, \"where\": \"return len(string.encode('ascii'))\", \"how\": \"Encodes to ASCII bytes instead of counting Unicode code points; non-ASCII chars raise or count as multiple bytes.\", \"what\": \"Input 'café' raises UnicodeEncodeError or returns 5 instead of 4; correct behavior counts characters.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314223,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 870,
+    "context_limit": 8192
+  }
+}

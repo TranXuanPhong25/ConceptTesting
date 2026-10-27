@@ -1,0 +1,30 @@
+{
+  "request_sha256": "e745a3d5facce56c095703fc499d022a1125a4ff7a6893d595c07ab256ad4695",
+  "stage": "retrieve",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n\"selected\": [\n{\n\"id\": \"C133\",\n\"line\": 17,\n\"where\": \"if i < 10: branch shortcut for single-digit numbers\",\n\"how\": \"Assumes single-digit numbers are always odd, skipping the even-digit check required by the spec.\",\n\"what\": \"Input [2] returns [2] instead of [] because 2 is even but passes the < 10 guard.\"\n}\n]\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 3261,
+    "total_tokens": 3366,
+    "completion_tokens": 105,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 39.844979143934324,
+  "parsed": {
+    "selected": [
+      {
+        "id": "C133",
+        "line": 17,
+        "where": "if i < 10: branch shortcut for single-digit numbers",
+        "how": "Assumes single-digit numbers are always odd, skipping the even-digit check required by the spec.",
+        "what": "Input [2] returns [2] instead of [] because 2 is even but passes the < 10 guard."
+      }
+    ]
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "task_id": "HumanEval/137",
+  "split": "development",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "26dc7f30ed948e8a151c5cd56e6ec861c7e8829849bdf522c4b1af2bffa49af1",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C149\",\n      \"line\": 14,\n      \"where\": \"String comparison of normalized inputs instead of numeric conversion\",\n      \"how\": \"Lexicographic ordering of strings (e.g., '10' < '2') differs from numeric magnitude, violating the requirement to compare real numbers.\",\n      \"what\": \"Returns the wrong larger value for inputs like 10 and 2; '10' is lexicographically smaller than '2'.\"\n    },\n    {\n      \"id\": \"C139\",\n      \"line\": 14,\n      \"where\": \"Replacing '.' with ',' before comparison alters the original string representation\",\n      \"how\": \"The specification requires returning the variable in its original type; modifying the string changes the returned value's content.\",\n      \"what\": \"Returns '2,3' instead of '2.3' for input '2.3', violating the contract to preserve the original representation.\"\n    }\n  ],\n  \"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3347,
+      "total_tokens": 3589,
+      "completion_tokens": 242,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 43.84970974898897,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C149",
+          "line": 14,
+          "where": "String comparison of normalized inputs instead of numeric conversion",
+          "how": "Lexicographic ordering of strings (e.g., '10' < '2') differs from numeric magnitude, violating the requirement to compare real numbers.",
+          "what": "Returns the wrong larger value for inputs like 10 and 2; '10' is lexicographically smaller than '2'."
+        },
+        {
+          "id": "C139",
+          "line": 14,
+          "where": "Replacing '.' with ',' before comparison alters the original string representation",
+          "how": "The specification requires returning the variable in its original type; modifying the string changes the returned value's content.",
+          "what": "Returns '2,3' instead of '2.3' for input '2.3', violating the contract to preserve the original representation."
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.lexicographic-numeric-order",
+      "line": 14,
+      "where": "String comparison of normalized inputs instead of numeric conversion",
+      "how": "Lexicographic ordering of strings (e.g., '10' < '2') differs from numeric magnitude, violating the requirement to compare real numbers.",
+      "what": "Returns the wrong larger value for inputs like 10 and 2; '10' is lexicographically smaller than '2'.",
+      "line_normalized_from_string": false
+    },
+    {
+      "concept_id": "py.text-normalization-contract",
+      "line": 14,
+      "where": "Replacing '.' with ',' before comparison alters the original string representation",
+      "how": "The specification requires returning the variable in its original type; modifying the string changes the returned value's content.",
+      "what": "Returns '2,3' instead of '2.3' for input '2.3', violating the contract to preserve the original representation.",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.lexicographic-numeric-order",
+      "line": 14,
+      "where": "str(a).replace(\".\",\",\") < str(b).replace(\".\",\",\")",
+      "how": "String comparisons follow lexicographic code-point ordering rather than numeric magnitude or an external rank.",
+      "what": "The wrong maximum, minimum, interval order or selected value is returned."
+    },
+    {
+      "concept_id": "py.text-normalization-contract",
+      "line": 14,
+      "where": "str(a).replace(\".\",\",\")",
+      "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+      "what": "Required original text is altered or a distinction specified by the task disappears."
+    },
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 14,
+      "where": "str(a).replace(\".\",\",\") < str(b).replace(\".\",\",\")",
+      "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+      "what": "A valid boundary input takes a branch whose result or rejection violates the specification."
+    }
+  ]
+}

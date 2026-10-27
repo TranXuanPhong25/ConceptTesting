@@ -1,0 +1,69 @@
+{
+  "task_id": "HumanEval/86",
+  "split": "development",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "7579d4ec35ff80bb1496e9d4489dcf5ba0b023d8caa3e480aed3bd0243f17bf4",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n\"selected\": [\n{\n\"id\": \"C142\",\n\"line\": 18,\n\"where\": \"s.split() followed by ' '.join(s_list) reconstructs the string\",\n\"how\": \"split() collapses multiple spaces and trims leading/trailing whitespace, violating the contract to preserve blank spaces.\",\n\"what\": \"Input 'a  b' (two spaces) returns 'a b' (one space); leading/trailing spaces are lost.\"\n}\n]\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3342,
+      "total_tokens": 3452,
+      "completion_tokens": 110,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 39.379240344045684,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C142",
+          "line": 18,
+          "where": "s.split() followed by ' '.join(s_list) reconstructs the string",
+          "how": "split() collapses multiple spaces and trims leading/trailing whitespace, violating the contract to preserve blank spaces.",
+          "what": "Input 'a  b' (two spaces) returns 'a b' (one space); leading/trailing spaces are lost."
+        }
+      ]
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.split-join-separator-loss",
+      "line": 18,
+      "where": "s.split() followed by ' '.join(s_list) reconstructs the string",
+      "how": "split() collapses multiple spaces and trims leading/trailing whitespace, violating the contract to preserve blank spaces.",
+      "what": "Input 'a  b' (two spaces) returns 'a b' (one space); leading/trailing spaces are lost.",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.split-join-separator-loss",
+      "line": 18,
+      "where": "s.split()",
+      "how": "Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.",
+      "what": "Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored."
+    },
+    {
+      "concept_id": "py.index-out-of-bounds",
+      "line": 20,
+      "where": "s_list[i]",
+      "how": "Direct indexing rejects indices at or above length and below negative length instead of clamping like a slice.",
+      "what": "IndexError replaces the required value or documented invalid-input handling."
+    },
+    {
+      "concept_id": "py.range-exclusive-stop",
+      "line": 19,
+      "where": "range(len(s_list))",
+      "how": "range includes start and excludes stop, with direction determined by step.",
+      "what": "A required endpoint is never visited or an interval is unexpectedly empty."
+    }
+  ]
+}

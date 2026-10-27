@@ -1,0 +1,92 @@
+{
+  "request_sha256": "5ee831e78047d5383b791f3dffeefea6d62cef2813cf59b3ced99c97792fed30",
+  "stage": "judge",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n\"cards\": [\n{\"key\": \"K0\", \"grade\": 0, \"reason\": \"No branch boundary or equality special case bug exists in the code.\"},\n{\"key\": \"K1\", \"grade\": 0, \"reason\": \"Normalization is permitted by the spec; no text preservation bug exists.\"},\n{\"key\": \"K2\", \"grade\": 2, \"reason\": \"Literal table omits uppercase vowels, causing incorrect counts for mixed-case inputs.\"},\n{\"key\": \"K3\", \"grade\": 0, \"reason\": \"No index() usage or positional confusion bug exists in the code.\"},\n{\"key\": \"K4\", \"grade\": 2, \"reason\": \"Indexing s[-1] on empty string raises IndexError instead of handling empty input.\"}\n],\n\"bindings\": [\n{\"key\": \"B0\", \"where\": 1, \"how\": 1, \"what\": 1, \"reason\": \"Correctly identifies empty string indexing fault causing IndexError.\"},\n{\"key\": \"B1\", \"where\": 1, \"how\": 0, \"what\": 0, \"reason\": \"Normalization is valid per spec; no bug connection established.\"},\n{\"key\": \"B2\", \"where\": 1, \"how\": 1, \"what\": 1, \"reason\": \"Correctly identifies case-sensitive check failing uppercase 'Y' at end.\"},\n{\"key\": \"B3\", \"where\": 1, \"how\": 1, \"what\": 1, \"reason\": \"Correctly identifies literal table omitting uppercase vowels.\"},\n{\"key\": \"B3\", \"where\": 1, \"how\": 1, \"what\": 1, \"reason\": \"Correctly identifies literal table omitting uppercase vowels.\"},\n{\"key\": \"B4\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"Mechanism describes index() usage which is not present in the code.\"}\n]\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 1869,
+    "total_tokens": 2308,
+    "completion_tokens": 439,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 48.107142847031355,
+  "parsed": {
+    "cards": [
+      {
+        "key": "K0",
+        "grade": 0,
+        "reason": "No branch boundary or equality special case bug exists in the code."
+      },
+      {
+        "key": "K1",
+        "grade": 0,
+        "reason": "Normalization is permitted by the spec; no text preservation bug exists."
+      },
+      {
+        "key": "K2",
+        "grade": 2,
+        "reason": "Literal table omits uppercase vowels, causing incorrect counts for mixed-case inputs."
+      },
+      {
+        "key": "K3",
+        "grade": 0,
+        "reason": "No index() usage or positional confusion bug exists in the code."
+      },
+      {
+        "key": "K4",
+        "grade": 2,
+        "reason": "Indexing s[-1] on empty string raises IndexError instead of handling empty input."
+      }
+    ],
+    "bindings": [
+      {
+        "key": "B0",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Correctly identifies empty string indexing fault causing IndexError."
+      },
+      {
+        "key": "B1",
+        "where": 1,
+        "how": 0,
+        "what": 0,
+        "reason": "Normalization is valid per spec; no bug connection established."
+      },
+      {
+        "key": "B2",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Correctly identifies case-sensitive check failing uppercase 'Y' at end."
+      },
+      {
+        "key": "B3",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Correctly identifies literal table omitting uppercase vowels."
+      },
+      {
+        "key": "B3",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Correctly identifies literal table omitting uppercase vowels."
+      },
+      {
+        "key": "B4",
+        "where": 0,
+        "how": 0,
+        "what": 0,
+        "reason": "Mechanism describes index() usage which is not present in the code."
+      }
+    ]
+  }
+}

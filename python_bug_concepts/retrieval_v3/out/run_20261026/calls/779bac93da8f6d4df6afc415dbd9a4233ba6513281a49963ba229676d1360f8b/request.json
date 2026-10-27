@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"strlen\", \"source\": \"\\n\\ndef strlen(string: str) -> int:\\n    \\\"\\\"\\\" Return length of given string\\n    >>> strlen('')\\n    0\\n    >>> strlen('abc')\\n    3\\n    \\\"\\\"\\\"\\n    if not isinstance(string, str):\\n        return 0\\n    return len(string.encode('ascii'))\\n\", \"concept_hints\": [{\"title\": \"Byte encoding is mistaken for Unicode character processing\", \"where\": \"Code encodes a str and counts, indexes or deduplicates the resulting bytes, or forces an ASCII encoding.\", \"how\": \"Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.\", \"what\": \"Character length or distinct-character count is wrong, or encoding rejects a valid string.\", \"test\": \"Use {text} containing admissible non-ASCII characters, including a multibyte character repeated once.\"}]}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314323,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 333,
+    "context_limit": 8192
+  }
+}

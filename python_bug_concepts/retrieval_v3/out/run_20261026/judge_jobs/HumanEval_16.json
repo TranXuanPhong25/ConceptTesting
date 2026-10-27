@@ -1,0 +1,36 @@
+{
+  "task_id": "HumanEval/16",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: \\n3: def count_distinct_characters(string: str) -> int:\\n4:     \\\"\\\"\\\" Given a string, find out how many distinct characters (regardless of case) does it consist of\\n5:     >>> count_distinct_characters('xyzXYZ')\\n6:     3\\n7:     >>> count_distinct_characters('Jerry')\\n8:     4\\n9:     \\\"\\\"\\\"\\n10:     # Create a set of unique characters\\n11:     unique_chars = set(string.lower().encode())\\n12:     # Count the number of elements in the set\\n13:     return len(unique_chars)\", \"reference\": \"\\n\\ndef count_distinct_characters(string: str) -> int:\\n    \\\"\\\"\\\" Given a string, find out how many distinct characters (regardless of case) does it consist of\\n    >>> count_distinct_characters('xyzXYZ')\\n    3\\n    >>> count_distinct_characters('Jerry')\\n    4\\n    \\\"\\\"\\\"\\n\\n    return len(set(string.lower()))\\n\\n\", \"validated_witness\": {\"args\": [\"éé\"], \"expected\": {\"status\": \"ok\", \"value\": 1, \"type\": \"int\", \"repr\": \"1\"}, \"actual\": {\"status\": \"ok\", \"value\": 2, \"type\": \"int\", \"repr\": \"2\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Byte encoding is mistaken for Unicode character processing\", \"where\": \"Code encodes a str and counts, indexes or deduplicates the resulting bytes, or forces an ASCII encoding.\", \"how\": \"Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.\", \"what\": \"Character length or distinct-character count is wrong, or encoding rejects a valid string.\", \"test\": \"Use {text} containing admissible non-ASCII characters, including a multibyte character repeated once.\"}, {\"key\": \"K1\", \"title\": \"Aggregation uses the wrong region, grouping or unit\", \"where\": \"sum, len or another fold aggregates a whole input or counts outer items while the specification requires prefixes, separate groups, filtered occurrences or a different unit.\", \"how\": \"A whole-input total loses intermediate or per-group information, and counting outer items does not compute a required weighted or nested total such as all characters.\", \"what\": \"Equal totals produce an invalid equivalence and a required intermediate condition or grouped result is lost.\", \"test\": \"Use {groups_or_prefixes} with the same total but different required intermediate or per-group behavior.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 11, \"where\": \"string.lower().encode()\", \"how\": \"Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.\", \"what\": \"Character length or distinct-character count is wrong, or encoding rejects a valid string.\"}, {\"key\": \"B1\", \"card\": \"K0\", \"line\": 11, \"where\": \"set(string.lower().encode()) counts bytes instead of characters\", \"how\": \"Encoding converts multibyte Unicode characters to multiple bytes, inflating the distinct count\", \"what\": \"Input 'café' returns 5 instead of 4; non-ASCII chars are counted per byte\"}, {\"key\": \"B2\", \"card\": \"K1\", \"line\": 13, \"where\": \"len(unique_chars)\", \"how\": \"A whole-input total loses intermediate or per-group information, and counting outer items does not compute a required weighted or nested total such as all characters.\", \"what\": \"Equal totals produce an invalid equivalence and a required intermediate condition or grouped result is lost.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.unicode-text-byte-domain",
+      "K1": "py.aggregation-scope"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.unicode-text-byte-domain"
+      },
+      "B1": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.unicode-text-byte-domain"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.aggregation-scope"
+      }
+    }
+  }
+}

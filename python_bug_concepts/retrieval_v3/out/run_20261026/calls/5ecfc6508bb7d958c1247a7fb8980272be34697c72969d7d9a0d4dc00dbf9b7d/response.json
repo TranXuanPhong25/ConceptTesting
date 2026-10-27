@@ -1,0 +1,31 @@
+{
+  "request_sha256": "5ecfc6508bb7d958c1247a7fb8980272be34697c72969d7d9a0d4dc00dbf9b7d",
+  "stage": "retrieve",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\"selected\":[{\"id\":\"C133\",\"line\":10,\"where\":\"if x == y: return x\",\"how\":\"The equality branch returns x instead of the required sum 2*x, violating the addition contract.\",\"what\":\"Input (2, 2) returns 2 instead of 4; any equal pair returns half the correct sum.\"}],\"abstain_reason\":\"\"}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 2977,
+    "total_tokens": 3058,
+    "completion_tokens": 81,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 24.349218304036185,
+  "parsed": {
+    "selected": [
+      {
+        "id": "C133",
+        "line": 10,
+        "where": "if x == y: return x",
+        "how": "The equality branch returns x instead of the required sum 2*x, violating the addition contract.",
+        "what": "Input (2, 2) returns 2 instead of 4; any equal pair returns half the correct sum."
+      }
+    ],
+    "abstain_reason": ""
+  }
+}

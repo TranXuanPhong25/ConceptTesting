@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: \\n3: def unique(l: list):\\n4:     \\\"\\\"\\\"Return sorted unique elements in a list\\n5:     >>> unique([5, 3, 5, 2, 3, 3, 9, 0, 123])\\n6:     [0, 2, 3, 5, 9, 123]\\n7:     \\\"\\\"\\\"\\n8:     return list(set(l))\", \"reference\": \"\\n\\ndef unique(l: list):\\n    \\\"\\\"\\\"Return sorted unique elements in a list\\n    >>> unique([5, 3, 5, 2, 3, 3, 9, 0, 123])\\n    [0, 2, 3, 5, 9, 123]\\n    \\\"\\\"\\\"\\n\\n    return sorted(set(l))\\n\\n\", \"validated_witness\": {\"args\": [[10, 1, 5]], \"expected\": {\"status\": \"ok\", \"value\": [1, 5, 10], \"type\": \"list\", \"repr\": \"[1, 5, 10]\"}, \"actual\": {\"status\": \"ok\", \"value\": [1, 10, 5], \"type\": \"list\", \"repr\": \"[1, 10, 5]\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Set conversion loses ordering required by the output contract\", \"where\": \"A set is converted or iterated into an output sequence without restoring the required order.\", \"how\": \"Sets represent unique members and do not provide the sorted or original sequence order required by many APIs.\", \"what\": \"Output members may be correct while their order violates the specification.\", \"test\": \"Use {values} whose required order differs from a possible set iteration order, including out-of-order distinct inputs.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 8, \"where\": \"return list(set(l))\", \"how\": \"set() discards insertion order; the spec requires sorted output but no sort is applied.\", \"what\": \"Input [5,3,2] yields [2,3,5] or [5,3,2] instead of strictly [2,3,5].\"}, {\"key\": \"B1\", \"card\": \"K0\", \"line\": 8, \"where\": \"set(l)\", \"how\": \"Sets represent unique members and do not provide the sorted or original sequence order required by many APIs.\", \"what\": \"Output members may be correct while their order violates the specification.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314234,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 907,
+    "context_limit": 8192
+  }
+}

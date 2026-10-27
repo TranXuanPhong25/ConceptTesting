@@ -1,0 +1,85 @@
+{
+  "task_id": "HumanEval/5",
+  "split": "development",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "08ae995756abb3ef7682c96107771cc41b2b183421e10ebb3a2523783acd58db",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n\"selected\": [\n{\n\"id\": \"C133\",\n\"line\": 12,\n\"where\": \"numbers.insert(0, 0) and numbers.append(0) modify input list with sentinel values\",\n\"how\": \"Assumes input list can be mutated and sentinels can be filtered; violates contract to preserve input and handle empty lists correctly\",\n\"what\": \"Input [1, 2] becomes [0, 1, 2, 0]; output [1, 2] instead of [1, delimeter, 2]; empty input returns [0, 0] instead of []\"\n},\n{\n\"id\": \"C104\",\n\"line\": 19,\n\"where\": \"numbers[i + 1] accesses next element in loop range(len(numbers) - 1)\",\n\"how\": \"Assumes list length is at least 2 after sentinel insertion; fails on empty input where length is 2 but indices 0 and 1 are sentinels\",\n\"what\": \"Input [] triggers IndexError on numbers[1] instead of returning empty list []\"\n}\n],\n\"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3440,
+      "total_tokens": 3698,
+      "completion_tokens": 258,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 35.83922136807814,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C133",
+          "line": 12,
+          "where": "numbers.insert(0, 0) and numbers.append(0) modify input list with sentinel values",
+          "how": "Assumes input list can be mutated and sentinels can be filtered; violates contract to preserve input and handle empty lists correctly",
+          "what": "Input [1, 2] becomes [0, 1, 2, 0]; output [1, 2] instead of [1, delimeter, 2]; empty input returns [0, 0] instead of []"
+        },
+        {
+          "id": "C104",
+          "line": 19,
+          "where": "numbers[i + 1] accesses next element in loop range(len(numbers) - 1)",
+          "how": "Assumes list length is at least 2 after sentinel insertion; fails on empty input where length is 2 but indices 0 and 1 are sentinels",
+          "what": "Input [] triggers IndexError on numbers[1] instead of returning empty list []"
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 12,
+      "where": "numbers.insert(0, 0) and numbers.append(0) modify input list with sentinel values",
+      "how": "Assumes input list can be mutated and sentinels can be filtered; violates contract to preserve input and handle empty lists correctly",
+      "what": "Input [1, 2] becomes [0, 1, 2, 0]; output [1, 2] instead of [1, delimeter, 2]; empty input returns [0, 0] instead of []",
+      "line_normalized_from_string": false
+    },
+    {
+      "concept_id": "py.index-out-of-bounds",
+      "line": 19,
+      "where": "numbers[i + 1] accesses next element in loop range(len(numbers) - 1)",
+      "how": "Assumes list length is at least 2 after sentinel insertion; fails on empty input where length is 2 but indices 0 and 1 are sentinels",
+      "what": "Input [] triggers IndexError on numbers[1] instead of returning empty list []",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.quantifier-scope",
+      "line": 17,
+      "where": "numbers[i]",
+      "how": "Universal and existential conditions differ from testing one representative element or only the final aggregate.",
+      "what": "A required all-elements, any-element or intermediate-prefix condition is classified incorrectly."
+    },
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 17,
+      "where": "numbers[i] != 0",
+      "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+      "what": "A valid boundary input takes a branch whose result or rejection violates the specification."
+    },
+    {
+      "concept_id": "py.index-out-of-bounds",
+      "line": 17,
+      "where": "numbers[i]",
+      "how": "Direct indexing rejects indices at or above length and below negative length instead of clamping like a slice.",
+      "what": "IndexError replaces the required value or documented invalid-input handling."
+    }
+  ]
+}

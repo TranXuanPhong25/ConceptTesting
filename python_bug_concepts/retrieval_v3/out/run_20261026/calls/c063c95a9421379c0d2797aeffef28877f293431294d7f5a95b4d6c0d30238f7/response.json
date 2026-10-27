@@ -1,0 +1,30 @@
+{
+  "request_sha256": "c063c95a9421379c0d2797aeffef28877f293431294d7f5a95b4d6c0d30238f7",
+  "stage": "retrieve",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n\"selected\": [\n{\n\"id\": \"C104\",\n\"line\": 18,\n\"where\": \"digitSum(s[1:]) recursive call on empty string s\",\n\"how\": \"Base case guards only empty string at entry; recursive step indexes s[0] on empty slice, causing IndexError instead of returning 0.\",\n\"what\": \"Input 'a' raises IndexError; expected 0 per spec for non-uppercase trailing chars.\"\n}\n]\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 3439,
+    "total_tokens": 3545,
+    "completion_tokens": 106,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 33.840979611035436,
+  "parsed": {
+    "selected": [
+      {
+        "id": "C104",
+        "line": 18,
+        "where": "digitSum(s[1:]) recursive call on empty string s",
+        "how": "Base case guards only empty string at entry; recursive step indexes s[0] on empty slice, causing IndexError instead of returning 0.",
+        "what": "Input 'a' raises IndexError; expected 0 per spec for non-uppercase trailing chars."
+      }
+    ]
+  }
+}

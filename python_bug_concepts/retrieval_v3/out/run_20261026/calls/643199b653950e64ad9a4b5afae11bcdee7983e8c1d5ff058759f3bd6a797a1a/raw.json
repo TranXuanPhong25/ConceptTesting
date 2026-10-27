@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-aac061423d3e3ebd",
+  "object": "chat.completion",
+  "created": 1793037864,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n\"cards\": [\n{\"key\": \"K0\", \"grade\": 2, \"reason\": \"Indexing s[0] on empty string during recursion causes IndexError instead of returning 0.\"},\n{\"key\": \"K1\", \"grade\": 1, \"reason\": \"Recursion progresses correctly; stack depth is not the primary bug mechanism here.\"},\n{\"key\": \"K2\", \"grade\": 0, \"reason\": \"The spec requires ASCII codes; Unicode handling is not the bug causing failure.\"}\n],\n\"bindings\": [\n{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"isupper works correctly for ASCII; Unicode mismatch is not the actual bug.\"},\n{\"key\": \"B1\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"Indexing s[0] is the fault site, but B1 lacks the specific recursive context.\"},\n{\"key\": \"B2\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"Recursion depth is not the issue; the base case logic is the actual fault.\"},\n{\"key\": \"B3\", \"where\": 1, \"how\": 1, \"what\": 1, \"reason\": \"Correctly identifies indexing empty string in recursion as the cause of IndexError.\"}\n]\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 1393,
+    "total_tokens": 1707,
+    "completion_tokens": 314,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

@@ -1,0 +1,103 @@
+{
+  "task_id": "HumanEval/140",
+  "split": "audit",
+  "arm": "blind",
+  "response": {
+    "request_sha256": "3d776f9b2233b4f8e5e3c96777b5946975755eead07cbffc840fc2e7069b90f4",
+    "stage": "judge",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 3,\n      \"reason\": \"Correctly identifies fixed literal replacement failing to handle arbitrary-length runs of spaces.\"\n    },\n    {\n      \"key\": \"K1\",\n      \"grade\": 0,\n      \"reason\": \"Irrelevant; the bug involves replacement logic, not splitting or joining operations.\"\n    },\n    {\n      \"key\": \"K2\",\n      \"grade\": 0,\n      \"reason\": \"Irrelevant; the bug is about space run handling, not case or character normalization.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Correctly cites line 15, explains fixed literal limitation, and gives concrete input/output consequence.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Incorrectly attributes the bug to split/join mechanics which are not present in the code.\"\n    },\n    {\n      \"key\": \"B2\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Incorrectly claims normalization is the issue; the code does not alter case or other characters.\"\n    },\n    {\n      \"key\": \"B3\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Correctly identifies line 15 as the fault site and explains the non-overlapping chunk limitation.\"\n    }\n  ]\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 1472,
+      "total_tokens": 1884,
+      "completion_tokens": 412,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 53.289771135896444,
+    "parsed": {
+      "cards": [
+        {
+          "key": "K0",
+          "grade": 3,
+          "reason": "Correctly identifies fixed literal replacement failing to handle arbitrary-length runs of spaces."
+        },
+        {
+          "key": "K1",
+          "grade": 0,
+          "reason": "Irrelevant; the bug involves replacement logic, not splitting or joining operations."
+        },
+        {
+          "key": "K2",
+          "grade": 0,
+          "reason": "Irrelevant; the bug is about space run handling, not case or character normalization."
+        }
+      ],
+      "bindings": [
+        {
+          "key": "B0",
+          "where": 1,
+          "how": 1,
+          "what": 1,
+          "reason": "Correctly cites line 15, explains fixed literal limitation, and gives concrete input/output consequence."
+        },
+        {
+          "key": "B1",
+          "where": 0,
+          "how": 0,
+          "what": 0,
+          "reason": "Incorrectly attributes the bug to split/join mechanics which are not present in the code."
+        },
+        {
+          "key": "B2",
+          "where": 0,
+          "how": 0,
+          "what": 0,
+          "reason": "Incorrectly claims normalization is the issue; the code does not alter case or other characters."
+        },
+        {
+          "key": "B3",
+          "where": 1,
+          "how": 1,
+          "what": 1,
+          "reason": "Correctly identifies line 15 as the fault site and explains the non-overlapping chunk limitation."
+        }
+      ]
+    }
+  },
+  "valid_schema": true,
+  "mapping": {
+    "cards": {
+      "K0": "py.fixed-chunk-run",
+      "K1": "py.split-join-separator-loss",
+      "K2": "py.text-normalization-contract"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.fixed-chunk-run"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 2,
+        "concept_id": "py.split-join-separator-loss"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.text-normalization-contract"
+      },
+      "B3": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.fixed-chunk-run"
+      }
+    }
+  }
+}

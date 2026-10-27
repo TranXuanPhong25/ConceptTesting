@@ -1,0 +1,43 @@
+{
+  "task_id": "HumanEval/158",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: def find_max(words):\\n3:     \\\"\\\"\\\"Write a function that accepts a list of strings.\\n4:     The list contains different words. Return the word with maximum number\\n5:     of unique characters. If multiple strings have maximum number of unique\\n6:     characters, return the one which comes first in lexicographical order.\\n7: \\n8:     find_max([\\\"name\\\", \\\"of\\\", \\\"string\\\"]) == \\\"string\\\"\\n9:     find_max([\\\"name\\\", \\\"enam\\\", \\\"game\\\"]) == \\\"enam\\\"\\n10:     find_max([\\\"aaaaaaa\\\", \\\"bb\\\" ,\\\"cc\\\"]) == \\\"\\\"aaaaaaa\\\"\\n11:     \\\"\\\"\\\"\\n12:     max_word = None\\n13:     max_unique = 0\\n14:     for word in words:\\n15:         unique = len(set(word))\\n16:         if unique > max_unique:\\n17:             max_unique = unique\\n18:             max_word = word\\n19:         elif unique == max_unique:\\n20:             if word < max_word:\\n21:                 max_word = word\\n22:     return max_word\", \"reference\": \"\\ndef find_max(words):\\n    \\\"\\\"\\\"Write a function that accepts a list of strings.\\n    The list contains different words. Return the word with maximum number\\n    of unique characters. If multiple strings have maximum number of unique\\n    characters, return the one which comes first in lexicographical order.\\n\\n    find_max([\\\"name\\\", \\\"of\\\", \\\"string\\\"]) == \\\"string\\\"\\n    find_max([\\\"name\\\", \\\"enam\\\", \\\"game\\\"]) == \\\"enam\\\"\\n    find_max([\\\"aaaaaaa\\\", \\\"bb\\\" ,\\\"cc\\\"]) == \\\"\\\"aaaaaaa\\\"\\n    \\\"\\\"\\\"\\n\\n\\n    mx_ch_cnt, ans = 0, \\\"\\\"\\n    for word in words:\\n        ch_cnt = len(set(word)) \\n        if ch_cnt > mx_ch_cnt or (ch_cnt == mx_ch_cnt and word < ans):\\n            mx_ch_cnt, ans = ch_cnt, word\\n    return ans\\n\\n\", \"validated_witness\": {\"args\": [[\"\"]], \"expected\": {\"status\": \"ok\", \"value\": \"\", \"type\": \"str\", \"repr\": \"''\"}, \"actual\": {\"status\": \"error\", \"error_type\": \"TypeError\", \"message\": \"'<' not supported between instances of 'str' and 'NoneType'\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}, {\"key\": \"K1\", \"title\": \"Set conversion loses ordering required by the output contract\", \"where\": \"A set is converted or iterated into an output sequence without restoring the required order.\", \"how\": \"Sets represent unique members and do not provide the sorted or original sequence order required by many APIs.\", \"what\": \"Output members may be correct while their order violates the specification.\", \"test\": \"Use {values} whose required order differs from a possible set iteration order, including out-of-order distinct inputs.\"}, {\"key\": \"K2\", \"title\": \"Aggregation uses the wrong region, grouping or unit\", \"where\": \"sum, len or another fold aggregates a whole input or counts outer items while the specification requires prefixes, separate groups, filtered occurrences or a different unit.\", \"how\": \"A whole-input total loses intermediate or per-group information, and counting outer items does not compute a required weighted or nested total such as all characters.\", \"what\": \"Equal totals produce an invalid equivalence and a required intermediate condition or grouped result is lost.\", \"test\": \"Use {groups_or_prefixes} with the same total but different required intermediate or per-group behavior.\"}, {\"key\": \"K3\", \"title\": \"A fixed extremum sentinel excludes valid values\", \"where\": \"A manual minimum or maximum accumulator starts at a fixed constant and updates by comparison.\", \"how\": \"If every valid candidate lies beyond the sentinel on the wrong side, no candidate replaces it.\", \"what\": \"The returned extremum or selected object is the sentinel rather than an eligible input.\", \"test\": \"Supply {values} all below the initial maximum or above the initial minimum, including a single valid candidate.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 22, \"where\": \"return max_word when words is empty\", \"how\": \"Initial sentinel None is returned for empty input, but specification implies returning empty string or handling empty list differently.\", \"what\": \"find_max([]) returns None instead of expected empty string or raises error; empty input class distinguishes behavior.\"}, {\"key\": \"B1\", \"card\": \"K2\", \"line\": 15, \"where\": \"len(set(word))\", \"how\": \"A whole-input total loses intermediate or per-group information, and counting outer items does not compute a required weighted or nested total such as all characters.\", \"what\": \"Equal totals produce an invalid equivalence and a required intermediate condition or grouped result is lost.\"}, {\"key\": \"B2\", \"card\": \"K3\", \"line\": 16, \"where\": \"unique > max_unique\", \"how\": \"If every valid candidate lies beyond the sentinel on the wrong side, no candidate replaces it.\", \"what\": \"The returned extremum or selected object is the sentinel rather than an eligible input.\"}, {\"key\": \"B3\", \"card\": \"K1\", \"line\": 15, \"where\": \"set(word)\", \"how\": \"Sets represent unique members and do not provide the sorted or original sequence order required by many APIs.\", \"what\": \"Output members may be correct while their order violates the specification.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.empty-singleton-shortcut",
+      "K1": "py.set-order-loss",
+      "K2": "py.aggregation-scope",
+      "K3": "py.extremum-initial-sentinel"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.empty-singleton-shortcut"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 2,
+        "concept_id": "py.aggregation-scope"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.extremum-initial-sentinel"
+      },
+      "B3": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.set-order-loss"
+      }
+    }
+  }
+}

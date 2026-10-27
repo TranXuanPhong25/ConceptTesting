@@ -1,0 +1,61 @@
+{
+  "task_id": "HumanEval/124",
+  "split": "development",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "402dfe07536bc2a42872229e9e857d76f2d27aa497e6cf42dbeef70cc25fea5a",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C133\",\n      \"line\": 44,\n      \"where\": \"int(date[2]) > 2020 or int(date[2]) < 1900\",\n      \"how\": \"The spec requires only format and day/month validity, but the code imposes an arbitrary year range [1900, 2020] not in the contract.\",\n      \"what\": \"Valid dates outside 1900-2020 (e.g., '01-01-2021') incorrectly return False instead of True.\"\n    },\n    {\n      \"id\": \"C133\",\n      \"line\": 48,\n      \"where\": \"if int(date[1]) > 29 or int(date[1]) < 1\",\n      \"how\": \"The spec allows up to 29 days for February, but the code rejects 29 (using > 29) only if the year is not a leap year, which is never checked.\",\n      \"what\": \"Valid leap-year dates like '02-29-2000' are incorrectly rejected because the code treats 29 as invalid for all years.\"\n    }\n  ],\n  \"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3771,
+      "total_tokens": 4070,
+      "completion_tokens": 299,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 49.08996684290469,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C133",
+          "line": 44,
+          "where": "int(date[2]) > 2020 or int(date[2]) < 1900",
+          "how": "The spec requires only format and day/month validity, but the code imposes an arbitrary year range [1900, 2020] not in the contract.",
+          "what": "Valid dates outside 1900-2020 (e.g., '01-01-2021') incorrectly return False instead of True."
+        },
+        {
+          "id": "C133",
+          "line": 48,
+          "where": "if int(date[1]) > 29 or int(date[1]) < 1",
+          "how": "The spec allows up to 29 days for February, but the code rejects 29 (using > 29) only if the year is not a leap year, which is never checked.",
+          "what": "Valid leap-year dates like '02-29-2000' are incorrectly rejected because the code treats 29 as invalid for all years."
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [],
+  "schema_error": "duplicate_concept",
+  "baseline": [
+    {
+      "concept_id": "py.branch-boundary-contract",
+      "line": 26,
+      "where": "len(date)!= 3",
+      "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+      "what": "A valid boundary input takes a branch whose result or rejection violates the specification."
+    },
+    {
+      "concept_id": "py.index-out-of-bounds",
+      "line": 29,
+      "where": "date[0]",
+      "how": "Direct indexing rejects indices at or above length and below negative length instead of clamping like a slice.",
+      "what": "IndexError replaces the required value or documented invalid-input handling."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"fib4\", \"source\": \"\\n\\ndef fib4(n: int):\\n    \\\"\\\"\\\"The Fib4 number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\\n    fib4(0) -> 0\\n    fib4(1) -> 0\\n    fib4(2) -> 2\\n    fib4(3) -> 0\\n    fib4(n) -> fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4).\\n    Please write a function to efficiently compute the n-th element of the fib4 number sequence.  Do not use recursion.\\n    >>> fib4(5)\\n    4\\n    >>> fib4(6)\\n    8\\n    >>> fib4(7)\\n    14\\n    \\\"\\\"\\\"\\n    if n == 0:\\n        return 0\\n    elif n == 1:\\n        return 0\\n    elif n == 2:\\n        return 2\\n    elif n == 3:\\n        return 0\\n    else:\\n        return fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4)\\n\", \"concept_hints\": []}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314346,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 416,
+    "context_limit": 8192
+  }
+}

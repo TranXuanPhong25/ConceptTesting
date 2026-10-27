@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"max_element\", \"source\": \"\\n\\ndef max_element(l: list):\\n    \\\"\\\"\\\"Return maximum element in the list.\\n    >>> max_element([1, 2, 3])\\n    3\\n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\\n    123\\n    \\\"\\\"\\\"\\n    max = 0\\n    for i in l:\\n        if i > max:\\n            max = i\\n    return max\\n\", \"concept_hints\": []}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314335,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 273,
+    "context_limit": 8192
+  }
+}

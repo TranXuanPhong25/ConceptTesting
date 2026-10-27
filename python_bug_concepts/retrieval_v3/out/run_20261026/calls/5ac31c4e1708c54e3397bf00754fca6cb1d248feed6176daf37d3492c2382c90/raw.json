@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-ab15aada5ec13d1c",
+  "object": "chat.completion",
+  "created": 1793066973,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"tests\": [\n    {\n      \"args\": [\n        []\n      ],\n      \"expected\": null\n    },\n    {\n      \"args\": [\n        [\n          \"a\",\n          \"b\",\n          \"c\"\n        ]\n      ],\n      \"expected\": \"a\"\n    },\n    {\n      \"args\": [\n        [\n          \"a\",\n          \"bb\",\n          \"ccc\"\n        ]\n      ],\n      \"expected\": \"ccc\"\n    }\n  ]\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 646,
+    "total_tokens": 771,
+    "completion_tokens": 125,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

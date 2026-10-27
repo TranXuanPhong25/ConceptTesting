@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: def x_or_y(n, x, y):\\n3:     \\\"\\\"\\\"A simple program which should return the value of x if n is \\n4:     a prime number and should return the value of y otherwise.\\n5: \\n6:     Examples:\\n7:     for x_or_y(7, 34, 12) == 34\\n8:     for x_or_y(15, 8, 5) == 5\\n9:     \\n10:     \\\"\\\"\\\"\\n11: \\n12:     # TODO: Write your code here\\n13:     # if n is prime then return x\\n14:     # if n is not prime then return y\\n15: \\n16:     if n < 0:\\n17:         return None\\n18: \\n19:     if n == 1:\\n20:         return y\\n21:     for i in range(2, int(n ** 0.5) + 1):\\n22:         if n % i == 0:\\n23:             return y\\n24:     return x\\n25: \", \"reference\": \"\\ndef x_or_y(n, x, y):\\n    \\\"\\\"\\\"A simple program which should return the value of x if n is \\n    a prime number and should return the value of y otherwise.\\n\\n    Examples:\\n    for x_or_y(7, 34, 12) == 34\\n    for x_or_y(15, 8, 5) == 5\\n    \\n    \\\"\\\"\\\"\\n\\n    def is_prime(a):\\n        return not (a < 2 or any(a % x == 0 for x in range(2, int(a ** 0.5) + 1)))\\n    return x if is_prime(n) else y\\n\\n\", \"validated_witness\": {\"args\": [0, 2, 3], \"expected\": {\"status\": \"ok\", \"value\": 3, \"type\": \"int\", \"repr\": \"3\"}, \"actual\": {\"status\": \"ok\", \"value\": 2, \"type\": \"int\", \"repr\": \"2\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Numeric conversion loses required value or precision\", \"where\": \"int or float conversion is applied to values whose exact numeric value must be preserved or rounded under a specified policy.\", \"how\": \"int truncates fractional values toward zero; float conversion can also round exact integer or decimal inputs before later arithmetic.\", \"what\": \"The result is numerically changed rather than merely represented in another type.\", \"test\": \"Use admissible fractional and large exact {values} through {cast_site}, including values beyond exact binary-float integer precision where allowed.\"}, {\"key\": \"K1\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}, {\"key\": \"K2\", \"title\": \"range excludes its stop boundary\", \"where\": \"A loop uses range to enumerate a contract-defined interval.\", \"how\": \"range includes start and excludes stop, with direction determined by step.\", \"what\": \"A required endpoint is never visited or an interval is unexpectedly empty.\", \"test\": \"Choose {start} and {stop} that differ by one; also check an equal-endpoint interval.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 21, \"where\": \"int(n ** 0.5)\", \"how\": \"int truncates fractional values toward zero; float conversion can also round exact integer or decimal inputs before later arithmetic.\", \"what\": \"The result is numerically changed rather than merely represented in another type.\"}, {\"key\": \"B1\", \"card\": \"K2\", \"line\": 21, \"where\": \"range(2, int(n ** 0.5) + 1)\", \"how\": \"range includes start and excludes stop, with direction determined by step.\", \"what\": \"A required endpoint is never visited or an interval is unexpectedly empty.\"}, {\"key\": \"B2\", \"card\": \"K1\", \"line\": 16, \"where\": \"n < 0\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314350,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 1389,
+    "context_limit": 8192
+  }
+}

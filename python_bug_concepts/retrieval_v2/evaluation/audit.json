@@ -1,0 +1,3854 @@
+{
+  "split": "audit",
+  "metric": "strict bug-family hit@3 against manually attributed, contract-valid native witness labels",
+  "engine_files": {
+    "retrieval_v2/engine.py": "89338fd3587716afa7ec44bc1f72ad4ae0c4d4158ff2f287e952702f83466615",
+    "retrieval_v2/corpus.py": "72b14aed887ea734404aeb354c8d3d5acde6a5ed012b4b01292070930cff16ac",
+    "retrieval_v2/evaluate.py": "7abcacb5f50d5442ec7c343d7f88ef806895963b43f5bd3d986257b80d0ecb65",
+    "retrieval_v2/grade_witnesses.py": "5c3379c7c2907b49cf373baf278e4200363d05d7310fe4aa8097bb3e975ad916",
+    "retrieval_v2/grader_worker.py": "3fdaf68994cea52fc96df6182be08271fac1d759aa1b1dd1878bf47ba6500f54",
+    "base.py": "352a6e39ddd27138039b314a8677d460939b06d37d5365fc756a520be4049312",
+    "ingest.py": "79fe1b5737021616988b3961c947c910e804b7be8ad5fd40ad695a4ae91d22e5"
+  },
+  "corpus_sha256": "fd2c495fa3682411f3c81f1653138ac2a68faa96e5224c0616ee238d76289655",
+  "gold_sha256": "0ce4234b8c58533c2761f7f87bb654372a32f74faf957f9736ff629bc98397dc",
+  "constant_baseline_concepts": [
+    "py.branch-boundary-contract",
+    "py.split-join-separator-loss",
+    "py.empty-singleton-shortcut"
+  ],
+  "summary": {
+    "original_bm25": {
+      "tasks": 40,
+      "hit_at_1": 1,
+      "hit_at_3": 1,
+      "fraction_at_3": 0.025,
+      "labeled_ceiling": 34
+    },
+    "extended_bm25": {
+      "tasks": 40,
+      "hit_at_1": 1,
+      "hit_at_3": 10,
+      "fraction_at_3": 0.25,
+      "labeled_ceiling": 34
+    },
+    "structural_v2": {
+      "tasks": 40,
+      "hit_at_1": 25,
+      "hit_at_3": 31,
+      "fraction_at_3": 0.775,
+      "labeled_ceiling": 34,
+      "correct_family_and_first_site_at_3": 25,
+      "correct_family_and_any3_sites_at_3": 29
+    },
+    "frequent3_development": {
+      "tasks": 40,
+      "hit_at_1": 7,
+      "hit_at_3": 10,
+      "fraction_at_3": 0.25,
+      "labeled_ceiling": 34
+    }
+  },
+  "tasks": [
+    {
+      "task_id": "HumanEval/2",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.branch-boundary-contract"
+      ],
+      "gold_witness_ids": [
+        0
+      ],
+      "rationale": "The number==1 branch returns 1 instead of the zero fractional part required for an integral input.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.decimal-from-float",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.numeric-cast-loss",
+            "py.decimal-from-float"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 12,
+                  "end_line": 12,
+                  "expression": "number >= 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "number == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 15,
+                  "end_line": 15,
+                  "expression": "number == 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/13",
+      "split": "audit",
+      "accepted_concepts": [],
+      "gold_witness_ids": [],
+      "rationale": "No confirmed matching mechanism witness in this run.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.version-integer-parsing",
+            "py.float-exact-equality",
+            "py.path-character-prefix"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.numeric-cast-loss",
+            "py.version-integer-parsing",
+            "py.float-exact-equality"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.recursive-base-progress",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.recursive-base-progress",
+              "sites": [
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "greatest_common_divisor(a, b - a)",
+                  "reason": "Self-recursive call; inspect valid base coverage and supported depth.",
+                  "priority": 140
+                },
+                {
+                  "line": 15,
+                  "end_line": 15,
+                  "expression": "greatest_common_divisor(b, a - b)",
+                  "reason": "Self-recursive call; inspect valid base coverage and supported depth.",
+                  "priority": 140
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 10,
+                  "end_line": 10,
+                  "expression": "a == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 12,
+                  "end_line": 12,
+                  "expression": "a < b",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 108
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/15",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.recursive-base-progress"
+      ],
+      "gold_witness_ids": [
+        11
+      ],
+      "rationale": "A valid large n requires a finite sequence but the linear recursive construction exceeds stack depth.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.repeated-matrix-row",
+            "py.version-integer-parsing"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.recursive-base-progress",
+            "py.repeated-matrix-row"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 2
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.recursive-base-progress",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.recursive-base-progress",
+              "sites": [
+                {
+                  "line": 17,
+                  "end_line": 17,
+                  "expression": "string_sequence(n - 1)",
+                  "reason": "Self-recursive call; inspect valid base coverage and supported depth.",
+                  "priority": 140
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 12,
+                  "end_line": 12,
+                  "expression": "n == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/17",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.index-out-of-bounds"
+      ],
+      "gold_witness_ids": [
+        13
+      ],
+      "rationale": "The 101st valid note writes outside the fixed-size list of 100.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.version-integer-parsing",
+            "py.invalid-special-method-return",
+            "py.float-exact-equality"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.version-integer-parsing",
+            "py.float-exact-equality"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.index-out-of-bounds",
+            "py.slice-boundary-normalization"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.index-out-of-bounds",
+              "sites": [
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "result[index]",
+                  "reason": "Subscription into repetition-allocated storage; inspect capacity versus input size.",
+                  "priority": 136
+                },
+                {
+                  "line": 24,
+                  "end_line": 24,
+                  "expression": "result[index]",
+                  "reason": "Subscription into repetition-allocated storage; inspect capacity versus input size.",
+                  "priority": 136
+                },
+                {
+                  "line": 27,
+                  "end_line": 27,
+                  "expression": "result[index]",
+                  "reason": "Subscription into repetition-allocated storage; inspect capacity versus input size.",
+                  "priority": 136
+                }
+              ]
+            },
+            {
+              "id": "py.slice-boundary-normalization",
+              "sites": [
+                {
+                  "line": 29,
+                  "end_line": 29,
+                  "expression": "result[:index]",
+                  "reason": "Slice bounds and exclusive stop define the selected segment.",
+                  "priority": 62
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/19",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.presence-frequency-confusion"
+      ],
+      "gold_witness_ids": [
+        14
+      ],
+      "rationale": "Membership of each dictionary numeral is used instead of preserving its input frequency.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.dict-iteration-unpacks-keys",
+            "py.fromkeys-shared-value"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.split-join-separator-loss",
+            "py.float-exact-equality",
+            "py.dict-iteration-unpacks-keys"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.split-join-separator-loss"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.split-join-separator-loss",
+              "sites": [
+                {
+                  "line": 12,
+                  "end_line": 12,
+                  "expression": "numbers.split()",
+                  "reason": "Tokenization/reconstruction has a delimiter and empty-field policy.",
+                  "priority": 151
+                },
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "' '.join([key for key in num_dict.keys() if num_dict[key] in numbers])",
+                  "reason": "Tokenization/reconstruction has a delimiter and empty-field policy.",
+                  "priority": 151
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/25",
+      "split": "audit",
+      "accepted_concepts": [],
+      "gold_witness_ids": [],
+      "rationale": "No confirmed matching mechanism witness in this run.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.mutator-return-none",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.mutator-return-none",
+            "py.numeric-cast-loss"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 18,
+                  "end_line": 18,
+                  "expression": "n > 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "n % i == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/27",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.ascii-unicode-classification"
+      ],
+      "gold_witness_ids": [
+        18
+      ],
+      "rationale": "ASCII-only ranges fail to uppercase an admitted lowercase Unicode character.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.string-format-contract",
+            "py.slots-string-metadata"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.text-normalization-contract",
+            "py.lexicographic-numeric-order",
+            "py.ascii-unicode-classification"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.text-normalization-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.text-normalization-contract",
+              "sites": [
+                {
+                  "line": 12,
+                  "end_line": 12,
+                  "expression": "ch.lower()",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                },
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "ch.upper()",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/29",
+      "split": "audit",
+      "accepted_concepts": [],
+      "gold_witness_ids": [],
+      "rationale": "No confirmed matching mechanism witness in this run.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.identity-versus-equality",
+            "py.generator-return-is-not-yield"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.lexicographic-numeric-order",
+            "py.quantifier-scope",
+            "py.invalid-special-method-return"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 11,
+                  "end_line": 11,
+                  "expression": "not prefix",
+                  "reason": "A truthiness guard specializes the empty-input path.",
+                  "priority": 125
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/30",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.numeric-cast-loss"
+      ],
+      "gold_witness_ids": [
+        19
+      ],
+      "rationale": "int truncates valid positive elements instead of preserving their numeric values.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.repeated-matrix-row"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.numeric-cast-loss"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.numeric-cast-loss",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.numeric-cast-loss",
+              "sites": [
+                {
+                  "line": 10,
+                  "end_line": 10,
+                  "expression": "int(p)",
+                  "reason": "Numeric coercion can change fraction or finite-precision value.",
+                  "priority": 138
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 10,
+                  "end_line": 10,
+                  "expression": "p > 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/40",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.presence-frequency-confusion"
+      ],
+      "gold_witness_ids": [
+        25
+      ],
+      "rationale": "Membership permits reusing the sole 1 twice for the pair with -2, violating three-distinct-occurrences semantics.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.set-loses-multiplicity"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.set-order-loss"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.presence-frequency-confusion",
+            "py.set-loses-multiplicity"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.presence-frequency-confusion",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "set()",
+                  "reason": "Presence-only state is being used in an occurrence-sensitive task.",
+                  "priority": 150
+                },
+                {
+                  "line": 24,
+                  "end_line": 24,
+                  "expression": "target - j in seen",
+                  "reason": "Membership/one-key state does not establish occurrence counts or distinct index use.",
+                  "priority": 149
+                }
+              ]
+            },
+            {
+              "id": "py.set-loses-multiplicity",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "set()",
+                  "reason": "Set state cannot by itself retain the occurrence multiplicity needed by the task.",
+                  "priority": 148
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/48",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.text-normalization-contract"
+      ],
+      "gold_witness_ids": [
+        28
+      ],
+      "rationale": "Lowercasing changes a non-palindrome into a palindrome under the exact-character contract.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.assert-message-instead-of-comparison",
+            "py.truthy-tuple-condition"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.split-join-separator-loss",
+            "py.assert-message-instead-of-comparison",
+            "py.text-normalization-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.text-normalization-contract",
+            "py.empty-singleton-shortcut",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.text-normalization-contract",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "text.lower().replace(' ', '')",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                },
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "text.lower()",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                }
+              ]
+            },
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "len(chars) < 2",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                },
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "not text",
+                  "reason": "A truthiness guard specializes the empty-input path.",
+                  "priority": 125
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "len(chars) < 2",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 25,
+                  "end_line": 25,
+                  "expression": "chars == reversed_text",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 108
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/51",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.text-normalization-contract"
+      ],
+      "gold_witness_ids": [
+        30
+      ],
+      "rationale": "A non-vowel space is deleted in addition to the vowel.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.strip-character-set",
+            "py.property-missing-return",
+            "py.binding-overwrite"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.split-join-separator-loss",
+            "py.strip-character-set",
+            "py.property-missing-return"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.literal-classification-domain",
+            "py.text-normalization-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 2,
+          "evidence": [
+            {
+              "id": "py.literal-classification-domain",
+              "sites": [
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "char not in vowels",
+                  "reason": "Literal character membership defines an explicit class table.",
+                  "priority": 148
+                }
+              ]
+            },
+            {
+              "id": "py.text-normalization-contract",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "text.replace(' ', '')",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/53",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.branch-boundary-contract"
+      ],
+      "gold_witness_ids": [
+        33
+      ],
+      "rationale": "The equal-operand branch returns one operand instead of their sum.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.legacy-print-redirection",
+            "py.tautological-condition",
+            "py.version-integer-parsing"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.legacy-print-redirection",
+            "py.numeric-cast-loss",
+            "py.tautological-condition"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 10,
+                  "end_line": 10,
+                  "expression": "x == y",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 108
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/56",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.empty-singleton-shortcut"
+      ],
+      "gold_witness_ids": [
+        35
+      ],
+      "rationale": "An empty bracket string is rejected instead of satisfying the balanced-empty convention.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.falsy-fallback",
+            "py.mutator-return-none"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.falsy-fallback",
+            "py.unicode-text-byte-domain"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.empty-singleton-shortcut",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 23,
+                  "end_line": 23,
+                  "expression": "len(stack) == 0",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                },
+                {
+                  "line": 29,
+                  "end_line": 29,
+                  "expression": "len(stack) == 0",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                },
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "not brackets",
+                  "reason": "A truthiness guard specializes the empty-input path.",
+                  "priority": 125
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 23,
+                  "end_line": 23,
+                  "expression": "len(stack) == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 29,
+                  "end_line": 29,
+                  "expression": "len(stack) == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/57",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.branch-boundary-contract"
+      ],
+      "gold_witness_ids": [
+        36
+      ],
+      "rationale": "Equality of the first pair selects decreasing direction and rejects a nondecreasing sequence.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.range-exclusive-stop",
+            "py.assert-message-instead-of-comparison"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.range-exclusive-stop",
+            "py.quantifier-scope"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.empty-singleton-shortcut",
+            "py.branch-boundary-contract",
+            "py.negative-index-sentinel"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 2,
+          "evidence": [
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 12,
+                  "end_line": 12,
+                  "expression": "len(l) <= 1",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 12,
+                  "end_line": 12,
+                  "expression": "len(l) <= 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 17,
+                  "end_line": 17,
+                  "expression": "direction == 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "direction == -1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            },
+            {
+              "id": "py.negative-index-sentinel",
+              "sites": [
+                {
+                  "line": 18,
+                  "end_line": 18,
+                  "expression": "l[i-1]",
+                  "reason": "Subtracting from a position can create a valid-but-unintended negative index.",
+                  "priority": 88
+                },
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "l[i-1]",
+                  "reason": "Subtracting from a position can create a valid-but-unintended negative index.",
+                  "priority": 88
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/61",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.empty-singleton-shortcut"
+      ],
+      "gold_witness_ids": [
+        39
+      ],
+      "rationale": "The empty-case branch returns False for a balanced empty bracket string.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.float-exact-equality",
+            "py.falsy-fallback"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.float-exact-equality",
+            "py.falsy-fallback"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.empty-singleton-shortcut",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "len(brackets) == 0",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "len(brackets) == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 24,
+                  "end_line": 24,
+                  "expression": "len(brackets) % 2 != 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 33,
+                  "end_line": 33,
+                  "expression": "count < 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/67",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.branch-boundary-contract"
+      ],
+      "gold_witness_ids": [
+        43
+      ],
+      "rationale": "An unstated n>=1 guard rejects a valid zero-total distribution.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.version-integer-parsing",
+            "py.index-out-of-bounds",
+            "py.float-exact-equality"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.version-integer-parsing",
+            "py.numeric-cast-loss",
+            "py.float-exact-equality"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.text-normalization-contract",
+            "py.empty-singleton-shortcut",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3,
+          "evidence": [
+            {
+              "id": "py.text-normalization-contract",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "s.split(\"and\")[0].strip()",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                },
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "s.split(\"and\")[1].strip()",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                }
+              ]
+            },
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "len(s) < 1",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "len(s) < 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 18,
+                  "end_line": 18,
+                  "expression": "n < 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/68",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.first-match-vs-optimum"
+      ],
+      "gold_witness_ids": [
+        44
+      ],
+      "rationale": "After the global minimum is odd, the function returns the first even value rather than the smallest even value.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.index-out-of-bounds",
+            "py.negative-index-sentinel"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.index-out-of-bounds",
+            "py.negative-index-sentinel"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.index-origin-domain",
+            "py.first-occurrence-position",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.index-origin-domain",
+              "sites": [
+                {
+                  "line": 43,
+                  "end_line": 43,
+                  "expression": "enumerate(arr)",
+                  "reason": "The specification distinguishes a positional origin, index parity, or coefficient degree.",
+                  "priority": 146
+                }
+              ]
+            },
+            {
+              "id": "py.first-occurrence-position",
+              "sites": [
+                {
+                  "line": 41,
+                  "end_line": 41,
+                  "expression": "arr.index(min_value)",
+                  "reason": "index returns the first equal occurrence, not an arbitrary current position.",
+                  "priority": 146
+                }
+              ]
+            },
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 36,
+                  "end_line": 36,
+                  "expression": "len(arr) == 0",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/72",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.quantifier-scope"
+      ],
+      "gold_witness_ids": [
+        46
+      ],
+      "rationale": "Endpoint equality is used as the whole-list palindrome condition, ignoring unequal interior mirror positions.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.invalid-special-method-return"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.aggregation-scope"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.quantifier-scope",
+            "py.empty-singleton-shortcut",
+            "py.aggregation-scope"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.quantifier-scope",
+              "sites": [
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "q[0]",
+                  "reason": "Selected positions/final aggregate must not replace the required whole-input or prefix condition.",
+                  "priority": 149
+                }
+              ]
+            },
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "len(q) == 1",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                }
+              ]
+            },
+            {
+              "id": "py.aggregation-scope",
+              "sites": [
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "sum(q)",
+                  "reason": "The aggregate's region, unit and grouping are explicit review obligations.",
+                  "priority": 126
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/74",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.aggregation-scope"
+      ],
+      "gold_witness_ids": [
+        48
+      ],
+      "rationale": "Distinct-word cardinality is used as the aggregation unit instead of total character count over all words.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.repeated-matrix-row",
+            "py.legacy-print-redirection",
+            "py.assert-message-instead-of-comparison"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.repeated-matrix-row",
+            "py.legacy-print-redirection",
+            "py.first-match-vs-optimum"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.presence-frequency-confusion",
+            "py.set-loses-multiplicity",
+            "py.aggregation-scope"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3,
+          "evidence": [
+            {
+              "id": "py.presence-frequency-confusion",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "set(lst1)",
+                  "reason": "Presence-only state is being used in an occurrence-sensitive task.",
+                  "priority": 150
+                }
+              ]
+            },
+            {
+              "id": "py.set-loses-multiplicity",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "set(lst1)",
+                  "reason": "Set state cannot by itself retain the occurrence multiplicity needed by the task.",
+                  "priority": 148
+                }
+              ]
+            },
+            {
+              "id": "py.aggregation-scope",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "len(set(lst1))",
+                  "reason": "The aggregate's region, unit and grouping are explicit review obligations.",
+                  "priority": 120
+                },
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "len(set(lst2))",
+                  "reason": "The aggregate's region, unit and grouping are explicit review obligations.",
+                  "priority": 120
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/81",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.rounding-policy"
+      ],
+      "gold_witness_ids": [
+        52
+      ],
+      "rationale": "Pre-rounding 3.71 to 3.7 crosses the strict GPA classification threshold.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.falsy-fallback",
+            "py.legacy-print-redirection"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.falsy-fallback"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.rounding-policy",
+            "py.index-out-of-bounds",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.rounding-policy",
+              "sites": [
+                {
+                  "line": 32,
+                  "end_line": 32,
+                  "expression": "round(grade, 1)",
+                  "reason": "Rounding and comparison order/tie policy must match the numeric contract.",
+                  "priority": 170
+                }
+              ]
+            },
+            {
+              "id": "py.index-out-of-bounds",
+              "sites": [
+                {
+                  "line": 34,
+                  "end_line": 34,
+                  "expression": "letter_grades[i]",
+                  "reason": "Subscription into repetition-allocated storage; inspect capacity versus input size.",
+                  "priority": 136
+                },
+                {
+                  "line": 36,
+                  "end_line": 36,
+                  "expression": "letter_grades[i]",
+                  "reason": "Subscription into repetition-allocated storage; inspect capacity versus input size.",
+                  "priority": 136
+                },
+                {
+                  "line": 38,
+                  "end_line": 38,
+                  "expression": "letter_grades[i]",
+                  "reason": "Subscription into repetition-allocated storage; inspect capacity versus input size.",
+                  "priority": 136
+                }
+              ]
+            },
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 28,
+                  "end_line": 28,
+                  "expression": "not grades",
+                  "reason": "A truthiness guard specializes the empty-input path.",
+                  "priority": 125
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/85",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.index-origin-domain"
+      ],
+      "gold_witness_ids": [
+        53
+      ],
+      "rationale": "Starting at len(lst)-1 and stepping by two selects parity based on input length rather than required odd positions.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.mutate-while-iterating",
+            "py.falsy-fallback"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.first-occurrence-position",
+            "py.shortcircuit-boolean-result"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.index-origin-domain",
+            "py.branch-boundary-contract",
+            "py.negative-index-sentinel"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.index-origin-domain",
+              "sites": [
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "lst[x-1]",
+                  "reason": "A positional assignment or selection must use the specified coordinate origin and stride.",
+                  "priority": 147
+                },
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "lst[x-1]",
+                  "reason": "The specification distinguishes a positional origin, index parity, or coefficient degree.",
+                  "priority": 146
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 12,
+                  "end_line": 12,
+                  "expression": "x > 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "lst[x-1] % 2 == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            },
+            {
+              "id": "py.negative-index-sentinel",
+              "sites": [
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "lst[x-1]",
+                  "reason": "Subtracting from a position can create a valid-but-unintended negative index.",
+                  "priority": 88
+                },
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "lst[x-1]",
+                  "reason": "Subtracting from a position can create a valid-but-unintended negative index.",
+                  "priority": 88
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/88",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.observation-after-transform"
+      ],
+      "gold_witness_ids": [
+        55
+      ],
+      "rationale": "The ascending/descending decision reads endpoints after sorting instead of the original endpoints.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.negative-index-sentinel",
+            "py.float-exact-equality",
+            "py.invalid-special-method-return"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.first-occurrence-position",
+            "py.negative-index-sentinel",
+            "py.observation-after-transform"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.observation-after-transform",
+            "py.index-origin-domain",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.observation-after-transform",
+              "sites": [
+                {
+                  "line": 24,
+                  "end_line": 24,
+                  "expression": "array_copy.sort()",
+                  "reason": "Sorting occurs in a task whose decision depends on original ordered state.",
+                  "priority": 181
+                }
+              ]
+            },
+            {
+              "id": "py.index-origin-domain",
+              "sites": [
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "array[:]",
+                  "reason": "A positional assignment or selection must use the specified coordinate origin and stride.",
+                  "priority": 147
+                },
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "array[:]",
+                  "reason": "The specification distinguishes a positional origin, index parity, or coefficient degree.",
+                  "priority": 146
+                }
+              ]
+            },
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 17,
+                  "end_line": 17,
+                  "expression": "len(array) == 0",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                },
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "len(array) == 1",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/89",
+      "split": "audit",
+      "accepted_concepts": [],
+      "gold_witness_ids": [],
+      "rationale": "No confirmed matching mechanism witness in this run.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.invalid-special-method-return",
+            "py.legacy-print-redirection",
+            "py.float-exact-equality"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.legacy-print-redirection",
+            "py.index-origin-domain",
+            "py.ascii-unicode-classification"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.index-origin-domain",
+            "py.first-occurrence-position",
+            "py.text-normalization-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.index-origin-domain",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "alphabet.index(char.lower())",
+                  "reason": "Occurrence position and alphabet ordinal are different coordinate domains.",
+                  "priority": 157
+                }
+              ]
+            },
+            {
+              "id": "py.first-occurrence-position",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "alphabet.index(char.lower())",
+                  "reason": "index returns the first equal occurrence, not an arbitrary current position.",
+                  "priority": 146
+                }
+              ]
+            },
+            {
+              "id": "py.text-normalization-contract",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "char.lower()",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/94",
+      "split": "audit",
+      "accepted_concepts": [],
+      "gold_witness_ids": [],
+      "rationale": "No confirmed matching mechanism witness in this run.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.version-integer-parsing",
+            "py.float-exact-equality",
+            "py.legacy-print-redirection"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.numeric-cast-loss",
+            "py.float-exact-equality",
+            "py.legacy-print-redirection"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.empty-reduction-domain",
+            "py.aggregation-scope",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.empty-reduction-domain",
+              "sites": [
+                {
+                  "line": 29,
+                  "end_line": 29,
+                  "expression": "max(primes)",
+                  "reason": "An iterable extremum needs a policy when no eligible element survives.",
+                  "priority": 131
+                }
+              ]
+            },
+            {
+              "id": "py.aggregation-scope",
+              "sites": [
+                {
+                  "line": 31,
+                  "end_line": 31,
+                  "expression": "sum(digits)",
+                  "reason": "The aggregate's region, unit and grouping are explicit review obligations.",
+                  "priority": 126
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "x > 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 24,
+                  "end_line": 24,
+                  "expression": "num % i == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/98",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.literal-classification-domain"
+      ],
+      "gold_witness_ids": [
+        61
+      ],
+      "rationale": "The literal uppercase vowel class omits I.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.subprocess-nonzero-ignored",
+            "py.logging-format-arguments"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.literal-classification-domain",
+            "py.first-match-vs-optimum"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 2
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.literal-classification-domain",
+            "py.index-origin-domain",
+            "py.slice-boundary-normalization"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.literal-classification-domain",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "letter in \"AEOU\"",
+                  "reason": "Literal character membership defines an explicit class table.",
+                  "priority": 148
+                }
+              ]
+            },
+            {
+              "id": "py.index-origin-domain",
+              "sites": [
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "s[::2]",
+                  "reason": "The specification distinguishes a positional origin, index parity, or coefficient degree.",
+                  "priority": 146
+                }
+              ]
+            },
+            {
+              "id": "py.slice-boundary-normalization",
+              "sites": [
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "s[::2]",
+                  "reason": "Slice bounds and exclusive stop define the selected segment.",
+                  "priority": 62
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/102",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.branch-boundary-contract",
+        "py.first-match-vs-optimum"
+      ],
+      "gold_witness_ids": [
+        64
+      ],
+      "rationale": "The both-even endpoint path returns the lower endpoint rather than the greatest eligible even number.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.index-out-of-bounds",
+            "py.subprocess-nonzero-ignored"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.numeric-cast-loss",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.first-match-vs-optimum",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.first-match-vs-optimum",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "return x",
+                  "reason": "A loop returns a qualifying candidate before later candidates are considered.",
+                  "priority": 139
+                },
+                {
+                  "line": 25,
+                  "end_line": 25,
+                  "expression": "return y",
+                  "reason": "A loop returns a qualifying candidate before later candidates are considered.",
+                  "priority": 139
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "x % 2 == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "y % 2 == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "x % 2 == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/104",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.branch-boundary-contract",
+        "py.literal-classification-domain"
+      ],
+      "gold_witness_ids": [
+        65
+      ],
+      "rationale": "The single-digit shortcut skips odd-digit classification and admits 2.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.mutator-return-none",
+            "py.float-exact-equality",
+            "py.version-integer-parsing"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.mutator-return-none",
+            "py.set-order-loss",
+            "py.signed-modulo-domain"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.signed-modulo-domain"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 17,
+                  "end_line": 17,
+                  "expression": "i < 10",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "int(j) % 2 == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            },
+            {
+              "id": "py.signed-modulo-domain",
+              "sites": [
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "int(j) % 2",
+                  "reason": "Remainder sign/domain differs from magnitude digit extraction.",
+                  "priority": 94
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/110",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.branch-boundary-contract"
+      ],
+      "gold_witness_ids": [
+        67
+      ],
+      "rationale": "A length-equality precondition is invented even though exchanging elements can satisfy the task for these unequal lists.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.repeated-matrix-row",
+            "py.missing-abstract-contract"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.recursive-base-progress",
+            "py.repeated-matrix-row"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.index-out-of-bounds",
+            "py.range-exclusive-stop"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "len(lst1) != len(lst2)",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "lst1[i] % 2 != 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "lst2[j] % 2 == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            },
+            {
+              "id": "py.index-out-of-bounds",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "lst1[i]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                },
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "lst2[j]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                },
+                {
+                  "line": 22,
+                  "end_line": 22,
+                  "expression": "lst1[i]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                }
+              ]
+            },
+            {
+              "id": "py.range-exclusive-stop",
+              "sites": [
+                {
+                  "line": 18,
+                  "end_line": 18,
+                  "expression": "range(len(lst1))",
+                  "reason": "The loop domain uses an exclusive range stop.",
+                  "priority": 70
+                },
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "range(len(lst2))",
+                  "reason": "The loop domain uses an exclusive range stop.",
+                  "priority": 70
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/112",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.text-normalization-contract"
+      ],
+      "gold_witness_ids": [
+        68
+      ],
+      "rationale": "Unrequested lowercasing changes the retained string and its palindrome classification.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.truthy-generator-assert",
+            "py.falsy-fallback",
+            "py.strip-character-set"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.text-normalization-contract",
+            "py.falsy-fallback",
+            "py.truthy-generator-assert"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.quantifier-scope",
+            "py.text-normalization-contract",
+            "py.slice-boundary-normalization"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 2,
+          "evidence": [
+            {
+              "id": "py.quantifier-scope",
+              "sites": [
+                {
+                  "line": 18,
+                  "end_line": 18,
+                  "expression": "s[::-1]",
+                  "reason": "Selected positions/final aggregate must not replace the required whole-input or prefix condition.",
+                  "priority": 149
+                }
+              ]
+            },
+            {
+              "id": "py.text-normalization-contract",
+              "sites": [
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "s.lower()",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                },
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "c.lower()",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                },
+                {
+                  "line": 17,
+                  "end_line": 17,
+                  "expression": "s.replace(i, \"\")",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                }
+              ]
+            },
+            {
+              "id": "py.slice-boundary-normalization",
+              "sites": [
+                {
+                  "line": 18,
+                  "end_line": 18,
+                  "expression": "s[::-1]",
+                  "reason": "Slice bounds and exclusive stop define the selected segment.",
+                  "priority": 62
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/114",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.empty-singleton-shortcut"
+      ],
+      "gold_witness_ids": [
+        70
+      ],
+      "rationale": "The two-element shortcut omits the valid entire two-element subarray.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.assert-message-instead-of-comparison"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.extremum-initial-sentinel"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.empty-singleton-shortcut",
+            "py.aggregation-scope",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 11,
+                  "end_line": 11,
+                  "expression": "len(nums) == 1",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                },
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "len(nums) == 2",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                }
+              ]
+            },
+            {
+              "id": "py.aggregation-scope",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "sum(nums[i:j])",
+                  "reason": "The aggregate's region, unit and grouping are explicit review obligations.",
+                  "priority": 126
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 11,
+                  "end_line": 11,
+                  "expression": "len(nums) == 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "len(nums) == 2",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/125",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.first-occurrence-position",
+        "py.index-origin-domain"
+      ],
+      "gold_witness_ids": [
+        77
+      ],
+      "rationale": "Text occurrence position is used instead of alphabet ordinal, and index returns the first repeated occurrence.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.legacy-print-redirection",
+            "py.regex-positional-flags"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.text-normalization-contract",
+            "py.ascii-unicode-classification"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.index-origin-domain",
+            "py.split-join-separator-loss",
+            "py.first-occurrence-position"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.index-origin-domain",
+              "sites": [
+                {
+                  "line": 17,
+                  "end_line": 17,
+                  "expression": "txt.index(i)",
+                  "reason": "Occurrence position and alphabet ordinal are different coordinate domains.",
+                  "priority": 157
+                }
+              ]
+            },
+            {
+              "id": "py.split-join-separator-loss",
+              "sites": [
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "txt.split()",
+                  "reason": "Tokenization/reconstruction has a delimiter and empty-field policy.",
+                  "priority": 151
+                },
+                {
+                  "line": 15,
+                  "end_line": 15,
+                  "expression": "txt.split(',')",
+                  "reason": "Tokenization/reconstruction has a delimiter and empty-field policy.",
+                  "priority": 151
+                }
+              ]
+            },
+            {
+              "id": "py.first-occurrence-position",
+              "sites": [
+                {
+                  "line": 17,
+                  "end_line": 17,
+                  "expression": "txt.index(i)",
+                  "reason": "index returns the first equal occurrence, not an arbitrary current position.",
+                  "priority": 146
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/126",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.index-out-of-bounds"
+      ],
+      "gold_witness_ids": [
+        78
+      ],
+      "rationale": "The final equal pair causes lst[i+2] to access past the sequence.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.index-out-of-bounds",
+            "py.legacy-print-redirection",
+            "py.assert-message-instead-of-comparison"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.set-order-loss",
+            "py.legacy-print-redirection",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.empty-singleton-shortcut",
+            "py.branch-boundary-contract",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3,
+          "evidence": [
+            {
+              "id": "py.empty-singleton-shortcut",
+              "sites": [
+                {
+                  "line": 18,
+                  "end_line": 18,
+                  "expression": "len(lst) == 1",
+                  "reason": "A small-length comparison creates a specialized path.",
+                  "priority": 141
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 18,
+                  "end_line": 18,
+                  "expression": "len(lst) == 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            },
+            {
+              "id": "py.index-out-of-bounds",
+              "sites": [
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "lst[i]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                },
+                {
+                  "line": 21,
+                  "end_line": 21,
+                  "expression": "lst[i+1]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                },
+                {
+                  "line": 23,
+                  "end_line": 23,
+                  "expression": "lst[i]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/132",
+      "split": "audit",
+      "accepted_concepts": [],
+      "gold_witness_ids": [],
+      "rationale": "No confirmed matching mechanism witness in this run.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.constant-comprehension-key",
+            "py.negative-index-sentinel",
+            "py.empty-membership"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.quantifier-scope",
+            "py.branch-boundary-contract",
+            "py.empty-membership"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null,
+          "evidence": [
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "brackets == -1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "brackets < len(string) - 1",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 108
+                }
+              ]
+            },
+            {
+              "id": "py.index-out-of-bounds",
+              "sites": [
+                {
+                  "line": 20,
+                  "end_line": 20,
+                  "expression": "string[brackets]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": false,
+          "any_site_hit_at_3": false
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/140",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.fixed-chunk-run"
+      ],
+      "gold_witness_ids": [
+        85
+      ],
+      "rationale": "Replacing a fixed triple leaves an extra underscore in a longer maximal whitespace run.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.legacy-print-redirection",
+            "py.float-exact-equality",
+            "py.binding-overwrite"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.legacy-print-redirection",
+            "py.split-join-separator-loss",
+            "py.fixed-chunk-run"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 3
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.fixed-chunk-run",
+            "py.text-normalization-contract",
+            "py.split-join-separator-loss"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.fixed-chunk-run",
+              "sites": [
+                {
+                  "line": 15,
+                  "end_line": 15,
+                  "expression": "text.replace(\"___\", \"-\")",
+                  "reason": "A fixed repeated literal is replaced, rather than a maximal run.",
+                  "priority": 190
+                }
+              ]
+            },
+            {
+              "id": "py.text-normalization-contract",
+              "sites": [
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "text.replace(\" \", \"_\")",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                },
+                {
+                  "line": 15,
+                  "end_line": 15,
+                  "expression": "text.replace(\"___\", \"-\")",
+                  "reason": "This operation changes exact case/characters or whitespace.",
+                  "priority": 143
+                }
+              ]
+            },
+            {
+              "id": "py.split-join-separator-loss",
+              "sites": [
+                {
+                  "line": 14,
+                  "end_line": 14,
+                  "expression": "text.replace(\" \", \"_\")",
+                  "reason": "Tokenization/reconstruction has a delimiter and empty-field policy.",
+                  "priority": 135
+                },
+                {
+                  "line": 15,
+                  "end_line": 15,
+                  "expression": "text.replace(\"___\", \"-\")",
+                  "reason": "Tokenization/reconstruction has a delimiter and empty-field policy.",
+                  "priority": 135
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/148",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.lexicographic-numeric-order"
+      ],
+      "gold_witness_ids": [
+        90
+      ],
+      "rationale": "Lexicographic planet-name comparison incorrectly rejects a pair whose orbital interval is valid in reverse name order.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.index-out-of-bounds",
+            "py.boolean-exception-matcher",
+            "py.repeated-matrix-row"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.set-order-loss",
+            "py.boolean-exception-matcher",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.lexicographic-numeric-order",
+            "py.first-occurrence-position",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.lexicographic-numeric-order",
+              "sites": [
+                {
+                  "line": 23,
+                  "end_line": 23,
+                  "expression": "planet1 < planet2",
+                  "reason": "Label comparison precedes lookup in an explicitly ranked domain.",
+                  "priority": 175
+                },
+                {
+                  "line": 26,
+                  "end_line": 26,
+                  "expression": "a > b",
+                  "reason": "Label comparison precedes lookup in an explicitly ranked domain.",
+                  "priority": 175
+                }
+              ]
+            },
+            {
+              "id": "py.first-occurrence-position",
+              "sites": [
+                {
+                  "line": 24,
+                  "end_line": 24,
+                  "expression": "planet_list.index(planet1)",
+                  "reason": "index returns the first equal occurrence, not an arbitrary current position.",
+                  "priority": 146
+                },
+                {
+                  "line": 25,
+                  "end_line": 25,
+                  "expression": "planet_list.index(planet2)",
+                  "reason": "index returns the first equal occurrence, not an arbitrary current position.",
+                  "priority": 146
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 23,
+                  "end_line": 23,
+                  "expression": "planet1 < planet2",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 108
+                },
+                {
+                  "line": 26,
+                  "end_line": 26,
+                  "expression": "a > b",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 108
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/152",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.absolute-difference"
+      ],
+      "gold_witness_ids": [
+        93
+      ],
+      "rationale": "Signed subtraction is returned where the required error magnitude is nonnegative.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.invalid-special-method-return",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.index-origin-domain",
+            "py.invalid-special-method-return"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.absolute-difference",
+            "py.index-origin-domain",
+            "py.index-out-of-bounds"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.absolute-difference",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "game[i] - guess[i]",
+                  "reason": "Signed subtraction implements a required magnitude without abs.",
+                  "priority": 185
+                }
+              ]
+            },
+            {
+              "id": "py.index-origin-domain",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "game[i]",
+                  "reason": "The specification distinguishes a positional origin, index parity, or coefficient degree.",
+                  "priority": 146
+                }
+              ]
+            },
+            {
+              "id": "py.index-out-of-bounds",
+              "sites": [
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "game[i]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                },
+                {
+                  "line": 19,
+                  "end_line": 19,
+                  "expression": "guess[i]",
+                  "reason": "Direct subscription needs an admissible index at size boundaries.",
+                  "priority": 76
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/153",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.extremum-initial-sentinel"
+      ],
+      "gold_witness_ids": [
+        94
+      ],
+      "rationale": "An initial score -1 excludes every valid all-lowercase extension candidate.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.repeated-matrix-row",
+            "py.boolean-exception-matcher",
+            "py.fstring-docstring"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.ascii-unicode-classification",
+            "py.digit-place-extraction",
+            "py.repeated-matrix-row"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.extremum-initial-sentinel",
+            "py.ascii-unicode-classification",
+            "py.branch-boundary-contract"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.extremum-initial-sentinel",
+              "sites": [
+                {
+                  "line": 30,
+                  "end_line": 30,
+                  "expression": "strength > strongest_strength",
+                  "reason": "A comparison-updated accumulator has a fixed initial sentinel.",
+                  "priority": 178
+                }
+              ]
+            },
+            {
+              "id": "py.ascii-unicode-classification",
+              "sites": [
+                {
+                  "line": 25,
+                  "end_line": 25,
+                  "expression": "letter.isupper()",
+                  "reason": "A character-class API chooses a specific Unicode/ASCII domain.",
+                  "priority": 130
+                },
+                {
+                  "line": 27,
+                  "end_line": 27,
+                  "expression": "letter.islower()",
+                  "reason": "A character-class API chooses a specific Unicode/ASCII domain.",
+                  "priority": 130
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 30,
+                  "end_line": 30,
+                  "expression": "strength > strongest_strength",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 108
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/155",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.numeric-text-width"
+      ],
+      "gold_witness_ids": [
+        95
+      ],
+      "rationale": "Reversing then integer-parsing turns a real zero digit into discarded leading-zero text before digit counting.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.float-exact-equality",
+            "py.unary-increment-noop",
+            "py.version-integer-parsing"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.numeric-cast-loss",
+            "py.numeric-text-width",
+            "py.float-exact-equality"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": true,
+          "rank": 2
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.numeric-text-width",
+            "py.branch-boundary-contract",
+            "py.signed-modulo-domain"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.numeric-text-width",
+              "sites": [
+                {
+                  "line": 13,
+                  "end_line": 13,
+                  "expression": "int(str(num)[::-1])",
+                  "reason": "Parsing sliced/reversed digit text discards leading-zero representation.",
+                  "priority": 188
+                }
+              ]
+            },
+            {
+              "id": "py.branch-boundary-contract",
+              "sites": [
+                {
+                  "line": 11,
+                  "end_line": 11,
+                  "expression": "num < 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                },
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "int(x) % 2 == 0",
+                  "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+                  "priority": 112
+                }
+              ]
+            },
+            {
+              "id": "py.signed-modulo-domain",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "int(x) % 2",
+                  "reason": "Remainder sign/domain differs from magnitude digit extraction.",
+                  "priority": 94
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    },
+    {
+      "task_id": "HumanEval/158",
+      "split": "audit",
+      "accepted_concepts": [
+        "py.extremum-initial-sentinel",
+        "py.tie-break-selection"
+      ],
+      "gold_witness_ids": [
+        96
+      ],
+      "rationale": "A zero-score valid string ties the initial score while the candidate is still None, causing a string/None comparison.",
+      "systems": {
+        "original_bm25": {
+          "predictions": [
+            "py.slots-string-metadata",
+            "py.init-return-or-yield",
+            "py.mutable-default"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "extended_bm25": {
+          "predictions": [
+            "py.set-order-loss",
+            "py.unicode-text-byte-domain",
+            "py.slots-string-metadata"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        },
+        "structural_v2": {
+          "predictions": [
+            "py.extremum-initial-sentinel",
+            "py.set-order-loss",
+            "py.aggregation-scope"
+          ],
+          "hit_at_1": true,
+          "hit_at_3": true,
+          "rank": 1,
+          "evidence": [
+            {
+              "id": "py.extremum-initial-sentinel",
+              "sites": [
+                {
+                  "line": 16,
+                  "end_line": 16,
+                  "expression": "unique > max_unique",
+                  "reason": "A comparison-updated accumulator has a fixed initial sentinel.",
+                  "priority": 178
+                }
+              ]
+            },
+            {
+              "id": "py.set-order-loss",
+              "sites": [
+                {
+                  "line": 15,
+                  "end_line": 15,
+                  "expression": "set(word)",
+                  "reason": "A set reaches sequence processing without restoring the specified order.",
+                  "priority": 170
+                }
+              ]
+            },
+            {
+              "id": "py.aggregation-scope",
+              "sites": [
+                {
+                  "line": 15,
+                  "end_line": 15,
+                  "expression": "len(set(word))",
+                  "reason": "The aggregate's region, unit and grouping are explicit review obligations.",
+                  "priority": 120
+                }
+              ]
+            }
+          ],
+          "first_site_hit_at_3": true,
+          "any_site_hit_at_3": true
+        },
+        "frequent3_development": {
+          "predictions": [
+            "py.branch-boundary-contract",
+            "py.split-join-separator-loss",
+            "py.empty-singleton-shortcut"
+          ],
+          "hit_at_1": false,
+          "hit_at_3": false,
+          "rank": null
+        }
+      }
+    }
+  ]
+}

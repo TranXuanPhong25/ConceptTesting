@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-8ffe948893ee1989",
+  "object": "chat.completion",
+  "created": 1793036807,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\"selected\":[{\"id\":\"C141\",\"line\":16,\"where\":\"c in string.ascii_letters for c in s\",\"how\":\"string.ascii_letters covers only ASCII letters, while spec implies all Unicode letters via isalpha.\",\"what\":\"Non-ASCII letters like 'é' are ignored; 'a1é' returns '1éa' instead of 'A1É'.\"}],\"abstain_reason\":\"\"}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 3304,
+    "total_tokens": 3392,
+    "completion_tokens": 88,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

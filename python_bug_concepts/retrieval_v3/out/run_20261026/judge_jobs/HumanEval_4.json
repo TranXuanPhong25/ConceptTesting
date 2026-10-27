@@ -1,0 +1,36 @@
+{
+  "task_id": "HumanEval/4",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: from typing import List\\n2: \\n3: \\n4: def mean_absolute_deviation(numbers: List[float]) -> float:\\n5:     \\\"\\\"\\\" For a given list of input numbers, calculate Mean Absolute Deviation\\n6:     around the mean of this dataset.\\n7:     Mean Absolute Deviation is the average absolute difference between each\\n8:     element and a centerpoint (mean in this case):\\n9:     MAD = average | x - x_mean |\\n10:     >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\\n11:     1.0\\n12:     \\\"\\\"\\\"\\n13:     if len(numbers) < 2:\\n14:         raise ValueError(\\\"At least two elements are required.\\\")\\n15: \\n16:     mean = sum(numbers) / len(numbers)\\n17:     return sum(abs(x - mean) for x in numbers) / len(numbers)\\n18: \", \"reference\": \"from typing import List\\n\\n\\ndef mean_absolute_deviation(numbers: List[float]) -> float:\\n    \\\"\\\"\\\" For a given list of input numbers, calculate Mean Absolute Deviation\\n    around the mean of this dataset.\\n    Mean Absolute Deviation is the average absolute difference between each\\n    element and a centerpoint (mean in this case):\\n    MAD = average | x - x_mean |\\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\\n    1.0\\n    \\\"\\\"\\\"\\n\\n    mean = sum(numbers) / len(numbers)\\n    return sum(abs(x - mean) for x in numbers) / len(numbers)\\n\\n\", \"validated_witness\": {\"args\": [[1.0]], \"expected\": {\"status\": \"ok\", \"value\": 0.0, \"type\": \"float\", \"repr\": \"0.0\"}, \"actual\": {\"status\": \"error\", \"error_type\": \"ValueError\", \"message\": \"At least two elements are required.\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}, {\"key\": \"K1\", \"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 13, \"where\": \"len(numbers) < 2\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}, {\"key\": \"B1\", \"card\": \"K1\", \"line\": 13, \"where\": \"len(numbers) < 2\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\"}, {\"key\": \"B2\", \"card\": \"K1\", \"line\": 13, \"where\": \"if len(numbers) < 2: raises ValueError\", \"how\": \"The guard rejects singleton lists, but the MAD formula is mathematically defined (0.0) for a single element.\", \"what\": \"Input [1.0] raises ValueError instead of returning 0.0 as the specification implies for a valid dataset.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.branch-boundary-contract",
+      "K1": "py.empty-singleton-shortcut"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.branch-boundary-contract"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.empty-singleton-shortcut"
+      },
+      "B2": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.empty-singleton-shortcut"
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: \\n3: def same_chars(s0: str, s1: str):\\n4:     \\\"\\\"\\\"\\n5:     Check if two words have the same characters.\\n6:     >>> same_chars('eabcdzzzz', 'dddzzzzzzzddeddabc')\\n7:     True\\n8:     >>> same_chars('abcd', 'dddddddabc')\\n9:     True\\n10:     >>> same_chars('dddddddabc', 'abcd')\\n11:     True\\n12:     >>> same_chars('eabcd', 'dddddddabc')\\n13:     False\\n14:     >>> same_chars('abcd', 'dddddddabce')\\n15:     False\\n16:     >>> same_chars('eabcdzzzz', 'dddzzzzzzzddddabc')\\n17:     False\\n18:     \\\"\\\"\\\"\\n19:     s0 = s0.lower()\\n20:     s1 = s1.lower()\\n21:     return set(s0) == set(s1)\\n22: \", \"reference\": \"\\n\\ndef same_chars(s0: str, s1: str):\\n    \\\"\\\"\\\"\\n    Check if two words have the same characters.\\n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddeddabc')\\n    True\\n    >>> same_chars('abcd', 'dddddddabc')\\n    True\\n    >>> same_chars('dddddddabc', 'abcd')\\n    True\\n    >>> same_chars('eabcd', 'dddddddabc')\\n    False\\n    >>> same_chars('abcd', 'dddddddabce')\\n    False\\n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddddabc')\\n    False\\n    \\\"\\\"\\\"\\n\\n    return set(s0) == set(s1)\\n\\n\", \"validated_witness\": null, \"cards\": [{\"key\": \"K0\", \"title\": \"A set collapses repeated values that the application needed to retain\", \"where\": \"A set literal includes duplicate values or is used as though it preserves input multiplicity.\", \"how\": \"A set retains one entry per equal value; repeated literals do not create additional elements.\", \"what\": \"Required cardinality or multiplicity is lost, or a copy-paste typo hides a missing distinct entry.\", \"test\": \"Construct {set_expression} with equal values and compare it with {required_entries}.\"}, {\"key\": \"K1\", \"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}, {\"key\": \"K2\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 19, \"where\": \"s0.lower()\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\"}, {\"key\": \"B1\", \"card\": \"K2\", \"line\": 21, \"where\": \"set(s0) == set(s1)\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 21, \"where\": \"return set(s0) == set(s1)\", \"how\": \"Converting strings to sets discards character frequency; the spec requires matching counts, not just presence.\", \"what\": \"Inputs like 'aab' and 'ab' return True (faulty) instead of False (expected) because duplicate 'a' is lost.\"}, {\"key\": \"B3\", \"card\": \"K1\", \"line\": 19, \"where\": \"s0 = s0.lower() and s1 = s1.lower() before set comparison\", \"how\": \"The spec implies case-sensitive character matching; lowercasing destroys the distinction between 'A' and 'a'.\", \"what\": \"Inputs like 'A' and 'a' return True (faulty) instead of False (expected) because case is normalized.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314254,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 1441,
+    "context_limit": 8192
+  }
+}

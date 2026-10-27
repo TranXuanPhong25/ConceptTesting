@@ -1,0 +1,63 @@
+{
+  "request_sha256": "79d09c5faea2c56c8ac4f668570b6d74b67cce63dc061fa7cf637f284bad0672",
+  "stage": "judge",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 3,\n      \"reason\": \"Correctly describes missing base case for n=0 causing infinite recursion and RecursionError.\"\n    },\n    {\n      \"key\": \"K1\",\n      \"grade\": 1,\n      \"reason\": \"Applicable to boundary logic but does not describe the actual infinite recursion mechanism.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 0,\n      \"what\": 1,\n      \"reason\": \"Line 12 is the fault site; mechanism explanation is confused; consequence and input class are correct.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Correctly identifies line 12, missing base case mechanism, and RecursionError for input 0.\"\n    },\n    {\n      \"key\": \"B2\",\n      \"where\": 0,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Line 14 is not the fault site; mechanism and consequence descriptions are accurate.\"\n    },\n    {\n      \"key\": \"B3\",\n      \"where\": 1,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Line 12 is relevant; explanation is generic and fails to link to the specific recursion bug.\"\n    }\n  ]\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 1264,
+    "total_tokens": 1637,
+    "completion_tokens": 373,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 46.32427606615238,
+  "parsed": {
+    "cards": [
+      {
+        "key": "K0",
+        "grade": 3,
+        "reason": "Correctly describes missing base case for n=0 causing infinite recursion and RecursionError."
+      },
+      {
+        "key": "K1",
+        "grade": 1,
+        "reason": "Applicable to boundary logic but does not describe the actual infinite recursion mechanism."
+      }
+    ],
+    "bindings": [
+      {
+        "key": "B0",
+        "where": 1,
+        "how": 0,
+        "what": 1,
+        "reason": "Line 12 is the fault site; mechanism explanation is confused; consequence and input class are correct."
+      },
+      {
+        "key": "B1",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Correctly identifies line 12, missing base case mechanism, and RecursionError for input 0."
+      },
+      {
+        "key": "B2",
+        "where": 0,
+        "how": 1,
+        "what": 1,
+        "reason": "Line 14 is not the fault site; mechanism and consequence descriptions are accurate."
+      },
+      {
+        "key": "B3",
+        "where": 1,
+        "how": 0,
+        "what": 0,
+        "reason": "Line 12 is relevant; explanation is generic and fails to link to the specific recursion bug."
+      }
+    ]
+  }
+}

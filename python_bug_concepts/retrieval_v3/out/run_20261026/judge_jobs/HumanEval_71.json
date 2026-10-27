@@ -1,0 +1,36 @@
+{
+  "task_id": "HumanEval/71",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: def triangle_area(a, b, c):\\n3:     '''\\n4:     Given the lengths of the three sides of a triangle. Return the area of\\n5:     the triangle rounded to 2 decimal points if the three sides form a valid triangle. \\n6:     Otherwise return -1\\n7:     Three sides make a valid triangle when the sum of any two sides is greater \\n8:     than the third side.\\n9:     Example:\\n10:     triangle_area(3, 4, 5) == 6.00\\n11:     triangle_area(1, 2, 10) == -1\\n12:     '''\\n13: \\n14:     s = (a + b + c) / 2\\n15:     if (s - a) < b < s and (s - b) < c < s and (s - c) < a < s:\\n16:         return round((s * (s - a) * (s - b) * (s - c)) ** 0.5, 2)\\n17:     else:\\n18:         return -1\\n19:     \\n20: \", \"reference\": \"\\ndef triangle_area(a, b, c):\\n    '''\\n    Given the lengths of the three sides of a triangle. Return the area of\\n    the triangle rounded to 2 decimal points if the three sides form a valid triangle. \\n    Otherwise return -1\\n    Three sides make a valid triangle when the sum of any two sides is greater \\n    than the third side.\\n    Example:\\n    triangle_area(3, 4, 5) == 6.00\\n    triangle_area(1, 2, 10) == -1\\n    '''\\n\\n\\n    if a + b <= c or a + c <= b or b + c <= a: return -1\\n    p = (a + b + c) / 2\\n    return round((p * (p - a) * (p - b) * (p - c)) ** 0.5, 2)\\n\\n\", \"validated_witness\": null, \"cards\": [{\"key\": \"K0\", \"title\": \"Rounding or pre-rounding uses a different tie or threshold policy\", \"where\": \"round or another rounding transformation is used before a comparison or as part of an output conversion.\", \"how\": \"Python round uses its documented tie behavior; rounding before classification can also move values across thresholds.\", \"what\": \"A tie rounds in the wrong direction or a near-threshold value is assigned to the wrong class.\", \"test\": \"Use {values} at exact ties and immediately around {threshold}, with both signs if allowed.\"}, {\"key\": \"K1\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 15, \"where\": \"if (s - a) < b < s and (s - b) < c < s and (s - c) < a < s:\", \"how\": \"The condition uses strict inequalities and derived bounds that fail for degenerate triangles (sum of two sides equals the third), violating the spec's 'greater than' requirement.\", \"what\": \"Input (1, 2, 3) returns -1 (invalid) instead of 0.0 (valid degenerate triangle area), as 1+2 is not strictly greater than 3.\"}, {\"key\": \"B1\", \"card\": \"K0\", \"line\": 16, \"where\": \"round((s * (s - a) * (s - b) * (s - c)) ** 0.5, 2)\", \"how\": \"Python round uses its documented tie behavior; rounding before classification can also move values across thresholds.\", \"what\": \"A tie rounds in the wrong direction or a near-threshold value is assigned to the wrong class.\"}, {\"key\": \"B2\", \"card\": \"K1\", \"line\": 15, \"where\": \"(s - a) < b < s\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.rounding-policy",
+      "K1": "py.branch-boundary-contract"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.branch-boundary-contract"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.rounding-policy"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.branch-boundary-contract"
+      }
+    }
+  }
+}

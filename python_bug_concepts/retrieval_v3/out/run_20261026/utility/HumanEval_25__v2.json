@@ -1,0 +1,52 @@
+{
+  "task_id": "HumanEval/25",
+  "split": "audit",
+  "arm": "v2",
+  "response": {
+    "request_sha256": "5ac8d3e89e074816d468747252bb18e82db460ffb047146f8615bc25a8d0c3ff",
+    "stage": "utility",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"tests\": [\n    {\"args\": [1], \"expected\": []},\n    {\"args\": [2], \"expected\": [2]},\n    {\"args\": [8], \"expected\": [2, 2, 2]}\n  ]\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 453,
+      "total_tokens": 513,
+      "completion_tokens": 60,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 8.249665833078325,
+    "parsed": {
+      "tests": [
+        {
+          "args": [
+            1
+          ],
+          "expected": []
+        },
+        {
+          "args": [
+            2
+          ],
+          "expected": [
+            2
+          ]
+        },
+        {
+          "args": [
+            8
+          ],
+          "expected": [
+            2,
+            2,
+            2
+          ]
+        }
+      ]
+    }
+  }
+}

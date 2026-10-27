@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"fix_spaces\", \"source\": \"\\ndef fix_spaces(text):\\n    \\\"\\\"\\\"\\n    Given a string text, replace all spaces in it with underscores, \\n    and if a string has more than 2 consecutive spaces, \\n    then replace all consecutive spaces with - \\n    \\n    fix_spaces(\\\"Example\\\") == \\\"Example\\\"\\n    fix_spaces(\\\"Example 1\\\") == \\\"Example_1\\\"\\n    fix_spaces(\\\" Example 2\\\") == \\\"_Example_2\\\"\\n    fix_spaces(\\\" Example   3\\\") == \\\"_Example-3\\\"\\n    \\\"\\\"\\\"\\n    # Your code here\\n    text = text.replace(\\\" \\\", \\\"_\\\")\\n    text = text.replace(\\\"___\\\", \\\"-\\\")\\n    return text\\n\", \"concept_hints\": [{\"title\": \"Fixed literal replacement is mistaken for replacement of a maximal run\", \"where\": \"replace is applied to a fixed repeated literal while the contract describes an arbitrary-length run.\", \"how\": \"Literal replacement handles matched non-overlapping chunks; it does not automatically consume the entire maximal run.\", \"what\": \"Extra characters remain or multiple replacement markers appear where one run marker is required.\", \"test\": \"Use {text} with run lengths just below, equal to, one above and twice {chunk_length}.\"}, {\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}, {\"title\": \"Splitting and joining changes delimiter or whitespace structure\", \"where\": \"split, replace or join is used to parse or reconstruct a string with specified delimiters or spacing.\", \"how\": \"Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.\", \"what\": \"Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored.\", \"test\": \"Use {text} with repeated separators, leading/trailing separators and adjacent non-space-separated tokens.\"}]}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314440,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 622,
+    "context_limit": 8192
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "task_id": "HumanEval/115",
+  "split": "development",
+  "arm": "blind",
+  "response": {
+    "request_sha256": "3240448b3b8bc57137870e7190ed2066819da3ac79b11cd9f6612f93c093f63b",
+    "stage": "judge",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 2,\n      \"reason\": \"Correctly describes aggregating total water instead of per-well drops, matching the actual bug.\"\n    },\n    {\n      \"key\": \"K1\",\n      \"grade\": 2,\n      \"reason\": \"Correctly identifies the branch logic error where total water capacity triggers wrong per-well count.\"\n    },\n    {\n      \"key\": \"K2\",\n      \"grade\": 0,\n      \"reason\": \"No indexing boundary error exists; code uses loops and len, not direct computed indexing.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Line 42 is the fault site; explanation correctly links global capacity check to per-well violation.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Line 37 uses len, not direct indexing; no IndexError occurs for valid inputs.\"\n    },\n    {\n      \"key\": \"B2\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Line 38 aggregates globally; explanation correctly links this to ignoring per-well capacity constraints.\"\n    },\n    {\n      \"key\": \"B3\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 0,\n      \"reason\": \"Line 38 is fault site; mechanism correct but consequence description is too generic.\"\n    },\n    {\n      \"key\": \"B4\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Line 39 handles empty input correctly; no boundary violation or spec disagreement exists here.\"\n    }\n  ]\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 2185,
+      "total_tokens": 2666,
+      "completion_tokens": 481,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 67.07138694007881,
+    "parsed": {
+      "cards": [
+        {
+          "key": "K0",
+          "grade": 2,
+          "reason": "Correctly describes aggregating total water instead of per-well drops, matching the actual bug."
+        },
+        {
+          "key": "K1",
+          "grade": 2,
+          "reason": "Correctly identifies the branch logic error where total water capacity triggers wrong per-well count."
+        },
+        {
+          "key": "K2",
+          "grade": 0,
+          "reason": "No indexing boundary error exists; code uses loops and len, not direct computed indexing."
+        }
+      ],
+      "bindings": [
+        {
+          "key": "B0",
+          "where": 1,
+          "how": 1,
+          "what": 1,
+          "reason": "Line 42 is the fault site; explanation correctly links global capacity check to per-well violation."
+        },
+        {
+          "key": "B1",
+          "where": 0,
+          "how": 0,
+          "what": 0,
+          "reason": "Line 37 uses len, not direct indexing; no IndexError occurs for valid inputs."
+        },
+        {
+          "key": "B2",
+          "where": 1,
+          "how": 1,
+          "what": 1,
+          "reason": "Line 38 aggregates globally; explanation correctly links this to ignoring per-well capacity constraints."
+        },
+        {
+          "key": "B3",
+          "where": 1,
+          "how": 1,
+          "what": 0,
+          "reason": "Line 38 is fault site; mechanism correct but consequence description is too generic."
+        },
+        {
+          "key": "B4",
+          "where": 0,
+          "how": 0,
+          "what": 0,
+          "reason": "Line 39 handles empty input correctly; no boundary violation or spec disagreement exists here."
+        }
+      ]
+    }
+  },
+  "valid_schema": true,
+  "mapping": {
+    "cards": {
+      "K0": "py.aggregation-scope",
+      "K1": "py.branch-boundary-contract",
+      "K2": "py.index-out-of-bounds"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v3",
+        "rank": 1,
+        "concept_id": "py.branch-boundary-contract"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 2,
+        "concept_id": "py.index-out-of-bounds"
+      },
+      "B2": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.aggregation-scope"
+      },
+      "B3": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.aggregation-scope"
+      },
+      "B4": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.branch-boundary-contract"
+      }
+    }
+  }
+}

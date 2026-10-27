@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-beaa62537ab4fd43",
+  "object": "chat.completion",
+  "created": 1793039176,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 3,\n      \"reason\": \"Correctly identifies fixed literal replacement failing to handle arbitrary-length runs of spaces.\"\n    },\n    {\n      \"key\": \"K1\",\n      \"grade\": 0,\n      \"reason\": \"Irrelevant; the bug involves replacement logic, not splitting or joining operations.\"\n    },\n    {\n      \"key\": \"K2\",\n      \"grade\": 0,\n      \"reason\": \"Irrelevant; the bug is about space run handling, not case or character normalization.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Correctly cites line 15, explains fixed literal limitation, and gives concrete input/output consequence.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Incorrectly attributes the bug to split/join mechanics which are not present in the code.\"\n    },\n    {\n      \"key\": \"B2\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Incorrectly claims normalization is the issue; the code does not alter case or other characters.\"\n    },\n    {\n      \"key\": \"B3\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Correctly identifies line 15 as the fault site and explains the non-overlapping chunk limitation.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 1472,
+    "total_tokens": 1884,
+    "completion_tokens": 412,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

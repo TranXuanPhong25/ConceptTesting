@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-888a478638bf7485",
+  "object": "chat.completion",
+  "created": 1793038583,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 2,\n      \"reason\": \"Describes the branch boundary bug where single-digit even numbers are incorrectly accepted.\"\n    },\n    {\n      \"key\": \"K1\",\n      \"grade\": 0,\n      \"reason\": \"Irrelevant; inputs are positive integers, so signed modulo behavior does not cause the bug.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Correctly identifies line 17 as the fault site where the shortcut bypasses the even check.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Line 22 is not the fault site; the bug is the missing check in the < 10 branch.\"\n    },\n    {\n      \"key\": \"B2\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Accurately links the strict comparison at line 17 to the specification violation for input 2.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 1330,
+    "total_tokens": 1643,
+    "completion_tokens": 313,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

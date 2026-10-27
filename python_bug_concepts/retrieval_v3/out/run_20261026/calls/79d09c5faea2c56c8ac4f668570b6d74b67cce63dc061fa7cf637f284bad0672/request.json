@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: \\n3: def fib(n: int):\\n4:     \\\"\\\"\\\"Return n-th Fibonacci number.\\n5:     >>> fib(10)\\n6:     55\\n7:     >>> fib(1)\\n8:     1\\n9:     >>> fib(8)\\n10:     21\\n11:     \\\"\\\"\\\"\\n12:     if n == 1 or n == 2:\\n13:         return 1\\n14:     return fib(n - 1) + fib(n - 2)\", \"reference\": \"\\n\\ndef fib(n: int):\\n    \\\"\\\"\\\"Return n-th Fibonacci number.\\n    >>> fib(10)\\n    55\\n    >>> fib(1)\\n    1\\n    >>> fib(8)\\n    21\\n    \\\"\\\"\\\"\\n\\n\\n    if n == 0: return 0\\n    if n <= 2: return 1\\n    a, b = 1, 1\\n    for _ in range(3, n + 1):\\n        a, b, = b, a + b\\n    return b\\n\\n\", \"validated_witness\": {\"args\": [0], \"expected\": {\"status\": \"ok\", \"value\": 0, \"type\": \"int\", \"repr\": \"0\"}, \"actual\": {\"status\": \"error\", \"error_type\": \"RecursionError\", \"message\": \"maximum recursion depth exceeded\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Recursive calls fail to reach a valid base case or exceed supported stack depth\", \"where\": \"A function calls itself with smaller, unchanged or expanding arguments while base guards cover only part of the valid domain.\", \"how\": \"A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.\", \"what\": \"A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.\", \"test\": \"Use the smallest allowed {base_boundary} missing from the guards and an admissible {depth_input} under {execution_contract}.\"}, {\"key\": \"K1\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 12, \"where\": \"if n == 1 or n == 2: return 1\", \"how\": \"Specification implies standard Fibonacci sequence where fib(0)=0, but code returns 1 for n=0 via infinite recursion.\", \"what\": \"Input 0 causes RecursionError; correct behavior should return 0 or raise ValueError for invalid input.\"}, {\"key\": \"B1\", \"card\": \"K0\", \"line\": 12, \"where\": \"if n == 1 or n == 2: return 1\", \"how\": \"Base cases cover only 1 and 2; input 0 or negative integers recurse infinitely without hitting a guard.\", \"what\": \"Input 0 or -1 raises RecursionError instead of returning a defined value or raising ValueError.\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 14, \"where\": \"fib(n - 1)\", \"how\": \"A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.\", \"what\": \"A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.\"}, {\"key\": \"B3\", \"card\": \"K1\", \"line\": 12, \"where\": \"n == 1\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314255,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 1264,
+    "context_limit": 8192
+  }
+}

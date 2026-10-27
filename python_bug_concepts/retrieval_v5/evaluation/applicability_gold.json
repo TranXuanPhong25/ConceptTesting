@@ -1,0 +1,677 @@
+{
+  "label_kind": "single_author_manual_conditional_test_relevance_not_verified_bug_accuracy",
+  "created_before_retrieval_outcomes": true,
+  "inputs_sha256": "8c7429a0281ed8afd92d68d79b223ea05b42da19fae4b705b6e134b6eb20317f",
+  "annotated_tasks": 94,
+  "tasks": {
+    "HumanEval/2": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "number == 1 returns 1; the decimal-part contract requires checking exact integral inputs and neighbors."
+    },
+    "HumanEval/3": {
+      "concept_ids": [
+        "py.aggregation-scope",
+        "py.quantifier-scope"
+      ],
+      "rationale": "sum(operations) and subsequent subtraction are used for a requirement about any intermediate account balance; same totals with different prefixes distinguish the requirement."
+    },
+    "HumanEval/4": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut"
+      ],
+      "rationale": "len(numbers) < 2 rejects a one-element dataset whose mean absolute deviation is well defined as zero."
+    },
+    "HumanEval/5": {
+      "concept_ids": [
+        "py.branch-boundary-contract",
+        "py.index-out-of-bounds"
+      ],
+      "rationale": "numbers[i] != 0 treats zero as a sentinel although zero is a valid list element; range(len(numbers)-1) and i+1 also create concrete size-boundary review sites."
+    },
+    "HumanEval/8": {
+      "concept_ids": [],
+      "rationale": "The main visible risk is recursive cost rather than one of the supported concrete API/contract cards; do not force an index label just because there are subscripts."
+    },
+    "HumanEval/9": {
+      "concept_ids": [
+        "py.extremum-initial-sentinel"
+      ],
+      "rationale": "max_so_far starts at 0 while the integer-list contract admits entirely negative sequences."
+    },
+    "HumanEval/10": {
+      "concept_ids": [
+        "py.slice-boundary-normalization",
+        "py.index-out-of-bounds"
+      ],
+      "rationale": "The palindrome constructor combines first/last indexing with [1:-1] and [1:] recursion; short and repeated-edge strings are valid boundary questions for the shortest-palindrome contract."
+    },
+    "HumanEval/11": {
+      "concept_ids": [
+        "py.numeric-text-width"
+      ],
+      "rationale": "int(a,2), bin and zfill reconstruct binary strings; leading-zero width is part of returning a binary string of the input width, and must be checked independently of the numeric XOR."
+    },
+    "HumanEval/12": {
+      "concept_ids": [
+        "py.text-normalization-contract",
+        "py.empty-reduction-domain",
+        "py.tie-break-selection"
+      ],
+      "rationale": "lower changes selected text, filters can remove every empty string before max, and equal-length candidates must retain the first string."
+    },
+    "HumanEval/13": {
+      "concept_ids": [],
+      "rationale": "The recursive subtraction algorithm needs progress/domain analysis not established by a corpus card; no forced relevance label."
+    },
+    "HumanEval/14": {
+      "concept_ids": [
+        "py.slice-boundary-normalization",
+        "py.range-exclusive-stop"
+      ],
+      "rationale": "range(len(string)) and [:i+1] enumerate prefixes; verify inclusion of the full prefix and singleton/end boundaries specified by all-prefixes."
+    },
+    "HumanEval/15": {
+      "concept_ids": [],
+      "rationale": "Recursive string construction is not one of the supported concrete mechanisms; no card forced from the mere presence of a branch or return."
+    },
+    "HumanEval/16": {
+      "concept_ids": [
+        "py.unicode-text-byte-domain"
+      ],
+      "rationale": "len(set(string.lower().encode())) counts distinct encoded bytes rather than distinct case-insensitive characters."
+    },
+    "HumanEval/17": {
+      "concept_ids": [
+        "py.index-out-of-bounds"
+      ],
+      "rationale": "result is fixed at 100 elements and writes result[index] once per recognized note although the specification does not impose a 100-note limit."
+    },
+    "HumanEval/19": {
+      "concept_ids": [],
+      "rationale": "The dict-key traversal loses numeral multiplicity, but it is not set conversion and no current card states that exact presence-versus-frequency mechanism."
+    },
+    "HumanEval/20": {
+      "concept_ids": [
+        "py.negative-index-sentinel",
+        "py.index-out-of-bounds"
+      ],
+      "rationale": "closest_numbers_index begins at 0 and the return reads index-1; a first-pair minimum uses a valid negative index for a position that should represent the selected pair."
+    },
+    "HumanEval/23": {
+      "concept_ids": [
+        "py.unicode-text-byte-domain"
+      ],
+      "rationale": "len(string.encode('ascii')) changes the domain from unrestricted strings to ASCII bytes."
+    },
+    "HumanEval/25": {
+      "concept_ids": [],
+      "rationale": "The unbounded divisor search needs an efficiency/termination contract beyond these cards; no generic arithmetic card is forced."
+    },
+    "HumanEval/26": {
+      "concept_ids": [],
+      "rationale": "Toggling result membership on each repeat mishandles counts above two; it is not mutation of the traversed input and no exact retained card describes this parity-of-occurrences mechanism."
+    },
+    "HumanEval/27": {
+      "concept_ids": [
+        "py.ascii-unicode-classification"
+      ],
+      "rationale": "The implementation recognizes only A-Z/a-z while the specification asks to flip lowercase and uppercase characters without declaring ASCII-only input."
+    },
+    "HumanEval/29": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut"
+      ],
+      "rationale": "The empty-prefix shortcut bypasses startswith; verify that its returned list has the exact required all-strings behavior for the valid empty prefix. This is a conditional test question, not an asserted fault."
+    },
+    "HumanEval/30": {
+      "concept_ids": [
+        "py.numeric-cast-loss"
+      ],
+      "rationale": "int(p) follows p>0 and changes positive fractional values although the public spec says numbers rather than integers."
+    },
+    "HumanEval/31": {
+      "concept_ids": [
+        "py.branch-boundary-contract",
+        "py.range-exclusive-stop"
+      ],
+      "rationale": "The sole n==1 guard and range(2,n) require explicit checks of the prime-domain boundary at 0,1,2; an empty divisor range cannot itself establish primality."
+    },
+    "HumanEval/34": {
+      "concept_ids": [
+        "py.set-order-loss"
+      ],
+      "rationale": "list(set(l)) produces a sequence while the specification explicitly requires sorted unique elements."
+    },
+    "HumanEval/35": {
+      "concept_ids": [
+        "py.extremum-initial-sentinel"
+      ],
+      "rationale": "max starts at 0, which is outside an entirely negative input list and can survive every comparison."
+    },
+    "HumanEval/36": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "Special branches n<10 and n<100 return constants based on divisibility of n, while the contract counts occurrences in integers strictly below n; boundary pairs distinguish those branches."
+    },
+    "HumanEval/37": {
+      "concept_ids": [
+        "py.first-occurrence-position",
+        "py.index-out-of-bounds"
+      ],
+      "rationale": "new_list.index(i) selects the first equal occurrence instead of the current position when collecting even-index values; duplicates can also make the later indexed list too short."
+    },
+    "HumanEval/40": {
+      "concept_ids": [
+        "py.set-loses-multiplicity"
+      ],
+      "rationale": "seen is a set but the condition needs three distinct occurrences; membership alone cannot represent the number of occurrences available for a pair."
+    },
+    "HumanEval/41": {
+      "concept_ids": [],
+      "rationale": "The visible implementation issue is work proportional to n squared; no complexity card is present and a correct range is not labeled just to increase coverage."
+    },
+    "HumanEval/42": {
+      "concept_ids": [
+        "py.numeric-cast-loss"
+      ],
+      "rationale": "int(x+1) can truncate an admissible fractional element; the public contract says list elements incremented by one."
+    },
+    "HumanEval/46": {
+      "concept_ids": [],
+      "rationale": "The source violates the explicit do-not-use-recursion requirement, a mechanism outside the present semantic API cards."
+    },
+    "HumanEval/48": {
+      "concept_ids": [
+        "py.text-normalization-contract"
+      ],
+      "rationale": "lower().replace(' ', '') changes characters before a palindrome check even though the specification does not authorize case or whitespace normalization."
+    },
+    "HumanEval/49": {
+      "concept_ids": [],
+      "rationale": "The n==0,p==1 modular identity issue is not represented precisely by the current cards; do not label the otherwise ordinary range loop."
+    },
+    "HumanEval/50": {
+      "concept_ids": [
+        "py.ascii-unicode-classification"
+      ],
+      "rationale": "isalpha controls whether the inverse ord/chr arithmetic executes; compare the actual alphabet defined by encode_shift with the broader Unicode predicate before admitting new input classes."
+    },
+    "HumanEval/51": {
+      "concept_ids": [
+        "py.text-normalization-contract"
+      ],
+      "rationale": "replace(' ', '') deletes non-vowel spaces even though the requested transform removes only vowels."
+    },
+    "HumanEval/52": {
+      "concept_ids": [
+        "py.shortcircuit-boolean-result",
+        "py.quantifier-scope"
+      ],
+      "rationale": "return l and l[-1] < t can return [] and tests only the final element although the requirement is that all elements lie below threshold."
+    },
+    "HumanEval/53": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "The x==y special case returns x rather than x+y; equal nonzero operands distinguish the specified arithmetic from the shortcut."
+    },
+    "HumanEval/54": {
+      "concept_ids": [
+        "py.text-normalization-contract"
+      ],
+      "rationale": "lower changes character identity before comparing sets although the words are not specified to be case-insensitive."
+    },
+    "HumanEval/55": {
+      "concept_ids": [],
+      "rationale": "Missing recursive base-case/progress behavior needs a recursion card that is not in the frozen corpus."
+    },
+    "HumanEval/56": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut"
+      ],
+      "rationale": "if not brackets returns False; the empty sequence is a concrete boundary for the every-opening-has-closing requirement."
+    },
+    "HumanEval/57": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "The first comparison l[0] < l[1] fixes direction; equal initial elements followed by an increase distinguish non-strict monotonicity from that branch choice."
+    },
+    "HumanEval/58": {
+      "concept_ids": [
+        "py.set-order-loss"
+      ],
+      "rationale": "The returned list of a set intersection is not explicitly sorted although sorted unique common elements are required."
+    },
+    "HumanEval/59": {
+      "concept_ids": [],
+      "rationale": "The finite hard-coded trial divisor table can miss factors beyond its table, but a generic integer comparison does not express that algorithmic completeness fault."
+    },
+    "HumanEval/61": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut"
+      ],
+      "rationale": "The len==0 branch rejects an empty bracket sequence before the prefix balance rule is applied."
+    },
+    "HumanEval/62": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut",
+        "py.index-out-of-bounds",
+        "py.range-exclusive-stop"
+      ],
+      "rationale": "The singleton shortcut and writes to derivatives[0]/[-1] create concrete zero/one coefficient-list boundary questions, and polynomial degree is tied to range endpoints."
+    },
+    "HumanEval/63": {
+      "concept_ids": [],
+      "rationale": "The visible issue is recursive recomputation/efficiency; no matching complexity card is available."
+    },
+    "HumanEval/64": {
+      "concept_ids": [
+        "py.first-occurrence-position"
+      ],
+      "rationale": "c == s[-1] compares character values rather than whether the current y occurrence is in the final position."
+    },
+    "HumanEval/66": {
+      "concept_ids": [
+        "py.ascii-unicode-classification"
+      ],
+      "rationale": "isupper and ord are applied to characters while the spec describes uppercase ASCII codes; the permitted alphabet needs explicit domain checking."
+    },
+    "HumanEval/67": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "n < 1 rejects a total of zero although the distribution spec does not declare that total invalid; check the stated number domain at that guard. Input grammar questions remain conditional."
+    },
+    "HumanEval/68": {
+      "concept_ids": [
+        "py.tie-break-selection"
+      ],
+      "rationale": "The pluck contract requires the first index among equal minimum eligible values, so equal-score/index tie cases are a specific selection question at min and arr.index."
+    },
+    "HumanEval/69": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "freq[i] >= i is supplemented with freq[i] > freq[i-1] although the public acceptance threshold does not include that neighboring-frequency constraint."
+    },
+    "HumanEval/71": {
+      "concept_ids": [
+        "py.branch-boundary-contract",
+        "py.rounding-policy"
+      ],
+      "rationale": "Triangle validity uses strict chained comparisons and the result is rounded to two places; degenerate edges and rounding ties give concrete spec-based questions."
+    },
+    "HumanEval/72": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut",
+        "py.quantifier-scope"
+      ],
+      "rationale": "The singleton branch ignores weight, and q[0]==q[-1] checks only endpoint equality rather than full palindromic balance."
+    },
+    "HumanEval/73": {
+      "concept_ids": [
+        "py.index-out-of-bounds",
+        "py.range-exclusive-stop"
+      ],
+      "rationale": "Pair indexing arr[len(arr)-1-i] and range(len(arr)//2) can be exercised on short and odd/even lengths under the pair-change contract. These are conditional boundary checks, not a claimed root cause."
+    },
+    "HumanEval/74": {
+      "concept_ids": [
+        "py.set-loses-multiplicity",
+        "py.aggregation-scope"
+      ],
+      "rationale": "len(set(lst)) discards repeated words and substitutes distinct-word cardinality for the required sum of all string lengths."
+    },
+    "HumanEval/76": {
+      "concept_ids": [
+        "py.integer-division-precision"
+      ],
+      "rationale": "Recursive x/n converts an integer power problem into floating arithmetic; admissible large exact powers test preservation of exact integer reasoning."
+    },
+    "HumanEval/78": {
+      "concept_ids": [],
+      "rationale": "The visible count expression covers the listed prime hexadecimal symbols; no concrete failure mechanism is established from public source/spec alone."
+    },
+    "HumanEval/79": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "The 0<=decimal<=255 guard imposes an upper bound absent from the stated decimal-to-binary contract."
+    },
+    "HumanEval/80": {
+      "concept_ids": [
+        "py.text-normalization-contract"
+      ],
+      "rationale": "s.lower() changes case before the three-consecutive-letters distinctness requirement, which does not authorize normalization."
+    },
+    "HumanEval/81": {
+      "concept_ids": [
+        "py.rounding-policy",
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "grade=round(grade,1) occurs before strict GPA threshold comparisons; values around each specified grade boundary must remain in the right class."
+    },
+    "HumanEval/83": {
+      "concept_ids": [],
+      "rationale": "Enumerating all n-digit values is mainly a complexity concern; do not force a range fault when bounds implement the public interval."
+    },
+    "HumanEval/85": {
+      "concept_ids": [],
+      "rationale": "The length-dependent odd/even starting-position error needs an exact parity/position-selection card rather than a fabricated out-of-bounds label."
+    },
+    "HumanEval/86": {
+      "concept_ids": [
+        "py.split-join-separator-loss"
+      ],
+      "rationale": "split() followed by joining with one space collapses blank runs although the specification says to keep blank spaces."
+    },
+    "HumanEval/88": {
+      "concept_ids": [],
+      "rationale": "The direction predicate is applied after sorting rather than before; current cards do not state this sequencing fault and the actual shallow copy is not itself wrong."
+    },
+    "HumanEval/89": {
+      "concept_ids": [
+        "py.text-normalization-contract",
+        "py.ascii-unicode-classification"
+      ],
+      "rationale": "char.lower() erases original case and alphabet.index assumes an ASCII table; test the exact alphabet/case contract separately."
+    },
+    "HumanEval/91": {
+      "concept_ids": [
+        "py.split-join-separator-loss",
+        "py.index-out-of-bounds"
+      ],
+      "rationale": "Only dot separators are split despite .?! delimiters, and words[0] is read even for empty sentence fragments."
+    },
+    "HumanEval/92": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "The x==y==z extra equality branch can accept equal nonzero integers that do not meet one-equals-sum-of-the-other-two."
+    },
+    "HumanEval/94": {
+      "concept_ids": [
+        "py.empty-reduction-domain",
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "max(primes) needs a policy when no candidate survives, and an empty range(2,num) accepts num==1 as prime; record these as conditional domain questions where the spec leaves edge behavior unstated."
+    },
+    "HumanEval/97": {
+      "concept_ids": [
+        "py.signed-modulo-domain"
+      ],
+      "rationale": "a%10 and b%10 are applied directly to possibly negative integers; the example includes negative input and specifies unit-digit products."
+    },
+    "HumanEval/98": {
+      "concept_ids": [
+        "py.literal-classification-domain"
+      ],
+      "rationale": "The literal vowel table AEOU omits I even though uppercase vowels are required."
+    },
+    "HumanEval/99": {
+      "concept_ids": [
+        "py.rounding-policy",
+        "py.numeric-cast-loss"
+      ],
+      "rationale": "The half-case path uses int(value+1) or int(value-1); positive/negative .5 inputs distinguish required half-away-from-zero from truncating the adjusted float."
+    },
+    "HumanEval/101": {
+      "concept_ids": [
+        "py.split-join-separator-loss"
+      ],
+      "rationale": "replace(',', '') removes separators rather than splitting, so adjacent comma-separated words can merge."
+    },
+    "HumanEval/102": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "The inclusive interval and even-endpoint branch return x when both endpoints are even; equal/adjacent even boundaries test the required largest eligible value."
+    },
+    "HumanEval/104": {
+      "concept_ids": [
+        "py.branch-boundary-contract",
+        "py.literal-classification-domain"
+      ],
+      "rationale": "The i<10 branch admits all single digits instead of checking the specified all-odd-digit class, so enumerate single-digit boundaries."
+    },
+    "HumanEval/109": {
+      "concept_ids": [
+        "py.quantifier-scope"
+      ],
+      "rationale": "Recursive or over suffixes can discard an earlier obstruction while the contract asks for one rotation making the entire array nondecreasing; inspect the full-array condition rather than one suffix."
+    },
+    "HumanEval/110": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "The len(lst1)!=len(lst2) early rejection introduces a size-equality requirement not stated in the exchange contract."
+    },
+    "HumanEval/112": {
+      "concept_ids": [
+        "py.text-normalization-contract"
+      ],
+      "rationale": "s.lower and c.lower change required exact characters before deletion and palindrome testing."
+    },
+    "HumanEval/113": {
+      "concept_ids": [
+        "py.literal-classification-domain"
+      ],
+      "rationale": "Repeated counts list 1,3,5,7 but omit 9 from the specified odd-digit domain."
+    },
+    "HumanEval/114": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut"
+      ],
+      "rationale": "The len==2 path takes min of individual elements and omits the valid two-element subarray for the nonempty-subarray minimum requirement."
+    },
+    "HumanEval/115": {
+      "concept_ids": [
+        "py.aggregation-scope"
+      ],
+      "rationale": "The code sums all grid cells before one ceiling operation although the spec requires bucket extraction counts for separate wells."
+    },
+    "HumanEval/117": {
+      "concept_ids": [
+        "py.split-join-separator-loss"
+      ],
+      "rationale": "split(' ') retains empty fields for repeated spaces while the spec requests words; the natural-number consonant boundary can distinguish empty fields from words."
+    },
+    "HumanEval/118": {
+      "concept_ids": [
+        "py.literal-classification-domain"
+      ],
+      "rationale": "The vowel membership table contains lowercase only although the public example requires uppercase U to qualify."
+    },
+    "HumanEval/119": {
+      "concept_ids": [],
+      "rationale": "The code allows interleaving strings by insertion instead of only two concatenation orders; no precise existing concatenation-language card covers that candidate-space expansion."
+    },
+    "HumanEval/121": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut"
+      ],
+      "rationale": "len(lst)==1 returns 0 without checking the sole element at even position zero as required."
+    },
+    "HumanEval/124": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "Year limits 1900..2020 are added beyond the listed validation rules, and month/day thresholds provide concrete required boundaries."
+    },
+    "HumanEval/125": {
+      "concept_ids": [
+        "py.first-occurrence-position"
+      ],
+      "rationale": "txt.index(i) obtains the first text position rather than the character's alphabetical rank; repeated letters and changed positions distinguish these domains."
+    },
+    "HumanEval/126": {
+      "concept_ids": [
+        "py.index-out-of-bounds"
+      ],
+      "rationale": "lst[i+2] is accessed within range(len(lst)-1) when an equal pair occurs at the end."
+    },
+    "HumanEval/127": {
+      "concept_ids": [
+        "py.range-exclusive-stop",
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "Closed interval endpoints and special end-start values 0/1 are explicit in code and spec; boundary tests must distinguish interval location from length. These are candidate questions rather than verified fault-family labels."
+    },
+    "HumanEval/128": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "All-negative and zero comparisons dispatch to special sign branches; small admissible values -1,0,1 distinguish required product-of-sign behavior."
+    },
+    "HumanEval/130": {
+      "concept_ids": [
+        "py.integer-division-precision"
+      ],
+      "rationale": "The even recurrence branch uses n/2 in an integer sequence; exactness/type behavior of the computed branch is a concrete numeric contract question."
+    },
+    "HumanEval/132": {
+      "concept_ids": [],
+      "rationale": "The code assumes a contiguous opening [[ pattern where a nested valid subsequence is required; that formal-language mismatch has no precise frozen card."
+    },
+    "HumanEval/134": {
+      "concept_ids": [
+        "py.split-join-separator-loss",
+        "py.ascii-unicode-classification"
+      ],
+      "rationale": "split() interprets all whitespace as delimiters while the spec defines words by spaces, and isalpha supplies a broader character domain that needs checking."
+    },
+    "HumanEval/135": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut"
+      ],
+      "rationale": "len(arr)==1 returns index 0 even though there is no preceding element and the stated absent-index result is -1."
+    },
+    "HumanEval/136": {
+      "concept_ids": [
+        "py.empty-reduction-domain"
+      ],
+      "rationale": "For a multi-element all-zero list both sign-filtered lists are empty, but the first empty branch calls min(pos_lst)."
+    },
+    "HumanEval/137": {
+      "concept_ids": [
+        "py.lexicographic-numeric-order"
+      ],
+      "rationale": "The source compares str(a)/str(b) after separator replacement while the contract asks for larger real numeric value and original return type."
+    },
+    "HumanEval/140": {
+      "concept_ids": [
+        "py.split-join-separator-loss"
+      ],
+      "rationale": "Two literal replace operations implement a run-length whitespace contract; runs longer than three and edge runs test exact separator reconstruction."
+    },
+    "HumanEval/141": {
+      "concept_ids": [
+        "py.ascii-unicode-classification"
+      ],
+      "rationale": "The regex uses both ASCII letter ranges and \\d while the allowed digit class is explicitly 0-9; this is a conditional source-domain check, not a demonstrated regex bug label."
+    },
+    "HumanEval/142": {
+      "concept_ids": [
+        "py.empty-singleton-shortcut"
+      ],
+      "rationale": "len==1/2 shortcuts bypass index-zero squaring, which is still required for small lists."
+    },
+    "HumanEval/144": {
+      "concept_ids": [
+        "py.integer-division-precision",
+        "py.float-exact-equality"
+      ],
+      "rationale": "eval of fractions performs floating division then compares the product exactly with its integer conversion, although exact integrality is required."
+    },
+    "HumanEval/146": {
+      "concept_ids": [
+        "py.literal-classification-domain"
+      ],
+      "rationale": "A finite even-digit exclusion table is applied to nums[i]//10, which can contain more than one digit; test complete first-digit classification across larger magnitudes."
+    },
+    "HumanEval/148": {
+      "concept_ids": [
+        "py.lexicographic-numeric-order"
+      ],
+      "rationale": "planet1<planet2 uses lexicographic name order before list.index, while required orbital order is given by the explicit planet sequence."
+    },
+    "HumanEval/149": {
+      "concept_ids": [
+        "py.set-loses-multiplicity"
+      ],
+      "rationale": "set(lst)-set(odd_lst) deletes duplicate even-length words though the contract permits duplicates in its sorted output."
+    },
+    "HumanEval/150": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "The n<0 and n==1 branches and empty divisor range need comparison with the specified prime/nonprime return choice at small integer boundaries."
+    },
+    "HumanEval/152": {
+      "concept_ids": [
+        "py.absolute-difference"
+      ],
+      "rationale": "result.append(game[i]-guess[i]) returns signed rather than required absolute differences."
+    },
+    "HumanEval/153": {
+      "concept_ids": [
+        "py.extremum-initial-sentinel",
+        "py.tie-break-selection"
+      ],
+      "rationale": "strongest_strength=-1 excludes extensions whose valid score is smaller; equal maximum scores must also retain the first extension."
+    },
+    "HumanEval/154": {
+      "concept_ids": [
+        "py.slice-boundary-normalization",
+        "py.membership-wrong-domain"
+      ],
+      "rationale": "Rotation uses b[i:]+b[:i] and substring membership; the empty-string/endpoint behavior is a concrete conditional question about the specified rotation/subsequence domain."
+    },
+    "HumanEval/155": {
+      "concept_ids": [
+        "py.numeric-text-width"
+      ],
+      "rationale": "Negative numbers reverse their digit string and parse it back with int, losing zero digits before even/odd digit counting."
+    },
+    "HumanEval/158": {
+      "concept_ids": [
+        "py.extremum-initial-sentinel",
+        "py.tie-break-selection"
+      ],
+      "rationale": "max_unique=0/max_word=None can leave an eligible zero-score word without a candidate, and equal scores require lexicographic tie handling."
+    },
+    "HumanEval/159": {
+      "concept_ids": [
+        "py.branch-boundary-contract"
+      ],
+      "rationale": "The guard compares number+remaining to need rather than just available remaining; test required exhaustion boundaries with nonzero already-eaten counts."
+    },
+    "HumanEval/160": {
+      "concept_ids": [
+        "py.branch-boundary-contract",
+        "py.operator-precedence"
+      ],
+      "rationale": "The i==0 branch and final-operand branch interact at one operator, and mixed operators must preserve the specified precedence in the generated expression."
+    },
+    "HumanEval/161": {
+      "concept_ids": [
+        "py.ascii-unicode-classification"
+      ],
+      "rationale": "string.ascii_letters chooses whether swapcase runs even though the spec says letters without an ASCII restriction."
+    },
+    "HumanEval/162": {
+      "concept_ids": [
+        "py.text-normalization-contract"
+      ],
+      "rationale": "strip changes whitespace before the required MD5 of the given text and can turn a nonempty whitespace string into the empty-input sentinel."
+    },
+    "HumanEval/163": {
+      "concept_ids": [],
+      "rationale": "Stepping a digit interval by two without aligning starting parity needs a precise stride/alignment concept; do not label a correct exclusive-stop transformation as that fault."
+    }
+  }
+}

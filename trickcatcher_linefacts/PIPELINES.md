@@ -1,5 +1,7 @@
 # trickcatcher_linefacts — Execution flows
 
+Update 2026-10-13: [audit of current v7/v8/v9 execution, ConceptCoder alignment, dataset/baseline/ablation fairness, and the proposed concept–relation bug-reasoning direction](AUDIT_CONCEPT_RELATIONS_2026-10-13.md). It includes two new diagrams and recomputed metrics from saved observations. The source-only audit below retains its original scope and date.
+
 Source audit: 2026-10-12. This document describes **the execution pipeline**, rather than a version genealogy. Diagram labels use English technical terms; less common terms are explained in the glossary. No `RESULTS.md`/`results.md` was read and no experiment was run.
 
 Evidence: current Python/shell source, preserved prompt templates, historical v3m/v3m2 source-hash manifests, and input/bundle schemas. Numbers below are **configured workloads or bounds**, not measured outcomes. Existing artifacts can bypass preparation, generation or execution; bounds assume a cold cache and successful orchestration unless stated otherwise.
@@ -620,4 +622,4 @@ All executable source links and function names can be checked in [FUNCTION_INDEX
 
 - **v80_deepseekproviders** (2026-10-26): exact v72 diagnosis on explicit Reka and DeepInfra/fp8. Reka raw85 correct/full85 supported and admitted; DeepInfra raw85 correct but extra JSONkey.3answers/8slots;124timeout and85full429, no task124 result. Known$0.00528633 plus2unknowncharges,5publicprogramchecks, no efficacy claim. [Results](analysis/v80_deepseekproviders/RESULTS.md), [lineage](analysis/v80_deepseekproviders/VERSION_TREE.md).
 
-- **v81_deepinfra_quarter** (2026-10-26): v77 isolated quarter28/113HEdev, fixedrandomseed20261026, only concept-hybrid vs combined, K1; DeepSeek/DeepInfra/fp8, cap$4.20,24CPUtests/reviewPASS. Launched, no scientific result yet. [Live status](analysis/v81_deepinfra_quarter/STATUS.json), [run](analysis/v81_deepinfra_quarter/CURRENT_RUN.json).
+- **v81_deepinfra_quarter** (2026-10-26): fixed28/113HEdev,combined vs concept-hybrid,K1,DeepInfra/fp8 cap$4.20. After key repair,3/28 paired tasks; task19 generation canceled, partial no efficacy verdict. Separate one-prompt Relace then Reka provider diagnostic: Relace canceled $.020253, Reka completed $.006697; combined bill$.026950, not a v81 score; Reka strategy ran offline100/100 valid and SPACE-hit, no expected-output score. [Continuation](analysis/v81_deepinfra_quarter/RESUME_RESULTS.md), [provider diagnostic](analysis/v81_deepinfra_quarter/PROVIDER_TRIAL_RESULTS.md).

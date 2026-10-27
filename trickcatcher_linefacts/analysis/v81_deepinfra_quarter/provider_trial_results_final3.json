@@ -1,0 +1,71 @@
+{
+  "model": "deepseek/deepseek-v4-flash-0731",
+  "results": [
+    {
+      "provider": "relace/fp4",
+      "response": {
+        "content": "",
+        "finish_reason": null,
+        "usage": null,
+        "provider": "Relace",
+        "model": "deepseek/deepseek-v4-flash-0731",
+        "generation_id": "gen-1793072719-w2ZZnHHwzf4krJSMuQ75",
+        "done": false,
+        "stream_error": "missing_done",
+        "event_count": 25356,
+        "curl_exit_code": 0
+      },
+      "worstcase_reservation_usd": "0.02411576",
+      "known_cost_usd": null,
+      "billing": "unknown; full reservation retained",
+      "status": "error_or_incomplete"
+    },
+    {
+      "provider": "reka",
+      "response": {
+        "content": "def strategy():\n    words = (\"zero\", \"one\", \"two\", \"three\", \"four\", \"five\", \"six\", \"seven\", \"eight\", \"nine\")\n    return (\n        st.lists(st.sampled_from(words), min_size=1, max_size=10)\n        .flatmap(lambda ws: st.text(alphabet=\" \", min_size=1, max_size=3).map(lambda sep: sep.join(ws)))\n        .flatmap(lambda s: st.text(alphabet=\" \", min_size=0, max_size=3).map(lambda pre: pre + s))\n        .flatmap(lambda s: st.text(alphabet=\" \", min_size=0, max_size=3).map(lambda suf: s + suf))\n        .filter(lambda s: s != s.strip() or \"  \" in s)\n        .map(lambda s: (s,))\n    )",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 843,
+          "completion_tokens": 23766,
+          "total_tokens": 24609,
+          "cost": 0.00669663,
+          "is_byok": false,
+          "prompt_tokens_details": {
+            "cached_tokens": 0,
+            "cache_write_tokens": 0,
+            "audio_tokens": 0,
+            "video_tokens": 0
+          },
+          "cost_details": {
+            "upstream_inference_cost": 0.00669663,
+            "upstream_inference_prompt_cost": 4.215e-05,
+            "upstream_inference_completions_cost": 0.00665448
+          },
+          "completion_tokens_details": {
+            "reasoning_tokens": 23581,
+            "image_tokens": 0,
+            "audio_tokens": 0
+          }
+        },
+        "provider": "Reka",
+        "model": "deepseek/deepseek-v4-flash-0731",
+        "generation_id": "gen-1793073622-nSoioRivPsYmAy4TG93g",
+        "done": true,
+        "stream_error": null,
+        "event_count": 6660,
+        "curl_exit_code": 0
+      },
+      "worstcase_reservation_usd": "0.03722296",
+      "known_cost_usd": "0.00669663",
+      "status": "response_received"
+    }
+  ],
+  "known_cost_usd": "0.00669663",
+  "unresolved_reservation_usd": "0.02411576",
+  "combined_cap_usd": "0.12",
+  "worstcase_if_all_reserved_usd": "0.03081239",
+  "stop_reason": null,
+  "efficacy_claim": null,
+  "finished_utc": "2026-10-27T04:08:34.749457+00:00"
+}

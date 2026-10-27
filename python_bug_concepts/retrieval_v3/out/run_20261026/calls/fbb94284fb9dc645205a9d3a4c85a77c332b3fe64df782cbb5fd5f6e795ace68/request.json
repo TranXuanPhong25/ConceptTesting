@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: def any_int(x, y, z):\\n3:     '''\\n4:     Create a function that takes 3 numbers.\\n5:     Returns true if one of the numbers is equal to the sum of the other two, and all numbers are integers.\\n6:     Returns false in any other cases.\\n7:     \\n8:     Examples\\n9:     any_int(5, 2, 7) ➞ True\\n10:     \\n11:     any_int(3, 2, 2) ➞ False\\n12: \\n13:     any_int(3, -2, 1) ➞ True\\n14:     \\n15:     any_int(3.6, -2.2, 2) ➞ False\\n16:   \\n17: \\n18:     \\n19:     '''\\n20:     if x==y+z or y==x+z or z==x+y or x==y==z:\\n21:         if type(x)==int and type(y)==int and type(z)==int:\\n22:             return True\\n23:         else:\\n24:             return False\\n25:     else:\\n26:         return False\\n27:     \", \"reference\": \"\\ndef any_int(x, y, z):\\n    '''\\n    Create a function that takes 3 numbers.\\n    Returns true if one of the numbers is equal to the sum of the other two, and all numbers are integers.\\n    Returns false in any other cases.\\n    \\n    Examples\\n    any_int(5, 2, 7) ➞ True\\n    \\n    any_int(3, 2, 2) ➞ False\\n\\n    any_int(3, -2, 1) ➞ True\\n    \\n    any_int(3.6, -2.2, 2) ➞ False\\n  \\n\\n    \\n    '''\\n\\n    if type(x) != int or type(y) != int or type(z) != int: return False\\n    return x == y + z or y == x + z or z == y + x\\n\\n\", \"validated_witness\": {\"args\": [1, 1, 1], \"expected\": {\"status\": \"ok\", \"value\": false, \"type\": \"bool\", \"repr\": \"False\"}, \"actual\": {\"status\": \"ok\", \"value\": true, \"type\": \"bool\", \"repr\": \"True\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Exact floating point equality rejects a mathematically equal result\", \"where\": \"Computed floats are compared with == or !=.\", \"how\": \"Binary floating point rounding can produce nearby but unequal values.\", \"what\": \"An expected equal case fails or takes the wrong branch.\", \"test\": \"Choose {operands} whose arithmetic result differs from {expected_value} by representational rounding.\"}, {\"key\": \"K1\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 20, \"where\": \"x==y+z\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}, {\"key\": \"B1\", \"card\": \"K1\", \"line\": 20, \"where\": \"The condition `x==y==z` is added to the sum-check logic.\", \"how\": \"The spec requires one number to equal the sum of the other two; `x==y==z` allows equal non-zero values (e.g., 3,3,3) where 3 != 3+3.\", \"what\": \"Input (3, 3, 3) returns True (faulty) instead of False (specified), as 3 is not the sum of 3 and 3.\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 21, \"where\": \"The check `type(x)==int` validates integer types.\", \"how\": \"Python's `bool` is a subclass of `int`, so `type(True) is int` is False, but `isinstance(True, int)` is True; however, the spec implies standard integers, and `type` check correctly rejects floats but might be too strict if `bool` is intended as valid integer input.\", \"what\": \"Input (1, 0, 1) where 1 is `True` returns False (faulty) if `True` is considered a valid integer per spec, whereas `isinstance` would return True.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314292,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 1465,
+    "context_limit": 8192
+  }
+}

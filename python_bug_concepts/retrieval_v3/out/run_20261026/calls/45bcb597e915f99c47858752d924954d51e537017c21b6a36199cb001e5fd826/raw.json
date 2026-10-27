@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-907f64dc51b72523",
+  "object": "chat.completion",
+  "created": 1793028066,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C162\",\n      \"line\": 24,\n      \"where\": \"Recursive call fibfib(n-1) + fibfib(n-2) + fibfib(n-3) without iterative optimization\",\n      \"how\": \"Pure recursion lacks memoization; exponential branching causes stack overflow for moderate n despite correct base cases\",\n      \"what\": \"Input n=40 raises RecursionError instead of returning the correct integer value\"\n    }\n  ],\n  \"abstain_reason\": \"No other distinct faults found; base cases match specification exactly and no mutable state or type errors exist.\"\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 3302,
+    "total_tokens": 3450,
+    "completion_tokens": 148,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

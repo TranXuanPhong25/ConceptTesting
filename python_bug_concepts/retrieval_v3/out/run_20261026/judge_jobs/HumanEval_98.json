@@ -1,0 +1,47 @@
+{
+  "task_id": "HumanEval/98",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: def count_upper(s):\\n3:     \\\"\\\"\\\"\\n4:     Given a string s, count the number of uppercase vowels in even indices.\\n5:     \\n6:     For example:\\n7:     count_upper('aBCdEf') returns 1\\n8:     count_upper('abcdefg') returns 0\\n9:     count_upper('dBBE') returns 0\\n10:     \\\"\\\"\\\"\\n11:     \\n12:     # your code here\\n13:     even_string = \\\"\\\"\\n14:     for letter in s[::2]:\\n15:         even_string += letter\\n16:         \\n17:     count = 0\\n18:     \\n19:     for letter in even_string:\\n20:         if letter in \\\"AEOU\\\":\\n21:             count += 1\\n22:             \\n23:     return count\\n24: \", \"reference\": \"\\ndef count_upper(s):\\n    \\\"\\\"\\\"\\n    Given a string s, count the number of uppercase vowels in even indices.\\n    \\n    For example:\\n    count_upper('aBCdEf') returns 1\\n    count_upper('abcdefg') returns 0\\n    count_upper('dBBE') returns 0\\n    \\\"\\\"\\\"\\n\\n    cnt = 0\\n    for i in range(0, len(s), 2):\\n        if s[i] in \\\"AEIOU\\\":\\n            cnt += 1\\n    return cnt\\n\\n\", \"validated_witness\": {\"args\": [\"I\"], \"expected\": {\"status\": \"ok\", \"value\": 1, \"type\": \"int\", \"repr\": \"1\"}, \"actual\": {\"status\": \"ok\", \"value\": 0, \"type\": \"int\", \"repr\": \"0\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Slice clamping hides invalid bounds or drops an endpoint\", \"where\": \"Sequence slicing is used where index validation or inclusive endpoints are required.\", \"how\": \"Slices clamp bounds, interpret negatives relative to length and exclude the stop position.\", \"what\": \"An invalid request silently yields an empty or truncated result.\", \"test\": \"Slice {sequence} at length, beyond length, negative bounds, and an empty interval.\"}, {\"key\": \"K1\", \"title\": \"A position, stride or coordinate is interpreted in the wrong domain\", \"where\": \"Positions, length-derived indices, strides or character ordinals are used as offsets, parity selectors or derived values.\", \"how\": \"Zero/one-based origins, stride alignment and coordinate versus value domains are distinct; the same numeric expression need not represent the required position or rank.\", \"what\": \"The wrong positions, multiplier, alphabet rank or stride class determine the result.\", \"test\": \"Use admissible {positions_or_values} at the first/last position and opposite parity or origin, including repeated characters when ordinal rank is required.\"}, {\"key\": \"K2\", \"title\": \"A literal classification table omits or admits values outside the required class\", \"where\": \"A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.\", \"how\": \"A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.\", \"what\": \"A required member is ignored or an invalid member is accepted in the returned predicate or count.\", \"test\": \"Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 14, \"where\": \"s[::2]\", \"how\": \"Slices clamp bounds, interpret negatives relative to length and exclude the stop position.\", \"what\": \"An invalid request silently yields an empty or truncated result.\"}, {\"key\": \"B1\", \"card\": \"K1\", \"line\": 14, \"where\": \"s[::2]\", \"how\": \"Zero/one-based origins, stride alignment and coordinate versus value domains are distinct; the same numeric expression need not represent the required position or rank.\", \"what\": \"The wrong positions, multiplier, alphabet rank or stride class determine the result.\"}, {\"key\": \"B2\", \"card\": \"K2\", \"line\": 20, \"where\": \"letter in \\\"AEOU\\\"\", \"how\": \"A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.\", \"what\": \"A required member is ignored or an invalid member is accepted in the returned predicate or count.\"}, {\"key\": \"B3\", \"card\": \"K2\", \"line\": 20, \"where\": \"if letter in \\\"AEOU\\\": checks membership against a literal string\", \"how\": \"The literal table omits 'I' and 'O', failing to cover the full set of uppercase vowels required by the spec.\", \"what\": \"Input 'I' or 'O' at even index returns 0 instead of 1; e.g., 'I' is ignored.\"}, {\"key\": \"B4\", \"card\": \"K1\", \"line\": 14, \"where\": \"s[::2] selects characters at even indices (0, 2, 4...)\", \"how\": \"The stride correctly implements even indices; however, if the spec implied 1-based counting or odd indices, this would be the fault.\", \"what\": \"No fault found; 'aBCdEf' index 2 is 'C' (not vowel), index 4 is 'E' (vowel), result 1 matches spec.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.slice-boundary-normalization",
+      "K1": "py.index-origin-domain",
+      "K2": "py.literal-classification-domain"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v2",
+        "rank": 2,
+        "concept_id": "py.slice-boundary-normalization"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.index-origin-domain"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.literal-classification-domain"
+      },
+      "B3": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.literal-classification-domain"
+      },
+      "B4": {
+        "system": "v3",
+        "rank": 1,
+        "concept_id": "py.index-origin-domain"
+      }
+    }
+  }
+}

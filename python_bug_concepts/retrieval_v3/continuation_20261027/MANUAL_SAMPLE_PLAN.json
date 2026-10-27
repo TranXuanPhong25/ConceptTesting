@@ -1,0 +1,266 @@
+{
+  "sampling": "20 smallest SHA256(quality-manual-20261027:task_id:zero_based_rank) among original v3 167 returned rows; deterministic post-hoc sample, no replacements. Source/reference review by same project author, not independent annotator. Judge and gold not supplied in review packet.",
+  "population": 167,
+  "rows": [
+    {
+      "task_id": "HumanEval/9",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.extremum-initial-sentinel",
+        "line": 10,
+        "where": "max_so_far initialized to 0, a fixed sentinel for rolling maximum",
+        "how": "Assumes all input integers are non-negative; negative numbers are ignored as they never exceed the sentinel",
+        "what": "Input [-5, -2] returns [0, 0] instead of [-5, -2]",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "013f9df8962f1b93d5983c541178728f3cc1517eab2ec0b900ea7050d9c9bdd9"
+    },
+    {
+      "task_id": "HumanEval/153",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.extremum-initial-sentinel",
+        "line": 19,
+        "where": "strongest_strength = -1 initializes the accumulator with a fixed sentinel.",
+        "how": "If all extensions have a strength less than or equal to -1, the sentinel is never replaced.",
+        "what": "Returns an empty extension name instead of the strongest valid extension for inputs like ['a', 'b'].",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "0185f310ba099be0fae31c1109131fcf9a317f88a82273f226aa7356507342d3"
+    },
+    {
+      "task_id": "HumanEval/85",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.index-origin-domain",
+        "line": 12,
+        "where": "while(x > 0) loop condition and x -= 2 stride logic",
+        "how": "Loop decrements index by 2 starting from length, skipping even indices (0, 2) and processing odd indices (1, 3) incorrectly due to off-by-one origin shift.",
+        "what": "Input [4, 2, 6, 7] returns 7 (odd index 3) instead of 2 (even value at odd index 1); correct behavior sums even values at odd indices.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "01e6cfd265f5cf5882e09960ac1a52947835bd58d01949e5c3accad55009940b"
+    },
+    {
+      "task_id": "HumanEval/42",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.numeric-cast-loss",
+        "line": 10,
+        "where": "int(x + 1) in list comprehension",
+        "how": "int() truncates fractional results of x+1, losing precision for float inputs",
+        "what": "Input [1.5] yields [2] instead of [2.5]",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "055bd4a72039b23ffcea3a7b5cc17af9993292db279dd00a7ed86152f0ee87d3"
+    },
+    {
+      "task_id": "HumanEval/4",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.empty-singleton-shortcut",
+        "line": 13,
+        "where": "if len(numbers) < 2: raises ValueError",
+        "how": "The guard rejects singleton lists, but the MAD formula is mathematically defined (0.0) for a single element.",
+        "what": "Input [1.0] raises ValueError instead of returning 0.0 as the specification implies for a valid dataset.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "061ace2c5c408fcf5d600daf1d04dec3fb09e3077ffb86ffe2489871433e69ce"
+    },
+    {
+      "task_id": "HumanEval/37",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.first-occurrence-position",
+        "line": 13,
+        "where": "even_index_ints = [i for i in new_list if new_list.index(i) % 2 == 0]",
+        "how": "index(i) returns the first occurrence of value i, not the current loop index, causing duplicate values to be misclassified by parity.",
+        "what": "Input [2, 1, 2] yields [2, 1, 2] instead of [2, 1, 2] (if sorted) or incorrect sorting due to wrong index parity detection.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "0671d9bf726e1b1a229defa72d8ab64300689c8894c145d0131208460e7fd400"
+    },
+    {
+      "task_id": "HumanEval/13",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.recursive-base-progress",
+        "line": 13,
+        "where": "Recursive call with b - a when a < b, missing base case for b == 0",
+        "how": "When a is 0 and b is non-zero, the first guard returns b, but if a is non-zero and b is 0, the logic recurses infinitely as b - a becomes negative and never hits a == 0.",
+        "what": "Input (5, 0) causes infinite recursion and RecursionError instead of returning 5.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "06bb879608672a386b8206485b404877721ba42a6d2db7678d6114d4fa8bb946"
+    },
+    {
+      "task_id": "HumanEval/31",
+      "rank": 2,
+      "binding": {
+        "concept_id": "py.range-exclusive-stop",
+        "line": 22,
+        "where": "for i in range(2, n):",
+        "how": "range excludes the stop value n, so the divisor n is never tested, though this is mathematically redundant for primality.",
+        "what": "No observable fault for standard primes; however, if the logic relied on checking n itself, it would fail.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "09c035d396bebe14bc83a694b270c2ec6ef2ca95be64b5d14e9afd79f29047b6"
+    },
+    {
+      "task_id": "HumanEval/155",
+      "rank": 2,
+      "binding": {
+        "concept_id": "py.branch-boundary-contract",
+        "line": 11,
+        "where": "if num < 0: branch applies a transformation only to negative inputs",
+        "how": "The specification requires counting digits of the magnitude for all integers, but the code alters the digit sequence only for negatives",
+        "what": "Input -120 yields (1, 1) instead of (2, 1) due to the zero-loss bug, while positive 120 yields (2, 1) correctly",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "09ea362c4c98bbe021b2e65c598334bfaaabbf906da66022358029593c51049a"
+    },
+    {
+      "task_id": "HumanEval/37",
+      "rank": 2,
+      "binding": {
+        "concept_id": "py.index-origin-domain",
+        "line": 13,
+        "where": "even_index_ints = [i for i in new_list if new_list.index(i) % 2 == 0]",
+        "how": "The code iterates over values (i) but uses index(i) to determine position, confusing the value domain with the position domain.",
+        "what": "Lists with repeated values at different parities (e.g., [1, 2, 1]) fail to sort even indices correctly because the second '1' is skipped or misidentified.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "0d2083a9975e9af51a2e8a743622e15d27bbea4d9293743b1203dbbd75a48db4"
+    },
+    {
+      "task_id": "HumanEval/9",
+      "rank": 2,
+      "binding": {
+        "concept_id": "py.branch-boundary-contract",
+        "line": 13,
+        "where": "Strict inequality 'n > max_so_far' updates the rolling maximum",
+        "how": "Assumes strict increase is required to update; equal values do not trigger an update, though the current max is correct",
+        "what": "Input [3, 3] returns [3, 3] correctly; this hypothesis is weak as the logic holds for equality, but C135 is the primary fault",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "0fecea42e6ca726a6378b39b100d0b2a75c3fa1d2e63d60d6adcc0ddd8a378d9"
+    },
+    {
+      "task_id": "HumanEval/35",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.extremum-initial-sentinel",
+        "line": 10,
+        "where": "max = 0 initializes accumulator to fixed sentinel",
+        "how": "Assumes all valid list elements are >= 0; negative inputs never update max",
+        "what": "Returns 0 for lists like [-5, -2] instead of -2",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "100d9b683aa411c8b9dd15ecfae15d6b3abbfd8962f76fdd7b2bd6bc73e4e4b1"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "rank": 2,
+      "binding": {
+        "concept_id": "py.index-out-of-bounds",
+        "line": 19,
+        "where": "words[0] accesses the first element without checking if the sentence is empty",
+        "how": "Splitting on '.' can produce empty strings (e.g., trailing dot or consecutive dots), making words an empty list and causing IndexError.",
+        "what": "Input 'Hello.' or 'Hello..World' raises IndexError instead of returning a count.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "102019cbf4bcdb856eff53e5811a3a45fbd62439f2634e56e19a2fd664e3b827"
+    },
+    {
+      "task_id": "HumanEval/29",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.empty-singleton-shortcut",
+        "line": 12,
+        "where": "return strings when prefix is empty",
+        "how": "The spec implies filtering by prefix; returning all strings for empty prefix violates the 'start with' contract for non-empty strings.",
+        "what": "Input ['abc'] with prefix '' returns ['abc'] instead of [] (or vice versa depending on strict interpretation of 'start with').",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "105bcb4d980cb6708a7c3dca719ec5dae88a734d965650afb039320f87d866d8"
+    },
+    {
+      "task_id": "HumanEval/72",
+      "rank": 2,
+      "binding": {
+        "concept_id": "py.empty-singleton-shortcut",
+        "line": 20,
+        "where": "if len(q) == 1: return True skips weight check",
+        "how": "Singleton shortcut bypasses the required sum <= w constraint for length-1 lists",
+        "what": "Input [10], 5 returns True (incorrect, 10 > 5), violating the weight specification",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "1062af5abb0a5e9b7e4d1c1e66a8ad289318daf3227c7f891def149517ec1bdc"
+    },
+    {
+      "task_id": "HumanEval/80",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.text-normalization-contract",
+        "line": 16,
+        "where": "s = s.lower() transforms input before checking distinctness",
+        "how": "Specification examples imply case-sensitive distinctness; lowercasing merges distinct cases like 'A' and 'a'.",
+        "what": "Input 'AaB' returns False (faulty) instead of True (specified) because 'a' and 'a' are seen as duplicates.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "12020a8d9a92ca45f2c352ad6231844a3b4de65647ba1ef2cc26867ed41e60b1"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "rank": 3,
+      "binding": {
+        "concept_id": "py.branch-boundary-contract",
+        "line": 22,
+        "where": "if value % 1 == 0.5 checks for exact tie",
+        "how": "Floating-point modulo arithmetic may not yield exactly 0.5 for values that are mathematically equidistant due to representation errors.",
+        "what": "Input '1.5' might fail the equality check and fall through to round(), potentially returning 2 instead of 2 (correct) or 1 (incorrect) depending on bit representation.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "144faf4600d03ed486361e65598059205e4559f255156d5172e2014996a63aee"
+    },
+    {
+      "task_id": "HumanEval/118",
+      "rank": 1,
+      "binding": {
+        "concept_id": "py.literal-classification-domain",
+        "line": 17,
+        "where": "vowels = ['a', 'e', 'i', 'o', 'u'] defines the classification table",
+        "how": "The list omits uppercase vowels, violating the case-sensitive requirement to find 'U' in 'FULL'.",
+        "what": "Input 'FULL' returns '' instead of 'U' because 'U' is not in the lowercase-only list.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "1506137f5d533e4fd8bd77ebe8413557b6e1341959c2658c2558269aa93ffb02"
+    },
+    {
+      "task_id": "HumanEval/68",
+      "rank": 3,
+      "binding": {
+        "concept_id": "py.empty-reduction-domain",
+        "line": 39,
+        "where": "Calls min(arr) on the entire array without filtering for even values first.",
+        "how": "min() is applied to an unfiltered collection; if the array contains only odd numbers, min() returns an odd number, leading to incorrect logic flow.",
+        "what": "Input [1, 3, 5] returns [1, 0] (odd) instead of [] (no even values).",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "176a3ea9a5ef1b89494f3e0806d1eb81be541040f4fdd943ce97c9695cb397e5"
+    },
+    {
+      "task_id": "HumanEval/125",
+      "rank": 2,
+      "binding": {
+        "concept_id": "py.index-origin-domain",
+        "line": 17,
+        "where": "txt.index(i) % 2 != 0 used to filter characters by position",
+        "how": "The code uses character ordinal value or first-index position instead of the actual iteration index for parity check.",
+        "what": "Input 'bc' returns 0 instead of 1 because 'b' (index 1) is filtered out incorrectly due to index lookup logic.",
+        "line_normalized_from_string": false
+      },
+      "sample_key": "180915f2dfb5c56dc422b05ef2ef8ee2a676377304dbfe92202c51ae9b2beb3b"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"cycpattern_check\", \"source\": \"\\ndef cycpattern_check(a , b):\\n    \\\"\\\"\\\"You are given 2 words. You need to return True if the second word or any of its rotations is a substring in the first word\\n    cycpattern_check(\\\"abcd\\\",\\\"abd\\\") => False\\n    cycpattern_check(\\\"hello\\\",\\\"ell\\\") => True\\n    cycpattern_check(\\\"whassup\\\",\\\"psus\\\") => False\\n    cycpattern_check(\\\"abab\\\",\\\"baa\\\") => True\\n    cycpattern_check(\\\"efef\\\",\\\"eeff\\\") => False\\n    cycpattern_check(\\\"himenss\\\",\\\"simen\\\") => True\\n\\n    \\\"\\\"\\\"\\n    for i in range(len(b)):\\n        if b[i:] + b[:i] in a:\\n            return True\\n    return False\\n\\n\", \"concept_hints\": [{\"title\": \"range excludes its stop boundary\", \"where\": \"A loop uses range to enumerate a contract-defined interval.\", \"how\": \"range includes start and excludes stop, with direction determined by step.\", \"what\": \"A required endpoint is never visited or an interval is unexpectedly empty.\", \"test\": \"Choose {start} and {stop} that differ by one; also check an equal-endpoint interval.\"}]}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314454,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 399,
+    "context_limit": 8192
+  }
+}

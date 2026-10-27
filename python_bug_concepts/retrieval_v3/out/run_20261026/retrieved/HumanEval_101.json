@@ -1,0 +1,63 @@
+{
+  "task_id": "HumanEval/101",
+  "split": "development",
+  "arm": "qwen",
+  "response": {
+    "request_sha256": "0bf2a156103d9ae765a8a23fb0952cc53db8c96ced844cab72bc58e27c8e0d57",
+    "stage": "retrieve",
+    "status": "received",
+    "model": "qwen3.5-27b-awq",
+    "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C142\",\n      \"line\": 13,\n      \"where\": \"s.replace(',', '').split() removes commas then splits on whitespace\",\n      \"how\": \"Deleting commas merges adjacent tokens that were comma-separated without spaces, violating the delimiter contract.\",\n      \"what\": \"Input 'a,b' yields ['ab'] instead of ['a', 'b']; adjacent comma-separated words merge incorrectly.\"\n    }\n  ],\n  \"abstain_reason\": \"\"\n}",
+    "reasoning_content": "",
+    "finish_reason": "stop",
+    "usage": {
+      "prompt_tokens": 3209,
+      "total_tokens": 3329,
+      "completion_tokens": 120,
+      "prompt_tokens_details": null,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      }
+    },
+    "elapsed_seconds": 46.39169233292341,
+    "parsed": {
+      "selected": [
+        {
+          "id": "C142",
+          "line": 13,
+          "where": "s.replace(',', '').split() removes commas then splits on whitespace",
+          "how": "Deleting commas merges adjacent tokens that were comma-separated without spaces, violating the delimiter contract.",
+          "what": "Input 'a,b' yields ['ab'] instead of ['a', 'b']; adjacent comma-separated words merge incorrectly."
+        }
+      ],
+      "abstain_reason": ""
+    }
+  },
+  "selected": [
+    {
+      "concept_id": "py.split-join-separator-loss",
+      "line": 13,
+      "where": "s.replace(',', '').split() removes commas then splits on whitespace",
+      "how": "Deleting commas merges adjacent tokens that were comma-separated without spaces, violating the delimiter contract.",
+      "what": "Input 'a,b' yields ['ab'] instead of ['a', 'b']; adjacent comma-separated words merge incorrectly.",
+      "line_normalized_from_string": false
+    }
+  ],
+  "schema_error": null,
+  "baseline": [
+    {
+      "concept_id": "py.split-join-separator-loss",
+      "line": 13,
+      "where": "s.replace(',', '').split()",
+      "how": "Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.",
+      "what": "Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored."
+    },
+    {
+      "concept_id": "py.text-normalization-contract",
+      "line": 13,
+      "where": "s.replace(',', '')",
+      "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+      "what": "Required original text is altered or a distinction specified by the task disappears."
+    }
+  ]
+}

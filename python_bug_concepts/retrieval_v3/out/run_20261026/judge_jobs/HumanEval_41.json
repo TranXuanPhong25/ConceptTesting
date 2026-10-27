@@ -1,0 +1,31 @@
+{
+  "task_id": "HumanEval/41",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: \\n3: def car_race_collision(n: int):\\n4:     \\\"\\\"\\\"\\n5:     Imagine a road that's a perfectly straight infinitely long line.\\n6:     n cars are driving left to right;  simultaneously, a different set of n cars\\n7:     are driving right to left.   The two sets of cars start out being very far from\\n8:     each other.  All cars move in the same speed.  Two cars are said to collide\\n9:     when a car that's moving left to right hits a car that's moving right to left.\\n10:     However, the cars are infinitely sturdy and strong; as a result, they continue moving\\n11:     in their trajectory as if they did not collide.\\n12: \\n13:     This function outputs the number of such collisions.\\n14:     \\\"\\\"\\\"\\n15:     return sum(1 for _ in range(n) for _ in range(n))\\n16: \", \"reference\": \"\\n\\ndef car_race_collision(n: int):\\n    \\\"\\\"\\\"\\n    Imagine a road that's a perfectly straight infinitely long line.\\n    n cars are driving left to right;  simultaneously, a different set of n cars\\n    are driving right to left.   The two sets of cars start out being very far from\\n    each other.  All cars move in the same speed.  Two cars are said to collide\\n    when a car that's moving left to right hits a car that's moving right to left.\\n    However, the cars are infinitely sturdy and strong; as a result, they continue moving\\n    in their trajectory as if they did not collide.\\n\\n    This function outputs the number of such collisions.\\n    \\\"\\\"\\\"\\n\\n\\n    return n ** 2\\n\\n\", \"validated_witness\": null, \"cards\": [{\"key\": \"K0\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}, {\"key\": \"K1\", \"title\": \"range excludes its stop boundary\", \"where\": \"A loop uses range to enumerate a contract-defined interval.\", \"how\": \"range includes start and excludes stop, with direction determined by step.\", \"what\": \"A required endpoint is never visited or an interval is unexpectedly empty.\", \"test\": \"Choose {start} and {stop} that differ by one; also check an equal-endpoint interval.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 15, \"where\": \"return sum(1 for _ in range(n) for _ in range(n))\", \"how\": \"The implementation computes n*n collisions, assuming every left-moving car hits every right-moving car, which contradicts the physical trajectory logic where cars pass through without changing paths.\", \"what\": \"For n=2, the code returns 4, but the specification implies a different collision count based on distinct car pairs or trajectory intersections not modeled by a simple Cartesian product.\"}, {\"key\": \"B1\", \"card\": \"K1\", \"line\": 15, \"where\": \"range(n)\", \"how\": \"range includes start and excludes stop, with direction determined by step.\", \"what\": \"A required endpoint is never visited or an interval is unexpectedly empty.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.branch-boundary-contract",
+      "K1": "py.range-exclusive-stop"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.branch-boundary-contract"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.range-exclusive-stop"
+      }
+    }
+  }
+}

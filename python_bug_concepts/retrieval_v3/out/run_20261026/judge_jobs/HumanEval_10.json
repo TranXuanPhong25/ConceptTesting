@@ -1,0 +1,37 @@
+{
+  "task_id": "HumanEval/10",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: \\n3: def is_palindrome(string: str) -> bool:\\n4:     \\\"\\\"\\\" Test if given string is a palindrome \\\"\\\"\\\"\\n5:     return string == string[::-1]\\n6: \\n7: \\n8: def make_palindrome(string: str) -> str:\\n9:     \\\"\\\"\\\" Find the shortest palindrome that begins with a supplied string.\\n10:     Algorithm idea is simple:\\n11:     - Find the longest postfix of supplied string that is a palindrome.\\n12:     - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\\n13:     >>> make_palindrome('')\\n14:     ''\\n15:     >>> make_palindrome('cat')\\n16:     'catac'\\n17:     >>> make_palindrome('cata')\\n18:     'catac'\\n19:     \\\"\\\"\\\"\\n20:     if string == '':\\n21:         return ''\\n22:     if is_palindrome(string):\\n23:         return string\\n24:     if string[0] == string[-1]:\\n25:         return string[0] + make_palindrome(string[1:-1]) + string[-1]\\n26:     else:\\n27:         return string[0] + make_palindrome(string[1:]) + string[0]\", \"reference\": \"\\n\\ndef is_palindrome(string: str) -> bool:\\n    \\\"\\\"\\\" Test if given string is a palindrome \\\"\\\"\\\"\\n    return string == string[::-1]\\n\\n\\ndef make_palindrome(string: str) -> str:\\n    \\\"\\\"\\\" Find the shortest palindrome that begins with a supplied string.\\n    Algorithm idea is simple:\\n    - Find the longest postfix of supplied string that is a palindrome.\\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\\n    >>> make_palindrome('')\\n    ''\\n    >>> make_palindrome('cat')\\n    'catac'\\n    >>> make_palindrome('cata')\\n    'catac'\\n    \\\"\\\"\\\"\\n\\n    if is_palindrome(string):\\n        return string\\n    for i in range(len(string)):\\n        if is_palindrome(string[i:]):\\n            return string + string[i-1::-1]\\n\\n\", \"validated_witness\": {\"args\": [\"abca\"], \"expected\": {\"status\": \"ok\", \"value\": \"abcacba\", \"type\": \"str\", \"repr\": \"'abcacba'\"}, \"actual\": {\"status\": \"ok\", \"value\": \"abcba\", \"type\": \"str\", \"repr\": \"'abcba'\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Checking one element or aggregate misses an all/any requirement\", \"where\": \"A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\", \"test\": \"Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees.\"}, {\"key\": \"K1\", \"title\": \"A negative sentinel is accidentally used as a valid sequence index\", \"where\": \"A search result or computed index can be negative before indexing a sequence.\", \"how\": \"Negative indexing selects from the end instead of rejecting the sentinel.\", \"what\": \"The last element is returned for a missing item.\", \"test\": \"Choose {input} that produces index -1 and apply the resulting index to a nonempty {sequence}.\"}, {\"key\": \"K2\", \"title\": \"Recursive calls fail to reach a valid base case or exceed supported stack depth\", \"where\": \"A function calls itself with smaller, unchanged or expanding arguments while base guards cover only part of the valid domain.\", \"how\": \"A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.\", \"what\": \"A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.\", \"test\": \"Use the smallest allowed {base_boundary} missing from the guards and an admissible {depth_input} under {execution_contract}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 24, \"where\": \"string[-1]\", \"how\": \"Negative indexing selects from the end instead of rejecting the sentinel.\", \"what\": \"The last element is returned for a missing item.\"}, {\"key\": \"B1\", \"card\": \"K2\", \"line\": 25, \"where\": \"make_palindrome(string[1:-1])\", \"how\": \"A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.\", \"what\": \"A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 5, \"where\": \"string[::-1]\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.quantifier-scope",
+      "K1": "py.negative-index-sentinel",
+      "K2": "py.recursive-base-progress"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v2",
+        "rank": 2,
+        "concept_id": "py.negative-index-sentinel"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.recursive-base-progress"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.quantifier-scope"
+      }
+    }
+  }
+}

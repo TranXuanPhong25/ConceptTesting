@@ -1,0 +1,36 @@
+{
+  "task_id": "HumanEval/46",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: \\n3: def fib4(n: int):\\n4:     \\\"\\\"\\\"The Fib4 number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\\n5:     fib4(0) -> 0\\n6:     fib4(1) -> 0\\n7:     fib4(2) -> 2\\n8:     fib4(3) -> 0\\n9:     fib4(n) -> fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4).\\n10:     Please write a function to efficiently compute the n-th element of the fib4 number sequence.  Do not use recursion.\\n11:     >>> fib4(5)\\n12:     4\\n13:     >>> fib4(6)\\n14:     8\\n15:     >>> fib4(7)\\n16:     14\\n17:     \\\"\\\"\\\"\\n18:     if n == 0:\\n19:         return 0\\n20:     elif n == 1:\\n21:         return 0\\n22:     elif n == 2:\\n23:         return 2\\n24:     elif n == 3:\\n25:         return 0\\n26:     else:\\n27:         return fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4)\", \"reference\": \"\\n\\ndef fib4(n: int):\\n    \\\"\\\"\\\"The Fib4 number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\\n    fib4(0) -> 0\\n    fib4(1) -> 0\\n    fib4(2) -> 2\\n    fib4(3) -> 0\\n    fib4(n) -> fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4).\\n    Please write a function to efficiently compute the n-th element of the fib4 number sequence.  Do not use recursion.\\n    >>> fib4(5)\\n    4\\n    >>> fib4(6)\\n    8\\n    >>> fib4(7)\\n    14\\n    \\\"\\\"\\\"\\n\\n    \\n    if n == 0:\\n        return 0\\n    elif n == 1:\\n        return 0\\n    elif n == 2:\\n        return 2\\n    elif n == 3:\\n        return 0\\n    else:\\n        a, b, c, d = 0, 0, 2, 0\\n        for i in range(4, n + 1):\\n            a, b, c, d = b, c, d, a + b + c + d\\n        return d\\n\\n\", \"validated_witness\": {\"args\": [1200], \"expected\": {\"status\": \"ok\", \"value\": 150123240468465608984471703499826202406206480408553874426420330519006070332716686127903324858168556104477813970528580154959435256869002648680629824412351234391285040725058423602788520026233254679016465257222828033757710766409047066447246575108230198308798638675804158316644267436943231543126413290840678877710166803605550978312380668062271168, \"type\": \"int\", \"repr\": \"150123240468465608984471703499826202406206480408553874426420330519006070332716686127903324858168556104477813970528580154959435256869002648680629824412351234391285040725058423602788520026233254679016465257222828033757710766409047066447246575108230198308798638675804158316644267436943231543126413290840678877710166803605550978312380668062271168\"}, \"actual\": {\"status\": \"error\", \"error_type\": \"RecursionError\", \"message\": \"maximum recursion depth exceeded\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Recursive calls fail to reach a valid base case or exceed supported stack depth\", \"where\": \"A function calls itself with smaller, unchanged or expanding arguments while base guards cover only part of the valid domain.\", \"how\": \"A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.\", \"what\": \"A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.\", \"test\": \"Use the smallest allowed {base_boundary} missing from the guards and an admissible {depth_input} under {execution_contract}.\"}, {\"key\": \"K1\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 18, \"where\": \"n == 0\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}, {\"key\": \"B1\", \"card\": \"K0\", \"line\": 27, \"where\": \"Recursive call fib4(n-1) + ... in the else branch\", \"how\": \"Specification explicitly forbids recursion; implementation uses it, risking stack overflow for large n.\", \"what\": \"Large valid inputs (e.g., n=1000) raise RecursionError instead of returning the computed integer.\"}, {\"key\": \"B2\", \"card\": \"K0\", \"line\": 27, \"where\": \"fib4(n-4)\", \"how\": \"A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.\", \"what\": \"A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.recursive-base-progress",
+      "K1": "py.branch-boundary-contract"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.branch-boundary-contract"
+      },
+      "B1": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.recursive-base-progress"
+      },
+      "B2": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.recursive-base-progress"
+      }
+    }
+  }
+}

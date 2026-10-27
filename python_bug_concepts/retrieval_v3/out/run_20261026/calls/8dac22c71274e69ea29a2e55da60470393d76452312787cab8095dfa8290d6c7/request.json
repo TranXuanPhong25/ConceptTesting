@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"encrypt\", \"source\": \"\\ndef encrypt(s):\\n    \\\"\\\"\\\"Create a function encrypt that takes a string as an argument and\\n    returns a string encrypted with the alphabet being rotated. \\n    The alphabet should be rotated in a manner such that the letters \\n    shift down by two multiplied to two places.\\n    For example:\\n    encrypt('hi') returns 'lm'\\n    encrypt('asdfghjkl') returns 'ewhjklnop'\\n    encrypt('gf') returns 'kj'\\n    encrypt('et') returns 'ix'\\n    \\\"\\\"\\\"\\n    result = \\\"\\\"\\n    alphabet = \\\"abcdefghijklmnopqrstuvwxyz\\\"\\n    for char in s:\\n        result += alphabet[(alphabet.index(char.lower()) + 2*2) % 26]\\n    return result\\n\", \"concept_hints\": []}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314389,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 313,
+    "context_limit": 8192
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-8d5f59e4a82b7199",
+  "object": "chat.completion",
+  "created": 1793037979,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 0,\n      \"reason\": \"Rounding policy is not the mechanism causing the triangle validation failure.\"\n    },\n    {\n      \"key\": \"K1\",\n      \"grade\": 2,\n      \"reason\": \"Correctly identifies the branch boundary error where strict inequality rejects valid degenerate triangles.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 0,\n      \"reason\": \"Spec requires strict inequality, so degenerate triangles are correctly rejected, not valid.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 0,\n      \"how\": 0,\n      \"what\": 0,\n      \"reason\": \"Rounding does not cause the validation logic error described in the binding.\"\n    },\n    {\n      \"key\": \"B2\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 0,\n      \"reason\": \"Spec requires strict inequality, so the boundary case is correctly handled as invalid.\"\n    }\n  ]\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 1368,
+    "total_tokens": 1657,
+    "completion_tokens": 289,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

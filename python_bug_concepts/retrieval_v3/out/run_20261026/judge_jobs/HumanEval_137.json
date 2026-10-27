@@ -1,0 +1,47 @@
+{
+  "task_id": "HumanEval/137",
+  "messages": [
+    {
+      "role": "system",
+      "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+    },
+    {
+      "role": "user",
+      "content": "{\"source\": \"1: \\n2: def compare_one(a, b):\\n3:     \\\"\\\"\\\"\\n4:     Create a function that takes integers, floats, or strings representing\\n5:     real numbers, and returns the larger variable in its given variable type.\\n6:     Return None if the values are equal.\\n7:     Note: If a real number is represented as a string, the floating point might be . or ,\\n8: \\n9:     compare_one(1, 2.5) ➞ 2.5\\n10:     compare_one(1, \\\"2,3\\\") ➞ \\\"2,3\\\"\\n11:     compare_one(\\\"5,1\\\", \\\"6\\\") ➞ \\\"6\\\"\\n12:     compare_one(\\\"1\\\", 1) ➞ None\\n13:     \\\"\\\"\\\"\\n14:     if str(a).replace(\\\".\\\",\\\",\\\") < str(b).replace(\\\".\\\",\\\",\\\"):\\n15:         return b\\n16:     elif str(a).replace(\\\".\\\",\\\",\\\") == str(b).replace(\\\".\\\",\\\",\\\"):\\n17:         return None\\n18:     else:\\n19:         return a\", \"reference\": \"\\ndef compare_one(a, b):\\n    \\\"\\\"\\\"\\n    Create a function that takes integers, floats, or strings representing\\n    real numbers, and returns the larger variable in its given variable type.\\n    Return None if the values are equal.\\n    Note: If a real number is represented as a string, the floating point might be . or ,\\n\\n    compare_one(1, 2.5) ➞ 2.5\\n    compare_one(1, \\\"2,3\\\") ➞ \\\"2,3\\\"\\n    compare_one(\\\"5,1\\\", \\\"6\\\") ➞ \\\"6\\\"\\n    compare_one(\\\"1\\\", 1) ➞ None\\n    \\\"\\\"\\\"\\n\\n\\n    num_a = float(str(a).replace(\\\",\\\", \\\".\\\"))\\n    num_b = float(str(b).replace(\\\",\\\", \\\".\\\"))\\n    if num_a == num_b:\\n        return None\\n    return a if num_a > num_b else b\\n\\n\", \"validated_witness\": {\"args\": [2, 10], \"expected\": {\"status\": \"ok\", \"value\": 10, \"type\": \"int\", \"repr\": \"10\"}, \"actual\": {\"status\": \"ok\", \"value\": 2, \"type\": \"int\", \"repr\": \"2\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}, {\"key\": \"K1\", \"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}, {\"key\": \"K2\", \"title\": \"Textual ordering is used where numeric or domain ordering is required\", \"where\": \"Values are compared as strings or labels while the specification defines numeric or another nonlexical order.\", \"how\": \"String comparisons follow lexicographic code-point ordering rather than numeric magnitude or an external rank.\", \"what\": \"The wrong maximum, minimum, interval order or selected value is returned.\", \"test\": \"Use {values} whose lexical order differs from the required numeric or domain order.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K1\", \"line\": 14, \"where\": \"Replacing '.' with ',' before comparison alters the original string representation\", \"how\": \"The specification requires returning the variable in its original type; modifying the string changes the returned value's content.\", \"what\": \"Returns '2,3' instead of '2.3' for input '2.3', violating the contract to preserve the original representation.\"}, {\"key\": \"B1\", \"card\": \"K2\", \"line\": 14, \"where\": \"str(a).replace(\\\".\\\",\\\",\\\") < str(b).replace(\\\".\\\",\\\",\\\")\", \"how\": \"String comparisons follow lexicographic code-point ordering rather than numeric magnitude or an external rank.\", \"what\": \"The wrong maximum, minimum, interval order or selected value is returned.\"}, {\"key\": \"B2\", \"card\": \"K2\", \"line\": 14, \"where\": \"String comparison of normalized inputs instead of numeric conversion\", \"how\": \"Lexicographic ordering of strings (e.g., '10' < '2') differs from numeric magnitude, violating the requirement to compare real numbers.\", \"what\": \"Returns the wrong larger value for inputs like 10 and 2; '10' is lexicographically smaller than '2'.\"}, {\"key\": \"B3\", \"card\": \"K0\", \"line\": 14, \"where\": \"str(a).replace(\\\".\\\",\\\",\\\") < str(b).replace(\\\".\\\",\\\",\\\")\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}, {\"key\": \"B4\", \"card\": \"K1\", \"line\": 14, \"where\": \"str(a).replace(\\\".\\\",\\\",\\\")\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+    }
+  ],
+  "mapping": {
+    "cards": {
+      "K0": "py.branch-boundary-contract",
+      "K1": "py.text-normalization-contract",
+      "K2": "py.lexicographic-numeric-order"
+    },
+    "bindings": {
+      "B0": {
+        "system": "v3",
+        "rank": 1,
+        "concept_id": "py.text-normalization-contract"
+      },
+      "B1": {
+        "system": "v2",
+        "rank": 0,
+        "concept_id": "py.lexicographic-numeric-order"
+      },
+      "B2": {
+        "system": "v3",
+        "rank": 0,
+        "concept_id": "py.lexicographic-numeric-order"
+      },
+      "B3": {
+        "system": "v2",
+        "rank": 2,
+        "concept_id": "py.branch-boundary-contract"
+      },
+      "B4": {
+        "system": "v2",
+        "rank": 1,
+        "concept_id": "py.text-normalization-contract"
+      }
+    }
+  }
+}

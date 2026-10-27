@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"intersperse\", \"source\": \"from typing import List\\n\\n\\ndef intersperse(numbers: List[int], delimeter: int) -> List[int]:\\n    \\\"\\\"\\\" Insert a number 'delimeter' between every two consecutive elements of input list `numbers'\\n    >>> intersperse([], 4)\\n    []\\n    >>> intersperse([1, 2, 3], 4)\\n    [1, 4, 2, 4, 3]\\n    \\\"\\\"\\\"\\n\\n    numbers.insert(0, 0)\\n    numbers.append(0)\\n    result = []\\n\\n    for i in range(len(numbers) - 1):\\n        if numbers[i] != 0:\\n            result.append(numbers[i])\\n        if numbers[i] != 0 and numbers[i + 1] != 0:\\n            result.append(delimeter)\\n\\n    return result\\n\\n\", \"concept_hints\": [{\"title\": \"Checking one element or aggregate misses an all/any requirement\", \"where\": \"A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\", \"test\": \"Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees.\"}, {\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}, {\"title\": \"Sequence indexing crosses the valid positive or negative boundary\", \"where\": \"A sequence is indexed with a computed or hard-coded integer.\", \"how\": \"Direct indexing rejects indices at or above length and below negative length instead of clamping like a slice.\", \"what\": \"IndexError replaces the required value or documented invalid-input handling.\", \"test\": \"Use {sequence} of length n and exercise {index_expression} at n, -n-1 and on an empty sequence.\"}]}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314305,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 654,
+    "context_limit": 8192
+  }
+}

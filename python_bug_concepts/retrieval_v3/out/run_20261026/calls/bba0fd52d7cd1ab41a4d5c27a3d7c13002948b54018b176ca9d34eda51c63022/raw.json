@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-a77e85eb2fa5bae8",
+  "object": "chat.completion",
+  "created": 1793067214,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"tests\": [\n    {\"args\": [[-1, 2, -4, 5, 6]], \"expected\": [2, 5, 6]},\n    {\"args\": [[5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]], \"expected\": [5, 3, 2, 3, 9, 123, 1]},\n    {\"args\": [[0, -1, -5]], \"expected\": []}\n  ]\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 295,
+    "total_tokens": 427,
+    "completion_tokens": 132,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

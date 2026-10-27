@@ -1,0 +1,210 @@
+{
+ "baseline": {
+  "task": 51,
+  "entry": "remove_vowels",
+  "put": "\n\ndef remove_vowels(text):\n    \"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\"\n    vowels = 'aeiouAEIOU'\n    text = text.replace(' ', '')\n    return ''.join([char for char in text if char not in vowels])\n\n",
+  "base": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate('') == ''\n    assert candidate(\"abcdef\\nghijklm\") == 'bcdf\\nghjklm'\n    assert candidate('fedcba') == 'fdcb'\n    assert candidate('eeeee') == ''\n    assert candidate('acBAA') == 'cB'\n    assert candidate('EcBOO') == 'cB'\n    assert candidate('ybcd') == 'ybcd'\n\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `text` of size or value 1000 or more (the largest in the existing tests is 14); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `text` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `text` of size or value 1000 or more (the largest in the existing tests is 14); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "abcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmab"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "NONASCII",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `text` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "ábçdéf\nghíjklm"
+    ],
+    "witness_call": "remove_vowels('ábçdéf\\nghíjklm')"
+   }
+  ],
+  "placebo_facts": [],
+  "tool_inputs": [
+   "remove_vowels('ábçdéf\\nghíjklm')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(text):\n    return isinstance(text, str)\n\ndef P1(text):\n    return P1_m(text)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+  "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.tuples(st.from_type(object))\n",
+  "strategy_sha256": "237c8c9245f384601160b52e17022c09a597cc1a66d1ea2797075a6c589fd6c7",
+  "strategy_fallback": true,
+  "mining_summary": {
+   "task": 51,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "74102c2a33188c33fc18aba2b0789016e9d6ed209c0798aa855f6881be25ee65",
+   "candidates": 1,
+   "confirmed": 1,
+   "coded": 1,
+   "surviving": 1,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+   "seed": 20261061,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 51,
+  "entry": "remove_vowels",
+  "put": "\n\ndef remove_vowels(text):\n    \"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\"\n    vowels = 'aeiouAEIOU'\n    text = text.replace(' ', '')\n    return ''.join([char for char in text if char not in vowels])\n\n",
+  "base": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate('') == ''\n    assert candidate(\"abcdef\\nghijklm\") == 'bcdf\\nghjklm'\n    assert candidate('fedcba') == 'fdcb'\n    assert candidate('eeeee') == ''\n    assert candidate('acBAA') == 'cB'\n    assert candidate('EcBOO') == 'cB'\n    assert candidate('ybcd') == 'ybcd'\n\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `text` of size or value 1000 or more (the largest in the existing tests is 14); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `text` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `text` of size or value 1000 or more (the largest in the existing tests is 14); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "abcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmabcdef\nghijklmab"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "NONASCII",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `text` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "ábçdéf\nghíjklm"
+    ],
+    "witness_call": "remove_vowels('ábçdéf\\nghíjklm')"
+   }
+  ],
+  "placebo_facts": [],
+  "tool_inputs": [
+   "remove_vowels('ábçdéf\\nghíjklm')",
+   "remove_vowels('abcdef\\nghijklm  ')",
+   "remove_vowels('EcBOO9')",
+   "remove_vowels(' ')",
+   "remove_vowels('fedcba!')",
+   "remove_vowels('!')",
+   "remove_vowels('99')",
+   "remove_vowels('abcdef\\nghijklm9')",
+   "remove_vowels('a')",
+   "remove_vowels('f')",
+   "remove_vowels('e')",
+   "remove_vowels('E')",
+   "remove_vowels('y')",
+   "remove_vowels('ab')",
+   "remove_vowels('fe')",
+   "remove_vowels('ee')",
+   "remove_vowels('ac')",
+   "remove_vowels('Ec')",
+   "remove_vowels('yb')",
+   "remove_vowels('aaaaaaaaaaaaaa')",
+   "remove_vowels('ffffff')",
+   "remove_vowels('aaaaa')",
+   "remove_vowels('EEEEE')",
+   "remove_vowels('yyyy')",
+   "remove_vowels('abcdef\\nghijkl')",
+   "remove_vowels('fedcb')",
+   "remove_vowels('eeee')",
+   "remove_vowels('acBA')",
+   "remove_vowels('EcBO')",
+   "remove_vowels('ybc')",
+   "remove_vowels('abcdef\\nghijklmm')",
+   "remove_vowels('fedcbaa')",
+   "remove_vowels('eeeeee')",
+   "remove_vowels('acBAAA')",
+   "remove_vowels('EcBOOO')",
+   "remove_vowels('ybcdd')",
+   "remove_vowels('aacdef\\nghijklm')",
+   "remove_vowels('ffdcba')",
+   "remove_vowels('aaBAA')",
+   "remove_vowels('EEBOO')",
+   "remove_vowels('yycd')",
+   "remove_vowels('mlkjihg\\nfedcba')",
+   "remove_vowels('abcdef')",
+   "remove_vowels('AABca')",
+   "remove_vowels('OOBcE')",
+   "remove_vowels('dcby')",
+   "remove_vowels('ABCDEF\\nGHIJKLM')",
+   "remove_vowels('FEDCBA')",
+   "remove_vowels('ACbaa')",
+   "remove_vowels('eCboo')",
+   "remove_vowels('YBCD')",
+   "remove_vowels('mbcdef\\nghijkla')",
+   "remove_vowels('aedcbf')",
+   "remove_vowels('AcBAa')",
+   "remove_vowels('OcBOE')",
+   "remove_vowels('dbcy')",
+   "remove_vowels('ACBAA')",
+   "remove_vowels('ECBOO')",
+   "remove_vowels('acbaa')",
+   "remove_vowels('ecboo')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(text):\n    return isinstance(text, str)\n\ndef P1(text):\n    return P1_m(text)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+  "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.tuples(st.from_type(object))\n",
+  "strategy_sha256": "237c8c9245f384601160b52e17022c09a597cc1a66d1ea2797075a6c589fd6c7",
+  "strategy_fallback": true,
+  "mining_summary": {
+   "task": 51,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "74102c2a33188c33fc18aba2b0789016e9d6ed209c0798aa855f6881be25ee65",
+   "candidates": 1,
+   "confirmed": 1,
+   "coded": 1,
+   "surviving": 1,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+   "seed": 20261061,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 14,
+  "survivors": 3
+ }
+}

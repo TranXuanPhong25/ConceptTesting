@@ -1,0 +1,31 @@
+{
+  "request_sha256": "53d66e89417ee304fc4478d8587ac23f09cd22386fc7bc9d083d607cac201b66",
+  "stage": "retrieve",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\"selected\":[{\"id\":\"C133\",\"line\":18,\"where\":\"while n > 1: loop condition for factorization\",\"how\":\"The condition n > 1 excludes n=1, which the spec implies should return an empty list, but the loop never runs for n=1, returning empty list correctly; however, for n=0 or negative, the loop never runs, returning empty list instead of raising or handling as per spec.\",\"what\":\"Input n=0 or n=-5 returns [] instead of raising ValueError or returning factors, violating the contract that input equals product of factors.\"}],\"abstain_reason\":\"\"}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 3135,
+    "total_tokens": 3267,
+    "completion_tokens": 132,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 27.940324594033882,
+  "parsed": {
+    "selected": [
+      {
+        "id": "C133",
+        "line": 18,
+        "where": "while n > 1: loop condition for factorization",
+        "how": "The condition n > 1 excludes n=1, which the spec implies should return an empty list, but the loop never runs for n=1, returning empty list correctly; however, for n=0 or negative, the loop never runs, returning empty list instead of raising or handling as per spec.",
+        "what": "Input n=0 or n=-5 returns [] instead of raising ValueError or returning factors, violating the contract that input equals product of factors."
+      }
+    ],
+    "abstain_reason": ""
+  }
+}

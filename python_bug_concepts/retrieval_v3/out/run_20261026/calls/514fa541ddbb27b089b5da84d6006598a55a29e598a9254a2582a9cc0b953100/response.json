@@ -1,0 +1,44 @@
+{
+  "request_sha256": "514fa541ddbb27b089b5da84d6006598a55a29e598a9254a2582a9cc0b953100",
+  "stage": "judge",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 3,\n      \"reason\": \"Correctly identifies missing sort causing order violation in output.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 0,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Line 11 is fault site; mechanism and consequence correctly described.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Precise fault site, mechanism, and concrete input example provided.\"\n    }\n  ]\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 1056,
+    "total_tokens": 1235,
+    "completion_tokens": 179,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 33.54560712608509,
+  "parsed": {
+    "cards": [
+      {
+        "key": "K0",
+        "grade": 3,
+        "reason": "Correctly identifies missing sort causing order violation in output."
+      }
+    ],
+    "bindings": [
+      {
+        "key": "B0",
+        "where": 0,
+        "how": 1,
+        "what": 1,
+        "reason": "Line 11 is fault site; mechanism and consequence correctly described."
+      },
+      {
+        "key": "B1",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Precise fault site, mechanism, and concrete input example provided."
+      }
+    ]
+  }
+}

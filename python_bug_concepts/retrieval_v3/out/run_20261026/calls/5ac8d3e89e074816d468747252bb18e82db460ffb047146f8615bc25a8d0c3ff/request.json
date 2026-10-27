@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"factorize\", \"source\": \"from typing import List\\n\\n\\ndef factorize(n: int) -> List[int]:\\n    \\\"\\\"\\\" Return list of prime factors of given integer in the order from smallest to largest.\\n    Each of the factors should be listed number of times corresponding to how many times it appeares in factorization.\\n    Input number should be equal to the product of all factors\\n    >>> factorize(8)\\n    [2, 2, 2]\\n    >>> factorize(25)\\n    [5, 5]\\n    >>> factorize(70)\\n    [2, 5, 7]\\n    \\\"\\\"\\\"\\n\\n    result = []\\n    i = 2\\n    while n > 1:\\n        if n % i == 0:\\n            result.append(i)\\n            n //= i\\n        else:\\n            i += 1\\n    return result\\n\\n\", \"concept_hints\": [{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}]}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314325,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 453,
+    "context_limit": 8192
+  }
+}

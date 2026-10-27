@@ -1,0 +1,31 @@
+{
+  "stage": "utility",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "Write diagnostic tests for the provided Python function using only its public specification and implementation. Return ONLY JSON {\"tests\":[{\"args\":[...],\"expected\":...}]} with at most THREE tests. args is the positional argument list and expected is the correct return value from the specification, not the buggy code's output. Use literal JSON data, no code strings, no nan/inf. Prefer small valid boundary inputs that can expose a concrete bug. Hints, if present, are unverified hypotheses: reject them if inconsistent with the spec. No prose or chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"entry\": \"sort_numbers\", \"source\": \"from typing import List\\n\\n\\ndef sort_numbers(numbers: str) -> str:\\n    \\\"\\\"\\\" Input is a space-delimited string of numberals from 'zero' to 'nine'.\\n    Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.\\n    Return the string with numbers sorted from smallest to largest\\n    >>> sort_numbers('three one five')\\n    'one three five'\\n    \\\"\\\"\\\"\\n    num_dict = {'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9}\\n    numbers = [num_dict[num] for num in numbers.split()]\\n    numbers.sort()\\n    return ' '.join([key for key in num_dict.keys() if num_dict[key] in numbers])\\n\\n\", \"concept_hints\": [{\"title\": \"Splitting and joining changes delimiter or whitespace structure\", \"where\": \"split, replace or join is used to parse or reconstruct a string with specified delimiters or spacing.\", \"how\": \"Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.\", \"what\": \"Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored.\", \"test\": \"Use {text} with repeated separators, leading/trailing separators and adjacent non-space-separated tokens.\"}]}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 800,
+    "seed": 314319,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 481,
+    "context_limit": 8192
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "request_sha256": "2c28efbe1b75d299666b3996f8957c7f0cdb03d01055d9331f181d59368eb069",
+  "stage": "judge",
+  "status": "received",
+  "model": "qwen3.5-27b-awq",
+  "content": "{\n  \"cards\": [\n    {\n      \"key\": \"K0\",\n      \"grade\": 3,\n      \"reason\": \"Correctly identifies ASCII encoding as the bug causing errors for non-ASCII characters.\"\n    }\n  ],\n  \"bindings\": [\n    {\n      \"key\": \"B0\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Accurately cites the encoding call, mechanism, and resulting error for non-ASCII input.\"\n    },\n    {\n      \"key\": \"B1\",\n      \"where\": 1,\n      \"how\": 1,\n      \"what\": 1,\n      \"reason\": \"Precisely links the return statement to the encoding error and incorrect length calculation.\"\n    }\n  ]\n}",
+  "reasoning_content": "",
+  "finish_reason": "stop",
+  "usage": {
+    "prompt_tokens": 870,
+    "total_tokens": 1062,
+    "completion_tokens": 192,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "elapsed_seconds": 35.70670298207551,
+  "parsed": {
+    "cards": [
+      {
+        "key": "K0",
+        "grade": 3,
+        "reason": "Correctly identifies ASCII encoding as the bug causing errors for non-ASCII characters."
+      }
+    ],
+    "bindings": [
+      {
+        "key": "B0",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Accurately cites the encoding call, mechanism, and resulting error for non-ASCII input."
+      },
+      {
+        "key": "B1",
+        "where": 1,
+        "how": 1,
+        "what": 1,
+        "reason": "Precisely links the return statement to the encoding error and incorrect length calculation."
+      }
+    ]
+  }
+}

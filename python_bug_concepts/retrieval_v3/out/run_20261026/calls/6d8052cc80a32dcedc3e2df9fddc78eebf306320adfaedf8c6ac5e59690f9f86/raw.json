@@ -1,0 +1,42 @@
+{
+  "id": "chatcmpl-9f341d4912c3a085",
+  "object": "chat.completion",
+  "created": 1793027869,
+  "model": "qwen3.5-27b-awq",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "{\n  \"selected\": [\n    {\n      \"id\": \"C139\",\n      \"line\": 20,\n      \"where\": \"text = text.replace(' ', '') removes spaces before vowel filtering\",\n      \"how\": \"Specification preserves spaces (e.g., 'abc def' -> 'bc df'), but implementation normalizes by stripping them.\",\n      \"what\": \"Input with spaces returns string missing spaces; e.g., 'a b' yields 'b' instead of ' b'.\"\n    }\n  ],\n  \"abstain_reason\": \"\"\n}",
+        "refusal": null,
+        "annotations": null,
+        "audio": null,
+        "function_call": null,
+        "reasoning": null
+      },
+      "logprobs": null,
+      "finish_reason": "stop",
+      "stop_reason": null,
+      "token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.31.0-tp2-3c4bf07e",
+  "usage": {
+    "prompt_tokens": 3242,
+    "total_tokens": 3370,
+    "completion_tokens": 128,
+    "prompt_tokens_details": null,
+    "completion_tokens_details": {
+      "reasoning_tokens": 0
+    }
+  },
+  "prompt_logprobs": null,
+  "prompt_token_ids": null,
+  "prompt_text": null,
+  "kv_transfer_params": null,
+  "ec_transfer_params": null,
+  "metrics": null
+}

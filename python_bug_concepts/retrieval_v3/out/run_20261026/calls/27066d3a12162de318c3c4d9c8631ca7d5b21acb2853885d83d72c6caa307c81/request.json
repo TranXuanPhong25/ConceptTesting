@@ -1,0 +1,31 @@
+{
+  "stage": "judge",
+  "body": {
+    "model": "qwen3.5-27b-awq",
+    "messages": [
+      {
+        "role": "system",
+        "content": "You evaluate retrieved concepts, not the programming solution. Methods and ranks are hidden. Use the reference implementation and validated example only as grading evidence. Never assume a concept is good because its title sounds related.\nGrade EACH card selection: 0 irrelevant or wrong mechanism; 1 operation/context applicable but no actual bug connection; 2 correctly describes an actual bug mechanism in the PUT; 3 precise actual mechanism with a concrete consequence and distinguishing input class. A card need not match the single supplied witness if another actual bug is supported by code/reference. Mere generic boundary or empty-input advice receives at most 1 unless concretely connected to a real fault.\nSeparately grade EACH binding on where/how/what, 0 or 1 each. where=1 only if cited line/expression is a real fault site, how=1 only if explanation correctly states the causal mechanism, what=1 only if consequence and input class can distinguish PUT from correct behavior. Generic text is not automatically false but gets 0 when it fails to establish the task-specific connection. Return only the requested JSON. Keep each reason <=20 words. Do not reveal chain-of-thought."
+      },
+      {
+        "role": "user",
+        "content": "{\"source\": \"1: \\n2: \\n3: def string_sequence(n: int) -> str:\\n4:     \\\"\\\"\\\" Return a string containing space-delimited numbers starting from 0 upto n inclusive.\\n5:     >>> string_sequence(0)\\n6:     '0'\\n7:     >>> string_sequence(5)\\n8:     '0 1 2 3 4 5'\\n9:     \\\"\\\"\\\"\\n10: \\n11:     # Base case\\n12:     if n == 0:\\n13:         return \\\"0\\\"\\n14: \\n15:     # Recursive case\\n16:     else:\\n17:         return string_sequence(n - 1) + \\\" \\\" + str(n)\\n18: \", \"reference\": \"\\n\\ndef string_sequence(n: int) -> str:\\n    \\\"\\\"\\\" Return a string containing space-delimited numbers starting from 0 upto n inclusive.\\n    >>> string_sequence(0)\\n    '0'\\n    >>> string_sequence(5)\\n    '0 1 2 3 4 5'\\n    \\\"\\\"\\\"\\n\\n\\n    return \\\" \\\".join(map(str, range(n + 1)))\\n\\n\", \"validated_witness\": {\"args\": [1200], \"expected\": {\"status\": \"ok\", \"value\": {\"presentation_omitted\": true, \"length\": 4894, \"sha256\": \"b6d4286335c834ee32e39c8c23b0069ed9fa41025190e948f85db3085e6a4e34\", \"prefix\": \"0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56\", \"suffix\": \" 1169 1170 1171 1172 1173 1174 1175 1176 1177 1178 1179 1180 1181 1182 1183 1184 1185 1186 1187 1188 1189 1190 1191 1192 1193 1194 1195 1196 1197 1198 1199 1200\"}, \"type\": \"str\"}, \"actual\": {\"status\": \"error\", \"error_type\": \"RecursionError\", \"message\": \"maximum recursion depth exceeded\"}, \"official_contract_passed\": true}, \"cards\": [{\"key\": \"K0\", \"title\": \"Recursive calls fail to reach a valid base case or exceed supported stack depth\", \"where\": \"A function calls itself with smaller, unchanged or expanding arguments while base guards cover only part of the valid domain.\", \"how\": \"A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.\", \"what\": \"A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.\", \"test\": \"Use the smallest allowed {base_boundary} missing from the guards and an admissible {depth_input} under {execution_contract}.\"}, {\"key\": \"K1\", \"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}], \"bindings\": [{\"key\": \"B0\", \"card\": \"K0\", \"line\": 17, \"where\": \"Recursive call string_sequence(n - 1) lacks a guard for negative n\", \"how\": \"The base case only handles n==0; negative inputs recurse indefinitely without termination\", \"what\": \"Input n=-1 raises RecursionError instead of returning an empty string or handling the domain\"}, {\"key\": \"B1\", \"card\": \"K0\", \"line\": 17, \"where\": \"string_sequence(n - 1)\", \"how\": \"A missing valid base case or non-progressing recurrence repeats calls until stack limits; even terminating linear recursion can exceed a supported input depth.\", \"what\": \"A valid input raises RecursionError or cannot complete because the recurrence fails its progress/depth contract.\"}, {\"key\": \"B2\", \"card\": \"K1\", \"line\": 12, \"where\": \"Base case guard if n == 0 excludes negative inputs from the specification\", \"how\": \"The specification implies a sequence from 0 to n; negative n should likely return empty, but code recurses\", \"what\": \"Input n=-1 causes infinite recursion instead of returning '' or raising a clear ValueError\"}, {\"key\": \"B3\", \"card\": \"K1\", \"line\": 12, \"where\": \"n == 0\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\"}], \"output_shape\": {\"cards\": [{\"key\": \"K0\", \"grade\": 0, \"reason\": \"one precise sentence\"}], \"bindings\": [{\"key\": \"B0\", \"where\": 0, \"how\": 0, \"what\": 0, \"reason\": \"one precise sentence\"}]}}"
+      }
+    ],
+    "temperature": 0.1,
+    "top_p": 0.95,
+    "max_tokens": 1000,
+    "seed": 314215,
+    "stream": false,
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    },
+    "response_format": {
+      "type": "json_object"
+    }
+  },
+  "tokens": {
+    "prompt_tokens": 1670,
+    "context_limit": 8192
+  }
+}
