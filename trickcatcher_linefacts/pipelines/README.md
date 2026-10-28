@@ -21,6 +21,21 @@ CPU representation gate 17/20, 26 tests pass; model stages await live user Qwen.
 
 # Frozen experiment pipelines
 
+[v85_retrievalhybrid](v85_retrievalhybrid/README.md) (2026-10-28): v11 hybrid with
+v2 compact card retrieval and explicit binding to tool targets. Paired113/K1,
+same Qwen27B and shared10-program ref oracle. Original live_1 stopped on context
+overflow with113prepared/6paired tasks and509responses. The amended
+[v85_contextfit](v85_contextfit/README.md) continuation reuses these checkpoints;
+31CPUchecks pass; controller stopped2026-10-28 12:02UTC at25pairs on connectivity
+failure.574responses plus1unknown-usage attempt. User restored endpoint;
+[v85_transport_resume](v85_transport_resume/README.md) subsequently stopped at
+43pairs on RemoteDisconnected. [v85_transport_resume2](v85_transport_resume2/README.md)
+stopped at54pairs on a240-second timeout; observed4096-token latency237seconds.
+[v85_transport_longwait](v85_transport_longwait/README.md) launched16:25UTC/PID76780
+with900-second completion waiting,54pairs/694responses restored.3prior failed
+attempts retain unknown usage; original3503cap preserved.
+Both rounds and10refs retained; no comparison result yet.
+
 New isolated trials (2026-10-14): [v14_obgraph](v14_obgraph/README.md), grounded obligation paths, and
 [v15_mrconcept](v15_mrconcept/README.md), conditional metamorphic concepts. Both use a dedicated `experiment.py`
 runner, fixed 20 dev tasks/K=1, and have passed CPU validation; online runs await Qwen availability.
