@@ -46,3 +46,7 @@ version that tried the same core idea and its result ([[check-version-tree-befor
 look for a go/no-go signal in existing outputs; never enlarge runs to salvage it ([[signal-not-more-data]]).
 
 **Endpoint keepalive (2026-10-20):** `scripts/ping_endpoint.sh <env-file>` (URL only from env/env-file, logs status codes only) every 20 min: GET /models + 1-token chat. Keep the env file outside the repo (session scratchpad, chmod 600). Current GPU model: qwen2.5-coder-32b-instruct (AWQ, ctx 8192).
+
+**Retrieval version names (user2026-10-29):** new retrieval/concept-gate experiments use `vr8`, `vr9`, ... rather than LineFacts `vNN`. Preserve earlier names/history; current implementation folder is `trickcatcher_linefacts/pipelines/vr8_semanticgate`.
+
+**Review before running (2026-10-21):** after implementing a new experiment, spawn an independent read-only review agent (practicality, tricky implementation, correct library use, plan adherence) and apply its must-fixes as a PREREG amendment before any outcome is computed.

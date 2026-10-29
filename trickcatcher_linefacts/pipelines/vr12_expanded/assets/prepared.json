@@ -1,0 +1,2393 @@
+[
+  {
+    "task": {
+      "task": 80,
+      "put": "\ndef is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s.lower()\n    for i in range(0, len(s)-2):\n        if s[i] == s[i+1] or s[i] == s[i+2] or s[i+1] == s[i+2]:\n            return False\n    return True\n\n",
+      "entry": "is_happy",
+      "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(\"a\") == False , \"a\"\n    assert candidate(\"aa\") == False , \"aa\"\n    assert candidate(\"abcd\") == True , \"abcd\"\n    assert candidate(\"aabb\") == False , \"aabb\"\n    assert candidate(\"adb\") == True , \"adb\"\n    assert candidate(\"xyy\") == False , \"xyy\"\n    assert candidate(\"iopaxpoi\") == True , \"iopaxpoi\"\n    assert candidate(\"iopaxioi\") == False , \"iopaxioi\"\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(s):\n    return isinstance(s, str)\n\ndef P1(s):\n    return P1_m(s)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+      "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+      "strategy_src": "def strategy():\n    return st.text(min_size=0, max_size=100)\n",
+      "strategy_sha256": "a9c8afe8168ea9986617fd7ca2dfa9ccc1d105bcb03dc5b4cdf2a13dccbba36a",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 80,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "9230dd594c79cebe9dc0800b39c8a3e4c5481d34a4a7e8f9b841f6e1324dac67",
+        "candidates": 2,
+        "confirmed": 2,
+        "coded": 2,
+        "surviving": 1,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [
+          {
+            "id": "P2",
+            "reason": "known_valid_rejection",
+            "failures": [
+              {
+                "id": "P2",
+                "index": 0,
+                "source": "base",
+                "input_repr": "(('a',), {})",
+                "accepted": false,
+                "error": null
+              }
+            ]
+          }
+        ],
+        "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+        "seed": 20261090,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 16,
+          "k": 28,
+          "family": "call-result removal",
+          "extended": true,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them.",
+          "witness": 118,
+          "boundary": false,
+          "reached": true,
+          "witness_call": "is_happy('-Aa')",
+          "block": 16,
+          "g_demote": false,
+          "tier": 0,
+          "mutant_src": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s\n    for i in range(0, len(s) - 2):\n        if s[i] == s[i + 1] or s[i] == s[i + 2] or s[i + 1] == s[i + 2]:\n            return False\n    return True",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 16,
+            "end_line": 16,
+            "expression": "s.lower()",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them."
+        },
+        {
+          "kind": "MUTANT",
+          "line": 18,
+          "k": 17,
+          "family": "CRP constant",
+          "extended": false,
+          "text": "{\"title\": \"Checking one element or aggregate misses an all/any requirement\", \"where\": \"A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\", \"test\": \"Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees.\"}\n  Tool target: Mutation (CRP constant): the mutant `i + 1` -> `i + 2` at line 18 survives: no existing test distinguishes them.",
+          "witness": 40,
+          "boundary": true,
+          "reached": true,
+          "witness_call": "is_happy('aa9')",
+          "block": 18,
+          "g_demote": false,
+          "tier": 0,
+          "mutant_src": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s.lower()\n    for i in range(0, len(s) - 2):\n        if s[i] == s[i + 2] or s[i] == s[i + 2] or s[i + 1] == s[i + 2]:\n            return False\n    return True",
+          "card_id": "py.quantifier-scope",
+          "card": {
+            "title": "Checking one element or aggregate misses an all/any requirement",
+            "where": "A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.",
+            "how": "Universal and existential conditions differ from testing one representative element or only the final aggregate.",
+            "what": "A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.",
+            "test": "Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees."
+          },
+          "retrieval_evidence": {
+            "line": 18,
+            "end_line": 18,
+            "expression": "s[i]",
+            "reason": "Selected positions/final aggregate must not replace the required whole-input or prefix condition.",
+            "priority": 122
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Mutation (CRP constant): the mutant `i + 1` -> `i + 2` at line 18 survives: no existing test distinguishes them."
+        },
+        {
+          "kind": "STMT",
+          "line": 14,
+          "lines": [
+            14
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.branch-boundary-contract",
+          "card": {
+            "title": "A branch boundary or equality special case disagrees with the specification",
+            "where": "A numeric comparison controls a branch, filter or early return at a threshold or equality case.",
+            "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+            "what": "A valid boundary input takes a branch whose result or rejection violates the specification.",
+            "test": "Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}."
+          },
+          "retrieval_evidence": {
+            "line": 14,
+            "end_line": 14,
+            "expression": "len(s) < 3",
+            "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+            "priority": 112
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 14; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them.",
+        "{\"title\": \"Checking one element or aggregate misses an all/any requirement\", \"where\": \"A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\", \"test\": \"Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees.\"}\n  Tool target: Mutation (CRP constant): the mutant `i + 1` -> `i + 2` at line 18 survives: no existing test distinguishes them.",
+        "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 17,
+          "k": 25,
+          "family": "ZIL",
+          "extended": true,
+          "text": "Mutation (ZIL): the mutant `for i in range(0, len(s) - 2)` -> `skip the loop body` at line 17 is killed: an existing test distinguishes them.",
+          "mutant_src": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s.lower()\n    for i in range(0, len(s) - 2):\n        break\n    return True"
+        },
+        {
+          "kind": "MUTANT",
+          "line": 18,
+          "k": 13,
+          "family": "AOR",
+          "extended": false,
+          "text": "Mutation (AOR): the mutant `i + 1` -> `i - 1` at line 18 is killed: an existing test distinguishes them.",
+          "mutant_src": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s.lower()\n    for i in range(0, len(s) - 2):\n        if s[i] == s[i - 1] or s[i] == s[i + 2] or s[i + 1] == s[i + 2]:\n            return False\n    return True"
+        }
+      ],
+      "placebo_facts": [
+        "Mutation (ZIL): the mutant `for i in range(0, len(s) - 2)` -> `skip the loop body` at line 17 is killed: an existing test distinguishes them.",
+        "Mutation (AOR): the mutant `i + 1` -> `i - 1` at line 18 is killed: an existing test distinguishes them."
+      ],
+      "tool_inputs": [
+        "is_happy('-Aa')",
+        "is_happy('aa9')"
+      ],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 0,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        16,
+        8,
+        16,
+        17
+      ],
+      "expression": "s.lower()",
+      "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+      "operation": "lower",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "2ad0ba1fafda2cdb29e837db714ec8df78a1971929ae2a69861d90970344d56d",
+      "status": "received",
+      "text": "```python\nassert is_happy(\"ABC\") == True\nassert is_happy(\"AaB\") == True\nassert is_happy(\"aAa\") == False\nassert is_happy(\"aaA\") == False\nassert is_happy(\"Aab\") == False\nassert is_happy(\"aba\") == True\nassert is_happy(\"abba\") == False\nassert is_happy(\"abca\") == True\nassert is_happy(\"abcde\") == True\nassert is_happy(\"abccde\") == False\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 938,
+      "n_out": 116,
+      "usage": {
+        "prompt_tokens": 938,
+        "total_tokens": 1054,
+        "completion_tokens": 116,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 9.899263042025268,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 92069010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "2ad0ba1fafda2cdb29e837db714ec8df78a1971929ae2a69861d90970344d56d",
+        "prompt_tokens": 938,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        16,
+        8,
+        16,
+        17
+      ],
+      "true": 5,
+      "false": 5,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": true
+    }
+  },
+  {
+    "task": {
+      "task": 67,
+      "put": "\ndef fruit_distribution(s,n):\n    \"\"\"\n    In this task, you will be given a string that represents a number of apples and oranges \n    that are distributed in a basket of fruit this basket contains \n    apples, oranges, and mango fruits. Given the string that represents the total number of \n    the oranges and apples and an integer that represent the total number of the fruits \n    in the basket return the number of the mango fruits in the basket.\n    for examble:\n    fruit_distribution(\"5 apples and 6 oranges\", 19) ->19 - 5 - 6 = 8\n    fruit_distribution(\"0 apples and 1 oranges\",3) -> 3 - 0 - 1 = 2\n    fruit_distribution(\"2 apples and 3 oranges\", 100) -> 100 - 2 - 3 = 95\n    fruit_distribution(\"100 apples and 1 oranges\",120) -> 120 - 100 - 1 = 19\n    \"\"\"\n    try:\n        if not s or len(s) < 1:\n            return \"invalid input\"\n        if n < 1:\n            return \"invalid input\"\n        number = int(s.split(\"and\")[0].strip().split()[0]) + int(s.split(\"and\")[1].strip().split()[0])\n        return n - number\n    except:\n        return \"invalid input\"\n",
+      "entry": "fruit_distribution",
+      "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(\"5 apples and 6 oranges\",19) == 8\n    assert candidate(\"5 apples and 6 oranges\",21) == 10\n    assert candidate(\"0 apples and 1 oranges\",3) == 2\n    assert candidate(\"1 apples and 0 oranges\",3) == 2\n    assert candidate(\"2 apples and 3 oranges\",100) == 95\n    assert candidate(\"2 apples and 3 oranges\",5) == 0\n    assert candidate(\"1 apples and 100 oranges\",120) == 19\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(s, n):\n    return isinstance(s, str)\n\ndef P1(s, n):\n    return P1_m(s, n)\n\ndef P2_m(s, n):\n    return isinstance(n, int)\n\ndef P2(s, n):\n    return P2_m(s, n)\n\ndef P3_m(s, n):\n    if not isinstance(s, str):\n        return False\n    parts = s.split(' apples and ')\n    if len(parts) != 2:\n        return False\n    apples_str = parts[0]\n    if not apples_str.isdigit():\n        return False\n    return int(apples_str) >= 0\n\ndef P3(s, n):\n    return P3_m(s, n)\n\ndef P4_m(s, n):\n    if not isinstance(s, str):\n        return False\n    parts = s.split(' apples and ')\n    if len(parts) != 2:\n        return False\n    oranges_part = parts[1]\n    oranges_str = oranges_part.split(' oranges')[0]\n    if not oranges_str.isdigit():\n        return False\n    return int(oranges_str) >= 0\n\ndef P4(s, n):\n    return P4_m(s, n)\n\ndef P5_m(s, n):\n    if not isinstance(s, str):\n        return False\n    parts = s.split(' apples and ')\n    if len(parts) != 2:\n        return False\n    apples_str = parts[0]\n    oranges_part = parts[1]\n    if not oranges_part.endswith(' oranges'):\n        return False\n    oranges_str = oranges_part[:-8]\n    if not apples_str.isdigit() or not oranges_str.isdigit():\n        return False\n    return True\n\ndef P5(s, n):\n    return P5_m(s, n)\n\ndef P6_m(s, n):\n    if not isinstance(s, str) or not isinstance(n, int):\n        return False\n    parts = s.split(' apples and ')\n    if len(parts) != 2:\n        return False\n    apples_str = parts[0]\n    oranges_part = parts[1]\n    if not oranges_part.endswith(' oranges'):\n        return False\n    oranges_str = oranges_part[:-8]\n    if not apples_str.isdigit() or not oranges_str.isdigit():\n        return False\n    apples = int(apples_str)\n    oranges = int(oranges_str)\n    return n >= apples + oranges\n\ndef P6(s, n):\n    return P6_m(s, n)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True and P4(*args, **kwargs) is True and P5(*args, **kwargs) is True and P6(*args, **kwargs) is True\n",
+      "valid_sha256": "4ae10245ba574f07371ab17cd55e086eb7f68f4755ae994dce4a41c9ff04bc38",
+      "strategy_src": "def strategy():\n    return st.tuples(st.from_type(object), st.from_type(object))\n",
+      "strategy_sha256": "7191d661c845b1a74a582469cb2a89e495c6ceb6ff2452a90d2e5f8022491b74",
+      "strategy_fallback": true,
+      "mining_summary": {
+        "task": 67,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "723c790e10628b4046e2d844fce3e4fdaade1235a3df9e5f0284c3c0695be049",
+        "candidates": 6,
+        "confirmed": 6,
+        "coded": 6,
+        "surviving": 6,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "4ae10245ba574f07371ab17cd55e086eb7f68f4755ae994dce4a41c9ff04bc38",
+        "seed": 20261077,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "STMT",
+          "line": 20,
+          "lines": [
+            20
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 20; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 20,
+            "end_line": 20,
+            "expression": "s.split(\"and\")[0].strip()",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 20; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 16,
+          "lines": [
+            16
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Execute source line 16; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.empty-singleton-shortcut",
+          "card": {
+            "title": "An empty or singleton shortcut changes the required result",
+            "where": "Code branches on sequence truthiness or length zero, one or two before the general computation.",
+            "how": "A small-input shortcut or guard can omit a valid case or skip work that is still required.",
+            "what": "A valid small input is rejected or returns a shortcut value inconsistent with the specification.",
+            "test": "Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs."
+          },
+          "retrieval_evidence": {
+            "line": 16,
+            "end_line": 16,
+            "expression": "len(s) < 1",
+            "reason": "A small-length comparison creates a specialized path.",
+            "priority": 141
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 16; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 16,
+          "lines": [
+            16
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 16; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.branch-boundary-contract",
+          "card": {
+            "title": "A branch boundary or equality special case disagrees with the specification",
+            "where": "A numeric comparison controls a branch, filter or early return at a threshold or equality case.",
+            "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+            "what": "A valid boundary input takes a branch whose result or rejection violates the specification.",
+            "test": "Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}."
+          },
+          "retrieval_evidence": {
+            "line": 16,
+            "end_line": 16,
+            "expression": "len(s) < 1",
+            "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+            "priority": 112
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 16; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 20; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Execute source line 16; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 16; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 18,
+          "k": 2,
+          "family": "ROR",
+          "extended": false,
+          "text": "Mutation (ROR): the mutant `n < 1` -> `n > 1` at line 18 is killed: an existing test distinguishes them.",
+          "mutant_src": "def fruit_distribution(s, n):\n    \"\"\"\n    In this task, you will be given a string that represents a number of apples and oranges \n    that are distributed in a basket of fruit this basket contains \n    apples, oranges, and mango fruits. Given the string that represents the total number of \n    the oranges and apples and an integer that represent the total number of the fruits \n    in the basket return the number of the mango fruits in the basket.\n    for examble:\n    fruit_distribution(\"5 apples and 6 oranges\", 19) ->19 - 5 - 6 = 8\n    fruit_distribution(\"0 apples and 1 oranges\",3) -> 3 - 0 - 1 = 2\n    fruit_distribution(\"2 apples and 3 oranges\", 100) -> 100 - 2 - 3 = 95\n    fruit_distribution(\"100 apples and 1 oranges\",120) -> 120 - 100 - 1 = 19\n    \"\"\"\n    try:\n        if not s or len(s) < 1:\n            return 'invalid input'\n        if n > 1:\n            return 'invalid input'\n        number = int(s.split('and')[0].strip().split()[0]) + int(s.split('and')[1].strip().split()[0])\n        return n - number\n    except:\n        return 'invalid input'"
+        }
+      ],
+      "placebo_facts": [
+        "Mutation (ROR): the mutant `n < 1` -> `n > 1` at line 18 is killed: an existing test distinguishes them."
+      ],
+      "tool_inputs": [],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 0,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        20,
+        21,
+        20,
+        46
+      ],
+      "expression": "s.split('and')[0].strip()",
+      "source_signature": "Call(func=Attribute(value=Subscript(value=Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='split', ctx=Load()), args=[Constant(value='and')], keywords=[]), slice=Constant(value=0), ctx=Load()), attr='strip', ctx=Load()), args=[], keywords=[])",
+      "operation": "strip",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "4dd46da5d115ac177d5c28d4729e7a94525f0cac7ef4a6af0654b33439cb4251",
+      "status": "received",
+      "text": "```python\nassert fruit_distribution(\" 5 apples and 6 oranges \", 19) == 8\nassert fruit_distribution(\"10 apples and 20 oranges\", 30) == 0\nassert fruit_distribution(\"100 apples and 100 oranges\", 199) == -1\nassert fruit_distribution(\"apples and oranges\", 10) == \"invalid input\"\nassert fruit_distribution(\"5 apples and 6 orange\", 19) == \"invalid input\"\nassert fruit_distribution(\"5 apples and 6 oranges and 2 mangoes\", 19) == \"invalid input\"\nassert fruit_distribution(\"5 apples and 6 oranges\", 0) == \"invalid input\"\nassert fruit_distribution(\"5 apples and 6 oranges\", -5) == \"invalid input\"\nassert fruit_distribution(\"5 apples and 6 oranges\", 11) == 0\nassert fruit_distribution(\"0 apples and 0 oranges\", 5) == 5\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 1034,
+      "n_out": 213,
+      "usage": {
+        "prompt_tokens": 1034,
+        "total_tokens": 1247,
+        "completion_tokens": 213,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 15.503401458030567,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 80421010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "4dd46da5d115ac177d5c28d4729e7a94525f0cac7ef4a6af0654b33439cb4251",
+        "prompt_tokens": 1034,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        20,
+        21,
+        20,
+        46
+      ],
+      "true": 3,
+      "false": 0,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 3,
+      "invalid_inputs": 7,
+      "inputs": 10,
+      "covered": true
+    }
+  },
+  {
+    "task": {
+      "task": 27,
+      "put": "\n\ndef flip_case(string: str) -> str:\n    \"\"\" For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n    >>> flip_case('Hello')\n    'hELLO'\n    \"\"\"\n\n    new_string = ''\n    for ch in string:\n        if 'A' <= ch <= 'Z':\n            new_string += ch.lower()\n        elif 'a' <= ch <= 'z':\n            new_string += ch.upper()\n        else:\n            new_string += ch\n    return new_string\n    pass\n",
+      "entry": "flip_case",
+      "base": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate('') == ''\n    assert candidate('Hello!') == 'hELLO!'\n    assert candidate('These violent delights have violent ends') == 'tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS'\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(string):\n    return isinstance(string, str)\n\ndef P1(string):\n    return P1_m(string)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+      "valid_sha256": "ed0b01c62068f5f58c41cd7274f29b3e5afaaf52b9c78ea83bd7982b370c318a",
+      "strategy_src": "def strategy():\n    return st.tuples(st.text())\n",
+      "strategy_sha256": "56bcc915285f9724d3b5d7b1b5962cb75d1f8d84fc464e74b4c732cfda5e2eeb",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 27,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "86af24e6eb959c0f88f0a3fdcee3a3b536a3d730384ccd503d861d7e4ada770c",
+        "candidates": 1,
+        "confirmed": 1,
+        "coded": 1,
+        "surviving": 1,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "ed0b01c62068f5f58c41cd7274f29b3e5afaaf52b9c78ea83bd7982b370c318a",
+        "seed": 20261037,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "STMT",
+          "line": 12,
+          "lines": [
+            12
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 12; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 12,
+            "end_line": 12,
+            "expression": "ch.lower()",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 12; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 12; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 14,
+          "k": 16,
+          "family": "SDL",
+          "extended": true,
+          "text": "Mutation (SDL): the mutant `new_string += ch.upper()` -> `pass` at line 14 is killed: an existing test distinguishes them.",
+          "mutant_src": "def flip_case(string: str) -> str:\n    \"\"\" For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n    >>> flip_case('Hello')\n    'hELLO'\n    \"\"\"\n    new_string = ''\n    for ch in string:\n        if 'A' <= ch <= 'Z':\n            new_string += ch.lower()\n        elif 'a' <= ch <= 'z':\n            pass\n        else:\n            new_string += ch\n    return new_string\n    pass"
+        },
+        {
+          "kind": "DU",
+          "line": 16,
+          "text": "Def-use pair (all-uses, c-use): the value assigned to `new_string` at line 14 reaches its use at line 16 in the existing tests.",
+          "cell": [
+            -2,
+            "du|3|new_string|14|16|c-use"
+          ]
+        }
+      ],
+      "placebo_facts": [
+        "Mutation (SDL): the mutant `new_string += ch.upper()` -> `pass` at line 14 is killed: an existing test distinguishes them.",
+        "Def-use pair (all-uses, c-use): the value assigned to `new_string` at line 14 reaches its use at line 16 in the existing tests."
+      ],
+      "tool_inputs": [],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 0,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        12,
+        26,
+        12,
+        36
+      ],
+      "expression": "ch.lower()",
+      "source_signature": "Call(func=Attribute(value=Name(id='ch', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+      "operation": "lower",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "e58ceb50818c111a4628126111d87fb701b55269a168d737f3738b915d90efb4",
+      "status": "received",
+      "text": "```python\nassert flip_case('aBc') == 'AbC'\nassert flip_case('123') == '123'\nassert flip_case('!@#') == '!@#'\nassert flip_case('') == ''\nassert flip_case('Z') == 'z'\nassert flip_case('z') == 'Z'\nassert flip_case('Hello World') == 'hELLO wORLD'\nassert flip_case('ABC') == 'abc'\nassert flip_case('abc') == 'ABC'\nassert flip_case('The Quick Brown Fox') == 'tHE qUICK bROWN fOX'\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 515,
+      "n_out": 136,
+      "usage": {
+        "prompt_tokens": 515,
+        "total_tokens": 651,
+        "completion_tokens": 136,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 9.895952875027433,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 44581010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "e58ceb50818c111a4628126111d87fb701b55269a168d737f3738b915d90efb4",
+        "prompt_tokens": 515,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        12,
+        26,
+        12,
+        36
+      ],
+      "true": 5,
+      "false": 0,
+      "unknown": 5,
+      "unreached": 5,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": true
+    }
+  },
+  {
+    "task": {
+      "task": 12,
+      "put": "from typing import List, Optional\n\n\ndef longest(strings: List[str]) -> Optional[str]:\n    \"\"\" Out of list of strings, return the longest one. Return the first one in case of multiple\n    strings of the same length. Return None in case the input list is empty.\n    >>> longest([])\n\n    >>> longest(['a', 'b', 'c'])\n    'a'\n    >>> longest(['a', 'bb', 'ccc'])\n    'ccc'\n    \"\"\"\n    if len(strings) == 0:\n        return None\n    strings = [s.lower() for s in strings]\n    strings = [s for s in strings if len(s) > 0]\n    strings = [s for s in strings if s]\n    return max(strings, key=len)\n\n",
+      "entry": "longest",
+      "base": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate([]) == None\n    assert candidate(['x', 'y', 'z']) == 'x'\n    assert candidate(['x', 'yyy', 'zzzz', 'www', 'kkkk', 'abc']) == 'zzzz'\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(strings):\n    return isinstance(strings, list)\n\ndef P1(strings):\n    return P1_m(strings)\n\ndef P2_m(strings):\n    if not isinstance(strings, list):\n        return False\n    for item in strings:\n        if not isinstance(item, str):\n            return False\n    return True\n\ndef P2(strings):\n    return P2_m(strings)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+      "valid_sha256": "1ab0f9b5880104a451c87891bb173a20141554c727c3317a8fff7df1eba01843",
+      "strategy_src": "def strategy():\n    return st.lists(st.text())\n",
+      "strategy_sha256": "6e4604d54660cbb93fa416afcecd21dce4190a3a48b080aee4ea04f432849996",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 12,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "478ae983dfcbceb727f322f1d90d683c170dc96df06cdf7b85ce40a29f7e9034",
+        "candidates": 2,
+        "confirmed": 2,
+        "coded": 2,
+        "surviving": 2,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "1ab0f9b5880104a451c87891bb173a20141554c727c3317a8fff7df1eba01843",
+        "seed": 20261022,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 16,
+          "k": 7,
+          "family": "call-result removal",
+          "extended": true,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them.",
+          "witness": 2,
+          "boundary": false,
+          "reached": true,
+          "witness_call": "longest(['X', 'YYY', 'ZZZZ', 'WWW', 'KKKK', 'ABC'])",
+          "block": 16,
+          "g_demote": false,
+          "tier": 0,
+          "mutant_src": "from typing import List, Optional\n\ndef longest(strings: List[str]) -> Optional[str]:\n    \"\"\" Out of list of strings, return the longest one. Return the first one in case of multiple\n    strings of the same length. Return None in case the input list is empty.\n    >>> longest([])\n\n    >>> longest(['a', 'b', 'c'])\n    'a'\n    >>> longest(['a', 'bb', 'ccc'])\n    'ccc'\n    \"\"\"\n    if len(strings) == 0:\n        return None\n    strings = [s for s in strings]\n    strings = [s for s in strings if len(s) > 0]\n    strings = [s for s in strings if s]\n    return max(strings, key=len)",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 16,
+            "end_line": 16,
+            "expression": "s.lower()",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them."
+        },
+        {
+          "kind": "BOUND",
+          "line": 14,
+          "cell": [
+            2,
+            "eqc|1|0|1|True"
+          ],
+          "witness": 41,
+          "text": "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Boundary value: at line 14, `len(strings)` was never equal to 1 (next to the constant 0 in `len(strings) == 0`).",
+          "reached": true,
+          "witness_call": "longest(['x'])",
+          "block": 14,
+          "g_demote": false,
+          "tier": 0,
+          "card_id": "py.empty-singleton-shortcut",
+          "card": {
+            "title": "An empty or singleton shortcut changes the required result",
+            "where": "Code branches on sequence truthiness or length zero, one or two before the general computation.",
+            "how": "A small-input shortcut or guard can omit a valid case or skip work that is still required.",
+            "what": "A valid small input is rejected or returns a shortcut value inconsistent with the specification.",
+            "test": "Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs."
+          },
+          "retrieval_evidence": {
+            "line": 14,
+            "end_line": 14,
+            "expression": "len(strings) == 0",
+            "reason": "A small-length comparison creates a specialized path.",
+            "priority": 141
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Boundary value: at line 14, `len(strings)` was never equal to 1 (next to the constant 0 in `len(strings) == 0`)."
+        },
+        {
+          "kind": "STMT",
+          "line": 19,
+          "lines": [
+            19
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Filtering leaves an empty input for a reduction without a default\", \"where\": \"min or max is applied to a collection that can become empty, possibly after filtering.\", \"how\": \"Without a default, min and max reject an empty iterable instead of producing an application sentinel.\", \"what\": \"The reduction raises instead of returning the required empty-result value.\", \"test\": \"Choose admissible {input} whose filter retains no candidates, including all-rejected or empty cases allowed by the spec.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.empty-reduction-domain",
+          "card": {
+            "title": "Filtering leaves an empty input for a reduction without a default",
+            "where": "min or max is applied to a collection that can become empty, possibly after filtering.",
+            "how": "Without a default, min and max reject an empty iterable instead of producing an application sentinel.",
+            "what": "The reduction raises instead of returning the required empty-result value.",
+            "test": "Choose admissible {input} whose filter retains no candidates, including all-rejected or empty cases allowed by the spec."
+          },
+          "retrieval_evidence": {
+            "line": 19,
+            "end_line": 19,
+            "expression": "max(strings, key=len)",
+            "reason": "An iterable extremum needs a policy when no eligible element survives.",
+            "priority": 131
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 19; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them.",
+        "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Boundary value: at line 14, `len(strings)` was never equal to 1 (next to the constant 0 in `len(strings) == 0`).",
+        "{\"title\": \"Filtering leaves an empty input for a reduction without a default\", \"where\": \"min or max is applied to a collection that can become empty, possibly after filtering.\", \"how\": \"Without a default, min and max reject an empty iterable instead of producing an application sentinel.\", \"what\": \"The reduction raises instead of returning the required empty-result value.\", \"test\": \"Choose admissible {input} whose filter retains no candidates, including all-rejected or empty cases allowed by the spec.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "OUTCOME",
+          "line": 14,
+          "text": "Branch coverage (C2): the True and False branches of `len(strings) == 0` (line 14) are taken by the existing tests.",
+          "cells": [
+            [
+              2,
+              "T"
+            ],
+            [
+              2,
+              "F"
+            ]
+          ]
+        },
+        {
+          "kind": "MUTANT",
+          "line": 14,
+          "k": 2,
+          "family": "CRP constant",
+          "extended": false,
+          "text": "Mutation (CRP constant): the mutant `len(strings) == 0` -> `len(strings) == -1` at line 14 is killed: an existing test distinguishes them.",
+          "mutant_src": "from typing import List, Optional\n\ndef longest(strings: List[str]) -> Optional[str]:\n    \"\"\" Out of list of strings, return the longest one. Return the first one in case of multiple\n    strings of the same length. Return None in case the input list is empty.\n    >>> longest([])\n\n    >>> longest(['a', 'b', 'c'])\n    'a'\n    >>> longest(['a', 'bb', 'ccc'])\n    'ccc'\n    \"\"\"\n    if len(strings) == -1:\n        return None\n    strings = [s.lower() for s in strings]\n    strings = [s for s in strings if len(s) > 0]\n    strings = [s for s in strings if s]\n    return max(strings, key=len)"
+        },
+        {
+          "kind": "BOUND",
+          "line": 14,
+          "text": "Boundary value: at line 14, `len(strings)` was sometimes equal to 0 (the constant in `len(strings) == 0`) and sometimes not.",
+          "cells": [
+            [
+              2,
+              "eqc|1|0|0|True"
+            ],
+            [
+              2,
+              "eqc|1|0|0|False"
+            ]
+          ]
+        }
+      ],
+      "placebo_facts": [
+        "Branch coverage (C2): the True and False branches of `len(strings) == 0` (line 14) are taken by the existing tests.",
+        "Mutation (CRP constant): the mutant `len(strings) == 0` -> `len(strings) == -1` at line 14 is killed: an existing test distinguishes them.",
+        "Boundary value: at line 14, `len(strings)` was sometimes equal to 0 (the constant in `len(strings) == 0`) and sometimes not."
+      ],
+      "tool_inputs": [
+        "longest(['X', 'YYY', 'ZZZZ', 'WWW', 'KKKK', 'ABC'])",
+        "longest(['x'])"
+      ],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 0,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        16,
+        15,
+        16,
+        24
+      ],
+      "expression": "s.lower()",
+      "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+      "operation": "lower",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "d002f4fce4b5ec1d2fe9787fffbc265294b551160ad0e8b8b33dccc2b070058e",
+      "status": "received",
+      "text": "```python\nassert longest(['a', 'B', 'C']) == 'a'\nassert longest(['A', 'b', 'c']) == 'A'\nassert longest(['a', 'bb', 'CCC']) == 'CCC'\nassert longest(['a', 'bb', 'ccc', 'dddd']) == 'dddd'\nassert longest(['a', 'bb', 'ccc', 'DDD']) == 'DDD'\nassert longest(['a', 'b', 'cc', 'DD']) == 'cc'\nassert longest(['A', 'B', 'CC', 'dd']) == 'A'\nassert longest(['a', 'bb', 'ccc', 'ddd']) == 'a'\nassert longest(['a', 'bb', 'ccc', 'DDD', 'eee']) == 'DDD'\nassert longest(['A', 'B', 'CC', 'DD', 'EEE']) == 'A'\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 858,
+      "n_out": 192,
+      "usage": {
+        "prompt_tokens": 858,
+        "total_tokens": 1050,
+        "completion_tokens": 192,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 35.716433624969795,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 31141010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "d002f4fce4b5ec1d2fe9787fffbc265294b551160ad0e8b8b33dccc2b070058e",
+        "prompt_tokens": 858,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        16,
+        15,
+        16,
+        24
+      ],
+      "true": 8,
+      "false": 2,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": true
+    }
+  },
+  {
+    "task": {
+      "task": 162,
+      "put": "\ndef string_to_md5(text):\n    \"\"\"\n    Given a string 'text', return its md5 hash equivalent string.\n    If 'text' is an empty string, return None.\n\n    >>> string_to_md5('Hello world') == '3e25960a79dbc69b674cd4ec67a72c62'\n    \"\"\"\n    import hashlib\n    text = text.strip()\n    if len(text) == 0:\n        return None\n    h = hashlib.md5()\n    h.update(text.encode('utf-8'))\n    return h.hexdigest()\n",
+      "entry": "string_to_md5",
+      "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate('Hello world') == '3e25960a79dbc69b674cd4ec67a72c62'\n    assert candidate('') == None\n    assert candidate('A B C') == '0ef78513b0cb8cef12743f5aeb35f888'\n    assert candidate('password') == '5f4dcc3b5aa765d61d8327deb882cf99'\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True\n\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(text):\n    return isinstance(text, str)\n\ndef P1(text):\n    return P1_m(text)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+      "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+      "strategy_src": "def strategy():\n    return st.tuples(st.text())\n",
+      "strategy_sha256": "56bcc915285f9724d3b5d7b1b5962cb75d1f8d84fc464e74b4c732cfda5e2eeb",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 162,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "fc7a1cd9d177949daaa4c875d901de749b5f70538565544641fb5a56c212c941",
+        "candidates": 2,
+        "confirmed": 2,
+        "coded": 2,
+        "surviving": 1,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [
+          {
+            "id": "P2",
+            "reason": "known_valid_rejection",
+            "failures": [
+              {
+                "id": "P2",
+                "index": 0,
+                "source": "base",
+                "input_repr": "(('Hello world',), {})",
+                "accepted": false,
+                "error": null
+              }
+            ]
+          }
+        ],
+        "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+        "seed": 20261172,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "STMT",
+          "line": 14,
+          "lines": [
+            14
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Byte encoding is mistaken for Unicode character processing\", \"where\": \"Code encodes a str and counts, indexes or deduplicates the resulting bytes, or forces an ASCII encoding.\", \"how\": \"Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.\", \"what\": \"Character length or distinct-character count is wrong, or encoding rejects a valid string.\", \"test\": \"Use {text} containing admissible non-ASCII characters, including a multibyte character repeated once.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.unicode-text-byte-domain",
+          "card": {
+            "title": "Byte encoding is mistaken for Unicode character processing",
+            "where": "Code encodes a str and counts, indexes or deduplicates the resulting bytes, or forces an ASCII encoding.",
+            "how": "Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.",
+            "what": "Character length or distinct-character count is wrong, or encoding rejects a valid string.",
+            "test": "Use {text} containing admissible non-ASCII characters, including a multibyte character repeated once."
+          },
+          "retrieval_evidence": {
+            "line": 14,
+            "end_line": 14,
+            "expression": "text.encode('utf-8')",
+            "reason": "Encoding changes from text characters to bytes.",
+            "priority": 195
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 14; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "MUTANT",
+          "line": 10,
+          "k": 4,
+          "family": "call-result removal",
+          "extended": true,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `text.strip()` -> `text` at line 10 survives: no existing test distinguishes them.",
+          "witness": 5,
+          "boundary": false,
+          "reached": true,
+          "witness_call": "string_to_md5(' ')",
+          "block": 10,
+          "g_demote": false,
+          "tier": 0,
+          "mutant_src": "def string_to_md5(text):\n    \"\"\"\n    Given a string 'text', return its md5 hash equivalent string.\n    If 'text' is an empty string, return None.\n\n    >>> string_to_md5('Hello world') == '3e25960a79dbc69b674cd4ec67a72c62'\n    \"\"\"\n    import hashlib\n    text = text\n    if len(text) == 0:\n        return None\n    h = hashlib.md5()\n    h.update(text.encode('utf-8'))\n    return h.hexdigest()",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 10,
+            "end_line": 10,
+            "expression": "text.strip()",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Mutation (call-result removal): the mutant `text.strip()` -> `text` at line 10 survives: no existing test distinguishes them."
+        },
+        {
+          "kind": "BOUND",
+          "line": 11,
+          "cell": [
+            4,
+            "eqc|3|0|1|True"
+          ],
+          "witness": 3,
+          "text": "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Boundary value: at line 11, `len(text)` was never equal to 1 (next to the constant 0 in `len(text) == 0`).",
+          "reached": true,
+          "witness_call": "string_to_md5('!')",
+          "block": 11,
+          "g_demote": false,
+          "tier": 0,
+          "card_id": "py.empty-singleton-shortcut",
+          "card": {
+            "title": "An empty or singleton shortcut changes the required result",
+            "where": "Code branches on sequence truthiness or length zero, one or two before the general computation.",
+            "how": "A small-input shortcut or guard can omit a valid case or skip work that is still required.",
+            "what": "A valid small input is rejected or returns a shortcut value inconsistent with the specification.",
+            "test": "Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs."
+          },
+          "retrieval_evidence": {
+            "line": 11,
+            "end_line": 11,
+            "expression": "len(text) == 0",
+            "reason": "A small-length comparison creates a specialized path.",
+            "priority": 141
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Boundary value: at line 11, `len(text)` was never equal to 1 (next to the constant 0 in `len(text) == 0`)."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"Byte encoding is mistaken for Unicode character processing\", \"where\": \"Code encodes a str and counts, indexes or deduplicates the resulting bytes, or forces an ASCII encoding.\", \"how\": \"Encoded bytes and Unicode characters are different domains; non-ASCII characters can take multiple bytes or fail ASCII encoding.\", \"what\": \"Character length or distinct-character count is wrong, or encoding rejects a valid string.\", \"test\": \"Use {text} containing admissible non-ASCII characters, including a multibyte character repeated once.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `text.strip()` -> `text` at line 10 survives: no existing test distinguishes them.",
+        "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Boundary value: at line 11, `len(text)` was never equal to 1 (next to the constant 0 in `len(text) == 0`)."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 11,
+          "k": 1,
+          "family": "CRP constant",
+          "extended": false,
+          "text": "Mutation (CRP constant): the mutant `len(text) == 0` -> `len(text) == 1` at line 11 is killed: an existing test distinguishes them.",
+          "mutant_src": "def string_to_md5(text):\n    \"\"\"\n    Given a string 'text', return its md5 hash equivalent string.\n    If 'text' is an empty string, return None.\n\n    >>> string_to_md5('Hello world') == '3e25960a79dbc69b674cd4ec67a72c62'\n    \"\"\"\n    import hashlib\n    text = text.strip()\n    if len(text) == 1:\n        return None\n    h = hashlib.md5()\n    h.update(text.encode('utf-8'))\n    return h.hexdigest()"
+        },
+        {
+          "kind": "BOUND",
+          "line": 11,
+          "text": "Boundary value: at line 11, `len(text)` was sometimes equal to 0 (the constant in `len(text) == 0`) and sometimes not.",
+          "cells": [
+            [
+              4,
+              "eqc|3|0|0|True"
+            ],
+            [
+              4,
+              "eqc|3|0|0|False"
+            ]
+          ]
+        }
+      ],
+      "placebo_facts": [
+        "Mutation (CRP constant): the mutant `len(text) == 0` -> `len(text) == 1` at line 11 is killed: an existing test distinguishes them.",
+        "Boundary value: at line 11, `len(text)` was sometimes equal to 0 (the constant in `len(text) == 0`) and sometimes not."
+      ],
+      "tool_inputs": [
+        "string_to_md5(' ')",
+        "string_to_md5('!')"
+      ],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 1,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        10,
+        11,
+        10,
+        23
+      ],
+      "expression": "text.strip()",
+      "source_signature": "Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='strip', ctx=Load()), args=[], keywords=[])",
+      "operation": "strip",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "d9e7d47c85c50a8076d2d24ae322e7cf9e2d25907409e8878e2d7f8dbf435c5b",
+      "status": "received",
+      "text": "```python\nassert string_to_md5('  Hello world  ') == '3e25960a79dbc69b674cd4ec67a72c62'\nassert string_to_md5('\\tHello\\t') == '3e25960a79dbc69b674cd4ec67a72c62'\nassert string_to_md5('\\nHello\\n') == '3e25960a79dbc69b674cd4ec67a72c62'\nassert string_to_md5('Hello World') == '6f1ed002ab5595859014ebf0951522d9'\nassert string_to_md5('hello world') == '5eb63bbbe01eeed093cb22bb8f5acdc3'\nassert string_to_md5('  ') == None\nassert string_to_md5('\\t') == None\nassert string_to_md5('\\n') == None\nassert string_to_md5('a') == '0cc175b9c0f1b6a831c399e269772661'\nassert string_to_md5('a b') == '4c42c3e7e6d6e3e3e7e6d6e3e3e7e6d6'\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 905,
+      "n_out": 331,
+      "usage": {
+        "prompt_tokens": 905,
+        "total_tokens": 1236,
+        "completion_tokens": 331,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 27.77157595893368,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 165541010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "d9e7d47c85c50a8076d2d24ae322e7cf9e2d25907409e8878e2d7f8dbf435c5b",
+        "prompt_tokens": 905,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        10,
+        11,
+        10,
+        23
+      ],
+      "true": 6,
+      "false": 4,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": true
+    }
+  },
+  {
+    "task": {
+      "task": 118,
+      "put": "\ndef get_closest_vowel(word):\n    \"\"\"You are given a word. Your task is to find the closest vowel that stands between \n    two consonants from the right side of the word (case sensitive).\n    \n    Vowels in the beginning and ending doesn't count. Return empty string if you didn't\n    find any vowel met the above condition. \n\n    You may assume that the given string contains English letter only.\n\n    Example:\n    get_closest_vowel(\"yogurt\") ==> \"u\"\n    get_closest_vowel(\"FULL\") ==> \"U\"\n    get_closest_vowel(\"quick\") ==> \"\"\n    get_closest_vowel(\"ab\") ==> \"\"\n    \"\"\"\n    vowels = ['a', 'e', 'i', 'o', 'u']\n    for i in range(len(word)-2, 0, -1):\n        if word[i] in vowels and word[i+1] not in vowels and word[i-1] not in vowels:\n            return word[i]\n    return \"\"\n",
+      "entry": "get_closest_vowel",
+      "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(\"yogurt\") == \"u\"\n    assert candidate(\"full\") == \"u\"\n    assert candidate(\"easy\") == \"\"\n    assert candidate(\"eAsy\") == \"\"\n    assert candidate(\"ali\") == \"\"\n    assert candidate(\"bad\") == \"a\"\n    assert candidate(\"most\") == \"o\"\n    assert candidate(\"ab\") == \"\"\n    assert candidate(\"ba\") == \"\"\n    assert candidate(\"quick\") == \"\"\n    assert candidate(\"anime\") == \"i\"\n    assert candidate(\"Asia\") == \"\"\n    assert candidate(\"Above\") == \"o\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True\n\n",
+      "split": "dev",
+      "mined_valid_src": "def P2_m(word):\n    return isinstance(word, str) and all((c.isalpha() for c in word))\n\ndef P2(word):\n    return P2_m(word)\n\ndef valid(*args, **kwargs):\n    return P2(*args, **kwargs) is True\n",
+      "valid_sha256": "bcfb6e25d7a3b13797cfa7fd46a732ed5763ff998850612a46ca86d92ecdce1d",
+      "strategy_src": "def strategy():\n    return st.text(alphabet=st.sampled_from('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'), min_size=0, max_size=100).map(lambda w: (w,))\n",
+      "strategy_sha256": "9ea5a9d0b2d279af9d540f6491a1cdd190ad2fb81cffd5141a5c9141d5fa30fb",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 118,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "ca36cf749a03ae6755e16d464e151ff29ace474dd43217f3264a67c8720dfb7d",
+        "candidates": 2,
+        "confirmed": 1,
+        "coded": 1,
+        "surviving": 1,
+        "mining_failure": null,
+        "dropped_confirmation": [
+          {
+            "id": "P1",
+            "condition": "The input 'word' must be a string.",
+            "evidence": "",
+            "reason": "confirmation_false"
+          }
+        ],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "bcfb6e25d7a3b13797cfa7fd46a732ed5763ff998850612a46ca86d92ecdce1d",
+        "seed": 20261128,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "STMT",
+          "line": 19,
+          "lines": [
+            19
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"A literal classification table omits or admits values outside the required class\", \"where\": \"A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.\", \"how\": \"A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.\", \"what\": \"A required member is ignored or an invalid member is accepted in the returned predicate or count.\", \"test\": \"Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.literal-classification-domain",
+          "card": {
+            "title": "A literal classification table omits or admits values outside the required class",
+            "where": "A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.",
+            "how": "A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.",
+            "what": "A required member is ignored or an invalid member is accepted in the returned predicate or count.",
+            "test": "Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}."
+          },
+          "retrieval_evidence": {
+            "line": 19,
+            "end_line": 19,
+            "expression": "word[i] in vowels",
+            "reason": "A finite literal table is used for a named numeric/character class.",
+            "priority": 140
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 19; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 20,
+          "lines": [
+            20
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"An early qualifying candidate is returned instead of the best eligible candidate\", \"where\": \"A loop or search returns the first qualifying element while the specification requires an optimum over eligible candidates.\", \"how\": \"Existence of an eligible candidate does not imply that it is minimal, maximal or closest among all eligible candidates.\", \"what\": \"The returned candidate qualifies but is not the required optimum.\", \"test\": \"Place a worse but eligible {first_candidate} before a better {later_candidate}, with an ineligible global extremum if filtering is required.\"}\n  Tool target: Execute source line 20; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.first-match-vs-optimum",
+          "card": {
+            "title": "An early qualifying candidate is returned instead of the best eligible candidate",
+            "where": "A loop or search returns the first qualifying element while the specification requires an optimum over eligible candidates.",
+            "how": "Existence of an eligible candidate does not imply that it is minimal, maximal or closest among all eligible candidates.",
+            "what": "The returned candidate qualifies but is not the required optimum.",
+            "test": "Place a worse but eligible {first_candidate} before a better {later_candidate}, with an ineligible global extremum if filtering is required."
+          },
+          "retrieval_evidence": {
+            "line": 20,
+            "end_line": 20,
+            "expression": "return word[i]",
+            "reason": "A loop returns a qualifying candidate before later candidates are considered.",
+            "priority": 139
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 20; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 19,
+          "lines": [
+            19
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"A negative sentinel is accidentally used as a valid sequence index\", \"where\": \"A search result or computed index can be negative before indexing a sequence.\", \"how\": \"Negative indexing selects from the end instead of rejecting the sentinel.\", \"what\": \"The last element is returned for a missing item.\", \"test\": \"Choose {input} that produces index -1 and apply the resulting index to a nonempty {sequence}.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.negative-index-sentinel",
+          "card": {
+            "title": "A negative sentinel is accidentally used as a valid sequence index",
+            "where": "A search result or computed index can be negative before indexing a sequence.",
+            "how": "Negative indexing selects from the end instead of rejecting the sentinel.",
+            "what": "The last element is returned for a missing item.",
+            "test": "Choose {input} that produces index -1 and apply the resulting index to a nonempty {sequence}."
+          },
+          "retrieval_evidence": {
+            "line": 19,
+            "end_line": 19,
+            "expression": "word[i-1]",
+            "reason": "Subtracting from a position can create a valid-but-unintended negative index.",
+            "priority": 88
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 19; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"A literal classification table omits or admits values outside the required class\", \"where\": \"A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.\", \"how\": \"A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.\", \"what\": \"A required member is ignored or an invalid member is accepted in the returned predicate or count.\", \"test\": \"Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"An early qualifying candidate is returned instead of the best eligible candidate\", \"where\": \"A loop or search returns the first qualifying element while the specification requires an optimum over eligible candidates.\", \"how\": \"Existence of an eligible candidate does not imply that it is minimal, maximal or closest among all eligible candidates.\", \"what\": \"The returned candidate qualifies but is not the required optimum.\", \"test\": \"Place a worse but eligible {first_candidate} before a better {later_candidate}, with an ineligible global extremum if filtering is required.\"}\n  Tool target: Execute source line 20; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"A negative sentinel is accidentally used as a valid sequence index\", \"where\": \"A search result or computed index can be negative before indexing a sequence.\", \"how\": \"Negative indexing selects from the end instead of rejecting the sentinel.\", \"what\": \"The last element is returned for a missing item.\", \"test\": \"Choose {input} that produces index -1 and apply the resulting index to a nonempty {sequence}.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [],
+      "placebo_facts": [],
+      "tool_inputs": [],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 0,
+    "binding": {
+      "family": "membership",
+      "status": "supported",
+      "requirement_status": "public_lexical_cue_unverified",
+      "site": [
+        19,
+        11,
+        19,
+        28
+      ],
+      "expression": "word[i] in vowels",
+      "source_signature": "Compare(left=Subscript(value=Name(id='word', ctx=Load()), slice=Name(id='i', ctx=Load()), ctx=Load()), ops=[In()], comparators=[Name(id='vowels', ctx=Load())])",
+      "expected_members": "aeiouAEIOU",
+      "negated": false,
+      "requirement_evidence": "You are given a word. Your task is to find the closest vowel that stands between",
+      "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+    },
+    "round1": {
+      "key": "1fe2ee26a267228b57c744a5f135e7cff63341fe7f37d52ab68ced03c1ff144a",
+      "status": "received",
+      "text": "```python\nassert get_closest_vowel(\"Yogurt\") == \"u\"\nassert get_closest_vowel(\"yOgurt\") == \"\"\nassert get_closest_vowel(\"ba\") == \"\"\nassert get_closest_vowel(\"ab\") == \"\"\nassert get_closest_vowel(\"a\") == \"\"\nassert get_closest_vowel(\"b\") == \"\"\nassert get_closest_vowel(\"baa\") == \"\"\nassert get_closest_vowel(\"aab\") == \"\"\nassert get_closest_vowel(\"baab\") == \"a\"\nassert get_closest_vowel(\"baaeb\") == \"e\"\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 984,
+      "n_out": 140,
+      "usage": {
+        "prompt_tokens": 984,
+        "total_tokens": 1124,
+        "completion_tokens": 140,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 24.216183417011052,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 126117010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "1fe2ee26a267228b57c744a5f135e7cff63341fe7f37d52ab68ced03c1ff144a",
+        "prompt_tokens": 984,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "membership",
+      "site": [
+        19,
+        11,
+        19,
+        28
+      ],
+      "true": 0,
+      "false": 6,
+      "unknown": 4,
+      "unreached": 4,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": false
+    }
+  },
+  {
+    "task": {
+      "task": 48,
+      "put": "\n\ndef is_palindrome(text: str):\n    \"\"\"\n    Checks if given string is a palindrome\n    >>> is_palindrome('')\n    True\n    >>> is_palindrome('aba')\n    True\n    >>> is_palindrome('aaaaa')\n    True\n    >>> is_palindrome('zbcd')\n    False\n    \"\"\"\n    \n    if not text:\n        return True\n    \n    chars = text.lower().replace(' ', '')\n    \n    if len(chars) < 2:\n        return True\n    \n    reversed_text = ''.join(reversed(chars))\n    return chars == reversed_text\n    \n",
+      "entry": "is_palindrome",
+      "base": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate('') == True\n    assert candidate('aba') == True\n    assert candidate('aaaaa') == True\n    assert candidate('zbcd') == False\n    assert candidate('xywyx') == True\n    assert candidate('xywyz') == False\n    assert candidate('xywzx') == False\n\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(text):\n    return isinstance(text, str)\n\ndef P1(text):\n    return P1_m(text)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+      "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+      "strategy_src": "def strategy():\n    return st.text()\n",
+      "strategy_sha256": "0ed262dc2227ec7c3abb744e7b600a466dbb97d3e1bc2c08d970f85d01250be3",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 48,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "6c47da9b01ccfce4867407f8b93583fefe3ac74bbb39ab568bfc1c176bc4eb4d",
+        "candidates": 1,
+        "confirmed": 1,
+        "coded": 1,
+        "surviving": 1,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+        "seed": 20261058,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 19,
+          "k": 7,
+          "family": "call-result removal",
+          "extended": true,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `text.lower()` -> `text` at line 19 survives: no existing test distinguishes them.",
+          "witness": 15,
+          "boundary": false,
+          "reached": true,
+          "witness_call": "is_palindrome('Aba')",
+          "block": 19,
+          "g_demote": false,
+          "tier": 0,
+          "mutant_src": "def is_palindrome(text: str):\n    \"\"\"\n    Checks if given string is a palindrome\n    >>> is_palindrome('')\n    True\n    >>> is_palindrome('aba')\n    True\n    >>> is_palindrome('aaaaa')\n    True\n    >>> is_palindrome('zbcd')\n    False\n    \"\"\"\n    if not text:\n        return True\n    chars = text.replace(' ', '')\n    if len(chars) < 2:\n        return True\n    reversed_text = ''.join(reversed(chars))\n    return chars == reversed_text",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 19,
+            "end_line": 19,
+            "expression": "text.lower().replace(' ', '')",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Mutation (call-result removal): the mutant `text.lower()` -> `text` at line 19 survives: no existing test distinguishes them."
+        },
+        {
+          "kind": "BOUND",
+          "line": 21,
+          "cell": [
+            7,
+            "eqc|6|2|0|True"
+          ],
+          "witness": 60,
+          "text": "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Boundary value: at line 21, `len(chars)` was never equal to 2 (the constant in `len(chars) < 2`).",
+          "reached": true,
+          "witness_call": "is_palindrome('x9')",
+          "block": 21,
+          "g_demote": false,
+          "guard_line": 21,
+          "guard_forced": false,
+          "guard_class": "na",
+          "guard_counts": {
+            "same": 0,
+            "necessary": 0,
+            "differ": 0
+          },
+          "tier": 0,
+          "card_id": "py.empty-singleton-shortcut",
+          "card": {
+            "title": "An empty or singleton shortcut changes the required result",
+            "where": "Code branches on sequence truthiness or length zero, one or two before the general computation.",
+            "how": "A small-input shortcut or guard can omit a valid case or skip work that is still required.",
+            "what": "A valid small input is rejected or returns a shortcut value inconsistent with the specification.",
+            "test": "Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs."
+          },
+          "retrieval_evidence": {
+            "line": 21,
+            "end_line": 21,
+            "expression": "len(chars) < 2",
+            "reason": "A small-length comparison creates a specialized path.",
+            "priority": 141
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Boundary value: at line 21, `len(chars)` was never equal to 2 (the constant in `len(chars) < 2`)."
+        },
+        {
+          "kind": "STMT",
+          "line": 21,
+          "lines": [
+            21
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 21; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.branch-boundary-contract",
+          "card": {
+            "title": "A branch boundary or equality special case disagrees with the specification",
+            "where": "A numeric comparison controls a branch, filter or early return at a threshold or equality case.",
+            "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+            "what": "A valid boundary input takes a branch whose result or rejection violates the specification.",
+            "test": "Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}."
+          },
+          "retrieval_evidence": {
+            "line": 21,
+            "end_line": 21,
+            "expression": "len(chars) < 2",
+            "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+            "priority": 112
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 21; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `text.lower()` -> `text` at line 19 survives: no existing test distinguishes them.",
+        "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Boundary value: at line 21, `len(chars)` was never equal to 2 (the constant in `len(chars) < 2`).",
+        "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 21; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 25,
+          "k": 3,
+          "family": "ROR",
+          "extended": false,
+          "text": "Mutation (ROR): the mutant `chars == reversed_text` -> `chars != reversed_text` at line 25 is killed: an existing test distinguishes them.",
+          "mutant_src": "def is_palindrome(text: str):\n    \"\"\"\n    Checks if given string is a palindrome\n    >>> is_palindrome('')\n    True\n    >>> is_palindrome('aba')\n    True\n    >>> is_palindrome('aaaaa')\n    True\n    >>> is_palindrome('zbcd')\n    False\n    \"\"\"\n    if not text:\n        return True\n    chars = text.lower().replace(' ', '')\n    if len(chars) < 2:\n        return True\n    reversed_text = ''.join(reversed(chars))\n    return chars != reversed_text"
+        },
+        {
+          "kind": "BOUND",
+          "line": 21,
+          "text": "Boundary value: at line 21, `len(chars)` was sometimes equal to 3 (next to the constant 2 in `len(chars) < 2`) and sometimes not.",
+          "cells": [
+            [
+              7,
+              "eqc|6|2|1|True"
+            ],
+            [
+              7,
+              "eqc|6|2|1|False"
+            ]
+          ]
+        }
+      ],
+      "placebo_facts": [
+        "Mutation (ROR): the mutant `chars == reversed_text` -> `chars != reversed_text` at line 25 is killed: an existing test distinguishes them.",
+        "Boundary value: at line 21, `len(chars)` was sometimes equal to 3 (next to the constant 2 in `len(chars) < 2`) and sometimes not."
+      ],
+      "tool_inputs": [
+        "is_palindrome('Aba')",
+        "is_palindrome('x9')"
+      ],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 0,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        19,
+        12,
+        19,
+        41
+      ],
+      "expression": "text.lower().replace(' ', '')",
+      "source_signature": "Call(func=Attribute(value=Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value=' '), Constant(value='')], keywords=[])",
+      "operation": "replace",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "6c3af1433ad35eb9bd8063dd588f119350e18097d4f8a9bd3d3310216da9ca3a",
+      "status": "received",
+      "text": "```python\nassert is_palindrome('A') == True\nassert is_palindrome('a') == True\nassert is_palindrome('Aa') == True\nassert is_palindrome('aa') == True\nassert is_palindrome('AaA') == True\nassert is_palindrome('Aba') == True\nassert is_palindrome('Abba') == True\nassert is_palindrome('Aba ') == True\nassert is_palindrome('Noon') == True\nassert is_palindrome('Noon ') == True\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 814,
+      "n_out": 113,
+      "usage": {
+        "prompt_tokens": 814,
+        "total_tokens": 927,
+        "completion_tokens": 113,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 20.671042500063777,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 63397010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "6c3af1433ad35eb9bd8063dd588f119350e18097d4f8a9bd3d3310216da9ca3a",
+        "prompt_tokens": 814,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        19,
+        12,
+        19,
+        41
+      ],
+      "true": 2,
+      "false": 8,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": true
+    }
+  },
+  {
+    "task": {
+      "task": 64,
+      "put": "\nFIX = \"\"\"\nAdd more test cases.\n\"\"\"\n\ndef vowels_count(s):\n    \"\"\"Write a function vowels_count which takes a string representing\n    a word as input and returns the number of vowels in the string.\n    Vowels in this case are 'a', 'e', 'i', 'o', 'u'. Here, 'y' is also a\n    vowel, but only when it is at the end of the given word.\n\n    Example:\n    >>> vowels_count(\"abcde\")\n    2\n    >>> vowels_count(\"ACEDY\")\n    3\n    \"\"\"\n    vowels = \"aeiou\"\n    count = 0\n    for c in s:\n        if c.lower() in vowels:\n            count += 1\n        elif c.lower() == \"y\" and c == s[-1]:\n            count += 1\n    return count\n\n",
+      "entry": "vowels_count",
+      "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(\"abcde\") == 2, \"Test 1\"\n    assert candidate(\"Alone\") == 3, \"Test 2\"\n    assert candidate(\"key\") == 2, \"Test 3\"\n    assert candidate(\"bye\") == 1, \"Test 4\"\n    assert candidate(\"keY\") == 2, \"Test 5\"\n    assert candidate(\"bYe\") == 1, \"Test 6\"\n    assert candidate(\"ACEDY\") == 3, \"Test 7\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(s):\n    return isinstance(s, str)\n\ndef P1(s):\n    return P1_m(s)\n\ndef P2_m(s):\n    return isinstance(s, str) and len(s) > 0 and (' ' not in s)\n\ndef P2(s):\n    return P2_m(s)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+      "valid_sha256": "74eddab77658f5761c77d326ea0788a09f2ae302863ede1819295c1135cf19c1",
+      "strategy_src": "def strategy():\n    return st.tuples(st.from_type(object))\n",
+      "strategy_sha256": "237c8c9245f384601160b52e17022c09a597cc1a66d1ea2797075a6c589fd6c7",
+      "strategy_fallback": true,
+      "mining_summary": {
+        "task": 64,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "ed85722fbedbbef737456681d81e3445014abb1fb11cf33ba64b3da4be391d20",
+        "candidates": 2,
+        "confirmed": 2,
+        "coded": 2,
+        "surviving": 2,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "74eddab77658f5761c77d326ea0788a09f2ae302863ede1819295c1135cf19c1",
+        "seed": 20261074,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "STMT",
+          "line": 23,
+          "lines": [
+            23
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"index(value) is mistaken for the current occurrence position\", \"where\": \"A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.\", \"how\": \"index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.\", \"what\": \"The wrong occurrence is selected or positional conditions follow value equality.\", \"test\": \"Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions.\"}\n  Tool target: Execute source line 23; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.first-occurrence-position",
+          "card": {
+            "title": "index(value) is mistaken for the current occurrence position",
+            "where": "A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.",
+            "how": "index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.",
+            "what": "The wrong occurrence is selected or positional conditions follow value equality.",
+            "test": "Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions."
+          },
+          "retrieval_evidence": {
+            "line": 23,
+            "end_line": 23,
+            "expression": "c == s[-1]",
+            "reason": "Value equality with the final character does not establish current iteration position.",
+            "priority": 185
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 23; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 21,
+          "lines": [
+            21
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"A literal classification table omits or admits values outside the required class\", \"where\": \"A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.\", \"how\": \"A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.\", \"what\": \"A required member is ignored or an invalid member is accepted in the returned predicate or count.\", \"test\": \"Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}.\"}\n  Tool target: Execute source line 21; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.literal-classification-domain",
+          "card": {
+            "title": "A literal classification table omits or admits values outside the required class",
+            "where": "A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.",
+            "how": "A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.",
+            "what": "A required member is ignored or an invalid member is accepted in the returned predicate or count.",
+            "test": "Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}."
+          },
+          "retrieval_evidence": {
+            "line": 21,
+            "end_line": 21,
+            "expression": "c.lower() in vowels",
+            "reason": "Literal character membership defines an explicit class table.",
+            "priority": 148
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 21; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 21,
+          "lines": [
+            21
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 21; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 21,
+            "end_line": 21,
+            "expression": "c.lower()",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 21; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"index(value) is mistaken for the current occurrence position\", \"where\": \"A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.\", \"how\": \"index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.\", \"what\": \"The wrong occurrence is selected or positional conditions follow value equality.\", \"test\": \"Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions.\"}\n  Tool target: Execute source line 23; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"A literal classification table omits or admits values outside the required class\", \"where\": \"A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.\", \"how\": \"A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.\", \"what\": \"A required member is ignored or an invalid member is accepted in the returned predicate or count.\", \"test\": \"Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}.\"}\n  Tool target: Execute source line 21; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 21; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "DU",
+          "line": 25,
+          "text": "Def-use pair (all-uses, c-use): the value assigned to `count` at line 24 reaches its use at line 25 in the existing tests.",
+          "cell": [
+            -2,
+            "du|6|count|24|25|c-use"
+          ]
+        }
+      ],
+      "placebo_facts": [
+        "Def-use pair (all-uses, c-use): the value assigned to `count` at line 24 reaches its use at line 25 in the existing tests."
+      ],
+      "tool_inputs": [],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 1,
+    "binding": {
+      "family": "membership",
+      "status": "supported",
+      "requirement_status": "public_lexical_cue_unverified",
+      "site": [
+        21,
+        11,
+        21,
+        30
+      ],
+      "expression": "c.lower() in vowels",
+      "source_signature": "Compare(left=Call(func=Attribute(value=Name(id='c', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[]), ops=[In()], comparators=[Name(id='vowels', ctx=Load())])",
+      "expected_members": "aeiouAEIOU",
+      "negated": false,
+      "requirement_evidence": "Write a function vowels_count which takes a string representing",
+      "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+    },
+    "round1": {
+      "key": "d6c982deb15780b64a7b51ac352fd361b1c8398b377f87318c89730cdfee733a",
+      "status": "received",
+      "text": "```python\nassert vowels_count(\"fly\") == 1\nassert vowels_count(\"sky\") == 1\nassert vowels_count(\"yay\") == 2\nassert vowels_count(\"my\") == 1\nassert vowels_count(\"rhythm\") == 2\nassert vowels_count(\"crypt\") == 1\nassert vowels_count(\"Y\") == 1\nassert vowels_count(\"y\") == 1\nassert vowels_count(\"happy\") == 2\nassert vowels_count(\"bye\") == 1\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 957,
+      "n_out": 107,
+      "usage": {
+        "prompt_tokens": 957,
+        "total_tokens": 1064,
+        "completion_tokens": 107,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 20.938512000022456,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 77733010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "d6c982deb15780b64a7b51ac352fd361b1c8398b377f87318c89730cdfee733a",
+        "prompt_tokens": 957,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "membership",
+      "site": [
+        21,
+        11,
+        21,
+        30
+      ],
+      "true": 0,
+      "false": 10,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": false
+    }
+  },
+  {
+    "task": {
+      "task": 112,
+      "put": "\ndef reverse_delete(s,c):\n    \"\"\"Task\n    We are given two strings s and c, you have to deleted all the characters in s that are equal to any character in c\n    then check if the result string is palindrome.\n    A string is called palindrome if it reads the same backward as forward.\n    You should return a tuple containing the result string and True/False for the check.\n    Example\n    For s = \"abcde\", c = \"ae\", the result should be ('bcd',False)\n    For s = \"abcdef\", c = \"b\"  the result should be ('acdef',False)\n    For s = \"abcdedcba\", c = \"ab\", the result should be ('cdedc',True)\n    \"\"\"\n    s = s.lower()\n    c = c.lower()\n    for i in s:\n        if i in c:\n            s = s.replace(i, \"\")\n    return s, s == s[::-1]\n",
+      "entry": "reverse_delete",
+      "base": "def check(candidate):\n\n    assert candidate(\"abcde\",\"ae\") == ('bcd',False)\n    assert candidate(\"abcdef\", \"b\") == ('acdef',False)\n    assert candidate(\"abcdedcba\",\"ab\") == ('cdedc',True)\n    assert candidate(\"dwik\",\"w\") == ('dik',False)\n    assert candidate(\"a\",\"a\") == ('',True)\n    assert candidate(\"abcdedcba\",\"\") == ('abcdedcba',True)\n    assert candidate(\"abcdedcba\",\"v\") == ('abcdedcba',True)\n    assert candidate(\"vabba\",\"v\") == ('abba',True)\n    assert candidate(\"mamma\", \"mia\") == (\"\", True)\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(s, c):\n    return isinstance(s, str)\n\ndef P1(s, c):\n    return P1_m(s, c)\n\ndef P2_m(s, c):\n    return isinstance(c, str)\n\ndef P2(s, c):\n    return P2_m(s, c)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+      "valid_sha256": "e0206a87e70a48de264fdd9d56388bf21e16a5b657c23c0d5146bd92da4f39ad",
+      "strategy_src": "def strategy():\n    return st.tuples(st.text(), st.text())\n",
+      "strategy_sha256": "435fa34a4d1ced5dc508ec9aceb20cc6df6efd7771dfd8ed5fe0fe89ab225a5c",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 112,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "50f08f71c87e72aefe04909f99a1556b24ec1a011a10d9837696c56a56baa982",
+        "candidates": 2,
+        "confirmed": 2,
+        "coded": 2,
+        "surviving": 2,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "e0206a87e70a48de264fdd9d56388bf21e16a5b657c23c0d5146bd92da4f39ad",
+        "seed": 20261122,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "STMT",
+          "line": 18,
+          "lines": [
+            18
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Checking one element or aggregate misses an all/any requirement\", \"where\": \"A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\", \"test\": \"Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees.\"}\n  Tool target: Execute source line 18; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.quantifier-scope",
+          "card": {
+            "title": "Checking one element or aggregate misses an all/any requirement",
+            "where": "A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.",
+            "how": "Universal and existential conditions differ from testing one representative element or only the final aggregate.",
+            "what": "A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.",
+            "test": "Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees."
+          },
+          "retrieval_evidence": {
+            "line": 18,
+            "end_line": 18,
+            "expression": "s[::-1]",
+            "reason": "Selected positions/final aggregate must not replace the required whole-input or prefix condition.",
+            "priority": 149
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 18; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "MUTANT",
+          "line": 13,
+          "k": 7,
+          "family": "call-result removal",
+          "extended": true,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 13 survives: no existing test distinguishes them.",
+          "witness": 60,
+          "boundary": false,
+          "reached": true,
+          "witness_call": "reverse_delete('MAMMA', 'mia')",
+          "block": 13,
+          "g_demote": false,
+          "tier": 0,
+          "mutant_src": "def reverse_delete(s, c):\n    \"\"\"Task\n    We are given two strings s and c, you have to deleted all the characters in s that are equal to any character in c\n    then check if the result string is palindrome.\n    A string is called palindrome if it reads the same backward as forward.\n    You should return a tuple containing the result string and True/False for the check.\n    Example\n    For s = \"abcde\", c = \"ae\", the result should be ('bcd',False)\n    For s = \"abcdef\", c = \"b\"  the result should be ('acdef',False)\n    For s = \"abcdedcba\", c = \"ab\", the result should be ('cdedc',True)\n    \"\"\"\n    s = s\n    c = c.lower()\n    for i in s:\n        if i in c:\n            s = s.replace(i, '')\n    return (s, s == s[::-1])",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 13,
+            "end_line": 13,
+            "expression": "s.lower()",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 13 survives: no existing test distinguishes them."
+        },
+        {
+          "kind": "STMT",
+          "line": 18,
+          "lines": [
+            18
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Slice clamping hides invalid bounds or drops an endpoint\", \"where\": \"Sequence slicing is used where index validation or inclusive endpoints are required.\", \"how\": \"Slices clamp bounds, interpret negatives relative to length and exclude the stop position.\", \"what\": \"An invalid request silently yields an empty or truncated result.\", \"test\": \"Slice {sequence} at length, beyond length, negative bounds, and an empty interval.\"}\n  Tool target: Execute source line 18; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.slice-boundary-normalization",
+          "card": {
+            "title": "Slice clamping hides invalid bounds or drops an endpoint",
+            "where": "Sequence slicing is used where index validation or inclusive endpoints are required.",
+            "how": "Slices clamp bounds, interpret negatives relative to length and exclude the stop position.",
+            "what": "An invalid request silently yields an empty or truncated result.",
+            "test": "Slice {sequence} at length, beyond length, negative bounds, and an empty interval."
+          },
+          "retrieval_evidence": {
+            "line": 18,
+            "end_line": 18,
+            "expression": "s[::-1]",
+            "reason": "Slice bounds and exclusive stop define the selected segment.",
+            "priority": 62
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 18; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"Checking one element or aggregate misses an all/any requirement\", \"where\": \"A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\", \"test\": \"Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees.\"}\n  Tool target: Execute source line 18; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 13 survives: no existing test distinguishes them.",
+        "{\"title\": \"Slice clamping hides invalid bounds or drops an endpoint\", \"where\": \"Sequence slicing is used where index validation or inclusive endpoints are required.\", \"how\": \"Slices clamp bounds, interpret negatives relative to length and exclude the stop position.\", \"what\": \"An invalid request silently yields an empty or truncated result.\", \"test\": \"Slice {sequence} at length, beyond length, negative bounds, and an empty interval.\"}\n  Tool target: Execute source line 18; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 16,
+          "k": 0,
+          "family": "ROR",
+          "extended": false,
+          "text": "Mutation (ROR): the mutant `i in c` -> `i not in c` at line 16 is killed: an existing test distinguishes them.",
+          "mutant_src": "def reverse_delete(s, c):\n    \"\"\"Task\n    We are given two strings s and c, you have to deleted all the characters in s that are equal to any character in c\n    then check if the result string is palindrome.\n    A string is called palindrome if it reads the same backward as forward.\n    You should return a tuple containing the result string and True/False for the check.\n    Example\n    For s = \"abcde\", c = \"ae\", the result should be ('bcd',False)\n    For s = \"abcdef\", c = \"b\"  the result should be ('acdef',False)\n    For s = \"abcdedcba\", c = \"ab\", the result should be ('cdedc',True)\n    \"\"\"\n    s = s.lower()\n    c = c.lower()\n    for i in s:\n        if i not in c:\n            s = s.replace(i, '')\n    return (s, s == s[::-1])"
+        },
+        {
+          "kind": "MUTANT",
+          "line": 18,
+          "k": 2,
+          "family": "CRP constant",
+          "extended": false,
+          "text": "Mutation (CRP constant): the mutant `-1` -> `-2` at line 18 is killed: an existing test distinguishes them.",
+          "mutant_src": "def reverse_delete(s, c):\n    \"\"\"Task\n    We are given two strings s and c, you have to deleted all the characters in s that are equal to any character in c\n    then check if the result string is palindrome.\n    A string is called palindrome if it reads the same backward as forward.\n    You should return a tuple containing the result string and True/False for the check.\n    Example\n    For s = \"abcde\", c = \"ae\", the result should be ('bcd',False)\n    For s = \"abcdef\", c = \"b\"  the result should be ('acdef',False)\n    For s = \"abcdedcba\", c = \"ab\", the result should be ('cdedc',True)\n    \"\"\"\n    s = s.lower()\n    c = c.lower()\n    for i in s:\n        if i in c:\n            s = s.replace(i, '')\n    return (s, s == s[::-2])"
+        }
+      ],
+      "placebo_facts": [
+        "Mutation (ROR): the mutant `i in c` -> `i not in c` at line 16 is killed: an existing test distinguishes them.",
+        "Mutation (CRP constant): the mutant `-1` -> `-2` at line 18 is killed: an existing test distinguishes them."
+      ],
+      "tool_inputs": [
+        "reverse_delete('MAMMA', 'mia')"
+      ],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 1,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        13,
+        8,
+        13,
+        17
+      ],
+      "expression": "s.lower()",
+      "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+      "operation": "lower",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "a5d78dd982bb18b0a7006a95936d13279947579197d9bc1f3ee129bb0432ee18",
+      "status": "received",
+      "text": "```python\nassert reverse_delete(\"Abba\", \"a\") == (\"bb\", True)\nassert reverse_delete(\"Abba\", \"b\") == (\"Aa\", True)\nassert reverse_delete(\"Racecar\", \"r\") == (\"aceca\", True)\nassert reverse_delete(\"Racecar\", \"R\") == (\"acecar\", False)\nassert reverse_delete(\"Madam\", \"m\") == (\"ada\", True)\nassert reverse_delete(\"Madam\", \"M\") == (\"adam\", False)\nassert reverse_delete(\"A man a plan a canal Panama\", \" \") == (\"amanaplanacanalPanama\", False)\nassert reverse_delete(\"A man a plan a canal Panama\", \" \") == (\"amanaplanacanalpanama\", True)\nassert reverse_delete(\"Deed\", \"e\") == (\"dd\", True)\nassert reverse_delete(\"Deed\", \"D\") == (\"eed\", False)\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 944,
+      "n_out": 198,
+      "usage": {
+        "prompt_tokens": 944,
+        "total_tokens": 1142,
+        "completion_tokens": 198,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 19.29206066695042,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 120741010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "a5d78dd982bb18b0a7006a95936d13279947579197d9bc1f3ee129bb0432ee18",
+        "prompt_tokens": 944,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        13,
+        8,
+        13,
+        17
+      ],
+      "true": 9,
+      "false": 0,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 9,
+      "invalid_inputs": 0,
+      "inputs": 9,
+      "covered": true
+    }
+  },
+  {
+    "task": {
+      "task": 89,
+      "put": "\ndef encrypt(s):\n    \"\"\"Create a function encrypt that takes a string as an argument and\n    returns a string encrypted with the alphabet being rotated. \n    The alphabet should be rotated in a manner such that the letters \n    shift down by two multiplied to two places.\n    For example:\n    encrypt('hi') returns 'lm'\n    encrypt('asdfghjkl') returns 'ewhjklnop'\n    encrypt('gf') returns 'kj'\n    encrypt('et') returns 'ix'\n    \"\"\"\n    result = \"\"\n    alphabet = \"abcdefghijklmnopqrstuvwxyz\"\n    for char in s:\n        result += alphabet[(alphabet.index(char.lower()) + 2*2) % 26]\n    return result\n",
+      "entry": "encrypt",
+      "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate('hi') == 'lm', \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate('asdfghjkl') == 'ewhjklnop', \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate('gf') == 'kj', \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate('et') == 'ix', \"This prints if this assert fails 1 (good for debugging!)\"\n\n    assert candidate('faewfawefaewg')=='jeiajeaijeiak', \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate('hellomyfriend')=='lippsqcjvmirh', \"This prints if this assert fails 2 (good for debugging!)\"\n    assert candidate('dxzdlmnilfuhmilufhlihufnmlimnufhlimnufhfucufh')=='hbdhpqrmpjylqmpyjlpmlyjrqpmqryjlpmqryjljygyjl', \"This prints if this assert fails 3 (good for debugging!)\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert candidate('a')=='e', \"This prints if this assert fails 2 (also good for debugging!)\"\n\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(s):\n    return isinstance(s, str)\n\ndef P1(s):\n    return P1_m(s)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+      "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+      "strategy_src": "def strategy():\n    return st.tuples(st.text())\n",
+      "strategy_sha256": "56bcc915285f9724d3b5d7b1b5962cb75d1f8d84fc464e74b4c732cfda5e2eeb",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 89,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "911e630eea34322b441cc5f4c903210a8ee62c6f19cdd737030139812c581444",
+        "candidates": 1,
+        "confirmed": 1,
+        "coded": 1,
+        "surviving": 1,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+        "seed": 20261099,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 16,
+          "k": 15,
+          "family": "call-result removal",
+          "extended": true,
+          "text": "{\"title\": \"A position, stride or coordinate is interpreted in the wrong domain\", \"where\": \"Positions, length-derived indices, strides or character ordinals are used as offsets, parity selectors or derived values.\", \"how\": \"Zero/one-based origins, stride alignment and coordinate versus value domains are distinct; the same numeric expression need not represent the required position or rank.\", \"what\": \"The wrong positions, multiplier, alphabet rank or stride class determine the result.\", \"test\": \"Use admissible {positions_or_values} at the first/last position and opposite parity or origin, including repeated characters when ordinal rank is required.\"}\n  Tool target: Mutation (call-result removal): the mutant `char.lower()` -> `char` at line 16 survives: no existing test distinguishes them.",
+          "witness": 0,
+          "boundary": false,
+          "reached": true,
+          "witness_call": "encrypt('A')",
+          "block": 16,
+          "g_demote": false,
+          "tier": 0,
+          "mutant_src": "def encrypt(s):\n    \"\"\"Create a function encrypt that takes a string as an argument and\n    returns a string encrypted with the alphabet being rotated. \n    The alphabet should be rotated in a manner such that the letters \n    shift down by two multiplied to two places.\n    For example:\n    encrypt('hi') returns 'lm'\n    encrypt('asdfghjkl') returns 'ewhjklnop'\n    encrypt('gf') returns 'kj'\n    encrypt('et') returns 'ix'\n    \"\"\"\n    result = ''\n    alphabet = 'abcdefghijklmnopqrstuvwxyz'\n    for char in s:\n        result += alphabet[(alphabet.index(char) + 2 * 2) % 26]\n    return result",
+          "card_id": "py.index-origin-domain",
+          "card": {
+            "title": "A position, stride or coordinate is interpreted in the wrong domain",
+            "where": "Positions, length-derived indices, strides or character ordinals are used as offsets, parity selectors or derived values.",
+            "how": "Zero/one-based origins, stride alignment and coordinate versus value domains are distinct; the same numeric expression need not represent the required position or rank.",
+            "what": "The wrong positions, multiplier, alphabet rank or stride class determine the result.",
+            "test": "Use admissible {positions_or_values} at the first/last position and opposite parity or origin, including repeated characters when ordinal rank is required."
+          },
+          "retrieval_evidence": {
+            "line": 16,
+            "end_line": 16,
+            "expression": "alphabet.index(char.lower())",
+            "reason": "Occurrence position and alphabet ordinal are different coordinate domains.",
+            "priority": 157
+          },
+          "retrieval_gate": "existing_v11_gap",
+          "tool_target_text": "Mutation (call-result removal): the mutant `char.lower()` -> `char` at line 16 survives: no existing test distinguishes them."
+        },
+        {
+          "kind": "STMT",
+          "line": 16,
+          "lines": [
+            16
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"index(value) is mistaken for the current occurrence position\", \"where\": \"A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.\", \"how\": \"index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.\", \"what\": \"The wrong occurrence is selected or positional conditions follow value equality.\", \"test\": \"Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions.\"}\n  Tool target: Execute source line 16; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.first-occurrence-position",
+          "card": {
+            "title": "index(value) is mistaken for the current occurrence position",
+            "where": "A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.",
+            "how": "index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.",
+            "what": "The wrong occurrence is selected or positional conditions follow value equality.",
+            "test": "Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions."
+          },
+          "retrieval_evidence": {
+            "line": 16,
+            "end_line": 16,
+            "expression": "alphabet.index(char.lower())",
+            "reason": "index returns the first equal occurrence, not an arbitrary current position.",
+            "priority": 146
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 16; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 16,
+          "lines": [
+            16
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 16; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 16,
+            "end_line": 16,
+            "expression": "char.lower()",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 16; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"A position, stride or coordinate is interpreted in the wrong domain\", \"where\": \"Positions, length-derived indices, strides or character ordinals are used as offsets, parity selectors or derived values.\", \"how\": \"Zero/one-based origins, stride alignment and coordinate versus value domains are distinct; the same numeric expression need not represent the required position or rank.\", \"what\": \"The wrong positions, multiplier, alphabet rank or stride class determine the result.\", \"test\": \"Use admissible {positions_or_values} at the first/last position and opposite parity or origin, including repeated characters when ordinal rank is required.\"}\n  Tool target: Mutation (call-result removal): the mutant `char.lower()` -> `char` at line 16 survives: no existing test distinguishes them.",
+        "{\"title\": \"index(value) is mistaken for the current occurrence position\", \"where\": \"A traversal recovers positions through sequence.index(value) or compares values to stand in for positions.\", \"how\": \"index returns the first equal occurrence; equal values at different positions cannot identify the current occurrence.\", \"what\": \"The wrong occurrence is selected or positional conditions follow value equality.\", \"test\": \"Place equal {values} at distinct positions that require different treatment, such as even/odd or first/last positions.\"}\n  Tool target: Execute source line 16; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 16; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "MUTANT",
+          "line": 16,
+          "k": 8,
+          "family": "CRP constant",
+          "extended": false,
+          "text": "Mutation (CRP constant): the mutant `2 * 2` -> `1 * 2` at line 16 is killed: an existing test distinguishes them.",
+          "mutant_src": "def encrypt(s):\n    \"\"\"Create a function encrypt that takes a string as an argument and\n    returns a string encrypted with the alphabet being rotated. \n    The alphabet should be rotated in a manner such that the letters \n    shift down by two multiplied to two places.\n    For example:\n    encrypt('hi') returns 'lm'\n    encrypt('asdfghjkl') returns 'ewhjklnop'\n    encrypt('gf') returns 'kj'\n    encrypt('et') returns 'ix'\n    \"\"\"\n    result = ''\n    alphabet = 'abcdefghijklmnopqrstuvwxyz'\n    for char in s:\n        result += alphabet[(alphabet.index(char.lower()) + 1 * 2) % 26]\n    return result"
+        },
+        {
+          "kind": "DU",
+          "line": 15,
+          "text": "Def-use pair (all-uses, c-use): the value assigned to `s` at line 2 reaches its use at line 15 in the existing tests.",
+          "cell": [
+            -2,
+            "du|2|s|2|15|c-use"
+          ]
+        }
+      ],
+      "placebo_facts": [
+        "Mutation (CRP constant): the mutant `2 * 2` -> `1 * 2` at line 16 is killed: an existing test distinguishes them.",
+        "Def-use pair (all-uses, c-use): the value assigned to `s` at line 2 reaches its use at line 15 in the existing tests."
+      ],
+      "tool_inputs": [
+        "encrypt('A')"
+      ],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 2,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        16,
+        43,
+        16,
+        55
+      ],
+      "expression": "char.lower()",
+      "source_signature": "Call(func=Attribute(value=Name(id='char', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+      "operation": "lower",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "3749f721b34f73bb47ca78126b564ed3f49b9ce484c4b12800185428d58cb815",
+      "status": "received",
+      "text": "```python\nassert encrypt('A') == 'E', \"Uppercase letters should be preserved and shifted\"\nassert encrypt('Hi') == 'Lm', \"Mixed case input should preserve original case\"\nassert encrypt('HI') == 'LM', \"All uppercase input should remain uppercase\"\nassert encrypt('z') == 'd', \"Alphabet wrap-around for lowercase 'z'\"\nassert encrypt('Z') == 'D', \"Alphabet wrap-around for uppercase 'Z'\"\nassert encrypt('ab') == 'ef', \"Consecutive letters shift correctly\"\nassert encrypt('ABC') == 'EFG', \"Uppercase consecutive letters shift correctly\"\nassert encrypt('aB') == 'eF', \"Alternating case shifts correctly preserving case\"\nassert encrypt('xyz') == 'bcd', \"Wrap-around for multiple lowercase letters\"\nassert encrypt('XYZ') == 'BCD', \"Wrap-around for multiple uppercase letters\"\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 1075,
+      "n_out": 201,
+      "usage": {
+        "prompt_tokens": 1075,
+        "total_tokens": 1276,
+        "completion_tokens": 201,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 14.805153459077701,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 100133010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "3749f721b34f73bb47ca78126b564ed3f49b9ce484c4b12800185428d58cb815",
+        "prompt_tokens": 1075,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        16,
+        43,
+        16,
+        55
+      ],
+      "true": 7,
+      "false": 3,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": true
+    }
+  },
+  {
+    "task": {
+      "task": 140,
+      "put": "\ndef fix_spaces(text):\n    \"\"\"\n    Given a string text, replace all spaces in it with underscores, \n    and if a string has more than 2 consecutive spaces, \n    then replace all consecutive spaces with - \n    \n    fix_spaces(\"Example\") == \"Example\"\n    fix_spaces(\"Example 1\") == \"Example_1\"\n    fix_spaces(\" Example 2\") == \"_Example_2\"\n    fix_spaces(\" Example   3\") == \"_Example-3\"\n    \"\"\"\n    # Your code here\n    text = text.replace(\" \", \"_\")\n    text = text.replace(\"___\", \"-\")\n    return text\n",
+      "entry": "fix_spaces",
+      "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(\"Example\") == \"Example\", \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate(\"Mudasir Hanif \") == \"Mudasir_Hanif_\", \"This prints if this assert fails 2 (good for debugging!)\"\n    assert candidate(\"Yellow Yellow  Dirty  Fellow\") == \"Yellow_Yellow__Dirty__Fellow\", \"This prints if this assert fails 3 (good for debugging!)\"\n    \n    # Check some edge cases that are easy to work out by hand.\n    assert candidate(\"Exa   mple\") == \"Exa-mple\", \"This prints if this assert fails 4 (good for debugging!)\"\n    assert candidate(\"   Exa 1 2 2 mple\") == \"-Exa_1_2_2_mple\", \"This prints if this assert fails 4 (good for debugging!)\"\n\n",
+      "split": "dev",
+      "mined_valid_src": "def P1_m(text):\n    return isinstance(text, str)\n\ndef P1(text):\n    return P1_m(text)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+      "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+      "strategy_src": "def strategy():\n    return st.text()\n",
+      "strategy_sha256": "0ed262dc2227ec7c3abb744e7b600a466dbb97d3e1bc2c08d970f85d01250be3",
+      "strategy_fallback": false,
+      "mining_summary": {
+        "task": 140,
+        "facts_version": "v3m",
+        "model": "qwen3.5-27b-awq",
+        "cache_key": "ce157ce59c50b3e6c6d9ecd3c6e2c0e98886f00e6a8a15fecd5f21f4502efa5e",
+        "candidates": 1,
+        "confirmed": 1,
+        "coded": 1,
+        "surviving": 1,
+        "mining_failure": null,
+        "dropped_confirmation": [],
+        "dropped_code": [],
+        "dropped_verifier": [],
+        "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+        "seed": 20261150,
+        "evidence_filter": false,
+        "preconditions_version": "B5"
+      },
+      "facts_version": "v4",
+      "concept_meta": [
+        {
+          "kind": "STMT",
+          "line": 15,
+          "lines": [
+            15
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Fixed literal replacement is mistaken for replacement of a maximal run\", \"where\": \"replace is applied to a fixed repeated literal while the contract describes an arbitrary-length run.\", \"how\": \"Literal replacement handles matched non-overlapping chunks; it does not automatically consume the entire maximal run.\", \"what\": \"Extra characters remain or multiple replacement markers appear where one run marker is required.\", \"test\": \"Use {text} with run lengths just below, equal to, one above and twice {chunk_length}.\"}\n  Tool target: Execute source line 15; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.fixed-chunk-run",
+          "card": {
+            "title": "Fixed literal replacement is mistaken for replacement of a maximal run",
+            "where": "replace is applied to a fixed repeated literal while the contract describes an arbitrary-length run.",
+            "how": "Literal replacement handles matched non-overlapping chunks; it does not automatically consume the entire maximal run.",
+            "what": "Extra characters remain or multiple replacement markers appear where one run marker is required.",
+            "test": "Use {text} with run lengths just below, equal to, one above and twice {chunk_length}."
+          },
+          "retrieval_evidence": {
+            "line": 15,
+            "end_line": 15,
+            "expression": "text.replace(\"___\", \"-\")",
+            "reason": "A fixed repeated literal is replaced, rather than a maximal run.",
+            "priority": 190
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 15; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 14,
+          "lines": [
+            14
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.text-normalization-contract",
+          "card": {
+            "title": "Normalization changes text that the specification requires preserving",
+            "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+            "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+            "what": "Required original text is altered or a distinction specified by the task disappears.",
+            "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+          },
+          "retrieval_evidence": {
+            "line": 14,
+            "end_line": 14,
+            "expression": "text.replace(\" \", \"_\")",
+            "reason": "This operation changes exact case/characters or whitespace.",
+            "priority": 143
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 14; this does not establish the hypothesized bug trigger."
+        },
+        {
+          "kind": "STMT",
+          "line": 14,
+          "lines": [
+            14
+          ],
+          "witness_call": null,
+          "text": "{\"title\": \"Splitting and joining changes delimiter or whitespace structure\", \"where\": \"split, replace or join is used to parse or reconstruct a string with specified delimiters or spacing.\", \"how\": \"Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.\", \"what\": \"Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored.\", \"test\": \"Use {text} with repeated separators, leading/trailing separators and adjacent non-space-separated tokens.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger.",
+          "card_id": "py.split-join-separator-loss",
+          "card": {
+            "title": "Splitting and joining changes delimiter or whitespace structure",
+            "where": "split, replace or join is used to parse or reconstruct a string with specified delimiters or spacing.",
+            "how": "Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.",
+            "what": "Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored.",
+            "test": "Use {text} with repeated separators, leading/trailing separators and adjacent non-space-separated tokens."
+          },
+          "retrieval_evidence": {
+            "line": 14,
+            "end_line": 14,
+            "expression": "text.replace(\" \", \"_\")",
+            "reason": "Tokenization/reconstruction has a delimiter and empty-field policy.",
+            "priority": 135
+          },
+          "retrieval_gate": "line_reachability_only",
+          "tool_target_text": "Execute source line 14; this does not establish the hypothesized bug trigger."
+        }
+      ],
+      "concept_facts": [
+        "{\"title\": \"Fixed literal replacement is mistaken for replacement of a maximal run\", \"where\": \"replace is applied to a fixed repeated literal while the contract describes an arbitrary-length run.\", \"how\": \"Literal replacement handles matched non-overlapping chunks; it does not automatically consume the entire maximal run.\", \"what\": \"Extra characters remain or multiple replacement markers appear where one run marker is required.\", \"test\": \"Use {text} with run lengths just below, equal to, one above and twice {chunk_length}.\"}\n  Tool target: Execute source line 15; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger.",
+        "{\"title\": \"Splitting and joining changes delimiter or whitespace structure\", \"where\": \"split, replace or join is used to parse or reconstruct a string with specified delimiters or spacing.\", \"how\": \"Whitespace split collapses runs and omits empty edge fields; deleting a delimiter can merge adjacent tokens.\", \"what\": \"Spaces disappear, empty fields are lost, token boundaries merge or specified delimiters are ignored.\", \"test\": \"Use {text} with repeated separators, leading/trailing separators and adjacent non-space-separated tokens.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger."
+      ],
+      "placebo_meta": [
+        {
+          "kind": "SPEC",
+          "input_class": {
+            "cls": "SPACE",
+            "param": 0
+          },
+          "text": "Input-domain class (specification): the existing tests already pass `text` with leading, trailing or repeated spaces."
+        }
+      ],
+      "placebo_facts": [
+        "Input-domain class (specification): the existing tests already pass `text` with leading, trailing or repeated spaces."
+      ],
+      "tool_inputs": [],
+      "doc_fail": [],
+      "retrieval_method": "v2_compact_site_bound"
+    },
+    "target_index": 1,
+    "binding": {
+      "family": "normalization",
+      "status": "supported",
+      "requirement_status": "unknown",
+      "site": [
+        14,
+        11,
+        14,
+        33
+      ],
+      "expression": "text.replace(' ', '_')",
+      "source_signature": "Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='replace', ctx=Load()), args=[Constant(value=' '), Constant(value='_')], keywords=[])",
+      "operation": "replace",
+      "predicate": "exact string receiver differs from the result of this normalization call"
+    },
+    "round1": {
+      "key": "c924ce7ab1850f5604bf845b3e55682de251b86f3ccef6d82801851689805150",
+      "status": "received",
+      "text": "```python\nassert fix_spaces(\"a    b\") == \"a-b\", \"Four spaces should be replaced by a single dash\"\nassert fix_spaces(\"a     b\") == \"a-b\", \"Five spaces should be replaced by a single dash\"\nassert fix_spaces(\"a    b   c\") == \"a-b-c\", \"Multiple runs of >2 spaces should each become a single dash\"\nassert fix_spaces(\"a  b\") == \"a_b\", \"Exactly two spaces should be replaced by underscores\"\nassert fix_spaces(\"a   b\") == \"a-b\", \"Exactly three spaces should be replaced by a single dash\"\nassert fix_spaces(\"    \") == \"-\", \"Four leading/trailing spaces should become a single dash\"\nassert fix_spaces(\"   \") == \"-\", \"Three leading/trailing spaces should become a single dash\"\nassert fix_spaces(\"a b c\") == \"a_b_c\", \"Single spaces should be replaced by underscores\"\nassert fix_spaces(\"a      b\") == \"a-b\", \"Six spaces should be replaced by a single dash, not multiple dashes\"\nassert fix_spaces(\"  a   b  \") == \"_a-b_\", \"Mix of 2 and 3+ spaces with leading/trailing\"\n```",
+      "model": "qwen3.5-27b-awq",
+      "n_in": 922,
+      "n_out": 262,
+      "usage": {
+        "prompt_tokens": 922,
+        "total_tokens": 1184,
+        "completion_tokens": 262,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      },
+      "finish_reason": "stop",
+      "seconds": 17.72580008301884,
+      "params": {
+        "model": "qwen3.5-27b-awq",
+        "seed": 145829010,
+        "temperature": 0.7,
+        "top_p": 0.95,
+        "max_tokens": 1024
+      },
+      "allocation": {
+        "requested_key": "c924ce7ab1850f5604bf845b3e55682de251b86f3ccef6d82801851689805150",
+        "prompt_tokens": 922,
+        "requested_max_tokens": 1024,
+        "effective_max_tokens": 1024,
+        "context_limit": 8192
+      },
+      "transport_attempts": 1
+    },
+    "round1_observability": {
+      "family": "normalization",
+      "site": [
+        14,
+        11,
+        14,
+        33
+      ],
+      "true": 10,
+      "false": 0,
+      "unknown": 0,
+      "unreached": 0,
+      "valid_inputs": 10,
+      "invalid_inputs": 0,
+      "inputs": 10,
+      "covered": true
+    }
+  }
+]

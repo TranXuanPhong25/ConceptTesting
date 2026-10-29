@@ -1,0 +1,229 @@
+{
+  "mode": "classify",
+  "task": {
+    "task": 80,
+    "put": "\ndef is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s.lower()\n    for i in range(0, len(s)-2):\n        if s[i] == s[i+1] or s[i] == s[i+2] or s[i+1] == s[i+2]:\n            return False\n    return True\n\n",
+    "entry": "is_happy",
+    "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(\"a\") == False , \"a\"\n    assert candidate(\"aa\") == False , \"aa\"\n    assert candidate(\"abcd\") == True , \"abcd\"\n    assert candidate(\"aabb\") == False , \"aabb\"\n    assert candidate(\"adb\") == True , \"adb\"\n    assert candidate(\"xyy\") == False , \"xyy\"\n    assert candidate(\"iopaxpoi\") == True , \"iopaxpoi\"\n    assert candidate(\"iopaxioi\") == False , \"iopaxioi\"\n",
+    "split": "dev",
+    "mined_valid_src": "def P1_m(s):\n    return isinstance(s, str)\n\ndef P1(s):\n    return P1_m(s)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+    "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+    "strategy_src": "def strategy():\n    return st.text(min_size=0, max_size=100)\n",
+    "strategy_sha256": "a9c8afe8168ea9986617fd7ca2dfa9ccc1d105bcb03dc5b4cdf2a13dccbba36a",
+    "strategy_fallback": false,
+    "mining_summary": {
+      "task": 80,
+      "facts_version": "v3m",
+      "model": "qwen3.5-27b-awq",
+      "cache_key": "9230dd594c79cebe9dc0800b39c8a3e4c5481d34a4a7e8f9b841f6e1324dac67",
+      "candidates": 2,
+      "confirmed": 2,
+      "coded": 2,
+      "surviving": 1,
+      "mining_failure": null,
+      "dropped_confirmation": [],
+      "dropped_code": [],
+      "dropped_verifier": [
+        {
+          "id": "P2",
+          "reason": "known_valid_rejection",
+          "failures": [
+            {
+              "id": "P2",
+              "index": 0,
+              "source": "base",
+              "input_repr": "(('a',), {})",
+              "accepted": false,
+              "error": null
+            }
+          ]
+        }
+      ],
+      "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+      "seed": 20261090,
+      "evidence_filter": false,
+      "preconditions_version": "B5"
+    },
+    "facts_version": "v4",
+    "concept_meta": [
+      {
+        "kind": "SEMANTIC",
+        "line": 16,
+        "k": 28,
+        "family": "call-result removal",
+        "extended": true,
+        "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them.",
+        "witness": 118,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "is_happy('-Aa')",
+        "block": 16,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s\n    for i in range(0, len(s) - 2):\n        if s[i] == s[i + 1] or s[i] == s[i + 2] or s[i + 1] == s[i + 2]:\n            return False\n    return True",
+        "card_id": "py.text-normalization-contract",
+        "card": {
+          "title": "Normalization changes text that the specification requires preserving",
+          "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+          "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+          "what": "Required original text is altered or a distinction specified by the task disappears.",
+          "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+        },
+        "retrieval_evidence": {
+          "line": 16,
+          "end_line": 16,
+          "expression": "s.lower()",
+          "reason": "This operation changes exact case/characters or whitespace.",
+          "priority": 143
+        },
+        "retrieval_gate": "existing_v11_gap",
+        "tool_target_text": "Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them.",
+        "semantic_index": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 18,
+        "k": 17,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "{\"title\": \"Checking one element or aggregate misses an all/any requirement\", \"where\": \"A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\", \"test\": \"Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees.\"}\n  Tool target: Mutation (CRP constant): the mutant `i + 1` -> `i + 2` at line 18 survives: no existing test distinguishes them.",
+        "witness": 40,
+        "boundary": true,
+        "reached": true,
+        "witness_call": "is_happy('aa9')",
+        "block": 18,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s.lower()\n    for i in range(0, len(s) - 2):\n        if s[i] == s[i + 2] or s[i] == s[i + 2] or s[i + 1] == s[i + 2]:\n            return False\n    return True",
+        "card_id": "py.quantifier-scope",
+        "card": {
+          "title": "Checking one element or aggregate misses an all/any requirement",
+          "where": "A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.",
+          "how": "Universal and existential conditions differ from testing one representative element or only the final aggregate.",
+          "what": "A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.",
+          "test": "Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees."
+        },
+        "retrieval_evidence": {
+          "line": 18,
+          "end_line": 18,
+          "expression": "s[i]",
+          "reason": "Selected positions/final aggregate must not replace the required whole-input or prefix condition.",
+          "priority": 122
+        },
+        "retrieval_gate": "existing_v11_gap",
+        "tool_target_text": "Mutation (CRP constant): the mutant `i + 1` -> `i + 2` at line 18 survives: no existing test distinguishes them."
+      },
+      {
+        "kind": "STMT",
+        "line": 14,
+        "lines": [
+          14
+        ],
+        "witness_call": null,
+        "text": "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger.",
+        "card_id": "py.branch-boundary-contract",
+        "card": {
+          "title": "A branch boundary or equality special case disagrees with the specification",
+          "where": "A numeric comparison controls a branch, filter or early return at a threshold or equality case.",
+          "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+          "what": "A valid boundary input takes a branch whose result or rejection violates the specification.",
+          "test": "Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}."
+        },
+        "retrieval_evidence": {
+          "line": 14,
+          "end_line": 14,
+          "expression": "len(s) < 3",
+          "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+          "priority": 112
+        },
+        "retrieval_gate": "line_reachability_only",
+        "tool_target_text": "Execute source line 14; this does not establish the hypothesized bug trigger."
+      }
+    ],
+    "concept_facts": [
+      "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `s.lower()` -> `s` at line 16 survives: no existing test distinguishes them.",
+      "{\"title\": \"Checking one element or aggregate misses an all/any requirement\", \"where\": \"A specification quantifies over elements or prefixes, while code checks only a selected element or one aggregate condition.\", \"how\": \"Universal and existential conditions differ from testing one representative element or only the final aggregate.\", \"what\": \"A required all-elements, any-element or intermediate-prefix condition is classified incorrectly.\", \"test\": \"Create {sequence} where the inspected element agrees with the predicate but an uninspected element or prefix disagrees.\"}\n  Tool target: Mutation (CRP constant): the mutant `i + 1` -> `i + 2` at line 18 survives: no existing test distinguishes them.",
+      "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 14; this does not establish the hypothesized bug trigger."
+    ],
+    "placebo_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 17,
+        "k": 25,
+        "family": "ZIL",
+        "extended": true,
+        "text": "Mutation (ZIL): the mutant `for i in range(0, len(s) - 2)` -> `skip the loop body` at line 17 is killed: an existing test distinguishes them.",
+        "mutant_src": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s.lower()\n    for i in range(0, len(s) - 2):\n        break\n    return True"
+      },
+      {
+        "kind": "MUTANT",
+        "line": 18,
+        "k": 13,
+        "family": "AOR",
+        "extended": false,
+        "text": "Mutation (AOR): the mutant `i + 1` -> `i - 1` at line 18 is killed: an existing test distinguishes them.",
+        "mutant_src": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    For example:\n    is_happy(a) => False\n    is_happy(aa) => False\n    is_happy(abcd) => True\n    is_happy(aabb) => False\n    is_happy(adb) => True\n    is_happy(xyy) => False\n    \"\"\"\n    if len(s) < 3:\n        return False\n    s = s.lower()\n    for i in range(0, len(s) - 2):\n        if s[i] == s[i - 1] or s[i] == s[i + 2] or s[i + 1] == s[i + 2]:\n            return False\n    return True"
+      }
+    ],
+    "placebo_facts": [
+      "Mutation (ZIL): the mutant `for i in range(0, len(s) - 2)` -> `skip the loop body` at line 17 is killed: an existing test distinguishes them.",
+      "Mutation (AOR): the mutant `i + 1` -> `i - 1` at line 18 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "is_happy('-Aa')",
+      "is_happy('aa9')"
+    ],
+    "doc_fail": [],
+    "retrieval_method": "v2_compact_site_bound",
+    "vr8_measurements": [
+      {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          16,
+          8,
+          16,
+          17
+        ],
+        "expression": "s.lower()",
+        "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+        "operation": "lower",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "input_repr": "('ABC',)"
+    },
+    {
+      "input_repr": "('AaB',)"
+    },
+    {
+      "input_repr": "('aAa',)"
+    },
+    {
+      "input_repr": "('aaA',)"
+    },
+    {
+      "input_repr": "('Aab',)"
+    },
+    {
+      "input_repr": "('aba',)"
+    },
+    {
+      "input_repr": "('abba',)"
+    },
+    {
+      "input_repr": "('abca',)"
+    },
+    {
+      "input_repr": "('abcde',)"
+    },
+    {
+      "input_repr": "('abccde',)"
+    }
+  ],
+  "shown": []
+}

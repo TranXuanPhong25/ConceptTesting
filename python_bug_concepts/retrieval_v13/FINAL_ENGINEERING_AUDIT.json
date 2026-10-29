@@ -1,0 +1,142 @@
+{
+  "kind": "read_only_engineering_integrity_no_new_inference_no_grades_read",
+  "at_utc": "2026-10-29T16:53:03.623356+00:00",
+  "versions": {
+    "retrieval_v11": {
+      "runtime_freeze": {
+        "sha256": "e864ed7f6bac626042a76a5298b49fa4429c98693f56cc918dfd9efdf72d0b3e",
+        "verified_files": 38,
+        "registered_files": 38,
+        "mismatches": [],
+        "status": "PASS"
+      },
+      "evaluation_freeze": {
+        "sha256": "eb630a34e515d0f2f99ffdcff18e14e1c7788d58396b8f51f8cb210614ce40eb",
+        "verified_files": 12,
+        "registered_files": 12,
+        "mismatches": [],
+        "status": "PASS"
+      },
+      "approval": {
+        "status": "approved",
+        "matches_freeze": true,
+        "must_fixes_remaining": []
+      },
+      "run_receipt_matches": true,
+      "retrieval_seal": {
+        "sha256": "753b8a181ea5c3b71cf1b62a96920ec36e413ec68ac82f3ae0e4784860eaf6eb",
+        "matches": true
+      },
+      "query_count": 28,
+      "arms_per_query": 4,
+      "query_order_matches_manifest": true,
+      "candidate_identity_matches": 112,
+      "candidate_identity_comparisons": 112,
+      "source_identity_matches": 112,
+      "model_identity_matches": 112,
+      "encoder_identity_matches": true,
+      "model": {
+        "model": "jinaai/jina-embeddings-v2-base-code",
+        "revision": "516f4baf13dec4ddddda8631e019b5737c8bc250",
+        "identity": "e9791680f9321f102812040951d91d9233e1559f40d761b26561bf18789cf8d1",
+        "manifest_sha256": "d8e3fec9e865b5c9c4c07640682257b3da31602c1237a0a56a1f5c09f5adab32",
+        "encoder_sha256": "edf59012697605d926183518c80b2bc5dc9c20d42bd5da75680511f9f5fb79ee",
+        "artifact_files": 9
+      },
+      "engineering_tests": {
+        "tests": 15,
+        "passed": 15,
+        "exit_code": 0,
+        "command": "python_bug_concepts/retrieval_v7/.venv/bin/python -m unittest python_bug_concepts.retrieval_v11.engineering_tests -v",
+        "new_target_execution": false,
+        "new_embedding_inference": false
+      }
+    },
+    "retrieval_v13": {
+      "runtime_freeze": {
+        "sha256": "c258ac2c4c80985df62642e0a195da7dd348c59a2780bc1031238bc2b34e4a7a",
+        "verified_files": 38,
+        "registered_files": 38,
+        "mismatches": [],
+        "status": "PASS"
+      },
+      "evaluation_freeze": {
+        "sha256": "6eb25d2c89c5f5bc78a12bf898fe9c144898e815aff87c862432be5cc484b6c7",
+        "verified_files": 12,
+        "registered_files": 12,
+        "mismatches": [],
+        "status": "PASS"
+      },
+      "approval": {
+        "status": "approved",
+        "matches_freeze": true,
+        "must_fixes_remaining": []
+      },
+      "run_receipt_matches": true,
+      "retrieval_seal": {
+        "sha256": "db316dd0f4403b7837b6b807539ec7362394f0968852cb657430adf3def88d91",
+        "matches": true
+      },
+      "query_count": 28,
+      "arms_per_query": 4,
+      "query_order_matches_manifest": true,
+      "candidate_identity_matches": 112,
+      "candidate_identity_comparisons": 112,
+      "source_identity_matches": 112,
+      "model_identity_matches": 112,
+      "encoder_identity_matches": true,
+      "model": {
+        "model": "jinaai/jina-embeddings-v2-base-code",
+        "revision": "516f4baf13dec4ddddda8631e019b5737c8bc250",
+        "identity": "e9791680f9321f102812040951d91d9233e1559f40d761b26561bf18789cf8d1",
+        "manifest_sha256": "d8e3fec9e865b5c9c4c07640682257b3da31602c1237a0a56a1f5c09f5adab32",
+        "encoder_sha256": "edf59012697605d926183518c80b2bc5dc9c20d42bd5da75680511f9f5fb79ee",
+        "artifact_files": 9
+      },
+      "engineering_tests": {
+        "tests": 26,
+        "passed": 26,
+        "exit_code": 0,
+        "command": "python_bug_concepts/retrieval_v7/.venv/bin/python -m unittest python_bug_concepts.retrieval_v13.engineering_tests -v",
+        "new_target_execution": false,
+        "new_embedding_inference": false
+      }
+    }
+  },
+  "shared_model_artifacts": {
+    "verified_files": 9,
+    "registered_files": 9,
+    "mismatches": [],
+    "manifests_equal": true
+  },
+  "old_prediction_seal_matches": true,
+  "vr12_local_only": {
+    "source_inputs": {
+      "verified_files": 79,
+      "registered_files": 79,
+      "mismatches": [],
+      "status": "PASS"
+    },
+    "parent_inventory": {
+      "verified_files": 64,
+      "registered_files": 64,
+      "mismatches": [],
+      "status": "PASS"
+    },
+    "freeze_sha256": "f5203c91de991ae64a19428723106d50da89735b185a9046552e2beeb447afd5",
+    "approval_matches_freeze": true,
+    "saved_status_stage": "blocked",
+    "saved_status_error_type": "RuntimeError",
+    "active_controller_pids": [],
+    "generated_or_attempt_artifact_count": 0,
+    "matching_artifacts": [],
+    "complete_marker_present": false,
+    "no_http_requests": true,
+    "completion_count_interpretation": "No local completion/attempt artifact; prior FINAL_AUDIT recorded zero new completions. No inference from a stale PID/status."
+  },
+  "limitations": [
+    "Engineering validity only; no semantic quality or detection claim.",
+    "No new grading queues, reviewer judgments or RESULTS files were opened. Historical frozen prior-input files were hashed only.",
+    "No HTTP request, model inference, controller launch or target execution in audit."
+  ]
+}

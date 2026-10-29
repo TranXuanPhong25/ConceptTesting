@@ -1,0 +1,386 @@
+{
+ "baseline": {
+  "task": 61,
+  "entry": "correct_bracketing",
+  "put": "\n\ndef correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"(\")\n    False\n    >>> correct_bracketing(\"()\")\n    True\n    >>> correct_bracketing(\"(()())\")\n    True\n    >>> correct_bracketing(\")(()\")\n    False\n    \"\"\"\n    # TODO:\n    # - return False if brackets is empty\n    # - return False if brackets is an odd number of brackets\n    # - return True if brackets is an even number of brackets,\n    #   and the number of opening brackets is the same as the number of closing brackets\n\n    if len(brackets) == 0:\n        return False\n    elif len(brackets) % 2 != 0:\n        return False\n    else:\n        count = 0\n        for bracket in brackets:\n            if bracket == \"(\":\n                count += 1\n            elif bracket == \")\":\n                count -= 1\n                if count < 0:\n                    return False\n        return count == 0\n\n\n",
+  "base": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate(\"()\")\n    assert candidate(\"(()())\")\n    assert candidate(\"()()(()())()\")\n    assert candidate(\"()()((()()())())(()()(()))\")\n    assert not candidate(\"((()())))\")\n    assert not candidate(\")(()\")\n    assert not candidate(\"(\")\n    assert not candidate(\"((((\")\n    assert not candidate(\")\")\n    assert not candidate(\"(()\")\n    assert not candidate(\"()()(()())())(()\")\n    assert not candidate(\"()()(()())()))()\")\n\n",
+  "concept_facts": [
+   "Branch coverage (C2): the True branch of `len(brackets) == 0` (line 22) is never taken by the existing tests.",
+   "Mutation (CRP constant): the mutant `len(brackets) % 2` -> `len(brackets) % 1` at line 24 survives: no existing test distinguishes them.",
+   "Def-use pair (all-uses, c-use): the value assigned to `count` at line 27 never reaches its use at line 35 in the existing tests."
+  ],
+  "concept_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 22,
+    "text": "Branch coverage (C2): the True branch of `len(brackets) == 0` (line 22) is never taken by the existing tests.",
+    "cell": [
+     2,
+     "T"
+    ],
+    "witness": 0,
+    "reached": true,
+    "witness_call": "correct_bracketing('')",
+    "block": 22,
+    "g_demote": false,
+    "guard_line": 22,
+    "guard_forced": false,
+    "guard_class": "differ",
+    "guard_counts": {
+     "same": 0,
+     "necessary": 0,
+     "differ": 1
+    },
+    "tier": 0
+   },
+   {
+    "kind": "MUTANT",
+    "line": 24,
+    "k": 11,
+    "family": "CRP constant",
+    "extended": false,
+    "text": "Mutation (CRP constant): the mutant `len(brackets) % 2` -> `len(brackets) % 1` at line 24 survives: no existing test distinguishes them.",
+    "witness": 2,
+    "boundary": true,
+    "reached": true,
+    "witness_call": "correct_bracketing('()()((()()())())(()()(()))9')",
+    "block": 24,
+    "g_demote": false,
+    "tier": 0,
+    "mutant_src": "def correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"(\")\n    False\n    >>> correct_bracketing(\"()\")\n    True\n    >>> correct_bracketing(\"(()())\")\n    True\n    >>> correct_bracketing(\")(()\")\n    False\n    \"\"\"\n    if len(brackets) == 0:\n        return False\n    elif len(brackets) % 1 != 0:\n        return False\n    else:\n        count = 0\n        for bracket in brackets:\n            if bracket == '(':\n                count += 1\n            elif bracket == ')':\n                count -= 1\n                if count < 0:\n                    return False\n        return count == 0"
+   },
+   {
+    "kind": "DU",
+    "line": 35,
+    "text": "Def-use pair (all-uses, c-use): the value assigned to `count` at line 27 never reaches its use at line 35 in the existing tests.",
+    "cell": [
+     -2,
+     "du|3|count|27|35|c-use"
+    ],
+    "witness": 82,
+    "reached": true,
+    "witness_call": "correct_bracketing('  ')",
+    "block": 35,
+    "g_demote": false,
+    "tier": 0
+   }
+  ],
+  "placebo_facts": [
+   "Branch coverage (C2): the True and False branches of `len(brackets) % 2 != 0` (line 24) are taken by the existing tests.",
+   "Mutation (ROR): the mutant `len(brackets) % 2 != 0` -> `len(brackets) % 2 == 0` at line 24 is killed: an existing test distinguishes them.",
+   "Def-use pair (all-uses, c-use): the value assigned to `brackets` at line 3 reaches its use at line 28 in the existing tests."
+  ],
+  "tool_inputs": [
+   "correct_bracketing('')",
+   "correct_bracketing('()()((()()())())(()()(()))9')",
+   "correct_bracketing('  ')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 24,
+    "text": "Branch coverage (C2): the True and False branches of `len(brackets) % 2 != 0` (line 24) are taken by the existing tests.",
+    "cells": [
+     [
+      6,
+      "T"
+     ],
+     [
+      6,
+      "F"
+     ]
+    ]
+   },
+   {
+    "kind": "MUTANT",
+    "line": 24,
+    "k": 3,
+    "family": "ROR",
+    "extended": false,
+    "text": "Mutation (ROR): the mutant `len(brackets) % 2 != 0` -> `len(brackets) % 2 == 0` at line 24 is killed: an existing test distinguishes them.",
+    "mutant_src": "def correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"(\")\n    False\n    >>> correct_bracketing(\"()\")\n    True\n    >>> correct_bracketing(\"(()())\")\n    True\n    >>> correct_bracketing(\")(()\")\n    False\n    \"\"\"\n    if len(brackets) == 0:\n        return False\n    elif len(brackets) % 2 == 0:\n        return False\n    else:\n        count = 0\n        for bracket in brackets:\n            if bracket == '(':\n                count += 1\n            elif bracket == ')':\n                count -= 1\n                if count < 0:\n                    return False\n        return count == 0"
+   },
+   {
+    "kind": "DU",
+    "line": 28,
+    "text": "Def-use pair (all-uses, c-use): the value assigned to `brackets` at line 3 reaches its use at line 28 in the existing tests.",
+    "cell": [
+     -2,
+     "du|3|brackets|3|28|c-use"
+    ]
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "\ndef valid(*args, **kwargs):\n    return True\n",
+  "valid_sha256": "d1ea6602938cb249b7cc0fdc547fb5f6b6b34c7456d182590080721b99b07487",
+  "strategy_src": "def strategy():\n    return st.text(alphabet='()', min_size=0, max_size=100)\n",
+  "strategy_sha256": "39b11cbd696310bbb09b70d85ca64903516164819dedad90accd40c8d9bac462",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 61,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "4f2945f94022e0d10c12d9c21aab9bb94fd95ac3e5d5ca66a4a726c50634e4c4",
+   "candidates": 5,
+   "confirmed": 3,
+   "coded": 0,
+   "surviving": 0,
+   "mining_failure": null,
+   "dropped_confirmation": [
+    {
+     "id": "P4",
+     "condition": "the number of opening brackets '(' is equal to the number of closing brackets ')'",
+     "evidence": "the number of opening brackets '(' is equal to the number of closing brackets ')'",
+     "reason": "confirmation_false"
+    },
+    {
+     "id": "P5",
+     "condition": "the string is not empty",
+     "evidence": "the string is not empty",
+     "reason": "confirmation_false"
+    }
+   ],
+   "dropped_code": [
+    {
+     "id": "P1",
+     "reason": "code_unparsable",
+     "error": "unterminated string literal (detected at line 5) (<unknown>, line 5)"
+    },
+    {
+     "id": "P2",
+     "reason": "code_unparsable",
+     "error": "unterminated string literal (detected at line 5) (<unknown>, line 5)"
+    },
+    {
+     "id": "P3",
+     "reason": "code_unparsable",
+     "error": "unterminated string literal (detected at line 5) (<unknown>, line 5)"
+    }
+   ],
+   "dropped_verifier": [],
+   "valid_sha256": "d1ea6602938cb249b7cc0fdc547fb5f6b6b34c7456d182590080721b99b07487",
+   "seed": 20261071,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 61,
+  "entry": "correct_bracketing",
+  "put": "\n\ndef correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"(\")\n    False\n    >>> correct_bracketing(\"()\")\n    True\n    >>> correct_bracketing(\"(()())\")\n    True\n    >>> correct_bracketing(\")(()\")\n    False\n    \"\"\"\n    # TODO:\n    # - return False if brackets is empty\n    # - return False if brackets is an odd number of brackets\n    # - return True if brackets is an even number of brackets,\n    #   and the number of opening brackets is the same as the number of closing brackets\n\n    if len(brackets) == 0:\n        return False\n    elif len(brackets) % 2 != 0:\n        return False\n    else:\n        count = 0\n        for bracket in brackets:\n            if bracket == \"(\":\n                count += 1\n            elif bracket == \")\":\n                count -= 1\n                if count < 0:\n                    return False\n        return count == 0\n\n\n",
+  "base": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate(\"()\")\n    assert candidate(\"(()())\")\n    assert candidate(\"()()(()())()\")\n    assert candidate(\"()()((()()())())(()()(()))\")\n    assert not candidate(\"((()())))\")\n    assert not candidate(\")(()\")\n    assert not candidate(\"(\")\n    assert not candidate(\"((((\")\n    assert not candidate(\")\")\n    assert not candidate(\"(()\")\n    assert not candidate(\"()()(()())())(()\")\n    assert not candidate(\"()()(()())()))()\")\n\n",
+  "concept_facts": [
+   "Branch coverage (C2): the True branch of `len(brackets) == 0` (line 22) is never taken by the existing tests.",
+   "Def-use pair (all-uses, c-use): the value assigned to `count` at line 27 never reaches its use at line 35 in the existing tests.",
+   "Branch coverage (C2): the False branch of `bracket == ')'` (line 31) is never taken by the existing tests."
+  ],
+  "concept_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 22,
+    "text": "Branch coverage (C2): the True branch of `len(brackets) == 0` (line 22) is never taken by the existing tests.",
+    "cell": [
+     2,
+     "T"
+    ],
+    "witness": 0,
+    "reached": true,
+    "witness_call": "correct_bracketing('')",
+    "block": 22,
+    "g_demote": false,
+    "guard_line": 22,
+    "guard_forced": false,
+    "guard_class": "differ",
+    "guard_counts": {
+     "same": 0,
+     "necessary": 0,
+     "differ": 1
+    },
+    "tier": 0
+   },
+   {
+    "kind": "DU",
+    "line": 35,
+    "text": "Def-use pair (all-uses, c-use): the value assigned to `count` at line 27 never reaches its use at line 35 in the existing tests.",
+    "cell": [
+     -2,
+     "du|3|count|27|35|c-use"
+    ],
+    "witness": 82,
+    "reached": true,
+    "witness_call": "correct_bracketing('  ')",
+    "block": 35,
+    "g_demote": false,
+    "tier": 0
+   },
+   {
+    "kind": "OUTCOME",
+    "line": 31,
+    "text": "Branch coverage (C2): the False branch of `bracket == ')'` (line 31) is never taken by the existing tests.",
+    "cell": [
+     16,
+     "F"
+    ],
+    "witness": 5,
+    "reached": true,
+    "witness_call": "correct_bracketing(' )')",
+    "block": 31,
+    "g_demote": false,
+    "tier": 0
+   }
+  ],
+  "placebo_facts": [
+   "Branch coverage (C2): the True and False branches of `len(brackets) % 2 != 0` (line 24) are taken by the existing tests.",
+   "Mutation (ROR): the mutant `len(brackets) % 2 != 0` -> `len(brackets) % 2 == 0` at line 24 is killed: an existing test distinguishes them.",
+   "Def-use pair (all-uses, c-use): the value assigned to `brackets` at line 3 reaches its use at line 28 in the existing tests."
+  ],
+  "tool_inputs": [
+   "correct_bracketing('')",
+   "correct_bracketing('()()((()()())())(()()(()))9')",
+   "correct_bracketing('  ')",
+   "correct_bracketing(' )')",
+   "correct_bracketing('()()((()()())())(()()(()))()()((()()())())(()()(()))')",
+   "correct_bracketing('((')",
+   "correct_bracketing(')(')",
+   "correct_bracketing('((((((')",
+   "correct_bracketing('((((((((((((')",
+   "correct_bracketing('((((((((((((((((((((((((((')",
+   "correct_bracketing('(((((((((')",
+   "correct_bracketing('))))')",
+   "correct_bracketing('(((')",
+   "correct_bracketing('((((((((((((((((')",
+   "correct_bracketing('(()()')",
+   "correct_bracketing('()()(()())(')",
+   "correct_bracketing('()()((()()())())(()()(())')",
+   "correct_bracketing('((()()))')",
+   "correct_bracketing(')((')",
+   "correct_bracketing('()()(()())())((')",
+   "correct_bracketing('()()(()())()))(')",
+   "correct_bracketing('())')",
+   "correct_bracketing('(()()))')",
+   "correct_bracketing('()()(()())())')",
+   "correct_bracketing('()()((()()())())(()()(())))')",
+   "correct_bracketing('((()()))))')",
+   "correct_bracketing(')(())')",
+   "correct_bracketing('(((((')",
+   "correct_bracketing('))')",
+   "correct_bracketing('(())')",
+   "correct_bracketing('()()(()())())(())')",
+   "correct_bracketing('()()(()())()))())')",
+   "correct_bracketing('((()(()())()')",
+   "correct_bracketing('((()((()()())())(()()(()))')",
+   "correct_bracketing('))()')",
+   "correct_bracketing('((()(()())())(()')",
+   "correct_bracketing('((()(()())()))()')",
+   "correct_bracketing('))()((')",
+   "correct_bracketing(')())()(()()(')",
+   "correct_bracketing(')))(()()(())())()()((()()(')",
+   "correct_bracketing('))))()(((')",
+   "correct_bracketing(')(())())()(()()(')",
+   "correct_bracketing(')()))())()(()()(')",
+   "correct_bracketing(')()()(')",
+   "correct_bracketing('))()(()())((')",
+   "correct_bracketing('))()((()()())())(()()(())(')",
+   "correct_bracketing(')(()()))(')",
+   "correct_bracketing('))()(()())())(((')",
+   "correct_bracketing('))()(()())()))((')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 24,
+    "text": "Branch coverage (C2): the True and False branches of `len(brackets) % 2 != 0` (line 24) are taken by the existing tests.",
+    "cells": [
+     [
+      6,
+      "T"
+     ],
+     [
+      6,
+      "F"
+     ]
+    ]
+   },
+   {
+    "kind": "MUTANT",
+    "line": 24,
+    "k": 3,
+    "family": "ROR",
+    "extended": false,
+    "text": "Mutation (ROR): the mutant `len(brackets) % 2 != 0` -> `len(brackets) % 2 == 0` at line 24 is killed: an existing test distinguishes them.",
+    "mutant_src": "def correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"(\")\n    False\n    >>> correct_bracketing(\"()\")\n    True\n    >>> correct_bracketing(\"(()())\")\n    True\n    >>> correct_bracketing(\")(()\")\n    False\n    \"\"\"\n    if len(brackets) == 0:\n        return False\n    elif len(brackets) % 2 == 0:\n        return False\n    else:\n        count = 0\n        for bracket in brackets:\n            if bracket == '(':\n                count += 1\n            elif bracket == ')':\n                count -= 1\n                if count < 0:\n                    return False\n        return count == 0"
+   },
+   {
+    "kind": "DU",
+    "line": 28,
+    "text": "Def-use pair (all-uses, c-use): the value assigned to `brackets` at line 3 reaches its use at line 28 in the existing tests.",
+    "cell": [
+     -2,
+     "du|3|brackets|3|28|c-use"
+    ]
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "\ndef valid(*args, **kwargs):\n    return True\n",
+  "valid_sha256": "d1ea6602938cb249b7cc0fdc547fb5f6b6b34c7456d182590080721b99b07487",
+  "strategy_src": "def strategy():\n    return st.text(alphabet='()', min_size=0, max_size=100)\n",
+  "strategy_sha256": "39b11cbd696310bbb09b70d85ca64903516164819dedad90accd40c8d9bac462",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 61,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "4f2945f94022e0d10c12d9c21aab9bb94fd95ac3e5d5ca66a4a726c50634e4c4",
+   "candidates": 5,
+   "confirmed": 3,
+   "coded": 0,
+   "surviving": 0,
+   "mining_failure": null,
+   "dropped_confirmation": [
+    {
+     "id": "P4",
+     "condition": "the number of opening brackets '(' is equal to the number of closing brackets ')'",
+     "evidence": "the number of opening brackets '(' is equal to the number of closing brackets ')'",
+     "reason": "confirmation_false"
+    },
+    {
+     "id": "P5",
+     "condition": "the string is not empty",
+     "evidence": "the string is not empty",
+     "reason": "confirmation_false"
+    }
+   ],
+   "dropped_code": [
+    {
+     "id": "P1",
+     "reason": "code_unparsable",
+     "error": "unterminated string literal (detected at line 5) (<unknown>, line 5)"
+    },
+    {
+     "id": "P2",
+     "reason": "code_unparsable",
+     "error": "unterminated string literal (detected at line 5) (<unknown>, line 5)"
+    },
+    {
+     "id": "P3",
+     "reason": "code_unparsable",
+     "error": "unterminated string literal (detected at line 5) (<unknown>, line 5)"
+    }
+   ],
+   "dropped_verifier": [],
+   "valid_sha256": "d1ea6602938cb249b7cc0fdc547fb5f6b6b34c7456d182590080721b99b07487",
+   "seed": 20261071,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 25,
+  "survivors": 2
+ }
+}

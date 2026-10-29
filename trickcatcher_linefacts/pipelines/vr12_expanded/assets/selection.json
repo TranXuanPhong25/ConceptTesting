@@ -1,0 +1,256 @@
+{
+  "rule": "All fresh source-supported tasks; prefer no observed true in valid savedR1 inputs, tie SHA256(card_id+colon+compact_JSON_site); task order SHA256(decimal task ID)",
+  "selected": [
+    {
+      "task": 80,
+      "target_index": 0,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          16,
+          8,
+          16,
+          17
+        ],
+        "expression": "s.lower()",
+        "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+        "operation": "lower",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "5cf52f04893f9b35da1a6d1f4d86d1e80e26812861388f76bedd0a1d48374019",
+      "task_order_sha256": "48449a14a4ff7d79bb7a1b6f3d488eba397c36ef25634c111b49baf362511afc"
+    },
+    {
+      "task": 67,
+      "target_index": 0,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          20,
+          21,
+          20,
+          46
+        ],
+        "expression": "s.split('and')[0].strip()",
+        "source_signature": "Call(func=Attribute(value=Subscript(value=Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='split', ctx=Load()), args=[Constant(value='and')], keywords=[]), slice=Constant(value=0), ctx=Load()), attr='strip', ctx=Load()), args=[], keywords=[])",
+        "operation": "strip",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "b0b17d0cc645b34a2846557166f4baa3c4476707960be8fe16bfbad844eb6a9b",
+      "task_order_sha256": "49d180ecf56132819571bf39d9b7b342522a2ac6d23c1418d3338251bfe469c8"
+    },
+    {
+      "task": 27,
+      "target_index": 0,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          12,
+          26,
+          12,
+          36
+        ],
+        "expression": "ch.lower()",
+        "source_signature": "Call(func=Attribute(value=Name(id='ch', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+        "operation": "lower",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "bcb85668f02964c00f6cb1a48f9ecdad0deab4bdc167fba17e742aef1ba3b545",
+      "task_order_sha256": "670671cd97404156226e507973f2ab8330d3022ca96e0c93bdbdb320c41adcaf"
+    },
+    {
+      "task": 12,
+      "target_index": 0,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          16,
+          15,
+          16,
+          24
+        ],
+        "expression": "s.lower()",
+        "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+        "operation": "lower",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "902b0ad4cdbfd109ea6bfb0c4a55f3ec507d70c0a7ef4b2e21992131030c5e61",
+      "task_order_sha256": "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918"
+    },
+    {
+      "task": 162,
+      "target_index": 1,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          10,
+          11,
+          10,
+          23
+        ],
+        "expression": "text.strip()",
+        "source_signature": "Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='strip', ctx=Load()), args=[], keywords=[])",
+        "operation": "strip",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "e9d1e65bc928dd59fc18902a0bd7a1c136f4c9bbcb7adf090a9ae7e84df914a4",
+      "task_order_sha256": "79d6eaa2676189eb927f2e16a70091474078e2117c3fc607d35cdc6b591ef355"
+    },
+    {
+      "task": 118,
+      "target_index": 0,
+      "binding": {
+        "family": "membership",
+        "status": "supported",
+        "requirement_status": "public_lexical_cue_unverified",
+        "site": [
+          19,
+          11,
+          19,
+          28
+        ],
+        "expression": "word[i] in vowels",
+        "source_signature": "Compare(left=Subscript(value=Name(id='word', ctx=Load()), slice=Name(id='i', ctx=Load()), ctx=Load()), ops=[In()], comparators=[Name(id='vowels', ctx=Load())])",
+        "expected_members": "aeiouAEIOU",
+        "negated": false,
+        "requirement_evidence": "You are given a word. Your task is to find the closest vowel that stands between",
+        "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+      },
+      "round1_OBS_covered": false,
+      "binding_tie_sha256": "448d134c0f171a8edef6e9b13d53b36608aca97cf977214a10fe6fac73f93dec",
+      "task_order_sha256": "85daaf6f7055cd5736287faed9603d712920092c4f8fd0097ec3b650bf27530e"
+    },
+    {
+      "task": 48,
+      "target_index": 0,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          19,
+          12,
+          19,
+          41
+        ],
+        "expression": "text.lower().replace(' ', '')",
+        "source_signature": "Call(func=Attribute(value=Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value=' '), Constant(value='')], keywords=[])",
+        "operation": "replace",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "ceb89fa5f36b05d370eaf2cb5d90ff3f27da9a33d1c259b7566ce5727ee373ab",
+      "task_order_sha256": "98010bd9270f9b100b6214a21754fd33bdc8d41b2bc9f9dd16ff54d3c34ffd71"
+    },
+    {
+      "task": 64,
+      "target_index": 1,
+      "binding": {
+        "family": "membership",
+        "status": "supported",
+        "requirement_status": "public_lexical_cue_unverified",
+        "site": [
+          21,
+          11,
+          21,
+          30
+        ],
+        "expression": "c.lower() in vowels",
+        "source_signature": "Compare(left=Call(func=Attribute(value=Name(id='c', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[]), ops=[In()], comparators=[Name(id='vowels', ctx=Load())])",
+        "expected_members": "aeiouAEIOU",
+        "negated": false,
+        "requirement_evidence": "Write a function vowels_count which takes a string representing",
+        "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+      },
+      "round1_OBS_covered": false,
+      "binding_tie_sha256": "8d6b1eb80ca2d266ef6162042cf53994aa94b4fc8d99dbd0e65b80774697d995",
+      "task_order_sha256": "a68b412c4282555f15546cf6e1fc42893b7e07f271557ceb021821098dd66c1b"
+    },
+    {
+      "task": 112,
+      "target_index": 1,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          13,
+          8,
+          13,
+          17
+        ],
+        "expression": "s.lower()",
+        "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+        "operation": "lower",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "c2a9f6da15b16c82aae15a00ed445de01477cc666466c2f21ea0e576cc19bef1",
+      "task_order_sha256": "b1556dea32e9d0cdbfed038fd7787275775ea40939c146a64e205bcb349ad02f"
+    },
+    {
+      "task": 89,
+      "target_index": 2,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          16,
+          43,
+          16,
+          55
+        ],
+        "expression": "char.lower()",
+        "source_signature": "Call(func=Attribute(value=Name(id='char', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+        "operation": "lower",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "7a46c1f2be237270e9e4062356a9eadf0ae5c5c97f0455f1a69abaf0a4bc15e9",
+      "task_order_sha256": "cd70bea023f752a0564abb6ed08d42c1440f2e33e29914e55e0be1595e24f45a"
+    },
+    {
+      "task": 140,
+      "target_index": 1,
+      "binding": {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          14,
+          11,
+          14,
+          33
+        ],
+        "expression": "text.replace(' ', '_')",
+        "source_signature": "Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='replace', ctx=Load()), args=[Constant(value=' '), Constant(value='_')], keywords=[])",
+        "operation": "replace",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      },
+      "round1_OBS_covered": true,
+      "binding_tie_sha256": "e4cea25a2b1a7d0bd2f52f4a1edc6cb713f2f8fe7126102e025ef7e897e999b2",
+      "task_order_sha256": "dbae772db29058a88f9bd830e957c695347c41b6162a7eb9a9ea13def34be56b"
+    }
+  ],
+  "task_count": 11,
+  "uncovered_target_tasks": [
+    118,
+    64
+  ]
+}

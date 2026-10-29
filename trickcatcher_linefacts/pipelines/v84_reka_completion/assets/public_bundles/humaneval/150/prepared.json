@@ -1,0 +1,488 @@
+{
+ "baseline": {
+  "task": 150,
+  "entry": "x_or_y",
+  "put": "\ndef x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n\n    Examples:\n    for x_or_y(7, 34, 12) == 34\n    for x_or_y(15, 8, 5) == 5\n    \n    \"\"\"\n\n    # TODO: Write your code here\n    # if n is prime then return x\n    # if n is not prime then return y\n\n    if n < 0:\n        return None\n\n    if n == 1:\n        return y\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            return y\n    return x\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(7, 34, 12) == 34\n    assert candidate(15, 8, 5) == 5\n    assert candidate(3, 33, 5212) == 33\n    assert candidate(1259, 3, 52) == 3\n    assert candidate(7919, -1, 12) == -1\n    assert candidate(3609, 1245, 583) == 583\n    assert candidate(91, 56, 129) == 129\n    assert candidate(6, 34, 1234) == 1234\n    \n\n    # Check some edge cases that are easy to work out by hand.\n    assert candidate(1, 2, 0) == 0\n    assert candidate(2, 2, 0) == 2\n\n",
+  "concept_facts": [
+   "Mutation (AOR): the mutant `n ** 0.5` -> `n * 0.5` at line 21 survives: no existing test distinguishes them.",
+   "Boundary value: at line 19, `n` was never equal to 0 (next to the constant 1 in `n == 1`).",
+   "Equivalence class: in the existing tests, parameter `n` of `x_or_y` was never zero."
+  ],
+  "concept_meta": [
+   {
+    "kind": "MUTANT",
+    "line": 21,
+    "k": 16,
+    "family": "AOR",
+    "extended": false,
+    "text": "Mutation (AOR): the mutant `n ** 0.5` -> `n * 0.5` at line 21 survives: no existing test distinguishes them.",
+    "witness": 233,
+    "boundary": false,
+    "reached": true,
+    "witness_call": "x_or_y(3609007, 1245, 583)",
+    "block": 21,
+    "g_demote": false,
+    "tier": 0,
+    "mutant_src": "def x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n\n    Examples:\n    for x_or_y(7, 34, 12) == 34\n    for x_or_y(15, 8, 5) == 5\n    \n    \"\"\"\n    if n < 0:\n        return None\n    if n == 1:\n        return y\n    for i in range(2, int(n * 0.5) + 1):\n        if n % i == 0:\n            return y\n    return x"
+   },
+   {
+    "kind": "BOUND",
+    "line": 19,
+    "cell": [
+     4,
+     "eqc|3|1|-1|True"
+    ],
+    "witness": 8,
+    "text": "Boundary value: at line 19, `n` was never equal to 0 (next to the constant 1 in `n == 1`).",
+    "reached": true,
+    "witness_call": "x_or_y(0, 2, 1)",
+    "block": 19,
+    "g_demote": false,
+    "tier": 0
+   },
+   {
+    "kind": "NUM",
+    "line": 2,
+    "cell": [
+     20,
+     "P|0|zero|True"
+    ],
+    "witness": 8,
+    "text": "Equivalence class: in the existing tests, parameter `n` of `x_or_y` was never zero.",
+    "reached": true,
+    "witness_call": "x_or_y(0, 2, 1)",
+    "block": 2,
+    "g_demote": false,
+    "tier": 0
+   }
+  ],
+  "placebo_facts": [
+   "Mutation (ROR): the mutant `n == 1` -> `n != 1` at line 19 is killed: an existing test distinguishes them.",
+   "Boundary value: at line 16, `n` was sometimes equal to 1 (next to the constant 0 in `n < 0`) and sometimes not.",
+   "Equivalence class: in the existing tests, parameter `y` of `x_or_y` was sometimes zero and sometimes not."
+  ],
+  "tool_inputs": [
+   "x_or_y(3609007, 1245, 583)",
+   "x_or_y(0, 2, 1)"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "MUTANT",
+    "line": 19,
+    "k": 2,
+    "family": "ROR",
+    "extended": false,
+    "text": "Mutation (ROR): the mutant `n == 1` -> `n != 1` at line 19 is killed: an existing test distinguishes them.",
+    "mutant_src": "def x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n\n    Examples:\n    for x_or_y(7, 34, 12) == 34\n    for x_or_y(15, 8, 5) == 5\n    \n    \"\"\"\n    if n < 0:\n        return None\n    if n != 1:\n        return y\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            return y\n    return x"
+   },
+   {
+    "kind": "BOUND",
+    "line": 16,
+    "text": "Boundary value: at line 16, `n` was sometimes equal to 1 (next to the constant 0 in `n < 0`) and sometimes not.",
+    "cells": [
+     [
+      1,
+      "eqc|0|0|1|True"
+     ],
+     [
+      1,
+      "eqc|0|0|1|False"
+     ]
+    ]
+   },
+   {
+    "kind": "NUM",
+    "line": 2,
+    "text": "Equivalence class: in the existing tests, parameter `y` of `x_or_y` was sometimes zero and sometimes not.",
+    "cells": [
+     [
+      20,
+      "P|2|zero|True"
+     ],
+     [
+      20,
+      "P|2|zero|False"
+     ]
+    ]
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(n, x, y):\n    return isinstance(n, int)\n\ndef P1(n, x, y):\n    return P1_m(n, x, y)\n\ndef P2_m(n, x, y):\n    return isinstance(x, int)\n\ndef P2(n, x, y):\n    return P2_m(n, x, y)\n\ndef P3_m(n, x, y):\n    return isinstance(y, int)\n\ndef P3(n, x, y):\n    return P3_m(n, x, y)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True\n",
+  "valid_sha256": "ee2db9c3ee378e2768073e5d6b51ab8bbab3379bb2e7cba7b495a9f8e3b48e97",
+  "strategy_src": "def strategy():\n    return st.tuples(st.integers(), st.integers(), st.integers())\n",
+  "strategy_sha256": "b55cbcfce9f2fa197a86c9be5b44bd897933b80389c290c91f55ce6b4ba5ca16",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 150,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "69da2ea7488ab1cc13c97df7aa7106ca6688efd9c6e7f0e6d054223190933d91",
+   "candidates": 4,
+   "confirmed": 4,
+   "coded": 3,
+   "surviving": 3,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [
+    {
+     "id": "P4",
+     "reason": "code_rejected",
+     "error": "only builtin calls are allowed"
+    }
+   ],
+   "dropped_verifier": [],
+   "valid_sha256": "ee2db9c3ee378e2768073e5d6b51ab8bbab3379bb2e7cba7b495a9f8e3b48e97",
+   "seed": 20261160,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 150,
+  "entry": "x_or_y",
+  "put": "\ndef x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n\n    Examples:\n    for x_or_y(7, 34, 12) == 34\n    for x_or_y(15, 8, 5) == 5\n    \n    \"\"\"\n\n    # TODO: Write your code here\n    # if n is prime then return x\n    # if n is not prime then return y\n\n    if n < 0:\n        return None\n\n    if n == 1:\n        return y\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            return y\n    return x\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(7, 34, 12) == 34\n    assert candidate(15, 8, 5) == 5\n    assert candidate(3, 33, 5212) == 33\n    assert candidate(1259, 3, 52) == 3\n    assert candidate(7919, -1, 12) == -1\n    assert candidate(3609, 1245, 583) == 583\n    assert candidate(91, 56, 129) == 129\n    assert candidate(6, 34, 1234) == 1234\n    \n\n    # Check some edge cases that are easy to work out by hand.\n    assert candidate(1, 2, 0) == 0\n    assert candidate(2, 2, 0) == 2\n\n",
+  "concept_facts": [
+   "Boundary value: at line 16, `n` was never equal to 0 (the constant in `n < 0`).",
+   "Equivalence class: in the existing tests, parameter `n` of `x_or_y` was never zero.",
+   "Boundary value: at line 19, `n` was never equal to 0 (next to the constant 1 in `n == 1`)."
+  ],
+  "concept_meta": [
+   {
+    "kind": "BOUND",
+    "line": 16,
+    "cell": [
+     1,
+     "eqc|0|0|0|True"
+    ],
+    "witness": 8,
+    "text": "Boundary value: at line 16, `n` was never equal to 0 (the constant in `n < 0`).",
+    "reached": true,
+    "witness_call": "x_or_y(0, 2, 1)",
+    "block": 16,
+    "g_demote": false,
+    "guard_line": 16,
+    "guard_forced": false,
+    "guard_class": "na",
+    "guard_counts": {
+     "same": 0,
+     "necessary": 0,
+     "differ": 0
+    },
+    "tier": 0
+   },
+   {
+    "kind": "NUM",
+    "line": 2,
+    "cell": [
+     20,
+     "P|0|zero|True"
+    ],
+    "witness": 8,
+    "text": "Equivalence class: in the existing tests, parameter `n` of `x_or_y` was never zero.",
+    "reached": true,
+    "witness_call": "x_or_y(0, 2, 1)",
+    "block": 2,
+    "g_demote": false,
+    "tier": 0
+   },
+   {
+    "kind": "BOUND",
+    "line": 19,
+    "cell": [
+     4,
+     "eqc|3|1|-1|True"
+    ],
+    "witness": 8,
+    "text": "Boundary value: at line 19, `n` was never equal to 0 (next to the constant 1 in `n == 1`).",
+    "reached": true,
+    "witness_call": "x_or_y(0, 2, 1)",
+    "block": 19,
+    "g_demote": false,
+    "tier": 0
+   }
+  ],
+  "placebo_facts": [
+   "Mutation (ROR): the mutant `n == 1` -> `n != 1` at line 19 is killed: an existing test distinguishes them.",
+   "Boundary value: at line 16, `n` was sometimes equal to 1 (next to the constant 0 in `n < 0`) and sometimes not.",
+   "Equivalence class: in the existing tests, parameter `y` of `x_or_y` was sometimes zero and sometimes not."
+  ],
+  "tool_inputs": [
+   "x_or_y(3609007, 1245, 583)",
+   "x_or_y(0, 2, 1)",
+   "x_or_y(-1, -1, 12)",
+   "x_or_y(2, 0, 0)",
+   "x_or_y(7919, -1, -1)",
+   "x_or_y(52, 3, 52)",
+   "x_or_y(3609, 583, 583)",
+   "x_or_y(100000000000000003, 2, 0)",
+   "x_or_y(7, -34007, 12)",
+   "x_or_y(1, 34, 12)",
+   "x_or_y(1, 8, 5)",
+   "x_or_y(1, 33, 5212)",
+   "x_or_y(1, 3, 52)",
+   "x_or_y(1, -1, 12)",
+   "x_or_y(1, 1245, 583)",
+   "x_or_y(1, 56, 129)",
+   "x_or_y(1, 34, 1234)",
+   "x_or_y(7, 0, 12)",
+   "x_or_y(15, 0, 5)",
+   "x_or_y(3, 0, 5212)",
+   "x_or_y(1259, 0, 52)",
+   "x_or_y(7919, 0, 12)",
+   "x_or_y(3609, 0, 583)",
+   "x_or_y(91, 0, 129)",
+   "x_or_y(6, 0, 1234)",
+   "x_or_y(1, 0, 0)",
+   "x_or_y(7, 1, 12)",
+   "x_or_y(15, 1, 5)",
+   "x_or_y(3, 1, 5212)",
+   "x_or_y(1259, 1, 52)",
+   "x_or_y(7919, 1, 12)",
+   "x_or_y(3609, 1, 583)",
+   "x_or_y(91, 1, 129)",
+   "x_or_y(6, 1, 1234)",
+   "x_or_y(1, 1, 0)",
+   "x_or_y(2, 1, 0)",
+   "x_or_y(7, -1, 12)",
+   "x_or_y(15, -1, 5)",
+   "x_or_y(3, -1, 5212)",
+   "x_or_y(1259, -1, 52)",
+   "x_or_y(3609, -1, 583)",
+   "x_or_y(91, -1, 129)",
+   "x_or_y(6, -1, 1234)",
+   "x_or_y(1, -1, 0)",
+   "x_or_y(2, -1, 0)",
+   "x_or_y(7, 34, 0)",
+   "x_or_y(15, 8, 0)",
+   "x_or_y(3, 33, 0)",
+   "x_or_y(1259, 3, 0)",
+   "x_or_y(7919, -1, 0)",
+   "x_or_y(3609, 1245, 0)",
+   "x_or_y(91, 56, 0)",
+   "x_or_y(6, 34, 0)",
+   "x_or_y(7, 34, 1)",
+   "x_or_y(15, 8, 1)",
+   "x_or_y(3, 33, 1)",
+   "x_or_y(1259, 3, 1)",
+   "x_or_y(7919, -1, 1)",
+   "x_or_y(3609, 1245, 1)",
+   "x_or_y(91, 56, 1)",
+   "x_or_y(6, 34, 1)",
+   "x_or_y(1, 2, 1)",
+   "x_or_y(2, 2, 1)",
+   "x_or_y(6, 34, 12)",
+   "x_or_y(14, 8, 5)",
+   "x_or_y(2, 33, 5212)",
+   "x_or_y(1258, 3, 52)",
+   "x_or_y(7918, -1, 12)",
+   "x_or_y(3608, 1245, 583)",
+   "x_or_y(90, 56, 129)",
+   "x_or_y(5, 34, 1234)",
+   "x_or_y(8, 34, 12)",
+   "x_or_y(16, 8, 5)",
+   "x_or_y(4, 33, 5212)",
+   "x_or_y(1260, 3, 52)",
+   "x_or_y(7920, -1, 12)",
+   "x_or_y(3610, 1245, 583)",
+   "x_or_y(92, 56, 129)",
+   "x_or_y(7, 34, 1234)",
+   "x_or_y(3, 2, 0)",
+   "x_or_y(2, 34, 12)",
+   "x_or_y(2, 8, 5)",
+   "x_or_y(2, 3, 52)",
+   "x_or_y(2, -1, 12)",
+   "x_or_y(2, 1245, 583)",
+   "x_or_y(2, 56, 129)",
+   "x_or_y(2, 34, 1234)",
+   "x_or_y(7, 33, 12)",
+   "x_or_y(15, 7, 5)",
+   "x_or_y(3, 32, 5212)",
+   "x_or_y(1259, 2, 52)",
+   "x_or_y(7919, -2, 12)",
+   "x_or_y(3609, 1244, 583)",
+   "x_or_y(91, 55, 129)",
+   "x_or_y(6, 33, 1234)",
+   "x_or_y(7, 35, 12)",
+   "x_or_y(15, 9, 5)",
+   "x_or_y(3, 34, 5212)",
+   "x_or_y(1259, 4, 52)",
+   "x_or_y(3609, 1246, 583)",
+   "x_or_y(91, 57, 129)",
+   "x_or_y(6, 35, 1234)",
+   "x_or_y(1, 3, 0)",
+   "x_or_y(2, 3, 0)",
+   "x_or_y(7, 2, 12)",
+   "x_or_y(15, 2, 5)",
+   "x_or_y(3, 2, 5212)",
+   "x_or_y(7919, 2, 12)",
+   "x_or_y(3609, 2, 583)",
+   "x_or_y(91, 2, 129)",
+   "x_or_y(6, 2, 1234)",
+   "x_or_y(7, 34, 11)",
+   "x_or_y(15, 8, 4)",
+   "x_or_y(3, 33, 5211)",
+   "x_or_y(1259, 3, 51)",
+   "x_or_y(7919, -1, 11)",
+   "x_or_y(3609, 1245, 582)",
+   "x_or_y(91, 56, 128)",
+   "x_or_y(6, 34, 1233)",
+   "x_or_y(7, 34, 13)",
+   "x_or_y(15, 8, 6)",
+   "x_or_y(3, 33, 5213)",
+   "x_or_y(1259, 3, 53)",
+   "x_or_y(7919, -1, 13)",
+   "x_or_y(3609, 1245, 584)",
+   "x_or_y(91, 56, 130)",
+   "x_or_y(6, 34, 1235)",
+   "x_or_y(7, 34, 2)",
+   "x_or_y(15, 8, 2)",
+   "x_or_y(3, 33, 2)",
+   "x_or_y(1259, 3, 2)",
+   "x_or_y(7919, -1, 2)",
+   "x_or_y(3609, 1245, 2)",
+   "x_or_y(91, 56, 2)",
+   "x_or_y(6, 34, 2)",
+   "x_or_y(1, 2, 2)",
+   "x_or_y(2, 2, 2)",
+   "x_or_y(7, -34, 12)",
+   "x_or_y(15, -8, 5)",
+   "x_or_y(3, -33, 5212)",
+   "x_or_y(1259, -3, 52)",
+   "x_or_y(3609, -1245, 583)",
+   "x_or_y(91, -56, 129)",
+   "x_or_y(6, -34, 1234)",
+   "x_or_y(1, -2, 0)",
+   "x_or_y(2, -2, 0)",
+   "x_or_y(9, 34, 12)",
+   "x_or_y(17, 8, 5)",
+   "x_or_y(5, 33, 5212)",
+   "x_or_y(1261, 3, 52)",
+   "x_or_y(7921, -1, 12)",
+   "x_or_y(3611, 1245, 583)",
+   "x_or_y(93, 56, 129)",
+   "x_or_y(8, 34, 1234)",
+   "x_or_y(4, 2, 0)",
+   "x_or_y(5, 34, 12)",
+   "x_or_y(13, 8, 5)",
+   "x_or_y(1257, 3, 52)",
+   "x_or_y(7917, -1, 12)",
+   "x_or_y(3607, 1245, 583)",
+   "x_or_y(89, 56, 129)",
+   "x_or_y(4, 34, 1234)",
+   "x_or_y(7, 36, 12)",
+   "x_or_y(15, 10, 5)",
+   "x_or_y(3, 35, 5212)",
+   "x_or_y(1259, 5, 52)",
+   "x_or_y(3609, 1247, 583)",
+   "x_or_y(91, 58, 129)",
+   "x_or_y(6, 36, 1234)",
+   "x_or_y(1, 4, 0)",
+   "x_or_y(2, 4, 0)",
+   "x_or_y(7, 32, 12)",
+   "x_or_y(15, 6, 5)",
+   "x_or_y(3, 31, 5212)",
+   "x_or_y(7919, -3, 12)",
+   "x_or_y(3609, 1243, 583)",
+   "x_or_y(91, 54, 129)",
+   "x_or_y(6, 32, 1234)",
+   "x_or_y(7, 34, 14)",
+   "x_or_y(15, 8, 7)",
+   "x_or_y(3, 33, 5214)",
+   "x_or_y(1259, 3, 54)",
+   "x_or_y(7919, -1, 14)",
+   "x_or_y(3609, 1245, 585)",
+   "x_or_y(91, 56, 131)",
+   "x_or_y(6, 34, 1236)",
+   "x_or_y(7, 34, 10)",
+   "x_or_y(15, 8, 3)",
+   "x_or_y(3, 33, 5210)",
+   "x_or_y(1259, 3, 50)",
+   "x_or_y(7919, -1, 10)",
+   "x_or_y(3609, 1245, 581)",
+   "x_or_y(91, 56, 127)",
+   "x_or_y(6, 34, 1232)"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "MUTANT",
+    "line": 19,
+    "k": 2,
+    "family": "ROR",
+    "extended": false,
+    "text": "Mutation (ROR): the mutant `n == 1` -> `n != 1` at line 19 is killed: an existing test distinguishes them.",
+    "mutant_src": "def x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n\n    Examples:\n    for x_or_y(7, 34, 12) == 34\n    for x_or_y(15, 8, 5) == 5\n    \n    \"\"\"\n    if n < 0:\n        return None\n    if n != 1:\n        return y\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            return y\n    return x"
+   },
+   {
+    "kind": "BOUND",
+    "line": 16,
+    "text": "Boundary value: at line 16, `n` was sometimes equal to 1 (next to the constant 0 in `n < 0`) and sometimes not.",
+    "cells": [
+     [
+      1,
+      "eqc|0|0|1|True"
+     ],
+     [
+      1,
+      "eqc|0|0|1|False"
+     ]
+    ]
+   },
+   {
+    "kind": "NUM",
+    "line": 2,
+    "text": "Equivalence class: in the existing tests, parameter `y` of `x_or_y` was sometimes zero and sometimes not.",
+    "cells": [
+     [
+      20,
+      "P|2|zero|True"
+     ],
+     [
+      20,
+      "P|2|zero|False"
+     ]
+    ]
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(n, x, y):\n    return isinstance(n, int)\n\ndef P1(n, x, y):\n    return P1_m(n, x, y)\n\ndef P2_m(n, x, y):\n    return isinstance(x, int)\n\ndef P2(n, x, y):\n    return P2_m(n, x, y)\n\ndef P3_m(n, x, y):\n    return isinstance(y, int)\n\ndef P3(n, x, y):\n    return P3_m(n, x, y)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True\n",
+  "valid_sha256": "ee2db9c3ee378e2768073e5d6b51ab8bbab3379bb2e7cba7b495a9f8e3b48e97",
+  "strategy_src": "def strategy():\n    return st.tuples(st.integers(), st.integers(), st.integers())\n",
+  "strategy_sha256": "b55cbcfce9f2fa197a86c9be5b44bd897933b80389c290c91f55ce6b4ba5ca16",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 150,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "69da2ea7488ab1cc13c97df7aa7106ca6688efd9c6e7f0e6d054223190933d91",
+   "candidates": 4,
+   "confirmed": 4,
+   "coded": 3,
+   "surviving": 3,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [
+    {
+     "id": "P4",
+     "reason": "code_rejected",
+     "error": "only builtin calls are allowed"
+    }
+   ],
+   "dropped_verifier": [],
+   "valid_sha256": "ee2db9c3ee378e2768073e5d6b51ab8bbab3379bb2e7cba7b495a9f8e3b48e97",
+   "seed": 20261160,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 17,
+  "survivors": 3
+ }
+}

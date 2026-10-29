@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "evidence_scope": "Pinned language and lint documentation; curated conditional mechanisms, not verified target bugs or historical bug-fix pairs.",
+  "records": [
+    {
+      "concept_id": "py.set-loses-multiplicity",
+      "family": "required-multiplicity-lost",
+      "realizations": ["set construction collapses equal values"],
+      "related_concepts": ["py.presence-frequency-confusion"],
+      "scope_note": "Refines the multiplicity branch of this card only. A repeated literal hiding a missing distinct entry needs separate specification evidence.",
+      "requirements": [
+        {"id": "occurrences-required", "role": "contract", "text": "The observable must retain repeated occurrences or their counts.", "required_evidence": "Quote a public requirement distinguishing counts from distinct membership."},
+        {"id": "duplicates-admissible", "role": "domain", "text": "Equal values may occur more than once in an admissible input.", "required_evidence": "Public input restrictions permit duplicates; absence of a restriction alone remains unknown."},
+        {"id": "loss-reaches-output", "role": "flow", "text": "The deduplicated value reaches a count-sensitive decision or output without recovering multiplicity.", "required_evidence": "Source spans for set construction, value flow and the affected consumer."}
+      ],
+      "effect": "Equal occurrences collapse to one set member, erasing multiplicity.",
+      "consumer": "Occurrence count, repeated-item output or matching logic requiring distinct uses of equal occurrences.",
+      "trigger": "Choose two admissible collections with identical distinct members and different occurrence counts, for which the contract requires different results.",
+      "exclusions": ["The contract asks only for distinct membership or cardinality.", "Original counts remain available and the consumer uses them.", "The admissible domain guarantees uniqueness."],
+      "benign_contrast": "Counting distinct values with len(set(values)) satisfies a distinct-cardinality contract; this is a conceptual contrast, not an executed target example.",
+      "citations": [{"pattern_id": "v2python:sets", "quote": "A :dfn:`set` object is an unordered collection of distinct :term:`hashable` objects.", "supports": "Set uniqueness semantics, not the target's need for occurrence counts."}],
+      "evidence_status": "curated_conditional_template"
+    },
+    {
+      "concept_id": "py.presence-frequency-confusion",
+      "family": "required-multiplicity-lost",
+      "realizations": ["membership boolean used as frequency", "one stored state per value used as remaining occurrences", "presence toggled instead of counting"],
+      "related_concepts": ["py.set-loses-multiplicity"],
+      "scope_note": "These realizations share information loss; their concrete state transitions must still be inspected separately.",
+      "requirements": [
+        {"id": "counts-required", "role": "contract", "text": "The public result distinguishes occurrence counts or requires each occurrence to be consumed once.", "required_evidence": "Quote the multiplicity or distinct-occurrence requirement."},
+        {"id": "counts-not-represented", "role": "flow", "text": "The relevant state stores membership or one position while losing required remaining-count information.", "required_evidence": "Source spans for state initialization, updates and reads; a dictionary may store counts and is not inherently insufficient."},
+        {"id": "repeat-admissible", "role": "domain", "text": "The input domain allows enough repeated values to distinguish presence from count.", "required_evidence": "Public domain restriction and admissible repeated-value input class."}
+      ],
+      "effect": "Presence records whether an occurrence exists; it cannot by itself distinguish one, two and three remaining occurrences.",
+      "consumer": "Frequency comparison, repeated-item output or pairing that must not reuse a consumed occurrence.",
+      "trigger": "Vary multiplicity while preserving distinct members; for toggled presence also compare two and three occurrences, subject to the contract.",
+      "exclusions": ["Only existence or parity is required.", "A separate counter or occurrence list supplies the information.", "The domain guarantees unique values."],
+      "benign_contrast": "Membership is sufficient for an existence query even when duplicates occur; no target execution is claimed.",
+      "citations": [{"pattern_id": "python:membership", "quote": "The operators :keyword:`in` and :keyword:`not in` test for membership.", "supports": "Membership semantics; insufficiency for a specific target remains a conditional inference."}],
+      "evidence_status": "curated_conditional_template"
+    },
+    {
+      "concept_id": "py.unicode-text-byte-domain",
+      "family": "text-domain-mismatch",
+      "realizations": ["encoded byte measurement substitutes for character measurement", "restrictive encoding rejects admissible text"],
+      "related_concepts": [],
+      "scope_note": "Code points, grapheme clusters and bytes are distinct domains; the intended domain must be explicit.",
+      "requirements": [
+        {"id": "character-contract", "role": "contract", "text": "The public contract measures or accepts text characters, with the relevant character unit identified.", "required_evidence": "Quote the unit and accepted character-domain requirement; do not infer it solely from a function name."},
+        {"id": "encoding-observable", "role": "flow", "text": "Encoding affects a returned measurement, a decision, or an exception visible to the caller.", "required_evidence": "Source spans for encoding and its consumer or propagating exception path."},
+        {"id": "distinguishing-text", "role": "domain", "text": "Admissible text distinguishes the selected encoding from the required character domain.", "required_evidence": "Public restrictions permit the proposed characters and the selected encoding is resolved."}
+      ],
+      "effect": "Encoding changes the representation to bytes and can raise an encoding error; character-level observations need not be preserved.",
+      "consumer": "Length, indexing, distinct-character measurement or successful processing of admissible text.",
+      "trigger": "Use contract-admissible characters with multiple bytes in the selected encoding, or characters it cannot encode; choose the case matching the actual consumer.",
+      "exclusions": ["The contract explicitly counts encoded bytes.", "The admissible encoding/domain is known to preserve the required observation.", "Encoded bytes only feed a byte-oriented consumer such as hashing with the required encoding."],
+      "benign_contrast": "Computing payload size in encoded bytes is appropriate when the API specifies byte length; this is a conceptual contrast.",
+      "citations": [{"pattern_id": "v2python:encode", "quote": "Return the string encoded to :class:`bytes`.", "supports": "Encoding result type."}, {"pattern_id": "v2python:encode", "quote": "If ``'strict'`` (the default), a :exc:`UnicodeError` exception is raised.", "supports": "Documented handling when an encoding error occurs; not proof that a particular input causes one."}],
+      "evidence_status": "curated_conditional_template"
+    },
+    {
+      "concept_id": "py.first-match-vs-optimum",
+      "family": "premature-selection",
+      "realizations": ["return or break after first eligible candidate without establishing optimality"],
+      "related_concepts": [],
+      "scope_note": "Eligibility, optimum and tie policy are separate requirements; returning the first tied optimum can be correct.",
+      "requirements": [
+        {"id": "optimum-required", "role": "contract", "text": "The contract requires a minimum, maximum or closest eligible candidate, not merely any or first candidate.", "required_evidence": "Quote eligibility, ordering key and tie policy from the public contract."},
+        {"id": "early-exit", "role": "flow", "text": "Selection stops at an eligible candidate before considering a potentially better eligible candidate.", "required_evidence": "Source spans for traversal order, eligibility check and exit; inspect sorting or monotonicity guarantees."},
+        {"id": "better-later-possible", "role": "domain", "text": "An admissible traversal can place a worse eligible candidate before a better one.", "required_evidence": "Public ordering restrictions and actual traversal permit the proposed order."}
+      ],
+      "effect": "Existence of an eligible candidate is substituted for optimality over all eligible candidates.",
+      "consumer": "Returned selected value, object or position.",
+      "trigger": "Place a worse eligible candidate before a better eligible candidate in the actual traversal order; derive the expected choice from the public key and tie rule.",
+      "exclusions": ["The contract requests the first or any eligible match.", "Traversal is guaranteed to visit the best eligible candidate first.", "An admissible domain has at most one eligible candidate."],
+      "benign_contrast": "Early return after sorting by the required key can be correct if eligibility and tie rules are preserved; no target proof is implied.",
+      "citations": [{"pattern_id": "v2python:extrema", "quote": "Return the largest item in an iterable or the largest of two or more arguments.", "supports": "Maximum semantics used to explain the optimum requirement; not evidence of an early-exit bug."}, {"pattern_id": "v2python:extrema", "quote": "If multiple items are maximal, the function returns the first one encountered.", "supports": "First occurrence is valid for tied builtin maxima."}],
+      "evidence_status": "curated_conditional_template"
+    },
+    {
+      "concept_id": "py.extremum-initial-sentinel",
+      "family": "sentinel-outside-selection-domain",
+      "realizations": ["fixed initial maximum exceeds all eligible values", "fixed initial minimum is below all eligible values"],
+      "related_concepts": [],
+      "scope_note": "The sentinel is problematic only when the contract requires an eligible value and an admissible path leaves it selected.",
+      "requirements": [
+        {"id": "eligible-output", "role": "contract", "text": "For a nonempty eligible collection the result must select its required extremum.", "required_evidence": "Quote selection semantics and any empty-case or sentinel policy."},
+        {"id": "sentinel-update", "role": "flow", "text": "A fixed initialization survives when no eligible candidate passes the comparison update, and it reaches the output.", "required_evidence": "Same-value provenance through initialization, comparison update and consumer."},
+        {"id": "outside-bound", "role": "domain", "text": "All eligible candidates may lie below the initial maximum or above the initial minimum.", "required_evidence": "Public domain bounds permit the entire candidate collection on that side of the sentinel."}
+      ],
+      "effect": "An artificial initialization remains selected instead of an eligible extremum.",
+      "consumer": "Returned extremum or the object/index attached to the accumulator.",
+      "trigger": "Use one or several eligible values all beyond the sentinel on the non-updating side; inspect comparison direction and equality handling.",
+      "exclusions": ["The sentinel is a valid extremal bound for the admitted domain and first-candidate handling is correct.", "The contract explicitly allows this sentinel for this case.", "Initialization comes from an eligible candidate and updates maintain the required optimum."],
+      "benign_contrast": "A zero maximum initializer can be valid when the contract guarantees nonnegative values and the returned value satisfies selection requirements; index/object outputs need additional checks.",
+      "citations": [{"pattern_id": "v2python:extrema", "quote": "The largest item in the iterable is returned.", "supports": "Eligible-extremum semantics; the sentinel failure is a curated conditional deduction."}],
+      "evidence_status": "curated_conditional_template"
+    },
+    {
+      "concept_id": "py.empty-reduction-domain",
+      "family": "derived-domain-empty",
+      "realizations": ["filter removes every candidate before min or max without a default"],
+      "related_concepts": [],
+      "scope_note": "Nonempty original input does not establish nonempty filtered input; not all reducers reject empty input.",
+      "requirements": [
+        {"id": "defined-empty-result", "role": "contract", "text": "The contract admits an input with no eligible candidates and requires a result rather than the observed reduction exception.", "required_evidence": "Quote input admissibility and empty-candidate result or exception policy."},
+        {"id": "filter-to-reduction", "role": "flow", "text": "An empty derived iterable reaches a resolved min or max without a suitable default or handling.", "required_evidence": "Source spans for the filter, reaching iterable, builtin resolution and absent handling on the path."},
+        {"id": "all-filtered", "role": "domain", "text": "An admissible input can make every element fail eligibility.", "required_evidence": "Eligibility condition and public domain allow an all-rejected collection."}
+      ],
+      "effect": "The reducer's nonempty-domain requirement is violated after filtering.",
+      "consumer": "The reduction call and the caller-visible return or exception.",
+      "trigger": "Use admissible input whose elements all fail the actual filter; include a nonempty original collection when allowed to distinguish input guards from derived-domain guards.",
+      "exclusions": ["Public contract permits the reduction exception in this case.", "A guard checks the same stable derived iterable.", "A suitable default or exception handler implements the required empty-case behavior.", "The domain guarantees at least one eligible candidate."],
+      "benign_contrast": "An empty sum returning zero is not evidence for the min/max empty-domain mechanism; reducer identity must be resolved.",
+      "citations": [{"pattern_id": "v2python:extrema", "quote": "If the iterable is empty and *default* is not provided, a :exc:`ValueError` is raised.", "supports": "Builtin min/max empty-input behavior, not target input reachability or expected policy."}],
+      "evidence_status": "curated_conditional_template"
+    },
+    {
+      "concept_id": "py.text-normalization-contract",
+      "family": "required-text-distinction-erased",
+      "realizations": ["lowercasing erases required case", "stripping erases significant boundary characters", "replacement erases required content"],
+      "related_concepts": [],
+      "scope_note": "The citation directly documents lower/lstrip; each other normalization operation needs its own resolved semantics before application.",
+      "requirements": [
+        {"id": "distinction-required", "role": "contract", "text": "The required observable distinguishes case or content changed by this normalization.", "required_evidence": "Quote the preservation or case-sensitive comparison requirement."},
+        {"id": "normalized-consumer", "role": "flow", "text": "A normalized value influences the observable without restoring the required distinction.", "required_evidence": "Source spans for the resolved transformation and output/decision consumer."},
+        {"id": "distinction-admissible", "role": "domain", "text": "Admissible inputs differ in a distinction erased by this transformation.", "required_evidence": "Public character and whitespace restrictions permit the contrast."}
+      ],
+      "effect": "Different original texts become indistinguishable to a consumer that must distinguish them.",
+      "consumer": "Case-sensitive comparison, preserved output text or significant-character measurement.",
+      "trigger": "Choose admissible texts that normalize alike but require different outputs; select case, whitespace or removed characters according to the actual operation.",
+      "exclusions": ["The public contract explicitly ignores or normalizes the distinction.", "Only a normalization-invariant classification is consumed.", "The original value supplies the required observable."],
+      "benign_contrast": "Lowercasing before a case-insensitive membership comparison can meet its contract; lowercasing alone is not bug evidence.",
+      "citations": [{"pattern_id": "v2python:normalization", "quote": "Return a copy of the string with all the cased characters [4]_ converted to lowercase.", "supports": "Lowercase transformation semantics."}, {"pattern_id": "v2python:normalization", "quote": "Return a copy of the string with leading characters removed.", "supports": "lstrip transformation semantics, not every text-normalization API."}],
+      "evidence_status": "curated_conditional_template"
+    },
+    {
+      "concept_id": "py.mutable-default",
+      "family": "cross-call-state-leak",
+      "realizations": ["mutating a shared function-argument default across omitted-argument calls"],
+      "related_concepts": [],
+      "scope_note": "The pinned Python FAQ supplies both the failure illustration and intentional memoization contrast; these are documentation examples, not mined historical fixes.",
+      "requirements": [
+        {"id": "independent-calls", "role": "contract", "text": "Calls that omit this argument must not inherit semantically relevant state from earlier calls.", "required_evidence": "Public independence or fresh-state requirement; do not infer it solely from mutability."},
+        {"id": "shared-default-mutated", "role": "flow", "text": "Calls mutate and later observe the same definition-time default object.", "required_evidence": "Source spans for default creation, omitted-argument binding, mutations and later reads; account for reset or copy behavior."},
+        {"id": "repeated-call-domain", "role": "domain", "text": "Repeated omitted-argument calls in the same function lifetime are admissible.", "required_evidence": "Public call/lifecycle contract allows the call sequence."}
+      ],
+      "effect": "State persists in the definition-time object and changes later independent-call behavior.",
+      "consumer": "Later returned value or externally visible side effect affected by the shared object.",
+      "trigger": "Make two admissible calls omitting the mutable argument; compare the second observable with the contractually equivalent fresh-state call, accounting for return aliasing.",
+      "exclusions": ["Shared state is an intentional cache and preserves all required observables.", "The default is not mutated or mutation cannot affect later observables.", "A fresh copy or reset occurs before every relevant use."],
+      "benign_contrast": "The Python FAQ explicitly demonstrates memoization with a mutable default cache; shared state can be intentional.",
+      "citations": [{"pattern_id": "python:default-arguments", "quote": "Default values are created exactly once, when the function is defined.", "supports": "Definition-time default lifetime."}, {"pattern_id": "python:default-arguments", "quote": "This feature can be useful.", "supports": "The following FAQ memoization example is an intentional shared-state use, not a bug-fix commit."}],
+      "evidence_status": "curated_conditional_template"
+    }
+  ]
+}

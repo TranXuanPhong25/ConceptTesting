@@ -1,0 +1,65 @@
+{
+  "audit_status": "INTEGRITY_PASS_PREFLIGHT_BLOCKED_NO_EXPERIMENT_OUTCOME",
+  "terminal_status": {"stage": "blocked", "error_type": "RuntimeError"},
+  "complete_marker_present": false,
+  "controller_pid": 63414,
+  "controller_proc_present_at_audit": false,
+  "exclusive_run_lock_available": true,
+  "integrity": {
+    "frozen_source_input_files_verified": 79,
+    "parent_files_verified": 64,
+    "source_input_hash_mismatches": [],
+    "parent_hash_mismatches": [],
+    "independent_review_status": "approved",
+    "review_approval_matches_freeze": true,
+    "must_fixes_remaining": [],
+    "freeze_sha256": "f5203c91de991ae64a19428723106d50da89735b185a9046552e2beeb447afd5",
+    "status_sha256": "9e02560c0acf569589b23feae7480167d62283cadfa01ef22bd06891fe9e5854"
+  },
+  "completion_accounting": {
+    "registered_cap": 132,
+    "attempt_ledger_present": false,
+    "new_completion_attempts": 0,
+    "new_received_completion_receipts": 0,
+    "new_completion_tokens": 0,
+    "new_unknown_completion_usage": 0,
+    "metadata_probe_count": "not recorded in saved run artifacts",
+    "exact_transport_failure_reason": "not recorded; STATUS and runner log expose RuntimeError only"
+  },
+  "subsequent_root_metadata_observation": {
+    "safe_result_reported_by_root": {"metadata_status": 404},
+    "timing": "One authorized metadata GET after the controller preflight stop; this is a separate observation, not the frozen controller error receipt.",
+    "new_completions": 0,
+    "user_endpoint_restore_request": "pending; no automatic retry before response"
+  },
+  "artifacts": {
+    "generation_present": false,
+    "generation_freeze_present": false,
+    "endpoint_metadata_present": false,
+    "grading_present": false,
+    "results_present": false,
+    "saved_run_files": ["runner.log", "LAUNCH.json", "RUN.lock", "STATUS.json", "controller.pid"]
+  },
+  "available_inherited_assets_not_new_spend": {
+    "prepared_tasks": 11,
+    "saved_round1_calls": 11,
+    "saved_reference_program_calls": 110,
+    "known_historical_usage": {"prompt_tokens": 30226, "completion_tokens": 20692, "total_tokens": 50918}
+  },
+  "outcome_audit": {
+    "strict_retain_strategy_pool_equality": "unavailable: generation did not begin",
+    "selected_call_exposure": "unavailable: no generated selections or grading",
+    "missing_expected_values": "unavailable: expected-output stage not reached",
+    "new_round1_headroom_result": "unavailable: no final score; historical secondary labels remain separate",
+    "efficacy_claim_supported": false
+  },
+  "auditor_actions": {
+    "new_api_or_model_calls": 0,
+    "new_put_executions": 0,
+    "new_scoring_runs": 0,
+    "controller_launches_or_retries": 0,
+    "controller_kills": 0,
+    "frozen_source_or_raw_output_edits": 0
+  },
+  "conclusion": "The single authorized controller exited during preflight with zero completion attempts. Source/input integrity and review approval pass. Exact controller HTTP cause is unavailable from the preserved artifacts; a separate authorized root metadata GET after the stop returned404. No strategy comparison or efficacy outcome exists; no automatic retry was attempted."
+}

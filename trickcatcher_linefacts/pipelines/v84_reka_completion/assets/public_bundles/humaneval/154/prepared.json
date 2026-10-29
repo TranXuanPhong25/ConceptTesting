@@ -1,0 +1,264 @@
+{
+ "baseline": {
+  "task": 154,
+  "entry": "cycpattern_check",
+  "put": "\ndef cycpattern_check(a , b):\n    \"\"\"You are given 2 words. You need to return True if the second word or any of its rotations is a substring in the first word\n    cycpattern_check(\"abcd\",\"abd\") => False\n    cycpattern_check(\"hello\",\"ell\") => True\n    cycpattern_check(\"whassup\",\"psus\") => False\n    cycpattern_check(\"abab\",\"baa\") => True\n    cycpattern_check(\"efef\",\"eeff\") => False\n    cycpattern_check(\"himenss\",\"simen\") => True\n\n    \"\"\"\n    for i in range(len(b)):\n        if b[i:] + b[:i] in a:\n            return True\n    return False\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    #assert True, \"This prints if this assert fails 1 (good for debugging!)\"\n\n    # Check some edge cases that are easy to work out by hand.\n    #assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n    assert  candidate(\"xyzw\",\"xyw\") == False , \"test #0\"\n    assert  candidate(\"yello\",\"ell\") == True , \"test #1\"\n    assert  candidate(\"whattup\",\"ptut\") == False , \"test #2\"\n    assert  candidate(\"efef\",\"fee\") == True , \"test #3\"\n    assert  candidate(\"abab\",\"aabb\") == False , \"test #4\"\n    assert  candidate(\"winemtt\",\"tinem\") == True , \"test #5\"\n\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `a` of size or value 1000 or more (the largest in the existing tests is 7); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `b` of size or value 1000 or more (the largest in the existing tests is 5); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `a` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `a` of size or value 1000 or more (the largest in the existing tests is 7); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "whattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwh",
+     "ptut"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 1
+    },
+    "text": "Input-domain class (specification): no existing test passes `b` of size or value 1000 or more (the largest in the existing tests is 5); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "winemtt",
+     "tinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinem"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "NONASCII",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `a` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "wháttúp",
+     "ptut"
+    ],
+    "witness_call": "cycpattern_check('wháttúp', 'ptut')"
+   }
+  ],
+  "placebo_facts": [],
+  "tool_inputs": [
+   "cycpattern_check('wháttúp', 'ptut')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(a, b):\n    return isinstance(a, str) and isinstance(b, str)\n\ndef P1(a, b):\n    return P1_m(a, b)\n\ndef P2_m(a, b):\n    return len(a) > 0 and len(b) > 0\n\ndef P2(a, b):\n    return P2_m(a, b)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+  "valid_sha256": "948fadef53668a434eb6d0e8ffcda26a0a0c3a541fdd76baeb82cca795638426",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.tuples(st.text(min_size=1), st.text(min_size=1))\n",
+  "strategy_sha256": "ef2b43cd326c2efb150a48162afdc4116410f3402f76faac4adbaafc86b96a2e",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 154,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "880017a5e2640ec2b837b15371451f658d57ac30400eee9c0117e2eb9b751b73",
+   "candidates": 2,
+   "confirmed": 2,
+   "coded": 2,
+   "surviving": 2,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "948fadef53668a434eb6d0e8ffcda26a0a0c3a541fdd76baeb82cca795638426",
+   "seed": 20261164,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 154,
+  "entry": "cycpattern_check",
+  "put": "\ndef cycpattern_check(a , b):\n    \"\"\"You are given 2 words. You need to return True if the second word or any of its rotations is a substring in the first word\n    cycpattern_check(\"abcd\",\"abd\") => False\n    cycpattern_check(\"hello\",\"ell\") => True\n    cycpattern_check(\"whassup\",\"psus\") => False\n    cycpattern_check(\"abab\",\"baa\") => True\n    cycpattern_check(\"efef\",\"eeff\") => False\n    cycpattern_check(\"himenss\",\"simen\") => True\n\n    \"\"\"\n    for i in range(len(b)):\n        if b[i:] + b[:i] in a:\n            return True\n    return False\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    #assert True, \"This prints if this assert fails 1 (good for debugging!)\"\n\n    # Check some edge cases that are easy to work out by hand.\n    #assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n    assert  candidate(\"xyzw\",\"xyw\") == False , \"test #0\"\n    assert  candidate(\"yello\",\"ell\") == True , \"test #1\"\n    assert  candidate(\"whattup\",\"ptut\") == False , \"test #2\"\n    assert  candidate(\"efef\",\"fee\") == True , \"test #3\"\n    assert  candidate(\"abab\",\"aabb\") == False , \"test #4\"\n    assert  candidate(\"winemtt\",\"tinem\") == True , \"test #5\"\n\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `a` of size or value 1000 or more (the largest in the existing tests is 7); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `b` of size or value 1000 or more (the largest in the existing tests is 5); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `a` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `a` of size or value 1000 or more (the largest in the existing tests is 7); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "whattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwhattupwh",
+     "ptut"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 1
+    },
+    "text": "Input-domain class (specification): no existing test passes `b` of size or value 1000 or more (the largest in the existing tests is 5); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "winemtt",
+     "tinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinemtinem"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "NONASCII",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `a` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "wháttúp",
+     "ptut"
+    ],
+    "witness_call": "cycpattern_check('wháttúp', 'ptut')"
+   }
+  ],
+  "placebo_facts": [],
+  "tool_inputs": [
+   "cycpattern_check('wháttúp', 'ptut')",
+   "cycpattern_check('xyzw', 'xyzw')",
+   "cycpattern_check('  abab', 'aabb')",
+   "cycpattern_check('xyzw9', 'xyw')",
+   "cycpattern_check(' efef', 'fee')",
+   "cycpattern_check('a', 'abab')",
+   "cycpattern_check('YELLO', 'ell')",
+   "cycpattern_check('yello!', 'ell')",
+   "cycpattern_check('winemtt', 'tinem  ')",
+   "cycpattern_check('xyzw', 'xyw9')",
+   "cycpattern_check('whattup', ' ptut')",
+   "cycpattern_check('winemtt', 'w')",
+   "cycpattern_check('winemtt', 'TINEM')",
+   "cycpattern_check('whattup', '-ptut')",
+   "cycpattern_check('abab', 'Aabb')",
+   "cycpattern_check('winem', 'tinem')",
+   "cycpattern_check('xxxx', 'xyw')",
+   "cycpattern_check('yyyyy', 'ell')",
+   "cycpattern_check('wwwwwww', 'ptut')",
+   "cycpattern_check('eeee', 'fee')",
+   "cycpattern_check('aaaa', 'aabb')",
+   "cycpattern_check('wwwwwww', 'tinem')",
+   "cycpattern_check('xyzw', 'xxx')",
+   "cycpattern_check('yello', 'eee')",
+   "cycpattern_check('whattup', 'pppp')",
+   "cycpattern_check('efef', 'fff')",
+   "cycpattern_check('abab', 'aaaa')",
+   "cycpattern_check('winemtt', 'ttttt')",
+   "cycpattern_check('yell', 'ell')",
+   "cycpattern_check('whattu', 'ptut')",
+   "cycpattern_check('winemt', 'tinem')",
+   "cycpattern_check('xyzww', 'xyw')",
+   "cycpattern_check('yelloo', 'ell')",
+   "cycpattern_check('whattupp', 'ptut')",
+   "cycpattern_check('efeff', 'fee')",
+   "cycpattern_check('ababb', 'aabb')",
+   "cycpattern_check('winemttt', 'tinem')",
+   "cycpattern_check('whattup', 'ptu')",
+   "cycpattern_check('abab', 'aab')",
+   "cycpattern_check('winemtt', 'tine')",
+   "cycpattern_check('xyzw', 'xyww')",
+   "cycpattern_check('yello', 'elll')",
+   "cycpattern_check('whattup', 'ptutt')",
+   "cycpattern_check('efef', 'feee')",
+   "cycpattern_check('abab', 'aabbb')",
+   "cycpattern_check('winemtt', 'tinemm')",
+   "cycpattern_check('xxzw', 'xyw')",
+   "cycpattern_check('yyllo', 'ell')",
+   "cycpattern_check('wwattup', 'ptut')",
+   "cycpattern_check('eeef', 'fee')",
+   "cycpattern_check('aaab', 'aabb')",
+   "cycpattern_check('wwnemtt', 'tinem')",
+   "cycpattern_check('wzyx', 'xyw')",
+   "cycpattern_check('olley', 'ell')",
+   "cycpattern_check('puttahw', 'ptut')",
+   "cycpattern_check('fefe', 'fee')",
+   "cycpattern_check('baba', 'aabb')",
+   "cycpattern_check('ttmeniw', 'tinem')",
+   "cycpattern_check('xyzw', 'xxw')",
+   "cycpattern_check('yello', 'eel')",
+   "cycpattern_check('whattup', 'pput')",
+   "cycpattern_check('efef', 'ffe')",
+   "cycpattern_check('winemtt', 'ttnem')",
+   "cycpattern_check('xyzw', 'wyx')",
+   "cycpattern_check('yello', 'lle')",
+   "cycpattern_check('whattup', 'tutp')",
+   "cycpattern_check('efef', 'eef')",
+   "cycpattern_check('abab', 'bbaa')",
+   "cycpattern_check('winemtt', 'menit')",
+   "cycpattern_check('wyzx', 'xyw')",
+   "cycpattern_check('oelly', 'ell')",
+   "cycpattern_check('phattuw', 'ptut')",
+   "cycpattern_check('ffee', 'fee')",
+   "cycpattern_check('bbaa', 'aabb')",
+   "cycpattern_check('tinemtw', 'tinem')",
+   "cycpattern_check('whattup', 'ttup')",
+   "cycpattern_check('abab', 'baba')",
+   "cycpattern_check('winemtt', 'minet')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(a, b):\n    return isinstance(a, str) and isinstance(b, str)\n\ndef P1(a, b):\n    return P1_m(a, b)\n\ndef P2_m(a, b):\n    return len(a) > 0 and len(b) > 0\n\ndef P2(a, b):\n    return P2_m(a, b)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True\n",
+  "valid_sha256": "948fadef53668a434eb6d0e8ffcda26a0a0c3a541fdd76baeb82cca795638426",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.tuples(st.text(min_size=1), st.text(min_size=1))\n",
+  "strategy_sha256": "ef2b43cd326c2efb150a48162afdc4116410f3402f76faac4adbaafc86b96a2e",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 154,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "880017a5e2640ec2b837b15371451f658d57ac30400eee9c0117e2eb9b751b73",
+   "candidates": 2,
+   "confirmed": 2,
+   "coded": 2,
+   "surviving": 2,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "948fadef53668a434eb6d0e8ffcda26a0a0c3a541fdd76baeb82cca795638426",
+   "seed": 20261164,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 5,
+  "survivors": 0
+ }
+}

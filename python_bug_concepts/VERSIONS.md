@@ -8,6 +8,7 @@ flowchart LR
     V3 --> V4
     V2 --> V5["V5:copied v2 + scoped facts"]
     V5 --> V6["V6:semantic-role ranking + policies"]
+    V6 --> V7["V7:open BM25 + dense recall; conditional evidence"]
 ```
 
 | Version | Concept representation / selection | Family+site hit@3 /113 | Native utility /40 |
@@ -18,6 +19,7 @@ flowchart LR
 | V5, opt-in | Same cards + scoped source facts, local provenance, requires/excludes, concept/site pairs | 74,no gain | Unmeasured |
 | V6 balanced, opt-in | Semantic applicability/role ranking + one weak fallback | 90, development-adapted | Unmeasured |
 | V6 precise, opt-in | Supported candidates only, otherwise abstain | 63, development-adapted | Unmeasured |
+| V7 separate CLI | Independent BM25/dense channels;8card evidence overlay; lexical binding | Unmeasured;4engineering sources only | Unmeasured |
 
 Plain Qwen utility baseline:4bug tasks,0false-alarm tasks. Utility input validity,
 reference-correct oracles and PUT/reference mismatch are checked separately.
@@ -36,3 +38,16 @@ cards vs275; frozen-label matches74.6%vs34.9%, not independent precision.
 Precise reduces correct-program over-retrieval100→5/113queries, while trading
 coverage.242tests/21native mechanism examples; no new model calls or utility.
 See [V6 audit/results](retrieval_v6/RESULTS.md).
+
+V7 [engineering and delivery audit](retrieval_v7/RESULTS.md):23new tests, real Jina
+code embeddings CPU,16fixture packets/522new embeddings. This is not semantic
+efficacy. Existing V85 integrates V2 into V11; frozen snapshot audit shows206/275
+cards use line gates,204of those hit in round1 and only2targeted in round2.
+No owner scoring/resume by this work; gate alignment and retrieval need separate
+controls. Public `auto` stays V2; V7 is its own module CLI.
+
+2026-10-29 `vr10` [frozen retrieval diagnostic](research/vr10_retrieval_diagnostic_20261029/REPORT.md):
+12buggy/12canonical/4oldfixturequeries, unchangedV6+V7A-D. Eight labelled tasks
+allhit in everyarm;117blinded sourcebindings reviewed. B-A andD-C each0new supported
+buggybindings: NO_GO for current dense package, no integration/promotion/model
+retuning.48newlocalembeddings/1092cachehits; noQwen/targetexecution in this diagnostic.

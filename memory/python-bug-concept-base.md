@@ -138,3 +138,75 @@ efficacy. No new Qwen/paid calls. Root API/CLI explicitv6 defaults balanced; low
 engine defaults precise; public auto staysv2. [Report](../python_bug_concepts/retrieval_v6/RESULTS.md).
 No frozen oldsource/corpus change. User authorized this adaptation; do not misread
 v5's no-retuning protocol as prohibiting this separately recorded v6 work.
+
+2026-10-28 user asks three-agent research on concept quality and missing embedding
+semantics. [Design review](../python_bug_concepts/research/semantic_retrieval_20261028/REPORT.md)
+is proposal only. V6 has partial rule semantics but ranks only recognizer-generated
+candidates; adding dense score after that gate cannot recover absent concepts.
+Recommended independent full-corpus dense+BM25+structural recall, then evidenced
+contract/effect/site binding and external buggy/fixed/benign concept exemplars.
+Saved balanced126cards:114semantic-extension/12original;94labelmatches:89/5.
+This reflects development cohort/labels, not proof original lint cards are poor.
+Existing utility prompt drops retrieved sites/bindings and sends generic cards;
+therefore v6 localization gains are not yet consumed/tested downstream. Do not
+reuse the old v2 site-bottleneck argument unchanged or label22unknown as missing
+concepts. No inference/model download/target execution/implementation in this review.
+
+2026-10-29 user authorized starting v7, then steered to check other-machine
+retrieval→v11 integration first. Actual v6 copy + isolated FastEmbed/LibCST env
+and unvalidated8record evidence overlay exist; no new embedding/model/target run.
+See retrieval_v7/START_STATUS.md: inherited docs/results are v6, not v7 completion.
+Fetch succeeded, HEAD=origin/main937f498. Previously missed tracked v85 integrates
+v2 into v11 already; its adapter uses same-span v11 facts or STMT reach fallback.
+Standalone utility binding omission does not describe v85. Latest tracked memory
+is historical54pairs/694responses, out/ ignored and absent locally; newer unpushed
+other-machine state unknown. Before resuming, obtain v85 terminal/per-task artifacts
+and inspect gate/trigger alignment and round2 delivery; don't duplicate/fix active
+frozen comparison. See [[v85-retrievalhybrid]] and corrected design review.
+
+2026-10-29 user requests plan. Saved
+[PLAN_V7_V85_20261029.md](../python_bug_concepts/PLAN_V7_V85_20261029.md): P0sync
+owner artifacts→P1saved gate/delivery audit→P2offline v2/v6 rebind→P3independent
+hybrid recall + evidence overlay→P4small semantic diagnostic→P5conditional v11
+utility. Base×retrieval2×2 includes open-BM25 control; gate/packet changes separate.
+P3engineering can proceed while waiting for owner outputs; no inference/run or
+algorithm change in this planning turn. V7 parent-copy docs are not its results.
+
+User requests resume after4h10. One-shot systemd user timer is active:
+`concepttester-v7-v85-resume-20261028-213102.timer`, scheduled2026-10-28T21:31:02Z
+=(2026-10-29 04:31:02 Asia/Ho_Chi_Minh). Service queues this existing Codex thread
+via `/usr/bin/codex queue` with the plan and state checks. No duplicate v85 launch;
+if other-machine outputs remain unavailable, continue independent P3 engineering.
+No new paid API budget or paper reproduction. Verify timer/service state before
+rescheduling; one shot only. Host/user session must remain available for delivery.
+
+2026-10-29 scheduled continuation completed P3engineering and read-only P0/P1.
+[V7 report](../python_bug_concepts/retrieval_v7/RESULTS.md), [validation](../python_bug_concepts/retrieval_v7/VALIDATION_V7.json):
+independent full-corpus BM25+dense/structural recall, fixed Jina code ONNX revision,
+8conditional evidence cards/7families, same restricted lexical binder, unknown
+newpairs, separate packet export/CLI.29tests(23new+6API) pass. Four authored-source
+smoke16packets/522newtextembeddings/474cachehits/0token truncation, sourcefreezePASS;
+no retrieval efficacy, P4GO or downstream utility claim. V6 source/input freezes
+and164parent-copy file accounting verified; auto remainsV2, no paid/Qwen/PUT calls.
+
+Owner snapshot now local, archive8583importhashes and113prepared/generationpairs
+verified. [Delivery audit](../python_bug_concepts/retrieval_v7/owner_audit/REPORT.md):
+275cards=206linefallback+69existing-gap;round1hits204/51;round2targets2/18;delivered
+round2inputtargets1/15.102/110same-line binding mismatches verified independently.
+No bug-loss or repair efficacy claim. Cachedv6 orderedcard/site identical17/113,
+allsource113identical. ExactP2rebindblocked: full original tool pool absent from
+portable checkpoint. At audit observation ownerSTATUSblockedRuntimeError, no
+HANDOFF_COMPLETE; owner not restarted/scored. Keep other session lifecycle separate.
+Priority is semantic gate/delivery alignment alongside P4applicability diagnostic;
+do not silently retune from smoke, conflate line-hit with trigger or treat old
+V6results asV7. Old startup pause/running statements superseded by START_STATUS.
+
+2026-10-29 next user-authorized agents completed
+[vr10 diagnostic](../python_bug_concepts/research/vr10_retrieval_diagnostic_20261029/REPORT.md).
+12fixedbuggy/12canonical/4oldfixturequeries;V6+A-D allhit8knownlabelsites,4unknown.
+117method-blinded sourcebindings reviewed;B-A/D-C each0additional supportedfault
+bindings onbuggyqueries,registeredNO_GO. No dense integration/promotion or rerun
+to rescue. Current8cardoverlay changes recall wording, not validated applicability.
+Vr9 also complete separately:ref6/6allarmsatR1ceiling,retention24vs19valid but
+exposingcalls1vs2;5newQwenexpectedcalls3742tokens. Read [[vr10-retrieval-diagnostic]]
+and [[vr9-applicability]] before proposing follow-up; frozen V7 implementation unchanged.

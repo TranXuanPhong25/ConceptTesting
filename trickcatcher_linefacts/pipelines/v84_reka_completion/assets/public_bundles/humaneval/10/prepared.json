@@ -1,0 +1,217 @@
+{
+ "baseline": {
+  "task": 10,
+  "entry": "make_palindrome",
+  "put": "\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n    if string == '':\n        return ''\n    if is_palindrome(string):\n        return string\n    if string[0] == string[-1]:\n        return string[0] + make_palindrome(string[1:-1]) + string[-1]\n    else:\n        return string[0] + make_palindrome(string[1:]) + string[0]\n",
+  "base": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate('') == ''\n    assert candidate('x') == 'x'\n    assert candidate('xyz') == 'xyzyx'\n    assert candidate('xyx') == 'xyx'\n    assert candidate('jerry') == 'jerryrrej'\n",
+  "concept_facts": [
+   "Branch coverage (C2): the True branch of `string[0] == string[-1]` (line 24) is never taken by the existing tests."
+  ],
+  "concept_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 24,
+    "text": "Branch coverage (C2): the True branch of `string[0] == string[-1]` (line 24) is never taken by the existing tests.",
+    "cell": [
+     16,
+     "T"
+    ],
+    "witness": 28,
+    "reached": true,
+    "witness_call": "make_palindrome('jerryjerry')",
+    "block": 24,
+    "g_demote": false,
+    "guard_line": 24,
+    "guard_forced": false,
+    "guard_class": "differ",
+    "guard_counts": {
+     "same": 1,
+     "necessary": 0,
+     "differ": 27
+    },
+    "tier": 0
+   }
+  ],
+  "placebo_facts": [
+   "Branch coverage (C2): the True and False branches of `is_palindrome(string)` (line 22) are taken by the existing tests."
+  ],
+  "tool_inputs": [
+   "make_palindrome('jerryjerry')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 22,
+    "text": "Branch coverage (C2): the True and False branches of `is_palindrome(string)` (line 22) are taken by the existing tests.",
+    "cells": [
+     [
+      10,
+      "T"
+     ],
+     [
+      10,
+      "F"
+     ]
+    ]
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(string):\n    return isinstance(string, str)\n\ndef P1(string):\n    return P1_m(string)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+  "valid_sha256": "ed0b01c62068f5f58c41cd7274f29b3e5afaaf52b9c78ea83bd7982b370c318a",
+  "strategy_src": "def strategy():\n    return st.text(alphabet=st.characters(whitelist_categories=('Ll', 'Lu', 'Nd')), min_size=0)\n",
+  "strategy_sha256": "691a81807771f59f6fe4c49b981499df96921f4c5102906a46c1cf52f6ae375e",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 10,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "2ba336ffdf9c93cb037564cae7a398eeebe81b6c6915669488d011b181624191",
+   "candidates": 1,
+   "confirmed": 1,
+   "coded": 1,
+   "surviving": 1,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "ed0b01c62068f5f58c41cd7274f29b3e5afaaf52b9c78ea83bd7982b370c318a",
+   "seed": 20261020,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 10,
+  "entry": "make_palindrome",
+  "put": "\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n    if string == '':\n        return ''\n    if is_palindrome(string):\n        return string\n    if string[0] == string[-1]:\n        return string[0] + make_palindrome(string[1:-1]) + string[-1]\n    else:\n        return string[0] + make_palindrome(string[1:]) + string[0]\n",
+  "base": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate('') == ''\n    assert candidate('x') == 'x'\n    assert candidate('xyz') == 'xyzyx'\n    assert candidate('xyx') == 'xyx'\n    assert candidate('jerry') == 'jerryrrej'\n",
+  "concept_facts": [
+   "Branch coverage (C2): the True branch of `string[0] == string[-1]` (line 24) is never taken by the existing tests.",
+   "Fault-type adequacy at L25: wrong operator: relational, arithmetic, boolean or negation operator, or break/continue. Behaviour: `return string[0] + make_palindrome(string[1:-1]) + string[-1]`. The public tests do not distinguish 4 surviving alternatives (`string[0] + make_palindrome(string[1:-1]) + string[-1]` -> `string[0] + make_palindrome(string[1:-1]) - string[-1]`; `string[0] + make_palindrome(string[1:-1])` -> `string[0] - make_palindrome(string[1:-1])`; `-1` -> `+1`). Exercise this behaviour and determine the required result from the specification."
+  ],
+  "concept_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 24,
+    "text": "Branch coverage (C2): the True branch of `string[0] == string[-1]` (line 24) is never taken by the existing tests.",
+    "cell": [
+     16,
+     "T"
+    ],
+    "witness": 28,
+    "reached": true,
+    "witness_call": "make_palindrome('jerryjerry')",
+    "block": 24,
+    "g_demote": false,
+    "guard_line": 24,
+    "guard_forced": false,
+    "guard_class": "differ",
+    "guard_counts": {
+     "same": 1,
+     "necessary": 0,
+     "differ": 27
+    },
+    "tier": 0
+   },
+   {
+    "kind": "FAULT",
+    "line": 25,
+    "fault_type": "OPERATOR",
+    "text": "Fault-type adequacy at L25: wrong operator: relational, arithmetic, boolean or negation operator, or break/continue. Behaviour: `return string[0] + make_palindrome(string[1:-1]) + string[-1]`. The public tests do not distinguish 4 surviving alternatives (`string[0] + make_palindrome(string[1:-1]) + string[-1]` -> `string[0] + make_palindrome(string[1:-1]) - string[-1]`; `string[0] + make_palindrome(string[1:-1])` -> `string[0] - make_palindrome(string[1:-1])`; `-1` -> `+1`). Exercise this behaviour and determine the required result from the specification.",
+    "survivors": 4,
+    "distinguished": 4,
+    "alternatives": [
+     "`string[0] + make_palindrome(string[1:-1]) + string[-1]` -> `string[0] + make_palindrome(string[1:-1]) - string[-1]`",
+     "`string[0] + make_palindrome(string[1:-1])` -> `string[0] - make_palindrome(string[1:-1])`",
+     "`-1` -> `+1`"
+    ],
+    "alternative_sources": [
+     "\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n    if string == '':\n        return ''\n    if is_palindrome(string):\n        return string\n    if string[0] == string[-1]:\n        return string[0] + make_palindrome(string[1:-1]) - string[-1]\n    else:\n        return string[0] + make_palindrome(string[1:]) + string[0]\n",
+     "\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n    if string == '':\n        return ''\n    if is_palindrome(string):\n        return string\n    if string[0] == string[-1]:\n        return string[0] - make_palindrome(string[1:-1]) + string[-1]\n    else:\n        return string[0] + make_palindrome(string[1:]) + string[0]\n",
+     "\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n    if string == '':\n        return ''\n    if is_palindrome(string):\n        return string\n    if string[0] == string[-1]:\n        return string[0] + make_palindrome(string[1:+1]) + string[-1]\n    else:\n        return string[0] + make_palindrome(string[1:]) + string[0]\n",
+     "\n\ndef is_palindrome(string: str) -> bool:\n    \"\"\" Test if given string is a palindrome \"\"\"\n    return string == string[::-1]\n\n\ndef make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n    if string == '':\n        return ''\n    if is_palindrome(string):\n        return string\n    if string[0] == string[-1]:\n        return string[0] + make_palindrome(string[1:-1]) + string[+1]\n    else:\n        return string[0] + make_palindrome(string[1:]) + string[0]\n"
+    ],
+    "reached": true,
+    "witness_call": "make_palindrome('xyxx')",
+    "block": 25,
+    "witness": 8
+   }
+  ],
+  "placebo_facts": [
+   "Branch coverage (C2): the True and False branches of `is_palindrome(string)` (line 22) are taken by the existing tests."
+  ],
+  "tool_inputs": [
+   "make_palindrome('jerryjerry')",
+   "make_palindrome('  ')",
+   "make_palindrome('jerry9')",
+   "make_palindrome(' jerry')",
+   "make_palindrome('jerry!')",
+   "make_palindrome('JERRY')",
+   "make_palindrome('j')",
+   "make_palindrome('xy')",
+   "make_palindrome('je')",
+   "make_palindrome('xxx')",
+   "make_palindrome('jjjjj')",
+   "make_palindrome('jerr')",
+   "make_palindrome('xx')",
+   "make_palindrome('xyzz')",
+   "make_palindrome('xyxx')",
+   "make_palindrome('jerryy')",
+   "make_palindrome('xxz')",
+   "make_palindrome('jjrry')",
+   "make_palindrome('zyx')",
+   "make_palindrome('yrrej')",
+   "make_palindrome('yerrj')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "OUTCOME",
+    "line": 22,
+    "text": "Branch coverage (C2): the True and False branches of `is_palindrome(string)` (line 22) are taken by the existing tests.",
+    "cells": [
+     [
+      10,
+      "T"
+     ],
+     [
+      10,
+      "F"
+     ]
+    ]
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(string):\n    return isinstance(string, str)\n\ndef P1(string):\n    return P1_m(string)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+  "valid_sha256": "ed0b01c62068f5f58c41cd7274f29b3e5afaaf52b9c78ea83bd7982b370c318a",
+  "strategy_src": "def strategy():\n    return st.text(alphabet=st.characters(whitelist_categories=('Ll', 'Lu', 'Nd')), min_size=0)\n",
+  "strategy_sha256": "691a81807771f59f6fe4c49b981499df96921f4c5102906a46c1cf52f6ae375e",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 10,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "2ba336ffdf9c93cb037564cae7a398eeebe81b6c6915669488d011b181624191",
+   "candidates": 1,
+   "confirmed": 1,
+   "coded": 1,
+   "surviving": 1,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "ed0b01c62068f5f58c41cd7274f29b3e5afaaf52b9c78ea83bd7982b370c318a",
+   "seed": 20261020,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 26,
+  "survivors": 11
+ }
+}

@@ -1,0 +1,2489 @@
+{
+  "groups": {
+    "v11": {
+      "calls": 268,
+      "prompt_tokens": 231638,
+      "completion_tokens": 41636,
+      "total_tokens": 273274
+    },
+    "retrieval": {
+      "calls": 154,
+      "prompt_tokens": 148410,
+      "completion_tokens": 39158,
+      "total_tokens": 187568
+    },
+    "shared_refs": {
+      "calls": 1130,
+      "prompt_tokens": 229550,
+      "completion_tokens": 231651,
+      "total_tokens": 461201
+    },
+    "remaining_preparation": {
+      "calls": 480,
+      "prompt_tokens": 161788,
+      "completion_tokens": 31488,
+      "total_tokens": 193276
+    }
+  },
+  "cross_arm_shared": {
+    "calls": 2,
+    "prompt_tokens": 1338,
+    "completion_tokens": 250,
+    "total_tokens": 1588
+  },
+  "stage": {
+    "v11": {
+      "round1": {
+        "calls": 113,
+        "prompt_tokens": 78075,
+        "completion_tokens": 24816,
+        "total_tokens": 102891
+      },
+      "round2": {
+        "calls": 155,
+        "prompt_tokens": 153563,
+        "completion_tokens": 16820,
+        "total_tokens": 170383
+      },
+      "labels": {
+        "strategy_0_0": {
+          "calls": 60,
+          "prompt_tokens": 60146,
+          "completion_tokens": 3579,
+          "total_tokens": 63725
+        },
+        "strategy_0_1": {
+          "calls": 44,
+          "prompt_tokens": 48315,
+          "completion_tokens": 6687,
+          "total_tokens": 55002
+        },
+        "round1": {
+          "calls": 113,
+          "prompt_tokens": 78075,
+          "completion_tokens": 24816,
+          "total_tokens": 102891
+        },
+        "strategy_1_0": {
+          "calls": 17,
+          "prompt_tokens": 16992,
+          "completion_tokens": 1065,
+          "total_tokens": 18057
+        },
+        "oracle": {
+          "calls": 25,
+          "prompt_tokens": 18484,
+          "completion_tokens": 5048,
+          "total_tokens": 23532
+        },
+        "strategy_1_1": {
+          "calls": 7,
+          "prompt_tokens": 7713,
+          "completion_tokens": 358,
+          "total_tokens": 8071
+        },
+        "strategy_2_0": {
+          "calls": 2,
+          "prompt_tokens": 1913,
+          "completion_tokens": 83,
+          "total_tokens": 1996
+        }
+      },
+      "tasks_with_round2": 60,
+      "logical_calls": 268
+    },
+    "retrieval": {
+      "round1": {
+        "calls": 113,
+        "prompt_tokens": 105399,
+        "completion_tokens": 23300,
+        "total_tokens": 128699
+      },
+      "round2": {
+        "calls": 41,
+        "prompt_tokens": 43011,
+        "completion_tokens": 15858,
+        "total_tokens": 58869
+      },
+      "labels": {
+        "round1": {
+          "calls": 113,
+          "prompt_tokens": 105399,
+          "completion_tokens": 23300,
+          "total_tokens": 128699
+        },
+        "oracle": {
+          "calls": 16,
+          "prompt_tokens": 9998,
+          "completion_tokens": 1213,
+          "total_tokens": 11211
+        },
+        "strategy_0_0": {
+          "calls": 19,
+          "prompt_tokens": 20357,
+          "completion_tokens": 6575,
+          "total_tokens": 26932
+        },
+        "strategy_1_0": {
+          "calls": 1,
+          "prompt_tokens": 1881,
+          "completion_tokens": 386,
+          "total_tokens": 2267
+        },
+        "strategy_1_1": {
+          "calls": 1,
+          "prompt_tokens": 2301,
+          "completion_tokens": 4096,
+          "total_tokens": 6397
+        },
+        "strategy_0_1": {
+          "calls": 4,
+          "prompt_tokens": 8474,
+          "completion_tokens": 3588,
+          "total_tokens": 12062
+        }
+      },
+      "tasks_with_round2": 19,
+      "logical_calls": 154
+    }
+  },
+  "preparation_prompt_prefixes": {
+    "Write def strategy(): returning a hypothesis.strategies stra": 113,
+    "List every condition the specification places on the inputs:": 113,
+    "For each candidate, decide whether the specification states ": 112,
+    "Write one Python predicate per kept condition, named by its ": 111,
+    "The strategy failed verification: nested definitions are uns": 3,
+    "The strategy failed verification: {\"nonliteral\": 0, \"wrong_a": 11,
+    "The strategy failed verification: {\"nonliteral\": 1, \"wrong_a": 1,
+    "The strategy failed verification: unsupported strategy opera": 13,
+    "The strategy failed verification: {\"nonliteral\": 28, \"wrong_": 1,
+    "The strategy failed verification: {\"nonliteral\": 22, \"wrong_": 1,
+    "The strategy failed verification: only pure builtin and st c": 1
+  },
+  "history": [
+    {
+      "key": "c1bcf735fd22e9e6e0571c0f98ffa6c543ed7b0a0ca31a16c527a49ebd7a0f3f",
+      "owner": [
+        "retrieval"
+      ],
+      "unknown": true,
+      "duplicate": false,
+      "error": "transport_TimeoutError",
+      "usage": null
+    },
+    {
+      "key": "38a69be64aa356cbb604519a6e961ca30eeab1d970e82056807fc9e4c7df7842",
+      "owner": [
+        "retrieval"
+      ],
+      "unknown": true,
+      "duplicate": false,
+      "error": "transport_RemoteDisconnected",
+      "usage": null
+    },
+    {
+      "key": "4d80ea92d52a1680a194d437792786e866c22c1de1993239716c8f3f94bbb6c8",
+      "owner": [
+        "v11"
+      ],
+      "unknown": true,
+      "duplicate": false,
+      "error": "transport_TimeoutError",
+      "usage": null
+    },
+    {
+      "key": "23ae9cc0858282785aa955ff990a92ff45e524160e95abf463b021fce0a65b44",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": true,
+      "duplicate": false,
+      "error": "http_status_503",
+      "usage": null
+    },
+    {
+      "key": "b8f9a107154848e81d7ba05f253c1634242fe6cec1744018acc47cd2d5b655d0",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": false,
+      "error": "http_status_404",
+      "usage": null
+    },
+    {
+      "key": "f3f57d4631fd64f0348fb74873ce2c02014f0fd1405ee29ce57be3d01112408a",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 261,
+        "total_tokens": 325,
+        "completion_tokens": 64,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "1e802281cb7ece879a0352921cd7a8b7a6b0310925e38d915f1451ae2710a491",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 261,
+        "total_tokens": 328,
+        "completion_tokens": 67,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "a793c7daf43244ba4dd6b270f8a127aec19b78e76dd060c4f96bab842d0a96c8",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 261,
+        "total_tokens": 517,
+        "completion_tokens": 256,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "d35dae2d2cf0a1530b05a38a3825a0cd9a4e03eb6008d389b763a174e7fb4b63",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 261,
+        "total_tokens": 337,
+        "completion_tokens": 76,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "8b5868bf9b968e143c6c0d20e6ffd32246b9a049c941a550742f5c67863586eb",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 339,
+        "completion_tokens": 146,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "b953ad04ad0bc2c7cec420224c030da2bf6e8c61b2a6fbf840dcafd7c51095c1",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 306,
+        "completion_tokens": 113,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "3d5127ff9164c04bb62d456fd9fb6d87cd37586ecd535575eb76f9a23714fed5",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 321,
+        "completion_tokens": 128,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "6f10d002c5f0aa2c6ba3dfff8e589d40a6103c265c8bbb412869305d1e3b37cd",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 423,
+        "completion_tokens": 230,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "f4086c5efe84a63b4bbbe0cdd105b2b80e8366433e048a8b9700051b919b0798",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 325,
+        "completion_tokens": 132,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "df06d346205a2f5932468d6f9ea380e6d2a6f98d81fa45ce1400f3c8f4a1ab59",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 401,
+        "completion_tokens": 208,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "2a747acd6dff7c377c1b569118892e772eaeee912f3f74dffc2ad6a6b34f1adc",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 311,
+        "completion_tokens": 118,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "2356801b143dddbf2da54924c86a88ecd328457062d4a905981fc99f32e85afe",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 423,
+        "completion_tokens": 230,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    },
+    {
+      "key": "b8dfa964990cb2aa2a874f90babd6aa603c1cf5680a2c74ea5a4b6c04398e7b3",
+      "owner": [
+        "shared_refs"
+      ],
+      "unknown": false,
+      "duplicate": true,
+      "error": null,
+      "usage": {
+        "prompt_tokens": 193,
+        "total_tokens": 418,
+        "completion_tokens": 225,
+        "prompt_tokens_details": null,
+        "completion_tokens_details": {
+          "reasoning_tokens": 0
+        }
+      }
+    }
+  ],
+  "tasks": {
+    "v11": [
+      {
+        "task": 10,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2157,
+        "completion_tokens": 222,
+        "total_tokens": 2379
+      },
+      {
+        "task": 101,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2585,
+        "completion_tokens": 262,
+        "total_tokens": 2847
+      },
+      {
+        "task": 102,
+        "round2_strategy_requests": 2,
+        "missed_facts": 2,
+        "calls": 4,
+        "prompt_tokens": 2770,
+        "completion_tokens": 321,
+        "total_tokens": 3091
+      },
+      {
+        "task": 104,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 605,
+        "completion_tokens": 126,
+        "total_tokens": 731
+      },
+      {
+        "task": 109,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 786,
+        "completion_tokens": 188,
+        "total_tokens": 974
+      },
+      {
+        "task": 11,
+        "round2_strategy_requests": 4,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 6175,
+        "completion_tokens": 1158,
+        "total_tokens": 7333
+      },
+      {
+        "task": 110,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2923,
+        "completion_tokens": 531,
+        "total_tokens": 3454
+      },
+      {
+        "task": 112,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 641,
+        "completion_tokens": 174,
+        "total_tokens": 815
+      },
+      {
+        "task": 113,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 4136,
+        "completion_tokens": 708,
+        "total_tokens": 4844
+      },
+      {
+        "task": 114,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2460,
+        "completion_tokens": 306,
+        "total_tokens": 2766
+      },
+      {
+        "task": 115,
+        "round2_strategy_requests": 3,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 5291,
+        "completion_tokens": 691,
+        "total_tokens": 5982
+      },
+      {
+        "task": 117,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 756,
+        "completion_tokens": 307,
+        "total_tokens": 1063
+      },
+      {
+        "task": 118,
+        "round2_strategy_requests": 4,
+        "missed_facts": 2,
+        "calls": 6,
+        "prompt_tokens": 4916,
+        "completion_tokens": 364,
+        "total_tokens": 5280
+      },
+      {
+        "task": 119,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2512,
+        "completion_tokens": 288,
+        "total_tokens": 2800
+      },
+      {
+        "task": 12,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 562,
+        "completion_tokens": 160,
+        "total_tokens": 722
+      },
+      {
+        "task": 121,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 559,
+        "completion_tokens": 124,
+        "total_tokens": 683
+      },
+      {
+        "task": 124,
+        "round2_strategy_requests": 3,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 8650,
+        "completion_tokens": 5692,
+        "total_tokens": 14342
+      },
+      {
+        "task": 125,
+        "round2_strategy_requests": 3,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 3443,
+        "completion_tokens": 279,
+        "total_tokens": 3722
+      },
+      {
+        "task": 126,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1013,
+        "completion_tokens": 149,
+        "total_tokens": 1162
+      },
+      {
+        "task": 127,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 981,
+        "completion_tokens": 203,
+        "total_tokens": 1184
+      },
+      {
+        "task": 128,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 882,
+        "completion_tokens": 160,
+        "total_tokens": 1042
+      },
+      {
+        "task": 13,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 1463,
+        "completion_tokens": 239,
+        "total_tokens": 1702
+      },
+      {
+        "task": 130,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3905,
+        "completion_tokens": 2074,
+        "total_tokens": 5979
+      },
+      {
+        "task": 132,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2441,
+        "completion_tokens": 172,
+        "total_tokens": 2613
+      },
+      {
+        "task": 134,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2366,
+        "completion_tokens": 204,
+        "total_tokens": 2570
+      },
+      {
+        "task": 135,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 563,
+        "completion_tokens": 226,
+        "total_tokens": 789
+      },
+      {
+        "task": 136,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2919,
+        "completion_tokens": 282,
+        "total_tokens": 3201
+      },
+      {
+        "task": 137,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 644,
+        "completion_tokens": 167,
+        "total_tokens": 811
+      },
+      {
+        "task": 14,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 435,
+        "completion_tokens": 193,
+        "total_tokens": 628
+      },
+      {
+        "task": 140,
+        "round2_strategy_requests": 3,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 3526,
+        "completion_tokens": 265,
+        "total_tokens": 3791
+      },
+      {
+        "task": 141,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 4045,
+        "completion_tokens": 341,
+        "total_tokens": 4386
+      },
+      {
+        "task": 142,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1014,
+        "completion_tokens": 236,
+        "total_tokens": 1250
+      },
+      {
+        "task": 144,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 636,
+        "completion_tokens": 187,
+        "total_tokens": 823
+      },
+      {
+        "task": 146,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2141,
+        "completion_tokens": 249,
+        "total_tokens": 2390
+      },
+      {
+        "task": 148,
+        "round2_strategy_requests": 3,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 5330,
+        "completion_tokens": 507,
+        "total_tokens": 5837
+      },
+      {
+        "task": 149,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2949,
+        "completion_tokens": 322,
+        "total_tokens": 3271
+      },
+      {
+        "task": 15,
+        "round2_strategy_requests": 3,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 3838,
+        "completion_tokens": 638,
+        "total_tokens": 4476
+      },
+      {
+        "task": 150,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2644,
+        "completion_tokens": 342,
+        "total_tokens": 2986
+      },
+      {
+        "task": 152,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 659,
+        "completion_tokens": 191,
+        "total_tokens": 850
+      },
+      {
+        "task": 153,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1066,
+        "completion_tokens": 217,
+        "total_tokens": 1283
+      },
+      {
+        "task": 154,
+        "round2_strategy_requests": 5,
+        "missed_facts": 3,
+        "calls": 7,
+        "prompt_tokens": 5426,
+        "completion_tokens": 484,
+        "total_tokens": 5910
+      },
+      {
+        "task": 155,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 606,
+        "completion_tokens": 170,
+        "total_tokens": 776
+      },
+      {
+        "task": 158,
+        "round2_strategy_requests": 2,
+        "missed_facts": 2,
+        "calls": 4,
+        "prompt_tokens": 3536,
+        "completion_tokens": 622,
+        "total_tokens": 4158
+      },
+      {
+        "task": 159,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 811,
+        "completion_tokens": 235,
+        "total_tokens": 1046
+      },
+      {
+        "task": 16,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 1774,
+        "completion_tokens": 192,
+        "total_tokens": 1966
+      },
+      {
+        "task": 160,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 740,
+        "completion_tokens": 199,
+        "total_tokens": 939
+      },
+      {
+        "task": 161,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2231,
+        "completion_tokens": 203,
+        "total_tokens": 2434
+      },
+      {
+        "task": 162,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 569,
+        "completion_tokens": 308,
+        "total_tokens": 877
+      },
+      {
+        "task": 163,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 593,
+        "completion_tokens": 159,
+        "total_tokens": 752
+      },
+      {
+        "task": 17,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2947,
+        "completion_tokens": 345,
+        "total_tokens": 3292
+      },
+      {
+        "task": 19,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 558,
+        "completion_tokens": 156,
+        "total_tokens": 714
+      },
+      {
+        "task": 2,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 541,
+        "completion_tokens": 178,
+        "total_tokens": 719
+      },
+      {
+        "task": 20,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 873,
+        "completion_tokens": 324,
+        "total_tokens": 1197
+      },
+      {
+        "task": 23,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 1397,
+        "completion_tokens": 165,
+        "total_tokens": 1562
+      },
+      {
+        "task": 25,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2495,
+        "completion_tokens": 203,
+        "total_tokens": 2698
+      },
+      {
+        "task": 26,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2153,
+        "completion_tokens": 390,
+        "total_tokens": 2543
+      },
+      {
+        "task": 27,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 489,
+        "completion_tokens": 126,
+        "total_tokens": 615
+      },
+      {
+        "task": 29,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 427,
+        "completion_tokens": 208,
+        "total_tokens": 635
+      },
+      {
+        "task": 3,
+        "round2_strategy_requests": 2,
+        "missed_facts": 2,
+        "calls": 4,
+        "prompt_tokens": 2851,
+        "completion_tokens": 293,
+        "total_tokens": 3144
+      },
+      {
+        "task": 30,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2161,
+        "completion_tokens": 300,
+        "total_tokens": 2461
+      },
+      {
+        "task": 31,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2102,
+        "completion_tokens": 178,
+        "total_tokens": 2280
+      },
+      {
+        "task": 34,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 1831,
+        "completion_tokens": 362,
+        "total_tokens": 2193
+      },
+      {
+        "task": 35,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 463,
+        "completion_tokens": 165,
+        "total_tokens": 628
+      },
+      {
+        "task": 36,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 686,
+        "completion_tokens": 129,
+        "total_tokens": 815
+      },
+      {
+        "task": 37,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2815,
+        "completion_tokens": 385,
+        "total_tokens": 3200
+      },
+      {
+        "task": 4,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 558,
+        "completion_tokens": 261,
+        "total_tokens": 819
+      },
+      {
+        "task": 40,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 670,
+        "completion_tokens": 207,
+        "total_tokens": 877
+      },
+      {
+        "task": 41,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 1886,
+        "completion_tokens": 174,
+        "total_tokens": 2060
+      },
+      {
+        "task": 42,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2229,
+        "completion_tokens": 346,
+        "total_tokens": 2575
+      },
+      {
+        "task": 46,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 571,
+        "completion_tokens": 113,
+        "total_tokens": 684
+      },
+      {
+        "task": 48,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 481,
+        "completion_tokens": 126,
+        "total_tokens": 607
+      },
+      {
+        "task": 49,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3706,
+        "completion_tokens": 1076,
+        "total_tokens": 4782
+      },
+      {
+        "task": 5,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 595,
+        "completion_tokens": 235,
+        "total_tokens": 830
+      },
+      {
+        "task": 50,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 477,
+        "completion_tokens": 123,
+        "total_tokens": 600
+      },
+      {
+        "task": 51,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2086,
+        "completion_tokens": 188,
+        "total_tokens": 2274
+      },
+      {
+        "task": 52,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 1850,
+        "completion_tokens": 235,
+        "total_tokens": 2085
+      },
+      {
+        "task": 53,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 461,
+        "completion_tokens": 138,
+        "total_tokens": 599
+      },
+      {
+        "task": 54,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 574,
+        "completion_tokens": 135,
+        "total_tokens": 709
+      },
+      {
+        "task": 55,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 420,
+        "completion_tokens": 103,
+        "total_tokens": 523
+      },
+      {
+        "task": 56,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 562,
+        "completion_tokens": 116,
+        "total_tokens": 678
+      },
+      {
+        "task": 57,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 674,
+        "completion_tokens": 146,
+        "total_tokens": 820
+      },
+      {
+        "task": 58,
+        "round2_strategy_requests": 4,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 4442,
+        "completion_tokens": 559,
+        "total_tokens": 5001
+      },
+      {
+        "task": 59,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2495,
+        "completion_tokens": 210,
+        "total_tokens": 2705
+      },
+      {
+        "task": 61,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 624,
+        "completion_tokens": 121,
+        "total_tokens": 745
+      },
+      {
+        "task": 62,
+        "round2_strategy_requests": 2,
+        "missed_facts": 2,
+        "calls": 4,
+        "prompt_tokens": 3224,
+        "completion_tokens": 395,
+        "total_tokens": 3619
+      },
+      {
+        "task": 63,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 4,
+        "prompt_tokens": 2692,
+        "completion_tokens": 1245,
+        "total_tokens": 3937
+      },
+      {
+        "task": 64,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 606,
+        "completion_tokens": 106,
+        "total_tokens": 712
+      },
+      {
+        "task": 66,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2398,
+        "completion_tokens": 209,
+        "total_tokens": 2607
+      },
+      {
+        "task": 67,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3213,
+        "completion_tokens": 928,
+        "total_tokens": 4141
+      },
+      {
+        "task": 68,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 916,
+        "completion_tokens": 201,
+        "total_tokens": 1117
+      },
+      {
+        "task": 69,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 4,
+        "prompt_tokens": 7852,
+        "completion_tokens": 848,
+        "total_tokens": 8700
+      },
+      {
+        "task": 71,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2715,
+        "completion_tokens": 448,
+        "total_tokens": 3163
+      },
+      {
+        "task": 72,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 706,
+        "completion_tokens": 201,
+        "total_tokens": 907
+      },
+      {
+        "task": 73,
+        "round2_strategy_requests": 3,
+        "missed_facts": 3,
+        "calls": 5,
+        "prompt_tokens": 5513,
+        "completion_tokens": 936,
+        "total_tokens": 6449
+      },
+      {
+        "task": 74,
+        "round2_strategy_requests": 4,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 5523,
+        "completion_tokens": 437,
+        "total_tokens": 5960
+      },
+      {
+        "task": 76,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 815,
+        "completion_tokens": 160,
+        "total_tokens": 975
+      },
+      {
+        "task": 78,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3985,
+        "completion_tokens": 1140,
+        "total_tokens": 5125
+      },
+      {
+        "task": 79,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 648,
+        "completion_tokens": 204,
+        "total_tokens": 852
+      },
+      {
+        "task": 8,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2418,
+        "completion_tokens": 391,
+        "total_tokens": 2809
+      },
+      {
+        "task": 80,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 604,
+        "completion_tokens": 114,
+        "total_tokens": 718
+      },
+      {
+        "task": 81,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1098,
+        "completion_tokens": 155,
+        "total_tokens": 1253
+      },
+      {
+        "task": 83,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 483,
+        "completion_tokens": 225,
+        "total_tokens": 708
+      },
+      {
+        "task": 85,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 500,
+        "completion_tokens": 188,
+        "total_tokens": 688
+      },
+      {
+        "task": 86,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2324,
+        "completion_tokens": 189,
+        "total_tokens": 2513
+      },
+      {
+        "task": 88,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3794,
+        "completion_tokens": 432,
+        "total_tokens": 4226
+      },
+      {
+        "task": 89,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 741,
+        "completion_tokens": 110,
+        "total_tokens": 851
+      },
+      {
+        "task": 9,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 564,
+        "completion_tokens": 241,
+        "total_tokens": 805
+      },
+      {
+        "task": 91,
+        "round2_strategy_requests": 3,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 3740,
+        "completion_tokens": 400,
+        "total_tokens": 4140
+      },
+      {
+        "task": 92,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2582,
+        "completion_tokens": 317,
+        "total_tokens": 2899
+      },
+      {
+        "task": 94,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 4835,
+        "completion_tokens": 284,
+        "total_tokens": 5119
+      },
+      {
+        "task": 97,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 669,
+        "completion_tokens": 168,
+        "total_tokens": 837
+      },
+      {
+        "task": 98,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2015,
+        "completion_tokens": 263,
+        "total_tokens": 2278
+      },
+      {
+        "task": 99,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 642,
+        "completion_tokens": 145,
+        "total_tokens": 787
+      }
+    ],
+    "retrieval": [
+      {
+        "task": 10,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 924,
+        "completion_tokens": 137,
+        "total_tokens": 1061
+      },
+      {
+        "task": 101,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 852,
+        "completion_tokens": 183,
+        "total_tokens": 1035
+      },
+      {
+        "task": 102,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2249,
+        "completion_tokens": 274,
+        "total_tokens": 2523
+      },
+      {
+        "task": 104,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 814,
+        "completion_tokens": 320,
+        "total_tokens": 1134
+      },
+      {
+        "task": 109,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1138,
+        "completion_tokens": 165,
+        "total_tokens": 1303
+      },
+      {
+        "task": 11,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 647,
+        "completion_tokens": 208,
+        "total_tokens": 855
+      },
+      {
+        "task": 110,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1154,
+        "completion_tokens": 249,
+        "total_tokens": 1403
+      },
+      {
+        "task": 112,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 944,
+        "completion_tokens": 198,
+        "total_tokens": 1142
+      },
+      {
+        "task": 113,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1167,
+        "completion_tokens": 340,
+        "total_tokens": 1507
+      },
+      {
+        "task": 114,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1125,
+        "completion_tokens": 174,
+        "total_tokens": 1299
+      },
+      {
+        "task": 115,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3557,
+        "completion_tokens": 606,
+        "total_tokens": 4163
+      },
+      {
+        "task": 117,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1127,
+        "completion_tokens": 167,
+        "total_tokens": 1294
+      },
+      {
+        "task": 118,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 984,
+        "completion_tokens": 140,
+        "total_tokens": 1124
+      },
+      {
+        "task": 119,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1074,
+        "completion_tokens": 334,
+        "total_tokens": 1408
+      },
+      {
+        "task": 12,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2116,
+        "completion_tokens": 365,
+        "total_tokens": 2481
+      },
+      {
+        "task": 121,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 955,
+        "completion_tokens": 126,
+        "total_tokens": 1081
+      },
+      {
+        "task": 124,
+        "round2_strategy_requests": 3,
+        "missed_facts": 2,
+        "calls": 5,
+        "prompt_tokens": 8502,
+        "completion_tokens": 5205,
+        "total_tokens": 13707
+      },
+      {
+        "task": 125,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 6698,
+        "completion_tokens": 7431,
+        "total_tokens": 14129
+      },
+      {
+        "task": 126,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1320,
+        "completion_tokens": 155,
+        "total_tokens": 1475
+      },
+      {
+        "task": 127,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1267,
+        "completion_tokens": 196,
+        "total_tokens": 1463
+      },
+      {
+        "task": 128,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1182,
+        "completion_tokens": 145,
+        "total_tokens": 1327
+      },
+      {
+        "task": 13,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 699,
+        "completion_tokens": 179,
+        "total_tokens": 878
+      },
+      {
+        "task": 130,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1414,
+        "completion_tokens": 608,
+        "total_tokens": 2022
+      },
+      {
+        "task": 132,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 856,
+        "completion_tokens": 110,
+        "total_tokens": 966
+      },
+      {
+        "task": 134,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 949,
+        "completion_tokens": 168,
+        "total_tokens": 1117
+      },
+      {
+        "task": 135,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 858,
+        "completion_tokens": 168,
+        "total_tokens": 1026
+      },
+      {
+        "task": 136,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1228,
+        "completion_tokens": 214,
+        "total_tokens": 1442
+      },
+      {
+        "task": 137,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 916,
+        "completion_tokens": 175,
+        "total_tokens": 1091
+      },
+      {
+        "task": 14,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 620,
+        "completion_tokens": 200,
+        "total_tokens": 820
+      },
+      {
+        "task": 140,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 922,
+        "completion_tokens": 262,
+        "total_tokens": 1184
+      },
+      {
+        "task": 141,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1392,
+        "completion_tokens": 145,
+        "total_tokens": 1537
+      },
+      {
+        "task": 142,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1291,
+        "completion_tokens": 232,
+        "total_tokens": 1523
+      },
+      {
+        "task": 144,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1047,
+        "completion_tokens": 355,
+        "total_tokens": 1402
+      },
+      {
+        "task": 146,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2721,
+        "completion_tokens": 331,
+        "total_tokens": 3052
+      },
+      {
+        "task": 148,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1158,
+        "completion_tokens": 205,
+        "total_tokens": 1363
+      },
+      {
+        "task": 149,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1043,
+        "completion_tokens": 289,
+        "total_tokens": 1332
+      },
+      {
+        "task": 15,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2029,
+        "completion_tokens": 482,
+        "total_tokens": 2511
+      },
+      {
+        "task": 150,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2626,
+        "completion_tokens": 384,
+        "total_tokens": 3010
+      },
+      {
+        "task": 152,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1093,
+        "completion_tokens": 317,
+        "total_tokens": 1410
+      },
+      {
+        "task": 153,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1332,
+        "completion_tokens": 214,
+        "total_tokens": 1546
+      },
+      {
+        "task": 154,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 759,
+        "completion_tokens": 128,
+        "total_tokens": 887
+      },
+      {
+        "task": 155,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 4,
+        "prompt_tokens": 3183,
+        "completion_tokens": 276,
+        "total_tokens": 3459
+      },
+      {
+        "task": 158,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1051,
+        "completion_tokens": 150,
+        "total_tokens": 1201
+      },
+      {
+        "task": 159,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 901,
+        "completion_tokens": 233,
+        "total_tokens": 1134
+      },
+      {
+        "task": 16,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 677,
+        "completion_tokens": 137,
+        "total_tokens": 814
+      },
+      {
+        "task": 160,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1035,
+        "completion_tokens": 205,
+        "total_tokens": 1240
+      },
+      {
+        "task": 161,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 888,
+        "completion_tokens": 135,
+        "total_tokens": 1023
+      },
+      {
+        "task": 162,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 905,
+        "completion_tokens": 331,
+        "total_tokens": 1236
+      },
+      {
+        "task": 163,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2499,
+        "completion_tokens": 411,
+        "total_tokens": 2910
+      },
+      {
+        "task": 17,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 874,
+        "completion_tokens": 1024,
+        "total_tokens": 1898
+      },
+      {
+        "task": 19,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 638,
+        "completion_tokens": 193,
+        "total_tokens": 831
+      },
+      {
+        "task": 2,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 575,
+        "completion_tokens": 168,
+        "total_tokens": 743
+      },
+      {
+        "task": 20,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1176,
+        "completion_tokens": 320,
+        "total_tokens": 1496
+      },
+      {
+        "task": 23,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 447,
+        "completion_tokens": 98,
+        "total_tokens": 545
+      },
+      {
+        "task": 25,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 748,
+        "completion_tokens": 117,
+        "total_tokens": 865
+      },
+      {
+        "task": 26,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 814,
+        "completion_tokens": 228,
+        "total_tokens": 1042
+      },
+      {
+        "task": 27,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 515,
+        "completion_tokens": 136,
+        "total_tokens": 651
+      },
+      {
+        "task": 29,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 518,
+        "completion_tokens": 194,
+        "total_tokens": 712
+      },
+      {
+        "task": 3,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 974,
+        "completion_tokens": 152,
+        "total_tokens": 1126
+      },
+      {
+        "task": 30,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 720,
+        "completion_tokens": 309,
+        "total_tokens": 1029
+      },
+      {
+        "task": 31,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2457,
+        "completion_tokens": 181,
+        "total_tokens": 2638
+      },
+      {
+        "task": 34,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 457,
+        "completion_tokens": 232,
+        "total_tokens": 689
+      },
+      {
+        "task": 35,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 631,
+        "completion_tokens": 158,
+        "total_tokens": 789
+      },
+      {
+        "task": 36,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2315,
+        "completion_tokens": 197,
+        "total_tokens": 2512
+      },
+      {
+        "task": 37,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1009,
+        "completion_tokens": 321,
+        "total_tokens": 1330
+      },
+      {
+        "task": 4,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 781,
+        "completion_tokens": 233,
+        "total_tokens": 1014
+      },
+      {
+        "task": 40,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 848,
+        "completion_tokens": 178,
+        "total_tokens": 1026
+      },
+      {
+        "task": 41,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 533,
+        "completion_tokens": 134,
+        "total_tokens": 667
+      },
+      {
+        "task": 42,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 560,
+        "completion_tokens": 365,
+        "total_tokens": 925
+      },
+      {
+        "task": 46,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 792,
+        "completion_tokens": 108,
+        "total_tokens": 900
+      },
+      {
+        "task": 48,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 814,
+        "completion_tokens": 113,
+        "total_tokens": 927
+      },
+      {
+        "task": 49,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 560,
+        "completion_tokens": 177,
+        "total_tokens": 737
+      },
+      {
+        "task": 5,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 881,
+        "completion_tokens": 277,
+        "total_tokens": 1158
+      },
+      {
+        "task": 50,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 570,
+        "completion_tokens": 139,
+        "total_tokens": 709
+      },
+      {
+        "task": 51,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 743,
+        "completion_tokens": 162,
+        "total_tokens": 905
+      },
+      {
+        "task": 52,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 795,
+        "completion_tokens": 203,
+        "total_tokens": 998
+      },
+      {
+        "task": 53,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 532,
+        "completion_tokens": 149,
+        "total_tokens": 681
+      },
+      {
+        "task": 54,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 763,
+        "completion_tokens": 124,
+        "total_tokens": 887
+      },
+      {
+        "task": 55,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 646,
+        "completion_tokens": 104,
+        "total_tokens": 750
+      },
+      {
+        "task": 56,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 774,
+        "completion_tokens": 118,
+        "total_tokens": 892
+      },
+      {
+        "task": 57,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 972,
+        "completion_tokens": 148,
+        "total_tokens": 1120
+      },
+      {
+        "task": 58,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 606,
+        "completion_tokens": 387,
+        "total_tokens": 993
+      },
+      {
+        "task": 59,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2643,
+        "completion_tokens": 202,
+        "total_tokens": 2845
+      },
+      {
+        "task": 61,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 847,
+        "completion_tokens": 122,
+        "total_tokens": 969
+      },
+      {
+        "task": 62,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1027,
+        "completion_tokens": 212,
+        "total_tokens": 1239
+      },
+      {
+        "task": 63,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 782,
+        "completion_tokens": 122,
+        "total_tokens": 904
+      },
+      {
+        "task": 64,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 957,
+        "completion_tokens": 107,
+        "total_tokens": 1064
+      },
+      {
+        "task": 66,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 973,
+        "completion_tokens": 142,
+        "total_tokens": 1115
+      },
+      {
+        "task": 67,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1034,
+        "completion_tokens": 213,
+        "total_tokens": 1247
+      },
+      {
+        "task": 68,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1289,
+        "completion_tokens": 199,
+        "total_tokens": 1488
+      },
+      {
+        "task": 69,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 2120,
+        "completion_tokens": 200,
+        "total_tokens": 2320
+      },
+      {
+        "task": 71,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2565,
+        "completion_tokens": 779,
+        "total_tokens": 3344
+      },
+      {
+        "task": 72,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2726,
+        "completion_tokens": 311,
+        "total_tokens": 3037
+      },
+      {
+        "task": 73,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3081,
+        "completion_tokens": 298,
+        "total_tokens": 3379
+      },
+      {
+        "task": 74,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1105,
+        "completion_tokens": 202,
+        "total_tokens": 1307
+      },
+      {
+        "task": 76,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1128,
+        "completion_tokens": 172,
+        "total_tokens": 1300
+      },
+      {
+        "task": 78,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1094,
+        "completion_tokens": 103,
+        "total_tokens": 1197
+      },
+      {
+        "task": 79,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 788,
+        "completion_tokens": 269,
+        "total_tokens": 1057
+      },
+      {
+        "task": 8,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 897,
+        "completion_tokens": 241,
+        "total_tokens": 1138
+      },
+      {
+        "task": 80,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 938,
+        "completion_tokens": 116,
+        "total_tokens": 1054
+      },
+      {
+        "task": 81,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3998,
+        "completion_tokens": 467,
+        "total_tokens": 4465
+      },
+      {
+        "task": 83,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 764,
+        "completion_tokens": 216,
+        "total_tokens": 980
+      },
+      {
+        "task": 85,
+        "round2_strategy_requests": 1,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 2196,
+        "completion_tokens": 521,
+        "total_tokens": 2717
+      },
+      {
+        "task": 86,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 894,
+        "completion_tokens": 144,
+        "total_tokens": 1038
+      },
+      {
+        "task": 88,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1242,
+        "completion_tokens": 183,
+        "total_tokens": 1425
+      },
+      {
+        "task": 89,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1075,
+        "completion_tokens": 201,
+        "total_tokens": 1276
+      },
+      {
+        "task": 9,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 730,
+        "completion_tokens": 240,
+        "total_tokens": 970
+      },
+      {
+        "task": 91,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 781,
+        "completion_tokens": 134,
+        "total_tokens": 915
+      },
+      {
+        "task": 92,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 876,
+        "completion_tokens": 160,
+        "total_tokens": 1036
+      },
+      {
+        "task": 94,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 1634,
+        "completion_tokens": 198,
+        "total_tokens": 1832
+      },
+      {
+        "task": 97,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 742,
+        "completion_tokens": 151,
+        "total_tokens": 893
+      },
+      {
+        "task": 98,
+        "round2_strategy_requests": 0,
+        "missed_facts": 0,
+        "calls": 1,
+        "prompt_tokens": 850,
+        "completion_tokens": 136,
+        "total_tokens": 986
+      },
+      {
+        "task": 99,
+        "round2_strategy_requests": 2,
+        "missed_facts": 1,
+        "calls": 3,
+        "prompt_tokens": 3708,
+        "completion_tokens": 1088,
+        "total_tokens": 4796
+      }
+    ]
+  }
+}

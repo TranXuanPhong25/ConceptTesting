@@ -1,0 +1,467 @@
+{
+ "records": [
+  {
+   "input_repr": "('A',)",
+   "valid": true,
+   "concept_hits": [
+    true,
+    true,
+    true
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('A')",
+   "semantic_measurements": [
+    {
+     "state": true,
+     "status": "observed",
+     "evidence": {
+      "observations": 1,
+      "hits": 1,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'A'",
+         "result": "'a'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('Hi',)",
+   "valid": true,
+   "concept_hits": [
+    true,
+    true,
+    true
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('Hi')",
+   "semantic_measurements": [
+    {
+     "state": true,
+     "status": "observed",
+     "evidence": {
+      "observations": 2,
+      "hits": 1,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'H'",
+         "result": "'h'"
+        }
+       },
+       {
+        "hit": false,
+        "detail": {
+         "receiver": "'i'",
+         "result": "'i'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('HI',)",
+   "valid": true,
+   "concept_hits": [
+    true,
+    true,
+    true
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('HI')",
+   "semantic_measurements": [
+    {
+     "state": true,
+     "status": "observed",
+     "evidence": {
+      "observations": 2,
+      "hits": 2,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'H'",
+         "result": "'h'"
+        }
+       },
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'I'",
+         "result": "'i'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('z',)",
+   "valid": true,
+   "concept_hits": [
+    false,
+    true,
+    false
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('z')",
+   "semantic_measurements": [
+    {
+     "state": false,
+     "status": "observed",
+     "evidence": {
+      "observations": 1,
+      "hits": 0,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": false,
+        "detail": {
+         "receiver": "'z'",
+         "result": "'z'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('Z',)",
+   "valid": true,
+   "concept_hits": [
+    true,
+    true,
+    true
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('Z')",
+   "semantic_measurements": [
+    {
+     "state": true,
+     "status": "observed",
+     "evidence": {
+      "observations": 1,
+      "hits": 1,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'Z'",
+         "result": "'z'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('ab',)",
+   "valid": true,
+   "concept_hits": [
+    false,
+    true,
+    false
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('ab')",
+   "semantic_measurements": [
+    {
+     "state": false,
+     "status": "observed",
+     "evidence": {
+      "observations": 2,
+      "hits": 0,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": false,
+        "detail": {
+         "receiver": "'a'",
+         "result": "'a'"
+        }
+       },
+       {
+        "hit": false,
+        "detail": {
+         "receiver": "'b'",
+         "result": "'b'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('ABC',)",
+   "valid": true,
+   "concept_hits": [
+    true,
+    true,
+    true
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('ABC')",
+   "semantic_measurements": [
+    {
+     "state": true,
+     "status": "observed",
+     "evidence": {
+      "observations": 3,
+      "hits": 3,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'A'",
+         "result": "'a'"
+        }
+       },
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'B'",
+         "result": "'b'"
+        }
+       },
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'C'",
+         "result": "'c'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('aB',)",
+   "valid": true,
+   "concept_hits": [
+    true,
+    true,
+    true
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('aB')",
+   "semantic_measurements": [
+    {
+     "state": true,
+     "status": "observed",
+     "evidence": {
+      "observations": 2,
+      "hits": 1,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": false,
+        "detail": {
+         "receiver": "'a'",
+         "result": "'a'"
+        }
+       },
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'B'",
+         "result": "'b'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('xyz',)",
+   "valid": true,
+   "concept_hits": [
+    false,
+    true,
+    false
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('xyz')",
+   "semantic_measurements": [
+    {
+     "state": false,
+     "status": "observed",
+     "evidence": {
+      "observations": 3,
+      "hits": 0,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": false,
+        "detail": {
+         "receiver": "'x'",
+         "result": "'x'"
+        }
+       },
+       {
+        "hit": false,
+        "detail": {
+         "receiver": "'y'",
+         "result": "'y'"
+        }
+       },
+       {
+        "hit": false,
+        "detail": {
+         "receiver": "'z'",
+         "result": "'z'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  },
+  {
+   "input_repr": "('XYZ',)",
+   "valid": true,
+   "concept_hits": [
+    true,
+    true,
+    true
+   ],
+   "shown_hits": [],
+   "contract_error": null,
+   "call": "encrypt('XYZ')",
+   "semantic_measurements": [
+    {
+     "state": true,
+     "status": "observed",
+     "evidence": {
+      "observations": 3,
+      "hits": 3,
+      "unknown": 0,
+      "examples": [
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'X'",
+         "result": "'x'"
+        }
+       },
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'Y'",
+         "result": "'y'"
+        }
+       },
+       {
+        "hit": true,
+        "detail": {
+         "receiver": "'Z'",
+         "result": "'z'"
+        }
+       }
+      ]
+     },
+     "requirement_status": "unknown"
+    }
+   ],
+   "semantic_execution_status": "ok",
+   "semantic_line_reached": [
+    true
+   ]
+  }
+ ],
+ "capture_errors": [],
+ "summary": {
+  "candidates": 10,
+  "valid": 10,
+  "removed": 0,
+  "raw_candidates": 10,
+  "raw_valid": 10,
+  "requested_draws": 10,
+  "oversize": 0,
+  "trace_errors": 0,
+  "first_contract_message": null,
+  "concept_hit_rates": [
+   0.7,
+   1.0,
+   0.7
+  ],
+  "concept_hit_counts": [
+   7,
+   10,
+   7
+  ],
+  "shown_hit_counts": []
+ }
+}

@@ -1,0 +1,605 @@
+{
+ "rule": "SHA256 task; ordering,membership,normalization;2unique/family",
+ "selected": [
+  {
+   "task": 137,
+   "index": 0,
+   "binding": {
+    "family": "ordering",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     14,
+     7,
+     14,
+     56
+    ],
+    "expression": "str(a).replace('.', ',') < str(b).replace('.', ',')",
+    "source_signature": "Compare(left=Call(func=Attribute(value=Call(func=Name(id='str', ctx=Load()), args=[Name(id='a', ctx=Load())], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value='.'), Constant(value=',')], keywords=[]), ops=[Lt()], comparators=[Call(func=Attribute(value=Call(func=Name(id='str', ctx=Load()), args=[Name(id='b', ctx=Load())], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value='.'), Constant(value=',')], keywords=[])])",
+    "operator": "Lt",
+    "alternative": "numeric",
+    "predicate": "the string comparison disagrees with finite decimal-number comparison of its operands"
+   }
+  },
+  {
+   "task": 148,
+   "index": 0,
+   "binding": {
+    "family": "ordering",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     23,
+     11,
+     23,
+     28
+    ],
+    "expression": "planet1 < planet2",
+    "source_signature": "Compare(left=Name(id='planet1', ctx=Load()), ops=[Lt()], comparators=[Name(id='planet2', ctx=Load())])",
+    "operator": "Lt",
+    "alternative": "literal_rank",
+    "rank_values": [
+     "Mercury",
+     "Venus",
+     "Earth",
+     "Mars",
+     "Jupiter",
+     "Saturn",
+     "Uranus",
+     "Neptune"
+    ],
+    "rank_name": "planet_list",
+    "rank_line": 18,
+    "predicate": "the string comparison disagrees with the unique literal rank-table ordering of its operands"
+   }
+  },
+  {
+   "task": 51,
+   "index": 0,
+   "binding": {
+    "family": "membership",
+    "status": "supported",
+    "requirement_status": "public_lexical_cue_unverified",
+    "site": [
+     21,
+     45,
+     21,
+     63
+    ],
+    "expression": "char not in vowels",
+    "source_signature": "Compare(left=Name(id='char', ctx=Load()), ops=[NotIn()], comparators=[Name(id='vowels', ctx=Load())])",
+    "expected_members": "aeiouAEIOU",
+    "negated": true,
+    "requirement_evidence": "remove_vowels is a function that takes string and returns string without vowels.",
+    "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+   }
+  },
+  {
+   "task": 98,
+   "index": 0,
+   "binding": {
+    "family": "membership",
+    "status": "supported",
+    "requirement_status": "public_lexical_cue_unverified",
+    "site": [
+     20,
+     11,
+     20,
+     27
+    ],
+    "expression": "letter in 'AEOU'",
+    "source_signature": "Compare(left=Name(id='letter', ctx=Load()), ops=[In()], comparators=[Constant(value='AEOU')])",
+    "expected_members": "AEIOU",
+    "negated": false,
+    "requirement_evidence": "Given a string s, count the number of uppercase vowels in even indices.",
+    "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+   }
+  },
+  {
+   "task": 101,
+   "index": 1,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     13,
+     11,
+     13,
+     29
+    ],
+    "expression": "s.replace(',', '')",
+    "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='replace', ctx=Load()), args=[Constant(value=','), Constant(value='')], keywords=[])",
+    "operation": "replace",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 54,
+   "index": 0,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     19,
+     9,
+     19,
+     19
+    ],
+    "expression": "s0.lower()",
+    "source_signature": "Call(func=Attribute(value=Name(id='s0', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+    "operation": "lower",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  }
+ ],
+ "candidates": [
+  {
+   "task": 98,
+   "index": 0,
+   "binding": {
+    "family": "membership",
+    "status": "supported",
+    "requirement_status": "public_lexical_cue_unverified",
+    "site": [
+     20,
+     11,
+     20,
+     27
+    ],
+    "expression": "letter in 'AEOU'",
+    "source_signature": "Compare(left=Name(id='letter', ctx=Load()), ops=[In()], comparators=[Constant(value='AEOU')])",
+    "expected_members": "AEIOU",
+    "negated": false,
+    "requirement_evidence": "Given a string s, count the number of uppercase vowels in even indices.",
+    "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+   }
+  },
+  {
+   "task": 162,
+   "index": 1,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     10,
+     11,
+     10,
+     23
+    ],
+    "expression": "text.strip()",
+    "source_signature": "Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='strip', ctx=Load()), args=[], keywords=[])",
+    "operation": "strip",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 118,
+   "index": 0,
+   "binding": {
+    "family": "membership",
+    "status": "supported",
+    "requirement_status": "public_lexical_cue_unverified",
+    "site": [
+     19,
+     11,
+     19,
+     28
+    ],
+    "expression": "word[i] in vowels",
+    "source_signature": "Compare(left=Subscript(value=Name(id='word', ctx=Load()), slice=Name(id='i', ctx=Load()), ctx=Load()), ops=[In()], comparators=[Name(id='vowels', ctx=Load())])",
+    "expected_members": "aeiouAEIOU",
+    "negated": false,
+    "requirement_evidence": "You are given a word. Your task is to find the closest vowel that stands between",
+    "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+   }
+  },
+  {
+   "task": 148,
+   "index": 0,
+   "binding": {
+    "family": "ordering",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     23,
+     11,
+     23,
+     28
+    ],
+    "expression": "planet1 < planet2",
+    "source_signature": "Compare(left=Name(id='planet1', ctx=Load()), ops=[Lt()], comparators=[Name(id='planet2', ctx=Load())])",
+    "operator": "Lt",
+    "alternative": "literal_rank",
+    "rank_values": [
+     "Mercury",
+     "Venus",
+     "Earth",
+     "Mars",
+     "Jupiter",
+     "Saturn",
+     "Uranus",
+     "Neptune"
+    ],
+    "rank_name": "planet_list",
+    "rank_line": 18,
+    "predicate": "the string comparison disagrees with the unique literal rank-table ordering of its operands"
+   }
+  },
+  {
+   "task": 51,
+   "index": 0,
+   "binding": {
+    "family": "membership",
+    "status": "supported",
+    "requirement_status": "public_lexical_cue_unverified",
+    "site": [
+     21,
+     45,
+     21,
+     63
+    ],
+    "expression": "char not in vowels",
+    "source_signature": "Compare(left=Name(id='char', ctx=Load()), ops=[NotIn()], comparators=[Name(id='vowels', ctx=Load())])",
+    "expected_members": "aeiouAEIOU",
+    "negated": true,
+    "requirement_evidence": "remove_vowels is a function that takes string and returns string without vowels.",
+    "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+   }
+  },
+  {
+   "task": 51,
+   "index": 1,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     20,
+     11,
+     20,
+     32
+    ],
+    "expression": "text.replace(' ', '')",
+    "source_signature": "Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='replace', ctx=Load()), args=[Constant(value=' '), Constant(value='')], keywords=[])",
+    "operation": "replace",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 113,
+   "index": 0,
+   "binding": {
+    "family": "membership",
+    "status": "unsupported",
+    "requirement_status": "unknown",
+    "reason": "ambiguous_or_missing_expression"
+   }
+  },
+  {
+   "task": 67,
+   "index": 0,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     20,
+     21,
+     20,
+     46
+    ],
+    "expression": "s.split('and')[0].strip()",
+    "source_signature": "Call(func=Attribute(value=Subscript(value=Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='split', ctx=Load()), args=[Constant(value='and')], keywords=[]), slice=Constant(value=0), ctx=Load()), attr='strip', ctx=Load()), args=[], keywords=[])",
+    "operation": "strip",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 89,
+   "index": 2,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     16,
+     43,
+     16,
+     55
+    ],
+    "expression": "char.lower()",
+    "source_signature": "Call(func=Attribute(value=Name(id='char', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+    "operation": "lower",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 27,
+   "index": 0,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     12,
+     26,
+     12,
+     36
+    ],
+    "expression": "ch.lower()",
+    "source_signature": "Call(func=Attribute(value=Name(id='ch', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+    "operation": "lower",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 112,
+   "index": 1,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     13,
+     8,
+     13,
+     17
+    ],
+    "expression": "s.lower()",
+    "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+    "operation": "lower",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 12,
+   "index": 0,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     16,
+     15,
+     16,
+     24
+    ],
+    "expression": "s.lower()",
+    "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+    "operation": "lower",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 146,
+   "index": 1,
+   "binding": {
+    "family": "membership",
+    "status": "unsupported",
+    "requirement_status": "unknown",
+    "site": [
+     13,
+     15,
+     13,
+     50
+    ],
+    "expression": "nums[i] % 10 not in [0, 2, 4, 6, 8]",
+    "source_signature": "Compare(left=BinOp(left=Subscript(value=Name(id='nums', ctx=Load()), slice=Name(id='i', ctx=Load()), ctx=Load()), op=Mod(), right=Constant(value=10)), ops=[NotIn()], comparators=[List(elts=[Constant(value=0), Constant(value=2), Constant(value=4), Constant(value=6), Constant(value=8)], ctx=Load())])",
+    "reason": "no_registered_public_class_cue"
+   }
+  },
+  {
+   "task": 48,
+   "index": 0,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     19,
+     12,
+     19,
+     41
+    ],
+    "expression": "text.lower().replace(' ', '')",
+    "source_signature": "Call(func=Attribute(value=Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value=' '), Constant(value='')], keywords=[])",
+    "operation": "replace",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 64,
+   "index": 1,
+   "binding": {
+    "family": "membership",
+    "status": "supported",
+    "requirement_status": "public_lexical_cue_unverified",
+    "site": [
+     21,
+     11,
+     21,
+     30
+    ],
+    "expression": "c.lower() in vowels",
+    "source_signature": "Compare(left=Call(func=Attribute(value=Name(id='c', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[]), ops=[In()], comparators=[Name(id='vowels', ctx=Load())])",
+    "expected_members": "aeiouAEIOU",
+    "negated": false,
+    "requirement_evidence": "Write a function vowels_count which takes a string representing",
+    "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+   }
+  },
+  {
+   "task": 64,
+   "index": 2,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     21,
+     11,
+     21,
+     20
+    ],
+    "expression": "c.lower()",
+    "source_signature": "Call(func=Attribute(value=Name(id='c', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+    "operation": "lower",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 101,
+   "index": 1,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     13,
+     11,
+     13,
+     29
+    ],
+    "expression": "s.replace(',', '')",
+    "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='replace', ctx=Load()), args=[Constant(value=','), Constant(value='')], keywords=[])",
+    "operation": "replace",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 140,
+   "index": 1,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     14,
+     11,
+     14,
+     33
+    ],
+    "expression": "text.replace(' ', '_')",
+    "source_signature": "Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='replace', ctx=Load()), args=[Constant(value=' '), Constant(value='_')], keywords=[])",
+    "operation": "replace",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 117,
+   "index": 1,
+   "binding": {
+    "family": "membership",
+    "status": "unsupported",
+    "requirement_status": "unknown",
+    "site": [
+     20,
+     76,
+     20,
+     102
+    ],
+    "expression": "letter not in 'aeiouAEIOU'",
+    "source_signature": "Compare(left=Name(id='letter', ctx=Load()), ops=[NotIn()], comparators=[Constant(value='aeiouAEIOU')])",
+    "reason": "no_registered_public_class_cue"
+   }
+  },
+  {
+   "task": 137,
+   "index": 0,
+   "binding": {
+    "family": "ordering",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     14,
+     7,
+     14,
+     56
+    ],
+    "expression": "str(a).replace('.', ',') < str(b).replace('.', ',')",
+    "source_signature": "Compare(left=Call(func=Attribute(value=Call(func=Name(id='str', ctx=Load()), args=[Name(id='a', ctx=Load())], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value='.'), Constant(value=',')], keywords=[]), ops=[Lt()], comparators=[Call(func=Attribute(value=Call(func=Name(id='str', ctx=Load()), args=[Name(id='b', ctx=Load())], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value='.'), Constant(value=',')], keywords=[])])",
+    "operator": "Lt",
+    "alternative": "numeric",
+    "predicate": "the string comparison disagrees with finite decimal-number comparison of its operands"
+   }
+  },
+  {
+   "task": 137,
+   "index": 1,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     14,
+     7,
+     14,
+     30
+    ],
+    "expression": "str(a).replace('.', ',')",
+    "source_signature": "Call(func=Attribute(value=Call(func=Name(id='str', ctx=Load()), args=[Name(id='a', ctx=Load())], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value='.'), Constant(value=',')], keywords=[])",
+    "operation": "replace",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 80,
+   "index": 0,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     16,
+     8,
+     16,
+     17
+    ],
+    "expression": "s.lower()",
+    "source_signature": "Call(func=Attribute(value=Name(id='s', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+    "operation": "lower",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 54,
+   "index": 0,
+   "binding": {
+    "family": "normalization",
+    "status": "supported",
+    "requirement_status": "unknown",
+    "site": [
+     19,
+     9,
+     19,
+     19
+    ],
+    "expression": "s0.lower()",
+    "source_signature": "Call(func=Attribute(value=Name(id='s0', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+    "operation": "lower",
+    "predicate": "exact string receiver differs from the result of this normalization call"
+   }
+  },
+  {
+   "task": 78,
+   "index": 0,
+   "binding": {
+    "family": "membership",
+    "status": "unsupported",
+    "requirement_status": "unknown",
+    "site": [
+     26,
+     86,
+     26,
+     100
+    ],
+    "expression": "num.count('D')",
+    "source_signature": "Call(func=Attribute(value=Name(id='num', ctx=Load()), attr='count', ctx=Load()), args=[Constant(value='D')], keywords=[])",
+    "reason": "unsupported_membership_form"
+   }
+  }
+ ]
+}

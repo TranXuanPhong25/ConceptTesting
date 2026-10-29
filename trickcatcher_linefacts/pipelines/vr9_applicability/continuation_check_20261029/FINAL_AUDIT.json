@@ -1,0 +1,92 @@
+{
+  "audit_status": "PASS_WITH_NEGATIVE_METHOD_RESULT",
+  "run_status": "complete",
+  "auditor_new_model_calls": 0,
+  "auditor_new_put_executions": 0,
+  "integrity": {
+    "frozen_source_files_verified": 80,
+    "parent_files_verified": 63,
+    "generation_files_verified": 788,
+    "exact_strategy_request_source_pool_receipt_checks": 48,
+    "strict_generic_controls_exactly_equal_archived_results": 12,
+    "round1_assertions_preserved_in_all_arms": true,
+    "unique_valid_selected_inputs_not_in_round1": true,
+    "max_selected_inputs_per_task": 4,
+    "max_selected_inputs_per_strategy": 2,
+    "max_assertions_per_task": 20,
+    "results_recomputed_from_saved_native_grading": true,
+    "results_sha256": "6d612053e2346c9efa5b386d25681dfbdf250e7273e6bc735e5bcc2ada377e09",
+    "generation_freeze_sha256": "94a3804ef0374ac5bfdc744467e2c84839b40fb83b7dd6feddea31dba8f53ae8"
+  },
+  "lifecycle_at_audit": {
+    "controller_pid": 49687,
+    "controller_proc_exists": false,
+    "exclusive_run_lock_available": true,
+    "complete_tasks": 6,
+    "registered_completion_cap": 12,
+    "new_completion_attempts": 5,
+    "unique_attempt_keys": 5,
+    "all_attempts_have_received_receipts": true,
+    "failed_or_unresolved_attempts": 0,
+    "fresh_requests_expected_output_only": true,
+    "fresh_requests_max_tokens": 1024,
+    "model": "qwen3.5-27b-awq",
+    "all_new_requests_within_context_8192": true
+  },
+  "costs": {
+    "new_physical_completions": 5,
+    "new_usage": {"prompt_tokens": 2918, "completion_tokens": 824, "total_tokens": 3742},
+    "new_unknown_usage": 0,
+    "inherited_round1_calls": 6,
+    "inherited_reference_calls": 60,
+    "inherited_round1_reference_usage": {"prompt_tokens": 17442, "completion_tokens": 12657, "total_tokens": 30099},
+    "reused_round2_physical_receipts": 20,
+    "reused_round2_usage": {"prompt_tokens": 15133, "completion_tokens": 2975, "total_tokens": 18108},
+    "logical_round2_calls_including_replay": 71,
+    "uses_of_five_fresh_receipts_across_arms": 9,
+    "fresh_receipt_task_mode_uses": [
+      [[148, "retain"], [148, "applicable"]],
+      [[51, "retain"]],
+      [[98, "retain"], [98, "applicable"]],
+      [[101, "retain"], [101, "applicable"]],
+      [[54, "retain"], [54, "applicable"]]
+    ],
+    "caveat": "Reused token counts are historical costs, not new spend. Inherited subtotals exclude earlier shared preparation costs. Logical arm calls repeat cached physical receipts."
+  },
+  "native_stage": {
+    "round1_final_classification_artifacts_checked": 48,
+    "classification_trace_errors": 0,
+    "assertion_capture_error_types": {"AssertionError": 144},
+    "assertion_capture_error_interpretation": "Existing assertions are executed against buggy PUTs for input capture. AssertionError is recorded after the call is captured; these are not model transport failures or tracing failures.",
+    "round1_ref_confirmed_tasks": [51, 54, 98, 101, 137, 148],
+    "selected_and_novel_valid_final_counts": {"strict": 19, "retain": 24, "applicable": 24, "generic": 23},
+    "missing_expected_total_each_arm": {"strict": 0, "retain": 0, "applicable": 0, "generic": 0},
+    "selected_bug_exposing_call_counts": {"strict": 2, "retain": 1, "applicable": 1, "generic": 2},
+    "task51": {
+      "refuted_target_skipped_only_by_applicable": true,
+      "selected_counts": {"strict": 0, "retain": 4, "applicable": 4, "generic": 4},
+      "selected_bug_exposing_counts": {"strict": 0, "retain": 0, "applicable": 0, "generic": 0},
+      "saved_semantic_candidate_occurrences": 200,
+      "saved_semantic_candidates_containing_literal_space": 22,
+      "saved_generic_candidate_occurrences": 200,
+      "saved_generic_candidates_containing_literal_space": 6,
+      "pool_counts_method": "Literal data inspection only; no candidate execution or new oracle labeling."
+    },
+    "task101_selection_loss": {"strict_exposing_calls": 2, "retain_exposing_calls": 1, "applicable_exposing_calls": 1, "generic_exposing_calls": 2}
+  },
+  "recomputed_scores": {
+    "ref": {
+      "strict": {"confirmed_tasks": 6, "false_alarm_tasks": 0, "abstained_calls": 2},
+      "retain": {"confirmed_tasks": 6, "false_alarm_tasks": 0, "abstained_calls": 1},
+      "applicable": {"confirmed_tasks": 6, "false_alarm_tasks": 0, "abstained_calls": 1},
+      "generic": {"confirmed_tasks": 6, "false_alarm_tasks": 0, "abstained_calls": 2}
+    },
+    "o0": {
+      "strict": {"confirmed_tasks": [51, 98, 101, 137, 148], "false_alarm_tasks": [98, 101]},
+      "retain": {"confirmed_tasks": [51, 98, 101, 137, 148], "false_alarm_tasks": [98, 101]},
+      "applicable": {"confirmed_tasks": [51, 98, 101, 137, 148], "false_alarm_tasks": [51, 98, 101]},
+      "generic": {"confirmed_tasks": [51, 98, 101, 137, 148], "false_alarm_tasks": [51, 98, 101]}
+    }
+  },
+  "conclusion": "Routing and valid-input retention work as registered. This six-task development replay shows no detection gain: round1 already detects every task, repaired task51 selections contain no exposing call, and task101 loses one selected exposing call. No automatic broader run or method promotion is justified."
+}

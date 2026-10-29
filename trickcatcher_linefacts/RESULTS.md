@@ -1491,3 +1491,41 @@ no tuning/data expansion.11 synthetic tests pass, all historical v47 metrics rep
 0 API/new program execution,no GPU. Input-exposure reach only,not assertion correctness or CASCADE online efficacy.
 [Report](analysis/v78_learned_select/RESULTS.md), [saved data](analysis/v78_learned_select/RESULTS.json),
 [prospective protocol/amendments](analysis/v78_learned_select/PREREG.md).
+
+## 2026-10-29 vr8 semantic gate — CPU ready, endpoint blocked
+
+41 CPU tests pass, including native strategy/classification/final scoring with ten
+saved reference programs. Selection frozen: 137,148 (ordering),51,98 (membership),
+101,54 (normalization). CPU replay of saved round1: old gate covered6/6 tasks;
+semantic predicate observed5/6, with task51 the sole uncovered target. Selection
+was not changed after this observation. This is a coverage diagnostic, not a bug
+score or evidence that vr8 improves generated tests.
+
+The first controller stopped at endpoint preflight; `/models` returned HTTP404.
+No new completion attempts, no generated vr8 tests, no efficacy result. The
+empty completion ledger permits an explicit retry with the same frozen sources
+once the endpoint is restored. No controller remains active.
+
+[Protocol and commands](pipelines/vr8_semanticgate/README.md).
+
+## 2026-10-29 vr8 semantic gate — COMPLETE, no improvement shown
+
+Supersedes preflight404. Six tasks/three arms:ref6/6confirmed,FA0allarms;
+round1already6/6. Secondaryo0:5/6allarms,FAold/generic3,semantic2 because fewer
+inputs retained. New semantic inputs7each;novelvalidold/generic23vssemantic19.
+Onlytask51changes target:correct vowel table makes membership-disagreement
+predicate impossible.200valid candidate occurrences rejected,including saved
+bug-exposing input confirmed by post-hoc native replay. Applicability/hardfilter
+failure,not transport failure or ConceptCoder reproduction.20newphysicalcalls,
+53logical,18,108tokens,0unknown;41CPUtests+terminalhash/receipt auditpass.
+Noactivejob/automaticexpansion. [Report](pipelines/vr8_semanticgate/completed/REPORT.md).
+
+## 2026-10-29 vr9 applicability/retention — CPU ready, endpoint404
+
+User-authorized repair aftervr8:separate false from statically refuted class
+hypothesis;retain novel valid nonhits within existing4input budget. Frozen6tasks,
+exact saved strategies/pools/R1/tenrefs.48CPUchecks+12exact control replays pass.
+CPUpreviewtask51strict0→retain4/applicable4selected validinputs;total19→24,
+generic23. No efficacy claim/newfinalscore.0newcompletions/tokens;controller64941
+exitedpreflight404. Resume only authorized diagnostic when endpoint restored.
+[Report](pipelines/vr9_applicability/readiness/REPORT.md).

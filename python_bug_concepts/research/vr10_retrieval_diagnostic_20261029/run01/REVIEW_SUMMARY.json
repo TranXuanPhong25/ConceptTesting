@@ -1,0 +1,1157 @@
+{
+  "coverage": {
+    "judged": 117,
+    "total_union": 132,
+    "selection": "entire query union for every query with incremental dense top3 plus old four fixtures"
+  },
+  "reviewed_proposal_quality": {
+    "buggy": {
+      "V6": {
+        "reviewed_bindings": 10,
+        "supported_fault": 7,
+        "contradicted": 3,
+        "unknown_or_conditional": 0
+      },
+      "A": {
+        "reviewed_bindings": 27,
+        "supported_fault": 7,
+        "contradicted": 20,
+        "unknown_or_conditional": 0
+      },
+      "B": {
+        "reviewed_bindings": 27,
+        "supported_fault": 7,
+        "contradicted": 18,
+        "unknown_or_conditional": 2
+      },
+      "C": {
+        "reviewed_bindings": 27,
+        "supported_fault": 7,
+        "contradicted": 20,
+        "unknown_or_conditional": 0
+      },
+      "D": {
+        "reviewed_bindings": 27,
+        "supported_fault": 7,
+        "contradicted": 18,
+        "unknown_or_conditional": 2
+      }
+    },
+    "canonical": {
+      "V6": {
+        "reviewed_bindings": 5,
+        "supported_fault": 0,
+        "contradicted": 5,
+        "unknown_or_conditional": 0
+      },
+      "A": {
+        "reviewed_bindings": 30,
+        "supported_fault": 0,
+        "contradicted": 30,
+        "unknown_or_conditional": 0
+      },
+      "B": {
+        "reviewed_bindings": 30,
+        "supported_fault": 0,
+        "contradicted": 30,
+        "unknown_or_conditional": 0
+      },
+      "C": {
+        "reviewed_bindings": 30,
+        "supported_fault": 0,
+        "contradicted": 30,
+        "unknown_or_conditional": 0
+      },
+      "D": {
+        "reviewed_bindings": 30,
+        "supported_fault": 0,
+        "contradicted": 30,
+        "unknown_or_conditional": 0
+      }
+    },
+    "preinspected_engineering_fixture": {
+      "V6": {
+        "reviewed_bindings": 4,
+        "supported_fault": 2,
+        "contradicted": 2,
+        "unknown_or_conditional": 0
+      },
+      "A": {
+        "reviewed_bindings": 12,
+        "supported_fault": 3,
+        "contradicted": 9,
+        "unknown_or_conditional": 0
+      },
+      "B": {
+        "reviewed_bindings": 12,
+        "supported_fault": 3,
+        "contradicted": 7,
+        "unknown_or_conditional": 2
+      },
+      "C": {
+        "reviewed_bindings": 12,
+        "supported_fault": 4,
+        "contradicted": 8,
+        "unknown_or_conditional": 0
+      },
+      "D": {
+        "reviewed_bindings": 12,
+        "supported_fault": 4,
+        "contradicted": 7,
+        "unknown_or_conditional": 1
+      }
+    }
+  },
+  "contrasts": {
+    "B-A": {
+      "added": [
+        {
+          "review_id": "00155ac538925b2c4785",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "digit place extraction",
+          "task_ids": [
+            "HumanEval/2"
+          ]
+        },
+        {
+          "review_id": "27dc26bd545e30fd2892",
+          "kind": "preinspected_engineering_fixture",
+          "status": "unknown_or_conditional",
+          "mechanism_family": "aggregation scope",
+          "task_ids": [
+            "occurrence_cardinality"
+          ]
+        },
+        {
+          "review_id": "0edc723079c6fa1b4637",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "digit place extraction",
+          "task_ids": [
+            "HumanEval/2"
+          ]
+        },
+        {
+          "review_id": "16aea0329f61c9437b52",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "multiplicity and presence",
+          "task_ids": [
+            "HumanEval/26"
+          ]
+        },
+        {
+          "review_id": "1c41d814742f1398616d",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "2ff3b4f7f5c727f5689c",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "boundary partition",
+          "task_ids": [
+            "HumanEval/109"
+          ]
+        },
+        {
+          "review_id": "b1ce2289878c88f3be1a",
+          "kind": "buggy",
+          "status": "unknown_or_conditional",
+          "mechanism_family": "digit place extraction",
+          "task_ids": [
+            "HumanEval/97"
+          ]
+        },
+        {
+          "review_id": "7cec017c4c88e36d66f0",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "Unicode byte domain",
+          "task_ids": [
+            "HumanEval/54"
+          ]
+        },
+        {
+          "review_id": "e718915d8232a2cf458d",
+          "kind": "preinspected_engineering_fixture",
+          "status": "unknown_or_conditional",
+          "mechanism_family": "text normalization contract",
+          "task_ids": [
+            "encoded_character_measurement"
+          ]
+        },
+        {
+          "review_id": "52d921b8409983765480",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "special method return type",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "7d86e262ef7a8e44543f",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "membership domain",
+          "task_ids": [
+            "HumanEval/51"
+          ]
+        },
+        {
+          "review_id": "6b8beea3b38a075d2c32",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "f-string docstring",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "878dd36e0ceaef387796",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "absolute difference",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "b15504e8c541394a3df5",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "Unicode byte domain",
+          "task_ids": [
+            "HumanEval/54"
+          ]
+        },
+        {
+          "review_id": "30fe72cb8811eb423474",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "ASCII versus Unicode character classification",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "5c943ae7d6866db6865b",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "signed subtraction versus absolute difference",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "1d800f77b763bc6641b1",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "lexicographic versus numeric order",
+          "task_ids": [
+            "filtered_minimum"
+          ]
+        },
+        {
+          "review_id": "70510f41fb213dc4e6b0",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "zip silently truncates parallel inputs",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "ad23e1f47a58a26099af",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "f-string not recognized as docstring",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "3823b647da1c932b8477",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "set iteration order loss",
+          "task_ids": [
+            "distinct_cardinality"
+          ]
+        },
+        {
+          "review_id": "e4ee7328b7a7a50ee2d7",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "separate locks fail to synchronize shared state",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "e54967a381de1300c99e",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "set iteration order loss",
+          "task_ids": [
+            "occurrence_cardinality"
+          ]
+        },
+        {
+          "review_id": "879974b4a02eca2dbe67",
+          "kind": "buggy",
+          "status": "unknown_or_conditional",
+          "mechanism_family": "linear recursion depth versus supported input size",
+          "task_ids": [
+            "HumanEval/10"
+          ]
+        },
+        {
+          "review_id": "8a391f95af134c82fc82",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "invalid special-method return contract",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "c5db474c285624abc8d2",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "becba5b3439e3ee124d9",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "and/or returns a nonboolean operand",
+          "task_ids": [
+            "HumanEval/40"
+          ]
+        }
+      ],
+      "removed": [
+        {
+          "review_id": "037b2b50d8356b28de89",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "numeric cast loss",
+          "task_ids": [
+            "occurrence_cardinality"
+          ]
+        },
+        {
+          "review_id": "23cdf00c651d3f04ffee",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/2"
+          ]
+        },
+        {
+          "review_id": "bd702ca52972b78023ef",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "sequence index bounds",
+          "task_ids": [
+            "HumanEval/26"
+          ]
+        },
+        {
+          "review_id": "d9c862b7cd233585c2f7",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "range exclusive bound",
+          "task_ids": [
+            "HumanEval/109"
+          ]
+        },
+        {
+          "review_id": "c19bf41e90af0bdc92e7",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "mutable default state",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "eafc47e6afead1b2a087",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "undefined local",
+          "task_ids": [
+            "HumanEval/54"
+          ]
+        },
+        {
+          "review_id": "891424124d177dbf2c03",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "b7183c97f34fe279cb15",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "a396c58acc7bc281d78e",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "tautological condition",
+          "task_ids": [
+            "HumanEval/54"
+          ]
+        },
+        {
+          "review_id": "0357cf2a59d71567ff18",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "generator return versus emitted item",
+          "task_ids": [
+            "HumanEval/97"
+          ]
+        },
+        {
+          "review_id": "42962b585f34b416cc2c",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "f-string not recognized as docstring",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "7cf768806191e4054a33",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "shared mutable function default",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "c26d0155b38aa1ba8da6",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/2"
+          ]
+        },
+        {
+          "review_id": "d7a9fec2419a3d85d9c3",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "filtered_minimum"
+          ]
+        },
+        {
+          "review_id": "2ed984480dfee62686c1",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "cf2161a676818f7d2f47",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "generator return versus emitted item",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "d49ee75bf7de2d632201",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "distinct_cardinality"
+          ]
+        },
+        {
+          "review_id": "524766667173390ebc20",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "shared mutable function default",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "cbe1773c392a2094a855",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "set iteration order loss",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "66c30a86d8432a0ad4de",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "occurrence_cardinality"
+          ]
+        },
+        {
+          "review_id": "7c4012c386f9d1f4a131",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "property getter implicit None fallthrough",
+          "task_ids": [
+            "HumanEval/51"
+          ]
+        },
+        {
+          "review_id": "86171a877aecfffb612a",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "direct index outside valid bounds",
+          "task_ids": [
+            "HumanEval/10"
+          ]
+        },
+        {
+          "review_id": "e0f8f8c0d711c6c297dc",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "d2b46f79f62362b7941e",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "encoded_character_measurement"
+          ]
+        },
+        {
+          "review_id": "b0fb7566b5e0d7ed8e2f",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "shared mutable function default",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "b24c06389f397cdfff5e",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "tautological or constant condition",
+          "task_ids": [
+            "HumanEval/40"
+          ]
+        }
+      ],
+      "new_supported_buggy_bindings": 0,
+      "new_supported_mechanisms": [],
+      "added_contradicted_paired_control_bindings": 14,
+      "removed_contradicted_paired_control_bindings": 16,
+      "control_kinds": [
+        "canonical",
+        "preinspected_engineering_fixture"
+      ],
+      "preregistered_gate": "NO_GO"
+    },
+    "D-C": {
+      "added": [
+        {
+          "review_id": "aec56de5763ec348bfff",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "integer division precision",
+          "task_ids": [
+            "HumanEval/2"
+          ]
+        },
+        {
+          "review_id": "1c41d814742f1398616d",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "2ff3b4f7f5c727f5689c",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "boundary partition",
+          "task_ids": [
+            "HumanEval/109"
+          ]
+        },
+        {
+          "review_id": "b1ce2289878c88f3be1a",
+          "kind": "buggy",
+          "status": "unknown_or_conditional",
+          "mechanism_family": "digit place extraction",
+          "task_ids": [
+            "HumanEval/97"
+          ]
+        },
+        {
+          "review_id": "87b768d6519af812be56",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "first match versus optimum",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "8c8a6b3fe5550a91f9c0",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "extremum sentinel",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "7cec017c4c88e36d66f0",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "Unicode byte domain",
+          "task_ids": [
+            "HumanEval/54"
+          ]
+        },
+        {
+          "review_id": "e718915d8232a2cf458d",
+          "kind": "preinspected_engineering_fixture",
+          "status": "unknown_or_conditional",
+          "mechanism_family": "text normalization contract",
+          "task_ids": [
+            "encoded_character_measurement"
+          ]
+        },
+        {
+          "review_id": "52d921b8409983765480",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "special method return type",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "8a6ad3c6e6813171ec44",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "empty reduction domain",
+          "task_ids": [
+            "HumanEval/40"
+          ]
+        },
+        {
+          "review_id": "7d86e262ef7a8e44543f",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "membership domain",
+          "task_ids": [
+            "HumanEval/51"
+          ]
+        },
+        {
+          "review_id": "a53da70456503fdad862",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "empty reduction domain",
+          "task_ids": [
+            "HumanEval/51"
+          ]
+        },
+        {
+          "review_id": "ce9f498f0583fa0d8217",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "membership domain",
+          "task_ids": [
+            "HumanEval/51"
+          ]
+        },
+        {
+          "review_id": "6b8beea3b38a075d2c32",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "f-string docstring",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "d2f22f302395f1a5207c",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "Unicode byte domain",
+          "task_ids": [
+            "HumanEval/140"
+          ]
+        },
+        {
+          "review_id": "30fe72cb8811eb423474",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "ASCII versus Unicode character classification",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "a1eca0eb0042280fba98",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "presence mistaken for multiplicity",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "f1cc368a8b749e073e65",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "fixed-width leading-digit extraction",
+          "task_ids": [
+            "HumanEval/97"
+          ]
+        },
+        {
+          "review_id": "1d800f77b763bc6641b1",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "lexicographic versus numeric order",
+          "task_ids": [
+            "filtered_minimum"
+          ]
+        },
+        {
+          "review_id": "90ff14405ff437833593",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "lossy numeric cast",
+          "task_ids": [
+            "HumanEval/2"
+          ]
+        },
+        {
+          "review_id": "70510f41fb213dc4e6b0",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "zip silently truncates parallel inputs",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "ad23e1f47a58a26099af",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "f-string not recognized as docstring",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "3823b647da1c932b8477",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "set iteration order loss",
+          "task_ids": [
+            "distinct_cardinality"
+          ]
+        },
+        {
+          "review_id": "891214effd05e3251a89",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "first qualifying candidate versus optimum",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "e4ee7328b7a7a50ee2d7",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "separate locks fail to synchronize shared state",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "e54967a381de1300c99e",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "set iteration order loss",
+          "task_ids": [
+            "occurrence_cardinality"
+          ]
+        },
+        {
+          "review_id": "879974b4a02eca2dbe67",
+          "kind": "buggy",
+          "status": "unknown_or_conditional",
+          "mechanism_family": "linear recursion depth versus supported input size",
+          "task_ids": [
+            "HumanEval/10"
+          ]
+        },
+        {
+          "review_id": "8a391f95af134c82fc82",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "invalid special-method return contract",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "ea3d61b518cc260021ce",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "encoded bytes versus Unicode characters",
+          "task_ids": [
+            "HumanEval/54"
+          ]
+        },
+        {
+          "review_id": "c5db474c285624abc8d2",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        }
+      ],
+      "removed": [
+        {
+          "review_id": "23cdf00c651d3f04ffee",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/2"
+          ]
+        },
+        {
+          "review_id": "12b66fc230bc70eeaaa0",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "empty reduction domain",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "d9c862b7cd233585c2f7",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "range exclusive bound",
+          "task_ids": [
+            "HumanEval/109"
+          ]
+        },
+        {
+          "review_id": "381dc6241689b9e2b4c0",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "scope declaration conflict",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "eafc47e6afead1b2a087",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "undefined local",
+          "task_ids": [
+            "HumanEval/54"
+          ]
+        },
+        {
+          "review_id": "891424124d177dbf2c03",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "cbb2b63258120829c15e",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "truthy tuple condition",
+          "task_ids": [
+            "HumanEval/40"
+          ]
+        },
+        {
+          "review_id": "c4e46cca01792151315e",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "f-string docstring",
+          "task_ids": [
+            "HumanEval/51"
+          ]
+        },
+        {
+          "review_id": "613bda522da3183f9d55",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "property missing return",
+          "task_ids": [
+            "HumanEval/51"
+          ]
+        },
+        {
+          "review_id": "b7183c97f34fe279cb15",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "a396c58acc7bc281d78e",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "tautological condition",
+          "task_ids": [
+            "HumanEval/54"
+          ]
+        },
+        {
+          "review_id": "e4acac69efac01316d97",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "conflicting scope declarations",
+          "task_ids": [
+            "HumanEval/97"
+          ]
+        },
+        {
+          "review_id": "07573f2c1fc509adfa0e",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "empty min/max domain",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "42962b585f34b416cc2c",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "f-string not recognized as docstring",
+          "task_ids": [
+            "HumanEval/50"
+          ]
+        },
+        {
+          "review_id": "0d2983c2b75da1821610",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "set iteration order loss",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "245e7cec820b1f3e9f9b",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "in-place mutator returns None",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "10738ce8c81ec841915f",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "range exclusive endpoint",
+          "task_ids": [
+            "HumanEval/140"
+          ]
+        },
+        {
+          "review_id": "15896e4035ada99e7f7d",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "invalid special-method return contract",
+          "task_ids": [
+            "HumanEval/97"
+          ]
+        },
+        {
+          "review_id": "c26d0155b38aa1ba8da6",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "legacy print redirection",
+          "task_ids": [
+            "HumanEval/2"
+          ]
+        },
+        {
+          "review_id": "4be02af602a90d5d12e5",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "generator return versus emitted item",
+          "task_ids": [
+            "filtered_minimum"
+          ]
+        },
+        {
+          "review_id": "2ed984480dfee62686c1",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "cf2161a676818f7d2f47",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "generator return versus emitted item",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "d49ee75bf7de2d632201",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "distinct_cardinality"
+          ]
+        },
+        {
+          "review_id": "c54d98b9d95d3bc11f94",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "in-place mutator returns None",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "cbe1773c392a2094a855",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "set iteration order loss",
+          "task_ids": [
+            "HumanEval/41"
+          ]
+        },
+        {
+          "review_id": "66c30a86d8432a0ad4de",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "occurrence_cardinality"
+          ]
+        },
+        {
+          "review_id": "7c4012c386f9d1f4a131",
+          "kind": "canonical",
+          "status": "contradicted",
+          "mechanism_family": "property getter implicit None fallthrough",
+          "task_ids": [
+            "HumanEval/51"
+          ]
+        },
+        {
+          "review_id": "86171a877aecfffb612a",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "direct index outside valid bounds",
+          "task_ids": [
+            "HumanEval/10"
+          ]
+        },
+        {
+          "review_id": "e0f8f8c0d711c6c297dc",
+          "kind": "buggy",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "HumanEval/23"
+          ]
+        },
+        {
+          "review_id": "d2b46f79f62362b7941e",
+          "kind": "preinspected_engineering_fixture",
+          "status": "contradicted",
+          "mechanism_family": "finally overrides pending control flow",
+          "task_ids": [
+            "encoded_character_measurement"
+          ]
+        }
+      ],
+      "new_supported_buggy_bindings": 0,
+      "new_supported_mechanisms": [],
+      "added_contradicted_paired_control_bindings": 18,
+      "removed_contradicted_paired_control_bindings": 19,
+      "control_kinds": [
+        "canonical",
+        "preinspected_engineering_fixture"
+      ],
+      "preregistered_gate": "NO_GO"
+    }
+  },
+  "review_sha256": {
+    "GRADES_1.json": "b2a24a28e88ebb50fb4998a4fa58efd38ec674e5369848515a5275c85add5ca8",
+    "REVIEW_QUEUE_1.json": "b903ea7a273cd7a30bb5b7a6ccef7a81618a68d2d74be514474a2644bf385ed4",
+    "GRADES_2.json": "a72b82d49c41fa1035050b89cdae8a1edbc9987b1bbdf48ea427b27febfdacba",
+    "REVIEW_QUEUE_2.json": "d5dede906fcfd998e200abb33859155cce7893c82b6ac31207adc840fb7a4e4e"
+  },
+  "limits": [
+    "Codex source reasoning, not independent human ground truth or formal proof.",
+    "Different source-based reviewers grade disjoint bindings; no inter-rater estimate.",
+    "Unmatched frozen label is unknown. Review status measures proposal quality, not bug-report FP.",
+    "No new test-generation or bug-detection efficacy measurement."
+  ]
+}

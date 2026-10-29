@@ -1,5 +1,11 @@
+- [VR11/VR13 binder + VR12 expansion](vr11-vr13-binding-vr12-expansion.md) — dev28: contradicted22→14, known-site8→7;11fresh VR9tasks ready, endpoint404/0completions
+- [VR9 applicability repair](vr9-applicability.md) — COMPLETE6/4arms;ref6/6R1ceiling;retention19→24/exposure2→1;5calls3742tokens,no promotion
+- [VR10 V7 dense diagnostic](vr10-retrieval-diagnostic.md) — NO_GO;12tasks/28queries/117blindedbindings,0new supported dense wins;no integration
+- [VR8 semantic gate](vr8-semanticgate.md) — COMPLETE6;allarmsref6/6atR1ceiling,no semantic gain;hardfilter drops exposing input,20calls/18108tokens
+- [V85 concept quality](v85-concept-quality.md) — generationtokens−31.4%,full−9.2%;206/275weakgates;ConceptCoder measurement alignment,5draftcards,no newrun
+- [V85 retrieval-hybrid](v85-retrievalhybrid.md) — COMPLETE113;ref78vs77/FA10vs13,p1.0;secondaryo0 73vs61;no primary gain/no active run;earlier Linux174ref stop retained in history
 - [Shared memory README](README.md) — how Claude + Codex read/write this folder (format, rules)
-- [Codex account gateway](codex-account-gateway.md) — standalone /home/phong/dev/codex_gateway; web quota dashboard started on loopback8787, both real quota reads verified, 65 tests/browser QA pass
+- [Codex account gateway](codex-account-gateway.md) — standalone /home/phong/dev/codex_gateway; 502 missing-SSE-header fixed, 69 tests pass, real inference + CLI tool round trip verified
 - [v63 scopeguard continuation](v63-scopeguard.md) — complete/audited108responses;pattern1/6vsconcept0/6;57nativewitnesses but weakhypotheses,447667tokens
 - [v62 pathfault contract repair](v62-pathfault-contractfix.md) — stopped on empty-scope verifier IndexError; v63 continuation reuses6writers/5checkpoints;30min monitoring
 - [v61 integrated pathfault](v61-pathfault-integrated.md) — terminal108responses/scored;18/18hypotheses rejected,0concept witnesses;interface failure,not efficacy test
@@ -106,10 +112,15 @@
 - [v76 GPT-OSS matched protocol](v76-ossmodel.md) — 2026-10-26 GPT-OSS-120B v34 loop: rule NOT met, concept 6 = plain 6 < placebo 9, 1–4, FP 56 vs 33; $0.069; DeepSeek cancelled
 - [v75 DeepSeek concept select](v75-deepseek-select.md) — 2026-10-25 DeepSeek-V4-Flash relace, 65k cap: no-go 17/15 vs random 18.25/17.96 (9/66 still empty); 3 models ≈ random
 - [v77 combined v11+v31](v77-combined.md) — prepared six arms/K3; user now wants combined vs concept-hybrid only after K1 cost discussion; reduced protocol not implemented
-- [KITE vs template paper](kite-vs-template-paper.md) — 2026-10-25 KITE no code/repeats v31; agentic-pbt pattern swap NO-GO after $0 audit (score flat across patterns, $5.8/call)
+- [KITE vs template paper](kite-vs-template-paper.md) — 2026-10-28 comparison: Python retrieval now exists, full KITE untested; CoverUp adapted run, MuTAP ≠ MutGen; earlier agentic-pbt swap NO-GO
 - [v79 DeepSeek diagnosis](v79-deepseekdiagnosis.md) — original+authorized retry both Relace429;0responses,2unknowncharges,$0.04899 reserved,no more calls
 - [v80 DeepSeek providers](v80-deepseekproviders.md) — Reka raw/full85 supported, DeepInfra raw85 correct(extra key);3answers/8slots,timeout+429,$0.005286 known plus unknowns
 - [v81 DeepInfra HumanEval quarter](v81-deepinfra-quarter.md) — partial3/28 paired tasks, expired key repaired but task19 stream canceled; alternate provider diagnostic $.02695, Reka strategy ran offline100/100 valid+SPACE-hit, no expected-output score
 - [concept coder.md directions](concept-coder-note-directions.md) — 2026-10-26 feasibility audit: ranking caches ready, oracle ceiling ≠ learnability; PBT v4 framework control; generator training lacks validated labels; no experiment run
 - [Python bug concept base](python-bug-concept-base.md) — v6 balanced91/90 vs88/74,126vs275cards;242tests,21native cases; development-adapted, auto remainsv2
+- [Concept quality + semantic retrieval review](../python_bug_concepts/research/semantic_retrieval_20261028/REPORT.md) — three-agent proposal: independent dense recall before binding; current candidate gate and utility's discarded sites limit gains
+- [V85 adapter delivery audit](../python_bug_concepts/retrieval_v7/owner_audit/REPORT.md) — V2 in V11;historical frozen-generation audit206linegates/204round1hits;final run status in v85-retrievalhybrid
+- [V7/V85 improvement plan](../python_bug_concepts/PLAN_V7_V85_20261029.md) — P3engineered29tests/actualJinaCPU;P1audit206linegates/204hit;P2poolmissing,P4/utilityunmeasured;seeV7RESULTS
 - [v78 learned concept selection](v78-learned-select.md) — 2026-10-26 grouped CPU replay NO-GO: context18 vs random18.25/prior20.5; spec-only21=context-free; 33 PUTs/24 problems, $0 API
+- [v83 Reka full quarter](v83-reka-quarter.md) — 2026-10-27 terminal partial 26/28; 1 unknown-charge stop, offline scoring recovered (o0 4–4, ref/full 3–4), descriptive only; no retry allowed
+- [v84 Reka completion addendum](v84-reka-completion.md) — completed missing tasks154/158; combined28/28 descriptive, mixed-run exploratory (o0 4–4, ref/full3–4), $0.0542 new; no efficacy verdict

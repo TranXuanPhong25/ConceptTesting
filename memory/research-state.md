@@ -6,6 +6,39 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-10-29 vr9 CPU READY, endpoint BLOCKED404: user-authorized applicability+
+retention repair aftervr8.48CPUchecks/12exactcontrolreplays pass;CPUselected19→24,
+task51zero→4. Expected outputs/final scoring pending,0newcompletions/tokens;
+controller64941exited. Frozen same6tasks/savedpools;max12fresh expected-outputcalls.
+See [[vr9-applicability]];no activejob/automaticfull113/vr10.
+2026-10-29 vr8 COMPLETE6tasks/3arms:ref6/6FA0each,alreadyR1ceiling;no semantic gain.
+Onlytask51changed targeting:correct vowel table makes disagreement predicate
+impossible;200valid candidate occurrences discarded,including native-confirmed
+exposing input.20newresponses/18,108tokens,0unknown;41CPU+hash/receipt auditPASS.
+PID35827exited;no activejob/automaticvr9/full113. See [[vr8-semanticgate]].
+2026-10-29 concept/cost audit:retrieval generation154vs268calls,187568vs273274
+known tokens;full shared-cost attribution−9.24%.206/275bindingsuseSTMT,204hitR1;
+coverage proxy does notmeasurecardsemantics.8pairedlossesmissinput,1oraclefailure.
+ConceptCoderdefinition audit+5data-onlydrafts saved;no runtimechange/newinference.
+See [[v85-concept-quality]];this ismeasurementproposal,notclaimed efficacygain.
+2026-10-29 07:04UTC latest: v85 COMPLETE113pairs/1130refs/113scored;PID46002 exited.
+Primaryref retrieval78vs v11 77,FA10vs13,paired10-9,p1.0:no clear primary gain.
+Secondaryo0 73vs61,FA51vs57,p.01690;do not replace primary.2048attempts,4unknowns.
+Finalreport/artifacts under v85_20261029_resume2/completed;all running notices
+below superseded. See [[v85-retrievalhybrid]];no automatic new run.
+2026-10-29 03:31:22UTC latest: Mac resume2 PID46002 from newer Linux174refs.
+User confirms Linux stopped;old Mac44302 drained/stopped after13duplicate calls.
+113pairs reused,956refs remaining at launch;18historical attempts include4unknowns
+and13known duplicates. See [[v85-retrievalhybrid]];all prior running notices superseded.
+2026-10-29 03:23:48UTC latest: user explicitly resumes local execution. Portable
+runner PID44302 RUNNING;113pairs reused,shared refs37/1130 at first check,
+937received total,0new failures,3historical unknowns; scoring follows refs.
+See [[v85-retrievalhybrid]] for active work root; older stop notice superseded.
+2026-10-29 latest: v85 USER-STOPPED for another machine. PID76780 exited
+17:19:23UTC28Oct;113paired generation+36/1130refs saved,936received responses,
+0outstanding requests,3historical unknowns.1094refs remain then scoring.
+Portable checkpoint: trickcatcher_linefacts/handoffs/v85_20261029/README.md.
+Do not restart local inference; older running notices below are superseded.
 Setting = TrickCatcher EvalPlus: LLM-written PUTs pass the HumanEval base tests but are buggy; the generator gets
 spec (docstring) + PUT code + base tests and must write assertions that reveal the bug. Model: Qwen2.5-Coder-7B-Instruct
 (fp16, vLLM 0.7.3) served from the user's Kaggle notebook through ngrok (see [[working-rules]] for how to use it).

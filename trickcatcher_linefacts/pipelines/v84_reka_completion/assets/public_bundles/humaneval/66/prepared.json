@@ -1,0 +1,286 @@
+{
+ "baseline": {
+  "task": 66,
+  "entry": "digitSum",
+  "put": "\ndef digitSum(s):\n    \"\"\"Task\n    Write a function that takes a string as input and returns the sum of the upper characters only'\n    ASCII codes.\n\n    Examples:\n        digitSum(\"\") => 0\n        digitSum(\"abAB\") => 131\n        digitSum(\"abcCd\") => 67\n        digitSum(\"helloE\") => 69\n        digitSum(\"woArBld\") => 131\n        digitSum(\"aAaaaXa\") => 153\n    \"\"\"\n    if s == \"\":\n        return 0\n    else:\n        return ord(s[0]) + digitSum(s[1:]) if s[0].isupper() else digitSum(s[1:])\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert True, \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate(\"\") == 0, \"Error\"\n    assert candidate(\"abAB\") == 131, \"Error\"\n    assert candidate(\"abcCd\") == 67, \"Error\"\n    assert candidate(\"helloE\") == 69, \"Error\"\n    assert candidate(\"woArBld\") == 131, \"Error\"\n    assert candidate(\"aAaaaXa\") == 153, \"Error\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n    assert candidate(\" How are yOu?\") == 151, \"Error\"\n    assert candidate(\"You arE Very Smart\") == 327, \"Error\"\n\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `s` of size or value 1000 or more (the largest in the existing tests is 18); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `s` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `s` of size or value 1000 or more (the largest in the existing tests is 18); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "You arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou ar"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "NONASCII",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `s` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "Yóú árÉ Vérý Smárt"
+    ],
+    "witness_call": "digitSum('Yóú árÉ Vérý Smárt')"
+   }
+  ],
+  "placebo_facts": [
+   "Input-domain class (specification): the existing tests already pass `s` with leading, trailing or repeated spaces."
+  ],
+  "tool_inputs": [
+   "digitSum('Yóú árÉ Vérý Smárt')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "SPACE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): the existing tests already pass `s` with leading, trailing or repeated spaces."
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(s):\n    return isinstance(s, str)\n\ndef P1(s):\n    return P1_m(s)\n\ndef P2_m(s):\n    return isinstance(s, str)\n\ndef P2(s):\n    return P2_m(s)\n\ndef P3_m(s):\n    return isinstance(s, str)\n\ndef P3(s):\n    return P3_m(s)\n\ndef P5_m(s):\n    return isinstance(s, str)\n\ndef P5(s):\n    return P5_m(s)\n\ndef P6_m(s):\n    return isinstance(s, str)\n\ndef P6(s):\n    return P6_m(s)\n\ndef P7_m(s):\n    return isinstance(s, str)\n\ndef P7(s):\n    return P7_m(s)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True and P5(*args, **kwargs) is True and P6(*args, **kwargs) is True and P7(*args, **kwargs) is True\n",
+  "valid_sha256": "adba0e2658c98bbc030043683170ff01e4d7e30c7440eb08faf3e4d55abcc2ca",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.text(alphabet=st.characters(whitelist_categories=('Lu',)), min_size=0, max_size=100)\n",
+  "strategy_sha256": "20a917756edbf4543dc2e435503d8bd3d0beddc2284f317dc7815aaeac75b4ff",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 66,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "833f8fdf4b62e33dc726baa58603f778bac40e169fa2a40756f1a193a7465378",
+   "candidates": 7,
+   "confirmed": 7,
+   "coded": 7,
+   "surviving": 6,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [
+    {
+     "id": "P4",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P4",
+       "index": 1,
+       "source": "base",
+       "input_repr": "(('abAB',), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    }
+   ],
+   "valid_sha256": "adba0e2658c98bbc030043683170ff01e4d7e30c7440eb08faf3e4d55abcc2ca",
+   "seed": 20261076,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 66,
+  "entry": "digitSum",
+  "put": "\ndef digitSum(s):\n    \"\"\"Task\n    Write a function that takes a string as input and returns the sum of the upper characters only'\n    ASCII codes.\n\n    Examples:\n        digitSum(\"\") => 0\n        digitSum(\"abAB\") => 131\n        digitSum(\"abcCd\") => 67\n        digitSum(\"helloE\") => 69\n        digitSum(\"woArBld\") => 131\n        digitSum(\"aAaaaXa\") => 153\n    \"\"\"\n    if s == \"\":\n        return 0\n    else:\n        return ord(s[0]) + digitSum(s[1:]) if s[0].isupper() else digitSum(s[1:])\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert True, \"This prints if this assert fails 1 (good for debugging!)\"\n    assert candidate(\"\") == 0, \"Error\"\n    assert candidate(\"abAB\") == 131, \"Error\"\n    assert candidate(\"abcCd\") == 67, \"Error\"\n    assert candidate(\"helloE\") == 69, \"Error\"\n    assert candidate(\"woArBld\") == 131, \"Error\"\n    assert candidate(\"aAaaaXa\") == 153, \"Error\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True, \"This prints if this assert fails 2 (also good for debugging!)\"\n    assert candidate(\" How are yOu?\") == 151, \"Error\"\n    assert candidate(\"You arE Very Smart\") == 327, \"Error\"\n\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `s` of size or value 1000 or more (the largest in the existing tests is 18); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `s` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `s` of size or value 1000 or more (the largest in the existing tests is 18); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "You arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou arE Very SmartYou ar"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "NONASCII",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `s` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "Yóú árÉ Vérý Smárt"
+    ],
+    "witness_call": "digitSum('Yóú árÉ Vérý Smárt')"
+   }
+  ],
+  "placebo_facts": [
+   "Input-domain class (specification): the existing tests already pass `s` with leading, trailing or repeated spaces."
+  ],
+  "tool_inputs": [
+   "digitSum('Yóú árÉ Vérý Smárt')",
+   "digitSum('  How are yOu?')",
+   "digitSum('You arE Very Smart9')",
+   "digitSum('YOU ARE VERY SMART')",
+   "digitSum('a')",
+   "digitSum('h')",
+   "digitSum('w')",
+   "digitSum(' ')",
+   "digitSum('Y')",
+   "digitSum('ab')",
+   "digitSum('he')",
+   "digitSum('wo')",
+   "digitSum('aA')",
+   "digitSum(' H')",
+   "digitSum('Yo')",
+   "digitSum('aaaa')",
+   "digitSum('aaaaa')",
+   "digitSum('hhhhhh')",
+   "digitSum('wwwwwww')",
+   "digitSum('aaaaaaa')",
+   "digitSum('             ')",
+   "digitSum('YYYYYYYYYYYYYYYYYY')",
+   "digitSum('abA')",
+   "digitSum('abcC')",
+   "digitSum('hello')",
+   "digitSum('woArBl')",
+   "digitSum('aAaaaX')",
+   "digitSum(' How are yOu')",
+   "digitSum('You arE Very Smar')",
+   "digitSum('abABB')",
+   "digitSum('abcCdd')",
+   "digitSum('helloEE')",
+   "digitSum('woArBldd')",
+   "digitSum('aAaaaXaa')",
+   "digitSum(' How are yOu??')",
+   "digitSum('You arE Very Smartt')",
+   "digitSum('aaAB')",
+   "digitSum('aacCd')",
+   "digitSum('hhlloE')",
+   "digitSum('wwArBld')",
+   "digitSum('aaaaaXa')",
+   "digitSum('  ow are yOu?')",
+   "digitSum('YYu arE Very Smart')",
+   "digitSum('BAba')",
+   "digitSum('dCcba')",
+   "digitSum('Eolleh')",
+   "digitSum('dlBrAow')",
+   "digitSum('aXaaaAa')",
+   "digitSum('?uOy era woH ')",
+   "digitSum('tramS yreV Era uoY')",
+   "digitSum('ABab')",
+   "digitSum('ABCcD')",
+   "digitSum('HELLOe')",
+   "digitSum('WOaRbLD')",
+   "digitSum('AaAAAxA')",
+   "digitSum(' hOW ARE YoU?')",
+   "digitSum('yOU ARe vERY sMART')",
+   "digitSum('BbAa')",
+   "digitSum('dbcCa')",
+   "digitSum('Eelloh')",
+   "digitSum('doArBlw')",
+   "digitSum('?How are yOu ')",
+   "digitSum('tou arE Very SmarY')",
+   "digitSum('ABAB')",
+   "digitSum('ABCCD')",
+   "digitSum('HELLOE')",
+   "digitSum('WOARBLD')",
+   "digitSum('AAAAAXA')",
+   "digitSum(' HOW ARE YOU?')",
+   "digitSum('abab')",
+   "digitSum('abccd')",
+   "digitSum('helloe')",
+   "digitSum('woarbld')",
+   "digitSum('aaaaaxa')",
+   "digitSum(' how are you?')",
+   "digitSum('you are very smart')",
+   "digitSum('  ')",
+   "digitSum(' abAB ')",
+   "digitSum(' abcCd ')",
+   "digitSum(' helloE ')",
+   "digitSum(' woArBld ')",
+   "digitSum(' aAaaaXa ')",
+   "digitSum('  How are yOu? ')",
+   "digitSum(' You arE Very Smart ')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "SPACE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): the existing tests already pass `s` with leading, trailing or repeated spaces."
+   }
+  ],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(s):\n    return isinstance(s, str)\n\ndef P1(s):\n    return P1_m(s)\n\ndef P2_m(s):\n    return isinstance(s, str)\n\ndef P2(s):\n    return P2_m(s)\n\ndef P3_m(s):\n    return isinstance(s, str)\n\ndef P3(s):\n    return P3_m(s)\n\ndef P5_m(s):\n    return isinstance(s, str)\n\ndef P5(s):\n    return P5_m(s)\n\ndef P6_m(s):\n    return isinstance(s, str)\n\ndef P6(s):\n    return P6_m(s)\n\ndef P7_m(s):\n    return isinstance(s, str)\n\ndef P7(s):\n    return P7_m(s)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True and P2(*args, **kwargs) is True and P3(*args, **kwargs) is True and P5(*args, **kwargs) is True and P6(*args, **kwargs) is True and P7(*args, **kwargs) is True\n",
+  "valid_sha256": "adba0e2658c98bbc030043683170ff01e4d7e30c7440eb08faf3e4d55abcc2ca",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.text(alphabet=st.characters(whitelist_categories=('Lu',)), min_size=0, max_size=100)\n",
+  "strategy_sha256": "20a917756edbf4543dc2e435503d8bd3d0beddc2284f317dc7815aaeac75b4ff",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 66,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "833f8fdf4b62e33dc726baa58603f778bac40e169fa2a40756f1a193a7465378",
+   "candidates": 7,
+   "confirmed": 7,
+   "coded": 7,
+   "surviving": 6,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [
+    {
+     "id": "P4",
+     "reason": "known_valid_rejection",
+     "failures": [
+      {
+       "id": "P4",
+       "index": 1,
+       "source": "base",
+       "input_repr": "(('abAB',), {})",
+       "accepted": false,
+       "error": null
+      }
+     ]
+    }
+   ],
+   "valid_sha256": "adba0e2658c98bbc030043683170ff01e4d7e30c7440eb08faf3e4d55abcc2ca",
+   "seed": 20261076,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 13,
+  "survivors": 0
+ }
+}

@@ -1,0 +1,227 @@
+{
+  "mode": "classify",
+  "task": {
+    "task": 48,
+    "put": "\n\ndef is_palindrome(text: str):\n    \"\"\"\n    Checks if given string is a palindrome\n    >>> is_palindrome('')\n    True\n    >>> is_palindrome('aba')\n    True\n    >>> is_palindrome('aaaaa')\n    True\n    >>> is_palindrome('zbcd')\n    False\n    \"\"\"\n    \n    if not text:\n        return True\n    \n    chars = text.lower().replace(' ', '')\n    \n    if len(chars) < 2:\n        return True\n    \n    reversed_text = ''.join(reversed(chars))\n    return chars == reversed_text\n    \n",
+    "entry": "is_palindrome",
+    "base": "\n\nMETADATA = {}\n\n\ndef check(candidate):\n    assert candidate('') == True\n    assert candidate('aba') == True\n    assert candidate('aaaaa') == True\n    assert candidate('zbcd') == False\n    assert candidate('xywyx') == True\n    assert candidate('xywyz') == False\n    assert candidate('xywzx') == False\n\n",
+    "split": "dev",
+    "mined_valid_src": "def P1_m(text):\n    return isinstance(text, str)\n\ndef P1(text):\n    return P1_m(text)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+    "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+    "strategy_src": "def strategy():\n    return st.text()\n",
+    "strategy_sha256": "0ed262dc2227ec7c3abb744e7b600a466dbb97d3e1bc2c08d970f85d01250be3",
+    "strategy_fallback": false,
+    "mining_summary": {
+      "task": 48,
+      "facts_version": "v3m",
+      "model": "qwen3.5-27b-awq",
+      "cache_key": "6c47da9b01ccfce4867407f8b93583fefe3ac74bbb39ab568bfc1c176bc4eb4d",
+      "candidates": 1,
+      "confirmed": 1,
+      "coded": 1,
+      "surviving": 1,
+      "mining_failure": null,
+      "dropped_confirmation": [],
+      "dropped_code": [],
+      "dropped_verifier": [],
+      "valid_sha256": "e2b3e01ae4ce1992e0f7a86f062417b43d87c2f8ef1eae6b0df3385a292b2511",
+      "seed": 20261058,
+      "evidence_filter": false,
+      "preconditions_version": "B5"
+    },
+    "facts_version": "v4",
+    "concept_meta": [
+      {
+        "kind": "SEMANTIC",
+        "line": 19,
+        "k": 7,
+        "family": "call-result removal",
+        "extended": true,
+        "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `text.lower()` -> `text` at line 19 survives: no existing test distinguishes them.",
+        "witness": 15,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "is_palindrome('Aba')",
+        "block": 19,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "def is_palindrome(text: str):\n    \"\"\"\n    Checks if given string is a palindrome\n    >>> is_palindrome('')\n    True\n    >>> is_palindrome('aba')\n    True\n    >>> is_palindrome('aaaaa')\n    True\n    >>> is_palindrome('zbcd')\n    False\n    \"\"\"\n    if not text:\n        return True\n    chars = text.replace(' ', '')\n    if len(chars) < 2:\n        return True\n    reversed_text = ''.join(reversed(chars))\n    return chars == reversed_text",
+        "card_id": "py.text-normalization-contract",
+        "card": {
+          "title": "Normalization changes text that the specification requires preserving",
+          "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+          "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+          "what": "Required original text is altered or a distinction specified by the task disappears.",
+          "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+        },
+        "retrieval_evidence": {
+          "line": 19,
+          "end_line": 19,
+          "expression": "text.lower().replace(' ', '')",
+          "reason": "This operation changes exact case/characters or whitespace.",
+          "priority": 143
+        },
+        "retrieval_gate": "existing_v11_gap",
+        "tool_target_text": "Mutation (call-result removal): the mutant `text.lower()` -> `text` at line 19 survives: no existing test distinguishes them.",
+        "semantic_index": 0
+      },
+      {
+        "kind": "BOUND",
+        "line": 21,
+        "cell": [
+          7,
+          "eqc|6|2|0|True"
+        ],
+        "witness": 60,
+        "text": "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Boundary value: at line 21, `len(chars)` was never equal to 2 (the constant in `len(chars) < 2`).",
+        "reached": true,
+        "witness_call": "is_palindrome('x9')",
+        "block": 21,
+        "g_demote": false,
+        "guard_line": 21,
+        "guard_forced": false,
+        "guard_class": "na",
+        "guard_counts": {
+          "same": 0,
+          "necessary": 0,
+          "differ": 0
+        },
+        "tier": 0,
+        "card_id": "py.empty-singleton-shortcut",
+        "card": {
+          "title": "An empty or singleton shortcut changes the required result",
+          "where": "Code branches on sequence truthiness or length zero, one or two before the general computation.",
+          "how": "A small-input shortcut or guard can omit a valid case or skip work that is still required.",
+          "what": "A valid small input is rejected or returns a shortcut value inconsistent with the specification.",
+          "test": "Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs."
+        },
+        "retrieval_evidence": {
+          "line": 21,
+          "end_line": 21,
+          "expression": "len(chars) < 2",
+          "reason": "A small-length comparison creates a specialized path.",
+          "priority": 141
+        },
+        "retrieval_gate": "existing_v11_gap",
+        "tool_target_text": "Boundary value: at line 21, `len(chars)` was never equal to 2 (the constant in `len(chars) < 2`)."
+      },
+      {
+        "kind": "STMT",
+        "line": 21,
+        "lines": [
+          21
+        ],
+        "witness_call": null,
+        "text": "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 21; this does not establish the hypothesized bug trigger.",
+        "card_id": "py.branch-boundary-contract",
+        "card": {
+          "title": "A branch boundary or equality special case disagrees with the specification",
+          "where": "A numeric comparison controls a branch, filter or early return at a threshold or equality case.",
+          "how": "Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.",
+          "what": "A valid boundary input takes a branch whose result or rejection violates the specification.",
+          "test": "Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}."
+        },
+        "retrieval_evidence": {
+          "line": 21,
+          "end_line": 21,
+          "expression": "len(chars) < 2",
+          "reason": "Concrete comparison partitions valid inputs; inspect equality and adjacent boundary behavior.",
+          "priority": 112
+        },
+        "retrieval_gate": "line_reachability_only",
+        "tool_target_text": "Execute source line 21; this does not establish the hypothesized bug trigger."
+      }
+    ],
+    "concept_facts": [
+      "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Mutation (call-result removal): the mutant `text.lower()` -> `text` at line 19 survives: no existing test distinguishes them.",
+      "{\"title\": \"An empty or singleton shortcut changes the required result\", \"where\": \"Code branches on sequence truthiness or length zero, one or two before the general computation.\", \"how\": \"A small-input shortcut or guard can omit a valid case or skip work that is still required.\", \"what\": \"A valid small input is rejected or returns a shortcut value inconsistent with the specification.\", \"test\": \"Use the smallest allowed empty, singleton and two-element {inputs}, with values that distinguish the specified outputs.\"}\n  Tool target: Boundary value: at line 21, `len(chars)` was never equal to 2 (the constant in `len(chars) < 2`).",
+      "{\"title\": \"A branch boundary or equality special case disagrees with the specification\", \"where\": \"A numeric comparison controls a branch, filter or early return at a threshold or equality case.\", \"how\": \"Strict and non-strict comparisons partition inputs differently, and a special-case return can bypass the required general rule.\", \"what\": \"A valid boundary input takes a branch whose result or rejection violates the specification.\", \"test\": \"Choose admissible values immediately below, equal to and above {threshold} at {comparison_site}.\"}\n  Tool target: Execute source line 21; this does not establish the hypothesized bug trigger."
+    ],
+    "placebo_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 25,
+        "k": 3,
+        "family": "ROR",
+        "extended": false,
+        "text": "Mutation (ROR): the mutant `chars == reversed_text` -> `chars != reversed_text` at line 25 is killed: an existing test distinguishes them.",
+        "mutant_src": "def is_palindrome(text: str):\n    \"\"\"\n    Checks if given string is a palindrome\n    >>> is_palindrome('')\n    True\n    >>> is_palindrome('aba')\n    True\n    >>> is_palindrome('aaaaa')\n    True\n    >>> is_palindrome('zbcd')\n    False\n    \"\"\"\n    if not text:\n        return True\n    chars = text.lower().replace(' ', '')\n    if len(chars) < 2:\n        return True\n    reversed_text = ''.join(reversed(chars))\n    return chars != reversed_text"
+      },
+      {
+        "kind": "BOUND",
+        "line": 21,
+        "text": "Boundary value: at line 21, `len(chars)` was sometimes equal to 3 (next to the constant 2 in `len(chars) < 2`) and sometimes not.",
+        "cells": [
+          [
+            7,
+            "eqc|6|2|1|True"
+          ],
+          [
+            7,
+            "eqc|6|2|1|False"
+          ]
+        ]
+      }
+    ],
+    "placebo_facts": [
+      "Mutation (ROR): the mutant `chars == reversed_text` -> `chars != reversed_text` at line 25 is killed: an existing test distinguishes them.",
+      "Boundary value: at line 21, `len(chars)` was sometimes equal to 3 (next to the constant 2 in `len(chars) < 2`) and sometimes not."
+    ],
+    "tool_inputs": [
+      "is_palindrome('Aba')",
+      "is_palindrome('x9')"
+    ],
+    "doc_fail": [],
+    "retrieval_method": "v2_compact_site_bound",
+    "vr8_measurements": [
+      {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          19,
+          12,
+          19,
+          41
+        ],
+        "expression": "text.lower().replace(' ', '')",
+        "source_signature": "Call(func=Attribute(value=Call(func=Attribute(value=Name(id='text', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[]), attr='replace', ctx=Load()), args=[Constant(value=' '), Constant(value='')], keywords=[])",
+        "operation": "replace",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "input_repr": "('A',)"
+    },
+    {
+      "input_repr": "('a',)"
+    },
+    {
+      "input_repr": "('Aa',)"
+    },
+    {
+      "input_repr": "('aa',)"
+    },
+    {
+      "input_repr": "('AaA',)"
+    },
+    {
+      "input_repr": "('Aba',)"
+    },
+    {
+      "input_repr": "('Abba',)"
+    },
+    {
+      "input_repr": "('Aba ',)"
+    },
+    {
+      "input_repr": "('Noon',)"
+    },
+    {
+      "input_repr": "('Noon ',)"
+    }
+  ],
+  "shown": []
+}

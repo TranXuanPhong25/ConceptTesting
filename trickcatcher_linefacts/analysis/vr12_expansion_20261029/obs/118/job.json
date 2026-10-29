@@ -1,0 +1,184 @@
+{
+  "mode": "classify",
+  "task": {
+    "task": 118,
+    "put": "\ndef get_closest_vowel(word):\n    \"\"\"You are given a word. Your task is to find the closest vowel that stands between \n    two consonants from the right side of the word (case sensitive).\n    \n    Vowels in the beginning and ending doesn't count. Return empty string if you didn't\n    find any vowel met the above condition. \n\n    You may assume that the given string contains English letter only.\n\n    Example:\n    get_closest_vowel(\"yogurt\") ==> \"u\"\n    get_closest_vowel(\"FULL\") ==> \"U\"\n    get_closest_vowel(\"quick\") ==> \"\"\n    get_closest_vowel(\"ab\") ==> \"\"\n    \"\"\"\n    vowels = ['a', 'e', 'i', 'o', 'u']\n    for i in range(len(word)-2, 0, -1):\n        if word[i] in vowels and word[i+1] not in vowels and word[i-1] not in vowels:\n            return word[i]\n    return \"\"\n",
+    "entry": "get_closest_vowel",
+    "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate(\"yogurt\") == \"u\"\n    assert candidate(\"full\") == \"u\"\n    assert candidate(\"easy\") == \"\"\n    assert candidate(\"eAsy\") == \"\"\n    assert candidate(\"ali\") == \"\"\n    assert candidate(\"bad\") == \"a\"\n    assert candidate(\"most\") == \"o\"\n    assert candidate(\"ab\") == \"\"\n    assert candidate(\"ba\") == \"\"\n    assert candidate(\"quick\") == \"\"\n    assert candidate(\"anime\") == \"i\"\n    assert candidate(\"Asia\") == \"\"\n    assert candidate(\"Above\") == \"o\"\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True\n\n",
+    "split": "dev",
+    "mined_valid_src": "def P2_m(word):\n    return isinstance(word, str) and all((c.isalpha() for c in word))\n\ndef P2(word):\n    return P2_m(word)\n\ndef valid(*args, **kwargs):\n    return P2(*args, **kwargs) is True\n",
+    "valid_sha256": "bcfb6e25d7a3b13797cfa7fd46a732ed5763ff998850612a46ca86d92ecdce1d",
+    "strategy_src": "def strategy():\n    return st.text(alphabet=st.sampled_from('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'), min_size=0, max_size=100).map(lambda w: (w,))\n",
+    "strategy_sha256": "9ea5a9d0b2d279af9d540f6491a1cdd190ad2fb81cffd5141a5c9141d5fa30fb",
+    "strategy_fallback": false,
+    "mining_summary": {
+      "task": 118,
+      "facts_version": "v3m",
+      "model": "qwen3.5-27b-awq",
+      "cache_key": "ca36cf749a03ae6755e16d464e151ff29ace474dd43217f3264a67c8720dfb7d",
+      "candidates": 2,
+      "confirmed": 1,
+      "coded": 1,
+      "surviving": 1,
+      "mining_failure": null,
+      "dropped_confirmation": [
+        {
+          "id": "P1",
+          "condition": "The input 'word' must be a string.",
+          "evidence": "",
+          "reason": "confirmation_false"
+        }
+      ],
+      "dropped_code": [],
+      "dropped_verifier": [],
+      "valid_sha256": "bcfb6e25d7a3b13797cfa7fd46a732ed5763ff998850612a46ca86d92ecdce1d",
+      "seed": 20261128,
+      "evidence_filter": false,
+      "preconditions_version": "B5"
+    },
+    "facts_version": "v4",
+    "concept_meta": [
+      {
+        "kind": "SEMANTIC",
+        "line": 19,
+        "lines": [
+          19
+        ],
+        "witness_call": null,
+        "text": "{\"title\": \"A literal classification table omits or admits values outside the required class\", \"where\": \"A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.\", \"how\": \"A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.\", \"what\": \"A required member is ignored or an invalid member is accepted in the returned predicate or count.\", \"test\": \"Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger.",
+        "card_id": "py.literal-classification-domain",
+        "card": {
+          "title": "A literal classification table omits or admits values outside the required class",
+          "where": "A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.",
+          "how": "A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.",
+          "what": "A required member is ignored or an invalid member is accepted in the returned predicate or count.",
+          "test": "Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}."
+        },
+        "retrieval_evidence": {
+          "line": 19,
+          "end_line": 19,
+          "expression": "word[i] in vowels",
+          "reason": "A finite literal table is used for a named numeric/character class.",
+          "priority": 140
+        },
+        "retrieval_gate": "line_reachability_only",
+        "tool_target_text": "Execute source line 19; this does not establish the hypothesized bug trigger.",
+        "semantic_index": 0
+      },
+      {
+        "kind": "STMT",
+        "line": 20,
+        "lines": [
+          20
+        ],
+        "witness_call": null,
+        "text": "{\"title\": \"An early qualifying candidate is returned instead of the best eligible candidate\", \"where\": \"A loop or search returns the first qualifying element while the specification requires an optimum over eligible candidates.\", \"how\": \"Existence of an eligible candidate does not imply that it is minimal, maximal or closest among all eligible candidates.\", \"what\": \"The returned candidate qualifies but is not the required optimum.\", \"test\": \"Place a worse but eligible {first_candidate} before a better {later_candidate}, with an ineligible global extremum if filtering is required.\"}\n  Tool target: Execute source line 20; this does not establish the hypothesized bug trigger.",
+        "card_id": "py.first-match-vs-optimum",
+        "card": {
+          "title": "An early qualifying candidate is returned instead of the best eligible candidate",
+          "where": "A loop or search returns the first qualifying element while the specification requires an optimum over eligible candidates.",
+          "how": "Existence of an eligible candidate does not imply that it is minimal, maximal or closest among all eligible candidates.",
+          "what": "The returned candidate qualifies but is not the required optimum.",
+          "test": "Place a worse but eligible {first_candidate} before a better {later_candidate}, with an ineligible global extremum if filtering is required."
+        },
+        "retrieval_evidence": {
+          "line": 20,
+          "end_line": 20,
+          "expression": "return word[i]",
+          "reason": "A loop returns a qualifying candidate before later candidates are considered.",
+          "priority": 139
+        },
+        "retrieval_gate": "line_reachability_only",
+        "tool_target_text": "Execute source line 20; this does not establish the hypothesized bug trigger."
+      },
+      {
+        "kind": "STMT",
+        "line": 19,
+        "lines": [
+          19
+        ],
+        "witness_call": null,
+        "text": "{\"title\": \"A negative sentinel is accidentally used as a valid sequence index\", \"where\": \"A search result or computed index can be negative before indexing a sequence.\", \"how\": \"Negative indexing selects from the end instead of rejecting the sentinel.\", \"what\": \"The last element is returned for a missing item.\", \"test\": \"Choose {input} that produces index -1 and apply the resulting index to a nonempty {sequence}.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger.",
+        "card_id": "py.negative-index-sentinel",
+        "card": {
+          "title": "A negative sentinel is accidentally used as a valid sequence index",
+          "where": "A search result or computed index can be negative before indexing a sequence.",
+          "how": "Negative indexing selects from the end instead of rejecting the sentinel.",
+          "what": "The last element is returned for a missing item.",
+          "test": "Choose {input} that produces index -1 and apply the resulting index to a nonempty {sequence}."
+        },
+        "retrieval_evidence": {
+          "line": 19,
+          "end_line": 19,
+          "expression": "word[i-1]",
+          "reason": "Subtracting from a position can create a valid-but-unintended negative index.",
+          "priority": 88
+        },
+        "retrieval_gate": "line_reachability_only",
+        "tool_target_text": "Execute source line 19; this does not establish the hypothesized bug trigger."
+      }
+    ],
+    "concept_facts": [
+      "{\"title\": \"A literal classification table omits or admits values outside the required class\", \"where\": \"A predicate or count uses membership in literal characters/numbers, repeated literal count calls or a hand-written character table.\", \"how\": \"A literal table represents exactly its listed members; it does not implicitly stand for all odd digits, vowels, valid symbols or other named classes.\", \"what\": \"A required member is ignored or an invalid member is accepted in the returned predicate or count.\", \"test\": \"Enumerate the finite allowed {classification_domain}, including boundary members and required letter cases, through {classification_site}.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger.",
+      "{\"title\": \"An early qualifying candidate is returned instead of the best eligible candidate\", \"where\": \"A loop or search returns the first qualifying element while the specification requires an optimum over eligible candidates.\", \"how\": \"Existence of an eligible candidate does not imply that it is minimal, maximal or closest among all eligible candidates.\", \"what\": \"The returned candidate qualifies but is not the required optimum.\", \"test\": \"Place a worse but eligible {first_candidate} before a better {later_candidate}, with an ineligible global extremum if filtering is required.\"}\n  Tool target: Execute source line 20; this does not establish the hypothesized bug trigger.",
+      "{\"title\": \"A negative sentinel is accidentally used as a valid sequence index\", \"where\": \"A search result or computed index can be negative before indexing a sequence.\", \"how\": \"Negative indexing selects from the end instead of rejecting the sentinel.\", \"what\": \"The last element is returned for a missing item.\", \"test\": \"Choose {input} that produces index -1 and apply the resulting index to a nonempty {sequence}.\"}\n  Tool target: Execute source line 19; this does not establish the hypothesized bug trigger."
+    ],
+    "placebo_meta": [],
+    "placebo_facts": [],
+    "tool_inputs": [],
+    "doc_fail": [],
+    "retrieval_method": "v2_compact_site_bound",
+    "vr8_measurements": [
+      {
+        "family": "membership",
+        "status": "supported",
+        "requirement_status": "public_lexical_cue_unverified",
+        "site": [
+          19,
+          11,
+          19,
+          28
+        ],
+        "expression": "word[i] in vowels",
+        "source_signature": "Compare(left=Subscript(value=Name(id='word', ctx=Load()), slice=Name(id='i', ctx=Load()), ctx=Load()), ops=[In()], comparators=[Name(id='vowels', ctx=Load())])",
+        "expected_members": "aeiouAEIOU",
+        "negated": false,
+        "requirement_evidence": "You are given a word. Your task is to find the closest vowel that stands between",
+        "predicate": "membership result differs from the registered ASCII-vowel class hypothesis at this exact lookup"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "input_repr": "('Yogurt',)"
+    },
+    {
+      "input_repr": "('yOgurt',)"
+    },
+    {
+      "input_repr": "('ba',)"
+    },
+    {
+      "input_repr": "('ab',)"
+    },
+    {
+      "input_repr": "('a',)"
+    },
+    {
+      "input_repr": "('b',)"
+    },
+    {
+      "input_repr": "('baa',)"
+    },
+    {
+      "input_repr": "('aab',)"
+    },
+    {
+      "input_repr": "('baab',)"
+    },
+    {
+      "input_repr": "('baaeb',)"
+    }
+  ],
+  "shown": []
+}

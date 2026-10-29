@@ -194,3 +194,72 @@ Nguồn: [`tc_full.py::generate/execute_task`](tc_full.py), [`tc_full_worker.py:
 ## Đọc sơ đồ
 
 Có bốn lựa chọn độc lập cần phân biệt: **cách tạo facts → arm sinh input/test → oracle → validity filter**. Tên phiên bản facts, tên run, và schema tag không thay thế được nhau. Sơ đồ phản ánh implementation đọc được; không kết luận phiên bản nào tốt hơn hoặc run nào hoàn tất.
+
+## 2026-10-29 retrieval experiment namespace
+
+```mermaid
+flowchart LR
+    V85["v85_retrievalhybrid: v2 cards in v11 loop"] --> VR8["vr8_semanticgate: bound OBS gates; CPU ready, endpoint blocked"]
+```
+
+`vr8`, `vr9`, ... label retrieval experiments separately from LineFacts `vNN`.
+VR8 preserves cards and reuses saved round1/ten refs, then compares old/semantic/
+generic under two strategy slots each. Exact-site predicates distinguish line
+reachability from value change, class disagreement and alternative ordering.
+These observations do not verify the full requirement or output propagation.
+41CPU tests pass; six selected tasks frozen;0new completions after preflight404.
+This is inspired by ConceptCoder's concept/measurement distinction, not its
+training implementation. [Protocol](pipelines/vr8_semanticgate/PREREG.md),
+[readiness and metric definitions](pipelines/vr8_semanticgate/README.md).
+
+VR8 terminal status supersedes readiness: **complete, no improvement shown**.
+Allarmsref6/6/FA0atR1ceiling;0additionalsemanticrealizations overcontrols.
+Task51exposes applicability/hardfilter failure;20newcalls/18,108tokens.
+Thetreeedge remainsv85→vr8;no vr9 created.
+[Result and proposed next design question](pipelines/vr8_semanticgate/completed/REPORT.md).
+
+## 2026-10-29 vr9 repair
+
+```mermaid
+flowchart LR
+    VR8["vr8: exact OBS, hard filter failure"] --> VR9["vr9: applicability + valid non-hit retention; CPU ready"]
+```
+
+VR9 changes routing/selection only and replays exact saved strategy pools.48CPU
+checks and12exact control replays pass. Task51preview0→4selected valid inputs;
+newexpected-output/scoring pending afterendpoint404,0newcompletions. No bug-score
+improvement claimed. [Protocol](pipelines/vr9_applicability/PREREG.md),
+[readiness report](pipelines/vr9_applicability/readiness/REPORT.md).
+
+VR9 terminal update2026-10-29: all6tasks/4arms complete;ref6/6FA0atR1ceiling.
+Retention19→24validinputs but exposingcalls2→1;task51still0selectedexposure.
+5newcompletions/3742tokens,no failure/unknown. Routing/retention mechanics repaired,
+no efficacy gain or promotion. [Result](pipelines/vr9_applicability/continuation_check_20261029/RESULT_REPORT.md).
+
+Separate retrieval-only `vr10` in `python_bug_concepts/research/` freezes V7A-D
+and12development tasks plus12canonical/4oldfixturequeries. Both dense contrasts
+recover0new supported buggy bindings over openBM25; NO_GO, no downstream run.
+[Diagnostic report](../python_bug_concepts/research/vr10_retrieval_diagnostic_20261029/REPORT.md).
+
+## 2026-10-29 V7 binding improvements and requested VR9 expansion
+
+```text
+V7 → vr10 dense diagnostic (NO_GO)
+ └→ vr11 operation binder → vr13 two role-completeness fixes
+V85 → vr8 OBS hard filter → vr9 applicability/retention → vr12_expanded
+```
+
+Vr13 is separate local retrieval development, not inserted into VR12. Same28old
+sources/identicalA-Dcandidates; armAbuggyproposals36→26, reviewedcontradictions22→14,
+supported9→9, known-sitehits8→7 (vr11:6). Canonicalproposals36→18, all18contradicted.
+No held-out efficacy/defaultpromotion or new dense gain. See
+[vr13 results](../python_bug_concepts/retrieval_v13/RESULTS.md) and
+[tree/metric definitions](../python_bug_concepts/retrieval_v13/VERSION_TREE.md).
+
+VR12 is the user-requested VR9 expansion: complete census of11fresheligible tasks,
+fourarms,K1,cap132physicalcompletions. Only2targetsOBS-uncovered/ninecoveredcontrols.
+24CPUchecks and independent source review pass; launch exited atpreflight, separate
+metadataGET404. Zero newcompletions/tokens, no scores/activecontroller. Await restored
+authorized endpoint; no repeated timer or paidfallback.
+[Readiness](pipelines/vr12_expanded/READINESS.md),
+[frozen protocol](pipelines/vr12_expanded/PREREG.md).

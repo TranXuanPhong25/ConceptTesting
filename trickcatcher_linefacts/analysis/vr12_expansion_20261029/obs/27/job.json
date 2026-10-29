@@ -1,0 +1,143 @@
+{
+  "mode": "classify",
+  "task": {
+    "task": 27,
+    "put": "\n\ndef flip_case(string: str) -> str:\n    \"\"\" For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n    >>> flip_case('Hello')\n    'hELLO'\n    \"\"\"\n\n    new_string = ''\n    for ch in string:\n        if 'A' <= ch <= 'Z':\n            new_string += ch.lower()\n        elif 'a' <= ch <= 'z':\n            new_string += ch.upper()\n        else:\n            new_string += ch\n    return new_string\n    pass\n",
+    "entry": "flip_case",
+    "base": "\n\nMETADATA = {\n    'author': 'jt',\n    'dataset': 'test'\n}\n\n\ndef check(candidate):\n    assert candidate('') == ''\n    assert candidate('Hello!') == 'hELLO!'\n    assert candidate('These violent delights have violent ends') == 'tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS'\n",
+    "split": "dev",
+    "mined_valid_src": "def P1_m(string):\n    return isinstance(string, str)\n\ndef P1(string):\n    return P1_m(string)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+    "valid_sha256": "ed0b01c62068f5f58c41cd7274f29b3e5afaaf52b9c78ea83bd7982b370c318a",
+    "strategy_src": "def strategy():\n    return st.tuples(st.text())\n",
+    "strategy_sha256": "56bcc915285f9724d3b5d7b1b5962cb75d1f8d84fc464e74b4c732cfda5e2eeb",
+    "strategy_fallback": false,
+    "mining_summary": {
+      "task": 27,
+      "facts_version": "v3m",
+      "model": "qwen3.5-27b-awq",
+      "cache_key": "86af24e6eb959c0f88f0a3fdcee3a3b536a3d730384ccd503d861d7e4ada770c",
+      "candidates": 1,
+      "confirmed": 1,
+      "coded": 1,
+      "surviving": 1,
+      "mining_failure": null,
+      "dropped_confirmation": [],
+      "dropped_code": [],
+      "dropped_verifier": [],
+      "valid_sha256": "ed0b01c62068f5f58c41cd7274f29b3e5afaaf52b9c78ea83bd7982b370c318a",
+      "seed": 20261037,
+      "evidence_filter": false,
+      "preconditions_version": "B5"
+    },
+    "facts_version": "v4",
+    "concept_meta": [
+      {
+        "kind": "SEMANTIC",
+        "line": 12,
+        "lines": [
+          12
+        ],
+        "witness_call": null,
+        "text": "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 12; this does not establish the hypothesized bug trigger.",
+        "card_id": "py.text-normalization-contract",
+        "card": {
+          "title": "Normalization changes text that the specification requires preserving",
+          "where": "lower, upper, casefold, strip or replace transforms input text before the required operation.",
+          "how": "These operations change case or characters; normalization is valid only when the target contract permits that change.",
+          "what": "Required original text is altered or a distinction specified by the task disappears.",
+          "test": "Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}."
+        },
+        "retrieval_evidence": {
+          "line": 12,
+          "end_line": 12,
+          "expression": "ch.lower()",
+          "reason": "This operation changes exact case/characters or whitespace.",
+          "priority": 143
+        },
+        "retrieval_gate": "line_reachability_only",
+        "tool_target_text": "Execute source line 12; this does not establish the hypothesized bug trigger.",
+        "semantic_index": 0
+      }
+    ],
+    "concept_facts": [
+      "{\"title\": \"Normalization changes text that the specification requires preserving\", \"where\": \"lower, upper, casefold, strip or replace transforms input text before the required operation.\", \"how\": \"These operations change case or characters; normalization is valid only when the target contract permits that change.\", \"what\": \"Required original text is altered or a distinction specified by the task disappears.\", \"test\": \"Compare admissible {texts} differing only in required case, whitespace or a character affected by {normalization_site}.\"}\n  Tool target: Execute source line 12; this does not establish the hypothesized bug trigger."
+    ],
+    "placebo_meta": [
+      {
+        "kind": "MUTANT",
+        "line": 14,
+        "k": 16,
+        "family": "SDL",
+        "extended": true,
+        "text": "Mutation (SDL): the mutant `new_string += ch.upper()` -> `pass` at line 14 is killed: an existing test distinguishes them.",
+        "mutant_src": "def flip_case(string: str) -> str:\n    \"\"\" For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n    >>> flip_case('Hello')\n    'hELLO'\n    \"\"\"\n    new_string = ''\n    for ch in string:\n        if 'A' <= ch <= 'Z':\n            new_string += ch.lower()\n        elif 'a' <= ch <= 'z':\n            pass\n        else:\n            new_string += ch\n    return new_string\n    pass"
+      },
+      {
+        "kind": "DU",
+        "line": 16,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `new_string` at line 14 reaches its use at line 16 in the existing tests.",
+        "cell": [
+          -2,
+          "du|3|new_string|14|16|c-use"
+        ]
+      }
+    ],
+    "placebo_facts": [
+      "Mutation (SDL): the mutant `new_string += ch.upper()` -> `pass` at line 14 is killed: an existing test distinguishes them.",
+      "Def-use pair (all-uses, c-use): the value assigned to `new_string` at line 14 reaches its use at line 16 in the existing tests."
+    ],
+    "tool_inputs": [],
+    "doc_fail": [],
+    "retrieval_method": "v2_compact_site_bound",
+    "vr8_measurements": [
+      {
+        "family": "normalization",
+        "status": "supported",
+        "requirement_status": "unknown",
+        "site": [
+          12,
+          26,
+          12,
+          36
+        ],
+        "expression": "ch.lower()",
+        "source_signature": "Call(func=Attribute(value=Name(id='ch', ctx=Load()), attr='lower', ctx=Load()), args=[], keywords=[])",
+        "operation": "lower",
+        "predicate": "exact string receiver differs from the result of this normalization call"
+      }
+    ]
+  },
+  "candidates": [
+    {
+      "input_repr": "('aBc',)"
+    },
+    {
+      "input_repr": "('123',)"
+    },
+    {
+      "input_repr": "('!@#',)"
+    },
+    {
+      "input_repr": "('',)"
+    },
+    {
+      "input_repr": "('Z',)"
+    },
+    {
+      "input_repr": "('z',)"
+    },
+    {
+      "input_repr": "('Hello World',)"
+    },
+    {
+      "input_repr": "('ABC',)"
+    },
+    {
+      "input_repr": "('abc',)"
+    },
+    {
+      "input_repr": "('The Quick Brown Fox',)"
+    }
+  ],
+  "shown": []
+}

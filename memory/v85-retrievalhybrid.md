@@ -1,6 +1,6 @@
 ---
 name: v85-retrievalhybrid
-description: Longer completion wait PID76780 running from54pairs/694responses;900s timeout,3historical unknowns within3503cap
+description: Complete113pairs/1130refs;primary ref retrieval78 vs v11 77,FA10vs13,paired10-9 p1.0;secondary73vs61
 metadata:
   type: project
 ---
@@ -143,3 +143,90 @@ changes or automatic retry loop.9focusedchecks pass;694request identities and
 694responses restored,missing completion submitted. No efficacy result yet.
 Active root:trickcatcher_linefacts/pipelines/v85_retrievalhybrid/out/humaneval/comparison_contextfit_4.
 Source:trickcatcher_linefacts/pipelines/v85_transport_longwait. Predecessors terminal.
+
+2026-10-28 17:16UTC (00:16Vietnam29Oct):generation complete113/113pairs, verified
+113final hybrid rows per arm. PID76780 alive; shared_spec_oracle19/1130,919received
+responses total,0new transport failures in contextfit_4.3historical unknowns remain.
+Scoring not started; no efficacy result. Same active root/controller; do not duplicate.
+
+2026-10-29 handoff supersedes all running status above: user explicitly stops
+local execution so another machine can continue. PID76780 exited17:19:23UTC28Oct
+after draining in-flight requests.113/113paired generation,36/1130shared refs,
+936received/936active attempts,0unresolved;3historical unknowns=939cumulative.
+No scoring yet. Do not restart local inference. Portable frozen snapshot and
+resume-only driver: trickcatcher_linefacts/handoffs/v85_20261029/README.md.
+Destination generates only1094missing refs then scores; same3503cumulative cap.
+Offline manifest/native checks and3resume tests pass; no new model calls.
+Linux destination not executed here; sandbox check required before inference.
+
+2026-10-29 03:23:48UTC user explicitly says run again, superseding local-stop
+and transfer instructions. Portable resume launched detached PID44302 from
+trickcatcher_linefacts/handoffs/v85_20261029/resume.py --run, existing work/.
+Offline hash/ledger/native checks pass; first fresh ref received (37/1130,
+937received total,2in-flight,0new failures at first check). SameQwen27B,2workers,
+900s completion timeout,3historical unknowns;1094remaining refs at launch,
+then automatic paired scoring. No generation rerun; original roots untouched.
+Active root: trickcatcher_linefacts/handoffs/v85_20261029/work/snapshot/
+trickcatcher_linefacts/pipelines/v85_retrievalhybrid/out/humaneval/handoff_20261029.
+Inspect STATUS.json and HANDOFF_COMPLETE.json; do not launch another copy.
+
+2026-10-29 (Vietnam), Codex: user explicitly requests continuation on the Linux
+destination and supplies the live endpoint. This supersedes the local-stop
+notice for this destination only. Python3.11.14 venv installed with the exact
+pinned tool versions;3resume tests,native shared-oracle test and reachable-listener
+network-denial check PASS. Offline manifest/ledger checks report113generation
+pairs,936received,3historical unknowns,36saved/1094missing references.
+Detached PID22898 launched about17:43UTC28Oct using the unchanged resume.py.
+Endpoint preflight passed;first2new reference slots saved by17:44:43UTC.
+Only missing references run,then the driver automatically freezes and grades.
+No final result yet. Do not start a duplicate or rerun failed/unresolved attempts.
+Destination status and completion markers are under
+trickcatcher_linefacts/handoffs/v85_20261029/work/snapshot/trickcatcher_linefacts/pipelines/v85_retrievalhybrid/out/humaneval/handoff_20261029/.
+Read HANDOFF_COMPLETE.json,not PID or COMPLETE.json alone,to establish final
+cumulative accounting. Linux portability preflight is now tested;report OS change.
+
+Historical Linux continuation checkpoint (2026-10-29 Vietnam, Codex; superseded
+by the Mac continuation and completion recorded below):
+PID22898 exited after138new references:174/1130saved,956remain.
+Last attempt:2026-10-28 18:09:34UTC. Final two completion attempts received
+HTTP503 (unknown usage) and HTTP404 (recorded without unknown usage).
+1074received/1076current-ledger attempts+3historical=1079cumulative attempts;
+4unknown usage. Both113generation arms remained complete;no final grading then.
+Source/import hashes,saved-oracle identities and request hashes passed offline audit.
+
+User requested continuation, but that session's network was restricted:metadata
+probe failed DNS resolution;0new completion requests. The unchanged driver refused
+the retained failed attempts. All receipts and the work directory were preserved
+for networked continuation with explicit failure accounting. See
+CONTINUATION_AUDIT_20261029.json. No source or protocol changes made in that check.
+
+2026-10-29 03:31:22UTC latest supersedes both previous hosts: user confirms
+Mac execution, Linux stopped. SSH found LinuxPID22898 exited at174refs with
+1074received+503unknown/404known failures. MacPID44302 was briefly launched
+before fetching that notice;blocked reservations/drained then stopped03:25:46UTC
+at49refs,13new successful calls,0unresolved. All13match already-received Linux
+request identities;Linux outputs retained without content-based selection.
+
+Fresh v85_20261029_resume2 snapshot imports174refs/113pairs and preserves18
+historical attempts (3oldunknown+503unknown+404known+13known duplicate calls).
+1092physical attempts at launch,4unknowns,3503global cap;duplicate known usage
+added to final totals. Three CPU tests/nativechecks andLinux originalhashesPASS.
+Detached MacPID46002 resumed only956missing refs then automatic scoring.
+Active root:trickcatcher_linefacts/handoffs/v85_20261029_resume2/work/snapshot/
+trickcatcher_linefacts/pipelines/v85_retrievalhybrid/out/humaneval/handoff_resume2_20261029.
+Original generation/source unchanged;see resume2 README/PREREG. No final result.
+Do not launch old archive or duplicate controllers;preserve allhost accounting.
+
+2026-10-29 07:04UTC completion check supersedes every RUNNING notice:
+MacPID46002 exited;HANDOFF_COMPLETE exists,1130refs/113scored tasks,0pending.
+Primaryref retrieval78/113vs v11 77/113,FA tasks10vs13,paired10wins/9losses,p1.0.
+No reliable primary detection gain. Secondaryo0 retrieval73vs61,FA51vs57,
+paired17/5,p.01690;do not substitute secondary for primary. D_I_samples85vs84.
+Note o0retrieval D_IO_samples72 differs from confirmed_tasks73 by definition;
+no independent replay of that discrepancy. Primaryref summaries agree.
+Final hashes/receipts/1130oracle identities/cumulative arithmetic audited:
+2030active received+18historical=2048physical attempts;4unknown usage,13known
+duplicate successes included. Known usage1,118,505tokens;RESULTS authoritative
+(STATUS usage omits duplicate tokens). Allfinal artifacts andreport committed
+under trickcatcher_linefacts/handoffs/v85_20261029_resume2/completed/.
+No new calls/fullrescoring/heldout replication;no automatic continuation.

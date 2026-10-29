@@ -1,0 +1,274 @@
+{
+  "gpt-oss-120b": {
+    "model": "gpt-oss-120b",
+    "route": "price-priority eligible routes (Near AI planning)",
+    "prompt_per_million": "0.03",
+    "completion_per_million": "0.15",
+    "rows": [
+      {
+        "dataset": "humaneval",
+        "arm": "plain",
+        "calls_per_sample": 1,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 339,
+        "estimate_usd": "0.14579712",
+        "full_output_cost_usd": "0.87478272"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "plain-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 2712,
+        "estimate_usd": "1.16637696",
+        "full_output_cost_usd": "6.99826176"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "toolinput",
+        "calls_per_sample": 1,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 339,
+        "estimate_usd": "0.14579712",
+        "full_output_cost_usd": "0.87478272"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "placebo-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 2712,
+        "estimate_usd": "1.16637696",
+        "full_output_cost_usd": "6.99826176"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "concept-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 2712,
+        "estimate_usd": "1.16637696",
+        "full_output_cost_usd": "6.99826176"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "concept-hybrid-ft",
+        "calls_per_sample": 8,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 2712,
+        "estimate_usd": "1.16637696",
+        "full_output_cost_usd": "6.99826176"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "plain",
+        "calls_per_sample": 1,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 99,
+        "estimate_usd": "0.04257792",
+        "full_output_cost_usd": "0.25546752"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "plain-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 792,
+        "estimate_usd": "0.34062336",
+        "full_output_cost_usd": "2.04374016"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "toolinput",
+        "calls_per_sample": 1,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 99,
+        "estimate_usd": "0.04257792",
+        "full_output_cost_usd": "0.25546752"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "placebo-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 792,
+        "estimate_usd": "0.34062336",
+        "full_output_cost_usd": "2.04374016"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "concept-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 792,
+        "estimate_usd": "0.34062336",
+        "full_output_cost_usd": "2.04374016"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "concept-hybrid-ft",
+        "calls_per_sample": 8,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 792,
+        "estimate_usd": "0.34062336",
+        "full_output_cost_usd": "2.04374016"
+      }
+    ],
+    "estimate_usd": "6.40475136",
+    "hard_cap_usd": "9.607127040",
+    "dataset_caps_usd": {
+      "humaneval": "7.43565312",
+      "vibepass_half": "2.171473920"
+    },
+    "full_output_cost_usd": "38.42850816",
+    "assumptions": "4096 prompt + 2048 output including reasoning/call; maximum logical calls; shared round1 double counted; scoring shares dataset cap"
+  },
+  "deepseek-v4-flash": {
+    "model": "deepseek-v4-flash",
+    "route": "relace/fp4",
+    "prompt_per_million": "0.0422",
+    "completion_per_million": "0.1694",
+    "rows": [
+      {
+        "dataset": "humaneval",
+        "arm": "plain",
+        "calls_per_sample": 1,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 339,
+        "estimate_usd": "1.9403513856",
+        "full_output_cost_usd": "7.5856158720"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "plain-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 2712,
+        "estimate_usd": "15.5228110848",
+        "full_output_cost_usd": "60.6849269760"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "toolinput",
+        "calls_per_sample": 1,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 339,
+        "estimate_usd": "1.9403513856",
+        "full_output_cost_usd": "7.5856158720"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "placebo-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 2712,
+        "estimate_usd": "15.5228110848",
+        "full_output_cost_usd": "60.6849269760"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "concept-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 2712,
+        "estimate_usd": "15.5228110848",
+        "full_output_cost_usd": "60.6849269760"
+      },
+      {
+        "dataset": "humaneval",
+        "arm": "concept-hybrid-ft",
+        "calls_per_sample": 8,
+        "tasks": 113,
+        "K": 3,
+        "logical_calls": 2712,
+        "estimate_usd": "15.5228110848",
+        "full_output_cost_usd": "60.6849269760"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "plain",
+        "calls_per_sample": 1,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 99,
+        "estimate_usd": "0.5666512896",
+        "full_output_cost_usd": "2.2152683520"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "plain-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 792,
+        "estimate_usd": "4.5332103168",
+        "full_output_cost_usd": "17.7221468160"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "toolinput",
+        "calls_per_sample": 1,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 99,
+        "estimate_usd": "0.5666512896",
+        "full_output_cost_usd": "2.2152683520"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "placebo-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 792,
+        "estimate_usd": "4.5332103168",
+        "full_output_cost_usd": "17.7221468160"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "concept-hybrid",
+        "calls_per_sample": 8,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 792,
+        "estimate_usd": "4.5332103168",
+        "full_output_cost_usd": "17.7221468160"
+      },
+      {
+        "dataset": "vibepass_half",
+        "arm": "concept-hybrid-ft",
+        "calls_per_sample": 8,
+        "tasks": 33,
+        "K": 3,
+        "logical_calls": 792,
+        "estimate_usd": "4.5332103168",
+        "full_output_cost_usd": "17.7221468160"
+      }
+    ],
+    "estimate_usd": "85.2380909568",
+    "hard_cap_usd": "10",
+    "dataset_caps_usd": {
+      "humaneval": "7.73972603",
+      "vibepass_half": "2.26027397"
+    },
+    "full_output_cost_usd": "333.2300636160",
+    "assumptions": "4096 prompt + 32768 output including reasoning/call; maximum logical calls; shared round1 double counted; scoring shares dataset cap"
+  }
+}

@@ -1,0 +1,254 @@
+{
+  "schema_version": "draft1",
+  "source_basis": "ConceptCoder section2.1 definition adapted to testing; no training/bottleneck reproduction",
+  "runtime_default_changed": false,
+  "cards": [
+    {
+      "id": "sem.text_normalization",
+      "replaces": [
+        "py.text-normalization-contract"
+      ],
+      "bindings": [
+        "input_text",
+        "normalization_operation",
+        "downstream_observation"
+      ],
+      "scope": "named text value before and after one transformation",
+      "domain": [
+        "identity",
+        "lower",
+        "upper",
+        "casefold",
+        "strip",
+        "replacement",
+        "unknown"
+      ],
+      "observation": "Record the actual transform and whether it changes the bound value on this input; reaching the call is insufficient.",
+      "requirement": "Record which textual distinctions the public specification requires preserving; if case policy is unstated or conflicting, retain unknown.",
+      "obligation": "Find two admissible values whose required distinction is collapsed by the bound transform, and confirm the changed value reaches the named downstream observation.",
+      "benign": "Case-insensitive comparison explicitly permits lower/casefold; an alphabet without case variation cannot exercise this case.",
+      "example": {
+        "contract": "Compare strings exactly, including case.",
+        "left": "A",
+        "right": "a",
+        "observed_projection": "lower",
+        "projected_values_equal": true,
+        "required_values_equal": false
+      },
+      "compact": "lower collapses A/a here. If this output must preserve case, exercise a case-only contrast; expected output comes from the spec/oracle.",
+      "guide": "Preserve original data for case-sensitive comparisons; normalize only where the contract permits it.",
+      "status": "design_candidate_not_runtime",
+      "concept_role": "observable_semantic_property_not_bug_verdict",
+      "measurement_status": [
+        "observed",
+        "unknown",
+        "unsupported"
+      ],
+      "requirement_sources": [
+        "public_spec_quote",
+        "public_example"
+      ],
+      "unknown_rule": "Missing evidence stays unknown; unknown is not false and is not covered.",
+      "coverage_rule": "Record site reachability separately; mark an obligation exercised only when its named semantic predicate is observed on an admissible test. This does not establish oracle correctness or absence of bugs.",
+      "pipeline_connection": "candidate only: extract OBS and REQ separately, then bind a specific TEST obligation; no arbitrary same-line fact may stand in for it"
+    },
+    {
+      "id": "sem.multiplicity_projection",
+      "replaces": [
+        "py.set-loses-multiplicity",
+        "py.presence-frequency-confusion"
+      ],
+      "bindings": [
+        "sequence",
+        "projection_operation",
+        "output_quantity"
+      ],
+      "scope": "a bound collection and its consumer",
+      "domain": [
+        "occurrences",
+        "distinct_values",
+        "membership_only",
+        "unknown"
+      ],
+      "observation": "Identify whether a specific projection collapses repetitions and whether its consumer observes counts or only membership.",
+      "requirement": "Determine whether the named result depends on occurrence counts or only distinct membership; do not infer this from set syntax.",
+      "obligation": "Exercise equal-support collections with different multiplicities and establish the bound projection collapses that distinction. Output invariance is a bug hypothesis only if the required output depends on multiplicity.",
+      "benign": "Distinct-element count and membership queries intentionally discard duplicate occurrences.",
+      "example": {
+        "contract": "Return the number of occurrences in the list.",
+        "left": [
+          2,
+          2,
+          7
+        ],
+        "right": [
+          2,
+          7
+        ],
+        "observed_projection": "set",
+        "projected_values_equal": true,
+        "required_values_equal": false
+      },
+      "compact": "set collapses [2,2,7] and [2,7]. If the requested quantity counts occurrences, use this contrast; distinct-member tasks are benign.",
+      "guide": "Use occurrence counts when requested; retain set-based logic for explicitly distinct-member semantics.",
+      "status": "design_candidate_not_runtime",
+      "concept_role": "observable_semantic_property_not_bug_verdict",
+      "measurement_status": [
+        "observed",
+        "unknown",
+        "unsupported"
+      ],
+      "requirement_sources": [
+        "public_spec_quote",
+        "public_example"
+      ],
+      "unknown_rule": "Missing evidence stays unknown; unknown is not false and is not covered.",
+      "coverage_rule": "Record site reachability separately; mark an obligation exercised only when its named semantic predicate is observed on an admissible test. This does not establish oracle correctness or absence of bugs.",
+      "pipeline_connection": "candidate only: extract OBS and REQ separately, then bind a specific TEST obligation; no arbitrary same-line fact may stand in for it"
+    },
+    {
+      "id": "sem.comparison_order",
+      "replaces": [
+        "py.lexicographic-numeric-order"
+      ],
+      "bindings": [
+        "left_operand",
+        "right_operand",
+        "comparison_site",
+        "required_rank_relation"
+      ],
+      "scope": "one comparison between two bound values",
+      "domain": [
+        "lexicographic",
+        "numeric",
+        "domain_rank",
+        "unknown"
+      ],
+      "observation": "Determine which order the expression implements from operand types/operator; require a pair for which implemented and required order disagree.",
+      "requirement": "Ground numeric magnitude or the external ranking in an explicit public specification; never obtain the order from the grading reference.",
+      "obligation": "Exercise an admissible inversion pair at the bound comparator and check that the comparison influences the named result.",
+      "benign": "Dictionary-order tasks intentionally use lexical comparison; distinct orders can also agree on an individual pair.",
+      "example": {
+        "contract": "Select the string representing the larger integer.",
+        "left": "10",
+        "right": "2",
+        "observed_order": "lexicographic",
+        "required_order": "numeric",
+        "observed_left_less": true,
+        "required_left_less": false
+      },
+      "compact": "String order ranks \"10\" before \"2\"; numeric order reverses it. Exercise an inversion only if this comparison requires numeric rank.",
+      "guide": "Compare the contract-specified key or rank; retain original values for the requested output.",
+      "status": "design_candidate_not_runtime",
+      "concept_role": "observable_semantic_property_not_bug_verdict",
+      "measurement_status": [
+        "observed",
+        "unknown",
+        "unsupported"
+      ],
+      "requirement_sources": [
+        "public_spec_quote",
+        "public_example"
+      ],
+      "unknown_rule": "Missing evidence stays unknown; unknown is not false and is not covered.",
+      "coverage_rule": "Record site reachability separately; mark an obligation exercised only when its named semantic predicate is observed on an admissible test. This does not establish oracle correctness or absence of bugs.",
+      "pipeline_connection": "candidate only: extract OBS and REQ separately, then bind a specific TEST obligation; no arbitrary same-line fact may stand in for it"
+    },
+    {
+      "id": "sem.classifier_membership",
+      "replaces": [
+        "py.literal-classification-domain"
+      ],
+      "bindings": [
+        "classifier",
+        "observed_member_set",
+        "admissible_alphabet",
+        "consumer"
+      ],
+      "scope": "one named finite classifier",
+      "domain": [
+        "member",
+        "nonmember",
+        "unknown"
+      ],
+      "observation": "Read the explicit literal table and observe membership for a bound symbol; independently record the required classifier from public spec/examples.",
+      "requirement": "Spell out allowed alphabet and required class; \"case sensitive\" alone does not establish lower-only vowel membership.",
+      "obligation": "Exercise a legal symbol in the symmetric difference of observed and required finite classes at an eligible consumer position. Record whether downstream eligibility conditions hold.",
+      "benign": "A lower-only table is valid when the input contract guarantees lowercase or normalization precedes the lookup.",
+      "example": {
+        "contract": "Both uppercase and lowercase A/E/I/O/U are vowels; return the matching original character between consonants.",
+        "input": "bAb",
+        "symbol": "A",
+        "observed_members": "aeiou",
+        "required_members": "aeiouAEIOU",
+        "observed_member": false,
+        "required_member": true
+      },
+      "compact": "The table contains lowercase vowels only. For a contract admitting uppercase vowels, exercise an eligible uppercase vowel; preserve its case in the expected result.",
+      "guide": "Use the contract-complete classifier or normalize only for membership while retaining the original character if required.",
+      "status": "design_candidate_not_runtime",
+      "concept_role": "observable_semantic_property_not_bug_verdict",
+      "measurement_status": [
+        "observed",
+        "unknown",
+        "unsupported"
+      ],
+      "requirement_sources": [
+        "public_spec_quote",
+        "public_example"
+      ],
+      "unknown_rule": "Missing evidence stays unknown; unknown is not false and is not covered.",
+      "coverage_rule": "Record site reachability separately; mark an obligation exercised only when its named semantic predicate is observed on an admissible test. This does not establish oracle correctness or absence of bugs.",
+      "pipeline_connection": "candidate only: extract OBS and REQ separately, then bind a specific TEST obligation; no arbitrary same-line fact may stand in for it"
+    },
+    {
+      "id": "sem.recursive_work_structure",
+      "replaces": [
+        "py.recursive-base-progress"
+      ],
+      "bindings": [
+        "recursive_site",
+        "subproblem_arguments",
+        "memoization_scope",
+        "input_measure"
+      ],
+      "scope": "recursive call graph or a bounded execution trace",
+      "domain": [
+        "no_repeated_subproblem_observed",
+        "repeated_subproblems_unshared",
+        "memoized_reuse",
+        "unknown"
+      ],
+      "observation": "Separate argument progress, base-case coverage, recursion depth and repeated work. Different properties require different measurements; repeated identical subproblem arguments are not proved by visiting a recursive call line.",
+      "requirement": "Resource failures require a declared admissible input range and evaluation resource budget. Without them, retain a performance hypothesis, not a confirmed correctness bug.",
+      "obligation": "Under a declared budget, show repeated unshared subproblems or depth growth on admissible inputs. Do not generate enormous expected integers or declare nontermination from recursion syntax.",
+      "benign": "Small bounded input domains can permit naive recursion; memoization may share repeated subproblem requests even when the source has multiple recursive calls.",
+      "example": {
+        "contract": "No resource budget supplied.",
+        "recursive_children": [
+          "n-1",
+          "n-2"
+        ],
+        "progress_measure": "n decreases for n>=2",
+        "overlapping_subproblems_possible": true,
+        "performance_violation_status": "unknown"
+      },
+      "compact": "Progress and duplicated recursive work are separate. Measure overlap/reuse under the declared input and resource budget; reaching recursion is not coverage.",
+      "guide": "Share repeated subproblems or use an iterative recurrence when the declared resource contract requires it.",
+      "status": "design_candidate_not_runtime",
+      "concept_role": "observable_semantic_property_not_bug_verdict",
+      "measurement_status": [
+        "observed",
+        "unknown",
+        "unsupported"
+      ],
+      "requirement_sources": [
+        "public_spec_quote",
+        "public_example"
+      ],
+      "unknown_rule": "Missing evidence stays unknown; unknown is not false and is not covered.",
+      "coverage_rule": "Record site reachability separately; mark an obligation exercised only when its named semantic predicate is observed on an admissible test. This does not establish oracle correctness or absence of bugs.",
+      "pipeline_connection": "candidate only: extract OBS and REQ separately, then bind a specific TEST obligation; no arbitrary same-line fact may stand in for it"
+    }
+  ]
+}
