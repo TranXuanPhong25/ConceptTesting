@@ -263,3 +263,12 @@ metadataGET404. Zero newcompletions/tokens, no scores/activecontroller. Await re
 authorized endpoint; no repeated timer or paidfallback.
 [Readiness](pipelines/vr12_expanded/READINESS.md),
 [frozen protocol](pipelines/vr12_expanded/PREREG.md).
+
+VR12 terminal2026-10-30 supersedes preflightblocked: complete11/11tasks,
+39physicalcompletions/39,878newtokens/0unknown. Ref strict/retain/applicable9vs
+generic8 (R1=7); primary applicabilitygain not demonstrated, paired1–0,p=1.0.
+All16arm/oracle summaries match savedreceipts under pinnedPython3.11.14.
+Earlier unpinned-audit FA/abstention mismatch was Unicode-dependent callkey
+serialization, not a frozenresult inconsistency. No source/result repair or
+newinference. [Final report](analysis/vr12_schedule_20261030/FINAL_REPORT.md),
+[runtime audit addendum](analysis/vr12_schedule_20261030/RUNTIME_AUDIT_ADDENDUM.md).
