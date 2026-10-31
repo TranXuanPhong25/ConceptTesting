@@ -9,6 +9,11 @@ When an experiment is borderline (e.g. v34 8–2 but rule not met), do NOT propo
 "prove" it. The user wants evidence that the direction is worth continuing: mechanism checks on existing outputs
 (does the concept actually point at the bug? do wins use it?), cheap CPU metrics, a clear go/no-go.
 
+Also never cite dataset size / "only 33 PUTs" / "one benchmark" as the reason a result is weak or as a way to
+keep a direction alive. User (2026-10-21): "đã bảo là đừng lấy lý do dataset để vớt vát". When a tool-based concept
+fails, look at what is missing in the method: coverage of the tool's techniques, and the accuracy and taxonomy of the
+concepts given to the LLM.
+
 **Why:** user (2026-10-20): "không nên cố chấp chạy thêm dataset để vớt vát chứng minh, thứ cần là tín hiệu rằng hướng
 này có thể tiếp tục, chứ không phải là chạy nhiều hơn".
 **How to apply:** after each result, first run a zero-cost mechanism analysis and state the signal plainly; propose

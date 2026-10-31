@@ -1,0 +1,8 @@
+# Ngoài scope hoặc không đủ evidence
+
+| Paper | Year/venue | Dataset | Author model | Artifact | Grade | Main limitation |
+|---|---|---|---|---|---|---|
+| [Escaping the Self-Repair Trap: Improving Test Oracle Generation via Dual-Context Awareness](https://arxiv.org/abs/2608.05917) | 2026 ASE | Regression-oracle/mutation subjects; exact target benchmark not verified | Exact model/config not audited | [source/record](https://zenodo.org/records/21357436) | X | No Defects4J use found in inspected paper; không tính là exact-dataset paper. Correct-current-version oracle setting. |
+| [Uncovering Business Logic Bugs via Semantics-Driven Unit Test Generation](https://arxiv.org/abs/2604.23509) | 2026 ISSTA experience paper | Private industrial Go repositories | Not audited | Not verified | X | Paper explicitly says Defects4J/BugsInPy are poor proxies and evaluates industrial Go. Metadata keyword hit không phải dataset use. |
+| [LLM-Based Invariant Testing for Software Functional Bugs](https://arxiv.org/abs/2607.18711) | 2026 ISSRE | C/C++ libraries + historical bugs; not Defects4J/BugsInPy | Not audited | [source/record](https://github.com/SecurityLab-UCD/CNTG) | X | Không thuộc requested benchmark; không tính là exact-dataset base. |
+| [Understanding and Improving LLM-Based Test Oracle Generation](https://zenodo.org/records/19228870) | 2026 Zenodo submission artifact; publication not verified | Defects4J + GHRB | GPT-4o + MiniMax | [source/record](https://zenodo.org/records/19228870) | X | An artifact registry, not verified published paper. Files restricted; không đếm như một paper đủ điều kiện. |

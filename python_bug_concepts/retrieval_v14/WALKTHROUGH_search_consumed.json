@@ -1,0 +1,530 @@
+{
+  "id": "search_consumed",
+  "result": {
+    "version": "vr14_concept_templates",
+    "arm": "relations",
+    "backend": "SQLite FTS5 BM25",
+    "candidate_cap": 3,
+    "query": "position lookup\nsearch produces position\nmissing returns negative sentinel\nsource sequence\nneedle element\nposition index\nsearch position indexing\nsearch result consumed as index\nmissing found boundary position partitions\nsearch_source sequence\nneedle element\nposition index\nindexed_source sequence\nresult element\nposition lookup position flows to index search position indexing",
+    "omitted_query_characters": 0,
+    "source_sha256": "aae496bee6ca3264ca7bfb5b7bdb813190bca0af5b9816e088e8555900d1cc54",
+    "entry": "f",
+    "instances": [
+      {
+        "id": "aae496bee6ca:Call:2:3:2:12/position_lookup",
+        "kind": "position_lookup",
+        "scope": "f",
+        "evidence": {
+          "id": "aae496bee6ca:Call:2:3:2:12",
+          "span": [
+            2,
+            3,
+            2,
+            12
+          ],
+          "expression": "s.find(q)"
+        },
+        "slots": {
+          "source": {
+            "type": "sequence",
+            "evidence": {
+              "id": "aae496bee6ca:Name:2:3:2:4",
+              "span": [
+                2,
+                3,
+                2,
+                4
+              ],
+              "expression": "s"
+            }
+          },
+          "needle": {
+            "type": "element",
+            "evidence": {
+              "id": "aae496bee6ca:Name:2:10:2:11",
+              "span": [
+                2,
+                10,
+                2,
+                11
+              ],
+              "expression": "q"
+            }
+          },
+          "position": {
+            "type": "index",
+            "evidence": {
+              "id": "aae496bee6ca:Call:2:3:2:12",
+              "span": [
+                2,
+                3,
+                2,
+                12
+              ],
+              "expression": "s.find(q)"
+            }
+          }
+        },
+        "properties": [
+          "search produces position",
+          "missing returns negative sentinel"
+        ],
+        "relations": [],
+        "assumptions": [
+          "annotated_str",
+          "receiver follows its declared builtin semantics"
+        ],
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "aae496bee6ca:Subscript:4:8:4:16/search_position_indexing",
+        "kind": "search_position_indexing",
+        "scope": "f",
+        "evidence": {
+          "id": "aae496bee6ca:Subscript:4:8:4:16",
+          "span": [
+            4,
+            8,
+            4,
+            16
+          ],
+          "expression": "s[alias]"
+        },
+        "slots": {
+          "search_source": {
+            "type": "sequence",
+            "evidence": {
+              "id": "aae496bee6ca:Name:2:3:2:4",
+              "span": [
+                2,
+                3,
+                2,
+                4
+              ],
+              "expression": "s"
+            }
+          },
+          "needle": {
+            "type": "element",
+            "evidence": {
+              "id": "aae496bee6ca:Name:2:10:2:11",
+              "span": [
+                2,
+                10,
+                2,
+                11
+              ],
+              "expression": "q"
+            }
+          },
+          "position": {
+            "type": "index",
+            "evidence": {
+              "id": "aae496bee6ca:Name:4:10:4:15",
+              "span": [
+                4,
+                10,
+                4,
+                15
+              ],
+              "expression": "alias"
+            }
+          },
+          "indexed_source": {
+            "type": "sequence",
+            "evidence": {
+              "id": "aae496bee6ca:Name:4:8:4:9",
+              "span": [
+                4,
+                8,
+                4,
+                9
+              ],
+              "expression": "s"
+            }
+          },
+          "result": {
+            "type": "element",
+            "evidence": {
+              "id": "aae496bee6ca:Subscript:4:8:4:16",
+              "span": [
+                4,
+                8,
+                4,
+                16
+              ],
+              "expression": "s[alias]"
+            }
+          }
+        },
+        "properties": [
+          "search result consumed as index",
+          "missing found boundary position partitions"
+        ],
+        "relations": [
+          {
+            "subject": "aae496bee6ca:Call:2:3:2:12/position_lookup",
+            "predicate": "position_flows_to_index",
+            "object": "aae496bee6ca:Subscript:4:8:4:16/search_position_indexing",
+            "evidence": [
+              {
+                "id": "aae496bee6ca:Call:2:3:2:12",
+                "span": [
+                  2,
+                  3,
+                  2,
+                  12
+                ],
+                "expression": "s.find(q)"
+              },
+              {
+                "id": "aae496bee6ca:Name:4:10:4:15",
+                "span": [
+                  4,
+                  10,
+                  4,
+                  15
+                ],
+                "expression": "alias"
+              },
+              {
+                "id": "aae496bee6ca:Subscript:4:8:4:16",
+                "span": [
+                  4,
+                  8,
+                  4,
+                  16
+                ],
+                "expression": "s[alias]"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "annotated_str",
+          "receiver follows its declared builtin semantics"
+        ],
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred",
+        "source_chain": [
+          {
+            "id": "aae496bee6ca:Assign:2:1:2:12",
+            "span": [
+              2,
+              1,
+              2,
+              12
+            ],
+            "expression": "i=s.find(q)"
+          },
+          {
+            "id": "aae496bee6ca:Assign:3:1:3:8",
+            "span": [
+              3,
+              1,
+              3,
+              8
+            ],
+            "expression": "alias=i"
+          }
+        ]
+      }
+    ],
+    "unknown": [],
+    "requirement": {
+      "status": "unknown",
+      "cues": [],
+      "public_docstring": ""
+    },
+    "candidates": [
+      {
+        "template_id": "concept.search_position_indexing",
+        "bm25_score": 14.635564862590549,
+        "bound_instances": 1
+      },
+      {
+        "template_id": "concept.position_lookup",
+        "bm25_score": 11.470479573896524,
+        "bound_instances": 1
+      },
+      {
+        "template_id": "concept.direct_indexing",
+        "bm25_score": 4.867593538747261,
+        "bound_instances": 0
+      }
+    ],
+    "bindings": [
+      {
+        "template_id": "concept.search_position_indexing",
+        "instance_id": "aae496bee6ca:Subscript:4:8:4:16/search_position_indexing",
+        "slots": {
+          "search_source": {
+            "type": "sequence",
+            "evidence": {
+              "id": "aae496bee6ca:Name:2:3:2:4",
+              "span": [
+                2,
+                3,
+                2,
+                4
+              ],
+              "expression": "s"
+            }
+          },
+          "needle": {
+            "type": "element",
+            "evidence": {
+              "id": "aae496bee6ca:Name:2:10:2:11",
+              "span": [
+                2,
+                10,
+                2,
+                11
+              ],
+              "expression": "q"
+            }
+          },
+          "position": {
+            "type": "index",
+            "evidence": {
+              "id": "aae496bee6ca:Name:4:10:4:15",
+              "span": [
+                4,
+                10,
+                4,
+                15
+              ],
+              "expression": "alias"
+            }
+          },
+          "indexed_source": {
+            "type": "sequence",
+            "evidence": {
+              "id": "aae496bee6ca:Name:4:8:4:9",
+              "span": [
+                4,
+                8,
+                4,
+                9
+              ],
+              "expression": "s"
+            }
+          },
+          "result": {
+            "type": "element",
+            "evidence": {
+              "id": "aae496bee6ca:Subscript:4:8:4:16",
+              "span": [
+                4,
+                8,
+                4,
+                16
+              ],
+              "expression": "s[alias]"
+            }
+          }
+        },
+        "relations": [
+          {
+            "subject": "aae496bee6ca:Call:2:3:2:12/position_lookup",
+            "predicate": "position_flows_to_index",
+            "object": "aae496bee6ca:Subscript:4:8:4:16/search_position_indexing",
+            "evidence": [
+              {
+                "id": "aae496bee6ca:Call:2:3:2:12",
+                "span": [
+                  2,
+                  3,
+                  2,
+                  12
+                ],
+                "expression": "s.find(q)"
+              },
+              {
+                "id": "aae496bee6ca:Name:4:10:4:15",
+                "span": [
+                  4,
+                  10,
+                  4,
+                  15
+                ],
+                "expression": "alias"
+              },
+              {
+                "id": "aae496bee6ca:Subscript:4:8:4:16",
+                "span": [
+                  4,
+                  8,
+                  4,
+                  16
+                ],
+                "expression": "s[alias]"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "annotated_str",
+          "receiver follows its declared builtin semantics"
+        ],
+        "partitions": [
+          {
+            "id": "needle_absent_nonempty_source",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "search_source": "s",
+              "needle": "q",
+              "position": "alias",
+              "indexed_source": "s",
+              "result": "s[alias]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "first_position",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "search_source": "s",
+              "needle": "q",
+              "position": "alias",
+              "indexed_source": "s",
+              "result": "s[alias]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "last_position",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "search_source": "s",
+              "needle": "q",
+              "position": "alias",
+              "indexed_source": "s",
+              "result": "s[alias]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "repeated_matches",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "search_source": "s",
+              "needle": "q",
+              "position": "alias",
+              "indexed_source": "s",
+              "result": "s[alias]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          }
+        ],
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "template_id": "concept.position_lookup",
+        "instance_id": "aae496bee6ca:Call:2:3:2:12/position_lookup",
+        "slots": {
+          "source": {
+            "type": "sequence",
+            "evidence": {
+              "id": "aae496bee6ca:Name:2:3:2:4",
+              "span": [
+                2,
+                3,
+                2,
+                4
+              ],
+              "expression": "s"
+            }
+          },
+          "needle": {
+            "type": "element",
+            "evidence": {
+              "id": "aae496bee6ca:Name:2:10:2:11",
+              "span": [
+                2,
+                10,
+                2,
+                11
+              ],
+              "expression": "q"
+            }
+          },
+          "position": {
+            "type": "index",
+            "evidence": {
+              "id": "aae496bee6ca:Call:2:3:2:12",
+              "span": [
+                2,
+                3,
+                2,
+                12
+              ],
+              "expression": "s.find(q)"
+            }
+          }
+        },
+        "relations": [],
+        "assumptions": [
+          "annotated_str",
+          "receiver follows its declared builtin semantics"
+        ],
+        "partitions": [
+          {
+            "id": "needle_absent",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "s",
+              "needle": "q",
+              "position": "s.find(q)"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "first_position",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "s",
+              "needle": "q",
+              "position": "s.find(q)"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "last_position",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "s",
+              "needle": "q",
+              "position": "s.find(q)"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "repeated_matches",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "s",
+              "needle": "q",
+              "position": "s.find(q)"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          }
+        ],
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      }
+    ]
+  }
+}

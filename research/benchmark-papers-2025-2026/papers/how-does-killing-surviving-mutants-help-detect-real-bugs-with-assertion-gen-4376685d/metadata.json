@@ -1,0 +1,34 @@
+{
+  "openalex_id": "https://openalex.org/W7215079639",
+  "title": "How Does Killing Surviving Mutants Help Detect Real Bugs with Assertion Generation? A Controlled Experiment",
+  "year": 2026,
+  "publication_date": "2026-10-01",
+  "type": "article",
+  "doi": "https://doi.org/10.1145/3832232",
+  "primary_url": "https://doi.org/10.1145/3832232",
+  "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3832232?download=true",
+  "venue": "Proceedings of the ACM on software engineering.",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 28,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_author_artifact_verified",
+  "year_venue": "2026 ISSTA; verified against official first-author publications page and paper PDF",
+  "datasets": [
+    "Defects4J 3.0.1: paper states 854 bugs/17 subjects in corpus; after excluding Mockito and Closure, studies 642 real-bug versions across 15 subjects. The controlled mutant analysis focuses on 104 bugs with revealability gaps."
+  ],
+  "models": "No LLM; deterministic assertion augmentation + Major mutation testing.",
+  "artifact_url": "https://github.com/spideruci/Defects4j_for_Coupling_Effect_Analysis_Through_Killing_Surviving_Mutants; paper cites Zenodo DOI 10.5281/zenodo.21328338; GitHub README links prebuilt Docker example archive DOI 10.5281/zenodo.21013232.",
+  "license": "MIT software; paper CC BY 4.0",
+  "input_setting": "Remove developer triggering tests to construct bug-ignorant suite T; generate Major mutants on fixed version; use passing tests and compare state collected on fixed vs mutant versions; add one localized assertion and validate it passes fixed/fails faulty. For real-bug analysis, directly compare fixed and buggy versions. Not issue-report input, root-cause localization, or LLM test generation.",
+  "reproduction_grade": "B (conditional full-study reproduction; documented Docker/CI examples make smoke reproduction feasible)",
+  "concept_hook": "High: revealability-gap classification and mutation-derived behavioral assertions on Defects4J, but not issue-level root-cause diagnosis.",
+  "limitation": "Full paper reports 1,177 experimental hours; paper DOI and README Docker archive Zenodo records differ and exact full dataset archive is unresolved.",
+  "rank": 52,
+  "family": "oracle_assertion_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/how-does-killing-surviving-mutants-help-detect-real-bugs-with-assertion-gen-4376685d/NOTES.md"
+}

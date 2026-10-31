@@ -1,0 +1,267 @@
+Tratto: A Neuro-Symbolic Approach to Deriving Axiomatic Test Oracles
+Report GitHub Issue
+×
+Title:
+Content selection saved. Describe the issue below:
+Description:
+Submit without GitHub
+Submit in GitHub
+arXiv is now an independent nonprofit!
+Learn more
+×
+Back to arXiv
+Why HTML?
+Report Issue
+Back to Abstract
+Download PDF
+Abstract.
+1 Introduction
+2 Motivating Example
+3 Tratto
+3.1 Architecture
+3.2 Symbolic Module
+3.2.1 Token Collector
+3.2.2 Token Filter
+3.3 Neural Module
+3.3.1 Oracle Evaluator
+3.3.2 Token Selector
+3.4 Data Collection
+3.4.1 Procedure Specifications Dataset
+3.4.2 Oracles Dataset
+3.4.3 Tokens Dataset
+4 Evaluation
+4.1 RQ1: Code Models Comparison
+4.2 RQ2: Ablation Studies
+4.3 RQ3: Oracle Generation
+4.3.1 Ground-Truth Dataset
+4.3.2 Comparison Approaches
+4.3.3 Metrics
+4.3.4 Training and Evaluation Setup
+4.3.5 Results
+4.4 RQ4: Robustness to Documentation Variations
+4.5 RQ5: Application to Software Testing
+5 Threats to Validity
+6 Related Work
+6.1 Symbolic Approaches
+6.2 Neural Approaches
+7 Conclusion
+Acknowledgements
+References
+License: arXiv.org perpetual non-exclusive license
+arXiv:2504.04251v2 [cs.SE] 22 Apr 2025
+Tratto: A Neuro-Symbolic Approach to Deriving Axiomatic Test Oracles
+DOI: 10.1145/3728960Journal: PACMSEVolume: 2ISSTAISSTA0837CCS: Software and its engineering Software testing and debuggingCCS: Computing methodologies Neural networksCCS: Computing methodologies Natural language processing
+Davide Molinelli
+Affiliation: Constructor Institute, Università della Svizzera italiana, Switzerland
+email: dm@constructor.org
+,
+Alberto Martin-Lopez
+Affiliation: Università della Svizzera italiana, Switzerland
+email: alberto.martin@usi.ch
+,
+Elliott Zackrone
+Affiliation: University of Washington, USA
+email: ezackr@cs.washington.edu
+,
+Beyza Eken
+Affiliation: Università della Svizzera italiana, Switzerland
+email: beyza.eken@usi.ch
+,
+Michael D. Ernst
+Affiliation: University of Washington, USA
+email: mernst@cs.washington.edu
+and
+Mauro Pezzè
+Affiliation: Constructor Institute, Università della Svizzera italiana, Switzerland
+email: mp@constructor.org
+Received  2025-03-31
+Abstract.
+This paper presents Tratto, a neuro-symbolic approach that generates assertions (boolean expressions) that can serve as axiomatic oracles, from source code and documentation.
+The symbolic module of Tratto takes advantage of the grammar of the programming language, the unit under test, and the context of the unit (its class and available APIs) to restrict the search space of the tokens that can be successfully used to generate valid oracles.
+The neural module of Tratto uses transformers fine-tuned for both deciding whether to output an oracle or
+not and selecting the next lexical token to incrementally build the oracle from the set of tokens returned by the symbolic module.
+Our experiments show that Tratto outperforms the
+state-of-the-art axiomatic oracle generation approaches, with 73% accuracy, 72% precision, and 61% F1-score, largely higher than the best results of the symbolic and neural approaches considered in our study (61%, 62%, and 37%, respectively). Tratto can generate three times more axiomatic oracles than current symbolic approaches, while generating 10 times less false positives than GPT4 complemented with few-shot learning and Chain-of-Thought prompting.
+Keywords: test oracle, automated oracle generation, deep learning, transfer learning
+1. Introduction
+Software testing is an expensive activity.
+While many testing activities can be automated, for example, test
+execution with JUnit (Cheon and Leavens, 2002a), and unit test input
+generation with Randoop (Pacheco et al., 2007) and
+EvoSuite (Fraser and Arcuri, 2013), other activities still require significant human effort.
+The oracle problem is still largely open and its automation is limited (Barr et al., 2015; Pezzè and Zhang, 2015).
+Current approaches generate implicit and regression oracles, which address only some aspects of the oracle problem:
+implicit oracles detect crashes and exceptions, while regression oracles detect differences in behavior between different versions.
+In this paper, we focus on the automatic generation of axiomatic
+oracles. The current approaches to generate test oracles produce
+concrete oracles, that is, assertions on specific concrete
+inputs. For instance, assertTrue(sum(20,22)==42)
+indicates the expected result for the concrete input values 20 and 22.
+Axiomatic oracles generalize concrete oracles as assertions on the inputs and outputs variables and state.
+For instance assertTrue(sum(a,b)==a+b) predicates on the expected result for all pairs of inputs.
+Axiomatic oracles are essential elements in tools such as QuickCheck (Claessen and Hughes, 2000) and jmlunit (Cheon and Leavens, 2002b) as an aid for testing. Axiomatic oracles are core assets of
+property-based testing (Fink and Bishop, 1997), metamorphic relations (Chen et al., 1998),
+parameterized unit tests (Tillmann and Schulte, 2005), and
+theories (Saff, 2007).
+The benefits of axiomatic oracles are particularly significant when dealing
+with large, automatically generated test suites. Tools like
+Randoop (Pacheco et al., 2007) and
+EvoSuite (Fraser and Arcuri, 2011) generate test cases
+that rely on implicit and regression oracles only, and may result in false alarms. Generating concrete oracles manually for each test input to filter out false alarms is extremely effort-demanding and impractical for large test suites.
+Axiomatic oracles in the form of preconditions, normal and exceptional postconditions within the unit under test are independent from the number of test cases, and can effectively reduce false alarms.
+Preconditions rule out invalid program inputs, thus reducing false positives. Normal and exceptional postconditions identify failures, thus reducing false negatives.
+Beyond testing, axiomatic test oracles are useful for other software engineering (SE) tasks. For example, they aid program comprehension (Kanstren, 2009; Cornelissen et al., 2009) by specifying expected behavior unequivocally, unlike ambiguous natural language descriptions. They support requirements engineering (Cheng and Atlee, 2007) by providing formal specifications to validate and ensure completeness and consistency. In program synthesis (Parisotto et al., 2016), axiomatic oracles can guide the generation of correct code by offering clear specifications. Lastly, in runtime verification (Leucker and Schallhart, 2009; Wang et al., 2018), they serve as properties to monitor, ensuring the program meets its specifications during execution.
+Current approaches for generating test oracles are either symbolic- or
+neural-based.
+Symbolic approaches derive axiomatic oracles, such as program
+invariants (Ernst et al., 2007), metamorphic
+relations (Blasi et al., 2021), and
+postconditions (Blasi et al., 2018) from formal
+specifications (Antoy and Hamlet, 2000; Day and Gannon, 1985), software documentation (Peters and Parnas, 1998), and program
+traces (Wang et al., 2004) using a pre-defined set of rules and patterns.
+Neural approaches leverage deep learning (DL) (Dinella et al., 2022) and transfer learning (Mastropaolo et al., 2023)
+to generate either concrete test cases (Tufano et al., 2021) or
+concrete oracles for a given test
+input (Dinella et al., 2022; Watson et al., 2020).
+Symbolic and neural approaches both suffer from limitations. Neural
+approaches are well suited to handle fuzziness, for example, when deriving
+test oracles from ambiguous natural language descriptions. However, they
+require large amounts of (usually labeled) data and they are expensive to
+run. Symbolic techniques perform well by leveraging a fixed set of
+domain-specific rules, for instance, pattern and lexical
+matching (Blasi et al., 2018; Blasi et al., 2021; Blasi et al., 2022),
+but do not generalize beyond the hard-coded rules.
+To the best of our knowledge, the potential of neural approaches for generating widely applicable axiomatic test oracles is still unexplored.
+This paper introduces Tratto, a neuro-symbolic approach to derive
+axiomatic oracles from commonly available software artifacts such as source
+code and documentation. An axiomatic oracle is composed of lexical
+tokens.11
+1
+Unless otherwise specified, we use “token” in the
+traditional sense of compilers,
+lexers, and programming languages. Machine learning
+transformers use “token” for a different concept (e.g., the lexical token someVar may be tokenized into two transformer tokens, some and Var).
+For instance, the axiomatic oracle “result>0;” is
+composed of four tokens, ‘result’, ‘>’, ‘0’, and ‘;’.
+Tratto (TRAnsformer-based
+Token-by-Token Oracle generation)
+reformulates the oracle generation problem as a token generation
+problem.
+Tratto generates oracles token by token.
+At each token-generation iteration, Tratto restricts the search
+space of the next possible tokens in two ways. The first restriction is
+based on a programming language grammar and the portion of the oracle
+generated so far. For instance, a boolean expression cannot be the argument with a
+“>” operator.
+The second restriction is based on the symbols that are in scope.
+These symbols include the method parameters and the
+return value (for postconditions), fields and methods both in the current class and accessible through them.
+Tratto implements a neural approach to select a token from the set of available tokens.
+Tratto leverages pre-trained transformers fine-tuned on the task of selecting candidate tokens based on (i) the oracle generated so far, (ii) the unit under test (including source code and documentation), and (iii) additional unit context, for instance, information about the available APIs.
+The neural module of Tratto features a multitask model trained on a dataset that was expressed in two different ways (for two different tasks): a dataset of oracles, and a dataset of tokens that appear in the oracles. The dataset substantially extends the dataset available in the replication package of Blasi et al. (Blasi et al., 2018; jdo, nd).
+We enhanced the initial dataset by (i) fixing semantically-incorrect
+oracles, (ii) adding oracles that we could infer from the code and the
+documentation,
+(iii) adding oracles from other publicly available Java projects, and
+(iv) automatically augmenting the Javadoc comments with semantically
+equivalent Javadoc comments that refer to the same oracles.
+The resulting dataset features 34,249 oracle samples.
+We produced a dataset of 188,900 tokens from the tokens in the oracles.
+Both datasets are publicly available in multiple formats, suitable for training
+sequence-to-sequence and classification models, to support future
+research (Anonymous, 2025).
+We experimentally evaluated Tratto.
+We compared the performance of
+different code models to support the neural module, Code Gemma
+(Google) (Team et al., 2024), StarCoder2
+(BigCode) (Lozhkov et al., 2024) and Code Llama
+(Meta) (Rozière et al., 2024), all in their version
+featuring 7B trainable parameters. We selected Code Llama since it
+outperforms the other models for this task, with 91% accuracy in
+predicting the next oracle token.
+We performed
+two ablation studies to compare Tratto with (i) a purely neural model
+trained for predicting oracles, not supported by the token-by-token
+symbolic approach, and (ii) a version of Tratto featuring two different
+models, instead of a single multitask model. The results show that the
+symbolic module and the multitask model provide an additional +6 and +3
+percentage points of accuracy in predicting oracles, respectively.
+We compared Tratto with two state-of-the-art symbolic and neural approaches for axiomatic oracle generation, Jdoctor (symbolic) (Blasi et al., 2018) and GPT4 (neural) (OpenAI, 2023b) on a ground-truth dataset of axiomatic test oracles.
+The experimental results that we discuss in Section 4.3.5 indicate that Tratto outperforms both Jdoctor and GPT4 in terms of accuracy (73% for Tratto, 61% for Jdoctor, 40% for GPT4), precision (72% for Tratto, 62% for Jdoctor, 24% for GPT4), and F1-score (61% for Tratto, 25% for Jdoctor, 37% for GPT4). Tratto’s recall (52%) is better than Jdoctor’s (16%) and worse than GPT4’s (89%).
+In overall terms, Tratto achieves an excellent balance between generating oracles (3×3\times more than Jdoctor) while incurring in few false positives (10×10\times less than GPT4).
+We also compared the robustness of Tratto, Jdoctor and GPT4 in generating correct oracles when the documentation of the units under test was modified in different ways (details in Section 4.4). The results show that Tratto and GPT4 have comparable performance, generating 195 and 208 correct and compilable oracles, respectively, from a set of 220 descriptions derived from 55 original descriptions. Jdoctor generated only 49 correct and compilable oracles.
+Lastly, we evaluated the effectiveness of the oracles generated by Tratto and Jdoctor for increasing the mutation score of test suites automatically generated with EvoSuite (Fraser and Arcuri, 2011). We could not evaluate GPT4 for this purpose due to the large amount of non-compilable oracles generated (552 out of 1,213), which made it impossible to automate the insertion of oracles into the test cases. We considered two types of test suites: with implicit oracles only, and with both implicit and regression oracles.
+From among 6 projects considered, Tratto increased the mutation score of 5 test suites with implicit oracles and 3 test suites with both implicit and regression oracles, while Jdoctor increased the mutation score of 4 test suites in the former case and in no cases in the latter.
+In summary, this paper discusses the limitations of the state-of-the-art
+approaches to generate axiomatic oracles (Section 2), and
+makes the following contributions:
+(1)
+It defines a novel approach that iteratively generates test oracles, token by token, by combining a symbolic with a neural approach to steer the generation of tokens toward valid oracles, thus reducing the impact of false positives of purely neural approaches (Section 3.1).
+(2)
+It introduces Tratto, a neuro-symbolic approach and corresponding tool to generate axiomatic oracles from source code and documentation (Sections 3.2 and 3.3).
+(3)
+It proposes a collection of comprehensive datasets of oracles and tokens that can be reused for training future models for generating oracles (Section 3.4).
+(4)
+It performs empirical studies to: (i) compare the performance of different code models for the tasks of oracle evaluation and token selection; (ii) highlight the contributions of Tratto’s components to its overall performance; and (iii) compare Tratto with state-of-the-art approaches for oracle generation, showing its superior performance in terms of correctness, robustness and applicability to enhancing automatically generated test suites (Section 4).
+2. Motivating Example
+⬇
+1
+/**
+2
+* Sets the item label generator for a series and
+3
+* sends a {@link RendererChangeEvent} to all
+4
+* registered listeners.
+5
+*
+6
+* @param series  the series index (zero based).
+7
+* @param generator  the generator
+8
+* (<code>null</code> permitted).
+9
+*
+10
+* @see #getSeriesItemLabelGenerator(int)
+11
+*/
+12
+public void setSeriesItemLabelGenerator(int series,
+13
+CategoryItemLabelGenerator generator) {
+14
+setSeriesItemLabelGenerator(series, generator,
+15
+true);
+16
+}
+Listing 1: Documentation and implementation of
+method setSeriesItemLabelGenerator from JFreeChart.
+This section shows how state-of-the-art oracle generators perform on an example method (Listing ). Their limitations motivate Tratto.
+The documentation in Listing  describes a precondition
+“series >= 0” in natural language (“the series index (zero based)”, line 6).
+If a test generator produces a unit test case with a negative
+series as argument, the test crashes. The precondition indicates
+that the test case is invalid, and avoids executing the test with a false positive result.
+The main state-of-the-art oracle generators do not generate this precondition:
+TOGA (Dinella et al., 2022), a neural
+approach for generating test assertions, does not generate
+preconditions at all.
+Jdoctor (Blasi et al., 2018), a symbolic approach, does not generate the precondition either, since it is based on a set of patterns and rules that do not match the comment.
+EvoSuite (Fraser and Arcuri, 2011), a search-based test generator, generates regression test oracles, and no preconditions.
+GPT4 (OpenAI, 2024), a large language model (LLM) trained on natural language and code, correctly generates the precondition, but also generates wrong, useless, or non-compilable oracles such as “generator == null || generator != null” and “generator == null || generator is a valid CategoryItemLabelGenerator instance”.
+Tratto derives the precondition “series >= 0” that prevents the generation of invalid test cases and false positives, and does not generate wrong oracles like GPT4. The neural module of Tratto generalizes to previously unseen oracles, beyond the fixed set of rules and patterns of Jdoctor, while the symbolic module restricts the possible oracles to compilable oracles.
+3. Tratto
+Tratto generates
+executable preconditions, regular and exceptional postconditions that together comprise axiomatic oracles.
+Tratto generates executable assertions in Java from Java source code and Javadoc comments.
+Preconditions, like “param1 cannot be null”, constrain the validity of the test input.
+Postconditions, like “the output must be positive”, and exceptional postconditions, like “if param1 is null, an exception is thrown”, constrain the expected behavior of a program.
+The input of Tratto is the source code of the method under test and its
+context, such as fields and methods in its class.
+Tratto tries to generate a precondition from each
+@param tag,
+a regular postcondition from each @return tag, an exceptional
+postcondition from each @throws and @exception tag, and preconditions, regular and exceptional postconditions from the free-text part of the Javadoc, the method signature and 

@@ -1,0 +1,63 @@
+{
+  "rank": 89,
+  "title": "Multi-SWT-Bench: A Multilingual Benchmark for Reproduction Test Generation",
+  "fulltext_read": true,
+  "read_path": "papers/multi-swt-bench-a-multilingual-benchmark-for-reproduction-test-generation-cc029ef4/public_evidence/paper_fulltext.txt",
+  "read_sha256": "4947dd33bdb25dac8756ffe2fae001f34d404b667d589476c850b4aeac4b4c93",
+  "read_source": "https://arxiv.org/html/2609.34752v1 (submitted 28 September 2026; full 10,158-word extraction with appendices A–C and references)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Multi-SWT-Bench: 1,963 issue-reproduction tasks across 51 repositories and eight languages: Python (474), Java (111), TypeScript (224), JavaScript (356), Go (425), Rust (120), C (127), C++ (126). Constructed from 2,132 Multi-SWE-Bench issues by checking whether golden developer tests fail before and pass after the fix.",
+    "Multi-SWT-Bench-Lite (called Flash in the package): 340 unique task IDs; this subset is used for every experiment reported in the paper.",
+    "SWT-Bench, TDD-Bench-Verified and TDD-Bench-Java are related-work comparisons only; the experiment data comes from Multi-SWE-Bench issues converted and validated for reproduction tests.",
+    "No Defects4J or BugsInPy experimental dataset use."
+  ],
+  "task": "Given a natural-language issue and pre-fix repository, generate a set of tests without access to the golden fix. The evaluator requires at least one test to fail before and pass after the golden fix, and all generated tests to pass after the fix. The paper also measures changed-line coverage and patch well-formedness. The failure analysis examines causes of generation failure, including language-specific testing conventions, implicit setup, and loss of behavior/executability after revisions; it does not produce a ground-truth taxonomy of the underlying software faults.",
+  "input_setting": "Repository-level issue-conditioned test-patch generation across eight languages. Four agent methods: MSWE-agent, MOpenHands, OpenAI Codex CLI and Claude Code. Experimental tasks use the 340-instance Lite subset; 1,963 tasks are available as the full benchmark. Test-generation prompts, environment setup, golden patches and evaluation are included in the replication package.",
+  "author_artifact_url": "https://doi.org/10.5281/zenodo.22961970",
+  "author_relationship_evidence": "The paper's reproducibility statement explicitly links DOI 10.5281/zenodo.22961970 as its replication package. Zenodo API record has the exact title, date 2026-09-25, CC BY 4.0 metadata and file `multi-swt-bench-replication.zip` (225,722,979 bytes; MD5 1ad4bc29eaf2bb7d8198a2f6afc69053). Retrieved the ZIP central directory by HTTP byte ranges (no full archive download or extraction): 289 entries. Read the embedded README and license plus selected run/config files. README states it contains benchmark data, evaluation scripts, configurations, prompts, instructions and stored results; inside package code LICENSE is Apache-2.0. The article's DOI is 22961970; a nearby DOI 21887892 surfaced in an unrelated search result and is BehaviorAudit, not this paper's package.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "Zenodo version record `10.5281/zenodo.22961970`; replication archive MD5 `1ad4bc29eaf2bb7d8198a2f6afc69053`, 225,722,979 bytes, 289 ZIP entries. Read package README, LICENSE, `methods/experiments.json`, and statically inspected `methods/run.py` via range reads; no full archive download, extraction, source execution, or benchmark run. Public dependent repositories include multi-swe-bench/MSWE-agent and multi-swe-bench/MopenHands.",
+  "license": "Zenodo record metadata: CC BY 4.0; package's own code LICENSE: Apache-2.0. Package README states third-party code retains its own terms and the benchmark source material/patches are not relicensed; the pinned MSWE-agent fork has conflicting license metadata and no LICENSE file, requiring upstream licensing clarification.",
+  "exact_models": [
+    "MSWE-agent: GPT-5.6 Luna, Claude Sonnet 5, DeepSeek-V4-Flash, DeepSeek-V4-Pro.",
+    "MOpenHands: GPT-5.6 Luna, Claude Sonnet 5, DeepSeek-V4-Flash, DeepSeek-V4-Pro.",
+    "Codex CLI: GPT-5.6 Luna and GPT-6 Astra; CLI versions 0.152.1 and 0.153.4 pinned, with per-instance overrides in experiments.json.",
+    "Claude Code: Claude Sonnet 5 and Claude Opus 5; CLI version 2.1.260 pinned.",
+    "API models are specified by provider/model aliases rather than immutable dated checkpoint IDs; Codex/Claude configurations use CLI subscription auth."
+  ],
+  "weights_status": "No paper-specific fine-tuning or released weights. The package pins method/tool versions and stores experiment configs and outputs, but uses external hosted LLMs or Codex/Claude subscriptions. The MOpenHands runner takes configurable `model`, `base_url`, API-key environment name and allowed host through an API proxy, so a local OpenAI-compatible Qwen endpoint appears technically adaptable; this has not been tested and requires endpoint/proxy configuration. No model/API calls made.",
+  "evaluation_route": "Read full arXiv v1 (10,158 words / 1,378 lines including all references and appendices A–C); SHA-256 above. Paper evaluates all methods on 340 Lite tasks. Best full success rate is Claude Code + Claude Opus 5 at 65.29%; MOpenHands + Claude Sonnet 5 is 57.94%; its DeepSeek-V4-Flash result is 55.29% at reported $0.0175/instance versus $0.6222/instance for Sonnet. Zenodo archive central directory confirms benchmark/full.txt has 1,963 unique IDs and benchmark/flash.txt has 340 unique IDs; README gives setup, build, run, and evaluate commands, and methods/experiments.json enumerates the 12 configs. Stored results include compressed prediction files for all 12 configurations. `methods/run.py` routes MOpenHands configuration fields (`model`, `base_url`, `api_key_env`, `allowed_host`) through the API proxy, giving a possible own-model route. Exact full rerun is substantial: Ubuntu 24.04/Python 3.12/Docker, multilingual image builds, external model credentials/subscriptions, and the README says method runner processes instances serially. No code/model/task execution.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The package is unusually complete and includes full/Lite IDs, expected reference data, evaluation scripts, method-specific prompts/patches, configs, instructions and stored model outputs, but a full live rerun requires substantial Docker builds and 340 task executions across multilingual repositories.",
+    "Paper models are hosted APIs or CLI subscription models; exact immutable model checkpoint snapshots are not provided. CLI versions are pinned, but provider aliases can change. Full exact rerun may not reproduce the same model behavior.",
+    "A local Qwen can likely be connected through the MOpenHands API proxy's configurable base_url/model fields, but the paper did not test a local model and this route would require endpoint allowlist/config adjustment.",
+    "Package README flags conflicting/missing license metadata for its pinned MSWE-agent fork; data and source patches retain upstream repository terms. Clarify before redistribution or modifying that component.",
+    "Benchmark source is Multi-SWE-Bench; model contamination risk is not eliminated. The study does not use Defects4J/BugsInPy and does not provide a causal root-cause label set.",
+    "Zenodo record uses an anonymous creator (consistent with an anonymized review artifact); exact link is supported by the paper's explicit DOI, but external upstream source snapshots should still be checked at the package's pins before a rerun."
+  ],
+  "concept_fit": "Very high for issue-to-reproduction-test generation and a directly executable behavioral oracle, with broader multilingual coverage than SWT-Bench, TDD-Bench-Java, Defects4J or BugsInPy. It is particularly useful for evaluating whether a model preserves issue-specific behavior through iterative edits and handles ecosystem-specific setup conventions. Failure analysis gives qualitative test-generation failure mechanisms, but no causal fault taxonomy or explicit validated root-cause explanations.",
+  "recommendation": "Promote to the top-tier paper for the original SWT-style reproduction-test question. It has a complete, public replication archive with full (1,963) and Lite (340) task IDs, benchmark source/hash reconstruction, evaluation scripts, prompts, pinned agent/tool versions, experiment config and cached predictions for all 12 configurations. This makes offline result auditing and a bounded one-method rerun realistic; a full 340-task multilingual rerun is much heavier. For the user's own model, MOpenHands' configurable API endpoint is a promising local-Qwen integration route, but it is conditional on proxy allowlisting and has not been tested. Compare its task and oracle closely with #98 TDD-Bench-Java (simpler Java-only own-model scoring) and #63 TestExplora (proactive discovery). It provides no Defects4J/BugsInPy experiment or root-cause labels. No code/API/model run.",
+  "citations": [
+    "https://arxiv.org/abs/2609.34752",
+    "https://arxiv.org/html/2609.34752v1",
+    "https://doi.org/10.5281/zenodo.22961970",
+    "https://github.com/multi-swe-bench/MSWE-agent",
+    "https://github.com/multi-swe-bench/MopenHands"
+  ],
+  "supporting_locations": [
+    "Paper Sections 2–3: 1,963 tasks/51 repos/eight languages; 340 Lite subset; all experiments use Lite; method/model and F2P/coverage/well-formedness definitions.",
+    "Paper Tables 3–5: cross-language and method/model scores, success criterion, change coverage and costs; Claude Code + Opus 5 best at 65.29% overall.",
+    "Paper Sections 4.2 and Appendix C: language-specific testing conventions; implicit environment setup; iterative edits that remove target behavior or break compilation.",
+    "Paper Appendix A: MSWE-agent, MOpenHands, Codex and Claude Code prompts. Paper Section 4.3: inference cost from $0.0175 to $1.1545 per task.",
+    "Paper reproducibility statement explicitly links Zenodo DOI 22961970 and claims package includes data/scripts/configs/prompts/instructions.",
+    "Read embedded replication README (HTTP byte ranges): Ubuntu 24.04, Python 3.12, Docker; setup/build/run/evaluate commands; benchmark full/flash subsets; stored result archives; code Apache-2.0; MSWE-Agent licensing caveat.",
+    "Zenodo central directory: 289 entries, full.txt=1,963 unique IDs, flash.txt=340 unique IDs, expected.json, benchmark build sources, evaluation harness, agent patches/prompts, experiment configs, 12 compressed result files.",
+    "Embedded `methods/experiments.json` enumerates model aliases, tool versions, iteration/call limits and provider endpoint/auth config; `methods/run.py` forwards OpenHands base_url and allowed_host through model API proxy."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

@@ -1,0 +1,193 @@
+{
+ "baseline": {
+  "task": 98,
+  "entry": "count_upper",
+  "put": "\ndef count_upper(s):\n    \"\"\"\n    Given a string s, count the number of uppercase vowels in even indices.\n    \n    For example:\n    count_upper('aBCdEf') returns 1\n    count_upper('abcdefg') returns 0\n    count_upper('dBBE') returns 0\n    \"\"\"\n    \n    # your code here\n    even_string = \"\"\n    for letter in s[::2]:\n        even_string += letter\n        \n    count = 0\n    \n    for letter in even_string:\n        if letter in \"AEOU\":\n            count += 1\n            \n    return count\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate('aBCdEf')  == 1\n    assert candidate('abcdefg') == 0\n    assert candidate('dBBE') == 0\n    assert candidate('B')  == 0\n    assert candidate('U')  == 1\n    assert candidate('') == 0\n    assert candidate('EEEE') == 2\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True\n\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `s` of size or value 1000 or more (the largest in the existing tests is 7); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `s` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `s` of size or value 1000 or more (the largest in the existing tests is 7); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgab"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "NONASCII",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `s` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "ábçdéfg"
+    ],
+    "witness_call": "count_upper('ábçdéfg')"
+   }
+  ],
+  "placebo_facts": [],
+  "tool_inputs": [
+   "count_upper('ábçdéfg')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(s):\n    return isinstance(s, str)\n\ndef P1(s):\n    return P1_m(s)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+  "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.text(alphabet=st.characters(whitelist_categories=('Lu', 'Ll')), min_size=0, max_size=100)\n",
+  "strategy_sha256": "95d84336983694ddfb3eb2a5ca95d137b943335733af63b42ee18342f683fae6",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 98,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "325fd79d823db0412c0d31ff9585160fdd8adb3fdad9f396f17f2ba2a8f97155",
+   "candidates": 1,
+   "confirmed": 1,
+   "coded": 1,
+   "surviving": 1,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+   "seed": 20261108,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "combined": {
+  "task": 98,
+  "entry": "count_upper",
+  "put": "\ndef count_upper(s):\n    \"\"\"\n    Given a string s, count the number of uppercase vowels in even indices.\n    \n    For example:\n    count_upper('aBCdEf') returns 1\n    count_upper('abcdefg') returns 0\n    count_upper('dBBE') returns 0\n    \"\"\"\n    \n    # your code here\n    even_string = \"\"\n    for letter in s[::2]:\n        even_string += letter\n        \n    count = 0\n    \n    for letter in even_string:\n        if letter in \"AEOU\":\n            count += 1\n            \n    return count\n\n",
+  "base": "def check(candidate):\n\n    # Check some simple cases\n    assert candidate('aBCdEf')  == 1\n    assert candidate('abcdefg') == 0\n    assert candidate('dBBE') == 0\n    assert candidate('B')  == 0\n    assert candidate('U')  == 1\n    assert candidate('') == 0\n    assert candidate('EEEE') == 2\n\n    # Check some edge cases that are easy to work out by hand.\n    assert True\n\n",
+  "concept_facts": [
+   "Input-domain class (specification): no existing test passes `s` of size or value 1000 or more (the largest in the existing tests is 7); the specification's input requirements allow it.",
+   "Input-domain class (specification): no existing test passes `s` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it."
+  ],
+  "concept_meta": [
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "LARGE",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `s` of size or value 1000 or more (the largest in the existing tests is 7); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "abcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgabcdefgab"
+    ],
+    "witness_call": null
+   },
+   {
+    "kind": "SPEC",
+    "input_class": {
+     "cls": "NONASCII",
+     "param": 0
+    },
+    "text": "Input-domain class (specification): no existing test passes `s` containing non-ASCII letters (for example accented letters); the specification's input requirements allow it.",
+    "witness": 0,
+    "reached": true,
+    "witness_args": [
+     "ábçdéfg"
+    ],
+    "witness_call": "count_upper('ábçdéfg')"
+   }
+  ],
+  "placebo_facts": [],
+  "tool_inputs": [
+   "count_upper('ábçdéfg')",
+   "count_upper('  ')",
+   "count_upper('abcdefg9')",
+   "count_upper(' aBCdEf')",
+   "count_upper('-U')",
+   "count_upper('aBCdEfaBCdEf')",
+   "count_upper('a')",
+   "count_upper('d')",
+   "count_upper('E')",
+   "count_upper('aB')",
+   "count_upper('ab')",
+   "count_upper('dB')",
+   "count_upper('EE')",
+   "count_upper('aaaaaa')",
+   "count_upper('aaaaaaa')",
+   "count_upper('dddd')",
+   "count_upper('aBCdE')",
+   "count_upper('abcdef')",
+   "count_upper('dBB')",
+   "count_upper('EEE')",
+   "count_upper('aBCdEff')",
+   "count_upper('abcdefgg')",
+   "count_upper('dBBEE')",
+   "count_upper('BB')",
+   "count_upper('UU')",
+   "count_upper('EEEEE')",
+   "count_upper('aaCdEf')",
+   "count_upper('aacdefg')",
+   "count_upper('ddBE')",
+   "count_upper('fEdCBa')",
+   "count_upper('gfedcba')",
+   "count_upper('EBBd')",
+   "count_upper('AbcDeF')",
+   "count_upper('ABCDEFG')",
+   "count_upper('Dbbe')",
+   "count_upper('b')",
+   "count_upper('u')",
+   "count_upper('eeee')",
+   "count_upper('fBCdEa')",
+   "count_upper('gbcdefa')",
+   "count_upper('ABCDEF')",
+   "count_upper('DBBE')",
+   "count_upper('dbbe')"
+  ],
+  "doc_fail": [],
+  "placebo_meta": [],
+  "split": "dev",
+  "facts_version": "v4",
+  "mined_valid_src": "def P1_m(s):\n    return isinstance(s, str)\n\ndef P1(s):\n    return P1_m(s)\n\ndef valid(*args, **kwargs):\n    return P1(*args, **kwargs) is True\n",
+  "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+  "spec_facts": true,
+  "strategy_src": "def strategy():\n    return st.text(alphabet=st.characters(whitelist_categories=('Lu', 'Ll')), min_size=0, max_size=100)\n",
+  "strategy_sha256": "95d84336983694ddfb3eb2a5ca95d137b943335733af63b42ee18342f683fae6",
+  "strategy_fallback": false,
+  "mining_summary": {
+   "task": 98,
+   "facts_version": "v3m",
+   "model": "qwen2.5-coder-7b-instruct",
+   "cache_key": "325fd79d823db0412c0d31ff9585160fdd8adb3fdad9f396f17f2ba2a8f97155",
+   "candidates": 1,
+   "confirmed": 1,
+   "coded": 1,
+   "surviving": 1,
+   "mining_failure": null,
+   "dropped_confirmation": [],
+   "dropped_code": [],
+   "dropped_verifier": [],
+   "valid_sha256": "9872ed22fe3fb8a5c5282b65842f8d3497958e1562ca011fee972c7aff47438a",
+   "seed": 20261108,
+   "evidence_filter": false,
+   "preconditions_version": "B5"
+  }
+ },
+ "tool_audit": {
+  "historical": false,
+  "mutants": 13,
+  "survivors": 2
+ }
+}

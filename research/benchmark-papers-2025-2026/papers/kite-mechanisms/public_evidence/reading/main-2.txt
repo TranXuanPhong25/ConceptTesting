@@ -1,0 +1,274 @@
+print is the first 16
+hexadecimal characters of SHA-1 over the canonicalized tree.
+II-B Base Context Retrieval
+Base Context Retrieval addresses the contextual constraints of mechanism generalization. Prior work shows that missing repository context often leads LLMs to project-inconsistent calls, object constructions, or assertions [34, 13]. In KITE, repository context also determines whether a historical mechanism can be safely migrated.
+Before mechanism recall and injection, KITE builds a mechanism-agnostic base context for the focal method. The context bundle captures the focal method’s calling environment, type constraints, related test usage, and local behavioral semantics, and provides shared constraints for mechanism selection, injection planning, test generation and enhancement. Its role is to constrain how a historical mechanism can be reasonably instantiated in the current repository.
+To build the bundle, KITE organizes the target repository as a repository knowledge graph and performs on-demand retrieval over it. Nodes cover repository entities such as methods, classes, and files, while edges encode structural relations such as calls, containment, and test associations. Starting from the focal method’s signature, source snippet, enclosing class, and file location, KITE retrieves same-class helper methods, cross-class dependencies, related tests, and necessary documentation on demand. The resulting method-level context bundle serves as a shared constraint for synthetic bug injection and test construction.
+II-C Knowledge-Guided Synthetic Bug Injection
+Knowledge-Guided Synthetic Bug Injection connects mechanism generalization with automatic injection. Given the focal method and its context bundle, KITE selects historical mechanisms compatible with the target method and instantiates them as injected methods. Unlike fixed mutation operators, KITE migrates real-bug behavior at the mechanism level and turns compatible mechanisms into executable behavioral proxies.
+II-C1 Focal Method Profiling
+KITE first builds semantic and structural profiles for the focal method, which provide the query evidence used in mechanism recall.
+The semantic profile aligns with the offline semantic mechanism representation and describes whether the focal method has the semantic conditions needed to carry a bug mechanism. KITE therefore builds a target-side semantic profile with three summaries:
+•
+Mechanism-bearing behavior (what): which behavioral semantics in the method may carry a bug mechanism.
+•
+Applicability context (where): which local conditions and code shapes may support mechanism adaptation.
+•
+Edit affordance (how): whether executable local edits exist for reproducing the bug mechanism.
+This alignment maps the historical mechanism’s what, where, and how to behavioral relevance, applicability, and injectability in the focal method.
+The structural profile is the set of query unit structures extracted from the focal method using the online anchor-selection rules described above. These queries indicate whether the focal method contains local AST patterns compatible with historical bug mechanisms.
+II-C2 Dual Structural-Semantic Recall
+Based on the focal method profile, KITE performs dual structural-semantic recall and gathers two kinds of mechanism-level evidence. Semantic evidence captures behavioral relevance, while structural evidence captures whether the focal method contains a compatible local AST pattern.
+Semantic recall operates on the semantic knowledge index. KITE compares the focal method’s semantic profile with offline bug-mechanism summaries to retrieve behaviorally relevant reviewed mechanisms. Mechanism-bearing behavior, applicability context, and edit affordance are aligned with historical bug mechanism, applicability, and injection intent in the same embedding space, indicating whether a historical deviation matches the target method’s behavioral surface, local conditions, and injectable edit directions.
+Structural recall operates on the unit structure index. KITE compares the focal method’s query unit structures with historical unit structures to retrieve bug units that share compatible local AST patterns. Matching first uses the coarse key to narrow the candidate range. It then performs fine-grained comparison: identical fingerprints provide high-confidence matches, while the remaining candidates are ranked by multiset-Jaccard overlap over normalized anchor and relation signatures, together with simple composition signals such as anchor and relation counts. The retrieved historical units are then mapped to bug mechanisms through the unit-to-mechanism relation saved in the offline stage.
+KITE fuses and reranks the evidence from the two recall paths at the mechanism level. Semantic evidence explains why a candidate mechanism is related to the focal method’s behavior, while structural evidence shows that the focal method contains a compatible local structure for carrying the mechanism. Mechanisms supported by both paths receive higher priority, and candidates supported by only one path are retained to cover semantic-neighbor transfer or cross-domain structural transfer. The top-ranked bug mechanisms then enter injection plan generation.
+II-C3 Knowledge-Guided Injection Plan Generation
+Injection planning is the step that turns an abstract mechanism into a concrete candidate behavior in the target repository. For each candidate mechanism, KITE provides the injection agent with the mechanism and context bundle. The mechanism includes buggy behavior, applicability conditions, injection intent, representative evidence, and expected failure signals; the context bundle provides the focal method, repository-specific types, collaborators, usage constraints, and related tests.
+The agent does not output a complete Java file; it emits a structured injection plan with the mechanism to reproduce, the expected behavioral change, focal-method-local before-after diffs, and corresponding anchors. This mechanism-guided plan separates migration from execution: the LLM proposes a local buggy rewrite, while the program-side executor locates, applies, and validates it. This reduces unrelated or syntax-breaking edits while preserving mechanism-level explanations for test enhancement.
+II-C4 Program-Side Execution and Validity Gates
+Finally, KITE uses a program-side executor to instantiate an injection plan as a synthetic bug. Because these injected methods directly serve as feedback targets for test enhancement, invalid or trivial injections can mislead the subsequent generation process. KITE therefore applies validity gates to the injection result to ensure locality, executability, and behavioral validity.
+Specifically, the executor reparses the focal method, locates the target statement or expression through structural anchors, and applies the after rewrite to generate an injected method. KITE then checks four constraints: locality, syntactic and compilation validity, repository compatibility, and behavioral non-triviality. Together, these gates ensure that the edit stays within the focal method, compiles in the repository, uses compatible constructs, and produces a test-distinguishable behavioral difference. Injected methods that pass the gates are accepted for test enhancement.
+II-D Bug-Enhanced Iterative Test Improvement
+After injection execution and validity gating, KITE obtains a set of accepted injected methods. Bug-Enhanced Iterative Test Improvement uses these injected methods as feedback targets, requiring tests to pass on the correct method while exposing the behavioral differences introduced by the corresponding injected method.
+II-D1 Base Test Suite
+KITE first generates an initial canonical suite S0S_{0} from the context bundle. Candidate tests must compile, execute, and satisfy the correct method semantics; otherwise, the tester agent repairs them using correct-side feedback within a bounded budget.
+II-D2 Synthetic-Bug Feedback
+KITE then processes the accepted injected methods in mechanism-ranking order. Let the correct method be cc, the accepted injected methods be 𝒞~={c~1,…,c~M}\tilde{\mathcal{C}}=\{\tilde{c}_{1},\ldots,\tilde{c}_{M}\}, and the current canonical suite be Sj−1S_{j-1}. For c~j\tilde{c}_{j}, KITE checks whether Sj−1S_{j-1} already passes on cc and exposes a behavioral difference on c~j\tilde{c}_{j}. If so, the suite remains unchanged and the method is marked as detected. Otherwise, the tester agent performs bounded enhancement using the current tests, correct-side feedback, injection-side feedback, local patch summary, and trigger recipe to produce S′S^{\prime}.
+Each enhancement round focuses on one injected method: correct-side feedback preserves the intended semantics, while injection-side feedback explains why the current tests fail to trigger or distinguish the injected behavior.
+II-D3 Promotion Gate and History Preservation
+A candidate enhanced suite replaces the current canonical suite only after it passes the promotion gate. The promotion gate contains three conditions: (1) the candidate suite must pass on the correct method; (2) it must expose the behavioral difference of the current injected method; and (3) it must not lose the ability to detect previously detected injected methods. These conditions respectively ensure correct semantics, current feedback gain, and historical feedback preservation. If the candidate suite passes the gate, KITE promotes it to the new canonical suite; otherwise, it retains the original suite and marks the current injected method as surviving.
+After all accepted injected methods are processed, KITE outputs the iteratively enhanced test result SfinalS_{\mathrm{final}}. This output completes KITE’s central loop: bug mechanisms in historical real-bug records are represented as mechanism-level knowledge, transferred to a new focal method through semantic relevance and structural instantiability, transformed through automatic injection into test-generation-consumable synthetic-bug feedback, and finally used to guide LLMs to generate unit tests with stronger real-bug detection capability.
+III Evaluation
+We evaluate KITE’s effectiveness, cost, component contributions, and synthetic-bug feedback behavior through four research questions (RQs):
+•
+RQ1 (Effectiveness and Cost): Does KITE improve real-bug detection over existing methods at acceptable cost?
+•
+RQ2 (Ablation Study): How much do KITE’s key modules contribute to effectiveness?
+•
+RQ3 (Usefulness of Synthetic-Bug Feedback): Can KITE produce useful and diverse synthetic-bug feedback?
+•
+RQ4 (Unique Detection Analysis): Which real bugs are detected only by KITE, and why?
+III-A Experimental Setup
+III-A1 Dataset
+We construct the experimental materials from five Java real-bug data sources: Defects4J, Bears, Bugs.jar, GitBug-Java, and GHRB [23, 25, 24, 26, 27]. These sources contain buggy versions and their corresponding correct versions, which are used to build the final method-level benchmark tasks and historical real-bug records for the offline knowledge base.
+TABLE I: Defects4J benchmark construction.
+Project
+All
+Single-class
+Selected
+Ratio
+Cli
+39
+32
+24
+61.54%
+Compress
+47
+43
+32
+68.09%
+Csv
+16
+15
+11
+68.75%
+JacksonDatabind
+110
+91
+51
+46.36%
+Jsoup
+93
+75
+54
+58.06%
+Total
+305
+256
+172
+56.39%
+We use Defects4J tasks from Cli, Compress, Csv, JacksonDatabind, and Jsoup as benchmark candidates. To attribute detection results to a single method and control LLM cost, we retain only records whose production-code patch can be stably localized to one focal method, filtering multi-file or unresolved patches and yielding 172 method-level tasks. Table I shows the filtering results. Each retained task includes the correct-version code, repository context, and the corresponding buggy version, which is used only for final evaluation; during generation and enhancement, all evaluated methods access only the correct version.
+The offline bug-mechanism knowledge base uses records from the five sources, excluding the benchmark projects, to avoid project-level leakage. 2,069 of 2,083 records enter knowledge construction, producing 1,686 unit structure index records and 1,325 reviewed bug mechanisms for structural and semantic recall.
+III-A2 Baselines
+We compare KITE with six baseline classes: no-feedback LLM generation, execution-feedback repair, coverage-guided enhancement, mutation-score-guided enhancement, knowledge-enhanced generation, and traditional search-based test generation. All LLM baselines use the same model backend as KITE and run on the same method-level tasks.
+Direct LLM is a no-feedback one-pass generation baseline. It receives the focal method and lightweight context, including same-class helper methods and related tests, and generates a test suite in one pass.
+ChatUniTest is an execution-feedback repair baseline. It generates tests from the focal method and repository context, then performs multi-round repair based on compilation or execution failures [11].
+CoverUp is a coverage-guided enhancement baseline. It measures focal-method coverage, extracts uncovered statements and branches, and asks the LLM to generate or repair tests around these missing coverage segments [18].
+MutGen is a mutation-score-guided enhancement baseline. It uses mutation-analysis feedback, especially surviving or uncovered mutants, to guide the LLM to generate tests that kill more generic mutants [22].
+KTester is a knowledge-enhanced generation baseline. It augments LLM-based test generation with testing-domain knowledge and repository-aware context to guide object construction, method invocation, and assertion generation [13].
+EvoSuite is a traditional search-based test-generation baseline. It generates tests at the target-class level with a fixed random seed and search budget [3, 35].
+III-A3 Settings
+We integrate all baselines into the same method-level framework and use a unified evaluator for compilation, execution, coverage, mutation analysis, and real-bug detection. We adapt public implementations when available and otherwise reproduce the core workflow, feedback signals, and optimization objectives described in the original papers. The main parameters of each baseline are kept consistent with the original paper or public implementation.
+All LLM-based methods use the OpenAI GPT-5.4 API model (gpt-5.4) with temperature 0.1. KITE limits both test generation and enhancement to at most five rounds.
+TABLE II: RQ1 effectiveness and token cost.
+Metric
+EvoSuite
+Direct
+ChatUT
+KTester
+CoverUp
+MutGen
+KITE
+GS
+80.81
+50.58
+100.00
+73.26
+97.67
+100.00
+100.00
+BC
+69.33
+62.11
+65.07
+74.24
+61.86
+64.21
+71.78
+LC
+80.76
+80.35
+84.09
+85.37
+82.13
+80.18
+86.02
+MS
+38.39
+43.73
+47.69
+56.72
+42.91
+55.41
+52.90
+RBDR
+29.07
+23.26
+45.35
+47.09
+48.26
+52.33
+72.67
+AvTok (M)
+0.000
+0.006
+0.041
+0.076
+0.107
+0.105
+0.177
+III-B RQ1: Effectiveness and Cost
+III-B1 Design
+We run KITE and all baselines on the 172 method-level benchmark tasks. A unified method-level evaluator collects generation success, coverage, and mutation score on the correct version, and evaluates real-bug detection results on the corresponding buggy version.
+We use RBDR as the primary metric and report standard effectiveness metrics together with token cost:
+•
+GS (Generation Success): percentage of tasks that produce an evaluable test suite.
+•
+BC (Branch Coverage)/LC (Line Coverage): branch and executable-line coverage on the focal method.
+•
+MS (Mutation Score): percentage of generic mutants killed by generated tests.
+•
+RBDR (Real-Bug Detection Rate): percentage of tasks where generated tests distinguish correct and buggy versions.
+•
+AvTok (Average Tokens): average LLM tokens per focal method.
+GS and RBDR use all 172 instances as the denominator; BC, LC, MS, and AvTok are averaged on the common-success subset where all methods produce evaluable suites. RBDR measures real-bug detection, while BC, LC, and MS analyze the consistency between proxy metrics and detection [36, 37, 38]. We use JaCoCo for coverage and Major for mutation scores [39, 40].
+III-B2 Results
+Table II reports overall effectiveness and token cost. KITE achieves the highest real-bug detection rate (RBDR), 72.67%, outperforming the strongest baseline MutGen by 20.34 percentage points.
+Further, KITE’s advantage is not explained by traditional proxy metrics alone. KTester obtains the highest branch coverage (BC) and mutation score (MS), but its RBDR is 25.58 percentage points lower than KITE’s. Similarly, MutGen has higher MS than KITE but 20.34 percentage points lower RBDR. Although KITE achieves the highest line coverage (LC), the contrast with KTester and MutGen suggests that proxy metrics cannot reliably capture the behavioral targets needed for real-bug detection.
+At the project level, Table III shows that KITE achieves the highest RBDR on all five Defects4J projects, with gains from 12.96 to 28.12 percentage points. The gains are largest on Compress and Csv; Jsoup has the smallest gain, but it still reaches 12.96 percentage points.
+Beyond effectiveness, we also examine token cost. KITE has the highest token consumption, 0.177M tokens per target, mainly due to context retrieval, injection planning, and per-plan test enhancement. Compared with KTester, CoverUp, ChatUniTest, and MutGen, KITE uses more tokens, but its RBDR is higher by 25.58, 24.41, 27.32, and 20.34 percentage points, respectively.
+Finding 1: KITE achieves the highest RBDR, and this advantage is not explained by coverage or mutation score.
+TABLE III: Project-level RBDR comparison.
+Project
+KITE
+Best Base.
+Gain
+Cli
+75.00
+58.33
++16.67
+Csv
+100.00
+72.73
++27.27
+Jsoup
+68.52
+55.56
++12.96
+JacksonDatabind
+64.71
+45.10
++19.61
+Compress
+81.25
+53.13
++28.12
+III-C RQ2: Ablation Study
+III-C1 Design
+We conduct ablations on the same 172 tasks, using the same LLM configuration, iteration budget, and evaluator as RQ1. Each variant removes one key mechanism:
+•
+w/o Ctx. removes Base Context Retrieval.
+•
+w/o Str. removes Structural Recall.
+•
+w/o Sem. removes Semantic Recall.
+•
+w/o SBF. removes Synthetic-Bug Feedback.
+We reuse RQ1 metrics, with GS and RBDR computed over all 172 tasks. Proxy metrics are computed within the ablation setting rather than on the RQ1 cross-baseline common-success subset, so the Full row is the ablation reference point rather than a duplicate of Table II.
+III-C2 Results
+Table IV reports the ablation results. All variants maintain 100% generation success (GS), so the real-bug detection rate (RBDR) drops reflect how the removed modules affect real-bug detection capability rather than generation failures.
+TABLE IV: RQ2 ablation results.
+Metric
+Full
+w/o Ctx.
+w/o Str.
+w/o Sem.
+w/o SBF.
+GS
+100.00
+100.00
+100.00
+100.00
+100.00
+BC
+62.46
+63.32
+59.80
+62.59
+59.42
+LC
+82.59
+82.83
+79.63
+82.37
+81.29
+MS
+50.37
+49.81
+47.50
+48.05
+48.12
+RBDR
+72.67
+70.35
+68.60
+68.60
+52.91
+Δ\DeltaRBDR
+–
+-2.32
+-4.07
+-4.07
+-19.76
+AvTok (M)
+0.225
+0.186
+0.207
+0.222
+0.202
+Removing Base Context Retrieval reduces RBDR by 2.32 percentage points with little coverage change, indicating that repository context mainly provides behavioral constraints. Removing either Structural Recall or Semantic Recall reduces RBDR by 4.07 percentage points, showing that the two recall paths provide complementary selection signals.
+The largest drop comes from w/o SBF, where RBDR decreases from 72.67% to 52.91%. This 19.76-percentage-point drop indicates that KITE’s main gain comes from transforming recalled bug mechanisms into executable feedback targets and enhancing tests around these targets.
+Finding 2: Ablation results show that each key module contributes to KITE’s RBDR, with synthetic-bug feedback causing the largest drop when removed.
+III-D RQ3: Usefulness of Synthetic-Bug Feedback
+III-D1 Design
+RQ3 reuses the complete RQ1 execution logs to assess the usefulness and diversity of synthetic-bug feedback. We collect injection plans, accepted injected methods, and whether the final test suite detects each accepted injected method; for diversity, we group accepted injected meth

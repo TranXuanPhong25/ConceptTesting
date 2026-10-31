@@ -1,0 +1,687 @@
+have 20 candidate paths, each representing a distinct execution flow.
+To mitigate this, instead of providing all candidate paths in the prompt, we rank them and select two paths per method, based on exploitation and exploration (Lines 2–2). For exploitation, we choose the path with the highest missedScore to maximize code coverage improvement. For exploration, we select the path that has been visited the least in previous iterations, ensuring diversity in test generation. If the two selected paths are the same, we include it only once and update pathHistory accordingly. This approach ensures that LLMs have a clearer target and can focus more effectively on generating relevant test cases, without exceeding their context window.
+⬇
+## Source File
+Here is the source file that you will be writing tests against.
+{source_file_numbered}
+## Test File
+Here is the file that contains the existing tests.
+{test_file}
+## Third-party dependencies for test generation
+Please use the following dependencies to generation tests
+{test_dependencies}
+{%-␣if failed_tests_section%}
+{{ failed_tests_section }}
+{% endif %}
+## Methods Under Test
+Please generate test for {method_name_1} to cover the path {selected_path_for_method_1}
+...
+Please generate test for {method_name_N} to cover the path {selected_path_for_method_N}-␣
+Figure 4. Code Structure Aware Prompt Template
+3.3. Program Analysis Guided Prompt Template
+After selecting the paths, we construct a test generation prompt by inserting the selected paths into a structured prompt template. Our program analysis-guided prompt template, shown in Figure 4, consists of five sections: source file, test file, test dependencies, failed tests, and methods under test.
+The source file section includes the complete source code with additional line numbers to facilitate mapping the selected path lines back to their corresponding locations in the code. The test file section contains the currently existing test cases. The test dependencies section specifies the required packages and their versions in the test scope, such as junit:4.13.2, to prevent LLMs from generating tests using incorrect package versions. The failed tests section includes test cases from the last iteration that failed, providing feedback to guide LLMs in refining test generation (subsection 3.4). Finally, the methods under test section includes the selected paths for each MUT, obtained using Algorithm 2. The paths follow the format illustrated in Figure 1, where each statement is mapped to its corresponding line number in the original source file, and conditional statements are annotated with their branch evaluation (true or false).
+3.4. Iterative Test Generation Framework
+Algorithm 3 Iterative Test Generation Framework
+Input: srcFileDir, testFileDir
+1
+testDeps = extractDependenciesForTestScope()
+2
+srcFile = readFile(srcFileDir)
+3
+if testFileDir does not exist then
+4
+testFile = initialTestClassSkeleton(testFileDir, testDeps)
+5
+else
+6
+testFile = readFile(testFileDir)
+7
+end if
+8
+iter, iterNoIncrease = 0, 0
+9
+pathHistory = dict(), failedTestFeedback = []
+10
+methodDict = Algorithm 1 (srcFile)
+11
+maxCYC = getMaxComplexity(methodDict)
+12
+curCoverage = runTestsWithCoverage(testFile)
+13
+while iter < maxCYC and iterNoIncrease < maxNoIncreaseLimit and curCoverage < 100%  do
+14
+// build prompt for test generation
+15
+if curCoverage = 0% then
+16
+prompt = buildPrompt(srcFile, testFile, testDeps)
+17
+else
+18
+selectedPaths = Algorithm 2 (srcFile, testFile, methodDict, pathHistory)
+19
+prompt = buildPrompt(srcFile, testFile, testDeps, selectedPaths, failedTestFeedback)
+20
+end if
+21
+generatedTests = generateTestByPromptLLM(prompt)
+22
+// Validate generated tests
+23
+foreach test in generatedTests do
+24
+stdout = addNewTestAndRun(test, testFile)
+25
+if test is failed then
+26
+errorMsg = parseErrorMessage(stdout)
+27
+removeAddedTest(test, testFile)
+28
+testsToRepair.add((test, errorMsg))
+29
+end if
+30
+end foreach
+31
+failedTestFeedback = repairAndValidate (testsToRepair, numOfAttempts)
+32
+newCoverage = runTestsWithCoverage(testFile)
+33
+if newCoverage > curCoverage then
+34
+iterNoIncrease = 0
+35
+else
+36
+iterNoIncrease += 1
+37
+end if
+38
+curCoverage = newCoverage, iter += 1
+39
+end while
+In the previous subsections, we introduced the algorithms and components used to construct the hybrid program analysis-guided prompt for test generation, focusing on a single iteration. Now, we elaborate on the design of our iterative test generation workflow, which is presented in Algorithm 3 and explain how the various components integrate into the overall Panta framework.
+Test Generation. Algorithm 3 begins by preparing the source file, target test file, and test dependencies (Lines 3–3). For example, if the project uses Maven, we can extract test dependencies using the command mvn dependency:list. We then read the source file as context from the directory s​r​c​F​i​l​e​D​i​rsrcFileDir. Our approach supports two scenarios: (1) augmenting existing tests, and (2) generating a new test file from scratch. We first check whether a test file exists at t​e​s​t​F​i​l​e​D​i​rtestFileDir. If a test file is available, we analyze and augment the existing test case; otherwise, we create a new test file based on the extracted test dependencies, initializing it with the test class declaration and necessary import statements.
+We initialize workflow tracking variables (Lines 3–3) to monitor the stopping conditions. Specifically, we use iter to count the total number of iterations and iterNoIncrease to track the number of consecutive iterations without code coverage improvement. We hypothesize that if several consecutive iterations fail to enhance code coverage, it likely indicates convergence to a fixed value, making further execution unnecessary. Path selection data is stored in pathHistory, which is referenced by Algorithm 2 for selecting paths. Additionally, we maintain failedTestFeedback to store failed tests from the previous iteration, providing feedback to refine the current test generation process. Next, we perform program analysis to extract paths for MUTs using Algorithm 1 and obtain the initial code coverage information (Lines 3–3). We calculate the maximum cyclomatic complexity among all MUTs in the source file, denoted as maxCYC (Line 3). Since the number of paths for any MUT is at most maxCYC, we use this value to approximate the complexity of the source file and set it as the maximum number of iterations for test generation. This ensures that the iterative workflow runs for at most maxCYC iterations. Along with this iteration limit, the process terminates under three conditions (Line 3): (1) if the number of iterations reaches the limit maxCYC, (2) if the code coverage reaches 100%, or (3) if there are maxNoIncreaseLimit consecutive iterations without coverage improvement. These conditions help optimize resource usage and prevent unnecessary test generation attempts.
+For each iteration, we determine the test generation strategy based on the current code coverage. If the coverage is 0%, indicating that no existing tests are available, we prompt LLMs to generate tests using only the source file, test file, and test dependencies, without providing the selected paths. This approach allows greater flexibility for LLMs to generate tests covering different parts of the source file (Lines 3–3). If the coverage is greater than 0%, we guide LLMs using our program analysis-guided prompt, which includes the selected paths to focus test generation on uncovered parts of the code (Lines 3–3).
+Test Validation.
+After the LLM completes test generation, the generated tests are directed to the validation step (Lines 3–3). The tests are executed one by one. Passed tests are added to the test file, while failed tests, along with their error messages, are collected for the test repair process (Line 3). We prompt the LLM with the failed tests and their corresponding error messages, allowing it to attempt repairs for up to numOfAttempt times per failed test. We observed that if a test initially fails due to a compilation error, fixing the compilation error may reveal additional compilation errors or runtime errors. Therefore, a single repair attempt is often insufficient. To address this, we set the default value of numOfAttempt to 3. The repair process stops when either all failed tests are successfully fixed or the maximum number of repair attempts is reached. After the repair attempts, if any tests still fail, we store them along with their error messages in failedTestFeedback, which serves as feedback for the next round of test generation. Finally, we execute the current test file to obtain the updated coverage information and update the iter and iterNoIncrease variables (Lines 3–3). If none of the stop conditions have been met, the process continues with the next iteration.
+4. Evaluation
+We assess Panta to answer the following three research questions:
+•
+RQ1: How does the quality of tests generated by Panta compare to state-of-the-art test generation techniques?
+•
+RQ2: What is the individual contribution of each component of Panta to the overall quality of the generated tests?
+•
+RQ3: How do different LLMs affect the performance of Panta in test generation?
+Table 1. Included subjects from Defects4J
+Identifier
+Project
+#Class
+#MUTs
+CYCm​a​x\textbf{CYC}_{max}
+CYCm​e​d\textbf{CYC}_{med}
+Cli
+Cli-40f
+2
+31
+11
+1
+Codec
+Codec-18f
+7
+78
+31
+1
+Collections
+Collections-28f
+5
+218
+32
+2
+Compress
+Compress-47f
+9
+65
+22
+3
+Csv
+Csv-16f
+3
+72
+25
+1
+Gson
+Gson-16f
+4
+75
+37
+2
+JCore
+JacksonCore-26f
+9
+161
+30
+4
+JDatabind
+JacksonDatabind-112f
+9
+371
+22
+2
+JXml
+JacksonXml-5f
+4
+118
+29
+2
+Jsoup
+Jsoup-93f
+8
+171
+22
+1
+JxPath
+JxPath-22f
+12
+115
+32
+4
+Lang
+Lang-4f
+17
+586
+30
+2
+Math
+Math-2f
+30
+452
+31
+2
+Time
+Time-13f
+11
+458
+30
+2
+Total/Ave
+130
+2971
+27
+2
+4.1. Experimental Setup
+Subject Programs. We evaluate Panta using real-world subjects from Defects4J (Just
+et al., 2014). Specifically, we selected the latest fixed version of each subject program from Defects4J v2.0.1. To maintain consistency, we exclude three outdated projects—Chart, Mockito, and Closure—as they do not use Maven and rely on deprecated dependencies. The remaining 14 subjects are compatible with Java 8 or higher, Maven (v3.6.3), and JUnit (v4.13.2). They are further integrated with JaCoCo (v0.8.11) (geeksforgeeks, 2025a) for code coverage measurement and Pitest (v1.17.0) (Coles et al., 2016) for mutation score evaluation.
+To evaluate coverage on complex code, we did not generate tests for all classes; instead, we selected non-abstract, public classes that contain at least one method with cyclomatic complexity greater than 10 (McCabe, 1976; Sanusi et al., 2020). Our process began by automatically selecting all public, non-abstract classes from the 14 Defects4J projects that include at least one non-private method exceeding this threshold. We then manually excluded two types of outliers: (1) classes with extreme complexity (e.g., cyclomatic complexity > 40) caused by large switch-statement patterns, and (2) classes with minimal explicit control flow due to heavy reliance on inheritance. These exclusions ensured that our evaluation remained focused on complex yet analyzable control-flow structures. Table 1 presents the selected subjects. The column Project denotes the class name along with its version number from Defects4J. The column #Class represents the number of classes for which we generate tests, while #MUTs counts the total number of methods under test within the selected classes, for each project. In total, we evaluate 130 classes containing 2,971 methods under test (MUTs). Additionally, we report the maximum and median cyclomatic complexity values of the methods under test in the columns CYCm​a​x\text{CYC}_{max}, CYCm​e​d\text{CYC}_{med}, respectively. More details about individual classes are publicly available in our repository (Panta, 2025).
+Table 2. Comparing Panta with SymPrompt
+Identifier
+#Class
+line coverage (%)
+branch coverage (%)
+pass rate (%)
+mutation score (%)
+HCC(#)
+Panta
+SymPrompt
+Panta
+SymPrompt
+Panta
+SymPrompt
+Panta
+SymPrompt
+Panta
+SymPrompt
+Cli
+2
+83.56
+42.93
+70.02
+34.02
+85.21
+29.31
+39.31
+33.53
+1
+0
+Codec
+7
+81.83
+47.67
+77.05
+41.77
+72.82
+29.04
+26.10
+19.14
+5
+1
+Collections
+5
+72.66
+61.77
+68.53
+64.48
+40.01
+49.83
+63.43
+55.56
+2
+3
+Compress
+9
+56.95
+21.90
+46.19
+17.31
+43.40
+20.29
+25.16
+9.09
+1
+0
+Csv
+3
+76.99
+46.47
+56.74
+35.48
+69.88
+34.45
+69.45
+48.45
+0
+0
+Gson
+4
+77.07
+40.81
+60.95
+32.57
+72.96
+10.44
+46.17
+23.74
+1
+0
+JCore
+9
+68.43
+36.21
+60.88
+33.58
+61.74
+36.32
+29.79
+12.13
+3
+1
+JDatabind
+9
+56.77
+35.64
+47.10
+29.93
+28.99
+23.11
+35.34
+39.85
+1
+0
+JXml
+4
+67.81
+26.32
+62.99
+22.26
+64.18
+26.31
+41.10
+7.82
+1
+1
+Jsoup
+8
+82.99
+36.99
+61.98
+25.62
+68.93
+22.92
+56.69
+32.89
+2
+0
+JxPath
+12
+56.80
+24.40
+49.05
+22.48
+50.97
+14.08
+45.97
+20.73
+4
+1
+Lang
+17
+71.18
+57.71
+64.13
+52.18
+72.27
+51.39
+39.01
+53.31
+5
+2
+Math
+30
+70.94
+50.45
+62.81
+44.75
+41.38
+35.57
+43.05
+36.68
+13
+6
+Time
+11
+80.57
+58.66
+70.34
+47.41
+71.86
+45.05
+52.45
+45.33
+6
+1
+Total/Ave
+130
+70.18
+43.91
+60.83
+38.17
+55.92
+32.83
+43.79
+31.30
+45
+16
+Evaluation Metrics. We adopt commonly used quality metrics in test generation literature (Wang
+et al., 2024a; Deljouyi et al., 2024; Ryan et al., 2024), including line coverage, branch coverage, and pass rate for RQ1 and RQ2. The pass rate is defined as the percentage of generated tests that successfully pass when added to the test suite. Since we evaluate at the class level rather than the method level, we measure line and branch coverage per class and report the average coverage across all targeted classes for each project. For RQ1 and RQ3, in addition to these standard metrics, we use two additional metrics: High Coverage Count (HCC) and mutation score. Based on industry standards (geeksforgeeks, 2025b; atlassian, 2025), typical code coverage targets range from 70% to 80%, e.g., Salesforce sets a 75% threshold for line coverage (salesforce, 2025). However, since line coverage is generally easier to achieve than branch coverage, we focus primarily on branch coverage. Therefore, we report the number of classes that achieve at least 75% branch coverage as a high coverage count, denoted as HCC. Additionally, we evaluate mutation score to assess test effectiveness, as coverage alone does not ensure fault detection if test assertions are non-existent or weak (Zhang and Mesbah, 2015).
+LLM Selection. We select the latest open-source model, Meta Llama 3.3 70B (Llama, 2025), as our primary model for evaluation. For RQ3, to assess the impact of different models, we evaluate Panta on three additional models: one open-source model, Mistral Large 2 (Mistral, 2025) from Mistral AI, and two proprietary cost-efficient models—GPT-4o Mini from OpenAI (OpenAI, 2025) and Claude 3.5 Haiku from Anthropic (Anthropic, 2025). All LLMs evaluated support a context window of 128k tokens. The model parameters are held constant across all four LLMs used in our evaluation, with max_tokens set to 4096 for output generation and temperature set to 0.2.
+Panta supports both augmenting existing test classes and generating new ones. To ensure a fair comparison, we evaluate Panta in the scenario where tests are generated for a new class without any existing test cases across all research questions. Given the low temperature, the generation process is largely deterministic, with only minor fluctuations. As a result, we perform a single run per class and report the average results across all classes for each project.
+Table 3. Ablation Study
+Identifier
+#Class
+line coverage (%)
+branch coverage (%)
+pass rate (%)
+baseline
+Panta_basic
+Panta_cov
+Panta
+baseline
+Panta_basic
+Panta_cov
+Panta
+baseline
+Panta_basic
+Panta_cov
+Panta
+Cli
+2
+24.29
+78.72
+85.12
+83.56
+13.12
+63.99
+71.93
+70.02
+28.57
+77.64
+66.25
+85.21
+Codec
+7
+39.06
+77.91
+65.55
+81.83
+32.24
+69.46
+57.86
+77.05
+41.51
+62.67
+59.85
+72.82
+Collections
+5
+30.30
+66.85
+64.97
+72.66
+29.90
+63.74
+66.32
+68.53
+60.80
+76.38
+75.04
+40.01
+Compress
+9
+17.76
+47.40
+47.59
+56.95
+14.02
+39.06
+39.86
+46.19
+19.88
+49.90
+40.54
+43.40
+Csv
+3
+12.11
+66.18
+59.34
+76.99
+6.00
+51.25
+44.49
+56.74
+28.70
+61.11
+61.02
+69.88
+Gson
+4
+28.00
+62.00
+75.46
+77.07
+17.00
+52.30
+55.85
+60.95
+52.92
+64.47
+64.46
+72.96
+JCore
+9
+25.47
+40.70
+42.37
+68.43
+15.89
+33.17
+35.02
+60.88
+42.60
+42.65
+45.32
+61.74
+JDatabind
+9
+17.90
+40.49
+38.43
+56.77
+12.17
+30.95
+29.74
+47.10
+37.10
+47.37
+43.23
+28.99
+JXml
+4
+12.26
+53.70
+38.08
+67.81
+4.04
+40.89
+30.37
+62.99
+25.22
+60.71
+37.50
+64.18
+Jsoup
+8
+42.35
+65.80
+77.62
+82.99
+27.99
+49.85
+61.02
+61.98
+55.90
+52.41
+65.19
+68.93
+JxPath
+12
+30.77
+53.28
+52.35
+56.80
+23.89
+45.41
+45.42
+49.05
+42.08
+59.60
+47.51
+50.97
+Lang
+17
+34.47
+60.90
+58.72
+71.18
+29.85
+53.74
+51.34
+64.13
+65.31
+67.29
+64.92
+72.27
+Math
+30
+37.47
+66.73
+62.35
+70.94
+29.39
+56.14
+55.58
+62.81
+61.84
+55.69
+54.96
+41.38
+Time
+11
+55.47
+71.42
+68.84
+80.57
+40.96
+59.40
+57.84
+70.34
+86.71
+65.77
+66.53
+71.86
+CYC​m​a​x≤20\text{CYC}{max}\leq 20
+104
+34.01
+61.56
+60.07
+70.37
+26.29
+51.80
+51.86
+61.09
+51.42
+58.21
+55.60
+56.10
+CYCm​a​x>20\text{CYC}_{max}>20
+26
+27.38
+55.49
+52.68
+69.42
+19.17
+46.00
+42.93
+59.81
+56.55
+59.15
+56.66
+55.16
+Total/Ave
+130
+32.69
+60.34
+58.59
+70.18
+24.87
+50.64
+50.08
+60.83
+52.45
+58.40
+55.81
+55.92
+4.2. RQ1: Generated Test Quality Comparison
+Search-based tools such as EvoSuite (Fraser and Arcuri, 2011) have already been extensively studied in comparison with LLM-based test generation (Wang
+et al., 2024a; Chen
+et al., 2024; Ryan et al., 2024; Rao et al., 2023; Deljouyi et al., 2024). Prior results demonstrate that LLM-based tools have advanced beyond search-based approaches by achieving higher average line and branch coverage, although EvoSuite remains competitive on certain projects. Moreover, search-based generated tests are often difficult to interpret and lack meaningful assertions compared to those produced by LLM-based methods (Rao et al., 2023; Deljouyi et al., 2024). Because our contribution lies in advancing LLM-based test generation, we therefore focus our comparisons on other LLM-based tools. The latest test generation techniques relevant to Panta include HITS (Wang
+et al., 2024a) and SymPrompt (Ryan et al., 2024). HITS decomposes focal methods into slices and generates tests slice by slice, while SymPrompt extracts path constraints as a list of branch conditions for each method under test and generates tests path by path. Neither approach leverages dynamic code coverage data and both operate statically without guidance on where additional tests are needed. Consequently, HITS and SymPrompt are limited to generating new test classes rather than augmenting existing ones. To differentiate Panta with them, Panta adopts an iterative workflow, guiding the LLM to generate tests for selected paths based on both dynamic and static program analysis information. Our approach works for both scenarios to augment existing tests and add new test classes.
+However, neither HITS nor SymPrompt has publicly available implementations. HITS relies on an LLM to generate slices instead of traditional program analysis, and the paper (Wang
+et al., 2024a) provides limited implementation details, making replication challenging. In contrast, SymPrompt provides sufficient details to replicate its approach. Therefore, to compare it with Panta, we implemented SymPrompt’s technique following the information that is available in their paper (Ryan et al., 2024).
+We present the results in Table 2. We highlight the best values in bold to enhance visualization in the result tables. In terms of line and branch coverage, Panta consistently outperforms SymPrompt across all projects.
+On average, Panta achieves 26.3% higher line coverage and 22.7% higher branch coverage than SymPrompt. Regarding high coverage count (HCC), 45 out of 130 classes achieve branch coverage above 75%, compared to only 16 for SymPrompt. The pass rate of SymPrompt is, on average, 23.1% lower than Panta. Beyond the absence of a test repair phase, this can be attributed to its limited prompt context. Specifically, SymPrompt provides only branch conditions rather than the full execution path, making it more challenging for the LLM to infer correct test inputs. In terms of mutation score, Panta achieves a higher average score (43.8%) than SymPrompt (31.3%), aligning with its superior code coverage results.
+There are a few scenarios in which SymPrompt performs better. In the Collections project, SymPrompt achieves a higher pass rate than Panta, while in JDatabind and Lang, its mutation score exceeds that of Panta. Upon analysis, these scenarios occur in large utility classes containing large number of methods. For example, MapUtils in Collections has 71 methods. Since Panta generates tests at the class level, it selects paths for each MUT that have not been fully covered in each iteration. For large classes, this results in long prompts, increasing the difficulty for the LLM to generate complete tests. In contrast, SymPrompt operates at the method level, allowing it to focus on smaller contexts, making it more effective in these specific cases.
+Overall, across all evaluation metrics—line coverag

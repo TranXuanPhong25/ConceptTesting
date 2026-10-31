@@ -1,0 +1,328 @@
+n of the symbolic module and the multitask model to the overall performance of Tratto? We carry out ablation studies to assess the performance of Tratto without the symbolic module (a purely neural model not supported by the proposed token-by-token oracle generation approach) and without the multitask model (two different models for the Oracle evaluator and Token selector).
+RQ3: What is the effectiveness of Tratto in generating axiomatic test oracles and how does it compare with state-of-the-art neural and symbolic techniques? We devise a ground-truth dataset of axiomatic test oracles to evaluate Tratto, and compare it against state-of-the-art symbolic- and neural-based approaches for oracle generation.
+RQ4: How robust is Tratto to documentation variations? Based on the results of RQ3, we select the oracles that all approaches correctly predict, we apply systematic variations to their associated documentation, and we measure the robustness of Tratto and the other approaches in terms of the amount of oracles that they can still correctly infer.
+RQ5: How effective are the generated oracles for improving test suites? We apply the oracles that Tratto generates to test suites automatically generated with EvoSuite, and we measure the effectiveness of Tratto for testing as the improvement of the mutation score.
+4.1. RQ1: Code Models Comparison
+RQ1 addresses the suitability of LLM code models that Tratto uses to both evaluate oracles and predict the next oracle token.
+We compare three models—Code Gemma by
+Google (Team et al., 2024), StarCoder2 by
+BigCode (Lozhkov et al., 2024), and Code Llama by
+Meta (Rozière et al., 2024)—to determine the most effective LLM for such tasks.
+We model both tasks as code infilling problems (see
+Listings  and ). We select these models
+since they are state-of-the-art, support infilling problems, are trained on
+large-scale code corpora, and are popular among researchers and
+practitioners for addressing code-related tasks.
+We used the version of each model that features 7B trainable parameters.
+The dataset used for training and validation features 223,149 samples (34,249 oracles + 188,900 tokens). We set aside all samples belonging to a single Java project (Guava, 30,891 samples, 14% of the total) for validation, and used the remaining 192,258 samples (86%) for training.22
+2
+We split the dataset in this way to avoid data leakage, since some oracle and token samples from the same project are the same except for the rephrased Javadoc tag, according to the data augmentation process described in Section 3.4.2.
+We trained all models for two epochs, as we experimentally determined that accuracy does not improve significantly after this point. We set the input length to 2,048 transformer tokens and the output length to 32 transformer tokens.33
+3
+Although the output of the models is a single lexical token (e.g., a variable name such as millis2secs) this is tokenized into multiple transformer tokens (e.g., mill-is-2-se-cs, five tokens). We used default hyper-parameters for all trainings.
+The accuracy obtained with Code Gemma, StarCoder2, and Code Llama is 58%, 69%, and 91%, respectively.
+Code Llama largely outperforms both Code Gemma and StarCoder2.
+We hypothesize that such a difference is due to both the pre-training data and the specificity of each training procedure.
+Code Llama is pre-trained primarily on natural language and actual code, and is further specialized for long-context inputs, which fits well with our tasks.
+StarCoder2 is pre-trained on varied data, including GitHub issues, pull requests and Jupyter notebooks.
+Code Gemma is pre-trained on English language data from open source mathematics datasets and synthetically generated code.
+Both Code Gemma and StarCoder2 are pre-trained on general data and synthetic code that are not particularly useful for our case.
+The results of RQ1 measure the accuracy of different LLM code models in correctly evaluating oracles and selecting oracle tokens, and clearly point to Code Llama as the best choice to generate correct axiomatic oracles.
+When used to generate a complete sequence of tokens conforming an oracle,
+Tratto instantiated with Code Llama correctly generates 69% axiomatic oracles on the Guava validation set, that is, 3,337 oracles (out of 4,865) have all their tokens correctly predicted.44
+4
+Note that this dataset also contains non-oracle samples (Comments without oracles in Figure 2), which are deemed as correctly predicted if the Oracle evaluator judged no need to generate an oracle.
+Answer to RQ1: Code Llama achieves
+91% accuracy for the tasks of evaluating oracles and selecting tokens, and outperforms both Code Gemma (58%) and StarCoder2 (69%).
+4.2. RQ2: Ablation Studies
+RQ2 addresses the contributions of the symbolic module and multitask model of Tratto in generating oracles.
+To this end, we carry out two ablation studies where these components are removed.
+In the first study, we remove the token-by-token oracle generation approach enabled by the symbolic module. Thus, the neural module either infers the whole oracle or indicates the impossibility of generating one, solely based on the unit under test.
+We set aside the Guava oracles (4,865) for validation, and used the remaining (29,384) for fine-tuning the Code Llama 7B model with default hyper-parameters for two epochs, as we did for Tratto.
+The resulting model generates 3,049 correct oracles out of 4,865, achieving an accuracy of 63%, 6% less that the 69% accuracy of Tratto.
+The difference is statistically significant according to the McNemar test (pp-value << 0.001, Odds Ratio = 2.57), which is suitable to pairwise compare dichotomous results of two different treatments as in this case (McNemar, 1947).
+This indicates that the symbolic module and the token-by-token approach contribute to improve the performance of generating axiomatic oracles.
+In the second study, we remove the multitask model and fine-tune two separate models, an Oracle evaluator and a Token selector.
+Both are based on Code Llama 7B and the training is performed with default hyper-parameters for two epochs. The Oracle evaluator is fine-tuned on the 29,384 oracle samples (86% of all oracles) that do not include the Guava project, and the Token selector is fine-tuned on the respective 162,874 token samples (86% of all tokens). Then, we jointly evaluate the capabilities of both models to correctly predict the 4,865 oracles from the Guava validation set, i.e., with the Oracle evaluator correctly predicting whether an oracle should be generated and, if so, with the Token selector correctly predicting all tokens of the oracle. Overall, this approach achieved 66% accuracy in generating oracles (3,213 out of 4,865 oracles from the Guava validation set), 3% less than the accuracy of Tratto.
+The difference is statistically significant (pp-value << 0.001, Odds Ratio = 1.55).
+This highlights the benefits of leveraging a multitask model for evaluating oracles and predicting tokens.
+Our analysis of the oracles that Tratto generates and the ablated approaches fail to generate indicates that the ablated approaches either incur in false positives, i.e., they generate oracles where there should be none, or they generate incorrect oracles.
+As an example of false positives, the purely neural model wrongly generates the precondition “array != null” from the Javadoc tag “@param array an array of {@code short} values, possibly empty”. The Oracle evaluator of the non-multitask model generates a precondition
+from the Javadoc tag “@param defaultValue the value provided for inputs absent in map keys”, which does not express any precondition.
+As an example of wrong oracles, the purely neural model generates the incorrect oracle “true ? Arrays.stream(array).anyMatch(jdVar -> jdVar == target) : true”, which asserts that the array parameter should always contain the target parameter, from the Javadoc tag “@return {@code true} when any element {@code array[i]} equals {@code target}”, while Tratto generates the correct oracle, “Arrays.stream(array).anyMatch(jdVar -> jdVar == target) ? methodResultID == true : methodResultID == false”, which asserts that, if the array parameter contains the target parameter, the method should return true, otherwise it should return false.
+Answer to RQ2:
+The purely neural and the non-multitask approaches achieve 63% and 66% accuracy, respectively, less than the 69% accuracy of Tratto. Thus, we conclude that the symbolic module and the multitask model both improve the performance of Tratto.
+4.3. RQ3: Oracle Generation
+RQ3 compares the effectiveness of Tratto to the state-of-the-art neural and symbolic approaches for generating axiomatic oracles. We present the ground-truth dataset used for evaluating, the state-of-the-art approaches we compare Tratto with, the metrics we computed with the experiments, the training and evaluation setup of the experiments, and finally we discuss the results.
+4.3.1. Ground-Truth Dataset
+We manually created a ground-truth dataset of axiomatic test oracles, to fairly compare Tratto with state-of-the-art approaches.
+We extracted and validated oracles from Defects4J (Just et al., 2014). We excluded two projects (Apache Commons Math (Foundation, 2023b) and Apache Commons
+Collections (Foundation, 2023a)) that are part of the
+training set of Tratto. For each of the remaining 15 projects in
+Defects4J, we systematically selected 10 Java classes by sorting them according to their character count
+and selecting those evenly spaced within the 5% to 95% range (i.e.,
+the classes at the percentiles 5, 15, 25, etc.). We manually extracted all
+possible axiomatic oracles from all methods of each selected class.
+The dataset contains 389 axiomatic oracles (positive samples) belonging to 274 methods of 150
+classes from 15 projects.
+For each method, we also generate one negative sample if no precondition, postcondition or exceptional postcondition could be generated for such method. For instance, if a method encodes two preconditions, it will result in two positive samples (two preconditions) plus two negative samples (one non-postcondition and one non-exceptional-postcondition). This leads to a total of 496 negative samples.
+Each sample was reviewed by at least two authors.
+4.3.2. Comparison Approaches
+We compare Tratto with Jdoctor (Blasi et al., 2018) and GPT4 (OpenAI, 2024), as representative symbolic and neural approaches, respectively.
+Jdoctor (Blasi et al., 2018) generates axiomatic oracles (preconditions, normal and exceptional postconditions) from the Javadoc tags @param, @return and @throws/@exception, respectively, by applying pattern, lexical, and semantic matching techniques. Jdoctor outperforms other approaches such as Toradocu (Goffi et al., 2016) and @tComment (Tan et al., 2012).
+The state-of-the-art neural approaches to generate oracles (Tufano et al., 2022; Watson et al., 2020; Dinella et al., 2022) produce concrete test oracles, that is, assertions on specific concrete inputs. They are not directly comparable with Tratto, which generates axiomatic oracles that predicate on variables, and are valid for all concrete inputs.
+Thus we compare Tratto against GPT4 (model GPT4-o) as representative neural approach to generate axiomatic oracles. We enhance GPT4 with few shot learning (Wang et al., 2021) combined with Chain-of-Thought
+prompting (Wei et al., 2022) to fully leverage its understanding capabilities.
+We provide GPT4 with three examples of
+how and when to generate axiomatic oracles based on several Java methods,
+following a step-by-step approach, and ask it to generate oracles for the
+ground-truth dataset, method by method. We share the prompts we use in our experiments in the replication package (Anonymous, 2025).
+4.3.3. Metrics
+We comparatively evaluate Tratto by computing true positives (correctly predicted oracles), true negatives (instances for which no oracle should be generated, and none is generated), false positives (instances for which no oracle should be generated, but one is generated, or wrongly generated oracles), and false negatives (oracles not generated, while one should be generated).
+We classify incomplete oracles, that is, oracles that capture only a subset of the correct behavior, as false positives, since they partially miss the semantic of the reference oracle and do not work for all test cases. The oracle
+“result != null” is an example of incomplete oracle for a method that returns a positive Integer, as it correctly captures only a subset of the expected behavior, while “result >= 0” is a wrong oracle for the same method, as 0 is not positive.
+We also compute accuracy (portion of all correct predictions out of the total predictions), precision (portion of oracles correctly generated out of all oracles generated), recall (portion of oracles correctly generated out of all actual oracles in the dataset), and F1-score (weighted harmonic mean of precision and recall).
+Accuracy measures the overall performance of the technique, but does not differentiate between false positives and negatives. Precision measures the ability to avoid false positives.
+Recall reflects the ability to capture all relevant instances, avoiding false negatives.
+F1-score combines precision and recall into a single measure that balances false positives and negatives, and is especially useful when the dataset is unbalanced and the positive class is rare, as in our case.
+4.3.4. Training and Evaluation Setup
+We trained Tratto with the same setup as in previous experiments, although using the complete dataset (223k samples) for training. We generated as many axiomatic oracles as possible for all methods in the ground-truth dataset.
+We downloaded and set up the most recent version of Jdoctor from the publicly available GitHub repository (commit
+d76899f). Jdoctor does not need training, as it is based on a set of heuristic rules and patterns. We generated as many axiomatic oracles as possible for all methods in the ground-truth dataset, as we did for Tratto.
+We performed similarly for GPT4, generating as many axiomatic oracles as possible for all methods,
+by crafting a prompt per method, making an API call per prompt, and collecting all responses, which we manually analyzed.
+4.3.5. Results
+Table 1 reports the accuracy (row AA), precision (PP), recall (RR), and F1-score (F​1F1) that we computed for each approach (Tratto, Jdoctor and GPT4) and each project (columns closure-compiler … mockito), as well as for all projects (column Total).
+The table highlights in green the best Total values and in red the worst values.
+We observe that Tratto outperforms both Jdoctor and GPT4 in terms of accuracy (73% for Tratto, 61% for Jdoctor, 40% for GPT4), precision (72% for Tratto, 62% for Jdoctor, 24% for GPT4), and F1-score (61% for Tratto, 25% for Jdoctor, 37% for GPT4). Tratto’s recall (52%) is better than Jdoctor’s (16%) and worse than GPT4 (89%).
+The results indicate that Tratto infers more correct predictions than both Jdoctor and GPT4 (accuracy) with a low impact of wrong results (precision). The better performance of GPT4 than Tratto in terms of recall indicates that GPT4 generates a higher proportion of oracles than Tratto out of the ground truth.
+This was expected since GPT4 is a general-purpose LLM with better generalization capabilities. However, the higher recall comes with a cost of more false positives (lower precision), on which Tratto does not incur as often thanks to the fine-tuning performed, which allows it to evaluate more precisely whether an oracle should be generated or not, and what the shape or the oracle should be. This is also illustrated with the F1-score, which well summarizes the improvement of the token-by-token neuro-symbolic approach of Tratto over the symbolic approach of Jdoctor and the neural approach of GPT4.
+The precision and recall of the approaches vary greatly across projects, thus confirming the dependency of the approaches on the quality of comments and code.
+Table 2 provides futher details for each project and approach. The table reports the number of methods (column MM), the number of oracles in the ground truth (OO), the number of non-oracle (negative) instances (N​ONO), and the true and false predictions (T​PTP, T​NTN, F​PFP, F​NFN) for all approaches and projects, as well as the totals (last row).
+For each metric, we report both the total number of predictions as well as the percentage over the total number of instances (O+N​O=389+496=885O+NO=389+496=885).
+Note that the sum of T​P+T​N+F​P+F​NTP+TN+FP+FN may go over 885 as any approach can generate any arbitrary number of false positives.
+Table 1. Accuracy (AA), precision (PP), recall (RR), and F1-score (F​1F1) for all approaches on ground-truth dataset.
+closure-compiler
+commons-cli
+commons-codec
+commons-compress
+commons-csv
+commons-jxpath
+commons-lang
+gson
+jackson-core
+jackson-databind
+jackson-dataformat
+jfree-chart
+joda-time
+jsoup
+mockito
+Total
+A
+56%
+83%
+61%
+74%
+91%
+62%
+75%
+80%
+68%
+58%
+67%
+77%
+81%
+60%
+67%
+73%
+P
+N/A
+60%
+29%
+82%
+88%
+N/A
+61%
+70%
+43%
+33%
+N/A
+90%
+83%
+50%
+N/A
+72%
+R
+0%
+75%
+24%
+53%
+97%
+0%
+67%
+70%
+33%
+3%
+0%
+60%
+78%
+5%
+0%
+52%
+Tratto
+F1
+N/A
+67%
+26%
+64%
+92%
+N/A
+64%
+70%
+37%
+6%
+N/A
+72%
+80%
+8%
+N/A
+61%
+A
+56%
+72%
+56%
+73%
+79%
+62%
+60%
+64%
+67%
+61%
+67%
+47%
+59%
+57%
+67%
+61%
+P
+N/A
+100%
+33%
+100%
+96%
+N/A
+0%
+6%
+33%
+100%
+N/A
+N/A
+74%
+0%
+N/A
+62%
+R
+0%
+16%
+4%
+41%
+68%
+0%
+0%
+7%
+11%
+3%
+0%
+0%
+33%
+0%
+0%
+16%
+Jdoctor
+F1
+N/A
+29%
+7%
+58%
+79%
+N/A
+N/A
+6%
+17%
+6%
+N/A
+N/A
+46%
+N/A
+N/A
+25%
+A
+18%
+26%
+37%
+42%
+55%
+5%
+53%
+19%
+47%
+35%
+50%
+35%
+53%
+41%
+50%
+40%
+P
+12%
+7%
+20%
+27%
+40%
+2%
+31%
+3%
+22%
+13%
+0%
+27%
+42%
+23%
+33%
+24%
+R
+100%
+100%
+92%
+100%
+92%
+100%
+88%
+60%
+100%
+100%
+N/A
+92%
+96%
+67%
+100%
+89%
+GPT4
+F1
+22%
+12%
+32%
+42%
+56%
+4%
+46%
+6%
+36%
+24%
+N/A
+42%
+58%
+34%
+50%
+37%
+Row Total of Table 2 highlights in green the best and in red the worst performance of the three approaches. Tratto generates the highest rate of correct oracles (total true positive rate 21%), and avoids generating oracles that shall not be genera

@@ -1,0 +1,57 @@
+{
+  "rank": 98,
+  "title": "Reproduction Test Generation for Java SWE Issues",
+  "fulltext_read": true,
+  "read_path": "papers/reproduction-test-generation-for-java-swe-issues-00dc97c7/public_evidence/paper_fulltext.txt",
+  "read_sha256": "332b322c32b87ab769e5d439dc45a1a60a87df20ffbc08c21025a190675a1d0c",
+  "read_source": "https://arxiv.org/html/2605.04320 (version 2, 7 May 2026; full 9,651-word HTML extraction including appendices, data statement and references)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "TDD-Bench-Java: 250 Java issue instances after fail-to-pass validation and deduplication from Java samples in SWE-PolyBench and Multi-SWE-bench; 13 repositories/build projects are summarized in Table 1.",
+    "Each Java instance contains issue text, pre-fix base commit, developer code patch and test patch; author runner evaluates issue-conditioned generated tests against old and fixed code.",
+    "A proprietary IBM Java dataset of 150 issues is also used, but neither the code nor issue data is public. Authors report 4% F2P without generated identifier hints and 20% with hints.",
+    "SWT-Bench and TDD-Bench-Verified are discussed as prior Python reproduction-test benchmarks; neither is the experiment dataset. Defects4J is mentioned in related work only, not evaluated."
+  ],
+  "task": "Generate a Java reproduction test directly from an issue description and pre-fix repository, without exposing the future fix to the generator. A candidate counts as fail-to-pass when it fails on the original code and passes after applying the developer patch. The method localizes files/functions, selects package/import/path context, writes a new test file, iteratively refines using execution feedback and a critic, then uses issue morphs to create candidates and selects one.",
+  "input_setting": "Issue text plus old source repository only at generation time; developer patch and golden test are reserved for evaluation. The public benchmark supplies fixed old/new snapshots through repository commits/patches, issue data, and a Docker-based runner. Public Java route takes a JSON prediction file with instance ID and unified test patch; it does not generate model output itself.",
+  "author_artifact_url": "https://github.com/IBM/TDD-Bench-Verified/tree/main/TDD-Bench-Java",
+  "author_relationship_evidence": "Paper Data Availability Statement links the IBM TDD-Bench-Verified Java benchmark and states that benchmark is open-sourced. Repository contains TDD-Bench-Java/README.md, java.csv, id_list.txt, tdd_java.diff, a 250-line command_run_gold.sh, the parent Apache-2.0 harness, golden patches, and evaluation code. Exact benchmark README documents the same Java reproduction-test task.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "IBM/TDD-Bench-Verified commit `3df8be066e486789d0b8e0d2865a3a4422b4560f` (2026-07-21). GitHub API tree checked (48 files); README, Java README, setup script, evaluator, and grading module statically inspected. No source code was executed. The Java setup pins SWE-PolyBench commit `1963184` and applies public `tdd_java.diff`.",
+  "license": "Repository declares Apache-2.0. The arXiv article is CC BY 4.0. Dataset includes upstream repositories and their original project licenses, which remain relevant to downstream use.",
+  "exact_models": [
+    "Claude-Sonnet-4.5",
+    "GPT-5.2"
+  ],
+  "weights_status": "No fine-tuned weights. Both models are hosted commercial APIs; the article does not pin immutable provider model revisions. The public paper explicitly states that reproduction-test generator code is proprietary. The public evaluation harness is model-independent and accepts JSON test patches, so a separate local model can be evaluated without reproducing e-Otter++ internals.",
+  "evaluation_route": "Read all 9,651 extracted words / 1,514 lines of arXiv v2, including benchmark construction, full generator method, results, proprietary data limitations, threats and references; SHA-256 above. The paper reports 43.6% F2P for Claude-Sonnet-4.5 and 46.4% for GPT-5.2 with e-Otter++; six-candidate F2P@6 is 54.8% for both. One e-Otter++ run is estimated at $2.5 per issue with Claude and $1.5 with GPT-5.2. Independently inspected public `java.csv` (4,575,886 bytes): parsed 250 rows / 250 unique IDs and matched all 250 against `id_list.txt`; every row has issue text, base commit, code patch and golden test patch. Public Java README shows test-patch prediction JSON and a Docker-backed `run_evaluation.py` route. The 250-line `command_run_gold.sh` invokes gold evaluation for the task list. Thus evaluating a user model is practical if it can output unified test patches; exact e-Otter++ reproduction is impossible from the published code because the generator is proprietary and its prompts are linked separately. No code/model run.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The authors explicitly state in the paper's Data Availability Statement that the reproduction-test generator code is proprietary; exact e-Otter++ reproduction is not possible from the public artifact.",
+    "Exact hosted model revisions are not pinned, and the reported Claude/GPT models require paid APIs. The six-candidate experiment costs approximately $2.5/issue or $1.5/issue according to the paper; no model call was made.",
+    "The public Java evaluation harness is reconstructed by cloning SWE-PolyBench at commit `1963184` and applying `tdd_java.diff`; it requires Docker and Java project build/test stacks (Maven/Gradle), so a full 250-task run can be substantial.",
+    "The public benchmark is derived from open-source SWE-PolyBench and Multi-SWE-bench, so possible model contamination remains; authors' internal 150-issue dataset is not available for independent evaluation.",
+    "The paper reports F2P but does not publish a causal root-cause taxonomy or explain/label why each test exposes each defect. F2P validates behavior across versions, not causal understanding by itself.",
+    "Java build errors are counted as failures on the old version; the evaluator requires the generated test to pass after the patch, but F2P remains a binary criterion and does not independently grade test quality or intent alignment."
+  ],
+  "concept_fit": "Very high task fit for issue-to-reproduction-test generation and executable behavioral oracles: input is an issue plus buggy repository; hidden fix is reserved for validation; F2P directly asks whether the test captures the repair-relevant behavior. The paper uses issue morphing, execution feedback and an LLM critic, but does not expose an explicit cause taxonomy or prove causal root-cause reasoning. It is Java/SWE-PolyBench/Multi-SWE-bench, not Defects4J, BugsInPy or SWT-Bench.",
+  "recommendation": "Promote to the top practical own-model evaluation candidate for Java issue-reproduction tests. Public Apache-2.0 data and evaluator provide a concrete route: produce per-instance unified test patches and score them with the supplied Docker harness. It is easier to evaluate a local model here than on TestExplora because the 250 Java task records and runner are public and verified. Treat this as an independent model evaluation, not a reproduction of the paper's e-Otter++ method/results: generator implementation is explicitly proprietary and exact API model revisions are not pinned. High value for oracle/F2P comparison, but it supplies no root-cause labels and does not use Defects4J/BugsInPy/SWT-Bench experimentally. No code or model run.",
+  "citations": [
+    "https://arxiv.org/abs/2605.04320",
+    "https://github.com/IBM/TDD-Bench-Verified/tree/3df8be066e486789d0b8e0d2865a3a4422b4560f/TDD-Bench-Java",
+    "https://github.com/IBM/TDD-Bench-Verified/tree/3df8be066e486789d0b8e0d2865a3a4422b4560f/tddbench/harness"
+  ],
+  "supporting_locations": [
+    "Paper Sections 3–5: 250-instance TDD-Bench-Java filtering, issue-only input, F2P evaluation, localization/contextualization/refinement/morphing/selector method, model results.",
+    "Paper Sections 6 and 8: 150 proprietary issues, 4%/20% performance with hints, contamination and generalizability limitations.",
+    "Paper Data Availability Statement: generator code is proprietary; TDD-Bench-Java is open-sourced; prompts are shared via external Drive link.",
+    "Public Java CSV audit: 250 rows / 250 unique IDs; all 250 match the public id_list; issue, base commit, code patch and test patch fields are populated.",
+    "Public TDD-Bench-Java README: sample prediction JSON format and command to run the evaluation harness for a specific instance.",
+    "Public setup.sh pins SWE-PolyBench commit 1963184 and applies the benchmark's public `tdd_java.diff`; command_run_gold.sh contains gold evaluation commands for the cohort.",
+    "Parent IBM repo declares Apache-2.0 and includes Docker-based evaluator; no commands that build/run benchmark tasks were executed."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

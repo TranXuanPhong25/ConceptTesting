@@ -1,0 +1,298 @@
+{
+  "baseline": {
+    "task": 161,
+    "entry": "minOperations",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit**0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n\n        if is_prime[n] or is_prime[m]:\n            return -1\n\n        dist = [float('inf')] * limit\n        pq = [(n, n)]  # (total_cost, node)\n        dist[n] = n\n        \n        num_digits = len(str(n))\n\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n\n            if current_cost > dist[u]:\n                continue\n            \n            if u == m:\n                return dist[m]\n\n            s_u = str(u)\n            \n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                \n                # Increase digit\n                if original_digit < 9:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i+1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                \n                # Decrease digit\n                if original_digit > 0:\n                    if i == 0 and num_digits > 1 and original_digit == 1:\n                        continue\n                    \n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i+1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n\n        return -1\n\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"You are given two integers n and m that consist of the same number of digits.\\nYou can perform the following operations any number of times:\\n\\nChoose any digit from n that is not 9 and increase it by 1.\\nChoose any digit from n that is not 0 and decrease it by 1.\\n\\nThe integer n must not be a prime number at any point, including its original value and after each operation.\\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\\n \\nExample 1:\\n\\nInput: n = 10, m = 12\\nOutput: 85\\nExplanation:\\nWe perform the following operations:\\n\\nIncrease the first digit, now n = 20.\\nIncrease the second digit, now n = 21.\\nIncrease the second digit, now n = 22.\\nDecrease the first digit, now n = 12.\\n\\n\\nExample 2:\\n\\nInput: n = 4, m = 8\\nOutput: -1\\nExplanation:\\nIt is impossible to make n equal to m.\\n\\nExample 3:\\n\\nInput: n = 6, m = 2\\nOutput: -1\\nExplanation: \\nSince 2 is already a prime, we can't make n equal to m.\\n\\n \\nConstraints:\\n\\n1 <= n, m < 10^4\\nn and m consist of the same number of digits.\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate(10, 12), 85, 0.0)\n    assert _heldout_same(candidate(4, 8), -1, 0.0)\n    assert _heldout_same(candidate(6, 2), -1, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 40,
+        "text": "Branch coverage (C2): the True branch of `n == m` (line 40) is never taken by the existing tests.",
+        "cell": [
+          3,
+          "T"
+        ],
+        "witness": 0,
+        "reached": true,
+        "witness_call": "minOperations(4, 4)",
+        "block": 40,
+        "g_demote": false,
+        "guard_line": 40,
+        "guard_forced": false,
+        "guard_class": "differ",
+        "guard_counts": {
+          "same": 1,
+          "necessary": 0,
+          "differ": 10
+        },
+        "tier": 0
+      },
+      {
+        "kind": "MUTANT",
+        "line": 45,
+        "k": 15,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `is_prime[1]` -> `is_prime[0]` at line 45 survives: no existing test distinguishes them.",
+        "witness": 119,
+        "boundary": false,
+        "reached": true,
+        "witness_call": "minOperations(1, 10000)",
+        "block": 45,
+        "g_demote": false,
+        "tier": 0,
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[0] = False\n        for i in range(2, int(limit ** 0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n        if is_prime[n] or is_prime[m]:\n            return -1\n        dist = [float('inf')] * limit\n        pq = [(n, n)]\n        dist[n] = n\n        num_digits = len(str(n))\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n            if current_cost > dist[u]:\n                continue\n            if u == m:\n                return dist[m]\n            s_u = str(u)\n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                if original_digit < 9:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                if original_digit > 0:\n                    if i == 0 and num_digits > 1 and (original_digit == 1):\n                        continue\n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n        return -1\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"\"\"You are given two integers n and m that consist of the same number of digits.\nYou can perform the following operations any number of times:\n\nChoose any digit from n that is not 9 and increase it by 1.\nChoose any digit from n that is not 0 and decrease it by 1.\n\nThe integer n must not be a prime number at any point, including its original value and after each operation.\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\n \nExample 1:\n\nInput: n = 10, m = 12\nOutput: 85\nExplanation:\nWe perform the following operations:\n\nIncrease the first digit, now n = 20.\nIncrease the second digit, now n = 21.\nIncrease the second digit, now n = 22.\nDecrease the first digit, now n = 12.\n\n\nExample 2:\n\nInput: n = 4, m = 8\nOutput: -1\nExplanation:\nIt is impossible to make n equal to m.\n\nExample 3:\n\nInput: n = 6, m = 2\nOutput: -1\nExplanation: \nSince 2 is already a prime, we can't make n equal to m.\n\n \nConstraints:\n\n1 <= n, m < 10^4\nn and m consist of the same number of digits.\"\"\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))"
+      },
+      {
+        "kind": "NUM",
+        "line": 39,
+        "cell": [
+          126,
+          "P|1|zero|True"
+        ],
+        "witness": 17,
+        "text": "Equivalence class: in the existing tests, parameter `n` of `minOperations` was never zero.",
+        "reached": true,
+        "witness_call": "minOperations(0, 2)",
+        "block": 39,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "DU",
+        "line": 49,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `is_prime` at line 44 reaches its use at line 49 in the existing tests.",
+        "cell": [
+          -2,
+          "du|39|is_prime|44|49|c-use"
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 86,
+        "k": 50,
+        "family": "ROR",
+        "extended": false,
+        "text": "Mutation (ROR): the mutant `num_digits > 1` -> `num_digits < 1` at line 86 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit ** 0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n        if is_prime[n] or is_prime[m]:\n            return -1\n        dist = [float('inf')] * limit\n        pq = [(n, n)]\n        dist[n] = n\n        num_digits = len(str(n))\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n            if current_cost > dist[u]:\n                continue\n            if u == m:\n                return dist[m]\n            s_u = str(u)\n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                if original_digit < 9:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                if original_digit > 0:\n                    if i == 0 and num_digits < 1 and (original_digit == 1):\n                        continue\n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n        return -1\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"\"\"You are given two integers n and m that consist of the same number of digits.\nYou can perform the following operations any number of times:\n\nChoose any digit from n that is not 9 and increase it by 1.\nChoose any digit from n that is not 0 and decrease it by 1.\n\nThe integer n must not be a prime number at any point, including its original value and after each operation.\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\n \nExample 1:\n\nInput: n = 10, m = 12\nOutput: 85\nExplanation:\nWe perform the following operations:\n\nIncrease the first digit, now n = 20.\nIncrease the second digit, now n = 21.\nIncrease the second digit, now n = 22.\nDecrease the first digit, now n = 12.\n\n\nExample 2:\n\nInput: n = 4, m = 8\nOutput: -1\nExplanation:\nIt is impossible to make n equal to m.\n\nExample 3:\n\nInput: n = 6, m = 2\nOutput: -1\nExplanation: \nSince 2 is already a prime, we can't make n equal to m.\n\n \nConstraints:\n\n1 <= n, m < 10^4\nn and m consist of the same number of digits.\"\"\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))"
+      },
+      {
+        "kind": "MUTANT",
+        "line": 52,
+        "k": 27,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `-1` -> `-0` at line 52 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit ** 0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n        if is_prime[n] or is_prime[m]:\n            return -0\n        dist = [float('inf')] * limit\n        pq = [(n, n)]\n        dist[n] = n\n        num_digits = len(str(n))\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n            if current_cost > dist[u]:\n                continue\n            if u == m:\n                return dist[m]\n            s_u = str(u)\n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                if original_digit < 9:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                if original_digit > 0:\n                    if i == 0 and num_digits > 1 and (original_digit == 1):\n                        continue\n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n        return -1\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"\"\"You are given two integers n and m that consist of the same number of digits.\nYou can perform the following operations any number of times:\n\nChoose any digit from n that is not 9 and increase it by 1.\nChoose any digit from n that is not 0 and decrease it by 1.\n\nThe integer n must not be a prime number at any point, including its original value and after each operation.\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\n \nExample 1:\n\nInput: n = 10, m = 12\nOutput: 85\nExplanation:\nWe perform the following operations:\n\nIncrease the first digit, now n = 20.\nIncrease the second digit, now n = 21.\nIncrease the second digit, now n = 22.\nDecrease the first digit, now n = 12.\n\n\nExample 2:\n\nInput: n = 4, m = 8\nOutput: -1\nExplanation:\nIt is impossible to make n equal to m.\n\nExample 3:\n\nInput: n = 6, m = 2\nOutput: -1\nExplanation: \nSince 2 is already a prime, we can't make n equal to m.\n\n \nConstraints:\n\n1 <= n, m < 10^4\nn and m consist of the same number of digits.\"\"\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the True branch of `n == m` (line 40) is never taken by the existing tests.",
+      "Mutation (CRP constant): the mutant `is_prime[1]` -> `is_prime[0]` at line 45 survives: no existing test distinguishes them.",
+      "Equivalence class: in the existing tests, parameter `n` of `minOperations` was never zero."
+    ],
+    "placebo_facts": [
+      "Def-use pair (all-uses, c-use): the value assigned to `is_prime` at line 44 reaches its use at line 49 in the existing tests.",
+      "Mutation (ROR): the mutant `num_digits > 1` -> `num_digits < 1` at line 86 is killed: an existing test distinguishes them.",
+      "Mutation (CRP constant): the mutant `-1` -> `-0` at line 52 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "minOperations(4, 4)",
+      "minOperations(1, 10000)",
+      "minOperations(0, 2)"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([(10, 12), (4, 8), (6, 2)]), st.tuples(st.integers(min_value=-10, max_value=200), st.integers(min_value=-10, max_value=200)))\n",
+    "strategy_sha256": "f23c03eabc0cfa0b401ab8ac12f4c08b17043cdf64bba28f01c19e34458d3575",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "combined": {
+    "task": 161,
+    "entry": "minOperations",
+    "put": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit**0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n\n        if is_prime[n] or is_prime[m]:\n            return -1\n\n        dist = [float('inf')] * limit\n        pq = [(n, n)]  # (total_cost, node)\n        dist[n] = n\n        \n        num_digits = len(str(n))\n\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n\n            if current_cost > dist[u]:\n                continue\n            \n            if u == m:\n                return dist[m]\n\n            s_u = str(u)\n            \n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                \n                # Increase digit\n                if original_digit < 9:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i+1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                \n                # Decrease digit\n                if original_digit > 0:\n                    if i == 0 and num_digits > 1 and original_digit == 1:\n                        continue\n                    \n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i+1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n\n        return -1\n\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"You are given two integers n and m that consist of the same number of digits.\\nYou can perform the following operations any number of times:\\n\\nChoose any digit from n that is not 9 and increase it by 1.\\nChoose any digit from n that is not 0 and decrease it by 1.\\n\\nThe integer n must not be a prime number at any point, including its original value and after each operation.\\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\\n \\nExample 1:\\n\\nInput: n = 10, m = 12\\nOutput: 85\\nExplanation:\\nWe perform the following operations:\\n\\nIncrease the first digit, now n = 20.\\nIncrease the second digit, now n = 21.\\nIncrease the second digit, now n = 22.\\nDecrease the first digit, now n = 12.\\n\\n\\nExample 2:\\n\\nInput: n = 4, m = 8\\nOutput: -1\\nExplanation:\\nIt is impossible to make n equal to m.\\n\\nExample 3:\\n\\nInput: n = 6, m = 2\\nOutput: -1\\nExplanation: \\nSince 2 is already a prime, we can't make n equal to m.\\n\\n \\nConstraints:\\n\\n1 <= n, m < 10^4\\nn and m consist of the same number of digits.\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))\n",
+    "base": "def _heldout_same(x, y, atol):\n    import math\n    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool)\n    if num(x) and num(y) and (isinstance(x, float) or isinstance(y, float)):\n        return math.isclose(x, y, rel_tol=1e-6, abs_tol=atol or 1e-6)\n    if isinstance(x, (list, tuple)) and isinstance(y, (list, tuple)) and len(x) == len(y):\n        return type(x) == type(y) and all(_heldout_same(a, b, atol) for a, b in zip(x, y))\n    return x == y\n\ndef check(candidate):\n    assert _heldout_same(candidate(10, 12), 85, 0.0)\n    assert _heldout_same(candidate(4, 8), -1, 0.0)\n    assert _heldout_same(candidate(6, 2), -1, 0.0)\n",
+    "split": "heldout",
+    "facts_version": "v4",
+    "doc_fail": false,
+    "concept_meta": [
+      {
+        "kind": "OUTCOME",
+        "line": 40,
+        "text": "Branch coverage (C2): the True branch of `n == m` (line 40) is never taken by the existing tests.",
+        "cell": [
+          3,
+          "T"
+        ],
+        "witness": 0,
+        "reached": true,
+        "witness_call": "minOperations(4, 4)",
+        "block": 40,
+        "g_demote": false,
+        "guard_line": 40,
+        "guard_forced": false,
+        "guard_class": "differ",
+        "guard_counts": {
+          "same": 1,
+          "necessary": 0,
+          "differ": 10
+        },
+        "tier": 0
+      },
+      {
+        "kind": "FAULT",
+        "line": 75,
+        "fault_type": "BOUNDARY",
+        "text": "Fault-type adequacy at L75: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if original_digit < 9:`. The public tests do not distinguish 2 surviving alternatives (`< 9` -> `<= 9`; `9` -> `10`). Exercise this behaviour and determine the required result from the specification.",
+        "survivors": 2,
+        "distinguished": 2,
+        "alternatives": [
+          "`< 9` -> `<= 9`",
+          "`9` -> `10`"
+        ],
+        "alternative_sources": [
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit**0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n\n        if is_prime[n] or is_prime[m]:\n            return -1\n\n        dist = [float('inf')] * limit\n        pq = [(n, n)]  # (total_cost, node)\n        dist[n] = n\n        \n        num_digits = len(str(n))\n\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n\n            if current_cost > dist[u]:\n                continue\n            \n            if u == m:\n                return dist[m]\n\n            s_u = str(u)\n            \n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                \n                # Increase digit\n                if original_digit <= 9:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i+1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                \n                # Decrease digit\n                if original_digit > 0:\n                    if i == 0 and num_digits > 1 and original_digit == 1:\n                        continue\n                    \n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i+1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n\n        return -1\n\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"You are given two integers n and m that consist of the same number of digits.\\nYou can perform the following operations any number of times:\\n\\nChoose any digit from n that is not 9 and increase it by 1.\\nChoose any digit from n that is not 0 and decrease it by 1.\\n\\nThe integer n must not be a prime number at any point, including its original value and after each operation.\\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\\n \\nExample 1:\\n\\nInput: n = 10, m = 12\\nOutput: 85\\nExplanation:\\nWe perform the following operations:\\n\\nIncrease the first digit, now n = 20.\\nIncrease the second digit, now n = 21.\\nIncrease the second digit, now n = 22.\\nDecrease the first digit, now n = 12.\\n\\n\\nExample 2:\\n\\nInput: n = 4, m = 8\\nOutput: -1\\nExplanation:\\nIt is impossible to make n equal to m.\\n\\nExample 3:\\n\\nInput: n = 6, m = 2\\nOutput: -1\\nExplanation: \\nSince 2 is already a prime, we can't make n equal to m.\\n\\n \\nConstraints:\\n\\n1 <= n, m < 10^4\\nn and m consist of the same number of digits.\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))\n",
+          "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit**0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n\n        if is_prime[n] or is_prime[m]:\n            return -1\n\n        dist = [float('inf')] * limit\n        pq = [(n, n)]  # (total_cost, node)\n        dist[n] = n\n        \n        num_digits = len(str(n))\n\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n\n            if current_cost > dist[u]:\n                continue\n            \n            if u == m:\n                return dist[m]\n\n            s_u = str(u)\n            \n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                \n                # Increase digit\n                if original_digit < 10:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i+1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                \n                # Decrease digit\n                if original_digit > 0:\n                    if i == 0 and num_digits > 1 and original_digit == 1:\n                        continue\n                    \n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i+1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n\n        return -1\n\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"You are given two integers n and m that consist of the same number of digits.\\nYou can perform the following operations any number of times:\\n\\nChoose any digit from n that is not 9 and increase it by 1.\\nChoose any digit from n that is not 0 and decrease it by 1.\\n\\nThe integer n must not be a prime number at any point, including its original value and after each operation.\\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\\n \\nExample 1:\\n\\nInput: n = 10, m = 12\\nOutput: 85\\nExplanation:\\nWe perform the following operations:\\n\\nIncrease the first digit, now n = 20.\\nIncrease the second digit, now n = 21.\\nIncrease the second digit, now n = 22.\\nDecrease the first digit, now n = 12.\\n\\n\\nExample 2:\\n\\nInput: n = 4, m = 8\\nOutput: -1\\nExplanation:\\nIt is impossible to make n equal to m.\\n\\nExample 3:\\n\\nInput: n = 6, m = 2\\nOutput: -1\\nExplanation: \\nSince 2 is already a prime, we can't make n equal to m.\\n\\n \\nConstraints:\\n\\n1 <= n, m < 10^4\\nn and m consist of the same number of digits.\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))\n"
+        ],
+        "reached": true,
+        "witness_call": "minOperations(10, 1)",
+        "block": 75,
+        "witness": 3
+      },
+      {
+        "kind": "NUM",
+        "line": 39,
+        "cell": [
+          126,
+          "P|1|zero|True"
+        ],
+        "witness": 17,
+        "text": "Equivalence class: in the existing tests, parameter `n` of `minOperations` was never zero.",
+        "reached": true,
+        "witness_call": "minOperations(0, 2)",
+        "block": 39,
+        "g_demote": false,
+        "tier": 0
+      }
+    ],
+    "placebo_meta": [
+      {
+        "kind": "DU",
+        "line": 49,
+        "text": "Def-use pair (all-uses, c-use): the value assigned to `is_prime` at line 44 reaches its use at line 49 in the existing tests.",
+        "cell": [
+          -2,
+          "du|39|is_prime|44|49|c-use"
+        ]
+      },
+      {
+        "kind": "MUTANT",
+        "line": 86,
+        "k": 50,
+        "family": "ROR",
+        "extended": false,
+        "text": "Mutation (ROR): the mutant `num_digits > 1` -> `num_digits < 1` at line 86 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit ** 0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n        if is_prime[n] or is_prime[m]:\n            return -1\n        dist = [float('inf')] * limit\n        pq = [(n, n)]\n        dist[n] = n\n        num_digits = len(str(n))\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n            if current_cost > dist[u]:\n                continue\n            if u == m:\n                return dist[m]\n            s_u = str(u)\n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                if original_digit < 9:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                if original_digit > 0:\n                    if i == 0 and num_digits < 1 and (original_digit == 1):\n                        continue\n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n        return -1\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"\"\"You are given two integers n and m that consist of the same number of digits.\nYou can perform the following operations any number of times:\n\nChoose any digit from n that is not 9 and increase it by 1.\nChoose any digit from n that is not 0 and decrease it by 1.\n\nThe integer n must not be a prime number at any point, including its original value and after each operation.\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\n \nExample 1:\n\nInput: n = 10, m = 12\nOutput: 85\nExplanation:\nWe perform the following operations:\n\nIncrease the first digit, now n = 20.\nIncrease the second digit, now n = 21.\nIncrease the second digit, now n = 22.\nDecrease the first digit, now n = 12.\n\n\nExample 2:\n\nInput: n = 4, m = 8\nOutput: -1\nExplanation:\nIt is impossible to make n equal to m.\n\nExample 3:\n\nInput: n = 6, m = 2\nOutput: -1\nExplanation: \nSince 2 is already a prime, we can't make n equal to m.\n\n \nConstraints:\n\n1 <= n, m < 10^4\nn and m consist of the same number of digits.\"\"\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))"
+      },
+      {
+        "kind": "MUTANT",
+        "line": 52,
+        "k": 27,
+        "family": "CRP constant",
+        "extended": false,
+        "text": "Mutation (CRP constant): the mutant `-1` -> `-0` at line 52 is killed: an existing test distinguishes them.",
+        "mutant_src": "from string import *\nfrom re import *\nfrom datetime import *\nfrom collections import *\nfrom heapq import *\nfrom bisect import *\nfrom copy import *\nfrom math import *\nfrom random import *\nfrom statistics import *\nfrom itertools import *\nfrom functools import *\nfrom operator import *\nfrom io import *\nfrom sys import *\nfrom json import *\nfrom builtins import *\nfrom typing import *\nimport string\nimport re\nimport datetime\nimport collections\nimport heapq\nimport bisect\nimport copy\nimport math\nimport random\nimport statistics\nimport itertools\nimport functools\nimport operator\nimport io\nimport sys\nimport json\nsys.setrecursionlimit(50000)\nimport heapq\n\nclass Solution:\n\n    def minOperations(self, n: int, m: int) -> int:\n        if n == m:\n            return 0\n        limit = 10000\n        is_prime = [True] * limit\n        is_prime[0] = is_prime[1] = False\n        for i in range(2, int(limit ** 0.5) + 1):\n            if is_prime[i]:\n                for multiple in range(i * i, limit, i):\n                    is_prime[multiple] = False\n        if is_prime[n] or is_prime[m]:\n            return -0\n        dist = [float('inf')] * limit\n        pq = [(n, n)]\n        dist[n] = n\n        num_digits = len(str(n))\n        while pq:\n            current_cost, u = heapq.heappop(pq)\n            if current_cost > dist[u]:\n                continue\n            if u == m:\n                return dist[m]\n            s_u = str(u)\n            for i in range(num_digits):\n                original_digit = int(s_u[i])\n                if original_digit < 9:\n                    new_s = s_u[:i] + str(original_digit + 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n                if original_digit > 0:\n                    if i == 0 and num_digits > 1 and (original_digit == 1):\n                        continue\n                    new_s = s_u[:i] + str(original_digit - 1) + s_u[i + 1:]\n                    v = int(new_s)\n                    if not is_prime[v]:\n                        new_cost = current_cost + v\n                        if new_cost < dist[v]:\n                            dist[v] = new_cost\n                            heapq.heappush(pq, (new_cost, v))\n        return -1\nimport copy\n\ndef minOperations(n: int, m: int) -> int:\n    \"\"\"You are given two integers n and m that consist of the same number of digits.\nYou can perform the following operations any number of times:\n\nChoose any digit from n that is not 9 and increase it by 1.\nChoose any digit from n that is not 0 and decrease it by 1.\n\nThe integer n must not be a prime number at any point, including its original value and after each operation.\nThe cost of a transformation is the sum of all values that n takes throughout the operations performed.\nReturn the minimum cost to transform n into m. If it is impossible, return -1.\n \nExample 1:\n\nInput: n = 10, m = 12\nOutput: 85\nExplanation:\nWe perform the following operations:\n\nIncrease the first digit, now n = 20.\nIncrease the second digit, now n = 21.\nIncrease the second digit, now n = 22.\nDecrease the first digit, now n = 12.\n\n\nExample 2:\n\nInput: n = 4, m = 8\nOutput: -1\nExplanation:\nIt is impossible to make n equal to m.\n\nExample 3:\n\nInput: n = 6, m = 2\nOutput: -1\nExplanation: \nSince 2 is already a prime, we can't make n equal to m.\n\n \nConstraints:\n\n1 <= n, m < 10^4\nn and m consist of the same number of digits.\"\"\"\n    return Solution().minOperations(*copy.deepcopy((n, m)))"
+      }
+    ],
+    "concept_facts": [
+      "Branch coverage (C2): the True branch of `n == m` (line 40) is never taken by the existing tests.",
+      "Fault-type adequacy at L75: off-by-one: a comparison boundary, numeric literal, index or range bound is one off. Behaviour: `if original_digit < 9:`. The public tests do not distinguish 2 surviving alternatives (`< 9` -> `<= 9`; `9` -> `10`). Exercise this behaviour and determine the required result from the specification.",
+      "Equivalence class: in the existing tests, parameter `n` of `minOperations` was never zero."
+    ],
+    "placebo_facts": [
+      "Def-use pair (all-uses, c-use): the value assigned to `is_prime` at line 44 reaches its use at line 49 in the existing tests.",
+      "Mutation (ROR): the mutant `num_digits > 1` -> `num_digits < 1` at line 86 is killed: an existing test distinguishes them.",
+      "Mutation (CRP constant): the mutant `-1` -> `-0` at line 52 is killed: an existing test distinguishes them."
+    ],
+    "tool_inputs": [
+      "minOperations(4, 4)",
+      "minOperations(1, 10000)",
+      "minOperations(0, 2)",
+      "minOperations(-6, 2)",
+      "minOperations(7, 2)",
+      "minOperations(4, -1)",
+      "minOperations(6, 1)",
+      "minOperations(4, 0)",
+      "minOperations(4, 10000)",
+      "minOperations(9999, 2)",
+      "minOperations(-1, 0)",
+      "minOperations(8, 4)",
+      "minOperations(12, 10)",
+      "minOperations(1, 0)",
+      "minOperations(1, 12)",
+      "minOperations(1, 8)",
+      "minOperations(1, 2)",
+      "minOperations(10, 1)",
+      "minOperations(4, 1)",
+      "minOperations(9, 12)",
+      "minOperations(3, 8)",
+      "minOperations(5, 2)",
+      "minOperations(11, 12)",
+      "minOperations(5, 8)",
+      "minOperations(2, 12)",
+      "minOperations(2, 8)",
+      "minOperations(2, 2)",
+      "minOperations(3, 12)",
+      "minOperations(3, 2)",
+      "minOperations(8, 12)",
+      "minOperations(8, 8)",
+      "minOperations(8, 2)",
+      "minOperations(9, 8)",
+      "minOperations(9, 2)",
+      "minOperations(10, 8)",
+      "minOperations(10, 2)",
+      "minOperations(10, 11)",
+      "minOperations(4, 7)",
+      "minOperations(10, 13)",
+      "minOperations(4, 9)",
+      "minOperations(6, 3)",
+      "minOperations(4, 2)",
+      "minOperations(10, 3)",
+      "minOperations(4, 3)",
+      "minOperations(6, 8)",
+      "minOperations(10, 9)",
+      "minOperations(6, 9)",
+      "minOperations(10, 10)",
+      "minOperations(4, 10)",
+      "minOperations(6, 10)",
+      "minOperations(12, 12)",
+      "minOperations(10, 14)",
+      "minOperations(6, 4)",
+      "minOperations(4, 6)"
+    ],
+    "mined_valid_src": "def valid(*args):\n    return True\n",
+    "valid_sha256": "5f9e8d3edbc1341bdf0c1b72057f35db9179aa096919f456b6fe75ecdad14152",
+    "strategy_src": "def strategy():\n    return st.one_of(st.sampled_from([(10, 12), (4, 8), (6, 2)]), st.tuples(st.integers(min_value=-10, max_value=200), st.integers(min_value=-10, max_value=200)))\n",
+    "strategy_sha256": "f23c03eabc0cfa0b401ab8ac12f4c08b17043cdf64bba28f01c19e34458d3575",
+    "strategy_fallback": true,
+    "mining_summary": {
+      "origin": "deterministic_public_examples",
+      "spec_validity": "unknown"
+    }
+  },
+  "tool_audit": {
+    "historical": true,
+    "mutants": 109,
+    "survivors": 25
+  }
+}

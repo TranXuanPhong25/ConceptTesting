@@ -1,0 +1,51 @@
+{
+  "rank": 57,
+  "title": "Evaluating Developer-written Unit Test Case Reduction for Java -- A Replication Study",
+  "fulltext_read": true,
+  "read_path": "papers/evaluating-developer-written-unit-test-case-reduction-for-java-a-replicatio-7d1325fd/public_evidence/paper_fulltext.txt",
+  "read_sha256": "7894581d8d84ed6c738f5195dc6913a48ff975bdf746be8987a018748c62cd48",
+  "read_source": "https://arxiv.org/html/2501.04890v1 (full author manuscript)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Defects4J: 30 developer-written failing test cases drawn from 6 Java projects, reusing exact cases from the ReduJavator study.",
+    "30 fault-triggering tests over mutants from six open-source Java projects (commons-validator, commons-math, commons-csv, commons-dbcp, commons-compress, etc.); paper states they reuse prior ReduJavator mutant test cases."
+  ],
+  "task": "Replication study of syntax-tree-based failing test-case reduction: compare how many AST leaf/non-leaf statements are removed from developer-written failing tests and whether each category has a higher removal probability. Uses ReduJavator Java tool; no test generation or LLM.",
+  "input_setting": "Failing developer unit test on buggy version or mutant; reducer iteratively removes AST statements while preserving failure, then compares original and minimal tests. Defects4J provides historical buggy/fixed subject test cases; mutants are separate subjects. This assesses test minimization/fault-localization support, not issue-to-reproducing-test generation or root-cause classification.",
+  "author_artifact_url": "https://github.com/amchristi/ReduJavator (Java tool cited by the paper); https://github.com/amchristi/ReduSharptor (predecessor C# tool).",
+  "author_relationship_evidence": "Paper explicitly links ReduJavator to https://github.com/amchristi/ReduJavator and identifies it as the Java reducer used in the replication; the repository owner matches third author Arpit Christi and README-level About says it was made public to publish the paper. Public snapshot has substantive Java source, Maven configuration, Observations and TEST_EXAMPLES files. GitHub archive comment pins source commit 00fc681edf99e975959b879376e8491327a75154.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "ReduJavator author repository snapshot at commit 00fc681edf99e975959b879376e8491327a75154; archive SHA-256 666e4a3cb5599377af1568751ec80dd3458d99de9c0e738ca56b26669b4a7cef. Static-inspected pom.xml, Main.java, Reducer.java, Execution.java, TestData.java, TestObject.java, Observations.txt and TEST_EXAMPLES.txt. No code executed. Repository has no explicit license file.",
+  "license": "Paper arXiv perpetual non-exclusive license. GitHub source repository has no explicit software license in the one-commit public snapshot; code reuse/republication permissions are unclear.",
+  "exact_models": [
+    "No LLM. JavaParser AST reduction with Maven/Ant/Gradle runners; test execution determines whether reduction preserves failure."
+  ],
+  "weights_status": "Not applicable.",
+  "evaluation_route": "Read all 3,781 extracted words / 1,013 lines, including all experimental tables and references; SHA-256 7894581d8d84ed6c738f5195dc6913a48ff975bdf746be8987a018748c62cd48. Study reports 30 Defects4J tests and 30 mutant-triggering tests across six Java projects. Defects4J tests: average 20.16 statements, 69.42% total reduction; non-tree statements average 62.37% removal probability, tree statements 7.04%. Mutant tests: 53.21% total reduction; non-tree probability 47.64%, tree 5.38%. Paired Wilcoxon finds non-tree vs tree reduction counts differ, but removal probabilities do not significantly differ (p=.5426 for D4J, p=.5731 for mutants), failing to confirm original C# finding of higher non-leaf removal probability. Public source exists, but exact paper cohort is not configured in repo. No run.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The public ReduJavator repo is a single-commit source snapshot with no license, and its TestObject.java embeds author-machine absolute paths. Default Main selects only project index 9 (Codec testLocaleIndependence); it does not encode all 30 Defects4J and 30 mutant test cases in Tables I–II. Exact replication requires configuring the full study cohort and environments.",
+    "The Observations.txt documents prior reproducibility problems: old Defects4J Maven/Gradle projects need manual build-file/compiler updates, and the reducer had false pass/fail behavior when the polling interval was too short.",
+    "Tool supports Maven/Ant/Gradle but requires Java 17, Maven, Ant/Gradle installations and per-project compile/test configuration; historical projects require environment restoration.",
+    "No LLM, root-cause labels, issue-to-test generation or modern SWT-Bench setting. It is a supporting minimization study only.",
+    "Source repository lacks a software license; do not assume it is permissively reusable. No code was run or modified."
+  ],
+  "concept_fit": "Low-to-moderate support for debugging/FL efficiency: smaller failure-inducing tests can simplify diagnosis, and Defects4J provides 30 concrete real-bug test cases. It studies AST leaf/non-leaf reduction patterns, not why a defect occurred, and does not generate tests or evaluate semantic oracle strength.",
+  "recommendation": "Keep as background/support only. It is a small, source-backed Defects4J replication with useful discussion of test reduction, but not a direct test-generation, issue-reproduction, oracle, or root-cause paper. The public Java reducer provides source but hard-coded local paths/default cohort and known environment instability prevent a clean exact rerun without configuration work; license is undeclared. Results can be read and critiqued from the paper tables. No LLM/model evaluation needed.",
+  "citations": [
+    "https://arxiv.org/abs/2501.04890v1",
+    "https://github.com/amchristi/ReduJavator",
+    "https://github.com/amchristi/ReduSharptor"
+  ],
+  "supporting_locations": [
+    "Full text SHA-256 7894581d8d84ed6c738f5195dc6913a48ff975bdf746be8987a018748c62cd48; read all 1,013 lines in consecutive chunks, including tables and references.",
+    "Sections III–IV and Tables I–IV: 30 Defects4J failing tests, 30 mutant tests; reduction totals and Wilcoxon results.",
+    "Table II reports Defects4J mean 69.42% statement reduction; mean non-tree removal probability 62.37%, tree 7.04%. Probabilities do not differ significantly (p=.5426), same for mutants (p=.5731).",
+    "Paper Introduction links both ReduSharptor and ReduJavator. GitHub ReduJavator is a public author repo; inspected README-less code comments, pom, reducer, runner, TestObject, Observations and examples.",
+    "TestObject.java contains hard-coded absolute paths and default Main.java selects one case; Observations records previous Maven/Gradle compile/test failures and manual project config."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

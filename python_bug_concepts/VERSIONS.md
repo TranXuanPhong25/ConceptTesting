@@ -9,6 +9,9 @@ flowchart LR
     V2 --> V5["V5:copied v2 + scoped facts"]
     V5 --> V6["V6:semantic-role ranking + policies"]
     V6 --> V7["V7:open BM25 + dense recall; conditional evidence"]
+    V7 --> VR13["vr13: operation/role binder; no downstream gain established"]
+    VR13 --> VR14["vr14: concept-template queries; unlabeled binding56→67/113; zero real-source relations"]
+    VR14 --> VR15["vr15: domain evidence + compositions;69/113tasks,5edges/3tasks;direct=BM25"]
 ```
 
 | Version | Concept representation / selection | Family+site hit@3 /113 | Native utility /40 |
@@ -51,3 +54,18 @@ controls. Public `auto` stays V2; V7 is its own module CLI.
 allhit in everyarm;117blinded sourcebindings reviewed. B-A andD-C each0new supported
 buggybindings: NO_GO for current dense package, no integration/promotion/model
 retuning.48newlocalembeddings/1092cachehits; noQwen/targetexecution in this diagnostic.
+
+### Local historical notes preserved during main sync
+
+2026-10-30 [vr15 domain/flow improvement](retrieval_v15/RESULTS.md) adds16instances
+and5sourceedges overvr14, with0oldinstance losses;69/113tasks,147instances.
+33engineeringtests and independent source review of all16newinstances/5edges pass
+conditionally. Directlookup=structuredBM25 at147bindings; no retrievalincrement,
+testgeneration/efficacy claim or default change. [Current tree](retrieval_v15/VERSION_TREE.md).
+
+2026-10-30 [vr14 concept-template prototype](retrieval_v14/RESULTS.md) moves neutral
+concept instances, typed roles and relations before query construction.20engineering
+tests pass; authored fixture exact binding raw10/16 vs structured16/16. Unlabeled
+source census bindings56→67/113tasks (98→131instances), but no relation edges were
+extracted and86/131instances are cardinality. Structured arms identical; no testgen,
+canonical use, model calls or default promotion. [Current tree](retrieval_v14/VERSION_TREE.md).

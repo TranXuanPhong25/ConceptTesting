@@ -1,0 +1,48 @@
+{
+  "rank": 13,
+  "title": "Call-Chain-Aware LLM-Based Test Generation for Java Projects",
+  "fulltext_read": true,
+  "read_path": "papers/cat/public_evidence/paper_fulltext.txt",
+  "read_sha256": "0b3d042d0bd3149eee878906070509c22f0c4340f330e5c513c48ea5289d6ad6",
+  "read_source": "https://arxiv.org/html/2604.22046v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "PANTA fixed Defects4J subjects:130classes2971methods14projects",
+    "4GitHubprojects112classes2707methods;commitprefixes inpaper"
+  ],
+  "task": "call-chain/dependency-aware regression test generation",
+  "input_setting": "Fixed/current code treated asreference;generatepermethod,rewritefailingassertionstomatchobservedcode;staticCHA boundeddepth3 paths/publicconstructors/relatedsources",
+  "author_artifact_url": "https://github.com/Amocy-Wang/CAT",
+  "author_relationship_evidence": "Paper explicitlylinks authorrepository;README evaluationartifact withmatching CATpipeline/sootup component.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "9da2e360b14c623067555acf806f98b297b0fbdd",
+  "license": "MIT",
+  "exact_models": [
+    "Qwen3-Coder30B viaOllama aliasqwen3-coder:30b;temperature0.2",
+    "Papermaxoutput16384tokens;publishedconstants/defaults100000"
+  ],
+  "weights_status": "No finetuning required;underlyingpublicQwenfamily availableinprinciple,butpreciseOllamadigest/quantization/revision notpinned ordownloaded. WrapperhardcodesQwen aliasregardlessofnormalmodelselection.",
+  "evaluation_route": "PANTA-derivedPython/Poetrypipeline,fixedsubjectmanifests/results;SootUp2.0Java17/MavenCallGraphPathFinder;modelinvokerOpenAI-compatiblechatendpoint;JUnit4D4J/5newsubjects;JaCoCo/PIT.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Noauthorcode/modelrun",
+    "CurrentMAX_TOKENS_NUM100000 propagatesgeneration/repairdefaults vs16384paper;actualpaperconfigreconciliation needed",
+    "Evaluationrunner writes no_coverage_increase_iterations10 vspaper/config3",
+    "Modelwrapperhardcoded endpoint/header must be configured safely;cachecredentialliteral redacted,originalunchanged",
+    "FullD4Jgeneration353.8hours/154.9Mtokens plus8.35hstaticanalysis;newsubjects321.3hplus61.63hstatic",
+    "OnlyonerunperLLMapproach/class;cannotassumevariancecontrolled",
+    "CHA paths areoverapproximated;2.41%spurious reported,no solverfeasibility guarantee",
+    "Postcutoff/unseenclaims notindependentlyverified;repositoryreleasedate/modelreleasedate not a proof ofno pretrainedoverlap",
+    "Fixed-code regression/mutation setting;notunknownhistoricalbugdiscovery"
+  ],
+  "concept_fit": "Strong execution-context/initialization prerequisites and indirectroutes;limitedintendedbehaviorsemantics. NaiveCAT+path combination hurts,indicatingneedforselectivegrounding.",
+  "recommendation": "Promote local-open-model supportingbase fordependency/contextconcepts;conditionalconfigreconciliation andlargecompute. Keepcorebuggy-input selectionseparate.",
+  "citations": [
+    "https://arxiv.org/html/2604.22046v2",
+    "https://github.com/Amocy-Wang/CAT/tree/9da2e360b14c623067555acf806f98b297b0fbdd"
+  ],
+  "reviewed_at": "2026-10-15T08:35:19.646653+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

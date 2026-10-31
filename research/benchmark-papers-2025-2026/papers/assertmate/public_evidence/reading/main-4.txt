@@ -1,0 +1,118 @@
+l agent, Code Generation Agent (CGA), Retrieval-Augmented Generation Agent (RAGA), and Chain-of-Thought Agent (CoTA), against the full AssertMate version.
+3
+Collaboration Strategies: In this set of variants, inspired by prior research [48, 49], we investigated the effectiveness of another two representative agent collaboration strategies: Debate and Voting.
+Debate involves iterative rounds of interaction where agents revise their responses based on peer input until a consensus is reached.
+Voting is one of the most commonly used and fundamental decision-making strategies in multi-agent discussion scenarios and in this study, we used it as the naive strategy for comparison.
+We used Human-Written FM-TP pairs as inputs and evaluated each variant’s performance using Compilation Success Rate (CSR), Pass Rate (PR), and Bug Detection Rate (BDR). The results are presented in Table III.
+Results:
+The dual capabilities of ActVCon (reasoning guidance and hallucination mitigation) are key to its effectiveness in promoting LLM-based assertion generation.
+By leveraging static program analysis to construct accurate actual values, ActVCon reduces hallucinated outputs, as evidenced by the 64.32-percentage-point drop in CSR and complete loss of bug detection when ActVCon is removed (AssertMate-) compared to the full AssertMate. Additionally, ActVCon enhances reasoning quality by anchoring assertion generation to concrete program states, leading to a PR improvement from 10.27% in AssertMate- to 60.09% in AssertMate.
+Its adaptability is further confirmed by integrating it into ChatAssert∗: ChatAssert∗+ outperforms the original ChatAssert∗ with relative gains of 2.05%, 31.05%, and 29.18% in CSR, PR, and BDR, respectively. These results position ActVCon as both an effective hallucination safeguard and a transferable reasoning scaffold for LLM-based assertion generation techniques.
+The EVGen framework outperforms individual prompting agents (CGA, RAGA, and CoTA), as demonstrated by AssertMate’s consistent superiority across all evaluation metrics.
+While each prompting strategy captures distinct facets of assertion generation, their isolated use limits holistic coverage. By enabling collaboration among specialized agents, EVGen integrates complementary insights and facilitates mutual validation. This coordinated design leads to relative improvements of 8.54% in CSR, 28.98% in PR, and 12.61% in BDR over the best-performing standalone prompting strategy, demonstrating that structured multi-agent collaboration more effectively aligns generated assertions with both syntactic correctness and semantic intent.
+The “LLM-as-a-Judge” serves as an effective collaboration mechanism, striking a balance between efficiency and effectiveness.
+In contrast, the Debate mechanism, despite yielding a moderate bug detection rate (45.53% BDR), suffers from the cascading effect of hallucinations across multi-round interactions (73.53% CSR) [49].
+These extended dialogues also incur prohibitive computational costs, consuming 3.7× more tokens per assertion than AssertMate.
+While voting achieves reasonable syntactic correctness (75.32% CSR), manual inspection revealed that it inevitably discards 12.5% of bugs detectable only by individual agents using specific prompting strategies (4 by CG, 3 by RAG, and 7 by CoT).
+This inherent limitation of Voting accounts for its 8.75-percentage-point drop in BDR compared to AssertMate.
+AssertMate overcomes these limitations through single-round expert mediation, where a Judge agent preserves valuable minority perspectives while mitigating hallucination risks. By combining consensus validation with expert appraisal, AssertMate achieves superior bug detection (46.25% BDR) without sacrificing implementation stability.
+Beyond comparisons with individual agents, Debate, and Voting, we further evaluate the selection effectiveness of the Judge through a paired override analysis against CoTA, the strongest individual agent in Table III.
+Specifically, we compare the outcomes of the assertions selected by the Judge and CoTA for the same input instance.
+A correct override occurs when the CoTA-generated assertion fails but the Judge-selected assertion succeeds, whereas an incorrect override occurs when the opposite happens.
+The Judge achieves 103 correct overrides and 44 incorrect overrides for CSR, and 129 correct overrides and 40 incorrect overrides for PR; both differences are statistically significant according to McNemar’s test (p<0.001p<0.001) [50].
+For BDR, the Judge achieves 13 correct overrides and 4 incorrect overrides, also showing a statistically significant difference (p<0.05p<0.05). These results demonstrate that the Judge more frequently improves upon the strongest individual agent than incorrectly replacing a better candidate.
+RQ3 Summary: Both ActVCon and EVGen are critical to AssertMate’s effectiveness.
+ActVCon not only mitigates hallucinations and guides LLM reasoning during assertion generation, but also enhances existing LLM-based techniques when integrated. Additionally, the “LLM-as-a-Judge” strategy proves to be a more effective collaboration mechanism compared to debate and voting, striking a balance between effectiveness and efficiency.
+VI Discussion
+In this section, we qualitatively demonstrate the effectiveness of AssertMate through a representative case, examine its performance with more advanced LLMs, discuss the complementarity and boundaries of its multi-agent design, and highlight the threats to validity of our study.
+VI-A Case Study of Test Assertion Quality
+Our evaluation (RQ1 and RQ2) confirms the effectiveness of the proposed AssertMate in comparison to existing baselines, particularly the second-best performing LLM-based approach ChatAssert∗.
+To gain deeper insights into their behavioral differences, we conducted an in-depth case study on a representative test instance from our dataset, as illustrated in Figure 5, focusing on a scenario involving bound parameter estimation within an optimization problem.
+(a) Focal Method and Test Prefix
+(b) Test Assertions generated by AssertMate and ChatAssert∗
+Fig. 5: A representative case study of bound parameter estimation
+Case Description.
+As shown in the figure, the method under test is a Gauss–Newton estimator for nonlinear least squares optimization, and the test constructs an estimation problem with two free parameters and one bound parameter.
+The human-written ground truth is:
+⬇
+Assert.assertTrue(estimator.getRMS(problem) < 1.0e-10);
+which verifies that the optimizer achieves a sufficiently small residual, indicating overall convergence of the estimation process.
+Outputs of ChatAssert∗ and AssertMate.
+To ensure an equal assertion budget, we invoked ChatAssert∗ three times for this case, matching the three assertions generated by AssertMate.
+However, all three generations yielded the same assertion shown in Figure 5, which verifies that the bound parameter remains fixed at its initial value (2.0), capturing constraint enforcement but not overall convergence.
+On the other hand, AssertMate not only reproduced the parameter-invariance assertion but also generated additional semantically relevant ones.
+This is because ActVCon detected additional internal attributes of the estimator class as potential actual values through static program analysis, enabling richer assertion generation.
+Moreover, if we manually add public utility methods (such as getRMS()) of the target class into the input, our approach is also able to synthesize assertions like:
+⬇
+Assert.assertTrue(estimator.getRMS(problem) < 1.0e-3);
+which checks the same convergence property as the human-written ground truth, although with a looser threshold.
+This case study highlights the key advantages of AssertMate:
+By identifying a set of valid actual values for assertions, AssertMate is able to target more meaningful verification points beyond the values of local variables, thereby enhancing the thoroughness of test validations.
+At the same time, the example also uncovers opportunities for future improvement.
+While AssertMate leverages program structure to guide the selection of meaningful targets, it currently lacks the ability to automatically recognize and incorporate public utility methods (such as getRMS()), which often encapsulate essential correctness conditions.
+This limitation suggests a promising research direction is optimizing the automated identification and inclusion of relevant public methods from the target class.
+Such methods usually serve as ideal actual values, and incorporating them could significantly improve the quality and relevance of generated assertions.
+VI-B AssertMate with More Advanced LLMs
+Considering experimental costs and the practical usage, we initially adopted DC-7B as the base model for AssertMate.
+However, with the rapid evolution of LLMs, more advanced models have demonstrated notably stronger capabilities in code understanding and generation.
+In particular, recent reasoning-enhanced models such as DeepSeek-R1 have garnered substantial attention for their superior performance in complex tasks.
+To explore the potential benefits of integrating more advanced models into our framework, we conducted an additional experiment evaluating the effectiveness of AssertMate when paired with larger and more advanced LLMs.
+Specifically, we selected two open-source models: Qwen2.5-Coder-32B (QC-32B), representing state-of-the-art code-centric LLMs, and DeepSeek-R1-Distill-Qwen-32B (DR-32B), exemplifying reasoning-enhanced LLMs.
+All experiments were conducted under the same setup as RQ1, and the corresponding results are presented in Table IV.
+Code-centric advanced LLMs tend to improve assertion generation effectiveness.
+Comparing the effectiveness of QC-32B and DC-7B, we observed that advanced code-centric LLMs significantly enhance assertion generation.
+Although QC-32B incurred a slight drop in CSR of 2.48 percentage points compared with DC-7B, it delivered gains of 8.64 and 11.79 percentage points in PR and BDR, respectively, highlighting its strength in generating semantically accurate and bug-revealing assertions.
+These results suggest that, when resources permit, adopting larger and more advanced code LLMs can be a valuable choice for boosting assertion quality.
+TABLE IV: Performance of using different base model for AssertMate
+Model
+CSR (%)
+PR (%)
+BDR (%)
+DR-32B
+59.44
+55.10
+45.54
+QC-32B
+74.30
+68.73
+58.04
+DC-7B
+76.78
+60.09
+46.25
+While reasoning capabilities enhance LLM performance, they are not the sole determinant of assertion generation effectiveness.
+Although DR-32B offers advanced reasoning capabilities, it does not outperform DC-7B under the unified assertion-generation protocol adopted in this work, with CSR, PR, and BDR lower by 17.34, 4.99, and 0.71 percentage points, respectively.
+One possible explanation is that the partially prefilled assertion template, while effective for ensuring executable and consistent outputs, may not be optimal for reasoning-oriented models, whose capabilities are better exploited through a more flexible think-then-answer generation process.
+Nevertheless, DR-32B achieves the best bug detection performance on the Math project, suggesting that reasoning-oriented models remain advantageous for reasoning-intensive scenarios.
+This observation motivates future work on adaptive prompting strategies that decouple semantic reasoning from structured assertion generation, allowing reasoning-oriented models to first reason about expected behaviors before producing executable assertions. More broadly, future agent collaboration strategies could dynamically route or weight different model families according to task characteristics, enabling reasoning-oriented and code-centric models to complement each other.
+VI-C Complementarity and Boundaries of Multi-Agent Collaboration
+The effectiveness of multi-perspective collaboration does not originate from the number of agents, but from the diversity of evidence sources and reasoning pathways they provide. AssertMate adopts CGA, RAGA, and CoTA because they capture complementary aspects of assertion reasoning. CGA derives expected values primarily from local program semantics and executable code structure; RAGA leverages structurally analogous tests to transfer assertion patterns and expected behaviors; and CoTA performs explicit multi-step reasoning by composing semantic relations from the focal method and test prefix. These heterogeneous perspectives reduce reliance on a single reasoning strategy and provide opportunities to identify valid assertions that may be missed by individual agents.
+The RQ3 results provide empirical support for this complementarity. The agent ablation analysis demonstrates that different perspectives likely capture different aspects of assertion generation, while the collaboration-strategy comparison shows that effective aggregation can further improve the reliability of generated assertions. These results suggest that the benefit of multi-agent collaboration comes from combining complementary reasoning signals rather than simply increasing the number of agents.
+However, multi-perspective collaboration is not universally beneficial. Its effectiveness depends on several conditions: (1) at least one perspective produces a correct candidate assertion, (2) different perspectives provide complementary rather than redundant evidence, and (3) the aggregation mechanism can identify and preserve valuable candidates. Collaboration may provide limited benefits when all agents lack necessary contextual information, share similar failure modes, or when the aggregation strategy eliminates useful minority candidates.
+The current evaluation explores a representative but bounded collaboration design space. Although the EVGen component of AssertMate can support different collaboration architectures, this study focuses on three representative mechanisms (i.e., majority voting, debate, and LLM-as-a-Judge) under the same perspective setting. These mechanisms represent direct consensus, iterative interaction, and expert-based selection, respectively, but they do not imply that the selected architecture is universally optimal. Future work will investigate adaptive perspective selection, dynamic agent allocation, and more advanced agentic collaboration strategies.
+VI-D Extensibility of Actual-Value Construction
+The current ActVCon rules (i.e., the return values and public getters) are designed as a practical approximation rather than an exhaustive semantic model of all possible observation points. In our Defects4J benchmark, these rules cover 86.5% of the assertion targets appearing in developer-written tests. This result suggests that return values and object states exposed through public getters represent common and practically useful sources of test oracles. More importantly, these observation points can be reliably identified and reconstructed, enabling the generation of executable assertions while avoiding the uncertainty introduced by arbitrary method invocation.
+The remaining 13.5% of assertion targets mainly involve parameterized method invocations used directly as actual values, such as assertEquals(expected, obj.computeSomething(param)). Supporting such cases requires more than identifying observable values; it introduces a parameter-synthesis problem, where the framework must infer valid argument values, construct corresponding declarations and assignments, and ensure that the generated invocation is both type-correct and semantically meaningful in the test context. Therefore, we intentionally exclude these cases from the current design rather than introducing broad invocation rules that may generate uncompilable or unreliable assertions.
+Nevertheless, extending ActVCon to support richer observation points is feasible. Potential directions include combining static analysis, constant propagation, and symbolic execution to infer valid arguments; mining project-specific test patterns to identify common invocation strategies; and leveraging LLM-based argument generation guided by method signatures and test context. These extensions are complementary to the current framework rather than fundamental changes to its core design. The existing rule-guided observation-point construction already provides broad practical coverage, while future extensions can further improve coverage for more complex assertion scenarios.
+VI-E Threats to Validity
+External Threats.
+Our evaluation is based on Defects4J, a widely adopted benchmark comprising real-world Java defects. However, its limited dataset size and Java-specific characteristics may limit generalizability to other programming languages. To mitigate this, we selected 2,203 EvoSuite-generated FM–TP pairs when validating the integration of AssertMate with EvoSuite, substantially expanding the experimental scale.
+Nevertheless, AssertMate is not inherently restricted to Java.
+The language-dependent components are mainly confined to ActVCon, which requires adapting program analysis and assertion mapping rules to different languages and testing frameworks, while the core LLM-based components remain language-independent.
+For example, extending AssertMate to Python or C++ only requires replacing Java-specific analysis with corresponding mechanisms for attribute/member analysis and adapting assertion templates to frameworks such as pytest or GoogleTest. In future work, we plan to extend our evaluation to larger, multi-language datasets to validate generalizability further.
+Internal Threats.
+One internal threat stems from the inherent randomness of LLM outputs.
+Although we fixed the temperature setting, stochastic generation may still affect assertion reproducibility.
+To address this, we generated five responses per query and applied a probability-based re-ranking strategy to select the most reliable output, thereby mitigating variability.
+Another potential threat is contamination in the backbone LLM.
+DeepSeek-Coder is trained on large-scale open-source code, while its pretraining corpus is not publicly available; therefore, we cannot fully verify whether Defects4J-related projects are included in its training data or perform strict decontamination.
+However, AssertMate does not directly prompt the LLM to reproduce existing developer-written assertions. Instead, ActVCon first derives assertion targets through static analysis and type-aware rules, and the LLM subsequently predicts expected values for these constructed actual values. The generated assertions are further validated through compilation and execution. Therefore, even if related Defects4J code was encountered during pretraining, successful assertion generation requires context-specific oracle inference rather than simple memorization of existing assertions. While this design reduces the risk of contamination-driven performance gains, we cannot completely eliminate this threat.
+Construction Threats.
+One major construct validity threat lies in the evaluation of the pass rate and bug detection rate.
+Since we focus on the unit test scenario, the correctness of the focal method is often unknown, making it difficult to distinguish between true assertion failures and false alarms. To address this challenge, we adopted two mitigation strategies: (1) for evaluating AssertMate’s effectiveness, we used human-written bug-triggering test cases from Defects4J, which are expected to pass on the fixed version and fail on the buggy version, thus serving as reliable ground truth; and (2) in RQ2, we used the number of killed mutants as an alternative evaluation metric, offering a more objective measure of assertion effectiveness in fault detection.
+VII Conclusion
+We proposed AssertMate, a novel agent-based assertion generation framework to facilitate generating effective assertions for automated testing.
+AssertMate offers three key advantages: (1) it integrates static program analysis to generate actual values, effectively mitigating LLM hallucinations; (2) it leverages complementary prompting strategies for richer context understanding; and (3) it employs a tailored multi-agent collaboration mechanism to determine accurate expected values. Evaluation results demonstrate that AssertMate significantly outperforms existing state-of-the-art techniques and validate the effectiveness of its core components.
+This work opens several promising avenues for future research. One direction is to improve the efficiency of AssertMate and extend its applicability beyond Java, broadening its impact across languages.
+Another is to explore more advanced collaboration mechanisms, such as dynamic task allocation, to better leverage the reasoning capabilities of large language models.
+We also plan to address hallucinations in expected value generation and component coordination by incorporating techniques like knowledge distillation to improve consistency and reliability. Furthermore, evaluating AssertMate in multi-assertion generation scenari

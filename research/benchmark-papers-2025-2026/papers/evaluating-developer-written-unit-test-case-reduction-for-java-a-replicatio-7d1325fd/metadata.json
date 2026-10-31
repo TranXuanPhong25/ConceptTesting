@@ -1,0 +1,35 @@
+{
+  "openalex_id": "https://openalex.org/W4406271021",
+  "title": "Evaluating Developer-written Unit Test Case Reduction for Java -- A Replication Study",
+  "year": 2025,
+  "publication_date": "2025-01-09",
+  "type": "preprint",
+  "doi": "https://doi.org/10.48550/arxiv.2501.04890",
+  "primary_url": "https://doi.org/10.48550/arxiv.2501.04890",
+  "pdf_url": "https://arxiv.org/pdf/2501.04890",
+  "venue": "arXiv (Cornell University)",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 26,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_author_source_verified",
+  "year_venue": "2025 arXiv v1 (Jan 9, 2025)",
+  "datasets": [
+    "Defects4J: 30 developer-written failing test cases drawn from 6 Java projects, reusing exact cases from the ReduJavator study.",
+    "30 fault-triggering tests over mutants from six open-source Java projects (commons-validator, commons-math, commons-csv, commons-dbcp, commons-compress, etc.); paper states they reuse prior ReduJavator mutant test cases."
+  ],
+  "models": "No LLM; ReduJavator AST-based test reducer.",
+  "artifact_url": "https://github.com/amchristi/ReduJavator (Java tool cited by the paper); https://github.com/amchristi/ReduSharptor (predecessor C# tool).",
+  "license": "No software license in author repo; paper manuscript arXiv perpetual non-exclusive license",
+  "input_setting": "Failing developer unit test on buggy version or mutant; reducer iteratively removes AST statements while preserving failure, then compares original and minimal tests. Defects4J provides historical buggy/fixed subject test cases; mutants are separate subjects. This assesses test minimization/fault-localization support, not issue-to-reproducing-test generation or root-cause classification.",
+  "reproduction_grade": "C (public tool but exact cohort/config and historical build environments require restoration)",
+  "concept_hook": "Low-to-moderate support for test minimization and debugging/FL; not root-cause classification or test generation.",
+  "limitation": "ReduJavator public TestObject uses author absolute paths/defaults only one D4J case; tool log records past false test-result issues and manual build fixes.",
+  "rank": 57,
+  "family": "testing_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/evaluating-developer-written-unit-test-case-reduction-for-java-a-replicatio-7d1325fd/NOTES.md"
+}

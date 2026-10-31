@@ -1,0 +1,46 @@
+{
+  "rank": 4,
+  "title": "DISTINCT: A Description-Guided Branch-Consistency Analysis Framework for Non-Regressive Test Case Generation",
+  "datasets": [
+    "Defects4J-Desc: paper says 441 focal methods/17 projects; public JSON contains 442 records (no exact duplicate records)",
+    "QuixBugs-Desc: 40 records verified"
+  ],
+  "task": "non-regressive bug-revealing Java test generation",
+  "input_setting": "buggy code plus NLD manually written by engineers from FIXED version; LLM-extracted semantic branch sets guide iterative tests",
+  "author_artifact_url": "https://github.com/anonymous-user-2309/DISTINCT",
+  "author_relationship_evidence": "Paper reference links this artifact; README title matches latest v3 and substantive generator/analyzer plus both dataset JSONs are public.",
+  "source_commit_or_archive": "ae28e128f36ae82fdadc8505af72a8ca6687bd28",
+  "license": "README displays MIT badge, but no LICENSE file and GitHub license null; legal grant unverified",
+  "exact_models": [
+    "DeepSeek-V3 in main paper; public scripts call deepseek-chat, temperature 0",
+    "Llama3-70B, Llama3-8B, CodeLlama-7B in generalization; Qianfan wrapper default Meta-Llama-3-70B and temperature 0.1"
+  ],
+  "weights_status": "No learned adapter needed, but precise base/instruct checkpoints and provider snapshots not pinned. Qianfan/API availability not verified.",
+  "evaluation_route": "Candidate generator -> Validator/Analyzer -> Test_one/Test_one_buggy and coverage scripts; local Defects4J checkouts/path mapping and input logs required.",
+  "blockers": [
+    "Public dataset count 442 differs from paper 441; exact evaluated manifest unresolved",
+    "Scripts contain author-local absolute paths and inconsistent helper import case: Test_one_Buggy vs distributed Test_one_buggy.py",
+    "Paper temperature 0 versus Qianfan code 0.1",
+    "Analyzer outer loop exits once tests pass; exact implementation of claimed repeated semantic consistency must be reconciled",
+    "Source repairs failing tests using project execution; confirm buggy/fixed project mapping before any evaluation to avoid deleting bug-revealing failures",
+    "README MIT badge has no accompanying license file",
+    "No local author evaluator/model run; publication tables have inconsistencies in baseline coverage and repeated headline metrics"
+  ],
+  "concept_fit": "Very high: intended branch concepts -> semantic consistency -> test refinement, but concepts and coverage are LLM judgments rather than proven feasible paths.",
+  "recommendation": "Top concept-aligned Defects4J candidate, but reproduction readiness below clean artifact candidates. Use fixed-derived descriptions as privileged specification and report that explicitly.",
+  "citations": [
+    "https://arxiv.org/html/2506.07486v3",
+    "https://github.com/anonymous-user-2309/DISTINCT/tree/ae28e128f36ae82fdadc8505af72a8ca6687bd28"
+  ],
+  "fulltext_read": true,
+  "read_path": "papers/distinct/public_evidence/paper_fulltext.txt",
+  "read_sha256": "a6b03b09d8aa5a816581f7a839207666394f59c19e3d63f3dbd809b58b7b49e8",
+  "read_source": "https://arxiv.org/html/2506.07486",
+  "dataset_use_verified": true,
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "reproduction_verdict": "conditional",
+  "reviewed_at": "2026-10-15T08:18:52.797297+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

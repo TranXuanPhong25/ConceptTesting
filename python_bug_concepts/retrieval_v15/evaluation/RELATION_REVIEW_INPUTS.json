@@ -1,0 +1,1295 @@
+[
+  {
+    "id": "51",
+    "source": "\n\ndef remove_vowels(text):\n    \"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\"\n    vowels = 'aeiouAEIOU'\n    text = text.replace(' ', '')\n    return ''.join([char for char in text if char not in vowels])\n\n",
+    "entry": "remove_vowels",
+    "instances": [
+      {
+        "id": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+        "kind": "sequence_transform",
+        "scope": "remove_vowels",
+        "evidence": {
+          "id": "6c51694f9089:Call:20:11:20:32",
+          "span": [
+            20,
+            11,
+            20,
+            32
+          ],
+          "expression": "text.replace(' ', '')"
+        },
+        "slots": {
+          "source": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Name:20:11:20:15",
+              "span": [
+                20,
+                11,
+                20,
+                15
+              ],
+              "expression": "text"
+            }
+          },
+          "result": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Call:20:11:20:32",
+              "span": [
+                20,
+                11,
+                20,
+                32
+              ],
+              "expression": "text.replace(' ', '')"
+            }
+          },
+          "pattern": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:24:20:27",
+              "span": [
+                20,
+                24,
+                20,
+                27
+              ],
+              "expression": "' '"
+            }
+          },
+          "replacement": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:29:20:31",
+              "span": [
+                20,
+                29,
+                20,
+                31
+              ],
+              "expression": "''"
+            }
+          }
+        },
+        "properties": [
+          "replace matching text fragments"
+        ],
+        "relations": [],
+        "assumptions": [
+          "receiver must use string replace semantics",
+          "str"
+        ],
+        "domain_evidence": {
+          "source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ],
+            "public_quotes": [
+              "remove_vowels is a function that takes string and returns string without vowels."
+            ]
+          },
+          "result": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "pattern": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:24:20:27",
+                "span": [
+                  20,
+                  24,
+                  20,
+                  27
+                ],
+                "expression": "' '"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "replacement": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:29:20:31",
+                "span": [
+                  20,
+                  29,
+                  20,
+                  31
+                ],
+                "expression": "''"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "6c51694f9089:ListComp:21:19:21:64/selective_filter",
+        "kind": "selective_filter",
+        "scope": "remove_vowels",
+        "evidence": {
+          "id": "6c51694f9089:ListComp:21:19:21:64",
+          "span": [
+            21,
+            19,
+            21,
+            64
+          ],
+          "expression": "[char for char in text if char not in vowels]"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:37:21:41",
+              "span": [
+                21,
+                37,
+                21,
+                41
+              ],
+              "expression": "text"
+            }
+          },
+          "element": {
+            "type": "element",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:29:21:33",
+              "span": [
+                21,
+                29,
+                21,
+                33
+              ],
+              "expression": "char"
+            }
+          },
+          "predicate": {
+            "type": "condition",
+            "evidence": {
+              "id": "6c51694f9089:Compare:21:45:21:63",
+              "span": [
+                21,
+                45,
+                21,
+                63
+              ],
+              "expression": "char not in vowels"
+            }
+          },
+          "result": {
+            "type": "sequence",
+            "evidence": {
+              "id": "6c51694f9089:ListComp:21:19:21:64",
+              "span": [
+                21,
+                19,
+                21,
+                64
+              ],
+              "expression": "[char for char in text if char not in vowels]"
+            }
+          }
+        },
+        "properties": [
+          "identity selection",
+          "predicate true retained false removed",
+          "iteration order and occurrence positions retained locally"
+        ],
+        "relations": [
+          {
+            "subject": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+            "predicate": "feeds_selection_source",
+            "object": "6c51694f9089:ListComp:21:19:21:64/selective_filter",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "id": "6c51694f9089:Name:21:37:21:41",
+                "span": [
+                  21,
+                  37,
+                  21,
+                  41
+                ],
+                "expression": "text"
+              },
+              {
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "predicate evaluation does not mutate the element or source"
+        ],
+        "domain_evidence": {
+          "source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Assign:20:4:20:32",
+                "span": [
+                  20,
+                  4,
+                  20,
+                  32
+                ],
+                "expression": "text = text.replace(' ', '')"
+              },
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "result": {
+            "kind": "sequence",
+            "evidence": [
+              {
+                "rule": "sequence_construction",
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred",
+        "source_chain": [
+          {
+            "id": "6c51694f9089:Assign:20:4:20:32",
+            "span": [
+              20,
+              4,
+              20,
+              32
+            ],
+            "expression": "text = text.replace(' ', '')"
+          }
+        ]
+      },
+      {
+        "id": "6c51694f9089:ListComp:21:19:21:64/transform_then_filter",
+        "kind": "transform_then_filter",
+        "scope": "remove_vowels",
+        "evidence": {
+          "id": "6c51694f9089:ListComp:21:19:21:64",
+          "span": [
+            21,
+            19,
+            21,
+            64
+          ],
+          "expression": "[char for char in text if char not in vowels]"
+        },
+        "slots": {
+          "input_source": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Name:20:11:20:15",
+              "span": [
+                20,
+                11,
+                20,
+                15
+              ],
+              "expression": "text"
+            }
+          },
+          "pattern": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:24:20:27",
+              "span": [
+                20,
+                24,
+                20,
+                27
+              ],
+              "expression": "' '"
+            }
+          },
+          "replacement": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:29:20:31",
+              "span": [
+                20,
+                29,
+                20,
+                31
+              ],
+              "expression": "''"
+            }
+          },
+          "filter_source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:37:21:41",
+              "span": [
+                21,
+                37,
+                21,
+                41
+              ],
+              "expression": "text"
+            }
+          },
+          "element": {
+            "type": "element",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:29:21:33",
+              "span": [
+                21,
+                29,
+                21,
+                33
+              ],
+              "expression": "char"
+            }
+          },
+          "predicate": {
+            "type": "condition",
+            "evidence": {
+              "id": "6c51694f9089:Compare:21:45:21:63",
+              "span": [
+                21,
+                45,
+                21,
+                63
+              ],
+              "expression": "char not in vowels"
+            }
+          },
+          "result": {
+            "type": "sequence",
+            "evidence": {
+              "id": "6c51694f9089:ListComp:21:19:21:64",
+              "span": [
+                21,
+                19,
+                21,
+                64
+              ],
+              "expression": "[char for char in text if char not in vowels]"
+            }
+          }
+        },
+        "properties": [
+          "text transformation precedes identity selection",
+          "original input and filtered source may differ"
+        ],
+        "relations": [
+          {
+            "subject": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+            "predicate": "transform_flows_to_filter",
+            "object": "6c51694f9089:ListComp:21:19:21:64/transform_then_filter",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "id": "6c51694f9089:Name:21:37:21:41",
+                "span": [
+                  21,
+                  37,
+                  21,
+                  41
+                ],
+                "expression": "text"
+              },
+              {
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "receiver must use string replace semantics",
+          "str",
+          "predicate evaluation does not mutate the element or source"
+        ],
+        "domain_evidence": {
+          "input_source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ],
+            "public_quotes": [
+              "remove_vowels is a function that takes string and returns string without vowels."
+            ]
+          },
+          "pattern": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:24:20:27",
+                "span": [
+                  20,
+                  24,
+                  20,
+                  27
+                ],
+                "expression": "' '"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "replacement": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:29:20:31",
+                "span": [
+                  20,
+                  29,
+                  20,
+                  31
+                ],
+                "expression": "''"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "filter_source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Assign:20:4:20:32",
+                "span": [
+                  20,
+                  4,
+                  20,
+                  32
+                ],
+                "expression": "text = text.replace(' ', '')"
+              },
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "result": {
+            "kind": "sequence",
+            "evidence": [
+              {
+                "rule": "sequence_construction",
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred",
+        "source_chain": [
+          {
+            "id": "6c51694f9089:Assign:20:4:20:32",
+            "span": [
+              20,
+              4,
+              20,
+              32
+            ],
+            "expression": "text = text.replace(' ', '')"
+          }
+        ]
+      }
+    ],
+    "unknown": []
+  },
+  {
+    "id": "74",
+    "source": "\ndef total_match(lst1, lst2):\n    '''\n    Write a function that accepts two lists of strings and returns the list that has \n    total number of chars in the all strings of the list less than the other list.\n\n    if the two lists have the same number of chars, return the first list.\n\n    Examples\n    total_match([], []) ➞ []\n    total_match(['hi', 'admin'], ['hI', 'Hi']) ➞ ['hI', 'Hi']\n    total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) ➞ ['hi', 'admin']\n    total_match(['hi', 'admin'], ['hI', 'hi', 'hi']) ➞ ['hI', 'hi', 'hi']\n    total_match(['4'], ['1', '2', '3', '4', '5']) ➞ ['4']\n    '''\n    if lst1 == lst2:\n        return lst1\n    else:\n        return lst1 if len(set(lst1)) < len(set(lst2)) else lst2\n\n",
+    "entry": "total_match",
+    "instances": [
+      {
+        "id": "6a38115f31ad:Call:19:23:19:37/cardinality",
+        "kind": "cardinality",
+        "scope": "total_match",
+        "evidence": {
+          "id": "6a38115f31ad:Call:19:23:19:37",
+          "span": [
+            19,
+            23,
+            19,
+            37
+          ],
+          "expression": "len(set(lst1))"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:27:19:36",
+              "span": [
+                19,
+                27,
+                19,
+                36
+              ],
+              "expression": "set(lst1)"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:23:19:37",
+              "span": [
+                19,
+                23,
+                19,
+                37
+              ],
+              "expression": "len(set(lst1))"
+            }
+          }
+        },
+        "properties": [
+          "measure collection size"
+        ],
+        "relations": [],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "6a38115f31ad:Call:19:23:19:37/distinct_cardinality",
+        "kind": "distinct_cardinality",
+        "scope": "total_match",
+        "evidence": {
+          "id": "6a38115f31ad:Call:19:23:19:37",
+          "span": [
+            19,
+            23,
+            19,
+            37
+          ],
+          "expression": "len(set(lst1))"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6a38115f31ad:Name:19:31:19:35",
+              "span": [
+                19,
+                31,
+                19,
+                35
+              ],
+              "expression": "lst1"
+            }
+          },
+          "distinct": {
+            "type": "value",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:27:19:36",
+              "span": [
+                19,
+                27,
+                19,
+                36
+              ],
+              "expression": "set(lst1)"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:23:19:37",
+              "span": [
+                19,
+                23,
+                19,
+                37
+              ],
+              "expression": "len(set(lst1))"
+            }
+          }
+        },
+        "properties": [
+          "count equality classes rather than total occurrences",
+          "same support different multiplicities"
+        ],
+        "relations": [
+          {
+            "subject": "6a38115f31ad:Call:19:27:19:36/deduplication",
+            "predicate": "deduplication_flows_to_count",
+            "object": "6a38115f31ad:Call:19:23:19:37/distinct_cardinality",
+            "evidence": [
+              {
+                "id": "6a38115f31ad:Call:19:27:19:36",
+                "span": [
+                  19,
+                  27,
+                  19,
+                  36
+                ],
+                "expression": "set(lst1)"
+              },
+              {
+                "id": "6a38115f31ad:Call:19:23:19:37",
+                "span": [
+                  19,
+                  23,
+                  19,
+                  37
+                ],
+                "expression": "len(set(lst1))"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "6a38115f31ad:Call:19:27:19:36/deduplication",
+        "kind": "deduplication",
+        "scope": "total_match",
+        "evidence": {
+          "id": "6a38115f31ad:Call:19:27:19:36",
+          "span": [
+            19,
+            27,
+            19,
+            36
+          ],
+          "expression": "set(lst1)"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6a38115f31ad:Name:19:31:19:35",
+              "span": [
+                19,
+                31,
+                19,
+                35
+              ],
+              "expression": "lst1"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:27:19:36",
+              "span": [
+                19,
+                27,
+                19,
+                36
+              ],
+              "expression": "set(lst1)"
+            }
+          }
+        },
+        "properties": [
+          "occurrences collapse to equality membership"
+        ],
+        "relations": [],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "6a38115f31ad:Call:19:40:19:54/cardinality",
+        "kind": "cardinality",
+        "scope": "total_match",
+        "evidence": {
+          "id": "6a38115f31ad:Call:19:40:19:54",
+          "span": [
+            19,
+            40,
+            19,
+            54
+          ],
+          "expression": "len(set(lst2))"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:44:19:53",
+              "span": [
+                19,
+                44,
+                19,
+                53
+              ],
+              "expression": "set(lst2)"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:40:19:54",
+              "span": [
+                19,
+                40,
+                19,
+                54
+              ],
+              "expression": "len(set(lst2))"
+            }
+          }
+        },
+        "properties": [
+          "measure collection size"
+        ],
+        "relations": [],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "6a38115f31ad:Call:19:40:19:54/distinct_cardinality",
+        "kind": "distinct_cardinality",
+        "scope": "total_match",
+        "evidence": {
+          "id": "6a38115f31ad:Call:19:40:19:54",
+          "span": [
+            19,
+            40,
+            19,
+            54
+          ],
+          "expression": "len(set(lst2))"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6a38115f31ad:Name:19:48:19:52",
+              "span": [
+                19,
+                48,
+                19,
+                52
+              ],
+              "expression": "lst2"
+            }
+          },
+          "distinct": {
+            "type": "value",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:44:19:53",
+              "span": [
+                19,
+                44,
+                19,
+                53
+              ],
+              "expression": "set(lst2)"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:40:19:54",
+              "span": [
+                19,
+                40,
+                19,
+                54
+              ],
+              "expression": "len(set(lst2))"
+            }
+          }
+        },
+        "properties": [
+          "count equality classes rather than total occurrences",
+          "same support different multiplicities"
+        ],
+        "relations": [
+          {
+            "subject": "6a38115f31ad:Call:19:44:19:53/deduplication",
+            "predicate": "deduplication_flows_to_count",
+            "object": "6a38115f31ad:Call:19:40:19:54/distinct_cardinality",
+            "evidence": [
+              {
+                "id": "6a38115f31ad:Call:19:44:19:53",
+                "span": [
+                  19,
+                  44,
+                  19,
+                  53
+                ],
+                "expression": "set(lst2)"
+              },
+              {
+                "id": "6a38115f31ad:Call:19:40:19:54",
+                "span": [
+                  19,
+                  40,
+                  19,
+                  54
+                ],
+                "expression": "len(set(lst2))"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "6a38115f31ad:Call:19:44:19:53/deduplication",
+        "kind": "deduplication",
+        "scope": "total_match",
+        "evidence": {
+          "id": "6a38115f31ad:Call:19:44:19:53",
+          "span": [
+            19,
+            44,
+            19,
+            53
+          ],
+          "expression": "set(lst2)"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6a38115f31ad:Name:19:48:19:52",
+              "span": [
+                19,
+                48,
+                19,
+                52
+              ],
+              "expression": "lst2"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "6a38115f31ad:Call:19:44:19:53",
+              "span": [
+                19,
+                44,
+                19,
+                53
+              ],
+              "expression": "set(lst2)"
+            }
+          }
+        },
+        "properties": [
+          "occurrences collapse to equality membership"
+        ],
+        "relations": [],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      }
+    ],
+    "unknown": []
+  },
+  {
+    "id": "158",
+    "source": "\ndef find_max(words):\n    \"\"\"Write a function that accepts a list of strings.\n    The list contains different words. Return the word with maximum number\n    of unique characters. If multiple strings have maximum number of unique\n    characters, return the one which comes first in lexicographical order.\n\n    find_max([\"name\", \"of\", \"string\"]) == \"string\"\n    find_max([\"name\", \"enam\", \"game\"]) == \"enam\"\n    find_max([\"aaaaaaa\", \"bb\" ,\"cc\"]) == \"\"aaaaaaa\"\n    \"\"\"\n    max_word = None\n    max_unique = 0\n    for word in words:\n        unique = len(set(word))\n        if unique > max_unique:\n            max_unique = unique\n            max_word = word\n        elif unique == max_unique:\n            if word < max_word:\n                max_word = word\n    return max_word\n",
+    "entry": "find_max",
+    "instances": [
+      {
+        "id": "4a8e56620880:Call:15:17:15:31/cardinality",
+        "kind": "cardinality",
+        "scope": "find_max",
+        "evidence": {
+          "id": "4a8e56620880:Call:15:17:15:31",
+          "span": [
+            15,
+            17,
+            15,
+            31
+          ],
+          "expression": "len(set(word))"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "4a8e56620880:Call:15:21:15:30",
+              "span": [
+                15,
+                21,
+                15,
+                30
+              ],
+              "expression": "set(word)"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "4a8e56620880:Call:15:17:15:31",
+              "span": [
+                15,
+                17,
+                15,
+                31
+              ],
+              "expression": "len(set(word))"
+            }
+          }
+        },
+        "properties": [
+          "measure collection size"
+        ],
+        "relations": [],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "4a8e56620880:Call:15:17:15:31/distinct_cardinality",
+        "kind": "distinct_cardinality",
+        "scope": "find_max",
+        "evidence": {
+          "id": "4a8e56620880:Call:15:17:15:31",
+          "span": [
+            15,
+            17,
+            15,
+            31
+          ],
+          "expression": "len(set(word))"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "4a8e56620880:Name:15:25:15:29",
+              "span": [
+                15,
+                25,
+                15,
+                29
+              ],
+              "expression": "word"
+            }
+          },
+          "distinct": {
+            "type": "value",
+            "evidence": {
+              "id": "4a8e56620880:Call:15:21:15:30",
+              "span": [
+                15,
+                21,
+                15,
+                30
+              ],
+              "expression": "set(word)"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "4a8e56620880:Call:15:17:15:31",
+              "span": [
+                15,
+                17,
+                15,
+                31
+              ],
+              "expression": "len(set(word))"
+            }
+          }
+        },
+        "properties": [
+          "count equality classes rather than total occurrences",
+          "same support different multiplicities"
+        ],
+        "relations": [
+          {
+            "subject": "4a8e56620880:Call:15:21:15:30/deduplication",
+            "predicate": "deduplication_flows_to_count",
+            "object": "4a8e56620880:Call:15:17:15:31/distinct_cardinality",
+            "evidence": [
+              {
+                "id": "4a8e56620880:Call:15:21:15:30",
+                "span": [
+                  15,
+                  21,
+                  15,
+                  30
+                ],
+                "expression": "set(word)"
+              },
+              {
+                "id": "4a8e56620880:Call:15:17:15:31",
+                "span": [
+                  15,
+                  17,
+                  15,
+                  31
+                ],
+                "expression": "len(set(word))"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "4a8e56620880:Call:15:21:15:30/deduplication",
+        "kind": "deduplication",
+        "scope": "find_max",
+        "evidence": {
+          "id": "4a8e56620880:Call:15:21:15:30",
+          "span": [
+            15,
+            21,
+            15,
+            30
+          ],
+          "expression": "set(word)"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "4a8e56620880:Name:15:25:15:29",
+              "span": [
+                15,
+                25,
+                15,
+                29
+              ],
+              "expression": "word"
+            }
+          },
+          "result": {
+            "type": "value",
+            "evidence": {
+              "id": "4a8e56620880:Call:15:21:15:30",
+              "span": [
+                15,
+                21,
+                15,
+                30
+              ],
+              "expression": "set(word)"
+            }
+          }
+        },
+        "properties": [
+          "occurrences collapse to equality membership"
+        ],
+        "relations": [],
+        "assumptions": [
+          "builtin input domain must be valid"
+        ],
+        "domain_evidence": {},
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      }
+    ],
+    "unknown": []
+  }
+]

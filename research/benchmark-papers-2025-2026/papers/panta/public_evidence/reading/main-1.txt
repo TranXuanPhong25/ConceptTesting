@@ -1,0 +1,344 @@
+LLM Test Generation via Iterative Hybrid Program Analysis
+Report GitHub Issue
+×
+Title:
+Content selection saved. Describe the issue below:
+Description:
+Submit without GitHub
+Submit in GitHub
+arXiv is now an independent nonprofit!
+Learn more
+×
+Back to arXiv
+Why HTML?
+Report Issue
+Back to Abstract
+Download PDF
+Abstract.
+1 Introduction
+2 Motivation
+3 Approach
+3.1 Static Path Approximation
+3.2 Dynamic Path Selection
+3.3 Program Analysis Guided Prompt Template
+3.4 Iterative Test Generation Framework
+4 Evaluation
+4.1 Experimental Setup
+4.2 RQ1: Generated Test Quality Comparison
+4.3 RQ2: Ablation study
+4.4 RQ3: Impact of different models
+5 Discussion
+6 Threats To Validity
+7 Related Work
+8 Conclusion
+References
+License: CC BY 4.0
+arXiv:2503.13580v2 [cs.SE] 28 Aug 2025
+LLM Test Generation via Iterative Hybrid Program Analysis
+Conference: 2026 IEEE/ACM 48th International Conference on Software Engineering; April 12–18, 2026; Rio de Janeiro, Brazil2026 IEEE/ACM 48th International Conference on Software Engineering (ICSE ’26), April 12–18, 2026, Rio de Janeiro, BrazilDOI: 10.1145/3744916.3764553ISBN: 979-8-4007-2025-3/26/04CCS: Software and its engineering Software testing and debugging
+Sijia Gu
+Affiliation: University of British Columbia, Vancouver, BC, Canada
+email: sijiagu@ece.ubc.ca
+,
+Noor Nashid
+Affiliation: University of British Columbia, Vancouver, BC, Canada
+email: nashid@ece.ubc.ca
+and
+Ali Mesbah
+Affiliation: University of British Columbia, Vancouver, BC, Canada
+email: amesbah@ece.ubc.ca
+© rightsretained
+Abstract.
+Automating unit test generation remains a significant challenge, particularly for complex methods in real-world projects. While Large Language Models (LLMs) have made strides in code generation, they struggle to achieve high branch coverage due to their limited ability to reason about intricate control flow structures. To address this limitation, we introduce Panta, a technique that emulates the iterative process human developers follow when analyzing code and constructing test cases. Panta integrates static control flow analysis and dynamic code coverage analysis to systematically guide LLMs in identifying uncovered execution paths and generating better test cases. By incorporating an iterative feedback-driven mechanism, our technique continuously refines test generation based on static and dynamic path coverage insights, ensuring more comprehensive and effective testing. Our empirical evaluation, conducted on classes with high cyclomatic complexity from open-source projects, demonstrates that Panta achieves 26% higher
+line coverage and 23% higher branch coverage compared to the state-of-the-art.
+Keywords: Test generation, program analysis, control-flow analysis, large language models
+1. Introduction
+Automated test generation plays a crucial role in software engineering by enhancing code reliability and maintainability. Large Language Models (LLMs) can replicate human coding styles and generate test cases with meaningful variable names, leveraging patterns learned from extensive training data. This capability has led to the adoption of LLMs for test code generation (Nashid
+et al., 2023; Lemieux
+et al., 2023; Alshahwan
+et al., 2024; Chen
+et al., 2024; Pan
+et al., 2025; Ryan et al., 2024; Wang
+et al., 2024a; Deljouyi et al., 2024).
+Despite their effectiveness in general coding tasks, LLMs—trained on diverse datasets—often struggle with the unique code structures and logic of specific projects. This limitation is particularly evident in cases involving complex control flow and conditional statements. Recent studies (Siddiq et al., 2024; Schäfer et al., 2023; El Haji, 2023; Wang et al., 2024b) have shown that LLM-generated test cases frequently fail to achieve sufficient branch coverage, as they inadequately capture intricate conditional logic.
+To address this limitation, researchers have explored techniques that supplement LLMs with additional program-related information, such as focal method slices (Wang
+et al., 2024a) and path constraints (Ryan et al., 2024). These approaches rely on static prompts containing method fragments to generate tests for each independent segment. However, they lack mechanisms to guide the generation process toward areas requiring additional coverage. Furthermore, since LLMs do not always produce correct code, only a subset of the generated tests compile and pass, leaving significant portions of the code untested. Additionally, these methods primarily focus on generating new test classes rather than augmenting existing ones. CoverUp (Pizzorno and
+Berger, 2024) takes a different approach by leveraging code coverage information to highlight uncovered portions of the code. However, our empirical evidence suggests that this approach is insufficient for more complex code, where additional contextual guidance is needed to drive meaningful improvements in branch coverage.
+(a) Execute existing tests to locate code that lacks coverage
+⬇
+1
+public static Options parsePattern (String pattern){
+2
+char opt = ’ ’;
+3
+boolean required = false;
+4
+Class<?> type = null;
+5
+final Options options = new Options();
+6
+for (int i = 0; i < pattern.length(); i++){
+7
+final char ch = pattern.charAt(i);
+8
+if (!isValueCode(ch)) {
+9
+// omit some details
+10
+opt = ch;
+11
+} else if (ch == ’!’) {
+12
+required = true;
+13
+} else {
+14
+type = (Class<?>) getValueClass(ch);
+15
+}
+16
+}
+17
+if (opt != ’ ’) {
+18
+// omit some details
+19
+}
+20
+return options;
+21
+}
+(b) Identify paths and reason about execution scenarios
+⬇
+2
+char opt = ’ ’;
+3
+boolean required = false;
+4
+Class<?> type = null;
+5
+final Options options = new Options();
+6
+for(int i=0;i<pattern.length();i++)is False
+17
+if (opt != ’ ’) is False
+20
+return options;
+When pattern is empty
+⬇
+2
+char opt = ’ ’;
+3
+boolean required = false;
+4
+Class<?> type = null;
+5
+final Options options = new Options();
+6
+for(int i=0;i<pattern.length();i++)is True
+7
+final char ch = pattern.charAt(i);
+8
+if (!isValueCode(ch)) is False
+11
+else if (ch == ’!’) is True
+12
+required = true;
+6
+for(int i=0;i<pattern.length();i++)is False
+17
+if (opt != ’ ’) is False
+20
+return options;
+When pattern contains only character "!"
+(c) Add new tests for the execution scenarios
+⬇
+@Test
+public void testEmptyPattern() {
+Options options =
+PatternOptionBuilder.parsePattern("");
+assertTrue(options.getOptions().isEmpty());
+}
+@Test
+public void testRequiredOption() {
+Options options =
+PatternOptionBuilder.parsePattern("!");
+// proper assertions
+}
+Figure 1. Workflow of a developer to add new test cases
+In this paper, we present Panta (Program ANalysis guided Test Automation), a novel approach that combines dynamic code coverage analysis and static control flow analysis to generate tests for under-tested execution paths. Our approach follows an iterative workflow, implementing a multi-step, feedback-driven fully automated process. Panta first gathers dynamic code coverage information and static control flow insights. Based on the extracted program analysis information, it identifies and selects execution paths that require additional test coverage for the class, and prompts an LLM to generate test cases that cover those paths. After test generation, Panta validates the generated tests, adding the passing ones back to the test class while repairing failed tests. The feedback from the test repair process is incorporated into subsequent test generation iterations.
+Our work makes the following contributions:
+•
+An iterative feedback-driven technique that integrates dynamic and static program analysis to assist LLMs in generating tests that cover complex control flow paths.
+•
+A novel path selection strategy that first ranks linearly independent execution paths—identified via control flow analysis—using a coverage deficiency score computed from code coverage data. It then selects prioritized paths while incorporating historical selection data to effectively balance exploitation and exploration.
+•
+A fully automated test generation tool, Panta, that supports both generating new test classes and augmenting existing tests. Panta is publicly available at (Panta, 2025).
+•
+An empirical evaluation of our approach using real-world open-source programs from the Defects4J (Just
+et al., 2014) benchmark. Our study demonstrates that Panta achieves 26% higher line coverage and 23% higher branch coverage compared to the state of the art.
+2. Motivation
+Recent advances in LLMs have dramatically enhanced their code generation capabilities, including the ability to create tests for diverse execution scenarios. However, when dealing with complex methods that contain multiple conditional branches, LLMs often struggle to achieve comprehensive branch coverage.
+As a running example, Figure 1, derived from the Cli project in the Defects4J dataset (Just
+et al., 2014), illustrates this challenge. We prompted Llama 3.3 70b (Llama, 2025), Meta’s latest open-source model, to generate tests for the parsePattern method shown in Figure 1 and then measured the resulting coverage. The generated tests, however, failed to cover the true branch of the else if (ch == ‘!’) condition at Lines 11–12 and the false branch of the if (opt != ’ ’) condition at Line 17. We also tried with GPT-4o, which similarly missed the false branch of the condition at Line 17.
+Our insight is that emulating a developer’s test creation process can more effectively guide LLMs to generate test cases. Typically, developers begin by checking whether a corresponding test class exists. If it does not, they create a test class skeleton with the necessary imports and gradually add test cases. If it does exist, they run the tests to generate a coverage report that highlights untested statements. They then analyze the control flow—particularly conditional branches and loops—to identify missing execution paths, add new tests to cover these paths, and rerun the tests until adequate coverage is achieved.
+For example, Figure 1 shows developers executing the tests and reviewing a JaCoCo (geeksforgeeks, 2025a) coverage report. In the parsePattern method, the report indicates that two branches remain uncovered. By analyzing the control flow, developers determine that reaching the true branch within a for loop requires the loop condition to be true while accessing the false branch outside the loop depends on the loop condition being false. Figure 1 illustrates two representative execution paths: one where an empty pattern prevents loop execution and one where a single ’!’ triggers the else if branch, which also covers the false branch. New test cases representing these scenarios are shown in Figure 1.
+While developers iteratively refine and expand coverage until achieving the desired adequacy level, manually analyzing the code and creating tests remains a time-intensive task. To address this challenge, our work aims to automate and replicate the iterative workflow that developers follow when generating test cases by combining dynamic and static program analysis to effectively guide LLMs to cover hard-to-cover branches.
+Figure 2. Overview of Panta.
+3. Approach
+Our approach, called Panta, leverages hybrid program analysis that seamlessly integrates static and dynamic analyses. By iteratively combining static control flow analysis with dynamic code coverage analysis, Panta enhances LLMs’ ability to determine where and how to generate test cases that improve branch coverage.
+Figure 2 provides an overview of this process. It begins by scanning the entire project to identify directories containing source files and their corresponding test files. If a source file lacks an associated test file, a new test file skeleton is created in the designated test directory. For each source file, the hybrid approach first uses static control flow analysis to extract potential execution paths and then employs dynamic analysis—executing the corresponding test file—to collect real-time branch coverage information. The selected paths, derived from a unique path selection strategy discussed in Section 3.2, are incorporated into a test generation prompt that guides the LLM in generating tests.
+In addition, the generated tests undergo validation: passing tests are integrated into the test file while failing tests are directed through a test repair procedure. If a test cannot be repaired, it is fed back into the test generation prompt as feedback for the next iteration. This iterative workflow continues until the stopping conditions defined in Section 3.4 are met. Since the process is applied uniformly across all source files and their corresponding test files, we detail the iterative test generation process for a single source file and its associated test file in the following subsections.
+Algorithm 1 Path Approximation through CFG
+Input: srcFile
+Output: methodDict
+1
+C​F​GfCFG_{f} = CFGraph(srcFile)
+2
+MUTs = identifyMethodUnderTestFrom(srcFile)
+3
+/* extract paths for each method under test  */
+4
+foreach method in MUTs do
+5
+C​F​GmCFG_{m} = extractCFGraphForMethod(C​F​GfCFG_{f}, method)
+6
+C​Y​CmCYC_{m}= computeCyclomaticComplexity(C​F​GmCFG_{m})
+7
+p​a​t​h​spaths = ExplorePaths(C​F​GmCFG_{m})
+8
+methodDict[method] = (C​Y​CmCYC_{m}, p​a​t​h​spaths)
+9
+end foreach
+10
+return methodDict
+11
+/* Explore paths using BFS  */
+12
+Function ExplorePaths(C​F​GmCFG_{m}):
+13
+start, end = getStartEndNodeFrom(C​F​GmCFG_{m})
+14
+queue.append([start])
+15
+while queue is not empty do
+16
+for i = 0 to length(queue) - 1 do
+17
+currentPath = queue.pop(0)
+18
+lastNode = getLastNodeOf(currentPath)
+19
+foreach successor in successors(lastNode) do
+20
+nextPath = copy(currentPath)
+21
+nextPath.append(successor)
+22
+if successor is not the end node then
+23
+queue.append(nextPath)
+24
+else
+25
+if nextPath contains edges not visited then
+26
+methodPaths.append(nextPath)
+27
+end if
+28
+if all edges of C​F​GmCFG_{m} has been visited then
+29
+return methodPaths
+30
+end if
+31
+end if
+32
+end foreach
+33
+end for
+34
+end while
+3.1. Static Path Approximation
+Extracting all execution paths from a source file is often impractical due to the complexity introduced by loop conditions, which can lead to an exponential or unbounded number of paths. To address this, we propose a path approximation strategy through control flow analysis.
+We introduce Algorithm 1, a path approximation method that utilizes the control flow graph (CFG) to extract a set of linearly independent paths, ensuring that each path introduces at least one new edge. We leverage an existing CFG generation technique (Das et al., 2023) to construct the control flow graph for the entire source file, denoted as C​F​GfCFG_{f} (Line 1). Next, we identify the methods under test (MUTs), excluding helper methods such as private methods, getters, and setters (Line 1). For each MUT, we extract its corresponding method-level control flow graph (C​F​GmCFG_{m}) from C​F​GfCFG_{f} (Line 1), forming the basis for our path approximation strategy.
+Figure 3. Control flow graph for parsePattern in Figure 1.
+Each C​F​GmCFG_{m} is a fully directed graph where code blocks correspond to nodes, and control flow determines the directed edges. We compute the cyclomatic complexity (CYC) (McCabe, 1976) for each method (Line 1), defined as #​edges−#​nodes+2\#\text{edges}-\#\text{nodes}+2. For instance, in Figure 3, we illustrate the C​F​GmCFG_{m} for the parsePattern method from Figure 1. We use the line numbers from Figure 1 to represent nodes, where lines 2 to 5 and lines 9 and 10 form basic code blocks that are grouped into single nodes. Circles represent nodes without branches, while branch nodes are marked as pentagons. The directed edges indicate the control flow between nodes. To ensure a structured representation, we introduce two additional nodes: a start node (1:start) representing the method entry point and a dummy end node (21:end) to unify all execution paths into a single exit. These start and end nodes are depicted as octagons. Excluding these additional nodes, the parsePattern method consists of 12 nodes and 15 edges, with a cyclomatic complexity (CYC) value of 5. We then extract paths using the ExplorePaths in Algorithm 1 (Lines 1–1), which is based on breadth-first search (BFS). The algorithm collects the shortest set of paths, ensuring each includes at least one unique edge. Exploration terminates once all edges have been visited. By employing ExplorePaths, we guarantee that for each method under test, the number of extracted paths equals its CYC.
+Using Algorithm 1, we obtain an approximated set of paths for each method under test in a static manner. Next, we use dynamic analysis to identify uncovered execution paths.
+3.2. Dynamic Path Selection
+We present a path selection strategy in Algorithm 2 that integrates dynamic code coverage data with the static paths extracted from Algorithm 1 to identify and prioritize uncovered paths for each test generation iteration.
+Given that multiple test generation iterations may have already occurred, we maintain a pathHistory log to track path selection data from previous iterations. Since large language models (LLMs) do not always guarantee the generation of correct tests that fully cover the selected paths in each iteration, a path may be selected multiple times if it remains uncovered. However, if a path has been selected multiple times without being covered, it may indicate that the path itself is invalid or that LLMs struggle to reason about it, making further attempts unproductive. To optimize resource usage, we limit the number of selection attempts per path to maxSelectedConst. If a path has been selected maxSelectedConst times without being covered, it is excluded from future selections.
+The data variables, pathHistory and maxSelectedConst, are used globally throughout the entire test generation process.
+Algorithm 2 Path Selection Strategy
+Data: pathHistory, maxSelectedConst
+Input: srcFile, testFile, methodDict
+Output: selectedPaths
+1
+// Run tests and collect coverage information
+2
+runTestsWithCoverage(testFile)
+3
+missedLines, missedBranches = parseCoverageReportFor(srcFile)
+4
+selectedPaths = dict()
+5
+// Process each method under test
+6
+foreach method in methodDict do
+7
+methodPaths = methodDict[method][1]
+8
+// Filter paths
+9
+candidatePaths = []
+10
+foreach path in methodPaths do
+11
+missedScore = count(missedLines ∩\cap path) + count(missedBranches ∩\cap path)
+12
+if missedScore > 0 then
+13
+selectedCount = pathHistory [method][path]
+14
+if selectedCount < maxSelectedConst  then
+15
+candidatePaths.append((path, missedScore, selectedCount))
+16
+end if
+17
+end if
+18
+end foreach
+19
+if candidatePaths is not empty then
+20
+// Exploitation: Pick highest missed path
+21
+highestPath = max(candidatePaths, key=missedScore)
+22
+pathHistory [method][highestPath] += 1
+23
+selectedPaths[method].add(highestPath)
+24
+// Exploration: Pick least selected path
+25
+leastPath = min(candidatePaths, key=selectedCount)
+26
+if leastPath ≠\neq highestPath then
+27
+pathHistory [method][leastPath] +=1
+28
+selectedPaths[method].add(leastPath)
+29
+end if
+30
+end if
+31
+end foreach
+32
+return selectedPaths
+In addition to the global data variables, the input to Algorithm 2 consists of the source file, the current test file, and the extracted paths for all methods under test (MUTs) in the source file, denoted as methodDict, obtained from Algorithm 1. The output consists of the selected paths for each MUT, which will be incorporated into the prompt for test generation.
+After introducing the global, input, and output variables, Algorithm 2 begins by executing the current test suite to collect coverage data, parsing the coverage report to identify missed statements and branches in the source file (Lines 2–2). For each MUT, we then filter out paths that have been fully covered or have exceeded maxSelectedConst selection attempts, retaining the remaining paths as candidates (Lines 2–2). These candidate paths have the potential to increase code coverage, as they contain uncovered statements or branches. To prioritize them, we compute a coverage deficiency score for each candidate path: missedScore=num of missed statements in path+num of missed branches in path\text{missedScore}=\text{num of missed statements in path}+\text{num of missed branches in path} (Line 2).
+We count missed statements as uncovered and partially covered lines; for the two paths in Figure 1, there is one missed statement: line 17 for the above path, and three missed statements: lines 11, 12 and 17 for the below path. To enhance the priority of branch coverage, besides the missed statements, we also increment the count of missed branches, which is 1 (above) and 2 (below) for the two paths respectively. Therefore, the missedScore for the two paths are 2 (above) and 5 (below), respectively.
+For complex methods with high cyclomatic complexity, the large number of candidate execution paths poses a challenge, making it difficult for LLMs to process efficiently and potentially exceed the available context window. For instance, an untested method with a cyclomatic complexity of 20 could 

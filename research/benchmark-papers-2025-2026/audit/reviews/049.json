@@ -1,0 +1,54 @@
+{
+  "rank": 49,
+  "title": "Beyond Fail-to-Pass: Iterative Hardening of Co-Generated Bug Reproduction Tests and Fixes",
+  "fulltext_read": true,
+  "read_path": "papers/beyond-fail-to-pass-iterative-hardening-of-co-generated-bug-reproduction-te-bf9d0ca2/public_evidence/paper_fulltext.txt",
+  "read_sha256": "1e70d6f275dc4aa7953b8cd2abf689e2800118209279dbe409fb7e09fe466500",
+  "read_source": "https://arxiv.org/html/2607.19843v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "SWT-Bench Verified ∩ SWE-bench Verified: 433 Python issue tasks with golden fixes and golden BRTs.",
+    "SWT-Bench Lite ∩ SWE-bench Lite: 276 Python issue tasks for cross-benchmark evaluation.",
+    "Standalone BRT injection study uses published prediction sets from LogicStar, e-Otter++, AssertFlip and OpenHands BRT-only on SWT-Bench; 1,104 F→P and 474 non-F→P instance/BRT pairs after harness-error exclusions."
+  ],
+  "task": "Study whether generated bug reproduction tests help repair, measure their repair-constraining quality against plausible-but-incorrect mutation patches (Mutation Patch Evaluation), and co-generate/harden a bug test and fix through CoHarden.",
+  "input_setting": "Issue report + buggy Python repo. Standalone analysis tests generated BRT against golden fix/test and semantic mutants of the golden fix (post-hoc measurement). CoHarden Phase 0 writes a user-visible witness test before any fix; hardening rounds jointly refine test and fix, mutate each current fix, and compare the current test against the previous-round test with a Temporal Matrix (no golden artifacts inside the loop).",
+  "author_artifact_url": "Project page: https://aka.ms/CoHarden (redirects to https://yhtan777.github.io/CoHarden-project-page/). The page shows a disabled “Code under review” button and no source/data link.",
+  "author_relationship_evidence": "Paper names the CoHarden project page. Following the official aka.ms URL reaches a project page hosted by first author Yuhao Tan’s GitHub Pages account. Page explicitly marks the GitHub code button “Code under review” with `is-disabled`; its only external URLs are site styling/favicon resources. Exact-title GitHub/code search found no public CoHarden repository. Thus implementation is not publicly released at audit time.",
+  "public_source_checked": true,
+  "source_status": "not_found",
+  "source_commit_or_archive": "No code, prompts archive, prediction logs, immutable commit, or data package located. Official project page states “Code under review” and provides no enabled source link. SWT/SWE-bench data are public dependencies, not CoHarden source/artifact.",
+  "license": "arXiv manuscript CC BY 4.0; no software/data license verified because the implementation is unavailable.",
+  "exact_models": [
+    "Main CoHarden implementation: OpenHands SDK + GPT-5-mini-0807; K=5 hardening rounds, four semantic mutation operators, N=3 each (up to 12 mutations/round), τ=0.2.",
+    "Cross-backbone experiment: GPT-5.4 and Claude Opus 4.5. Reported average cost per instance $6.69 and $18.07 respectively; GPT-5-mini main run $0.84/instance.",
+    "Standalone MPE mutation-patch generation: Agentless pipeline with GPT-5-mini; five operators, N=56/operator (280 patches/instance). OpenHands fix agent uses GPT-5-mini-0807."
+  ],
+  "weights_status": "No fine-tuning or local weights; hosted commercial GPT-5-mini-0807, GPT-5.4, and Claude Opus 4.5 APIs. Exact API snapshots not further pinned beyond model-name strings. No calls made.",
+  "evaluation_route": "Read all 15,387 extracted words of arXiv v1 including main paper and Appendices A–D/prompts. Main benchmark is 433 SWE-bench Verified ∩ SWT-Bench Verified tasks, with 276-task Lite intersection; metrics jointly check Resolved via SWE-bench golden tests and F→P via SWT-Bench golden tests. MPE mutates golden fixes with vanilla, symptom suppression, incomplete-fix, input-specific shortcut and behavior-substitution operators; generated test is Rigorous/Lax/Misaligned by comparison to golden BRT, with median laxity threshold τ=0.202. Standalone results: Rigorous injected tests +8.5 pp Resolved vs no-BRT; Lax +0.0 pp; Misaligned −3.6 pp. CoHarden: 69.4% Resolved/78.9% F→P, versus same-backbone OpenHands+Cogen 61.4%/72.7%; GPT-5.4/Opus 4.5 runs reach 76.2%/78.7% Resolved. No code/API execution. Project code currently under review, so result cannot be independently reproduced from a public implementation.",
+  "reproduction_verdict": "not_feasible",
+  "blockers": [
+    "Official project page’s GitHub button is disabled and explicitly says “Code under review”; no author implementation, exact code snapshot, run outputs, or prediction files are public.",
+    "No available source to inspect/run the OpenHands PluggableCritic integration, mutation-patch generators, Docker harness changes, or prompts; reproducing would require implementing the method, which is not authorized.",
+    "The benchmark data are public, but the large-scale MPE analysis relies on gold patches/tests and GPT-generated mutation patches (280 candidate mutants per issue); no cached per-instance evidence is public.",
+    "Hosted API models and model snapshots are not fully frozen; cost is material: GPT-5-mini $0.84/instance, GPT-5.4 $6.69/instance, Opus 4.5 $18.07/instance. No model calls made."
+  ],
+  "concept_fit": "Extremely high for oracle quality and repair-guiding tests. It distinguishes tests that merely reproduce a symptom (Lax) from tests that reject plausible incorrect fixes (Rigorous), and identifies common test–fix error coupling. Explicitly uses root-cause-oriented mutations (incomplete fix, symptom suppression, input-specific shortcut, behavior substitution), with examples grounded in a SymPy issue. It is not a root-cause taxonomy/classifier; its central contribution is a test-quality and co-hardening loop. Strong direct prior work for semantic/causal test adequacy and independent oracle assessment.",
+  "recommendation": "Promote as the strongest conceptual comparator for tests that constrain a fix to the real bug/root cause, and for distinguishing symptom reproduction from adequate behavioral assertions. Its benchmark directly intersects SWE/SWT-Bench Verified and the result is unusually aligned with avoiding false or lax oracles. Do not select as an immediately reproducible baseline while official code is under review. Pair with #47 TestPrune for an available source-backed base; DPIAgent (#48) supplies explicit diagnosis handoff, while CoHarden contributes test-rigor/fix-coupling metrics.",
+  "citations": [
+    "https://arxiv.org/html/2607.19843v1",
+    "https://aka.ms/CoHarden",
+    "https://yhtan777.github.io/CoHarden-project-page/"
+  ],
+  "supporting_locations": [
+    "Full text SHA-256 1e70d6f275dc4aa7953b8cd2abf689e2800118209279dbe409fb7e09fe466500; all 15,387 extracted words including appendices A–D read.",
+    "Sections 2.1–2.3: five mutation operators, Rigorous/Lax/Misaligned taxonomy, repair-utility experiment and 1.87× test–fix error coupling.",
+    "Sections 3–4 and Appendix C: Lax-init, Temporal Matrix, K=5, N=3/operator, τ=0.2, model configs, results and costs.",
+    "Appendix A: 56 mutation samples/operator in post-hoc MPE and cutoff sensitivity.",
+    "Appendix B: 433/276 dataset intersections and baseline setup; Appendix D includes full prompts.",
+    "Official project page source button is disabled with text “Code under review”; no code link or artifact was available."
+  ],
+  "reviewed_at": "2026-10-15T12:49:03+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

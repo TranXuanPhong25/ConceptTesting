@@ -15,3 +15,5 @@ empirical study). **How to apply:** thesis framing = empirical map + definitiona
 confirmation (other session, Codex; v55 interpretation concept on the oracle). See [[thesis-concept-requirement]].
 
 2026-10-25 update: [[v64-haiku-plainoracle]] — with Haiku, plain-impl oracle 25/33 (.96) beats defn = brute 21 (1.00), paired 4–0 (brute-force abstention). The definitional-family effect of §4 does not survive a stronger writer; it is a precision-vs-abstention trade-off.
+
+2026-10-25 update: [[v56-lcb-fresh]] — fresh LCB, Qwen writer: defn 5 / brute 6 / plain 4 tasks of 11, all NO-GO; defn keeps a precision edge (FA 5 vs 47). Definitional family not confirmed on tasks.

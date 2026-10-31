@@ -1,0 +1,41 @@
+{
+  "openalex_id": "https://openalex.org/W7168293583",
+  "title": "From Business Requirements to Test Assertions: Evaluating LLM-Generated Oracles on Real Bugs",
+  "year": 2026,
+  "publication_date": "2026-07-11",
+  "type": "preprint",
+  "doi": "https://doi.org/10.48550/arxiv.2607.10277",
+  "primary_url": "https://doi.org/10.48550/arxiv.2607.10277",
+  "pdf_url": "https://arxiv.org/pdf/2607.10277",
+  "venue": "arXiv (Cornell University)",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 24,
+  "dataset_use_verified": true,
+  "artifact_verified": false,
+  "model_verified": true,
+  "verification_status": "fulltext_verified_private_artifact_inaccessible",
+  "year_venue": "2026 arXiv preprint v1, submitted 2026-07-11; intended ESEIW 2026 manuscript; CC BY 4.0",
+  "datasets": [
+    "Defects4J Lang only, bugs 1 and 3–11 (10 real bugs)",
+    "No other Defects4J projects; no BugsInPy or SWT-Bench experiment"
+  ],
+  "models": [
+    "DeepSeek-V3",
+    "Gemma-3n-E4B-it",
+    "Llama-3-70B-chat-hf",
+    "Mistral-7B-Instruct-v0.2",
+    "Qwen3-Coder-480B-A35B-Instruct-FP8"
+  ],
+  "artifact_url": "https://figshare.com/s/50c240d183532de44c7a",
+  "license": "Figshare page claims MIT but labels share private; archive/license unverified; article CC BY 4.0",
+  "input_setting": "Requirements-only test-oracle generation from a manually authored business requirement and method signature; evaluate against manually authored REQ and buggy/fixed Defects4J SUT",
+  "reproduction_grade": "C",
+  "concept_hook": "Separates natural-language intended behavior (REQ) from observed SUT behavior; requirement-grounded assertion/oracle generation",
+  "limitation": "Only 10 Lang bugs; Figshare artifact is marked private and direct download failed; exact Together model versions not verified; no root-cause taxonomy",
+  "rank": 79,
+  "family": "oracle_assertion_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/from-business-requirements-to-test-assertions-evaluating-llm-generated-orac-afb2a2e7/NOTES.md"
+}

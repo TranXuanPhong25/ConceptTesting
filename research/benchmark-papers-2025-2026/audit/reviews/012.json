@@ -1,0 +1,42 @@
+{
+  "rank": 12,
+  "title": "LLM vs. Human Unit Tests: Fault Detection on Real Python Bugs",
+  "fulltext_read": true,
+  "read_path": "papers/llm-human-python/public_evidence/paper_fulltext.txt",
+  "read_sha256": "16a8b0c0119b5a446a63adda0d7062775fe6afd5ce985ad75bfaa5b5840a058e",
+  "read_source": "https://arxiv.org/html/2606.08588v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "29 BugsInPy bugs",
+    "15 python-slugify/packaging functions",
+    "8 researcher functions"
+  ],
+  "task": "fix-time regression test generation empirical comparison",
+  "input_setting": "LLM receives patch diff, bug report, source and test-side retrieved context; existing human tests have no same fault foreknowledge",
+  "author_artifact_url": null,
+  "author_relationship_evidence": "Paper claims replication package but supplies no usable author package link in inspected full text. Exact-title and first-author public searches did not locate implementation.",
+  "public_source_checked": true,
+  "source_status": "not_found",
+  "source_commit_or_archive": null,
+  "license": "paper CC-BY-4.0; software unverified",
+  "exact_models": [
+    "Gemini 2.5 Flash; immutable snapshot/config unspecified"
+  ],
+  "weights_status": "closed API model; exact snapshot availability not verified",
+  "evaluation_route": "pytest buggy/fixed fail-to-pass; keyword-overlap retrieval top k=3; exactly one pytest function per prompt",
+  "reproduction_verdict": "unknown",
+  "blockers": [
+    "No author implementation or exact frozen 29-bug manifest verified",
+    "Generation hyperparameters and complete prompt artifacts not released in inspected paper",
+    "Patch-informed regression task does not match unknown-bug discovery"
+  ],
+  "concept_fit": "moderate methodological support; weak main base for buggy-input concept generation",
+  "recommendation": "Do not prioritize as a reproducible base until author artifact/IDs are obtained. Model name alone cannot reproduce the experiment.",
+  "citations": [
+    "https://arxiv.org/html/2606.08588v1#S3.SS3",
+    "https://arxiv.org/html/2606.08588v1#S6.SS1"
+  ],
+  "reviewed_at": "2026-10-15T00:14:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

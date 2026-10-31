@@ -1,0 +1,55 @@
+{
+  "rank": 51,
+  "title": "Exploring the Interaction of Code Coverage and Non-Coverage Objectives in Search-Based Test Generation",
+  "fulltext_read": true,
+  "read_path": "papers/exploring-the-interaction-of-code-coverage-and-non-coverage-objectives-in-s-2773e724/public_evidence/paper_fulltext.txt",
+  "read_sha256": "1d9a378630df978ba14c26e3367675da8491b2b6a1d033216141303cff25b473",
+  "read_source": "https://research.chalmers.se/publication/548656/file/548656_Fulltext.pdf; DOI 10.1002/stvr.70009",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Defects4J 2.0.1: 835 faults/17 projects in the source dataset; purposively sampled 93 faults from 14 Java projects proportional to project fault counts after starting with 206, excluding 59 cases with pipeline/data errors and 54 below 5% average branch coverage.",
+    "Modified EvoSuite 1.2.1 generates suites on fixed versions; suites are then run against faulty versions to detect real faults."
+  ],
+  "task": "Search-based Java unit-test generation comparing Branch Coverage alone, three goal-based criteria (Exception Count, Output Coverage, Execution Time), and combined objectives; evaluate coverage, goal attainment, suite size/length, search budget and real Defects4J fault detection.",
+  "input_setting": "Class under test from fixed Defects4J revision; tests generated with EvoSuite whole-test-suite Genetic Algorithm, then evaluated on faulty revision. This is not issue-report reproduction, root-cause localization, or LLM testing.",
+  "author_artifact_url": "https://github.com/afonsohfontes/evosuite; https://github.com/afonsohfontes/defects4j; Zenodo data package titled for this paper at https://zenodo.org/records/11047568 (5.6 GB).",
+  "author_relationship_evidence": "The paper explicitly links the author-modified EvoSuite code, executable in the author Defects4J fork, and Zenodo replication package. The public EvoSuite fork is by author Afonso Fontes and differs from upstream in 72 files (including ExecutionTime fitness classes, FitnessFunctions, coverage instrumentation and statistics). Git heads observed: EvoSuite fork 207c2b1d7da86cb93268d37e08cb71cd1fd18e3e; Defects4J fork 00b83d3bb1c02a6ed599b90fa342a6bdea1ecc8f. Zenodo record 11047568 directly matches title and says it contains experimental data and algorithms under framework/test; published 2024 while paper was under submission. Published PDF cites Zenodo 11047567 instead, a one-digit DOI discrepancy not resolved through Zenodo API. Do not assume 11047568 is the exact article-cited snapshot.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "Author source branches pinned during audit: afonsohfontes/evosuite@207c2b1d7da86cb93268d37e08cb71cd1fd18e3e and afonsohfontes/defects4j@00b83d3bb1c02a6ed599b90fa342a6bdea1ecc8f. Open Zenodo data package record 11047568 contains 5.6 GB defects4j.zip; paper cites 11047567, so match/version needs reconciliation. EvoSuite fork LICENSE.txt is LGPL-3.0; Defects4J fork declares MIT. Data package license not independently verified.",
+  "license": "Article CC BY-NC per published PDF footer. Modified EvoSuite source LGPL-3.0; author Defects4J fork MIT. Zenodo archive is marked Open but a specific data license was not verified.",
+  "exact_models": [
+    "No LLM. Search-based EvoSuite 1.2.1, whole-test-suite Genetic Algorithm; fitness configurations: Branch, Exception Count, Output Coverage, Branch+Exception, Branch+Execution Time, Branch+Output. Execution Time cannot be run standalone in their modified EvoSuite implementation."
+  ],
+  "weights_status": "Not applicable (non-LLM search-based generator).",
+  "evaluation_route": "Read the complete 20,281-word Chalmers institutional PDF export (main sections 1–7 and study details); bibliography scanned. Experiment: 93 Defects4J faults, six fitness configurations, 180 s/300 s search budgets, 10 trials/configuration/budget/fault = 11,160 suites; EvoSuite runs on fixed CUT version and suites are applied to faulty version. Modified EvoSuite, Defects4J fork and data archive are public. Archive contains data and algorithms and is 5.6 GB; repeated end-to-end generation is compute-heavy (93 faults × 6 configs × 2 budgets × 10 trials, with 180/300 s/class and parallel VMs). Precomputed suites/data permit cheaper analysis. No source executed or modified.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The published paper cites Zenodo 11047567, while the matching-title public record located is 11047568; exact snapshot/archive identity needs confirmation.",
+    "Full archive is 5.6 GB and contains 11,160 generated-suite configurations; full experiment requires substantial Java/Defects4J setup and compute.",
+    "Modified source forks are mutable heads rather than tagged paper releases; audit pins observed commits, but exact relation of those HEADs to every result log is not fully documented.",
+    "Data archive is labelled open, but its specific data license was not independently confirmed.",
+    "The method is search-based, not LLM-based, and does not analyze issue reports or classify root causes; it is a supporting test-objective/fault-detection baseline."
+  ],
+  "concept_fit": "Moderate-to-high supporting fit for concept/goal adequacy: directly adds Exception Count, Output Coverage and Execution Time as goal-based objectives alongside branch coverage, and evaluates real Defects4J fault detection. Results show multi-objective configurations detect more faults on average than single goal-based objectives and do not significantly reduce branch coverage, but do not significantly beat Branch Coverage alone on fault detection. No causal root-cause labels or bug-trigger reasoning; this is a search-based objective study rather than an LLM benchmark.",
+  "recommendation": "Select as a reproducible supporting Defects4J baseline for the claim that tests should target meaningful non-coverage goals as well as structural coverage. It is not a direct root-cause-reproduction paper and not an LLM model-evaluation candidate. Reanalyze the public data first; a complete rerun is conditional on reconciling the Zenodo DOI discrepancy and installing the pinned EvoSuite/Defects4J environment.",
+  "citations": [
+    "https://research.chalmers.se/publication/548656",
+    "https://research.chalmers.se/publication/548656/file/548656_Fulltext.pdf",
+    "https://github.com/afonsohfontes/evosuite",
+    "https://github.com/afonsohfontes/defects4j",
+    "https://zenodo.org/records/11047568"
+  ],
+  "supporting_locations": [
+    "Full text SHA-256 1d9a378630df978ba14c26e3367675da8491b2b6a1d033216141303cff25b473; complete 30-page article, main methods/results/discussion/conclusion and bibliography reviewed.",
+    "Sections 4.1–4.3: Defects4J 2.0.1, 93 faults/14 projects, modified EvoSuite 1.2.1, 180/300 s and 10 trials; 11,160 suites.",
+    "Section 4.2 describes fixed-version generation, then testing suites on faulty versions; no issue-report input.",
+    "Results: Branch+Exception/Output/Execution-Time combos have near-similar coverage; multi-objective settings detect more faults than single goal-only settings, but not significantly more than Branch alone.",
+    "Official author Chalmers page links the published open-access PDF and confirms 2025 article metadata.",
+    "Author EvoSuite fork has 72-file diff vs upstream including new ExecutionTime fitness implementation; source/license files inspected, no code executed.",
+    "Zenodo 11047568 page identifies matching title, 5.6GB archive, experimental results and algorithms; published paper text cites 11047567 (unresolved discrepancy)."
+  ],
+  "reviewed_at": "2026-10-15T12:56:10+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

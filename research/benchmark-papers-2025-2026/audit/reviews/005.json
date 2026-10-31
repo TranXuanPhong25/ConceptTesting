@@ -1,0 +1,47 @@
+{
+  "rank": 5,
+  "title": "LLM Test Generation via Iterative Hybrid Program Analysis",
+  "fulltext_read": true,
+  "read_path": "papers/panta/public_evidence/paper_fulltext.txt",
+  "read_sha256": "0be1be114b34144b18db685a3e7ae1e67d68aae5068a19e5bb4af2c93dad0753",
+  "read_source": "https://arxiv.org/html/2503.13580v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "130 high-complexity classes, 2971 methods, 14 latest FIXED Defects4J2.0.1 projects; not historical buggy/fixed pairs"
+  ],
+  "task": "coverage-oriented regression test generation",
+  "input_setting": "fixed class code; no initial tests for experimental comparisons; CFG edge-covering path approximation plus JaCoCo deficits; passing tests retained",
+  "author_artifact_url": "https://github.com/PANTA-TestAutomation/Panta",
+  "author_relationship_evidence": "Paper links Panta artifact; README explicitly calls itself ICSE2026 replication package with exact paper title and arXiv ID.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "e8e0c679263b27b9e5bf590110827f4beadc52ce",
+  "license": "pyproject.toml declares Apache 2.0; no root license text verified; bundled subjects retain separate licenses",
+  "exact_models": [
+    "Primary: bedrock/us.meta.llama3-3-70b-instruct-v1:0",
+    "bedrock/mistral.mistral-large-2407-v1:0",
+    "gpt-4o-mini-2024-07-18",
+    "claude-3-5-haiku-20241022",
+    "Author invocation max_tokens4096 temperature0.2 for paper models"
+  ],
+  "weights_status": "No fine-tuning required; explicit provider model IDs verified. Bedrock/API access and current availability not tested; local Llama endpoint substitution would be an adaptation.",
+  "evaluation_route": "Poetry/Python3.11; packaged fixed subjects, class CSVs, static analysis JSON and1006 result files; execute_classes_with_high_complexity.py control llama3-3; result parsing and pass-rate scripts. Manifest row counts: {'class_list.csv': 130, 'high_complexity_classes.csv': 80}",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "No local author evaluator or model execution",
+    "AWS Bedrock credentials/region access or closed-model API required for identical author route",
+    "Full benchmark averages53minutes/class, roughly115hours sequential for130classes; paper only one run/class",
+    "No standard historical-bug detection evaluation; fixed-code validation removes runtime/assertion failures",
+    "Comex paths are structural approximations, no solver proves path feasibility or intended semantic oracle",
+    "README result-html-parse.py differs from distributed result-html-parser.py; exact class manifest and summary script paths require reconciliation"
+  ],
+  "concept_fit": "Strong structural path guidance and feedback baseline; lacks independent intended-behavior concepts/oracle.",
+  "recommendation": "Promote as public artifact baseline for path-guided coverage research with exact model IDs. Keep separate from core bug-revealing Defects4J papers; historical-bug adaptation would require a new evaluation.",
+  "citations": [
+    "https://arxiv.org/html/2503.13580v2",
+    "https://github.com/PANTA-TestAutomation/Panta/tree/e8e0c679263b27b9e5bf590110827f4beadc52ce"
+  ],
+  "reviewed_at": "2026-10-15T08:20:10.332644+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

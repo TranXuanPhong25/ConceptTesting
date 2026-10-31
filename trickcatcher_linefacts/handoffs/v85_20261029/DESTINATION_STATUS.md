@@ -1,5 +1,19 @@
 # Linux destination continuation
 
+Latest check, 2026-10-29 Vietnam: **blocked**, superseding launch status below.
+PID22898 exited after138new references:174/1130saved,956remain.
+Last attempt:2026-10-28 18:09:34UTC. Final two completion attempts received
+HTTP503 (unknown usage) and HTTP404 (recorded without unknown usage).
+1074received/1076current-ledger attempts+3historical=1079cumulative attempts;
+4unknown usage. Both113generation arms remain complete;no final grading.
+Source/import hashes,saved-oracle identities and request hashes pass offline audit.
+
+User requested continuation, but current session network is restricted:metadata
+probe failed DNS resolution;0new completion requests. The unchanged driver refuses
+the retained failed attempts. Preserve all receipts and the work directory;need a
+networked continuation with explicit failure accounting. See
+CONTINUATION_AUDIT_20261029.json. No source or protocol changes made.
+
 Started 2026-10-28 about 17:43 UTC (2026-10-29 Vietnam), on the user's explicit
 continuation request. Detached controller PID: 22898. No source changes.
 

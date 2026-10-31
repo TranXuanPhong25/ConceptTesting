@@ -1,0 +1,65 @@
+{
+  "rank": 74,
+  "title": "Do Coverage and Mutation Scores of LLM-Generated Test Suites Correlate with Their Effectiveness? (Replicability Study)",
+  "fulltext_read": true,
+  "read_path": "papers/do-coverage-and-mutation-scores-of-llm-generated-test-suites-correlate-with-6af9b6a2/public_evidence/paper_fulltext.txt",
+  "read_sha256": "d8c3e54703c453ed79ed1eeb830d4c6e6166329143c6bf1611c99c4c31712453",
+  "read_source": "https://arxiv.org/html/2607.22880 (v1, 24 July 2026; full 13,276-word article read including methods, results, threats, data availability and references)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Defects4J v3.0: 318 buggy focal methods from all 17 projects, each with a corresponding fixed method and failing developer test; the paper evaluates tests generated from both fixed and buggy inputs.",
+    "BugsInPy appears in related-work discussion only; it is not an experimental dataset. SWT-Bench is not used."
+  ],
+  "task": "Conceptual replication of coverage/mutation/real-bug effectiveness correlations for LLM-generated Java tests. Builds 8,268 suites / 101,123 test cases from 11 LLMs (13 configurations); measures statement, branch, MC/DC coverage, PIT mutation scores, and whether a suite passes on fixed but fails on buggy code. Correlations are analyzed pooled, within-model and across-model, with unconstrained suites and 3/5/10-test controls.",
+  "input_setting": "Focal method plus surrounding class/constructor/field/method context, generated separately from each fixed and buggy implementation. The paper shows that buggy-code prompts can induce tests that assert faulty behavior. Mutation analysis is treated as inapplicable for buggy-input test suites; real-bug detection uses the fixed version as the oracle.",
+  "author_artifact_url": "https://github.com/drixs2050/Cov_mut_bug_detect_correlation",
+  "author_relationship_evidence": "The article's Data Availability section names this exact GitHub URL and the linked Zenodo replication package. GitHub README cites the same authors, full title, ISSTA 2026 venue and DOI 10.1145/3832093; repository LICENSE copyright lists Junda Zhao, Shurui Zhou and Eldan Cohen. The repository contains matching prompts, pipeline, processed Defects4J per-method data and analysis notebooks.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "GitHub default-branch HEAD `4bc2ed63917557a8c879e6c733b8fa41c15b9871` (2026-07-24); public MIT repository, 2,688 tree entries, with source, notebooks and processed data. Static inspection covered README, LICENSE, NOTICE, configuration, environment, checkout helper, prompt, generation notebook and both analysis notebooks. Author Zenodo v1 is public (40.8 MB); its record links to the same GitHub source. Paper/README Zenodo DOI strings differ by a final digit in places; use the public GitHub link as the stable verified artifact, not the inconsistent DOI string.",
+  "license": "Repository declares MIT. NOTICE identifies adapted LLM4UT portions under Mulan PSL v2 and bundled PIT/JaCoCo/CodeCover/JUnit/Apache components under their respective licenses; Defects4J-derived code excerpts retain upstream project terms. Article is CC BY 4.0.",
+  "exact_models": [
+    "Gemini 2.5 Pro",
+    "Gemini 2.5 Flash (base and thinking settings)",
+    "Claude 4 Sonnet (base and extended-thinking settings)",
+    "Grok-4",
+    "Grok-3",
+    "GPT-4.1",
+    "GPT-o4-mini",
+    "DeepSeek-V3",
+    "DeepSeek-R1",
+    "Qwen3-Coder-Plus",
+    "Qwen3-Plus"
+  ],
+  "weights_status": "No task-finetuned model weights are reported or bundled. The study evaluates provider models/API configurations; public data stores their processed outputs and measurements. The generation notebook hardcodes the o4-mini API call and requires an API key for new generation. Model aliases/snapshots are not frozen in the inspected artifact. Qwen-branded models in the paper are hosted model names; this is not evidence that local Qwen checkpoints were used.",
+  "evaluation_route": "Full paper and appendix-level discussion read. The README says fixed/buggy per-focal-method CSVs include compilation, detection, coverage and mutation statistics; analysis notebooks recompute sampling/correlations from CSV without Defects4J or API keys. They use 1,000 samples of 100 focal methods and expose 3/5/10/all suite-size choices. The same notebooks can evaluate a chosen subset of available models. Some camera-ready per-model boxplot cells in the fixed analysis notebook transcribe correlation values from paper tables instead of deriving those values from loaded CSV. For generation/evaluator rerun, the artifact documents Defects4J v3, Java 11, Conda environment, benchmark checkouts, bundled PIT/JaCoCo/CodeCover/JUnit, and the pipeline to generate prompts, call a model, compile/run tests on buggy/fixed checkouts, measure, and analyze. No code or model was executed.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The statistical analysis is highly reproducible from included processed CSV data and public notebooks, but a few camera-ready plotted distributions contain values transcribed from the paper rather than recomputed.",
+    "A fresh exact test-generation replication requires hosted API access and substantial calls across 318 focal methods, both buggy and fixed variants, and the original 11 models/13 settings; exact immutable model snapshots are not identified.",
+    "A local Qwen run is a reasonable independent-model evaluation by adapting the notebook's API client, but it will not replicate the paper's original model outputs; this was not tested.",
+    "Full raw Defects4J project checkout and repeated test/coverage/mutation runs require Java 11, Defects4J setup, large storage/time, and its upstream project build environments.",
+    "The results are Java/Defects4J-specific. BugsInPy is not experimentally used; the paper does not provide root-cause labels or a causal explanation taxonomy. Its key contribution is metric validity and setting dependence, not a concept-guided testing method."
+  ],
+  "concept_fit": "Very high for deciding what to measure and for framing a buggy-input oracle study: it directly demonstrates that coverage/mutation proxies can diverge from real bug detection, particularly when the generated tests may encode the faulty implementation. Defects4J provides buggy/fixed versions and an oracle. This is not a root-cause method; a concept-guided extension would need a separately defined behavioral concept and causal/root-cause evaluation.",
+  "recommendation": "Top-priority read and a strong evaluation-method foundation. Reuse the public Defects4J statistics/data and notebooks first to understand the analysis without spending model calls. For a thesis experiment, a bounded independent Qwen evaluation on a selected Defects4J subset can test a new concept-guided method directly against fixed-version and buggy-version detection outcomes; report it as a new-model evaluation, not a paper reproduction. Exact paper-data analysis is readily reproducible; end-to-end original-model generation is conditional and expensive. No reimplementation or execution performed.",
+  "citations": [
+    "https://arxiv.org/abs/2607.22880",
+    "https://github.com/drixs2050/Cov_mut_bug_detect_correlation/tree/4bc2ed63917557a8c879e6c733b8fa41c15b9871",
+    "https://github.com/drixs2050/Cov_mut_bug_detect_correlation/blob/4bc2ed63917557a8c879e6c733b8fa41c15b9871/README.md",
+    "https://github.com/drixs2050/Cov_mut_bug_detect_correlation/blob/4bc2ed63917557a8c879e6c733b8fa41c15b9871/LICENSE",
+    "https://github.com/drixs2050/Cov_mut_bug_detect_correlation/blob/4bc2ed63917557a8c879e6c733b8fa41c15b9871/NOTICE",
+    "https://zenodo.org/records/21429529"
+  ],
+  "supporting_locations": [
+    "Paper Sections 3.2–3.7: 318 Defects4J focal methods, model settings, generation, suite sampling, metrics and correlation levels.",
+    "Paper Sections 5.4, 7–9: buggy-input results, implications, threats and future work.",
+    "Paper Data Availability and GitHub README: author source and reproducibility package identification.",
+    "README lines 199–210: processed data and no-generation analysis route; notes a few fixed plots are table-transcribed.",
+    "README lines 211–240 and UT_Test_Generation.ipynb: Defects4J/API/Java pipeline, model call and evaluator flow.",
+    "GitHub LICENSE/NOTICE: MIT main code and third-party/license boundaries."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

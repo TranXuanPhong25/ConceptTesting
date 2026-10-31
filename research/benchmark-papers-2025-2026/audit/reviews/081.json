@@ -1,0 +1,54 @@
+{
+  "rank": 81,
+  "title": "Go-UT-Bench: A Fine-Tuning Dataset for LLM-Based Unit Test Generation in Go",
+  "fulltext_read": true,
+  "read_path": "papers/go-ut-bench-a-fine-tuning-dataset-for-llm-based-unit-test-generation-in-go-fb1cdeaa/public_evidence/paper_fulltext.txt",
+  "read_sha256": "19df08798d7a40390497b983758c468fcb0e5d3c49a5e1996dca004c88c2eca5",
+  "read_source": "https://arxiv.org/html/2511.10868v2 (29 May 2026; full 6,299-word article including fine-tuning setup, limitations and appendices read)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Go-UT-Bench: 5,264 {Go source file, unit test file} pairs from 10 public repositories; train 3,684, test 790, validation 790. Repository sources include Kubernetes, TiDB, Go, Terraform, Moby, Ethereum, HuGo, Prometheus, KServe, Gin.",
+    "SWT-Bench appears in related-work discussion only; no SWT-Bench task instances, Defects4J, or BugsInPy experiments."
+  ],
+  "task": "Fine-tunes DeepSeek-Coder-V2-Lite-Instruct with LoRA and Llama-3.2-3B-Instruct with full SFT on Go source/test pairs. Uses AST-based chunking for files above 15,360 tokens, then compares base vs fine-tuned outputs with GPT-4o-mini as a pairwise judge against the repository's ground-truth test. Reports win rate; no compilation, execution, coverage, mutation, F2P or real-bug detection evaluation.",
+  "input_setting": "Full Go source file chunked by AST, prompted to generate Go unit tests. Train/test/validation split is by code/test sample from the same 10 repositories; paper describes repository-level results but does not establish repository-held-out generalization. Ground truth is a test file from the paired public repository commit.",
+  "author_artifact_url": "https://huggingface.co/datasets/Nutanix/GO-UNITTEST-BENCH",
+  "author_relationship_evidence": "The paper's Reproducibility Statement links the HuggingFace dataset. HF uploader is author Yashaswi Piplani/Nutanix; repository is public and contains train/test/validation data matching paper counts. No separate author GitHub implementation or fine-tuned model weights were linked in the paper.",
+  "public_source_checked": true,
+  "source_status": "partial",
+  "source_commit_or_archive": "Public, ungated HuggingFace dataset revision `24074620e2be3db20c11cba007649533cb677a30` (2025-02-11), 175 MB: train_data.json 124,067,486 bytes; test_data.json 30,268,029 bytes; val_data.json 20,647,345 bytes. Dataset card has no declared license field/tag; paper says source repositories are permissively licensed and entries retain repository commit metadata. No generation, chunking, fine-tuning or GPT-4o-mini judge code repository was located; only dataset is released.",
+  "license": "Paper CC BY 4.0. HuggingFace dataset is public/ungated but API/card does not specify a dataset-level license. Paper claims constituent repositories are permissively licensed and records source commit hashes; per-repository terms still apply and need checking before redistribution/use.",
+  "exact_models": [
+    "deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct (LoRA, 2 epochs, 80GB H100)",
+    "meta-llama/Llama-3.2-3B-Instruct (full fine-tuning, 2 epochs)",
+    "GPT-4o-mini as the sole pairwise evaluation judge"
+  ],
+  "weights_status": "Base checkpoints are public; no fine-tuned LoRA/full-model checkpoints or source training scripts are released/linked. User's Qwen2.5-Coder-7B would be a third-party fine-tuning experiment, not either paper model. The paper's evaluation judge is a hosted GPT-4o-mini API and no model snapshot is pinned.",
+  "evaluation_route": "Full paper read. Dataset is directly fetchable from HuggingFace and can support a custom Go test-generation/fine-tuning task; full reproduction requires recreating training and judge pipeline from prose, H100 80GB for full runs, and GPT-4o-mini judgments. The paper's own authors explicitly acknowledge that evaluation uses one LLM judge only, lacks human triangulation and has no execution-based check of whether tests compile/run. Thus reported win rate is not a trustworthy measure of executable or bug-revealing test quality. No code, model or dataset was downloaded/executed in this audit.",
+  "reproduction_verdict": "not_feasible",
+  "blockers": [
+    "No author training/generation/evaluation code or fine-tuned weights were found; a full replica requires implementing the missing pipeline from paper descriptions.",
+    "The sole GPT-4o-mini judge is susceptible to model bias and potential training overlap; the paper reports no human review, compile/run, coverage or mutation validation, no confidence intervals or significance tests.",
+    "The train/test/validation split is drawn across data from the same 10 repositories, so repository-level generalization is not demonstrated and similar code patterns may leak across splits.",
+    "The public HF dataset has no explicit dataset-level license metadata; individual source repositories have their own licenses.",
+    "Go-only training dataset, not Defects4J/BugsInPy/SWT issue-to-BRT or buggy/fixed evaluation. No real-fault/root-cause labels."
+  ],
+  "concept_fit": "Low-to-moderate for the primary thesis: offers a large authentic code/test corpus and a potential small-model fine-tuning signal for Go. It is not a behavioral oracle or issue-conditioned bug reproduction study, and its LLM-as-judge outcome omits runtime validity. Could inform dataset curation or serve as a Go-adaptation extension if fine-tuning is separately authorized, but not the main evaluation baseline.",
+  "recommendation": "Keep as a secondary data/fine-tuning lead only. Public data are easy to fetch and include source commit hashes, but no pipeline/weights are released and the evaluation is GPT-4o-mini preference against existing tests without execution. Do not treat its 81.9%/76.7% win rates as bug-detection or runnable-test scores. It does not match the user's Java/Python issue-reproduction target. No code/model/API run.",
+  "citations": [
+    "https://arxiv.org/abs/2511.10868",
+    "https://huggingface.co/datasets/Nutanix/GO-UNITTEST-BENCH",
+    "https://huggingface.co/deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct",
+    "https://huggingface.co/meta-llama/Llama-3.2-3B-Instruct"
+  ],
+  "supporting_locations": [
+    "Paper Sections 2–4: data construction, model fine-tuning, GPT-4o-mini judge and 81.9%/76.7% win rates.",
+    "Paper Section 6 Limitations: single LLM judge, no human/execution evaluation, only one metric and no significance testing.",
+    "Paper Appendix 8.4–8.6: DeepSeek LoRA and Llama full fine-tuning parameters and split counts.",
+    "Paper Reproducibility Statement and HuggingFace dataset API: public, ungated data revision and three split files, but no license metadata.",
+    "Related-work mentions SWT-Bench as a Python benchmark; no experimental use."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

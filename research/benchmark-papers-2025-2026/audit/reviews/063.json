@@ -1,0 +1,58 @@
+{
+  "rank": 63,
+  "title": "TestExplora: Benchmarking LLMs for Proactive Bug Discovery via Repository-Level Test Generation",
+  "fulltext_read": true,
+  "read_path": "papers/testexplora-benchmarking-llms-for-proactive-bug-discovery-via-repository-le-0375dd36/public_evidence/paper_fulltext.txt",
+  "read_sha256": "9b046900fcebe3e78f83fb16fde118f65ee4881038d39290f10cbfd431208e4f",
+  "read_source": "https://arxiv.org/html/2602.10471 (version 2, 22 February 2026; full 16,836-word HTML extraction including appendices A–G, bibliography, and repository inventory)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "TestExplora: 1,552 PRs and 2,389 test-generation tasks across 482 Python repositories; source method describes 12,227 preliminary PRs, and evaluation prose also says 12,227 PRs, so distinguish the candidate pool from the final released/evaluated task counts carefully.",
+    "TestExplora-Lite: 330 PRs / 517 samples, selected for human-written docstring quality; the main tables report model comparisons on TestExplora and Lite.",
+    "SWT-Bench, TDD-Bench Verified, TestBench, TestEval, and other suites appear as benchmark comparisons/related work, not as the experimental task datasets.",
+    "No Defects4J or BugsInPy experimental dataset use. Repository inventory is largely Python; the paper appendix lists repository-level categories and licenses."
+  ],
+  "task": "Given a repository, test entry points, documentation-derived intent, and (in white-box settings) implementation/dependencies, generate pytest tests that proactively reveal latent defects. Evaluate each candidate against pre-PR and post-PR code using Fail-to-Pass, plus head pass rate, entry coverage and change-focused coverage. This is proactive discovery with PR patches as hidden validation ground truth, not issue-report-conditioned bug reproduction.",
+  "input_setting": "White-box provides implementation and dependencies; black-box masks implementation and dependencies while retaining entry signatures and documentation; an agentic white-box route explores the repository. Documentation is either existing human-written docstrings or DocAgent-generated descriptions. Intended behavior is the oracle, with tests required to pass after the PR and fail before it.",
+  "author_artifact_url": "https://github.com/microsoft/TestExplora",
+  "author_relationship_evidence": "The arXiv paper explicitly links github.com/microsoft/TestExplora as its code; the repository README identifies itself as the official implementation of this exact paper and describes the same 2,389-task / 1,552-PR / 482-repository benchmark.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "Microsoft/TestExplora HEAD commit checked: 11e6952261f58d3ceb9f4d2571e03aa35dad9523 (2026-03-11). GitHub API tree contains substantive benchmark-construction, inference, model-call and Docker-evaluation files. Statically inspected README, requirements.txt, inference.py, call_vllm.py, eval_docker.py, prepare_prompts.py, and data_manager.py; no source executed.",
+  "license": "Implementation repository declares MIT. arXiv manuscript lists CC BY-NC-ND 4.0 for the paper. Appendix G reports per-repository upstream software licenses; the benchmark task data itself has no separately verified dataset license.",
+  "exact_models": [
+    "Main baseline table: Qwen3-Coder-30B-A3B, o3-mini, o4-mini, Gemini-2.5-Pro, GPT-4o (paper identifies snapshot 2024-05-13 in temporal analysis), GPT-5-mini.",
+    "Additional white-box context/agent comparison: DeepSeek-R1, Claude Sonnet 4.5, GPT-5, SWE-Agent and Trae-Agent, including GPT-5-mini and o4-mini agent variants.",
+    "The public call_vllm.py function named call_qwen_coder_30b actually configures Qwen2.5-Coder-32B-Instruct; this disagrees with the paper’s Qwen3-Coder-30B-A3B baseline and must be resolved before attributing its outputs to the paper model."
+  ],
+  "weights_status": "No paper-specific fine-tuned weights are described. Several baselines are hosted APIs. Source has a vLLM/OpenAI-compatible local endpoint path, making a custom model technically plausible, but the documented Qwen path/model identifier does not match the paper’s Qwen3-Coder-30B-A3B. No local model or API calls made.",
+  "evaluation_route": "Full article read: all 4,336 extracted lines / 16,836 words, including methods, results, references, prompt templates, action workflow, DocAgent examples, error cases, and the Appendix G inventory of repositories; SHA-256 recorded above. Paper reports max base-model F2P 11.84% on Lite (GPT-5-mini), max non-agent model 16.06% (Claude Sonnet 4.5), SWE-Agent GPT-5-mini 17.27% F2P and 29.7% F2P@5. These are low discovery rates; candidate suite count affects suite-level validity. The project repo provides a JSON data-path inference entry point and Docker evaluation but does not include the benchmark JSONs or cached test-patch outputs in its public tree, and README does not provide a data download link. `data_manager.py` default `subset=True` opens an absolute author-local path under `/home/superbench/...`; `lite=True` expects a second JSON file beside the supplied file. A custom Qwen endpoint is a plausible own-model route only after obtaining/building the data and correcting these path/model discrepancies. No run performed.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The public GitHub implementation is substantive and MIT licensed, but the repository tree contains no benchmark JSON, generated test patches, experiment outputs, or raw trajectories; README requires a user-supplied data_path and does not state where to download the paper’s dataset.",
+    "Inference defaults enable a subset filter that reads an absolute author-machine path; the Lite mode also expects a separate filtered data JSON. This prevents an out-of-box run without access to those missing inputs or configuration changes.",
+    "The paper’s Qwen3-Coder-30B-A3B result does not match the checked Qwen2.5-Coder-32B-Instruct model name in the public vLLM wrapper; immutable revisions for other model APIs are only partially specified.",
+    "Building the benchmark from raw GitHub PRs requires the authors’ filtering, parser, dependency-graph and DocAgent pipeline; exact task snapshots/documentation and the original benchmark cohort cannot be confirmed from the repository alone.",
+    "The paper’s prose alternates between the preliminary 12,227 PR candidate pool and final 1,552 PR / 2,389 task dataset counts. Exact denominators should be reconciled against machine-readable data before reproducing metrics.",
+    "The article offers no root-cause labels or causal explanation outputs for generated tests; it evaluates whether tests expose a PR-linked defect. It is not a direct Defects4J/BugsInPy task and does not use SWT-Bench experimentally."
+  ],
+  "concept_fit": "Very high for proactive behavior-guided testing: documentation provides an intended-behavior oracle, and generated tests must distinguish pre-PR faulty code from post-PR fixed code. The paper exposes the practical gap between plausible tests and genuinely defect-revealing tests. It does not explicitly extract or validate causal root-cause concepts, and it studies Python repositories rather than Defects4J/BugsInPy historical benchmark tasks.",
+  "recommendation": "Promote to a top conceptual candidate for proactive bug discovery and own-model test evaluation, but mark exact reproduction conditional. It is a better task match than the immediately preceding test-smell paper. Public MIT code includes generation, local vLLM, Docker evaluation and benchmark-building pipelines. However, task JSONs and cached outputs are absent, default filtering has an author-local absolute path, and the published Qwen3 model differs from the checked wrapper’s Qwen2.5 configuration. First resolve benchmark-data availability and model identity; do not claim the paper is directly reproducible until then. Use it to frame a separate proactive-discovery task, while keeping issue-conditioned SWT-Bench and historical Defects4J/BugsInPy results distinct. No author code or model was run.",
+  "citations": [
+    "https://arxiv.org/abs/2602.10471",
+    "https://arxiv.org/html/2602.10471",
+    "https://github.com/microsoft/TestExplora/tree/11e6952261f58d3ceb9f4d2571e03aa35dad9523"
+  ],
+  "supporting_locations": [
+    "Paper abstract and Sections 1, 3.1–3.5: proactive discovery framing, benchmark construction, inputs and F2P/coverage metrics.",
+    "Section 4, Tables 3–4 and Section 5: reported models, pass rates, agent evaluation and documentation ablation.",
+    "Appendices A–C: GitHub Actions-style execution setup, DocAgent example logs and white/black-box prompt templates.",
+    "Appendix F: error classifications and case studies where invalid generated tests self-fail rather than reveal the target defect.",
+    "Appendix G: 482-repository inventory with task counts, lines/files, categories and upstream licenses.",
+    "Public source README calls this the official implementation; stable commit tree contains inference.py, call_vllm.py, eval_docker.py, process_data.py, parser/dependency-graph builders, and MIT LICENSE.",
+    "Public source data_manager.py expects externally supplied JSON and includes a hard-coded author-local subset path; repository tree has no benchmark data files or output cache."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

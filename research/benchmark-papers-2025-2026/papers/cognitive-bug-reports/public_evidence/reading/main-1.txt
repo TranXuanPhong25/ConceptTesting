@@ -1,0 +1,117 @@
+Test Case Generation from Bug Reports via Large Language Models: A Cognitive Layered Evaluation Framework
+Report GitHub Issue
+×
+Title:
+Content selection saved. Describe the issue below:
+Description:
+Submit without GitHub
+Submit in GitHub
+arXiv is now an independent nonprofit!
+Learn more
+×
+Back to arXiv
+Why HTML?
+Report Issue
+Back to Abstract
+Download PDF
+Abstract.
+1 Introduction
+2 Background and Related Work
+3 Methodology
+3.1 Remember
+3.2 Understand
+3.3 Apply
+3.4 Analyze
+3.5 Evaluate
+3.6 Create
+4 Case Study
+4.1 Remember
+4.2 Understand
+4.3 Apply
+4.4 Analyze
+4.5 Evaluate
+5 Discussion
+5.1 Benchmark Quality
+5.2 Comparison with Developer Survey done by Zimmermann
+5.2.1 Comparison with Developer Preferences
+6 Conclusion
+References
+A Full Scott-Knott Results
+License: CC BY 4.0
+arXiv:2510.05365v1 [cs.SE] 06 Oct 2025
+Test Case Generation from Bug Reports via Large Language Models: A Cognitive Layered Evaluation Framework
+Journal: TOSEMVolume: 11110DOI: XXXXXXX.XXXXXXX
+Irtaza Sajid Qureshi
+email: irtaza11@yorku.ca
+Affiliation: York University, Lassonde School of Engineering, Toronto, Canada
+and
+Zhen Ming (Jack) Jiang
+email: zmjiang@yorku.ca
+Affiliation: York University, Lassonde School of Engineering, Toronto, Canada
+© acmcopyright
+Abstract.
+Large Language Models (LLMs) are increasingly applied to automated software testing, yet their ability to generalize beyond memorized patterns and reason about natural language bug reports remains unclear. We present a systematic evaluation of LLM reasoning in test case generation, structured around the cognitive layers of Bloom’s taxonomy: Remember, Understand, Apply, Analyze, Evaluate, and Create, which progressively assess higher levels of cognitive and reasoning capabilities. Building on the LIBRO framework, we evaluate StarCoder and GPT-4o on Defects4J, GHRB, and mutated variants that introduce linguistic and semantic challenges. Our findings show that both models largely reproduce prior results with minor deviations (Remember), exhibit partial robustness to linguistic rephrasings and translations while uncovering unique reproducible bugs (Understand), but suffer severe performance drops exceeding 60% under identifier mutations (Apply). Conversely, providing near-identical few-shot examples in an open-book setting improves success rates by up to three times, and component-level analysis reveals that structured technical elements, such as test code and method names, are far more impactful than narrative descriptions for successful test generation (Analyze). These insights illuminate the cognitive processes underlying LLM-generated tests, suggest concrete directions for improving performance, and establish a robust and realistic evaluation paradigm for this task.
+1. Introduction
+Large Language Models are rapidly evolving, with expanding use cases across software engineering. Their ability to generate code for well-described tasks makes them instrumental in automated development workflows. Among various applications of LLMs in this domain, one major area is software testing. LLMs can leverage natural language descriptions in bug reports to generate test cases aimed at reproducing the reported issues. The performance of LLMs on such tasks is often assessed using standardized benchmarks designed to evaluate their capabilities across different scenarios. A widely recognized benchmark for test case generation is Defects4J (Just et al., 2014), which has long served as a baseline for evaluating traditional techniques such as EvoCrash (Soltani et al., 2020) and Copy&Paste (Bettenburg et al., 2008).
+However, the suitability of these benchmarks for evaluating LLM-based methods raises new concerns. Real-world bugs from open-source repositories, which form the basis of benchmarks like Defects4J, may have been included in the training corpora of modern LLMs. This overlap introduces the risk of data contamination, where models may reproduce memorized examples instead of demonstrating true generalization. Such contamination can inflate performance metrics and compromise the reliability of evaluation outcomes.
+To address this issue, we propose a structured evaluation framework that systematically examines LLMs across progressively challenging scenarios. Our approach draws inspiration from Bloom’s Taxonomy (Bloom et al., 1956), a well-established model for categorizing cognitive skills that was originally designed for educational settings. We incorporate its layers: Remember, Understand, Apply, Analyze, Evaluate, and Create, to assess LLM-powered test generation along dimensions such as retention, generalization, contextual reasoning, ranking ability, and the capacity to recognize ambiguity and request clarifications.
+Rather than proposing entirely new benchmarks every few years, which requires significant manual effort and data curation, our framework adopts dynamic benchmarking by extending existing benchmarks through systematic linguistic and contextual variations. This enables evaluation under conditions that simulate unseen scenarios while maintaining compatibility with prior work. Each layer in the framework targets a specific capability, from reproducing test cases under identical inputs to handling reworded bug reports, masked identifiers, and open-book prompts. In doing so, we evaluate whether LLMs can move beyond memorization and demonstrate robust, task-relevant reasoning.
+We apply this framework to two modern LLMs, StarCoder and GPT-4o, using Defects4J and the GitHub Recent Bugs (GHRB) benchmark introduced by the LIBRO study (Kang et al., 2023). Our case study spans more than 800 bugs and their corresponding variants, measuring both bug reproduction success and model consistency across layers. The results highlight where current models succeed, where they fall short, and how evaluation methodologies can better reflect real-world usage.
+Contributions. This paper makes the following contributions:
+•
+We propose a structured evaluation framework for LLM-based test generation, inspired by Bloom’s Taxonomy, to assess capabilities such as retention, generalization, contextual reasoning, and clarification-seeking.
+•
+We design controlled mutation strategies that systematically vary bug reports and code contexts, enabling robust evaluation across linguistic and semantic dimensions.
+•
+We conduct a large-scale empirical study using Defects4J and GHRB to evaluate StarCoder and GPT-4o, offering detailed insights into their behavioral patterns across layered tasks.
+Paper Organization. Section 2 presents background and related work. Section 3 describes our evaluation framework and methodology. Section 4 presents the results of our case study. Section 5 discusses key findings and implications. Section 6 concludes the paper.
+2. Background and Related Work
+In this section, we review the foundational work and recent advances related to our study, focusing on three key areas: test case reproduction, LLM-based test generation, and benchmark construction and evaluation in software engineering.
+1) Test Case Reproduction
+Test case reproduction involves the automatic generation of tests that expose known software bugs. Traditional approaches, such as search-based software testing demonstrated by EvoSuite (Fraser and Arcuri, 2011), employ genetic algorithms to evolve Java JUnit test suites toward satisfying coverage criteria. These methods optimize for coverage and fault detection by iteratively refining candidate test suites. While effective, such techniques typically require detailed access to program semantics and do not directly utilize natural language bug reports.
+More recently, learning-based methods have begun to incorporate bug report information to guide test generation. These approaches improve adaptability to human-written bug reports, allowing automated systems to better interpret natural language. This accelerates test generation and supports quicker fault detection for faster bug resolution.
+2) LLM-Based Test Case Generation
+LLM-based test case generation techniques leverage the powerful language understanding and code synthesis capabilities of LLMs to translate natural language bug reports into executable tests. LIBRO (Kang et al., 2023) employs few-shot prompting by providing the model with pairs of example bug reports and their corresponding tests. Then prompts the LLM to generate a test for a new bug report, which is validated by execution on both buggy and fixed program versions to ensure correct failure reproduction. Post-processing filters and ranks the generated tests to improve reliability.
+Beyond LIBRO, other approaches explore different strategies to enhance test generation quality. These approaches apply few-shot prompting in multi-step pipelines comprising context localization, scaffolding, model planning, and feedback loops to improve the efficiency and accuracy of test case generation  (Ahmed et al., 2024)  (Ahmed et al., 2025)  (Nashid et al., 2025). In addition, tools like  (Sapozhnikov et al., 2024) integrate LLM-based test generation with traditional techniques (EvoSuite) within an IntelliJ plugin, enabling interactive test generation and refinement.
+3) Software Engineering Benchmark and Evaluation
+Effective evaluation of test generation frameworks requires robust, realistic benchmarks that accurately reflect model capabilities and limitations. Defects4J (Just et al., 2014) remains one of the most widely used benchmarks for Java-based test case reproduction, providing real bugs and fixes drawn from open-source projects. While it has enabled reproducible and comparative evaluation, its static and dated nature introduces significant limitations. Many of the repositories included in Defects4J may have been seen by models during pretraining, raising concerns about data contamination. This undermines the reliability of reported performance metrics and obscures the model’s actual reasoning abilities.
+Benchmarks like SWT-Bench (Mündler et al., 2025) and TDD-Bench (Ahmed et al., 2024) offer more contemporary evaluation datasets by focusing on Python projects with real-world bug-fix tasks. While they reduce the likelihood of contamination in the short term, their static nature means they will eventually become part of future training data. This limitation highlights the ongoing need for dynamic and adaptive evaluation methods.
+Beyond static benchmarks, dynamic benchmarking has emerged as a promising direction for assessing LLM robustness and reasoning. Rather than relying on a fixed set of tasks, dynamic benchmarks generate novel, out-of-distribution, or mutated test scenarios adaptively. This approach addresses two key challenges: (1) mitigating contamination by ensuring evaluation data remains unseen and unpredictable, and (2) enabling fine-grained assessments that probe reasoning, problem-solving, and adaptability under evolving conditions. Similar methodologies have been explored in related domains, for example, frameworks like DyVal (Zhu et al., 2024) and DARG (Zhang et al., 2024) construct and perturb structured reasoning graphs to create diverse, challenging test samples. While these ideas have gained traction in evaluating general LLM capabilities and some automated software engineering tasks, their systematic application to test case generation remains largely unexplored. Advancing beyond static datasets toward dynamic, contamination-resistant benchmarks will be key to ensuring fair, realistic, and forward-looking assessments.
+3. Methodology
+Our methodology is designed as an experimental framework to assess the capabilities of LLM beyond the generic benchmark evaluation, which could be inflated due to training data contamination. This study systematically evaluates the generalization and memorization capabilities of LLMs in generating test cases from bug reports. Our framework is inspired by Bloom’s Taxonomy, which is traditionally used in education research to quantify levels of learning and skill mastery, ranging from basic recall to complex problem-solving and knowledge transfer. We systematically divide the evaluation into six layers: Remember, Understand, Apply, Analyze, Evaluate, and Create. These layers are arranged in an increasingly complex manner, starting from Remember and progressing up to Create. Each layer is targeted to analyze different capabilities of the LLM by altering certain parts of the bug reproducing framework. To show the effectiveness of our approach, we demonstrate our study using Defects4J version 2.1.0. The rest of this section breaks down each layer in detail.
+3.1. Remember
+Objective:
+The goal of evaluation at this layer is to understand whether the solutions under evaluation (SUEs) reproduce the results under the same experimental configurations.
+Approach:
+Evaluating the consistency of LLMs across model versions is crucial for understanding their reliability in automated test generation. Before assessing generalization to new scenarios, it is important to determine how well LLMs retain prior knowledge and reproduce results under identical conditions. In our evaluation framework, remembering refers to the ability to recall and reproduce. We apply this concept to LLM evaluation by investigating whether a model consistently generates the same test cases when re-evaluated with the same framework. To do so, we replicate the LIBRO experimental setup with StarCoder-15.5B and examine whether results align with prior findings. Additionally, we extend this replication to GPT-4o, evaluating whether test case generation capabilities are preserved across model updates.
+Evaluation Scheme:
+Similar to LIBRO, we track the percentage of bugs with bug-reproducing test cases (BRT). A BRT is a test case that compiles, fails on the buggy version, and passes on the fixed version. This serves as the primary indicator of successful bug reproduction. This evaluation helps determine whether the SUE can recall and regenerate valid test cases under identical conditions.
+3.2. Understand
+Objective:
+The goal of evaluation at this layer is to check whether the SUEs can correctly interpret bug reports when the code context remains the same.
+Approach:
+Understanding a bug report requires an LLM to extract relevant information irrespective of phrasing or language. In this layer, we introduced linguistic variations through rephrasing and translating bug reports. We applied these variations to verify if these SUEs have basic comprehension skills to extract the key information from the bug reports, regardless of the phrasing. These two types of rephrasing were applied:
+•
+Rephrasing: Rephrasing was achieved by prompting GPT-3.5-turbo to linguistically vary the bug report but keep the original meaning intact. Each rephrased bug report was verified for semantic integrity with the original bug report by prompting GPT-4o. Rephrasing was performed again until the verification passed.
+•
+Translating: Similar to rephrasing, we extended our approach to include translations into Romanized Urdu to evaluate multilingual capabilities. We used Romanized Urdu, rather than a non-Latin script, to ensure compatibility with technical tools and enhance accessibility for testing frameworks. The translations were conducted using prompts to GPT-4 by preserving the meaning of the original bug report. Code snippets, API names, and stack traces were maintained in the original language. After manual analysis of a small sample of 5 bug reports from each project to ensure quality, GPT-4o was used for verification of the remaining bug reports. Figure  illustrates how linguistic variations are applied to enhance the robustness of the evaluation.
+Evaluation Scheme:
+As in the Remember layer, we track the percentage of bugs with BRTs. For each bug in a rephrasing setup, the SUE either solves it or does not. We result in a binary vector for each evaluation round that reflects success across all instances under a given setup. We used McNemar’s test to determine whether the performance of the SUEs differs significantly between the Remember and Understand layers, and across different rephrasing setups. In addition, we also compute the Baseline Consistency Rate, which reflects the percentage of bugs successfully reproduced both in the baseline and the modified setting. This helps assess whether the SUE can maintain performance when bug reports or code are altered.
+3.3. Apply
+Objective:
+The goal of evaluation at this layer is to examine the ability of SUEs to apply learned knowledge to different unseen scenarios, specifically when method names are altered through identifier mutations.
+Approach:
+Applying learned knowledge in test case generation requires that LLMs reason beyond memorized patterns and adapt to variations in code context. Many LLMs appear to be aligned with the identifier naming conventions of the repositories on which they were trained. When method names are altered, the models often experience performance declines. This reduction suggests that the models’ success is partially driven by their familiarity with specific identifiers, rather than by a deeper understanding of code semantics. To prevent LLMs from leveraging potentially memorized identifiers in their training data, we generated new method names for the bug-relevant methods using these strategies:
+•
+Meaningful Masking: We prompted GPT-3.5-turbo with relevant context from the method implementation to generate alternative method names. These names differ from those seen during training, requiring the SUEs to rely on contextual understanding rather than memorized identifiers when reasoning about the bug.
+•
+Hash based Masking: Instead of meaningful names, which can provide contextual information of the purpose of the function, we replace them with hash-based names by calculating the SHA-256 hashes for the original method names. This strips away all semantic meaning, forcing the SUEs to rely solely on the code’s structure and behavior to understand bugs. This tests whether they can understand the bug purely through the logic of the implementation.
+Experiments in this layer were conducted using four configurations: hash masking, meaningful masking, rephrasing combined with meaningful masking, and Romanized Urdu combined with meaningful masking. These variations allow us to test whether SUEs can still apply learned knowledge when familiar identifiers and phrasing are modified.
+Given the buggy-fixed pair for the project under test, we use a diff tool to identify patched methods. The original method names are anonymized using hash masking or meaningful mask. The generated method names are appended to the prefix “func_” to ensure the new name is unique and compatible with Java identifier rules (i.e., not starting with a number). These new method names replace the original ones in the code base using the javalang parser to identify method declarations and invocations.
+Evaluation Scheme:
+Similar to the Understand layer, we track the percentage of bugs with BRTs. We also report the Baseline Consistency Rate to assess performance retention relative to the original setup. In addition, we also employed McNemar’s test to check whether the evaluation results differ statistically from the previous layers.
+3.4. Analyze
+Objective:
+The goal of evaluation at this layer is to investigate how SUEs extract meaningful information from few-shot examples and bug report components, assessing their capacity to adapt retrieved examples for generating successful test cases.
+Approach:
+Effective test generation requires more than recognizing patterns. It also demands the ability to analyze and extract relevant information from examples and bug reports. In this layer, analysis refers to how well SUEs can learn from provided context and apply that knowledge to bugs under consideration. We evaluate this by comparing two settings: a closed-book setup using static few-shot examples curated by LIBRO researchers, and an open-book setup where examples are dynamically retrieved based on bug report s

@@ -1,0 +1,1486 @@
+{
+  "id": "51",
+  "result": {
+    "version": "vr15_concept_compositions",
+    "arm": "relations",
+    "backend": "SQLite FTS5 BM25",
+    "candidate_cap": 3,
+    "query": "sequence transform\nreplace matching text fragments\nsource text\nresult text\npattern text\nreplacement text\nselective filter\nidentity selection\npredicate true retained false removed\niteration order and occurrence positions retained locally\nsource iterable\nelement element\npredicate condition\nresult sequence\nsequence transform feeds selection source selective filter\ntransform then filter\ntext transformation precedes identity selection\noriginal input and filtered source may differ\ninput_source text\npattern text\nreplacement text\nfilter_source iterable\nelement element\npredicate condition\nresult sequence\nsequence transform transform flows to filter transform then filter",
+    "omitted_query_characters": 0,
+    "query_used_for_ranking": true,
+    "omitted_query_terms": 0,
+    "source_sha256": "6c51694f9089fe7ed35caf96e29461cf95a522575d6a8d5d9e214741e0afdee7",
+    "entry": "remove_vowels",
+    "instances": [
+      {
+        "id": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+        "kind": "sequence_transform",
+        "scope": "remove_vowels",
+        "evidence": {
+          "id": "6c51694f9089:Call:20:11:20:32",
+          "span": [
+            20,
+            11,
+            20,
+            32
+          ],
+          "expression": "text.replace(' ', '')"
+        },
+        "slots": {
+          "source": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Name:20:11:20:15",
+              "span": [
+                20,
+                11,
+                20,
+                15
+              ],
+              "expression": "text"
+            }
+          },
+          "result": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Call:20:11:20:32",
+              "span": [
+                20,
+                11,
+                20,
+                32
+              ],
+              "expression": "text.replace(' ', '')"
+            }
+          },
+          "pattern": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:24:20:27",
+              "span": [
+                20,
+                24,
+                20,
+                27
+              ],
+              "expression": "' '"
+            }
+          },
+          "replacement": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:29:20:31",
+              "span": [
+                20,
+                29,
+                20,
+                31
+              ],
+              "expression": "''"
+            }
+          }
+        },
+        "properties": [
+          "replace matching text fragments"
+        ],
+        "relations": [],
+        "assumptions": [
+          "receiver must use string replace semantics",
+          "str"
+        ],
+        "domain_evidence": {
+          "source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ],
+            "public_quotes": [
+              "remove_vowels is a function that takes string and returns string without vowels."
+            ]
+          },
+          "result": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "pattern": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:24:20:27",
+                "span": [
+                  20,
+                  24,
+                  20,
+                  27
+                ],
+                "expression": "' '"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "replacement": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:29:20:31",
+                "span": [
+                  20,
+                  29,
+                  20,
+                  31
+                ],
+                "expression": "''"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "id": "6c51694f9089:ListComp:21:19:21:64/selective_filter",
+        "kind": "selective_filter",
+        "scope": "remove_vowels",
+        "evidence": {
+          "id": "6c51694f9089:ListComp:21:19:21:64",
+          "span": [
+            21,
+            19,
+            21,
+            64
+          ],
+          "expression": "[char for char in text if char not in vowels]"
+        },
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:37:21:41",
+              "span": [
+                21,
+                37,
+                21,
+                41
+              ],
+              "expression": "text"
+            }
+          },
+          "element": {
+            "type": "element",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:29:21:33",
+              "span": [
+                21,
+                29,
+                21,
+                33
+              ],
+              "expression": "char"
+            }
+          },
+          "predicate": {
+            "type": "condition",
+            "evidence": {
+              "id": "6c51694f9089:Compare:21:45:21:63",
+              "span": [
+                21,
+                45,
+                21,
+                63
+              ],
+              "expression": "char not in vowels"
+            }
+          },
+          "result": {
+            "type": "sequence",
+            "evidence": {
+              "id": "6c51694f9089:ListComp:21:19:21:64",
+              "span": [
+                21,
+                19,
+                21,
+                64
+              ],
+              "expression": "[char for char in text if char not in vowels]"
+            }
+          }
+        },
+        "properties": [
+          "identity selection",
+          "predicate true retained false removed",
+          "iteration order and occurrence positions retained locally"
+        ],
+        "relations": [
+          {
+            "subject": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+            "predicate": "feeds_selection_source",
+            "object": "6c51694f9089:ListComp:21:19:21:64/selective_filter",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "id": "6c51694f9089:Name:21:37:21:41",
+                "span": [
+                  21,
+                  37,
+                  21,
+                  41
+                ],
+                "expression": "text"
+              },
+              {
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "predicate evaluation does not mutate the element or source"
+        ],
+        "domain_evidence": {
+          "source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Assign:20:4:20:32",
+                "span": [
+                  20,
+                  4,
+                  20,
+                  32
+                ],
+                "expression": "text = text.replace(' ', '')"
+              },
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "result": {
+            "kind": "sequence",
+            "evidence": [
+              {
+                "rule": "sequence_construction",
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred",
+        "source_chain": [
+          {
+            "id": "6c51694f9089:Assign:20:4:20:32",
+            "span": [
+              20,
+              4,
+              20,
+              32
+            ],
+            "expression": "text = text.replace(' ', '')"
+          }
+        ]
+      },
+      {
+        "id": "6c51694f9089:ListComp:21:19:21:64/transform_then_filter",
+        "kind": "transform_then_filter",
+        "scope": "remove_vowels",
+        "evidence": {
+          "id": "6c51694f9089:ListComp:21:19:21:64",
+          "span": [
+            21,
+            19,
+            21,
+            64
+          ],
+          "expression": "[char for char in text if char not in vowels]"
+        },
+        "slots": {
+          "input_source": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Name:20:11:20:15",
+              "span": [
+                20,
+                11,
+                20,
+                15
+              ],
+              "expression": "text"
+            }
+          },
+          "pattern": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:24:20:27",
+              "span": [
+                20,
+                24,
+                20,
+                27
+              ],
+              "expression": "' '"
+            }
+          },
+          "replacement": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:29:20:31",
+              "span": [
+                20,
+                29,
+                20,
+                31
+              ],
+              "expression": "''"
+            }
+          },
+          "filter_source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:37:21:41",
+              "span": [
+                21,
+                37,
+                21,
+                41
+              ],
+              "expression": "text"
+            }
+          },
+          "element": {
+            "type": "element",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:29:21:33",
+              "span": [
+                21,
+                29,
+                21,
+                33
+              ],
+              "expression": "char"
+            }
+          },
+          "predicate": {
+            "type": "condition",
+            "evidence": {
+              "id": "6c51694f9089:Compare:21:45:21:63",
+              "span": [
+                21,
+                45,
+                21,
+                63
+              ],
+              "expression": "char not in vowels"
+            }
+          },
+          "result": {
+            "type": "sequence",
+            "evidence": {
+              "id": "6c51694f9089:ListComp:21:19:21:64",
+              "span": [
+                21,
+                19,
+                21,
+                64
+              ],
+              "expression": "[char for char in text if char not in vowels]"
+            }
+          }
+        },
+        "properties": [
+          "text transformation precedes identity selection",
+          "original input and filtered source may differ"
+        ],
+        "relations": [
+          {
+            "subject": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+            "predicate": "transform_flows_to_filter",
+            "object": "6c51694f9089:ListComp:21:19:21:64/transform_then_filter",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "id": "6c51694f9089:Name:21:37:21:41",
+                "span": [
+                  21,
+                  37,
+                  21,
+                  41
+                ],
+                "expression": "text"
+              },
+              {
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "receiver must use string replace semantics",
+          "str",
+          "predicate evaluation does not mutate the element or source"
+        ],
+        "domain_evidence": {
+          "input_source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ],
+            "public_quotes": [
+              "remove_vowels is a function that takes string and returns string without vowels."
+            ]
+          },
+          "pattern": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:24:20:27",
+                "span": [
+                  20,
+                  24,
+                  20,
+                  27
+                ],
+                "expression": "' '"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "replacement": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:29:20:31",
+                "span": [
+                  20,
+                  29,
+                  20,
+                  31
+                ],
+                "expression": "''"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "filter_source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Assign:20:4:20:32",
+                "span": [
+                  20,
+                  4,
+                  20,
+                  32
+                ],
+                "expression": "text = text.replace(' ', '')"
+              },
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "result": {
+            "kind": "sequence",
+            "evidence": [
+              {
+                "rule": "sequence_construction",
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred",
+        "source_chain": [
+          {
+            "id": "6c51694f9089:Assign:20:4:20:32",
+            "span": [
+              20,
+              4,
+              20,
+              32
+            ],
+            "expression": "text = text.replace(' ', '')"
+          }
+        ]
+      }
+    ],
+    "unknown": [],
+    "requirement": {
+      "status": "unknown",
+      "cues": [],
+      "public_docstring": "    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\nghijklm\")\n    'bcdf\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    "
+    },
+    "candidates": [
+      {
+        "template_id": "concept.transform_then_filter",
+        "bm25_score": 25.27196735759032,
+        "bound_instances": 1
+      },
+      {
+        "template_id": "concept.selective_filter",
+        "bm25_score": 19.083511629482786,
+        "bound_instances": 1
+      },
+      {
+        "template_id": "concept.sequence_transform",
+        "bm25_score": 13.700891788302796,
+        "bound_instances": 1
+      }
+    ],
+    "bindings": [
+      {
+        "template_id": "concept.transform_then_filter",
+        "instance_id": "6c51694f9089:ListComp:21:19:21:64/transform_then_filter",
+        "slots": {
+          "input_source": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Name:20:11:20:15",
+              "span": [
+                20,
+                11,
+                20,
+                15
+              ],
+              "expression": "text"
+            }
+          },
+          "pattern": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:24:20:27",
+              "span": [
+                20,
+                24,
+                20,
+                27
+              ],
+              "expression": "' '"
+            }
+          },
+          "replacement": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:29:20:31",
+              "span": [
+                20,
+                29,
+                20,
+                31
+              ],
+              "expression": "''"
+            }
+          },
+          "filter_source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:37:21:41",
+              "span": [
+                21,
+                37,
+                21,
+                41
+              ],
+              "expression": "text"
+            }
+          },
+          "element": {
+            "type": "element",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:29:21:33",
+              "span": [
+                21,
+                29,
+                21,
+                33
+              ],
+              "expression": "char"
+            }
+          },
+          "predicate": {
+            "type": "condition",
+            "evidence": {
+              "id": "6c51694f9089:Compare:21:45:21:63",
+              "span": [
+                21,
+                45,
+                21,
+                63
+              ],
+              "expression": "char not in vowels"
+            }
+          },
+          "result": {
+            "type": "sequence",
+            "evidence": {
+              "id": "6c51694f9089:ListComp:21:19:21:64",
+              "span": [
+                21,
+                19,
+                21,
+                64
+              ],
+              "expression": "[char for char in text if char not in vowels]"
+            }
+          }
+        },
+        "relations": [
+          {
+            "subject": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+            "predicate": "transform_flows_to_filter",
+            "object": "6c51694f9089:ListComp:21:19:21:64/transform_then_filter",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "id": "6c51694f9089:Name:21:37:21:41",
+                "span": [
+                  21,
+                  37,
+                  21,
+                  41
+                ],
+                "expression": "text"
+              },
+              {
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "receiver must use string replace semantics",
+          "str",
+          "predicate evaluation does not mutate the element or source"
+        ],
+        "domain_evidence": {
+          "input_source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ],
+            "public_quotes": [
+              "remove_vowels is a function that takes string and returns string without vowels."
+            ]
+          },
+          "pattern": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:24:20:27",
+                "span": [
+                  20,
+                  24,
+                  20,
+                  27
+                ],
+                "expression": "' '"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "replacement": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:29:20:31",
+                "span": [
+                  20,
+                  29,
+                  20,
+                  31
+                ],
+                "expression": "''"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "filter_source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Assign:20:4:20:32",
+                "span": [
+                  20,
+                  4,
+                  20,
+                  32
+                ],
+                "expression": "text = text.replace(' ', '')"
+              },
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "result": {
+            "kind": "sequence",
+            "evidence": [
+              {
+                "rule": "sequence_construction",
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "source_chain": [
+          {
+            "id": "6c51694f9089:Assign:20:4:20:32",
+            "span": [
+              20,
+              4,
+              20,
+              32
+            ],
+            "expression": "text = text.replace(' ', '')"
+          }
+        ],
+        "partitions": [
+          {
+            "id": "pattern_absent_mixed_selection",
+            "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle.",
+            "bindings": {
+              "input_source": "text",
+              "pattern": "' '",
+              "replacement": "''",
+              "filter_source": "text",
+              "element": "char",
+              "predicate": "char not in vowels",
+              "result": "[char for char in text if char not in vowels]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "pattern_present_with_retained_content",
+            "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle.",
+            "bindings": {
+              "input_source": "text",
+              "pattern": "' '",
+              "replacement": "''",
+              "filter_source": "text",
+              "element": "char",
+              "predicate": "char not in vowels",
+              "result": "[char for char in text if char not in vowels]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "repeated_pattern_with_repeated_retained_content",
+            "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle.",
+            "bindings": {
+              "input_source": "text",
+              "pattern": "' '",
+              "replacement": "''",
+              "filter_source": "text",
+              "element": "char",
+              "predicate": "char not in vowels",
+              "result": "[char for char in text if char not in vowels]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "pattern_present_all_remaining_removed",
+            "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle.",
+            "bindings": {
+              "input_source": "text",
+              "pattern": "' '",
+              "replacement": "''",
+              "filter_source": "text",
+              "element": "char",
+              "predicate": "char not in vowels",
+              "result": "[char for char in text if char not in vowels]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          }
+        ],
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "template_id": "concept.selective_filter",
+        "instance_id": "6c51694f9089:ListComp:21:19:21:64/selective_filter",
+        "slots": {
+          "source": {
+            "type": "iterable",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:37:21:41",
+              "span": [
+                21,
+                37,
+                21,
+                41
+              ],
+              "expression": "text"
+            }
+          },
+          "element": {
+            "type": "element",
+            "evidence": {
+              "id": "6c51694f9089:Name:21:29:21:33",
+              "span": [
+                21,
+                29,
+                21,
+                33
+              ],
+              "expression": "char"
+            }
+          },
+          "predicate": {
+            "type": "condition",
+            "evidence": {
+              "id": "6c51694f9089:Compare:21:45:21:63",
+              "span": [
+                21,
+                45,
+                21,
+                63
+              ],
+              "expression": "char not in vowels"
+            }
+          },
+          "result": {
+            "type": "sequence",
+            "evidence": {
+              "id": "6c51694f9089:ListComp:21:19:21:64",
+              "span": [
+                21,
+                19,
+                21,
+                64
+              ],
+              "expression": "[char for char in text if char not in vowels]"
+            }
+          }
+        },
+        "relations": [
+          {
+            "subject": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+            "predicate": "feeds_selection_source",
+            "object": "6c51694f9089:ListComp:21:19:21:64/selective_filter",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "id": "6c51694f9089:Name:21:37:21:41",
+                "span": [
+                  21,
+                  37,
+                  21,
+                  41
+                ],
+                "expression": "text"
+              },
+              {
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "status": "lexical_flow"
+          }
+        ],
+        "assumptions": [
+          "predicate evaluation does not mutate the element or source"
+        ],
+        "domain_evidence": {
+          "source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "id": "6c51694f9089:Assign:20:4:20:32",
+                "span": [
+                  20,
+                  4,
+                  20,
+                  32
+                ],
+                "expression": "text = text.replace(' ', '')"
+              },
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "result": {
+            "kind": "sequence",
+            "evidence": [
+              {
+                "rule": "sequence_construction",
+                "id": "6c51694f9089:ListComp:21:19:21:64",
+                "span": [
+                  21,
+                  19,
+                  21,
+                  64
+                ],
+                "expression": "[char for char in text if char not in vowels]"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "source_chain": [
+          {
+            "id": "6c51694f9089:Assign:20:4:20:32",
+            "span": [
+              20,
+              4,
+              20,
+              32
+            ],
+            "expression": "text = text.replace(' ', '')"
+          }
+        ],
+        "partitions": [
+          {
+            "id": "all_predicate_true",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "text",
+              "element": "char",
+              "predicate": "char not in vowels",
+              "result": "[char for char in text if char not in vowels]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "all_predicate_false",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "text",
+              "element": "char",
+              "predicate": "char not in vowels",
+              "result": "[char for char in text if char not in vowels]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "mixed_predicate_outcomes",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "text",
+              "element": "char",
+              "predicate": "char not in vowels",
+              "result": "[char for char in text if char not in vowels]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "repeated_elements",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "text",
+              "element": "char",
+              "predicate": "char not in vowels",
+              "result": "[char for char in text if char not in vowels]"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          }
+        ],
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      },
+      {
+        "template_id": "concept.sequence_transform",
+        "instance_id": "6c51694f9089:Call:20:11:20:32/sequence_transform",
+        "slots": {
+          "source": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Name:20:11:20:15",
+              "span": [
+                20,
+                11,
+                20,
+                15
+              ],
+              "expression": "text"
+            }
+          },
+          "result": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Call:20:11:20:32",
+              "span": [
+                20,
+                11,
+                20,
+                32
+              ],
+              "expression": "text.replace(' ', '')"
+            }
+          },
+          "pattern": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:24:20:27",
+              "span": [
+                20,
+                24,
+                20,
+                27
+              ],
+              "expression": "' '"
+            }
+          },
+          "replacement": {
+            "type": "text",
+            "evidence": {
+              "id": "6c51694f9089:Constant:20:29:20:31",
+              "span": [
+                20,
+                29,
+                20,
+                31
+              ],
+              "expression": "''"
+            }
+          }
+        },
+        "relations": [],
+        "assumptions": [
+          "receiver must use string replace semantics",
+          "str"
+        ],
+        "domain_evidence": {
+          "source": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ],
+            "public_quotes": [
+              "remove_vowels is a function that takes string and returns string without vowels."
+            ]
+          },
+          "result": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "builtin_string_result",
+                "id": "6c51694f9089:Call:20:11:20:32",
+                "span": [
+                  20,
+                  11,
+                  20,
+                  32
+                ],
+                "expression": "text.replace(' ', '')"
+              },
+              {
+                "rule": "explicit_public_parameter_type",
+                "id": "6c51694f9089:Constant:4:4:18:7",
+                "span": [
+                  4,
+                  4,
+                  18,
+                  7
+                ],
+                "expression": "\"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\nghjklm'\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\""
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics",
+              "conditional on successful evaluation and declared builtin semantics",
+              "public type statement is unverified; not a runtime observation"
+            ]
+          },
+          "pattern": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:24:20:27",
+                "span": [
+                  20,
+                  24,
+                  20,
+                  27
+                ],
+                "expression": "' '"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          },
+          "replacement": {
+            "kind": "str",
+            "evidence": [
+              {
+                "rule": "string_literal",
+                "id": "6c51694f9089:Constant:20:29:20:31",
+                "span": [
+                  20,
+                  29,
+                  20,
+                  31
+                ],
+                "expression": "''"
+              }
+            ],
+            "assumptions": [
+              "conditional on successful evaluation and declared builtin semantics"
+            ]
+          }
+        },
+        "source_chain": [],
+        "partitions": [
+          {
+            "id": "pattern_absent",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "text",
+              "result": "text.replace(' ', '')",
+              "pattern": "' '",
+              "replacement": "''"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "single_match",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "text",
+              "result": "text.replace(' ', '')",
+              "pattern": "' '",
+              "replacement": "''"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "repeated_matches",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "text",
+              "result": "text.replace(' ', '')",
+              "pattern": "' '",
+              "replacement": "''"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          },
+          {
+            "id": "mixed_unmatched_content",
+            "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle.",
+            "bindings": {
+              "source": "text",
+              "result": "text.replace(' ', '')",
+              "pattern": "' '",
+              "replacement": "''"
+            },
+            "status": "planned_not_executed",
+            "realized": null
+          }
+        ],
+        "status": "source_bound_conditional",
+        "bug_verdict": "not_inferred"
+      }
+    ]
+  }
+}

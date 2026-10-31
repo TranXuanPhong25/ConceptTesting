@@ -1,0 +1,235 @@
+                                                                                                  Helpful/Harmful Aspects
+                                                                                                                    of Javadoc Comments
+
+
+
+
+                                         Fig. 2. Overview of our approach Doc2OracLL.
+
+
+2     APPROACH
+In Figure 2, we show an overview of our approach. We first fine-tune several large language models,
+as discussed in Section 2.1.3, using three pairs of prompts described in Section 2.1.2. To fine-tune
+the LLMs on these prompts, we employ the dataset detailed in Section 2.1.1. We generate various
+version of the test dataset by manipulating developer written Javadoc comments and by generating
+alternative Javadoc using GPT-3.5 model. We also perform unseen inference in the context of a
+real-bug detection study to investigate the impact of Javadoc comments. In this section, we provide
+an overview of the dataset, the prompts, the LLMs, and the metrics used to evaluate our method
+and compare it with other approaches.
+
+2.1    Supervised Fine-tuning
+This section discusses the dataset, prompts, and LLMs that are fine-tuned to investigate the impact
+of Javadoc comments on the test oracle generation (TOG) task.
+2.1.1 SF110* Dataset. To construct our dataset, we utilized the SF110 benchmark [13], which
+comprises 110 real-world open-source Java projects from various domains, all sourced from the
+SourceForge repository. The benchmark contains a total of 23,000 Java classes and is widely used
+for unit test generation [17, 38]. The dataset consists of tuples ((𝑝𝑖 , 𝑚𝑖 , 𝑑𝑖 ), 𝑜𝑖 ), where 𝑝𝑖 is the test
+prefix, 𝑚𝑖 is the MUT, 𝑑𝑖 is the Javadoc comments (if available), and 𝑜𝑖 is the ground truth test oracle,
+either an assertion or an exception. In total, the dataset includes 140,514 samples, of which 55,575
+(40%) contain Javadoc comments. These samples with Javadoc comments are used for fine-tuning
+the LLMs and have been split into three distinct subsets: 90% for training, 5% for validation, and 5%
+for testing.
+2.1.2 Prompts. The primary goal of our study is to investigate the impact of Javadoc comments on
+automated TOG. To ensure our experiments are well-controlled and to isolate the effect of Javadoc
+comments, we designed three pairs of prompts. In each prompt pair, the only difference between
+the two prompts is whether Javadoc comments are present or absent.
+   • Pair 1 (P1, P2): In this prompt pair, both prompts share the same minimal input—namely,
+     the test prefix. However, prompt P2 also includes the Javadoc comments. By comparing the
+     accuracy of these two prompts, we can directly assess the impact of Javadoc comments when
+     only minimal context—the test prefix—is provided.
+   • Pair 2 (P3, P4): In this prompt pair, both prompts include two key pieces of information—the
+     test prefix and the MUT signature—while prompt P4 adds the Javadoc comments as extra
+     context. By comparing the accuracy of these two prompts, we can gauge the influence of
+     Javadoc comments when both the test prefix and MUT signature are provided. Compared to
+
+, Vol. 1, No. 1, Article . Publication date: March 2025.
+Doc2OracLL: Investigating the Impact of Documentation on LLM-based Test Oracle Generation                            5
+
+
+     Pair 1, this pair further elucidates how additional contextual information (the MUT signature)
+     affects the role and impact of Javadoc comments.
+   • Pair 3 (P5 , P6 ): In this prompt pair, both prompts include the test prefix and the full MUT
+     (Method Under Test) code. However, prompt P6 also provides additional Javadoc comments. By
+     comparing the performance of these two prompts, we can analyze the contribution of Javadoc
+     comments when the model already has access to the complete MUT code. This comparison
+     clarifies the added value of Javadoc comments when substantial contextual information is
+     already available from both the test prefix and the MUT code, further refining our insights
+     from prompt pairs 1 and 2.
+
+2.1.3 Code Models. Decoder-only models are widely used for code generation [20], and smaller
+models offer several advantages over larger ones. For instance, fine-tuning smaller models generally
+requires fewer GPU resources, making them more cost-effective and reducing their environmental
+impact [4]. In this study, we selected four smaller models (fewer than 1 billion parameters), four
+models ranging from 1 to 2.7 billion parameters, and two models with 7 billion parameters. All
+of these models are decoder-only, pre-trained on multiple programming languages, and publicly
+available on Hugging Face[22]. They also come with sufficient documentation for fine-tuning,
+which has led to their adoption across a variety of tasks throughout the software development
+lifecycle (SDLC)[19, 20].
+CodeGPT [27]: In our study, we used the microsoft/CodeGPT-small-java model, a GPT-style lan-
+guage model with 110 million parameters. This model was trained and tested on a dataset of Java
+programs and is pre-trained for the code completion task, which aligns well with our designed
+prompts.
+CodeParrot [9]: We fine-tuned the 110-million-parameter version of CodeParrot, which was
+originally pre-trained for code generation on nine different programming languages, including
+Java, C++, and Python. Specifically, we employed the codeparrot/codeparrot-small-multi model from
+Hugging Face. Given its strong generalization on unseen data and its ability to outperform larger
+models [17], we selected this model for the TOG task.
+CodeGen [29]: CodeGen comprises four autoregressive language models of varying sizes (350M, 2B,
+6B, and 16B). In this paper, we fine-tuned the Salesforce/codegen-350M-multi and Salesforce/codegen-
+2B-multi models, each pre-trained on a dataset spanning six programming languages: C, C++, Go,
+Java, JavaScript, and Python. We selected these models for the TOG task due to their strong
+code comprehension and generation capabilities.
+PolyCoder [44]: PolyCoder is a family of large language models available in three parameter
+sizes—400M, 2.7B, and 16B—trained on 249 GB of code across 12 programming languages. In this
+work, we fine-tuned the NinedayWang/PolyCoder-0.4B and NinedayWang/PolyCoder-2.7B models
+for oracle generation.
+Phi-1 [33]: Phi-1 is a 1.3-billion-parameter, decoder-only transformer model originally designed for
+Python code generation. The microsoft/phi-1 variant was pre-trained on Python code from multiple
+sources. Although its primary focus is Python, our study found that it performs comparably to
+other models when fine-tuned for Java code generation. Nonetheless, despite achieving good results
+after fine-tuning, the model struggled to generalize effectively to unseen Java code.
+CodeLlama [8]: Code Llama is a family of pre-trained and fine-tuned generative models, ranging
+in size from 7 billion to 34 billion parameters. In our study, we used the codellama/CodeLlama-7b-hf
+model—a 7-billion-parameter, decoder-only language model designed for general code synthesis
+and comprehension. We selected Code Llama for its strong performance on Java code infilling tasks,
+where it has outperformed larger models [36].
+
+                                                               , Vol. 1, No. 1, Article . Publication date: March 2025.
+6                                                          Soneya Binta Hossain, Raygan Taylor, and Matthew Dwyer
+
+
+CodeGemma [15]: CodeGemma is a collection of lightweight models designed for tasks such
+as code completion, generation, natural language understanding, mathematical reasoning, and
+instruction following. The collection includes a 7-billion-parameter model pre-trained for code
+completion and generation, a 7-billion-parameter instruction-tuned model for code chat and in-
+struction following, and a 2-billion-parameter variant optimized for quick code completion. In this
+study, we fine-tuned both the 2-billion and 7-billion pre-trained models (google/codegemma-2b and
+google/codegemma-7b from Hugging Face [22]) for test oracle generation.
+
+2.1.4 Metric. To compute the accuracy of the generated test oracles, we use exact match with
+the ground truth oracle as our metric, a common approach in machine learning research [17, 19].
+However, we acknowledge that this approach may underestimate accuracy, since a test oracle
+can be correct even if it does not match the ground truth exactly. For example, we observed
+assertion oracles like assertFalse(boolean0) and assertEquals(false, boolean0), which
+are semantically equivalent despite differing in form.
+
+2.2    Unseen Inference
+To investigate the generalizability of Javadoc comments’ impact on TOG, we perform an unseen
+inference experiment.
+
+2.2.1 Dataset and Metric. For this unseen experiment, we use the widely recognized Defects4J
+dataset [23], which contains 835 bugs from 17 real-world Java projects. Each bug (1) is recorded in
+the project’s issue tracker, (2) involves source code changes, and (3) is reproducible. The dataset
+provides both buggy and fixed versions of the code. The fixed version applies a minimal patch
+that resolves the bug, ensuring all project tests pass, while the buggy version fails at least one
+test. Additionally, Defects4J includes utilities for generating and evaluating test suites, allowing
+researchers to confirm whether generated tests pass on fixed versions and detect bugs in buggy
+versions. This dataset is widely used for evaluating automated test oracle generation and program
+repair methods [11, 17–19].
+   In our study, we execute the test cases along with our method-generated test oracles on both the
+buggy and the fixed versions of each program. To evaluate bug detection effectiveness, we measure
+(1) the total number of bugs detected by our method, (2) the unique number of bugs detected
+by each LLM and prompt pair, (3) both individually and in combination, (4) and, finally, we also
+compare these results with two baseline approaches: TOGA [10] and nl2postcondition [11].
+
+3     EXPERIMENTAL STUDY
+We examine several key factors: the effects of Javadoc components on TOG as stand-alone or
+complementary input, the contribution of various Javadoc components to TOG, the effectiveness
+of GPT-generated Javadoc comments, the role of Javadoc comments in detecting real-world bugs,
+and when Javadoc comments can positively/negatively impact TOG. We answered following five
+research questions:
+  RQ1: What is the impact of developer-written Javadoc comments on the performance of different
+LLMs in TOG?In almost all cases, including Javadoc comments improves TOG performance,
+often by more than 20% when the base prompt contains minimal information.
+  RQ2: What is the contribution of each Javadoc comment component to the accuracy of TOG?We
+observe that the description and @return tags provide the most value when using Javadoc
+comments for TOG.
+
+, Vol. 1, No. 1, Article . Publication date: March 2025.
+Doc2OracLL: Investigating the Impact of Documentation on LLM-based Test Oracle Generation                                            7
+
+
+  RQ3: What is the impact of GPT-generated Javadoc comments on TOG performance?Even
+GPT-generated Javadoc comments can improve performance by about 10% compared to
+using no Javadoc comments.
+  RQ4: What is the impact of Javadoc comments in detecting real-world bugs from Defects4J?
+When Javadoc comments are included, our method significantly outperforms existing SOTA
+approaches. Notably, using Javadoc comments alone can yield better results than using the
+MUT implementation.
+  RQ5: What aspects of Javadoc comments make them effective or ineffective for TOG? Javadoc
+comments are effective when they clearly specify expected behavior, input/output contracts,
+and return values, but ineffective when they are lengthy, vague/incomplete, or irrelevant.
+
+3.1   RQ1: Impact of Javadoc Comments on TOG
+This study investigates the impact of Javadoc comments as a standalone or complementary input
+source for TOG. We evaluate 60 model-prompt combinations to systematically assess how Javadoc
+comments influence TOG performance across different LLMs and prompt contexts.
+3.1.1 Experimental Setup. We fine-tune 10 LLMs using the SF110* dataset (detailed in Section 2.1.1),
+where each input sample includes the method under test (MUT), a test prefix, and associated
+Javadoc comments. To isolate the impact of Javadoc comments, we design three pairs of prompts.
+In each pair, the only difference between the two prompts is the inclusion of Javadoc comments
+(Section 2.1.2).
+   Fine-tuning is conducted on a GPU setup with four A100 GPUs (40GB each), utilizing PyTorch’s
+Accelerate for multi-GPU training. To efficiently train models exceeding 1 billion parameters, we
+use DeepSpeed [34]. For 7B models (e.g., CodeLlama-7B, CodeGemma-7B), we apply Low-Rank
+Adaptation (LoRA).
+
+Table 1. Percentage of ground-truth test oracles generated by various model-prompt combinations. Within
+each prompt pair, we highlight the best-performing prompt in bold.
+
+                         Prompt                                                     Test Prefix,                    Test Prefix,
+                        Includes:                  Test Prefix,   Test Prefix,                     Test Prefix,
+                                    Test Prefix                                      MUT Sig,                         MUT,
+                                                      Doc          MUT Sig                            MUT
+           LLM                                                                         Doc                             Doc
+
+           CodeGPT-110M                56.80           76.16         77.28                 78.28      79.83                80.07
+           CodeParrot-110M             58.96           78.93         79.58                 80.23      80.48                80.88
+           CodeGen-350M                58.06           78.57         79.62                 80.26      80.42                81.56
+           PolyCoder-400M              57.63           77.49         78.11                 78.46      79.15                80.67
+           Phi-1                       58.42           78.46         80.16                 79.15      79.73                80.61
+           CodeGen-2B                  57.34           78.57         79.12                 79.04      79.59                80.62
+           CodeGemma-2B                58.35           76.84         78.72                 78.42      79.11                80.20
+           PolyCoder-2.7B              56.04           77.60         78.65                 78.28      78.90                80.23
+           CodeLlama-7B                58.38           79.22         78.90                 79.07      80.75                81.61
+           CodeGemma-7B                59.53           79.25         79.66                 80.41      81.08                81.84
+           Average:                    57.95           78.11         78.98                 79.16      79.90                80.83
+           Std. Dev.:                  0.98            0.99          0.80                  0.81       0.71                 0.60
+           t-test (p-value):              1.1 ∗ 10 −19 (s)                   0.64 (n.s.)                      0.00798(s)
+
+
+
+
+3.1.2 Results. The results are presented in Table 1. Column 1 lists the names of all 10 models,
+arranged in ascending order by parameter size. Column 2 shows the TOG accuracy when only the
+Test Prefix is used in the prompt (P1 ), providing a baseline for model performance with minimal
+contextual information. Column 3 shows the accuracy when Javadoc comments is included in the
+
+                                                                               , Vol. 1, No. 1, Article . Publication date: March 2025.
+8                                                                  Soneya Binta Hossain, Raygan Taylor, and Matthew Dwyer
+
+
+
+    ID : 47331
+    ===================                       ID : 8267
+                                                                                        ID : 64241
+    MUT Sig : public boolean                  ===================
+                                                                                        ===================
+            accept ( File f)                  MUT Sig : public static String
+                                                                                        MUT Sig : public boolean
+    ----------------------                           valueOf ( Object value )
+                                                                                                 isDoorOrWindow ()
+    * The method allows the display           ----------------------
+                                                                                        ----------------------
+            of all directories and all        * Return a empty String if value
+                                                                                        * Returns always < code > true </ code >.
+            files with the *. db suffix .            is null , else return value
+                                                                                        ----------------------
+    * @return boolean true if the             * @param value The string value
+                                                                                        // w / doc .: assertEquals ( true ,
+            file should be displayed .        * @return The result String
+                                                                                                 boolean0 )
+    ----------------------                    ----------------------
+                                                                                        /// / w / Sig .: assertEquals ( false ,
+    // w/ doc .: assertEquals ( false ,       // w/ doc .: assertEquals ("""" ,
+                                                   

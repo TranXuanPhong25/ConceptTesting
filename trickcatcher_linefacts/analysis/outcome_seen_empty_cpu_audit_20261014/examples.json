@@ -1,0 +1,47 @@
+[
+  {
+    "outcome": "F",
+    "witness_index": 1,
+    "witness_call": "intersection((0, 4), (0, 4))",
+    "n_hits": 11,
+    "represented_by_existing_stmt_witness": true,
+    "represented_by_shown_stmt_witness": true,
+    "task": 127,
+    "site_id": 46,
+    "kind": "cond",
+    "line": 40,
+    "expression": "i % j == 0",
+    "score": {
+      "call": "intersection((0, 4), (0, 4))",
+      "valid": true,
+      "contract_status": "ok",
+      "canonical_status": "ok",
+      "put_status": "ok",
+      "scorable": true,
+      "bug": true,
+      "exact_equality_bug": true,
+      "bug_kind": "wrong_output",
+      "put_value": "'YES'",
+      "canonical_value": "'NO'"
+    },
+    "historical_tool_witness_already_reveals_bug": true,
+    "stmt_representation": [
+      {
+        "line": 39,
+        "lines": [
+          39,
+          40,
+          41
+        ],
+        "text": "Statement coverage (C1): lines 39-41 (starting with `for j in range(2, i):`) are never executed by the existing tests.",
+        "reached": true,
+        "shown": true,
+        "witness_index": 1,
+        "witness_site_outcomes": [
+          "F"
+        ],
+        "witness_call": "intersection((0, 4), (0, 4))"
+      }
+    ]
+  }
+]

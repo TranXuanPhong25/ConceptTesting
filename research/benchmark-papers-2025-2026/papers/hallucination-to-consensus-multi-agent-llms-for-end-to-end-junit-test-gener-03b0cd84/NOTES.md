@@ -1,0 +1,11 @@
+# Hallucination to Consensus: Multi-Agent LLMs for End-to-End JUnit Test Generation
+
+Reviewed 2026-10-15. Full arXiv v7 read (15,083 words; SHA-256 `b22364ce1e76db5d0e35fbc44b3263c2edf04544777cc1df5adb8aa0b033cb64`), final TOSEM 2026 DOI [10.1145/3803418](https://doi.org/10.1145/3803418).
+
+CANDOR separates test-prefix generation from oracle repair. Initializer/validation makes a compiling scaffold; Planner/Tester/Inspector use JaCoCo gaps and execution feedback to improve prefixes; Requirement Engineer extracts intended behavior from descriptions; three DeepSeek-R1 reasoning Panelists plus Interpreters discuss tentative assertions, and a Curator corrects them. On HumanEvalJava and a LeetCodeJava set, CANDOR is comparable with EvoSuite on coverage, higher on Pitest mutation score, and improves oracle correctness by ≥21.1pp over TOGLL. It explicitly demonstrates generated assertions copying a buggy implementation, then correcting them from independent natural-language descriptions.
+
+**Fit:** very high concept/oracle quality and anti-misguidance prior; synthetic faulty source gives a direct test of whether oracles follow expected behavior. But the article explicitly excludes Defects4J because of dependencies, uses only 160 HumanEvalJava + 100 LeetCode methods and Pitest-generated mutants—not historical real bugs, SWT-Bench or BugsInPy. It does not produce a root-cause taxonomy.
+
+The paper-linked [public GitHub implementation/data](https://github.com/qiqiguana/candor/tree/157165cc7ac76d72e59ed60d13084d74822c9e2e) is substantial: pipeline, prompts, Java datasets, mutant variants, Maven/Pitest/Jacoco setup and generated tests. It lacks a root LICENSE. The source hard-codes local Ollama Llama3.1-70B/DeepSeek-R1-70B; Qwen through the user's remote vLLM endpoint is not a drop-in, although replacing the client/model settings is possible. README paths (`agents/...`, `tgen.main`) conflict with the pinned tree's root-level module layout. Exact replication is conditional on resolving licensing/setup and using 48GB+ local 70B models; a Qwen run would be a new variant. No source was run or modified.
+
+Structured review: [`audit/reviews/082.json`](../../audit/reviews/082.json); source inspection: [`public_evidence/source_audit.md`](public_evidence/source_audit.md).

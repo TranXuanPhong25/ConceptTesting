@@ -1,0 +1,34 @@
+{
+  "openalex_id": "https://openalex.org/W7215121149",
+  "title": "LLMutantKiller: Using Large Language Models to Generate Tests That Kill Mutants",
+  "year": 2026,
+  "publication_date": "2026-10-01",
+  "type": "article",
+  "doi": "https://doi.org/10.1145/3832098",
+  "primary_url": "https://doi.org/10.1145/3832098",
+  "pdf_url": "https://dl.acm.org/doi/pdf/10.1145/3832098?download=true",
+  "venue": "Proceedings of the ACM on software engineering.",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 26,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_complete_author_artifact_verified",
+  "year_venue": "2026 PACMSE/ISSTA 2026, Article ISSTA007, DOI 10.1145/3832098",
+  "datasets": [
+    "StrykerJS-generated surviving mutants from 13 open-source JavaScript/TypeScript projects; population 1,956 surviving mutants, Cochran sample selected 915. Manual classification found 815 behavior-changing and 100 equivalent mutants. Sample spans projects such as Complex.js, q, delta, plural, node-dirty and others. No Defects4J/BugsInPy/SWT-Bench experiment."
+  ],
+  "models": "Claude Sonnet 4.6, Devstral 2512, Llama 3.3 70B Instruct; custom endpoint support can allow own model.",
+  "artifact_url": "https://github.com/neu-se/LLMutantKiller___Artifact (official source, Docker and full replication package); author-hosted paper PDF https://www.franktip.org/pubs/issta2026.pdf.",
+  "license": "MIT software; CC BY 4.0 documentation; upstream licenses for included third-party material.",
+  "input_setting": "Original JS/TS file with mutation site replaced by placeholder; mutation metadata with original and replacement code fragments; optional existing project tests and package.json context. Output is a single Jest test file. Tests may use existing allowed libraries but cannot inspect source text or use external dependencies not already allowed. This is mutant-directed test generation, not issue-report-to-BRT or historical real-bug analysis.",
+  "reproduction_grade": "A- artifact inspection / C exact full live run (complete source/data/results; API, cost, runtime heavy)",
+  "concept_hook": "Very high mutation-guided behavioral test generation with original-pass/mutant-fail oracle, feedback and invalid-test auditing.",
+  "limitation": "JavaScript/TypeScript synthetic mutants only, not Defects4J/BugsInPy/SWT issue reproduction; full live rerun ~108-day Docker estimate and ~$1,313 historical cost.",
+  "rank": 60,
+  "family": "other_software_adjacent",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/llmutantkiller-using-large-language-models-to-generate-tests-that-kill-muta-380ee9c3/NOTES.md"
+}

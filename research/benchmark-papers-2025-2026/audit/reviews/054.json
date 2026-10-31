@@ -1,0 +1,54 @@
+{
+  "rank": 54,
+  "title": "STMutants: A Mutation Testing Dataset for Structured Text Programs in Industrial Automation",
+  "fulltext_read": true,
+  "read_path": "papers/stmutants-a-mutation-testing-dataset-for-structured-text-programs-in-indust-77a8d6a7/public_evidence/paper_fulltext.txt",
+  "read_sha256": "5db7be8c8755df616b20ab78018c794cb32c6e14c5b03bfd0992d87101ab272c",
+  "read_source": "https://arxiv.org/html/2606.05499 (arXiv v1 full text; submitted June 3, 2026)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "STMutants Figshare DOI 10.6084/m9.figshare.31724761.v3: 110 generated first-order mutant files across 11 IEC 61131-3 Structured Text programs, 108 retained/test-observable. Programs come from OSCAT basic library and sources cited by Koziolek et al. This paper does not use Defects4J experimentally; it mentions Defects4J only in related work."
+  ],
+  "task": "Release a PLC Structured Text mutation dataset and evaluate generated LLM test suites against mutants across seven ST mutation categories, using MATIEC to compile and execute original/mutant variants.",
+  "input_setting": "For each ST program, prompt an LLM once to produce test vectors and expected outputs; substitute each mutant into a harness while reusing the same generated tests; compare outputs. This is synthetic mutation testing for IEC 61131-3 PLC programs, not historical bug reproduction or Java/Python issue-level testing.",
+  "author_artifact_url": "Dataset: https://doi.org/10.6084/m9.figshare.31724761.v3 (public Figshare record). Compiler dependency: https://github.com/nucleron/matiec (upstream MATIEC, not this paper’s implementation).",
+  "author_relationship_evidence": "Paper explicitly links Figshare DOI 10.6084/m9.figshare.31724761; Figshare API record title matches and lists all three paper authors. Record version v3 is public, CC BY 4.0, and contains a 213,554-byte Mutations.zip. Downloaded archive contains 110 ST mutant source files organized by 11 program directories. No author experiment runner, harness, original test-suite bundle, or complete prompt/code package was listed.",
+  "public_source_checked": true,
+  "source_status": "partial",
+  "source_commit_or_archive": "Public dataset archive Mutations.zip from Figshare record 31724761 v3; size 213,554 bytes; SHA-256 c0355e78ff4e17b00cb63425b399fd441d0179e24628ad7678789934ad118da7. Contains ST mutant .txt files; no experiment code/runner or reproducible harness found in the record. Paper’s MATIEC link is upstream compiler dependency, not paper source.",
+  "license": "arXiv manuscript CC BY 4.0; Figshare dataset CC BY 4.0. No standalone software license because no author experiment implementation was located.",
+  "exact_models": [
+    "GPT-5.2 (provider API; default generation parameters unspecified)",
+    "Gemini 2.5 Pro (provider API; citation URL points to Gemini 2.5 Pro docs, but prose calls it “efficiency-oriented” while also listing Pro; API snapshot/default parameters unspecified)",
+    "Claude Sonnet 4.5 (model ID claude-sonnet-4-5-20250929; provider API)"
+  ],
+  "weights_status": "Hosted model APIs, no downloadable weights. GPT-5.2/Gemini version/default inference parameters are not fully pinned beyond family/model IDs; no calls made.",
+  "evaluation_route": "Read the full 1,181-line / 6,770-word arXiv HTML export in consecutive chunks through conclusion and full references; SHA-256 5db7be8c8755df616b20ab78018c794cb32c6e14c5b03bfd0992d87101ab272c. Paper: 11 ST programs, 110 generated/108 retained mutants; 7 mutation categories; MATIEC compiler; three model APIs. Baselines reported: GPT-5.2 93/108=86.1%, Gemini 2.5 102/108=94.4%, Claude Sonnet 4.5 93/108=86.1%; Cochran Q=8.17,p=.017 and pairwise corrected Wilcoxon p=.029 for Gemini vs each alternative. Artifact metadata and 213 KB mutant archive checked; static inventory shows ST mutants only, no runner/harness/prompt implementation. No model calls or code executed.",
+  "reproduction_verdict": "not_feasible",
+  "blockers": [
+    "Public artifact is dataset-only: the 213 KB Figshare archive contains mutant ST files but no author scripts, test harness, full prompt text in machine-readable form, model outputs, or exact environment recipe. Reproducing the paper’s two-phase pipeline would require implementing the missing evaluator/generation workflow; that is not authorized.",
+    "The dataset is for specialized PLC Structured Text/IEC 61131-3, not Defects4J Java, BugsInPy Python, or SWT-Bench repository issues.",
+    "Exact API parameters and immutable model snapshot are not fully reported for GPT-5.2/Gemini; reproducing headline results would require paid hosted model calls, not performed.",
+    "Only 11 moderate-size programs and manually screened first-order mutants; operator distribution dominated by VRO/CRO and external validity is limited.",
+    "Paper has internal numerical/reporting inconsistencies: abstract says “mutation detection accuracies” but methods describe test generation and execution; model prediction wording varies. More seriously, Figshare revision is v3 while paper references DOI without version and dataset contents need reconciling against reported retained/removed mutants. No original harness is public to resolve."
+  ],
+  "concept_fit": "Low for the project’s main Java/Python historical-bug and root-cause task. As adjacent supporting research it offers an open mutation dataset and temporal-state PLC testing challenge, but measures mutation score on generated industrial-control tests rather than real-bug detection, issue reproduction, or root-cause-informed assertions.",
+  "recommendation": "Do not select as a main benchmark or reproduction base for the thesis. Keep as out-of-scope adjacent dataset only if later extending to PLC/Structured Text or temporal mutation testing. Dataset itself is public and small, but exact paper reproduction is not feasible from the published artifact because experiment code/harness and complete machine-readable prompts are absent and original models are paid APIs. Defects4J mention is related work only, not dataset use.",
+  "citations": [
+    "https://arxiv.org/abs/2606.05499",
+    "https://arxiv.org/html/2606.05499",
+    "https://doi.org/10.6084/m9.figshare.31724761.v3",
+    "https://github.com/nucleron/matiec"
+  ],
+  "supporting_locations": [
+    "Full text hash 5db7be8c8755df616b20ab78018c794cb32c6e14c5b03bfd0992d87101ab272c; all 1,181 lines/6,770 words, sections I–IX and complete references read.",
+    "Sections II–III: 11 ST programs, 110 generated/108 retained mutants, manual review κ=.87, 7 operators, Figshare dataset.",
+    "Section IV: three hosted models; exact task is test-suite generation then direct mutation execution; outcomes and statistics.",
+    "Section VII external validity: 11 moderate-size programs, source libraries, only Structured Text, VRO/CRO-heavy distribution.",
+    "Section VIII: Defects4J is only cited as mainstream-language related work; not used as experimental dataset.",
+    "Figshare API title/authors/license/size checked; downloaded Mutations.zip contains 110 ST mutant text files only, no code/harness."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

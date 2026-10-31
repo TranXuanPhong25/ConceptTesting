@@ -1,0 +1,228 @@
+elects the more appropriate constraint set to guide the subsequent test generation process.
+III-A2 Meta Evaluation
+In the previous step, rTED derived two sets of type constraints: one aimed at revealing errors and another representing correct usage.
+Then, rTED evaluates the feasibility and risk of the error-revealing constraints using a dedicated evaluation agent.
+This agent validates the constraints and estimates the likelihood that the associated invocation chain could trigger a true type error.
+Specifically, the agent produces two outputs:
+(1) Risk level—labeled as either high or low, indicating the estimated probability of encountering a type error;
+(2) Justification—a concise explanation summarizing the rationale behind the risk assessment, including which part of the chain contributes most to the potential error.
+Ideally, invocation chains with plausible error-revealing constraints are classified as high-risk, and these constraints will be directly used to guide bug-oriented test generation.
+Otherwise, rTED falls back to the valid-usage constraints inferred by non-error-seeking agent to ensure test completeness.
+III-B Test Generation Phase
+rTED treats the entry method of the previously analyzed invocation chain as the method to be tested. This design choice ensures that the generated test cases reflect realistic usage scenarios (i.e., the entry point of a project or module would be invoked in practice).
+The goal of the test generation phase is to create test cases guided by the type constraints and invocation chain, along with the contextual information of the entry method.
+III-B1 Context Collection
+Prior work on LLM-based test generation has shown that incorporating contextual information beyond the focal method substantially improves the quality of generated tests [5, 14, 15].
+Motivated by this insight, rTED constructs comprehensive context to better support test generation. It collects two types of context: cross-file and intra-file context.
+The cross-file context includes the full invocation chain analyzed during type constraint analysis, along with the inferred constraints themselves.
+The intra-file context is gathered by parsing the file hosting the entry method and extracting relevant program elements, specifically including all import statements, global fields, class definitions, and method definitions. If the entry method belongs to a class, rTED also collects the class constructor and any class methods that are directly invoked by the entry method.
+The context information is then used to guide the LLM during test generation.
+III-B2 Test Generation Process
+To guide the LLM with the previously extracted context, rTED
+begins by inserting the cross-file context, including the invocation chain and its inferred type constraints, into the test generation agent’s memory as the chat history. Specifically, each entry (i.e., a round of conversation with the LLM) in this history corresponds to a step from the earlier constraint analysis phase, capturing the type constraint for a single call in the invocation chain. This equips the agent with essential background knowledge on the method’s broader usage context.
+Next, inspired by the success of Chain-of-Thought (CoT) prompting [16], rTED employs a two-stage CoT strategy. In the first stage, it formats the intra-file context to reflect the original source structure, appending the entry method at the end. The LLM is then prompted to summarize the method’s functionality according to the context, improving its contextual awareness of the method’s semantics. Both the intra-file context (included in the prompt used to instruct the LLM) and the generated functionality summary are also retained in memory as a round of conversation in the chat history.
+In the second stage, the LLM is prompted to generate unit tests using the stored cross-file context, intra-file context, and method summary. This combination serves as rich guidance, enabling the model to produce more targeted and meaningful test cases.
+For each generated test case, rTED first removes all assertions, as they are unnecessary for detecting type errors. rTED then executes the test. If the test fails without raising a type error, rTED invokes a self-debugging step [17], prompting the LLM to revise the test based on the error message and the original code.
+If the revised test still fails without raising a type error, rTED discards it.
+Otherwise, if a type error is raised, rTED proceeds to the reflection phase to determine whether the error is a true or false positive.
+III-C Reflection Phase
+Fig. 4: Few-shot examples for type consistency agent
+Existing researches have pointed out that LLMs are prone to hallucinations, which can lead to the generation of invalid or misleading unit tests [5, 6, 14]. Therefore, when an LLM-generated test case triggers a type error, it is essential to determine whether the error genuinely reflects a type misuse or is simply a result of an ill-formed test (e.g., using an invalid parameter type) to minimize false positives. To this end, rTED employs three specialized agents: two reflection agents (one for type consistency checking and another for semantic validity checking) and a meta-evaluation agent. Together, these agents validate generated failures and iteratively refine the test generation process.
+III-C1 Reflection Agents
+As discussed in Section I, a valid type error test case must satisfy two conditions:
+(1) type consistency—the test input should satisfy the inferred type constraints, and
+(2) semantic validity—the error should arise from a meaningful usage scenario rather than unrealistic scenarios or unrelated logic issues.
+To enforce these criteria, rTED employs two specialized reflection agents:
+•
+Type Consistency Agent: Checks whether the test inputs align with the inferred type constraints.
+•
+Semantic Validity Agent: Verifies that the test reflects a realistic use case and that the error genuinely stems from a true type misuse.
+Each agent is provided with the inferred type constraints used to generate the test case, the content of the invocation chain, the generated test case, and its execution output, including error messages and stack traces.
+To compensate for LLMs’ limited domain knowledge in diagnosing type-related false positives, rTED adopts a few-shot learning approach. Each agent is guided by two curated examples—one illustrating a true type error and another showing a false positive due to invalid input. Figure 4 presents the examples for the type consistency agent. Due to space limitation, we put other examples used on our project homepage [18].
+Both agents produce outputs with four components:
+•
+Decision: Classifies the test as a true or false positive.
+•
+Confidence: Indicates certainty (high, medium, low), which will be used in subsequent meta-evaluation.
+•
+Rationale: Summarizes the rationale behind the decision.
+•
+Suggestions: If the test is deemed false positive, offers guidance for fixing the test.
+The results from the two reflection agents are then forwarded to a third agent, i.e., the evaluation agent, which acts as an arbiter and makes the final decision.
+III-C2 Meta Evaluation
+The meta-evaluation agent is responsible for aggregating the outputs of the reflection agents to make a final decision.
+It uses an LLM-based weighted voting strategy that considers structured outputs from the type consistency and semantic validity agents, along with the inferred type constraints and the associated invocation chain. Based on this information, it classifies the test case as either a true positive or a false positive.
+If the test is deemed a true positive, the test case is retained. Otherwise, the agent synthesizes an explanation along with actionable suggestions based on the rationales from both reflection agents. These suggestions are then fed back to the test generation agent as iterative feedback.
+This feedback loop allows the test generation agent to refine its output, improving its ability to produce truly bug-revealing test cases while minimizing false positives.
+If, after refinement, the LLM still does not trigger a true type error, rTED proceeds to test the next method.
+IV Evaluation Design
+IV-A Research Questions
+To evaluate the effectiveness of rTED, we formulate the following research questions (RQs).
+•
+RQ1: To what extent can rTED detect type errors compared to state-of-the-art techniques?
+The goal of rTED is to generate unit tests for detecting python type errors, and this RQ investigates its ability in this regard.
+•
+RQ2: How does each main component of rTED contribute to its overall effectiveness? This RQ motivates an ablation study to evaluate the individual impact of rTED’s core components on its effectiveness.
+•
+RQ3: Can rTED uncover previously unknown type errors in real-world Python projects? This RQ assesses the practical applicability of rTED by evaluating its ability to discover new type-related bugs in real-world Python codebases.
+IV-B Subjects
+To answer RQ1 and RQ2, we adopted two widely-used benchmarks, i.e., BugsInPy [10] and TypeBugs [11], following prior work [11, 19, 1].
+Each benchmark contains a collection of real-world Python type-related bugs along with their corresponding fixed versions.
+To avoid duplication, we removed overlapping bugs between the two benchmarks following the practice of the existing work [1, 20, 21].
+We then attempted to replicate those type-related bugs. However, this replication process presented several challenges.
+For instance, some required third-party libraries had been removed from PyPI and could no longer be installed (e.g., the codecov package required by several bugs in the core project11
+1
+https://github.com/home-assistant/core/issues/91283).
+Additionally, many benchmark-listed dependencies conflicted with each other, a problem also noted in various related GitHub issues22
+2
+https://github.com/kupl/PyTER/issues/133
+3
+https://github.com/kupl/PyTER/issues/244
+4
+https://github.com/JohnnyPeng18/TypeFix/issues/1.
+We manually resolved these dependency conflicts to the best of our ability.
+As a result, we successfully replicated 69 real-world type errors across 16 open-source projects in the two benchmarks, with codebases ranging from 3K to 316K lines of code.
+For each bug, we extracted the method responsible for triggering the type error, referred to as the buggy focal method. These methods form the basis for evaluating each technique’s effectiveness in detecting Python type errors.
+We also extracted the corresponding fixed versions, referred to as non-buggy focal methods, to assess whether a unit test generation technique can avoid producing false positives on correct code.
+In total, we obtained 138 methods, including 69 buggy ones and 69 non-buggy ones.
+To answer RQ3, we applied rTED to the latest versions of six popular open-source Python projects to evaluate its effectiveness in detecting previously unknown type errors.
+Project selection was guided by three criteria:
+(1) We excluded repositories that primarily serve as educational resources, tutorials, or textbook materials, as they do not reflect production-level complexity.
+(2) We included only actively maintained projects with an average commit interval of less than one week.
+(3) We selected projects with comprehensive documentation and clear setup instructions to ensure compatibility with our experimental environment.
+We examined top-ranked Python repositories on GitHub (sorted by star count) and retained 50 projects that satisfied all three criteria.
+Then, considering evaluation costs, we sampled six for this experiment to avoid subjective bias.
+They are kivy [22], langchain [23], luigi [24], pwntools [25], scipy [26], and scrapy [27].
+Note that we did not simply select the top-starred projects, as these are often dominated by AI libraries with highly similar code patterns and error types. Instead, our sampling strategy prioritized domain diversity and evaluation reliability.
+IV-C Compared Techniques
+rTED aims to generate effective unit tests for precise type error detection, and thus we adopted both the state-of-the-art type error detection technique and the state-of-the-art LLM-based unit test generation techniques as our baselines:
+•
+Pyinder [1]: It is a static type-error detection tool for Python, which incorporates four key features identified through manual investigation for type error detection.
+•
+CHATTESTER [5]: The first technique to leverage LLMs for unit test generation. It prompts the LLM with the focal method and its context to generate tests.
+•
+SymPrompt [6]: It prompts LLMs to generate one test per execution path of the focal method, aiming to improve code coverage by encouraging path diversity.
+•
+HITS [7]: It first leverages LLMs to decompose complex methods into smaller slices and then guides LLMs to generate tests for each slice independently, aiming to improve code coverage.
+We did not include the traditional Python unit test generation tool (i.e, Pynguin [4]) for comparison.
+This is because
+(1) Pynguin fails to run on many projects in the two benchmarks due to its limited support for Python versions.
+(2) Many existing studies have demonstrated that LLM-based unit test generation outperforms the traditional Pynguin [6, 28, 15].
+IV-D Measurements
+These studied techniques differ in output: test generation techniques produce tests that may trigger runtime type errors, while Pyinder raises static alarms.
+Therefore, we unify the evaluation by considering a type error as “reported” for a given focal method if a test triggers a type error or a static tool raises an alarm.
+IV-D1 Outcomes on Buggy Methods
+To evaluate the effectiveness in triggering type errors, we ran each test generation technique on the buggy method and executed the generated tests on both the buggy and the corresponding fixed versions.
+For Pyinder, we applied it to both the buggy and fixed methods.
+Following the existing definition [29], we categorize the outcomes of each technique as follows:
+•
+True Positive for bug detection (TPbug{}_{\textit{bug}}):
+The technique reports a type error only on the buggy version, but not on the corresponding fixed version.
+•
+False Positive for bug detection (FPbug{}_{\textit{bug}}): The technique reports a type error on both the buggy and fixed versions.
+•
+False Negative for bug detection (FNbug{}_{\textit{bug}}): The technique fails to report a type error on the buggy version.
+Since all target methods under this setting are buggy (i.e., positive samples), there are no true negatives.
+IV-D2 Outcomes on Non-buggy Methods
+To investigate whether rTED can avoid producing false positives on correct code, we ran each technique on the fixed version.
+The possible outcomes include:
+•
+False Positive on non-buggy methods (FPnonbug{}_{\textit{nonbug}}): The technique incorrectly reports a type error on the non-buggy version.
+•
+True Negative on non-buggy methods (TNnonbug{}_{\textit{nonbug}}): The technique correctly does not report any error on the non-buggy version.
+All target methods under this setting are non-buggy (i.e., negative samples), and thus there are no true positives and false negatives.
+IV-D3 Metric Calculation
+Based on these outcomes, we measured the effectiveness of each technique using the following metrics:
+Accuracy measures the proportion of correct identifications, i.e., detecting type errors in buggy methods while correctly not detecting errors in non-buggy methods. It is calculated as:
+TPbug+TNnonbugTPbug+FPbug+FPnonbug+TNnonbug+FNbug\frac{\text{TP}_{\textit{bug}}+\text{TN}_{\textit{nonbug}}}{\text{TP}_{\textit{bug}}+\text{FP}_{\textit{bug}}+\text{FP}_{\textit{nonbug}}+\text{TN}_{\textit{nonbug}}+\text{FN}_{\textit{bug}}}.
+Precision measures the proportion of true bugs among all samples identified as bugs:
+TPbugTPbug+FPbug+FPnonbug\frac{\text{TP}_{\textit{bug}}}{\text{TP}_{\textit{bug}}+\text{FP}_{\textit{bug}}+\text{FP}_{\textit{nonbug}}}.
+Recall measures the proportion of true bugs correctly identified out of all true bugs:
+TPbugTPbug+FNbug\frac{\text{TP}_{\textit{bug}}}{\text{TP}_{\textit{bug}}+\text{FN}_{\textit{bug}}}.
+F1-score is the harmonic mean of Precision and Recall, providing a balanced measure that accounts for both false positives and false negatives:
+2×Precision×RecallPrecision+Recall\frac{2\times\text{Precision}\times\text{Recall}}{\text{Precision}+\text{Recall}}.
+IV-E Implementation and Environment
+We implemented rTED in Python, utilizing Jarvis [30] and tree-sitter [31] for call chain extraction.
+Jarvis combines flow-sensitive intra-procedural analysis and inter-procedural analysis to infer types and handle dynamic dispatch. Its type inference engine approximates runtime variable types to construct a receiver-type-aware call graph, allowing RTED to retrieve a reasonably sound set of call chains for focal methods.
+As the underlying LLM, we used DeepSeek-V3 [13] via its API to power all agents within rTED.
+For Pyinder, we directly leveraged the released implementation [32].
+For CHATTESTER (which is originally designed for Java), we adapted it to Python based on its publicly available implementation. For SymPrompt and HITS, due to the lack of released code, we re-implemented them based on the descriptions in their respective papers. To ensure a fair comparison, we used the same DeepSeek-V3 model [13] as the underlying LLM for CHATTESTER, SymPrompt, and HITS.
+For all focal methods in the benchmarks, we configured each technique to generate one test file per focal method.
+For rTED, one representative call chain (i.e., the shortest) is sampled per method to guide test generation.
+This design reduces prompt ambiguity and ensures the input remains within the LLM’s context window, since rTED provides all function implementations along the selected call chain as context.
+This also ensures that the resulting test suites are of comparable scale across techniques, enabling a fair comparison.
+We executed all generated tests using each project’s original testing framework, primarily pytest [33] or unittest [34].
+All experiments were conducted on a workstation running Ubuntu 20.04, equipped with a 128-core CPU, 504 GB of RAM, and 4 NVIDIA A800 GPUs.
+V Results and Analysis
+V-A RQ1: Effectiveness on Type Error Detection
+V-A1 Process
+For Pyinder, we collected its reported alarms. For test generation approaches, we generated and executed test suites to observe whether any type errors were triggered during runtime. Each technique’s output was then mapped to one of several possible outcomes introduced in Section IV-D based on whether it reported a type error for the buggy or fixed version of a method.
+V-A2 Results
+TABLE I: Comparison among rTED, Pyinder, CHATTESTER, SymPrompt, and HITS
+App.
+BugsInPy
+TypeBugs
+P
+R
+F1
+Acc
+P
+R
+F1
+Acc
+Pyinder
+0.25
+0.11
+0.15
+0.45
+0.14
+0.06
+0.08
+0.44
+CHATTESTER
+0.25
+0.13
+0.17
+0.50
+0.29
+0.11
+0.16
+0.47
+SymPrompt
+0.09
+0.04
+0.06
+0.43
+0.33
+0.05
+0.09
+0.50
+HITS
+0.11
+0.09
+0.10
+0.40
+0.34
+0.31
+0.33
+0.47
+rTED
+0.78
+0.50
+0.61
+0.70
+0.69
+0.54
+0.61
+0.67
+Fig. 5: Overlap of bug detection
+Table I presents the overall results in terms of precision (denoted as P), recall (denoted as R), F1-score (denoted as F1), and accuracy (denoted as A).
+From the table, rTED consistently outperforms all baselines, including the static analyzer Pyinder and dynamic test generation techniques, across both benchmarks.
+In terms of accuracy, rTED achieves 0.70 on BugsInPy and 0.67 on TypeBugs, significantly outperforming the best-performing baselines: 0.50 by CHATTESTER on BugsInPy and 0.50 by SymPrompt on TypeBugs, achieving improvements of 40% and 34%, respectively.
+For F1-score, rTED reaches 0.61 on both datasets, while the best baselines, CHATTESTER (0.17 on BugsInPy) and HITS (0.33 on TypeBugs), fall far behind. This demonstrates that rTED not only detects more bugs but also maintains strong precision, avoiding the excessive false positives that undermine many existing techniques.
+Figure 5 shows the overlap in bugs detected by each technique. From the figure, rTED successfully detects 34 bugs, while Pyinder, CHATTESTER, SymPrompt, and HITS detect only 5, 7, 3, and 12 bugs, respectively.
+Moreover, to detect those bugs, Pyinder, CHATTESTER, SymPrompt, and HITS produces 21, 19, 14, 35 false positives respectively, while rTED only produces 13 false positives,
+achieving an improvement of 173.9%∼\sim245.9% in precision.
+Notably, rTED not only covers nearly all bugs found by others but also identifies the largest number of unique bugs with fewest false positives, underscoring its practical effectiveness.
+Note that Pyinder, despite being tailored for type error detection, performs worse than the test generation approaches in some cases. This is partly due to its inherent limitations: certain bugs in the benchmarks require runtime information or involve third-party libraries, which static analysis alone cannot effectively handle.
+For more direct comparison, we also evaluate the performance of Pyinder and rTED on the 40 focal meth

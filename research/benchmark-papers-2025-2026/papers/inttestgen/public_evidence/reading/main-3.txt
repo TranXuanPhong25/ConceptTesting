@@ -1,0 +1,251 @@
+evaluation around three research questions.
+•
+RQ1 (Effectiveness): How effective is IntTestGen in generating low-level integration tests for Java repositories compared with the LLM-based and search-based baselines?
+•
+RQ2 (Efficiency): What efficiency cost does IntTestGen incur, in terms of wall-clock time and token consumption, relative to the baselines?
+•
+RQ3 (Ablation): How much do the major strategies in IntTestGen, namely usage retrieval, iteration-level memory, protocol constraints, and symbol constraints, each contribute to its effectiveness?
+For RQ1, we compare IntTestGen against two baselines: PANTA, the SOTA LLM-based approach, and EvoSuite, the SOTA search-based tool, to assess whether LLM-based integration test generation can improve test effectiveness compared to unit-level generation. This comparison examines both the quality of valid tests produced and the extent to which the generated tests exercise production code, including the CUT and code reached through real dependency interactions. Section 4.4 introduces the detailed effectiveness metrics.
+For RQ2, we analyze the practical cost of applying IntTestGen. Since integration test generation requires LLMs to reason about real dependencies, construct valid object states, and iteratively repair generated tests, it may introduce additional overhead compared to unit-level generation approaches. We therefore evaluate the computational cost of test generation in time and token consumption, with detailed efficiency metrics in Section 4.4.
+For RQ3, we conduct an ablation study to quantify how the major components of IntTestGen support its two core strategies: context-enriched generation and constraint-enforced fixing. We compare the full approach with four variants. The first variant, No_UR, removes usage retrieval and therefore directly ablates the context-enriched generation strategy by providing no mined dependency-usage examples to the generator. The other three variants ablate the constraint-enforced fixing strategy at different levels: No_Sym removes symbol-level constraints, so the repair stage is no longer explicitly restricted to valid project-visible classes, methods, and fields; No_Prot removes protocol-level constraints, allowing the model to violate valid API call sequences and object-state transitions; and No_Iter disables iteration-level constraints, i.e., experience memory, so information from gold tests, successful fix recipes, and unfixable anti-patterns is no longer carried into later repair iterations. These variants are chosen because they isolate the retrieval component used to address not knowing and the three complementary constraint levels used to address not following.
+4.2. Datasets
+We evaluate IntTestGen on two complementary benchmarks: Defects4J, a widely used Java test-generation benchmark that enables direct comparison with prior work, and Deps4J, a new, more challenging benchmark curated from post-cutoff open-source projects. While Defects4J provides a standard basis for evaluation, it may suffer from potential data leakage and relies on older Java and JUnit versions. To address these limitations, we construct Deps4J to (i) reduce the risk of data leakage, (ii) evaluate whether IntTestGen generalizes across diverse projects and dependency structures, and (iii) assess its effectiveness under more modern Java environments and more complex multi-module repository scenarios. Table 1 summarizes the main characteristics of the two benchmarks, including the number of projects (“#Projects”), selected classes (“#Classes”) and methods (“#MUTs”), average cyclomatic complexity (“CC”), Java and JUnit versions, and the earliest project creation time (“Created After”).
+Table 1. Characteristics of Defects4J and Deps4J.
+Benchmark
+#Projects
+#Classes
+#MUTs
+CC
+Java
+JUnit
+Created After
+Defects4J
+14
+130
+2971
+16.5
+11
+4
+2008
+Deps4J
+5
+30
+540
+38.4
+17
+5
+2025
+Defects4J. Following recent research (17; 21), we use the Defects4J v2.0.0 bug-free revisions of 14 Java projects. We focus on the 130 non-trivial classes identified by Gu et al. (17) as having cyclomatic complexity (CC) ≥11\geq 11 (i.e., we exclude simple classes that admit trivial single-path tests). These projects span Apache Commons (Lang, Math, Csv, Cli, Codec, Collections, Compress), Jackson (JacksonCore, JacksonDatabind, JacksonXml), Jsoup, JxPath, Gson, and JodaTime. All projects target Java 11 and JUnit 4. Their public commit dates range from 2008 to 2018, preceding the release date of any LLM considered in this study. We therefore cannot rule out potential data leakage in this dataset.
+Table 2. Statistics of the Deps4J dataset.
+Project
+Domain
+#CUTs
+#MUTs
+CC
+adk-java (15)
+Agent Development Kit (Google)
+6
+118
+38.7
+fit-framework (22)
+Model-engineering utils (Huawei)
+6
+89
+17.8
+agentscope-java (2)
+Multi-agent runtime
+6
+174
+87.0
+a2a-java (1)
+Agent-to-Agent SDK (Google)
+8
+107
+29.0
+jquick-curl (33)
+ANTLR-generated curl parser
+4
+52
+14.8
+Total
+30
+540
+38.4
+Deps4J. To mitigate the data leakage threat inherent in Defects4J, and to evaluate IntTestGen on software that reflects modern Java practice, we curate Deps4J: a new benchmark of 30 classes drawn from 5 high-profile open-source projects whose first commit dates and complete development histories post-date the training-data cutoff of the LLM used in our experiments (Qwen3-Coder, cutoff 2025-03). The selected projects (see Table 2) include adk-java (Google Agent Development Kit), fit-framework (Huawei Model Engine), agentscope-java, a2a-java (Google Agent-to-Agent SDK), and jquick-curl. We selected these projects because they (i) have been public after the year 2025, (ii) target Java 17 with JUnit 5, exercising new language features that were unavailable in the Defects4J projects, and (iii) are actively starred and forked on GitHub, indicating engineering quality comparable to Defects4J subjects. Among Java 17 projects created after the cutoff, these five were chosen to maximize diversity in dependency structures: they span agent runtimes (adk-java, a2a-java, agentscope-java), general-purpose utilities (fit-framework), and generated parsers (jquick-curl), with cyclomatic complexity ranging from 14.8 to 87.0 (Table 2) and with different Maven module layouts, ensuring that the benchmark is not biased toward a single project archetype.
+4.3. Baselines
+We compare IntTestGen against two baselines representing the two main families of automated test generation: PANTA (17), the state of the art among LLM-based approaches for Java, and EvoSuite (13), the state of the art among traditional search-based approaches (12; 13).
+PANTA is the strongest available LLM-based baseline for our setting. It is the most recent LLM-based approach that handles classes with external dependencies and establishes SOTA results on the widely adopted Defects4J benchmark. EvoSuite is the most widely used and strongest search-based test generation tool for Java and implements the DynaMOSA (32) algorithm by default. We choose EvoSuite over the alternative random-based tool Randoop (30) because comparative studies consistently show EvoSuite achieving higher coverage and fault detection (13).
+Baseline Selection Criteria. We therefore focus on PANTA and EvoSuite, which jointly cover the two dominant paradigms (LLM-based and search-based) and are both directly applicable to our benchmarks with publicly available implementations. Other approaches like CANDOR (40) target method-level programs without external dependencies (e.g., HumanEvalJava) and cannot generate tests for the dependency-rich classes in our benchmarks. Aster (31) and CITYWALK (43) target Python and C++, respectively, which are not directly applicable to Java projects. System-level tools such as EvoMaster (4) require REST API specifications, while our benchmarks consist of library and framework code without such exposed endpoints.
+4.4. Evaluation Metrics & Statistical Testing
+We evaluate generated test suites from two perspectives: effectiveness and efficiency. Effectiveness metrics measure how well the generated tests exercise the production code and expose behavioral differences. Efficiency metrics quantify the computational cost of producing the tests, including time, token consumption, and effort for iterative refinement. Finally, we use statistical testing to account for randomness in LLM-based generation and assess whether observed differences between approaches are statistically significant.
+4.4.1. Effectiveness metrics
+We adopt the following metrics to evaluate the effectiveness:
+Number of Tests. This metric reports the number of valid test cases in the final generated test file. We include this metric to quantify how many executable tests each approach produces. In unit test generation, generated tests may be discarded because they fail to compile, fail during execution, violate framework constraints, or rely on invalid dependency interactions. Thus, more valid tests indicate that the approach can produce more runnable tests during generation and repair.
+Line and Branch Coverage. We record standard JaCoCo line coverage and branch coverage on the CUT. These two metrics quantify how thoroughly the suite exercises the CUT in isolation and are directly comparable to the numbers reported by prior LLM-based generators (17; 40).
+Mutation Score. Line and branch coverage measure reach but not sensitivity: a test that invokes a method without asserting anything meaningful will still increase coverage. We therefore also report the mutation score computed with PIT (9) using the default operator set. For a CUT with NN generated mutants, the score is the fraction that are killed by at least one test in the generated suite: 𝑀𝑆=|killed|/N\mathit{MS}=\lvert\text{killed}\rvert/N.
+Dependency Line Coverage (DepLC).
+Line and branch coverage are computed only on the CUT. An integration test suite, however, also exercises the CUT’s real dependencies. The central motivation is that these dependency interactions create a coverage gap left by unit-level testing approaches (Section 1). To quantify this effect, we extend JaCoCo’s class-level reporting to the entire Maven module containing the CUT, and define three derived metrics over the resulting coverage vector:
+(2)
+𝐷𝐿𝐶\displaystyle\mathit{DLC}
+=∑ℓ∈𝐶𝑈𝑇𝟙​[ℓ​ covered],\displaystyle=\sum_{\ell\in\mathit{CUT}}\mathds{1}[\ell\text{ covered}],
+(3)
+𝑇𝐿𝐶\displaystyle\mathit{TLC}
+=∑ℓ∈𝑀𝑜𝑑𝑢𝑙𝑒𝟙​[ℓ​ covered],\displaystyle=\sum_{\ell\in\mathit{Module}}\mathds{1}[\ell\text{ covered}],
+(4)
+𝐷𝑒𝑝𝐿𝐶\displaystyle\mathit{DepLC}
+=𝑇𝐿𝐶−𝐷𝐿𝐶,\displaystyle=\mathit{TLC}-\mathit{DLC},
+where 𝐷𝐿𝐶\mathit{DLC} (Direct Line Coverage) counts the covered lines in the CUT itself, 𝑇𝐿𝐶\mathit{TLC} (Transitive Line Coverage) counts the covered lines across all production classes in the CUT’s Maven module, and 𝐷𝑒𝑝𝐿𝐶\mathit{DepLC} isolates the additional covered lines outside the CUT. Thus, 𝐷𝑒𝑝𝐿𝐶\mathit{DepLC} captures the extent to which generated tests execute real project code beyond the target class. This complements the CUT-level coverage and mutation score: while those metrics evaluate how thoroughly the target class is tested in isolation, 𝐷𝑒𝑝𝐿𝐶\mathit{DepLC} measures the additional dependency code exercised through integration-level execution.
+4.4.2. Efficiency metrics
+We adopt the following metrics to evaluate the efficiency:
+Number of Iterations. This metric reports the number of plan-generate-validate-fix cycles executed for a CUT before the tool stops, either by reaching its iteration budget, satisfying the stopping criterion, or failing to improve further. We include this metric to measure each approach’s convergence efficiency.
+Tokens Per Method. This metric reports the average token consumption per method in the CUT. We include this metric to measure each approach’s cost efficiency at the method level. Token consumption directly reflects the computational and monetary cost of producing tests. Normalizing token usage by the number of methods in the CUT makes the comparison less sensitive to differences in class or project size, and provides a clearer view of how much LLM budget is required to test each unit of code.
+Tokens Per Iteration. This metric is calculated as the total token consumption divided by the number of iterations. We include this metric to measure each approach’s cost efficiency per iteration. In iterative test generation, higher coverage often requires additional iterations, increasing total token consumption. Therefore, a larger total token count may reflect more extensive refinement rather than lower efficiency. By normalizing token consumption per iteration, this metric captures the average token cost per generation cycle and provides a fairer comparison of per-iteration efficiency across approaches.
+Time Per Method.
+This metric is calculated as the total wall-clock time divided by the number of methods in the CUT, where the total time is the elapsed time from the start to the end of test generation for the CUT. We include this metric to measure the time required to test each unit of code. Since different CUTs may contain different numbers of methods, the total time alone can be strongly affected by target size and may not provide a fair comparison across CUTs or projects. By normalizing wall-clock time per method, this metric provides a clearer view of average generation cost per method and reflects an approach’s practical scalability on larger code units.
+Time Per Iteration.
+This metric is the total wall-clock time divided by the number of generate–validate–fix iterations, where the total time is the elapsed time from the start to the end of test generation for a CUT. We include this metric because total time alone does not distinguish between approaches that perform different numbers of cycles. In iterative test generation, additional iterations may be necessary to improve the test suite and reach higher coverage, which naturally increases total runtime. Therefore, a larger total time may reflect more extensive refinement rather than lower efficiency. By normalizing time to the number of iterations, this metric captures the average time cost per cycle and enables a fairer comparison of per-iteration efficiency across approaches.
+4.4.3. Statistical Testing
+LLMs are inherently stochastic, as different runs may produce different tests even under identical experimental settings. To mitigate randomness, we report average results on the Defects4J (130 CUTs) and Deps4J (30 CUTs) datasets. We also conduct pairwise statistical testing and calculate effect sizes for each metric.
+Following the guidance for statistical testing (3), we use the two-sided paired Wilcoxon signed-rank test to compare IntTestGen against each baseline (PANTA and EvoSuite) on the per-CUT results, and report the Vargha–Delaney A^12\hat{A}_{12} effect size (38), which is widely used for randomized software-engineering algorithms (3). In our context, A^12\hat{A}_{12} estimates the probability that IntTestGen outperforms the baseline on a randomly selected paired observation, with ties counted as half. A value of 0.50.5 indicates no preference between the two approaches; values above 0.50.5 indicate that IntTestGen tends to achieve higher values, while values below 0.50.5 indicate that the baseline tends to achieve higher values. Following Vargha and Delaney (38), we interpret the effect as negligible when |A^12−0.5|<0.06|\hat{A}_{12}-0.5|<0.06, small when 0.06≤|A^12−0.5|<0.140.06\leq|\hat{A}_{12}-0.5|<0.14, medium when 0.14≤|A^12−0.5|<0.210.14\leq|\hat{A}_{12}-0.5|<0.21, and large when |A^12−0.5|≥0.21|\hat{A}_{12}-0.5|\geq 0.21. For the IntTestGen–EvoSuite mutation comparison, the test is computed on the 119 CUTs for which EvoSuite produced measurable mutation scores. We count unmeasurable CUTs (instrumentation failures and timeouts) as zero in the reported averages but exclude them from the paired test to avoid biasing the comparison.
+4.5. Implementation Details
+All experiments run on a Precision 7960 Tower workstation with an Intel Xeon w9-3495X processor and dual NVIDIA RTX 6000 Ada GPUs. The implementation is written in Python and uses LangChain (26) for LLM integration. We use Qwen3-Coder-30B-A3B-Instruct-FP8 (35) as the backbone model and serve it locally with vLLM (25). This local deployment avoids API costs and privacy concerns associated with closed-source LLM services, making the experimental setting better suited to real projects.
+To ensure a fair comparison, we configure both IntTestGen and PANTA under identical settings. Specifically, both tools use a context window of 16 38416\,384 tokens, a sampling temperature of 0.2, and a maximum output length of 40964096 tokens, as in PANTA (17). We set the maximum number of generation iterations Ni​t​e​rN_{iter} to 30, the maximum number of repair attempts Nf​i​xN_{fix} to 5, and the plateau-based early-stopping patience to 4. We selected these values based on PANTA experimental results, where test generation for most CUTs converged under this configuration. Using the same generous budget lets us fully exercise both PANTA and IntTestGen and ensures the comparison is not biased by premature stopping. For both tools, we set the generation target to 100% line coverage. Test generation stops once this target is reached or when the iteration budget or plateau criterion is triggered. For the program slicer used in IntTestGen, we adopt Joern, a widely used code analysis framework that supports code property graph-based analysis. For mutation testing, we use the default set of mutation operators, following the practice of MUTGEN (39) and PANTA (17).
+For EvoSuite, we use version 1.2.0 with its default DynaMOSA search. Each CUT is given a 300-second search budget, but CUTs that do not converge within this budget are re-run with an increased budget of up to one hour. All CUTs are thus complete by convergence (median 55 seconds), and EvoSuite’s results are not limited by an insufficient budget. EvoSuite’s mutation score is measured with PIT using the same operator set and flags as for IntTestGen and PANTA; CUTs where EvoSuite produced no usable tests or where PIT timed out are counted as zero (details in Section 6). On Deps4J (Java 17), EvoSuite 1.2.0 cannot process Java 17 bytecode and completes for only 4 of 30 CUTs (all in jquick-curl). We therefore report EvoSuite results on Defects4J in full and only its jquick-curl results on Deps4J, which we discuss separately in Section 5.1.
+5. Experimental Results
+5.1. RQ1 Results (Effectiveness)
+Table 3. Comparison of IntTestGen (MM), Panta (PP), and EvoSuite (EE) on Defects4J and Deps4J. Number of Tests: total tests per project (EvoSuite: sum over CUTs of the mean tests per successful seed). Line/Branch Coverage: per-CUT averages. #Mutants: total mutants per project, identical across systems since PIT generates the same mutant set. Mutation Score: percentage of killed mutants. Project DepLC: covered dependency lines, project-level union. The Stat. test rows report the paired Wilcoxon pp-value and A^12\hat{A}_{12} effect size of IntTestGen against each baseline: values under PP are M vs. P; values under EE are M vs. E (per-CUT tests for line/branch/mutation; per-project tests for test count and DepLC). “–”: not available or not comparable.
+Dataset
+Project
+Number of Tests
+Line Coverage
+Branch Coverage
+#Mutants
+Mutation Score
+Project DepLC
+MM
+PP
+EE
+MM
+PP
+EE
+MM
+PP
+EE
+MM
+PP
+EE
+MM
+PP
+EE
+Defects4J
+Cli
+65
+75
+40.8
+96.18
+78.13
+96.2
+89.88
+57.44
+95.8
+173
+57.23
+43.93
+57.9
+138
+131
+211
+Codec
+196
+284
+200.8
+90.95
+83.92
+97.4
+86.57
+74.29
+96.4
+1207
+37.37
+40.51
+66.9
+415
+420
+429
+Collections
+387
+351
+351.3
+93.41
+70.79
+80.4
+90.60
+67.75
+81.1
+711
+72.86
+57.81
+58.1
+717
+781
+1189
+Compress
+197
+524
+125.3
+85.89
+55.77
+48.2
+78.77
+49.43
+47.7
+1570
+40.76
+24.01
+25.9
+2368
+17
+691
+Csv
+142
+254
+135.8
+96.52
+69.40
+89.4
+87.90
+55.25
+89.1
+419
+29.36
+21.72
+64.4
+84
+69
+76
+Gson
+162
+619
+185.4
+86.86
+74.98
+80.2
+81.96
+60.81
+77.5
+771
+56.55
+53.96
+48.2
+587
+776
+1045
+JCore
+394
+486
+606.6
+80.49
+51.02
+87.5
+74.69
+44.79

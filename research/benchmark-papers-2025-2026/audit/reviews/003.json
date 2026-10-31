@@ -1,0 +1,43 @@
+{
+  "rank": 3,
+  "title": "Reflective Unit Test Generation for Precise Type Error Detection with Large Language Models",
+  "datasets": [
+    "69 type-error bugs across 16 projects from BugsInPy and TypeBugs; 138 buggy/fixed focal methods"
+  ],
+  "task": "type-error-revealing test generation",
+  "input_setting": "buggy focal code, shortest representative caller chain, inferred backward type constraints; assertions removed before execution",
+  "author_artifact_url": "https://github.com/chenyangyc/RTED",
+  "author_relationship_evidence": "Paper artifact link and repository README explicitly name RTED and this paper.",
+  "source_commit_or_archive": "ef10c4e1620cb618037a901092d266590e6b80bb",
+  "license": "No project license file verified; GitHub license null",
+  "exact_models": [
+    "DeepSeek-V3, temperature 0, all main agents",
+    "Qwen3-Coder in v2 RQ generalization; mixed DS generation/QC reflection also evaluated"
+  ],
+  "weights_status": "No fine-tuning required. Source config uses deepseek-ai/DeepSeek-V3, not an immutable API snapshot; Qwen3-Coder variant/checkpoint not pinned.",
+  "evaluation_route": "Author steps 0–4, per-project Conda environments; preprocessed focal methods, call chains and inferred constraints supplied; dual-version TypeError execution and reflection logs.",
+  "blockers": [
+    "No author code/model execution performed",
+    "Legacy dependency fixes and per-project environment setup required",
+    "Docker image only promised in README",
+    "requirements.txt lists tree-sitter packages but not complete OpenAI/dependency environment",
+    "LLM-derived constraints and reflection can hallucinate; narrow TypeError oracle does not assess arbitrary functional bugs"
+  ],
+  "concept_fit": "High for type constraints propagated across callers; narrow bug class and no executable assertion oracle.",
+  "recommendation": "Keep as strong Python type-constraint base, conditional reproduction. Correction to old scan: v2 DOES evaluate Qwen3-Coder. Do not equate constraints with sound symbolic analysis.",
+  "citations": [
+    "https://arxiv.org/html/2507.02318v2",
+    "https://github.com/chenyangyc/RTED/tree/ef10c4e1620cb618037a901092d266590e6b80bb"
+  ],
+  "fulltext_read": true,
+  "read_path": "papers/rted/public_evidence/paper_fulltext.txt",
+  "read_sha256": "5e56f8e92b74fe848c890fde11e9c8132ab9d8d64819fc19c774023c9528980a",
+  "read_source": "https://arxiv.org/html/2507.02318",
+  "dataset_use_verified": true,
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "reproduction_verdict": "conditional",
+  "reviewed_at": "2026-10-15T08:18:52.797297+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

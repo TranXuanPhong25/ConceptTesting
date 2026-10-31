@@ -1,0 +1,56 @@
+{
+  "rank": 24,
+  "title": "iCoRe: An Iterative Correlation-Aware Retriever for Bug Reproduction Test Generation",
+  "fulltext_read": true,
+  "read_path": "papers/icore/public_evidence/paper_fulltext.txt",
+  "read_sha256": "e9997ad0da71aad82d9038cb34b08f44f438616e342fe49e036560d15793104e",
+  "read_source": "https://arxiv.org/html/2604.19224v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "SWT-Bench Lite: 276 Python issues",
+    "TDD-Bench Verified: 449 Python issues"
+  ],
+  "task": "Retrieval for bug reproduction test (BRT) generation; separate production-code retrieval from test retrieval and iteratively refine test context with sketch-BRT textual and function-call similarity.",
+  "input_setting": "Issue report + buggy Python repository; retrieve production code by extracted entities and structural heuristic; initial tests by LLM exploration; generate sketch BRT; retrieve/rerank more tests over BM25 and weighted function-call-tree similarity; basic LIBRO-style generator produces 10 candidates and ranks top k.",
+  "author_artifact_url": "https://github.com/ZJU-CTAG/iCoRe",
+  "author_relationship_evidence": "Paper §10 Data Availability points to ZJU-CTAG/iCoRe for replication code/data/appendix. Repository name and files match iCoRe modules and paper’s retrieval/BRT stages.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "4ef1b08a288e519ff5d5a44775b5be8d0afb5626",
+  "license": "No software license in GitHub API metadata or repository root. Paper PDF is CC BY-NC-ND 4.0, which is not an explicit code license.",
+  "exact_models": [
+    "GPT-4o: paper specifies gpt-4o-2024-08-06; source maps gpt-4o to this snapshot.",
+    "DeepSeek-V3: paper-level model; source maps to deepseek-ai/DeepSeek-V3 through OpenAI-compatible endpoint.",
+    "Qwen3-32B: source maps to Qwen/Qwen3-32B through OpenAI-compatible endpoint; no weights shipped.",
+    "Retrieval keyword/exploration/sketch/reranking stages at temperature 0; basic BRT generator temperature 0.7 and 10 candidates; 3 retrieval iterations, max 5 tests retained."
+  ],
+  "weights_status": "No fine-tuning. GPT-4o requires hosted API; DeepSeek/Qwen models are called through configured OpenAI-compatible endpoints, with no model weights included in the package.",
+  "evaluation_route": "Public package includes core source for code/tree retrieval, test retrieval, weighted tree-edit similarity, LLM reranking, LIBRO-style BRT generation, benchmark environment setup, prompt templates, cached retrieval contexts and SWT-Bench Lite generated patches/ablations/baselines. Public SWT Lite iCoRe patch file has 276 unique rows; TDD retrieval contexts are present, but no TDD final generated-patch artifact found. Requirements are unpinned; README provides environment setup and scripts. Static inspection only; no code execution, no API call.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Repository code has no declared license; paper CC BY-NC-ND 4.0 applies to paper, not clearly to code.",
+    "Exact replay needs LLM API-compatible endpoints and paid GPT-4o calls; paper reports $0.28 per SWT Lite instance and $0.26 per TDD Verified instance. For all 276+449 tasks this is about $194.02 by arithmetic estimate, not spent.",
+    "The repository contains 276 SWT Lite iCoRe generated patches and retrieval contexts for 663 combined issue IDs, but no TDD-Bench final generated patches/results artifact was found; reported 52.8% on 449 TDD tasks is not directly auditable from cached final outputs.",
+    "Retrieval contexts include model-specific artifacts and some baselines (e.g., AssertFlip output has 268 rather than 276 rows); reproduce comparisons only after matching included issues and artifact versions.",
+    "Requirements are unpinned and need legacy SWE-bench/TDD-Bench Docker environments, tree-sitter/Pyan static function-call extraction, and multiple model endpoints.",
+    "Otter retrieval baseline was reimplemented by the authors because its official retrieval outputs were unavailable; this comparison is less independently checkable than cached AEGIS/AssertFlip/BM25 contexts."
+  ],
+  "concept_fit": "High as a retrieval/structural-context baseline for concept-guided tests: call-tree similarity provides behavioral context, but the paper’s main contribution is retrieval quality, not root-cause taxonomy or a reusable concept representation.",
+  "recommendation": "Strong and relatively practical research baseline: author code, prompt templates, retrieval artifacts and all SWT Lite prediction/ablation files are public; exact GPT snapshot and model parameters are specified. Suitable for a controlled retrieval comparison if the user approves API spend and selects a license-compatible reuse plan. Before claiming full replication, obtain/check TDD final output artifacts and reconcile missing baseline rows. Not a Defects4J/BugsInPy study.",
+  "citations": [
+    "https://arxiv.org/html/2604.19224v2",
+    "https://github.com/ZJU-CTAG/iCoRe/tree/4ef1b08a288e519ff5d5a44775b5be8d0afb5626",
+    "https://raw.githubusercontent.com/ZJU-CTAG/iCoRe/4ef1b08a288e519ff5d5a44775b5be8d0afb5626/README.md",
+    "https://raw.githubusercontent.com/ZJU-CTAG/iCoRe/4ef1b08a288e519ff5d5a44775b5be8d0afb5626/scripts/utils/llm_api.py",
+    "https://raw.githubusercontent.com/ZJU-CTAG/iCoRe/4ef1b08a288e519ff5d5a44775b5be8d0afb5626/test_retrieval.sh"
+  ],
+  "supporting_locations": [
+    "Paper §§3–10 and Appendices A–B; full-text cache SHA-256 e9997ad0da71aad82d9038cb34b08f44f438616e342fe49e036560d15793104e",
+    "Pinned source audit: papers/icore/public_evidence/source-audit.json",
+    "Source files include retrieval/function-call tree modules, prompts, data, benchmark env scripts and results/patches/*.jsonl.",
+    "Cached SWT Lite iCoRe output SHA-256 b43bce38cbbc0230c07e1ac46081c76fe7cb451aebe4da00de2421ccaf453443 (276 rows); GPT retrieval code/test contexts have 663 issue keys each."
+  ],
+  "reviewed_at": "2026-10-15T12:05:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

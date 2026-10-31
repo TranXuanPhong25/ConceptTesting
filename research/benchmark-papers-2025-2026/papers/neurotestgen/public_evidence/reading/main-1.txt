@@ -1,0 +1,168 @@
+NeuroTestGen: Neuro-Symbolic Guided Test Generation with Large Language Models
+Report GitHub Issue
+×
+Title:
+Content selection saved. Describe the issue below:
+Description:
+Submit without GitHub
+Submit in GitHub
+arXiv is now an independent nonprofit!
+Learn more
+×
+Back to arXiv
+Why HTML?
+Report Issue
+Back to Abstract
+Download PDF
+Abstract
+1 Introduction
+2 Problem Formulation
+2.1 Pure Symbolic Execution for Solving Pure Numerical Paths
+2.2 LLM-Based Path Solving for Object-related Paths
+2.3 Prompt Building and Test Case Generation
+3 Experiments
+3.1 Datasets
+3.2 Baseline and LLM Selection
+3.3 Evaluation Metrics
+4 Results
+4.1 Main Results of NeuroTestGen’s Performance
+4.2 Impact of Different Models
+4.3 Ablation Study
+5 Related Work
+5.1 LLM-Based Test Generation
+5.2 Symbolic Execution
+6 Conclusion
+References
+A Failure Analysis
+A.1 Partially Covered Lines and Branches
+A.2 Unreachable Paths
+A.3 LLM Capability Limitation
+B Impact Statements
+License: CC BY 4.0
+arXiv:2609.30178v1 [cs.SE] 24 Sep 2026
+NeuroTestGen: Neuro-Symbolic Guided Test Generation with Large Language Models
+Ruixin Zhang
+Affiliation: York University
+Email: jason666@my.yorku.ca
+Jiho Shin
+Affiliation: York University
+Email: jihoshin@yorku.ca
+Hung Viet Pham
+Affiliation: York University
+Email: hvpham@yorku.ca
+Song Wang
+Affiliation: York University
+Email: wangsong@yorku.ca
+Abstract
+Ensuring high structural coverage remains a fundamental challenge in automated test generation, particularly for complex software systems where reaching specific lines or branches requires satisfying intricate control- and data-flow constraints. Large Language Models (LLMs) have recently demonstrated strong capabilities in producing human-like test cases; however, they often struggle to generate inputs that satisfy precise path conditions.
+Conversely, symbolic execution can systematically derive such constraints, but it often fails to construct realistic, executable test cases and is constrained by scalability limitations.
+In this paper, we introduce NeuroTestGen, a hybrid approach that integrates symbolic execution with LLM-driven test synthesis to generate test cases targeting on-demand code coverage. Given a set of target statements within a method, NeuroTestGen first employs a symbolic analysis engine (i.e., the Z3 SMT solver) to extract path-specific constraints and construct a symbolic guidance specification for the desired coverage goal. This specification is then used to guide an LLM in synthesizing concrete test cases that are both structurally valid and semantically meaningful.
+For paths involving complex object-related constraints that are difficult for SMT solvers to handle, NeuroTestGen leverages LLMs to infer plausible constraints. Furthermore, NeuroTestGen incorporates an iterative feedback loop that validates LLM-generated tests and provides corrective guidance until the target line or branch is covered or a limit is reached.
+Our empirical evaluation on a widely used benchmark demonstrates that NeuroTestGen significantly outperforms the state-of-the-art approach across multiple LLMs, including Llama 3.3 70B1, GPT-4o Mini, Claude 3.5 Haiku3, and Claude Sonnet 4.6.
+1 Introduction
+Motivation: Software testing remains one of the most effective and widely used approaches for revealing faults in modern software systems Ammann and Offutt (2017).
+Despite decades of research, automatically generating high–quality tests that achieve precise structural coverage, such as reaching a specific line, branch, or path, remains a fundamental challenge Schäfer et al. (2023). Traditional test generation techniques, such as symbolic execution Baldoni et al. (2018), search-based testing Formica et al. (2023), and concolic execution Yun et al. (2018), have made substantial progress toward systematic exploration of program behavior. However, these techniques often struggle to scale to real-world software and frequently fail to produce readable, maintainable tests that developers can easily adopt within existing test suites.
+Recent advancements in Large Language Models (LLMs) have opened new possibilities for automated test generation Wang et al. (2024a). LLMs demonstrate remarkable ability to synthesize human-like unit tests, construct realistic input objects, compose correct API sequences, and integrate naturally with frameworks such as JUnit Tufano et al. (2020); Watson et al. (2020); Dinella et al. (2022).
+Yet, LLM-based test generation suffers from a critical limitation: while LLMs excel at generating plausible tests, they lack the precise reasoning required to construct tests that satisfy specific path constraints.
+Achieving a target branch or line often requires meeting intricate control-flow and data-flow conditions, maintaining object invariants, or triggering specific program states, capabilities that LLMs alone cannot reliably guarantee Wu et al. (2024); Wu et al. (2026b).
+To address this limitation, recent approaches have attempted to combine LLMs with program analysis techniques. One state-of-the-art approach is Panta Gu et al. (2026), which integrates static control-flow analysis and dynamic coverage feedback to iteratively guide LLMs toward uncovered program paths and improve structural coverage. While this hybrid design demonstrates the potential of combining LLMs with traditional analysis techniques, it still places excessive reliance on the LLM’s reasoning and code-generation capabilities. In practice, Panta directly includes uncovered execution paths in prompts without determining whether those paths are feasible or satisfiable. As a result, the LLM may repeatedly attempt to generate tests for infeasible paths, leading to wasted token budgets, redundant generations, and unstable performance. Furthermore, because Panta does not explicitly resolve path constraints, infer concrete input conditions, or reason about method signatures and object states before generation, much of the semantic reasoning burden is delegated entirely to the LLM. This over-reliance can easily confuse the model and lead to ineffective or suboptimal test generation, particularly for programs with complex branching logic and intricate input dependencies.
+In contrast, symbolic execution Baldoni et al. (2018) is highly effective at reasoning about the logical conditions required to reach targeted program behaviors. Given a target line or branch, symbolic execution can systematically derive path constraints, identify necessary input conditions, detect infeasible paths, and uncover required API invocation sequences. However, symbolic execution alone typically produces low-level constraints or concrete input values rather than complete, readable, and developer-friendly test cases. Furthermore, its practical applicability is often limited by scalability challenges, including path explosion and complex heap reasoning in large object-oriented systems.
+These observations expose a clear gap: Symbolic execution is good at constraint reasoning but poor at producing developer-friendly tests. LLMs generate high-quality tests but struggle to satisfy precise coverage goals.
+Technique: To bridge this gap, we propose NeuroTestGen, a neuro-symbolic test generation approach that leverages the complementary strengths of symbolic reasoning and LLMs to achieve targeted structural coverage on demand. Given a set of target statements within a method, NeuroTestGen first employs a symbolic analysis engine, i.e., the Z3 SMT solver De Moura and Bjørner (2008), to systematically explore feasible execution paths and extract path-specific constraints required to reach each target. These constraints are then encoded into a symbolic guidance specification that captures the necessary input conditions for achieving the desired coverage goal. This specification serves as structured guidance for an LLM, enabling it to synthesize concrete test cases that not only satisfy the underlying path conditions but also remain syntactically correct, executable, and semantically meaningful within the program context.
+For paths involving complex object-oriented behaviors, such as aliasing, heap structures, or API-specific semantics that are difficult for SMT solvers to precisely model, NeuroTestGen leverages the reasoning capabilities of LLMs to infer plausible constraints and complete partial specifications. This neuro-symbolic collaboration allows the system to overcome limitations of purely symbolic reasoning while preserving guidance grounded in program semantics. Furthermore, NeuroTestGen incorporates an iterative feedback loop in which generated test cases are executed and validated against the target coverage objectives. When a test fails to cover the intended line or branch, the system analyzes execution feedback (e.g., constraint violations or runtime behaviors) and provides corrective signals to refine subsequent generations. This process continues until the target is successfully covered or a predefined iteration budget is reached, ensuring both effectiveness and efficiency in test generation.
+Results: Our empirical evaluation on the widely used Defects4J benchmark Just et al. (2014), including 2,971 methods from 130 classes across 14 projects, demonstrates that NeuroTestGen consistently improves upon the state-of-the-art test generation approach Gu et al. (2026) across multiple LLMs, including Llama 3.3 70B, GPT-4o Mini, Claude 3.5 Haiku, and Claude Sonnet 4.6. Moreover, NeuroTestGen combined with Claude Sonnet 4.6 achieves the best overall performance, reaching 92.91% line coverage and 88.89% branch coverage while maintaining high test validity. These results demonstrate that integrating symbolic reasoning with LLM-guided synthesis substantially improves both the effectiveness and robustness of automated unit test generation across LLMs of varying capability and cost.
+2 Problem Formulation
+Figure 1: Overview of NeuroTestGen
+The overall workflow of our approach is illustrated in Figure 1. Given a project and a target source file, we first prompt an LLM to generate an initial set of test cases, providing a baseline for subsequent analysis. We then perform static code analysis to construct the control flow graph (CFG) and enumerate feasible execution paths for each method.
+Then our approach integrates dynamic coverage feedback with CFG-derived paths to identify candidate paths that remain uncovered.
+A path history log is maintained to avoid repeatedly selecting paths that have consistently failed to be covered after multiple attempts.
+An uncovered path is categorized into two types: pure numerical and object-related.
+A path is considered pure numerical when its execution logic consists exclusively of numerical computations, such as arithmetic operations, modulo calculations, comparisons, and bitwise manipulations, and all branch predicates are defined solely over primitive numerical variables without involving object states or external method semantics.
+In contrast, a path is considered object-related when its execution depends on object semantics or higher-level program abstractions, including object creation and access, method invocations, library API calls, constant/global object references, or complex string operations.
+These categories are handled differently during the symbolic execution stage, enabling NeuroTestGen to better address the distinct challenges posed by numerical constraints versus complex object interactions.
+2.1 Pure Symbolic Execution for Solving Pure Numerical Paths
+1
+public static int adjust(int n) {
+2
+if (n < 0) {
+3
+return -1;
+4
+}
+5
+if (n == 2) {
+6
+return 2;
+7
+}
+8
+n = n | 1;
+9
+if (n == 1) {
+10
+return 2;
+11
+}
+12
+final int rem = n % 3;
+13
+if (0 == rem) {
+14
+n += 2;
+15
+}
+16
+return n;
+17
+}
+(a) An example of an uncovered pure numerical path in method adjust(), where execution starts from the method entry, bypasses the earlier return branches, and reaches the branch rem == 0 at lines 13–15, which is not covered by the current test suite.
+1
+final class Mode {
+2
+static final Mode STRICT = new Mode();
+3
+private Mode(){}
+4
+}
+5
+6
+public static int classify(String text, Mode mode) {
+7
+if (text == null) {
+8
+return -1;
+9
+}
+10
+if (text.trim().isEmpty()) {
+11
+return 0;
+12
+}
+13
+if (mode == Mode.STRICT &&
+text.startsWith("A")) {
+14
+return 1;
+15
+}
+16
+return 2;
+17
+}
+(b) An example of an uncovered object-related path in method classify(), where execution reaches the object-dependent branch mode == Mode.STRICT && text.startsWith("A") at lines 13–15, which is not covered by the current test suite.
+Figure 2: Examples for pure numerical path and object-related path
+For pure numerical paths, we employ SMT-based symbolic execution to precisely solve path constraints without relying on LLM reasoning. Figure 2(a) illustrates such a case. In the example, the uncovered branch at lines 13–15 depends entirely on numerical constraints derived from the input variable n. Since the path contains no object states, heap references, or complex API semantics, it can be solved accurately using symbolic reasoning alone.
+To solve this type of path, we leverage the Z3 SMT solver De Moura and Bjørner (2008). We first extract the method parameters and create corresponding symbolic variables according to their declared types. During symbolic execution, the selected path is traversed sequentially while maintaining a symbolic environment that records the symbolic value of each program variable. Assignment statements update the symbolic state, whereas the original symbolic inputs are preserved for final model construction.
+For each branch condition along the path, we translate the predicate into a Z3-compatible constraint. If the execution path follows the false branch of a condition, the predicate is negated before being added to the solver (e.g., we translate if (n < 0) is False to Not(n < 0) and add it to the solver). Numerical expressions involving arithmetic operators, modulo operations, and bitwise operations are directly encoded into SMT formulas. In the example shown in Figure 2(a), the symbolic executor accumulates constraints from the preceding branches and finally derives the constraint associated with line 13, i.e., 0 == rem, where rem = n % 3. Solving the resulting constraint system enables the solver to synthesize concrete input values that drive execution into the uncovered branch at line 14.
+To control solving complexity and maintain efficiency, we currently skip loop bodies during symbolic execution, as loop handling typically requires loop unrolling or invariant inference, both of which can substantially increase constraint complexity and solving overhead. After all constraints along the selected path are collected, Z3 checks the satisfiability of the path condition. If the constraint set is satisfiable, we extract concrete input assignments from the generated model and use them as guidance for subsequent test generation. Otherwise, the path is regarded as infeasible and excluded from the current generation attempt.
+2.2 LLM-Based Path Solving for Object-related Paths
+While symbolic execution is effective for solving numerical constraints, it becomes significantly less effective on object-related paths.
+Such paths often depend on semantic knowledge that cannot be easily encoded into SMT constraints. Figure 2(b) presents an example of an object-related path. In this example, reaching the uncovered branch at lines 13–15 requires simultaneously satisfying two semantic conditions: the input object mode must reference the singleton object Mode.STRICT, and the string parameter text must satisfy the predicate text.startsWith("A"). These conditions involve object identity comparison and string API semantics, which are difficult to model precisely using traditional symbolic execution alone.
+To address this challenge, we employ an LLM-based path-solving strategy using a specialized component called LLM-Path-Solver. Given a object-related path, we avoid translating the path into SMT constraints. Instead, we provide the path information directly to the LLM-Path-Solver, including the source code, method signature, uncovered branch conditions, and execution path context. Based on this information, the model reasons about the program semantics and synthesizes concrete method inputs capable of driving execution toward the target branch.
+For the example shown in Figure 2(b), the LLM-Path-Solver infers that the branch condition at line 13 can only be satisfied when mode equals Mode.STRICT and the input string begins with the character "A". Accordingly, it may generate an input such as classify("Apple", Mode.STRICT), which enables execution to enter the uncovered branch and cover line 14.
+Since LLM-generated inputs may still contain reasoning mistakes or semantic hallucinations, we further introduce a secondary validation stage using another model named LLM-Verifier. The verifier symbolically traces the target method using the generated input and checks whether the execution indeed follows the intended path. If the verification fails, the rejection reason, together with the invalid input, is fed back to the LLM-Path-Solver for iterative refinement. This feedback-driven process continues until a valid input is generated or a predefined retry limit is reached.
+Once a valid input is confirmed, the generated concrete values are appended to the downstream test-generation prompt as path guidance examples.
+2.3 Prompt Building and Test Case Generation
+After symbolic execution, the candidate paths and their corresponding input references are formatted into prompts for test generation.
+To enrich the context provided to the LLM, we augment these prompts with explicit type information by annotating variables directly in the code as comments. For example, an initialization such as Date date = new Date() is transformed into Date date = new Date() // ‘‘date’’ is a variable of type ‘‘Date’’. We similarly handle container types (e.g., arrays, ArrayList, Set, and Map) by appending element-type annotations, such as // ‘‘list’’ is

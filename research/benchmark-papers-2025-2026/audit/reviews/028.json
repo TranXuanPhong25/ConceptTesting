@@ -1,0 +1,52 @@
+{
+  "rank": 28,
+  "title": "Exploring Generalizable Automated Program Repair with Large Language Models",
+  "fulltext_read": true,
+  "read_path": "papers/generalizable-apr/public_evidence/paper_fulltext.txt",
+  "read_sha256": "e48e10bcc5813102b0cfa263d8539481e000f0d3557b4d90d55c880d32c5a752",
+  "read_source": "https://arxiv.org/html/2506.03283v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Defects4J v3.0 (Java)",
+    "BugsInPy (Python)",
+    "BugsJS (JavaScript)",
+    "BugsPHP (PHP)"
+  ],
+  "task": "Empirical evaluation of LLM-based automated program repair, pass@1/pass@5 plausible patch generation across languages, prompt ingredients, fault localization granularity and patch complexity.",
+  "input_setting": "Buggy single-function code; zero-shot prompt with optional failing test/error data, perfect function/line localization, or top-3 FLACOCO suspect functions on Defects4J; generate 15 patches/task across three runs.",
+  "author_artifact_url": "https://figshare.com/s/947fd7030f10a67a1c9f",
+  "author_relationship_evidence": "Paper §7 Data Availability links exact Figshare share item; item title names the study and page metadata refers to its published IEEE Access version. The item indicates results/generated-patch supplement. No author code repository linked or located.",
+  "public_source_checked": true,
+  "source_status": "partial",
+  "source_commit_or_archive": "Figshare shared supplemental item (457.69 MB, modified 2026-07-14); no public repository commit identified.",
+  "license": "Figshare metadata states CC BY 4.0 for supplement. No implementation code/license identified.",
+  "exact_models": [
+    "13 models: GPT-4o (dated version 2024-11-11), OpenAI o3-mini (2025-01-31), Claude 3.7 Sonnet, Claude 3.5 Haiku, Gemini 1.5 Pro, Gemini 2.0 Flash, CodeLlama 13B/70B, Llama 3.3 70B, DeepSeek Coder 33B, DeepSeek R1 distill 70B, Qwen 2.5 Coder 32B, CodeGemma 7B.",
+    "15 patch generations/task, three batches of five, temperature 1.0."
+  ],
+  "weights_status": "No fine-tuning. Proprietary model endpoints needed for closed-model results; open-weight model names given but exact immutable weights/revisions are not pinned in available paper text.",
+  "evaluation_route": "Paper reports pass@1/pass@5 on four real bug datasets, prompt/FL/complexity variants; result/generated-patch supplement is linked through a Figshare private-share page (457.69 MB, CC BY 4.0), but file downloads were not available in this anonymous check. No source/scripts repository located. No code execution, patch generation, or API call performed.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "This is an APR evaluation, not reproduction-test generation or bug-root-cause taxonomy; it does not itself give human causal labels for bugs.",
+    "No author implementation or runnable experiment scripts were found. Figshare contains a large supplement but labels the item shared privately; web download returned 403 and anonymous HTTP HEAD returned 202 without content. The paper’s v2 says a reproduction package with prompting/analysis scripts would be added after acceptance, but accessible page does not document or expose those scripts.",
+    "Four dataset cohort counts are not reconciled between prose and Table 1: Defects4J 854 vs 845; BugsJS 453 vs 513; BugsPHP test split 513 vs Table 1 452; BugsInPy single-hunk 82 reproducible used vs 132 in Table 1. These may reflect filtering/version but method does not explain the differences in the read text.",
+    "The study generated ~195k patches across 13 models and four languages; closed models require API access and exact provider revisions are not pinned for all model families. Full rerun is expensive and the paper gives no total budget.",
+    "Evaluation relies on plausible-patch test pass rate, not manual patch correctness; authors discuss overfitting and contamination risks."
+  ],
+  "concept_fit": "Low-to-moderate for the test-generation thesis: useful evidence that test diagnostics and realistic imperfect localization affect repair, and that cross-language bug datasets have reproducibility issues. It does not generate tests or identify underlying bug causes.",
+  "recommendation": "Use as supporting background for choosing Defects4J/BugsInPy cohorts and designing imperfect-localization controls, not as the main thesis paper. The analysis suggests test failure signals help repair but does not answer root-cause taxonomy. Reproduction is conditional on obtaining the private-share supplement/scripts, resolving dataset denominators, and allocating multi-model API/compute budget.",
+  "citations": [
+    "https://arxiv.org/html/2506.03283v2",
+    "https://figshare.com/s/947fd7030f10a67a1c9f",
+    "https://violacampos.github.io/"
+  ],
+  "supporting_locations": [
+    "Paper §§1–8, Tables 1–7 and prompts; full-text cache SHA-256 e48e10bcc5813102b0cfa263d8539481e000f0d3557b4d90d55c880d32c5a752",
+    "Figshare page says shared privately, 457.69 MB, CC BY 4.0, modified 2026-07-14; download endpoint unavailable in this session.",
+    "Dataset cohort counts occur in §3.3 and Table 1; discrepancy summary recorded in source-audit.json."
+  ],
+  "reviewed_at": "2026-10-15T11:48:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

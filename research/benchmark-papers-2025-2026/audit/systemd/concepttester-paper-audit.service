@@ -1,0 +1,11 @@
+[Unit]
+Description=Continue user-authorized ConceptTester 500-paper audit
+ConditionPathExists=!/home/phong/dev/ConceptTester/research/benchmark-papers-2025-2026/audit/COMPLETE.json
+
+[Service]
+Type=oneshot
+WorkingDirectory=/home/phong/dev/ConceptTester
+ExecStart=/home/phong/.pyenv/versions/3.12.2/bin/python /home/phong/dev/ConceptTester/research/benchmark-papers-2025-2026/audit/scheduled_resume.py
+TimeoutStartSec=4h
+Environment=TZ=Asia/Ho_Chi_Minh
+

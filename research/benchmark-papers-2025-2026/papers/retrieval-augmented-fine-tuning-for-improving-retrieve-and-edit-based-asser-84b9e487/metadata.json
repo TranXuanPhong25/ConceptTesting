@@ -1,0 +1,36 @@
+{
+  "openalex_id": "https://openalex.org/W4409221414",
+  "title": "Retrieval-Augmented Fine-Tuning for Improving Retrieve-and-Edit Based Assertion Generation",
+  "year": 2025,
+  "publication_date": "2025-04-07",
+  "type": "article",
+  "doi": "https://doi.org/10.1109/tse.2025.3558403",
+  "primary_url": "https://doi.org/10.1109/tse.2025.3558403",
+  "pdf_url": null,
+  "venue": "IEEE Transactions on Software Engineering",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 28,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_author_artifact_verified",
+  "year_venue": "2025 IEEE Transactions on Software Engineering, vol. 51 no. 5 (primary PDF), DOI 10.1109/TSE.2025.3558403",
+  "datasets": [
+    "Dataatlas (156,760 TAP items overall; 15,676 test examples) and Dataintegration (265,420 items overall; 26,542 test examples), random 8:1:1 splits not project-disjoint; same projects may occur in train and test.",
+    "New cross-project test set of 15,676 Methods2Test TAPs, projects filtered to avoid train-project overlap.",
+    "Defects4J 2.0.0: paper states 835 bugs in 17 projects; focuses on 588 assertion-triggerable bugs; excludes exception-testing prefixes from assertion-generation evaluation."
+  ],
+  "models": "Main CodeT5-base 223M; paper also directly evaluates Qwen2.5-Coder-7B-Instruct with CoT on assertion inference.",
+  "artifact_url": "https://doi.org/10.5281/zenodo.15118614 (paper-linked replication package); https://github.com/Lhy-apple/EditAs2 (matching public source repo).",
+  "license": "Zenodo record CC BY 4.0; GitHub source archive has no explicit root software license",
+  "input_setting": "Input is a test prefix without assertions plus focal method; retrieval uses a training TAP as prototype. Defects4J evaluation combines generated assertion with EvoSuite-generated prefixes (from buggy versions) or supplied bug-triggering test prefixes, then checks failure on buggy and pass on fixed program. Not issue-report input or root-cause diagnosis.",
+  "reproduction_grade": "B- (public source/data/model archive route; exact replay conditional on 1.94GB package inspection, env/path repair, immutable weights and weak precision)",
+  "concept_hook": "High: retrieval exemplar + focal-test semantic-edit representation for assertions; exact Qwen2.5-Coder-7B-Instruct baseline aligns with project, but no Qwen Defects4J bug-found metric.",
+  "limitation": "Dataset train/test split is not project-disjoint; compilation 30.97%, precision 0.42%; source archive uses old dependencies/hard-coded paths.",
+  "rank": 53,
+  "family": "oracle_assertion_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/retrieval-augmented-fine-tuning-for-improving-retrieve-and-edit-based-asser-84b9e487/NOTES.md"
+}

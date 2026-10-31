@@ -1,0 +1,50 @@
+{
+  "rank": 37,
+  "title": "CoverUp: Effective High Coverage Test Generation for Python",
+  "fulltext_read": true,
+  "read_path": "papers/coverup-effective-high-coverage-test-generation-for-python-42c7809e/public_evidence/paper_fulltext.txt",
+  "read_sha256": "a8b150b5406c4d5356679fc74cd443a0dc9e7b33d5cb038752342cb64201d43b",
+  "read_source": "https://arxiv.org/html/2403.16218v4",
+  "dataset_use_verified": true,
+  "datasets": [
+    "CM: 35 open-source Python projects and 425 modules (about 100k LOC), derived from projects previously used in BugsInPy and Pynguin evaluation; not the BugsInPy bug-version benchmark.",
+    "PY: 84 Python modules from CodaMosa exclusions; MT: 163 HumanEval functions for MuTAP comparison."
+  ],
+  "task": "LLM-based Python regression test generation guided by line/branch coverage, source context and execution feedback. Objective is coverage improvement on supplied/current source, not bug-specific reproduction or causal diagnosis.",
+  "input_setting": "Coverage report + uncovered function/class segment and imports; LLM may request additional code definitions, tests execute in isolation and are accepted if passing and increase coverage; otherwise iterative repair/follow-up.",
+  "author_artifact_url": "https://github.com/plasma-umass/coverup; https://github.com/plasma-umass/coverup-eval; https://zenodo.org/records/15187805",
+  "author_relationship_evidence": "Paper Data Availability explicitly links code and replication package; evaluation README identifies itself as the FSE’25 artifact and names the paper/authors/DOI. Both GitHub API repositories list Apache-2.0 and were pinned to inspected commits.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "plasma-umass/coverup commit d9ca25b9282621d2779560f2be397ab0683a6733 (68-entry tree); plasma-umass/coverup-eval commit f3173196b90181974b0b684600ffde42ac36672c (recursive tree has 54,279 entries, API marks truncated=True); companion pytest-cleanslate commit 2049c8adb59da0736d9405ba0ee7b7061dc9fd57.",
+  "license": "Apache-2.0 for CoverUp and replication package (also pytest-cleanslate). Third-party submodules retain their own licenses.",
+  "exact_models": [
+    "Paper main run: OpenAI gpt-4o-2024-05-13, temperature 0; CoverUp GPT-4o evaluation config pins same dated model.",
+    "CodaMosa Codex baseline reuses authors’ historical cached outputs; adapted GPT-4o baseline used the same dated model."
+  ],
+  "weights_status": "No model weights/fine-tuning; model is hosted API. Source supports LiteLLM/model configuration, enabling alternative LLMs but such outputs do not reproduce the paper’s exact scores.",
+  "evaluation_route": "Full paper (11,328 words) read. Evaluation package README contains datasets, benchmark-specific Docker setup, scripts to run CoverUp/CodaMosa/MuTAP, compare coverage, cost, runs and continued-dialogue data; archived code/tests/logs/results are present. Pin config gpt4o-v2.sh uses gpt-4o-2024-05-13, max attempts 3, prompt-family gpt-v2, isolate tests, repeat-tests 5. Static inspected eval_coverup.py, requirements, CoverUp llm.py/config and README. Paper reports $399 for CoverUp’s CM run (4h, 58M prompt tokens) and README warns full reproduction is in order of thousands of dollars; no model/API/code execution.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The model is a paid hosted GPT-4o API; paper model exactness is pinned, but current availability/cost must be checked before a full replay. The artifact warns full replication costs thousands of dollars.",
+    "Source datasets cover projects associated with prior BugsInPy evaluation but not actual BugsInPy historical buggy/fixed instances; no Defects4J or SWT-Bench bug-reproduction study.",
+    "Evaluation is regression coverage, not oracle correctness or fault-revealing strength; coverage gains cannot establish assertions match intended behavior.",
+    "Huge evaluation tree and Docker/dependency installation burden; generated outputs/cached results are available for offline analysis."
+  ],
+  "concept_fit": "Medium for process concepts (coverage gaps, source context and execution feedback as guidance), but no explicit root-cause/semantic concept representation. Tests are generated against current code and selected by coverage increase.",
+  "recommendation": "Use as a strong public Python test-generation/control baseline if evaluating coverage-guided prompting or model transfer with a custom model. Do not count CM as BugsInPy bug-level evaluation: it inherits project subjects, not historical bug versions. Not a suitable primary paper for root-cause analysis, SWT issue reproduction or functional-bug oracles.",
+  "citations": [
+    "https://arxiv.org/html/2403.16218v4",
+    "https://github.com/plasma-umass/coverup/tree/d9ca25b9282621d2779560f2be397ab0683a6733",
+    "https://github.com/plasma-umass/coverup-eval/tree/f3173196b90181974b0b684600ffde42ac36672c",
+    "https://zenodo.org/records/15187805"
+  ],
+  "supporting_locations": [
+    "Paper §§1–7, especially §4.1; extracted full text SHA-256 a8b150b5406c4d5356679fc74cd443a0dc9e7b33d5cb038752342cb64201d43b.",
+    "Pinned replication README documents test data, Docker routes, outputs, runs, metrics, and high API cost. Config gpt4o-v2 pins model; relevant source and evaluation excerpt hashes in public_evidence/source-audit.json.",
+    "GitHub API tree metadata: CoverUp 68 entries; evaluation repository 54,279 entries (recursive response truncated); archived results and test-generation logs are present."
+  ],
+  "reviewed_at": "2026-10-15T12:15:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

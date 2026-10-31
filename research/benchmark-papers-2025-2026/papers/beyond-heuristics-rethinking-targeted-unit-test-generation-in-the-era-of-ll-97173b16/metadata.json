@@ -1,0 +1,40 @@
+{
+  "openalex_id": "https://openalex.org/W7220438216",
+  "title": "Beyond Heuristics? Rethinking Targeted Unit Test Generation in the Era of LLM Agents",
+  "year": 2026,
+  "publication_date": "2026-01-01",
+  "type": "article",
+  "doi": "https://doi.org/10.4230/lipics.esem.2026.47",
+  "primary_url": "https://doi.org/10.4230/lipics.esem.2026.47",
+  "pdf_url": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol394-esem2026/LIPIcs.ESEM.2026.47/LIPIcs.ESEM.2026.47.pdf",
+  "venue": "DROPS (Schloss Dagstuhl – Leibniz Center for Informatics)",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 24,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_public_artifact_metadata_readme_verified",
+  "year_venue": "ESEM 2026 technical track; official LIPIcs article published 2026-10-05; CC BY 4.0",
+  "datasets": [
+    "210 Java runtime-exception bugs across 66 projects; 169 consolidated from existing benchmarks including Defects4J/BEARS/Genesis/NPEX/VFix plus 41 disclosed after model cutoff",
+    "Benchmark evaluates target exception type and exact source line; no pre/post-fix F2P oracle",
+    "No BugsInPy or SWT-Bench experiment"
+  ],
+  "models": [
+    "GPT-5",
+    "Claude-4.5-Sonnet",
+    "DeepSeek-V3.2"
+  ],
+  "artifact_url": "https://doi.org/10.5281/zenodo.20283766",
+  "license": "Zenodo CC BY 4.0; internal package license and upstream repository terms not inspected",
+  "input_setting": "Buggy Java repository + exact exception type and line location; generate JUnit suite that triggers target exception at target top stack-trace frame",
+  "reproduction_grade": "B-",
+  "concept_hook": "Targeted exception-trigger tests and qualitative analysis of agent exploration/reasoning failures",
+  "limitation": "2.16 GB Zenodo ZIP; README inspected but evaluation source not fully inspected; target line supplied, no issue-to-BRT/hidden-fix oracle, no root-cause labels for faults",
+  "rank": 69,
+  "family": "testing_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/beyond-heuristics-rethinking-targeted-unit-test-generation-in-the-era-of-ll-97173b16/NOTES.md"
+}

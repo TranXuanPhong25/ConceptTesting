@@ -1,0 +1,265 @@
+g prior work [21, 8], we integrated AssertMate with EvoSuite to demonstrate its practical applicability in our evaluation.
+Specifically, we selected focal methods based on the bug-fixing patches for each bug in Defects4J and used EvoSuite to generate corresponding test cases.
+The test generation process followed EvoSuite’s default configuration and relied on its built-in coverage criteria as the primary guidance.
+Following previous research [34, 21], we addressed EvoSuite randomness by allocating 10 minutes per target and using coverage-guided generation to maximize test case quality.
+To construct valid test prefixes for focal methods, we removed all assertions from the generated test cases.
+In total, we obtained 2,203 Evosuite-generated FM-TP pairs for evaluation.
+IV-B Baselines
+We selected four representative types of state-of-the-art assertion generation techniques for comparison, covering DL-based and language model-based approaches.
+EditAS is an information retrieval (IR)-based assertion generation technique. It retrieves a similar FM-TP pair and learns from the edit sequence between the retrieved pair and the input, modifying the retrieved assertion accordingly. EditAS leverages an attention-based LSTM encoder-decoder architecture [35] to perform the assertion generation process.
+TOGLL is a pre-trained language (PLM)-based assertion generation technique. It fine-tunes the CodeGen-350M model [36] on the SF110 dataset to perform assertion generation.
+RetriGen is an enhanced retrieval-augmented assertion generation technique that uses a hybrid assertion retriever, which considers both lexical and semantic similarity to identify the most relevant test-assert pair from external codebases. This hybrid retriever combines a token-based retriever with an embedding-based retriever.
+The retrieved assertion is then combined with the original focal test and used as input to fine-tune a PLM-based assertion generator, implemented on top of the CodeT5 model.
+ChatAssert is an LLM-based assertion generation technique. It first prompts ChatGPT to generate a detailed code summarization of the test prefix. In addition, it retrieves a one-shot example based on semantic similarity using UniXCoder [37] to enhance in-context learning. Finally, it asks ChatGPT to generate an assertion for the given test prefix and applies an “execute-and-fix” post-processing step to resolve potential issues (e.g., compilation errors).
+In this study, we focus specifically on assertion generation in the context of unit testing, where generating assertions without assuming function correctness is essential.
+To ensure fairness, we disabled the repair module in the original baseline, as its reliance on “bug-free functions” fundamentally contradicts the assumptions of unit testing. The adapted version is referred to as ChatAssert∗.
+IV-C Metrics
+Previous research mainly relied on metrics such as Exact Match, BLEU, and CodeBLEU to evaluate the effectiveness of assertion generation [6, 7, 4, 21, 8, 1].
+However, we argue that these metrics are insufficient for fully capturing the correctness and practical utility.
+On the one hand, Exact Match fails to account for semantically equivalent assertions that differ syntactically from the ground truth but exhibit identical behavior.
+On the other hand, minor textual differences may have a limited impact on BLEU or CodeBLEU scores, yet could lead to serious issues such as invalid syntax or compilation failures.
+To address these limitations, our evaluation primarily adopts six comprehensive metrics, Compilation Success Rate, Pass Rate, Bug Detection Rate, Number of Killed Mutants, Token Overhead, and Average Time.
+Our evaluation incorporates two complementary metrics to assess assertion quality from both syntactic and semantic perspectives. First, since producing compilable code constitutes the fundamental capability of any code generation system, we propose the Compilation Success Rate (CSR) metric to quantify syntactic correctness.
+This aligns with prior studies that employed the Exact Match metric as a proxy for syntax-level validity, which inherently depends on correct syntax.
+For semantic validation, we introduce the Pass Rate (PR) metric to evaluate functional correctness while mitigating false negatives arising from semantically equivalent assertions.
+To avoid conflating assertion quality with assertion quantity, we evaluate CSR and PR at the assertion-candidate level rather than at the test-case level.
+For each FM-TP pair, if AssertMate constructs NN actual values and therefore generates NN assertions, we give each baseline the same assertion budget by duplicating the same FM-TP input NN times and asking the baseline to generate NN assertions.
+Each generated assertion is then independently appended to the corresponding test prefix and wrapped as a separate single-assertion test case.
+In other words, an FM-TP pair with an assertion budget of NN produces NN independent test cases for each technique, each containing the same test prefix and one generated assertion.
+The metrics are formally defined as: CSR =Nc​o​m​p​i​l​e​dNt​o​t​a​l=\frac{N_{compiled}}{N_{total}}, PR =Np​a​s​s​e​dNt​o​t​a​l=\frac{N_{passed}}{N_{total}}, where Nc​o​m​p​i​l​e​dN_{compiled} denotes the number of test cases that compile successfully, Np​a​s​s​e​dN_{passed} represents the number of test cases that execute successfully, and Nt​o​t​a​lN_{total} is the total number of independently constructed single-assertion test cases under the normalized assertion budget.
+We employed a suite of metrics to systematically evaluate the bug-revealing capability of the generated assertions. The primary metric, Bug Detection Rate (BDR), quantifies the effectiveness in uncovering real-world bugs from the Defects4J benchmark.
+It is defined as the ratio of detected bugs (BdetectedB_{\text{detected}}) to the total number of applicable bugs (BtotalB_{\text{total}}), using the combination of generated assertions and bug-triggering test prefixes.
+To assess capability against synthetic defects, we adopted mutation testing metrics following established practice [8]: #​𝐶𝑜𝑣𝑒𝑟𝑒𝑑​𝑀𝑢𝑡𝑎𝑛𝑡𝑠\mathit{\#Covered\ Mutants} counts mutants executed by synthesized test cases, #​𝐾𝑖𝑙𝑙𝑒𝑑​𝑀𝑢𝑡𝑎𝑛𝑡𝑠\mathit{\#Killed\ Mutants} tallies mutants detected through assertion failures, and 𝐾𝑖𝑙𝑙​𝑅𝑎𝑡𝑒\mathit{Kill\ Rate} (𝐾𝑖𝑙𝑙𝑒𝑑𝐶𝑜𝑣𝑒𝑟𝑒𝑑\frac{\mathit{Killed}}{\mathit{Covered}}) measures the detection efficiency.
+This triangulated evaluation strategy provides a comprehensive understanding of assertion quality across both real-world and artificially injected bugs.
+When comparing LLM-based approaches, we measured computational efficiency through two key dimensions as proposed in [38].
+Token Overhead reflects resource consumption via the average token count (including both prompt and response) per query, while Average Time captures temporal cost as the mean processing duration per FM-TP pair.
+These metrics collectively assess practical deployment feasibility in contemporary AI-powered testing pipelines.
+IV-D Implementation and Environment
+Studied LLM. For AssertMate, we used DeepSeek-Coder-7B-Instruct (DC-7B) [39] as the backbone model. This choice was motivated by two main considerations: (1) prior research[5] has shown that DC-7B offers a favorable trade-off between cost and performance in unit test generation; and (2) we aim to demonstrate that AssertMate can more effectively leverage the capabilities of LLMs for assertion generation, even when using a smaller-scale model.
+Regarding the LLM inference configuration, we set the temperature to 1.0 to encourage response diversity, which aligns with our oversampling strategy for generating complementary candidate assertions. We set top-p to 1.0 to avoid additional probability truncation and set the maximum token limit to 4,000 to accommodate sufficiently long generations.
+Baseline Replication. For the baseline techniques, we either replicated them using their publicly available implementations or re-implemented them strictly following the descriptions provided in their papers.
+Specifically, for TOGLL, we followed the original design using CodeGen-350M [36] with the P5 input format, i.e., (T​P+[s​e​p]+F​MTP+[sep]+FM) for TOGLL.
+To ensure a fair comparison, we used the original training and testing datasets provided by the authors of both EditAS and TOGLL. We first reproduced their reported results to validate our setup and then retained their original hyperparameter configurations for evaluation.
+For RetriGen, we used the publicly available fine-tuned model parameters and replicated the experimental setup from the original paper.
+In this setup, the retrieved assertion is selected from the training set and combined with the focal method and test prefix to form the augmented input for generation [28].
+For ChatAssert∗, we used the official implementation released by the authors [40], but excluded the post-hoc repair component to align with the focus of this study.
+Environment.
+We implemented our pipeline using tree-sitter [41] for static program analysis, using PyTorch 2.1.0 [42] and Transformers 4.44 [43] to build the LLM runtime environment. Furthermore, we used the VLLM library [44] to accelerate model inference. All experiments were conducted on Ubuntu 20.04 LTS, equipped with an Intel Xeon Gold 6248R CPU, 512 GB RAM, and four NVIDIA A100 GPUs.
+V Results
+In this section, we present our three research questions along with their corresponding analysis processes and results.
+V-A RQ1: Effectiveness comparison among studied techniques
+TABLE I: Performance of Studied Assertion Generation Techniques on Human-Written test prefixes (RQ1)
+Technique
+CSR (%)
+PR (%)
+BDR (%)
+Token Overhead
+Avg. Time (s)
+Mean
+SD
+Mean
+SD
+Mean
+SD
+Mean
+SD
+Mean
+SD
+EditAS
+18.06
+0.24
+17.71
+0.27
+0.00
+0.00
+–
+–
+0.37
+0.01
+TOGLL
+12.05
+0.66
+11.83
+0.73
+0.00
+0.00
+–
+–
+0.81
+0.03
+RetriGen
+21.59
+0.23
+6.43
+0.25
+0.00
+0.00
+–
+–
+0.23
+0.01
+ChatAssert∗
+50.21
+1.83
+39.81
+2.04
+37.32
+1.82
+1,609.67
+103.72
+13.27
+0.43
+AssertMate
+76.78
+0.90
+60.09
+1.07
+46.25
+1.75
+5,284.70
+117.36
+15.31
+0.83
+Process: To answer RQ1, which compares the effectiveness of AssertMate with baseline techniques, we used the Human-Written FM-TP pairs (described in Section IV-A) as inputs and applied each studied technique to generate corresponding assertions. The generated assertions were then appended to the test prefixes to form complete test cases.
+We evaluated these test cases using the Defects4J benchmark and reported three key effectiveness metrics: Compilation Success Rate (CSR), Pass Rate (PR), and Bug Detection Rate (BDR). Additionally, to assess computational efficiency, we measured and reported the Token Overhead and Average Time for each technique.
+To mitigate stochasticity in LLM operations and improve result reliability, we independently ran AssertMate and every baseline five times with the same configuration and reported the per-technique mean and sample standard deviation (SD) for each metric.
+To assess the robustness of the observed improvements, we used Wilcoxon signed-rank tests [45] on paired outcomes after averaging the five repetitions. We additionally reported Cliff’s delta (δ\delta) [46] as a measure of effect size.
+The evaluation results are summarized in Table I.
+Results:
+Across five independent runs, AssertMate achieves mean CSR, PR, and BDR values of 76.78%, 60.09%, and 46.25%, respectively, with corresponding SDs of 0.90, 1.07, and 1.75 percentage points, demonstrating stable performance across runs.
+Overall, AssertMate consistently outperforms the studied deep-learning-based and LLM-based approaches.
+First, in terms of syntactic correctness, AssertMate achieves a 52.92% relative improvement in CSR over the best-performing baseline, ChatAssert∗ (50.21%).
+This substantial gain highlights the effectiveness of combining static program analysis with LLMs via ActVCon.
+Second, for semantic correctness, AssertMate delivers a 50.94% relative gain in PR over ChatAssert∗ (39.81%) likely due to the multi-agent collaboration strategy that integrates diverse prompting styles for improved semantic reasoning.
+Compared with the other approaches, AssertMate achieves 3.39×\times, 5.08×\times, and 9.35×\times higher PR of EditAS (17.71%), TOGLL (11.83%), and RetriGen (6.43%), respectively.
+Third, in bug detection, AssertMate attains the highest BDR on the Defects4J benchmark, compared with 37.32% for ChatAssert∗, while EditAS, TOGLL, and RetriGen failed to detect any bugs, yielding a BDR of 0%.
+TABLE II: Performance of studied assertion generation techniques on Evosuite-generated test prefixes (RQ2)
+Technique
+CSR (%)
+# Covered
+Mutants
+# Killed
+Mutants
+Kill
+Rate (%)
+EditAS
+65.15
+17,883
+2,071
+11.58
+TOGLL
+70.95
+29,224
+5,374
+18.39
+TOGLLDN*
+1.21
+138
+9
+6.52
+RetriGen
+35.54
+973
+196
+20.14
+ChatAssert∗
+79.08
+63,665
+8,738
+13.72
+EvoSuite
+100.00
+56,661
+8,184
+14.44
+AssertMate
+83.72
+76,840
+12,276
+15.98
+*
+TOGLLDN refers to the variant of TOGLL retrained on the unseen dataset.
+The statistical testing results further support the effectiveness of AssertMate over all baselines. Using the Wilcoxon signed-rank test with Cliff’s delta effect size analysis, we observe statistically significant improvements for all pairwise comparisons in terms of CSR, PR, and BDR.
+For the comparison between AssertMate and the best-performing ChatAssert∗, AssertMate achieves a significant improvement in CSR (p=2.974×10−29p=2.974\times 10^{-29}, δ=0.377\delta=0.377, medium effect), PR (p=9.383×10−22p=9.383\times 10^{-22}, δ=0.302\delta=0.302, small effect) and BDR (p=0.0489p=0.0489, δ=0.152\delta=0.152, small effect). These results demonstrate that the performance gains of AssertMate are statistically significant across the evaluated baselines.
+Efficiency analysis of computational costs reveals nuanced insights into AssertMate’s operational trade-offs. While our approach requires 3.28× more tokens per generation than ChatAssert∗ (5,284.70 vs. 1,609.67 tokens), primarily due to multi-prompt integration and quality-oriented oversampling, this is offset by three key advantages: (1) The open-source DC-7B model outperforms ChatGPT in CSR (76.78% vs. 50.21%), showing that targeted architecture can enable small-scale models to exceed larger ones;
+(2) Running 7B models is more cost-effective and practical than proprietary models like ChatGPT;
+(3) Multi-agent parallelism keeps generation time comparable to ChatAssert (15.31s vs. 13.27s per generation), especially considering AssertMate’s superior effectiveness.
+This balanced cost-performance profile makes AssertMate a compelling option for assertion generation in safety-critical or resource-constrained environments.
+RQ1 Summary:
+AssertMate demonstrates strong assertion generation performance, achieving mean CSR, PR, and BDR values of 76.78%, 60.09%, and 46.25%, respectively. The improvements over the baselines are statistically significant, corresponding to relative gains of 52.92%–537.18% in CSR and 50.94%–834.53% in PR.
+While consuming 3.28×\times more tokens than the state-of-the-art LLM-based approach ChatAssert∗, AssertMate maintains a practical trade-off with a controlled time and efficient performance using a small-scale open-source model.
+V-B RQ2: Integration with Evosuite
+Process: Following prior work [8], we integrated the studied assertion generation techniques with EvoSuite to evaluate their practical utility.
+Specifically, we used the EvoSuite-generated FM-TP pairs (described in Section IV-A) as inputs and followed the same procedure as in RQ1 to construct complete test suites. We then employed the mutation testing toolkit provided by Defects4J to assess the effectiveness of each technique in killing mutants. Our evaluation focused on Compilation Success Rate (CSR), the number of covered and killed mutants, and the kill rate. We did not report Pass Rate or Bug Detection Rate due to the lack of valid ground-truth expected outputs in the generated test cases, which makes distinguishing false positives infeasible in the unit testing scenario.
+The results are presented in Table II.
+Results:
+Evaluation results demonstrate that AssertMate represents an advancement in assertion generation integrated with EvoSuite, substantially outperforming baselines across both syntactic and semantic dimensions.
+In terms of syntactic validity, AssertMate achieves an 83.72% CSR, surpassing EditAS, TOGLL, RetriGen, and ChatAssert∗ by 28.50%, 18.00%, 135.57%, and 5.87%, respectively.
+Semantically, AssertMate exhibits outstanding assertion quality, killing 12,276 mutants, a 492.76%, 128.43%, and 40.49% improvement over EditAS, TOGLL, and ChatAssert∗, respectively.
+While RetriGen achieves the highest kill rate, it covers the fewest mutants and kills far fewer mutants than the other compared techniques.
+These results together underscore AssertMate’s ability to generate precise expected values, which are essential for detecting subtle faults in complex codebases.
+When compared to the classic generation tool EvoSuite, its extremely high CSR (100%) is expected, as EvoSuite’s evolutionary process inherently ensures that the generated tests compile successfully on the fixed program versions.
+In contrast, language model-based generators, including AssertMate, naturally face risks of syntactic hallucination, which can potentially reduce CSR. Nonetheless, AssertMate achieves the highest CSR among the studied assertion-generation techniques,
+effectively suppressing hallucinations relative to other baselines such as ChatAssert*.
+More importantly, AssertMate achieves substantially higher mutant coverage (76,840 vs. 56,661), kill counts (12,276 vs. 8,184), and kill rate (15.98% vs. 14.44%),
+demonstrating stronger fault-detection capability than EvoSuite.
+Despite these advantages, our evaluation also reveals areas for refinement. While AssertMate leads in the absolute number of killed mutants, its kill rate (15.98%) suggests room for improving the precision of generated assertions, especially in capturing subtle behavioral variations.
+We first note that overall, language model-based assertion generation approaches outperform the DL-based one (i.e., 11.58% achieved by EditAS).
+Among the language model-based baselines, RetriGen achieved the highest kill rate at 20.14%; however, it covered the fewest mutants, with only 973 detected.
+On the other hand, TOGLL shows a kill rate (18.39%), which may also superficially suggest superior assertion quality compared with AssertMate.
+However, our follow-up investigation uncovered a potential leakage issue: TOGLL was originally trained on the SF110 dataset [47], which includes EvoSuite-generated test cases.
+This overlap with the evaluation setup likely inflated its performance.
+To test this hypothesis, we retrained TOGLL using D​a​t​an​e​wData_{new} dataset collected by Yu et al [7]
+and observed a sharp decline in performance, with the kill rate dropping from 18.39% to 6.52% (as shown in Table II, line TOGLLDN).
+This confirms the susceptibility of data-driven PLM-based methods to training–test distribution alignment and highlights a key limitation where real-world assertion generation tasks rarely have access to aligned test data during training.
+Together, these findings indicate that existing approaches relying on fine-tuning exhibit limited generalizability.
+TABLE III: Performance of studied variants (RQ3)
+Metric
+Single Agent
+Collaboration
+ActVCon
+AssertMate
+CGA
+RAGA
+CoTA
+Debate
+Voting
+AssertMate-
+ChatAssert∗+
+CSR
+52.01
+61.46
+70.74
+73.53
+75.32
+12.46
+51.24
+76.78
+PR
+43.96
+41.79
+46.59
+53.25
+44.73
+10.27
+52.17
+60.09
+BDR
+38.39
+35.71
+41.07
+45.53
+37.50
+0.00
+48.21
+46.25
+RQ2 Summary: AssertMate demonstrates strong practicality and superiority when integrated with EvoSuite, achieving substantially higher Compilation Success Rate (CSR) as well as greater numbers of covered and killed mutants. For example, AssertMate attains an assertion-level CSR of 83.72%, outperforming the studied assertion-generation approaches by margins ranging from 5.87% to 135.57%.
+Meanwhile, it highlights the chance to improve assertion specificity and generalizability.
+V-C RQ3: Ablation Study
+Process: In this RQ, we further conducted an ablation study to investigate the extent to which each major component contributes to the effectiveness of AssertMate.
+Three sets of variants are designed:
+1
+ActVCon Variants: We assessed the impact of the actual value constructor (ActVCon) through two complementary experiments.
+First, we removed ActVCon from AssertMate, denoted as AssertMate-, to evaluate its direct contribution to AssertMate’s overall effectiveness. Second, we integrated ActVCon into ChatAssert∗, referred to as ChatAssert∗+, to demonstrate the generalizability of ActVCon.
+2
+EVGen Variants: One key strength of AssertMate lies in its multi-perspective expected value generator (EVGen), which integrates diverse prompting strategies for expected value generation. To evaluate the contribution of this design, we compared the effectiveness of each individua

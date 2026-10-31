@@ -1,0 +1,183 @@
+The workflow of DISTINCT is illustrated in Figure 2.
+Fig. 2: The Workflow of DISTINCT
+Fig. 3: Generate Candidate Test Cases of isSimpleNumber
+III-A Generator
+Given the additional NLD in our experimental setting, we extended the basic prompt template originally used in ChatTester and accordingly modified a series of instructions.
+The resulting prompt includes the focal method and its associated NLD depicting functionalities, along with other contextual
+information such as a class declaration, related method signatures, fields, and import statements. Generator also includes defective focal methods as one of the inputs because they consist of low-level implementation details, and LLMs tend to overlook certain execution paths if they rely solely on the highly abstractive NLDs.
+Given the above prompt, an LLM is then guided to generate candidate test cases for the defective focal method. Figure 3 illustrates a generation example for the focal method isSimpleNumber.
+III-B Validator
+Test case repair is a commonly used module owing to its verified effectiveness [33, 22, 23]. Therefore, we inherit the Validator of ChatTester [22] with compile and error repair phases in DISTINCT.
+This repair process is performed iteratively. If candidate test cases continue to fail compilation after a repair attempt, the Validator re-extracts the latest error messages and triggers another repair iteration. This loop continues until the test case compiles successfully or the number of iterations reaches a determined limit; in this work, we initially set this value to 5.
+III-C Analyzer
+For candidate test cases that pass compilation, we employ an Analyzer to optimize their test coverage and defect-revealing ability.
+Analyzer contains five modules, namely Code & NLD Analysis, Candidate Test Case Analysis, Consistency Analysis, Consistency Correction, and Test Case Refinement
+for progressively revealing potentially uncovered branches and unreached defects in candidate test cases.
+III-C1 Code & NLD Analysis
+To extract accurate logical branches from the focal method, we perform two rounds of logic analysis using the LLM. In the first round (Code Analysis), we prompt the LLM to analyze the control flow structure of the focal method to identify all possible execution paths. Specifically, we construct a prompt template defined as: “## Focal Method\n{\{FOCAL_METHOD}\}\n## Instruction\nYou are a Senior Java Control Flow Analyst. Analyze the following focal method to identify all possible logical branches based on its control flow structure. Focus on static code analysis: extract every execution path, including all conditional branches, loops, and edge cases. Follow IEEE Structured Testing Guidelines with attention to full path coverage.”, where {\{FOCAL_METHOD}\} is the placeholder for a focal method. This prompt guides the LLM in performing a static, structure-based analysis to extract the initial set of logical branches.
+In the second round (NLD Analysis), we enhance the analysis by incorporating the semantic understanding provided by the NLD. Based on this NLD, we prompt the LLM to revise and refine the previously extracted branches. The prompt template in this stage is defined as: “{\{CODE_ANALYSIS_OUTPUTS}\}\n## Summary\n{\{SUMMARY}\}\n## Instruction\nYou are a Java Logic Correction Expert. Given the Summary of the focal method and its previously extracted logical branches, identify and correct any incorrect or incomplete branches. Ensure the final logical branches align precisely with the described intention. Add any missing branches and remove or fix semantically incorrect ones.”, where {\{CODE_ANALYSIS_OUTPUTS}\} and {\{SUMMARY}\} are the placeholders of the outputs of code analysis and the NLD. This analysis enables the correction of erroneous logical branches and the identification of any branches missed during the initial code analysis.
+Figure 4 illustrates a typical example of the focal method isSimpleNumber. Initially, LLM identifies three control flow branches based on the focal method. However, Branch 3 fails to account for edge cases, such as strings starting with a leading zero (e.g., “01”), which deviates from the original intent of the method isSimpleNumber. By incorporating the NLD of method isSimpleNumber, Branch 3 is rectified. Besides, other missing branches are also added, thereby aligning precisely with the intended behavior. We refer to the final refined logic as the correct logical branches, serving as a pseudo-reference for the follow-up steps.
+Fig. 4: Code & Description Analysis of isSimpleNumber
+III-C2 Candidate Test Case Analysis
+In this stage, we perform logic analysis on the compilation-passed candidate test cases to extract all their logical branches, referred to as the test case logical branches. To guide this analysis, we include candidate test cases and the associated focal method to construct the following prompt template: “## Focal Method\n{\{FOCAL_METHOD}\}\n## Candidate Test Cases\n{\{CANDIDATE_TESTS}\}\n## Instruction\nYou are a Java logic analysis expert. Given the test cases, list all logical branches exercised by the test cases, including conditionals, loops, and exceptions. Focus only on the branches actually triggered during execution.”, where {\{CANDIDATE_TESTS}\} is the placeholder of candidate test cases. This prompt directs the LLM to identify only the branches that are actively covered by the execution of the candidate test cases. An example is shown in Figure 5.
+Fig. 5: Candidate Test Case Analysis of isSimpleNumber
+III-C3 Consistency Analysis
+Finally, we construct the following prompt template: “## Correct Logical Branches\n{\{CORRECT_BRANCH}\}\n## Test Case Logical Branches\n{\{TEST_CASE_BRANCH}\}\n## Instruction\nYou are a Java testing expert tasked with improving test cases to cover all intended method behaviors. Given the correct logical branches and the test case logical branches, determine whether they are semantically consistent. If they are, return \“Consistent\”. If not, return \“Inconsistent\”.”, where {\{CORRECT_BRANCH}\} and {\{TEST_CASE_BRANCH}\} are placeholders of correct logical branches and test case logical branches.
+We use this prompt to compare the above two branch sets. If the result is “Consistent”, the candidate test cases is considered to meet our criteria and is likely to be an effective final test capable of detecting the defect. If the result is “Inconsistent”, a consistency correction is required to further refine the test suite. A specific example is shown in Figure 6.
+Fig. 6: Consistency Analysis of isSimpleNumber
+III-C4 Consistency Correction
+To maintain the mapping relations between candidate test cases and test case logical branches derived from it, this stage corrects faulty branches in test case logical branches according to the correct logical branches.
+Specifically, for branches in the test case logical branches that deviate semantically from the correct logical branches, we hope the LLM discards them and replaces with the correct ones. Missing branches are similarly supplemented using the correct logical branches. Logical branches that are semantically consistent across both are retained, thereby obtaining the finalized logical branches.
+To guide this correction process, we prompt the LLM with the following template: “## Correct Logical Branches\n{\{CORRECT_BRANCH}\}\n## Test Case Logical Branches\n{\{TEST_CASE_BRANCH}\}\n## Instruction\nYou are a Java logic correction expert. Based on the correct logical branches of the focal method, revise the test case logic branches to ensure consistency. Discard any semantically incorrect branches. Add any missing logical branches based on the correct ones. Retain branches that are semantically consistent.”. An illustrative example is shown in Figure 7.
+Fig. 7: Consistency Correction of isSimpleNumber
+III-D Test Case Refinement
+Guided by the finalized logical branches, we iteratively prompt the LLM to generate additional candidate test cases, and the LLM’s output is then fed into the Validator to initiate a new iteration. A specific example is shown in Figure 8. This loop continues until the candidate test cases reach the consistency result, or the number of iterations reaches a predefined limit; in this work, we empirically set this value to 5.
+Fig. 8: Test Case Refinement of isSimpleNumber
+IV Evaluation
+IV-A Benchmark Construction
+While both Defects4J-Sub and QuixBugs are applicable in non-regression testing contexts, they lack Natural Language Descriptions (NLDs) of focal methods to aid in understanding their intended behavior.
+To better evaluate our proposed test case generation framework, DISTINCT, we extend Defects4J-Sub and QuixBugs with manually crafted NLDs, constructing Defects4J-Desc and QuixBugs-Desc.
+To simulate how developers comprehend focal methods, we engaged five professional Java engineers, each with over three years of development experience, to independently write textual NLDs for the fixed versions of focal methods. This process ensures that the NLDs accurately reflect the original intent of the code.
+To ensure the objectivity, consistency, and informativeness of each NLD, we establish a standardized annotation protocol consisting of 3 principles [34, 35, 36]:
+(1) Functional Abstraction: The first sentence concisely describes the method’s primary purpose and its behavioral role in the enclosing class. It follows the pattern “The [method name] method in the [class name] class [does something]”, where [method name], [class name], and [does something] are placeholders.
+(2) Input/Output Specification: The NLD clearly explains the types and semantic roles of all input parameters and return values, including any noteworthy assumptions such as non-null requirements or exception conditions.
+(3) Core Logic Extraction: The central logic of the method is paraphrased in natural language, capturing key control flow, calculations, and use of standard libraries (e.g., Math.sqrt, Erf.erf). Rather than line-by-line translation, the NLD conveys what the method computes and how.
+Each NLD is independently annotated by two engineers and finalized through reconciliation and proofreading. As a result, our Defects4J-Desc comprises 441 focal methods from 17 Java projects, and QuixBugs-Desc contains 40 Java programs, with each sample containing its buggy version, fixed version, and a high-quality textual NLD describing its fixed version’s behavior. To the best of our knowledge, this is the first benchmark explicitly designed for unit testing of defective focal methods. It bridges a critical gap in test generation research, providing a realistic and rigorous foundation for evaluating test case generation tools under non-regressive scenarios. A detailed statistical overview of the two datasets, Defects4J-Desc and QuixBugs-Desc, including the number of bugs, as well as length statistics of both code and NLDs in tokens, is presented in Table II.
+TABLE II: Statistics of the Evaluation Datasets
+Dataset
+Metric
+Buggy
+Fixed
+NLD
+(Tokens)
+(Tokens)
+(Tokens)
+Defects4J-Desc
+(# Bugs: 441)
+Max.
+1491
+1479
+299
+Min.
+50
+51
+50
+Med.
+194
+251
+85
+Avg.
+282.5
+327.2
+94.9
+S.D.
+248.3
+272.6
+39.3
+QuixBugs-Desc
+(# Bugs: 40)
+Max.
+424
+457
+70
+Min.
+47
+47
+47
+Med.
+143
+149
+57
+Avg.
+163.6
+167.1
+56.7
+S.D.
+77.9
+79.9
+5.4
+IV-B Evaluation Setup
+Below introduces the rest of the RQs we explored.
+LLMs, participating in experiments below, follow the same settings as mentioned in Section II-C for implementation. All experiments are carried out on the benchmarks constructed above in Section IV-A, namely Defects4J-Desc and QuixBugs-Desc.
+To minimize the inherent stochasticity of LLMs during inference, we fixed the temperature to 0. This configuration ensures that the LLMs’ randomness is reduced to a minimum, thereby ensuring the reproducibility of the experiments.
+Nevertheless, a minor degree of randomness may still remain. We further evaluated the stability of our results by repeating a subset of experiments three times using the basic prompt configuration under the same experimental conditions. The subset comprised a number of focal methods from Defects4J-Desc and QuixBugs-Desc.
+Across repetitions, the observed variance of all LLMs under test in key metrics (CSR, PR, and DDR) was consistently below 5%, indicating that randomness exerts negligible influence on the reported conclusions.
+RQ2 (Overall Effectiveness): How does DISTINT perform against other approaches?
+We modify baseline approaches, including ChatTester, ChatUniTest, and individual LLMs, by incorporating NLDs into their original frameworks. These adapted versions are denoted with an asterisk (∗), such as ChatTester∗ and ChatUniTest∗. By comparing DISTINCT with these NLD-integrated variants, we ensure evaluation fairness and specifically examine the effectiveness of our proposed architecture. We exclude EvoSuite and certain other LLM-based testing tools, such as [37, 38, 39], for comparison, as their frameworks cannot accommodate NLDs, rendering them unsuitable for the non-regression testing scenario in our setting. Additionally, the work of Liu et al. [40] is excluded because their experimental setup requires both NLDs and a series of extra test cases for detecting specific tricky bugs, which differs significantly from our focus on generating tests solely based on natural language descriptions and defective code. Furthermore, we exclude standalone oracle generation methods (e.g., [41, 42]) for comparison, as they focus solely on assertion logic rather than constructing entire runnable test suites, so these partial generation techniques are outside our scope.
+RQ3 (Ablation Study): How much does each component contribute to DISTINCT?
+To evaluate the contribution of each component within DISTINCT, we design five experimental variants, each representing an independent ablation of the full framework: (1) DISTINCT-Ana: a variant of DISTINCT without the Analyzer component, primarily enhancing its ability by repairing test cases that fail to compile. (2) DISTINCT-Code is a variant that removes the focal method from the Analyzer, meaning the logical branch analysis is only based on the NLD, not the actual code. (3) DISTINCT-Val is a variant that removes the Validator component. (4) Individual LLM*, using a basic prompt as Figure 3, incorporating the NLD but without involving the Validator or Analyzer components. (5) DISTINCT is the complete framework, integrating both Validator and Analyzer components.
+RQ4 (LLM Generality): How does DISTINCT perform with different LLMs?
+To assess the generality of our proposed approach across different LLMs, we replace the original LLM, namely DeepSeek, with three representative alternatives, i.e., LLaMA3-70B, LLaMA3-8B, and CodeLLaMA-7B. All are state-of-the-art LLMs released recently, covering different sizes and both general and code LLMs.
+RQ5 (Sensitivity Analysis): How do different settings of hyperparameters affect the performance of DISTINCT?
+To investigate how adjusting the hyperparameters within the DISTINCT framework influences its performance, we employ a coarse grid of {\{3, 5, 7, 9}\} for the iteration numbers of the Validator and Analyzer, which is chosen based on empirical observations. This setting spans low-to-high budgets with constant steps, covers the practical range where refinement tends to saturate, and keeps the search space manageable. In addition, we discuss the performance variation of DISTINCT with different numbers of test cases (N), i.e., N={\{5, 6, 7, 8, 9, 10}\}.
+V Evaluation Results
+V-A RQ2 (Overall Effectiveness)
+TABLE III: Comparison of test case generation approaches.
+Approaches
+Defects4J-Desc
+QuixBugs-Desc
+CSR
+PR
+DDR
+BC
+SC
+CSR
+PR
+DDR
+BC
+SC
+Individual LLM*
+22.40% (0.00%)
+10.18% (↑\uparrow87.13%)
+1.36% (↑∞\uparrow\infty)
+66.70% (↑\uparrow14.21%)
+66.70% (↓\downarrow3.19%)
+75.00% (0.00%)
+42.50% (↑\uparrow13.33%)
+40.00% (↑∞\uparrow\infty)
+87.46% (↑\uparrow0.84%)
+78.51% (↑\uparrow2.51%)
+ChatTester*
+24.59% (↑\uparrow7.15%)
+13.93% (↑\uparrow324.70%)
+1.36% (↑∞\uparrow\infty)
+71.27% (↑\uparrow10.33%)
+79.13% (↓\downarrow0.78%)
+77.50% (0.00%)
+60.00% (↑\uparrow14.29%)
+42.50% (↑∞\uparrow\infty)
+87.80% (↑\uparrow0.17%)
+78.30% (↑\uparrow0.71%)
+ChatUniTest*
+24.23% (↑\uparrow20.01%)
+14.49% (↑\uparrow95.81%)
+1.36% (↑∞\uparrow\infty)
+72.50% (↑\uparrow24.36%)
+78.20% (↑\uparrow15.34%)
+75.00% (0.00%)
+57.50% (↑\uparrow15.00%)
+42.50% (↑∞\uparrow\infty)
+87.70% (↑\uparrow0.40%)
+78.85% (↑\uparrow1.87%)
+DISTINCT (Ours)
+29.41% (↑\uparrow19.60%)
+15.84% (↑\uparrow9.32%)
+3.39% (↑\uparrow149.26%)
+77.10% (↑\uparrow6.34%)
+81.40% (↑\uparrow2.87%)
+85.00% (↑\uparrow9.68%)
+62.50% (↑\uparrow4.17%)
+60.00% (↑\uparrow41.18%)
+91.64% (↑\uparrow4.37%)
+83.17% (↑\uparrow5.48%)
+Note: Parentheses in the first three rows indicate improvement rates over their respective original versions (without NLDs), while parentheses in the last row indicate gains over the best-performing baseline.
+Table III demonstrates the performance comparison among DISTINCT and the representative SOTA approaches across Defects4J-Desc and QuixBugs-Desc in the non-regression testing scenario. Here, the asterisk (∗) denotes the NLD-integrated variants of the respective baselines (i.e., ChatTester∗ and ChatUniTest∗). As can be seen, DISTINCT achieves notable improvements across all metrics, where it improves CSRs by 9.68%–19.60%, PR by 4.17%–9.32%, and DDR by 41.18%–149.26% across both datasets on average compared to the best-performing baselines. It also enhances BC by 4.37%–6.34%, and SC by 2.87%–5.48% on both datasets, demonstrating its superior effectiveness and robustness across benchmarks. Considering that both DISTINCT and SOTA approaches equipped with the validation-then-repair component (i.e., the Validator) and their only difference is the Analyzer component of DISTINCT, we attribute these improvements to the design of Analyzer, which leverages branch-consistency analysis guided by NLDs to explicitly direct the test case generation process, thereby significantly boosting the overall performance, especially defect detection rates. In addition, compared with the Individual LLM without either Validator or Analyzer, SOTA approaches and DISTINCT all manifest consistent improvements, which is reasonable.
+Afterwards, we further make comparisons on existing approaches between their before- and after-adapted versions based on Table I and III.
+As can be seen, regardless of the SOTA approaches (e.g., ChatTester) or individual LLMs, they overall outperform their original versions, except for the slight performance decline of SC on individual LLM and ChatTester. For example, integrating NLDs into existing approaches brings average improvements of 0.00%–20.01% in terms of CSR, 13.33%–324.70% in terms of PR, and 0.17%–24.36% in terms of BC across both benchmarks. In particular, all approaches demonstrate preliminary defect detection capabilities in non-regression testing with a DDR score of 1.36% on Defects4J-Desc and 40.00%–42.50% on QuixBugs-Desc.
+Finding 2: Incorporating NLD in the non-regression testing yields measurable gains to detect true bugs. DISTINCT substantially outperforms the LLM-based SOTA approaches across all evaluated metrics.
+V-B RQ3 (Ablation Study)
+RQ3 evaluates the contribution of each major component of DISTINCT to its overall performance. We conduct a systematic ablation study by assessing the four configurations mentioned in Section IV-B.
+Table IV reports the performance of these variants and their deltas relative to the full system.
+The Analyzer serves as the core component for aligning test generation with semantic intent. As shown in Table IV, removing this component (DISTINCT-Ana) leads to a severe degradation in defect detection, with DDR dropping by 39.82% on Defects4J-Desc and 12.50% on QuixBugs-Desc. Interestingly, on Defects4J-Desc, we observe a 4.08% relative increase in CSR. This suggests that the Analyzer’s NLD-guided consistency analysis often directs the LLM to explore complex code paths that are crucial for revealing deep-seated bugs. Without it, the model tends to generate more simplistic, syntactically safe tests, which significantly sacrifices DDR and PR (PR drops by 8.59% and 4.00% respectively).
+Furthermore, the necessity of anchoring high-level intent to concrete code structures is evidenced by the DISTINCT-Code variant. Excluding code context from the Analyzer results in a notable decline in DDR (-26.55%) and PR (-32.58%) on Defects4J-Desc. This indicates that for large-scale Java projects, NLDs alone are insufficient; the code context is essential to ground high-level intent into concrete execution paths. In contrast, on the simpler QuixBugs-Desc benchmark, the impact is milder, though BC and SC still decline by 3.38% and 1.78%, respectively.
+The Validator is equally critical for ensuring that semantically correct test ideas are translated into executable code. Removing the Validator (DISTINCT-Val) causes a sharp decline in CSR, with a relative drop of 12.27% on Defects4J-Des

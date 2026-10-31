@@ -1,0 +1,66 @@
+ing a key limitation in their ability to reason from unstructured, descriptive content.
+Summary: Open-book prompting substantially improves test case generation by enabling LLMs to apply knowledge from retrieved, contextually similar examples. Component-level analysis further reveals that models extract the most useful signals from structured technical content, with test code, buggy method name and stack traces being of highest importance. These findings suggest that successful test generation hinges on the model’s ability to analyze and adapt both external examples and internal report structures.
+Table 5. %BRT in closed-book and open-book settings across models, benchmarks, and mutation types.
+Benchmark
+Model
+Mutation
+%BRT (Closed)
+%BRT (Open)
+Defects4J
+StarCoder
+Meaningful Mask
+10.7%
+34.9%
+Rephrased
+22.5%
+65.3%
+Meaningful + Rephrased
+11.5%
+37.7%
+GPT-4o
+Meaningful Mask
+21.7%
+25.6%
+Rephrased
+36.3%
+45.3%
+Meaningful + Rephrased
+19.8%
+25.6%
+GHRB
+StarCoder
+Meaningful Mask
+9.7%
+25.8%
+Rephrased
+16.1%
+51.6%
+Meaningful + Rephrased
+6.5%
+25.8%
+GPT-4o
+Meaningful Mask
+12.9%
+12.9%
+Rephrased
+32.3%
+32.3%
+Meaningful + Rephrased
+12.9%
+12.9%
+Figure 1. Open-vs-Closed Book Comparison for Defects4J Benchmark
+Figure 2. Open-vs-Closed Book Comparison for GHRB Benchmark
+Figure 3. Scott-Knott ranks of bug report components on Defects4J.
+4.5. Evaluate
+5. Discussion
+5.1. Benchmark Quality
+The reliability of benchmark datasets plays a critical role in assessing LLMs’ generalization capabilities. Our analysis of the 812 bug reports in Defects4J revealed notable concerns regarding the quality of available bug descriptions. Specifically, 47 bug reports lacked relevant information, making it difficult for both human developers and LLMs to generate meaningful test cases. These bug reports usually contained attached files with a bug fix patch and update patch for test suite as well. Additionally, we identified 29 groups of bugs linked to the same bug report, covering 66 distinct bugs in total. While these bugs represent different issues, their association with a single report limits the benchmark’s ability to evaluate LLMs on unique, independently described faults. These inconsistencies highlight the need for more structured, informative, and diverse benchmarks to ensure robust model evaluation.
+5.2. Comparison with Developer Survey done by Zimmermann
+5.2.1. Comparison with Developer Preferences
+In addition to analyzing which bug report components are most useful to LLMs, we compare these findings with those from a prior study by Bettenburg et al. (Zimmermann et al., 2010), which surveyed developers to understand which bug report elements they consider most important for successful bug reproduction. This survey collected importance rankings across multiple components, including stack traces, test cases, code examples, and natural language descriptions such as steps to reproduce and observed behavior.
+Our findings show a clear overlap between components valued by developers and those that are most predictive for LLMs. Structured and technical elements such as test code and stack traces are consistently ranked high in both analyses. Developers rated stack traces and test cases among the top three most useful components, and our model-level analysis confirms their importance in guiding successful test generation. These components provide executable and context-specific cues, which LLMs appear to use effectively when reasoning about reproduction steps.
+Despite several points of alignment, we observe key differences between LLM behavior and developer expectations. Developers rated descriptive elements such as steps to reproduce and observed behavior as highly important, ranking them first and fourth in the survey, respectively. However, our analysis shows that LLMs rely minimally on narrative or procedural descriptions. In our dataset, the closest corresponding component is “Developer’s Intent,” which captures high-level explanations of what the user was trying to do. These descriptions, while potentially useful, often lack structure and clarity. This likely limits their utility in automated reasoning.
+Interestingly, developers also report these same components as frequent sources of frustration. In the survey, 79% cited errors in steps to reproduce as a major obstacle, while 48% encountered incorrect descriptions of observed behavior. Moreover, 74% of respondents reported missing or incomplete information, and over a third noted issues with unstructured or overly long text. These challenges may help explain why LLMs underutilize such components: even when present, they often lack the precision or consistency needed for effective test generation.
+This comparison highlights a fundamental gap between what developers need and what current LLMs are able to use effectively. Structured signals such as test code and stack traces remain the most actionable elements for both humans and models. In contrast, unstructured content, while essential in principle, is often underutilized due to its ambiguity or lack of clarity. Closing this gap may require improved LLM reasoning over loosely structured text, or interactive mechanisms that allow models to request missing or unclear information during the reproduction process.
+6. Conclusion
+This paper presents a structured evaluation framework for assessing LLM-based test generation, guided by Bloom’s Taxonomy. By applying systematic linguistic and contextual mutations to established benchmarks such as Defects4J and GHRB, we evaluate how well StarCoder and GPT-4o perform across the layers of Remember, Understand, Apply, and Analyze. Our findings reveal that while LLMs can recall previously seen tasks with high accuracy, they exhibit variability across repeated generations. GPT-4o demonstrates greater robustness than StarCoder when interpreting rephrased or translated bug reports, indicating stronger generalization under linguistic variation. However, both models experience a sharp decline when identifier information is obscured, highlighting a reliance on surface-level cues rather than deeper contextual understanding. When provided with relevant examples, both models benefit from alignment in technical details, supporting their ability to generalize under guidance. These results underscore the importance of evaluating LLMs beyond static benchmarks and offer a principled approach for identifying both capabilities and limitations in test case generation. Our framework provides a foundation for future assessments that aim to more faithfully reflect the challenges of real-world software engineering tasks.

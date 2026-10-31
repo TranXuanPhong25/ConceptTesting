@@ -1,0 +1,32 @@
+{
+  "openalex_id": "https://openalex.org/W4414430094",
+  "title": "Hallucination to Consensus: Multi-Agent LLMs for End-to-End JUnit Test Generation",
+  "year": 2026,
+  "publication_date": "2026-03-25",
+  "type": "article",
+  "doi": "https://doi.org/10.1145/3803418",
+  "primary_url": "https://doi.org/10.1145/3803418",
+  "pdf_url": "https://arxiv.org/pdf/2506.02943",
+  "venue": "ACM Transactions on Software Engineering and Methodology",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 24,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_public_author_artifact_verified",
+  "year_venue": "2026 (discovery metadata; venue/year not primary-verified)",
+  "datasets": "HumanEvalJava 160; LeetCodeJava 100 (50 medium/50 hard); each with three Pitest synthetic-mutant variants. Defects4J/SF110 explicitly excluded.",
+  "models": "Llama 3.1 70B basic + DeepSeek-R1 Llama-distilled 70B reasoning, 3 panel pipelines; GPT-3.5 and TOGLL baselines.",
+  "artifact_url": "https://github.com/qiqiguana/candor",
+  "license": "No root LICENSE/GitHub SPDX declaration found. Paper CC BY 4.0; source/data upstream terms need review.",
+  "input_setting": "Source + natural-language description; generates prefixes and corrects specification oracle even on synthetic-mutant source.",
+  "reproduction_grade": "Conditional; code/data public, but 70B Ollama setup, no license and README/code layout mismatch.",
+  "concept_hook": "Description-grounded panel oracle correction for synthetic faulty code; ablation of requirement extraction/panel consensus.",
+  "limitation": "No real historical bug IDs, Defects4J/BugsInPy/SWT; mutant-based fault proxy only; no root-cause labels.",
+  "rank": 82,
+  "family": "testing_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/hallucination-to-consensus-multi-agent-llms-for-end-to-end-junit-test-gener-03b0cd84/NOTES.md"
+}

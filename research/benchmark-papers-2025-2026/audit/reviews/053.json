@@ -1,0 +1,58 @@
+{
+  "rank": 53,
+  "title": "Retrieval-Augmented Fine-Tuning for Improving Retrieve-and-Edit Based Assertion Generation",
+  "fulltext_read": true,
+  "read_path": "papers/retrieval-augmented-fine-tuning-for-improving-retrieve-and-edit-based-asser-84b9e487/public_evidence/paper_fulltext.txt",
+  "read_sha256": "85ea6226f3604b6e17e2dbccf832c87f14e385a974b4cb4600423df2639a16b9",
+  "read_source": "https://yanmeng.github.io/papers/TSE251.pdf (author-hosted 24-page IEEE TSE article)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Dataatlas (156,760 TAP items overall; 15,676 test examples) and Dataintegration (265,420 items overall; 26,542 test examples), random 8:1:1 splits not project-disjoint; same projects may occur in train and test.",
+    "New cross-project test set of 15,676 Methods2Test TAPs, projects filtered to avoid train-project overlap.",
+    "Defects4J 2.0.0: paper states 835 bugs in 17 projects; focuses on 588 assertion-triggerable bugs; excludes exception-testing prefixes from assertion-generation evaluation."
+  ],
+  "task": "EditAS2 retrieves a similar focal-test/Test-Assert Pair with Jaccard similarity, forms a token edit sequence between input and retrieved focal-tests, and fine-tunes CodeT5 to edit the retrieved assertion into an assertion for the input focal-test. Evaluates exact assertion accuracy/CodeBLEU and bug finding on Defects4J.",
+  "input_setting": "Input is a test prefix without assertions plus focal method; retrieval uses a training TAP as prototype. Defects4J evaluation combines generated assertion with EvoSuite-generated prefixes (from buggy versions) or supplied bug-triggering test prefixes, then checks failure on buggy and pass on fixed program. Not issue-report input or root-cause diagnosis.",
+  "author_artifact_url": "https://doi.org/10.5281/zenodo.15118614 (paper-linked replication package); https://github.com/Lhy-apple/EditAs2 (matching public source repo).",
+  "author_relationship_evidence": "The paper explicitly links Zenodo DOI 10.5281/zenodo.15118614 and says the replication package includes datasets, EditAS2 source, trained model, and assertion-generation results. Zenodo API metadata confirms matching title, CC BY 4.0 record, and a 1,942,818,974-byte EditAs2.zip. Matching GitHub project README identifies EditAs2 and links datasets/trained models/results to a public drive; README documents training and test scripts. GitHub archive comment identifies source commit 47b1a657857c23c6a5e17958364723a8bbb4092f. Repository has substantial implementation files, but no root software LICENSE was found in the source archive; Zenodo CC BY 4.0 is verified for the replication record, not separately for every code component.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "GitHub codeload snapshot at commit 47b1a657857c23c6a5e17958364723a8bbb4092f, 139 MB zip (SHA-256 9ab41f35e45219332ef9bd413630192b20b5ad67ede5cff8c1152ba8b49024c9). Static-inspected README, configs.py, models.py, run_updater_single_gpu.py, scripts/fintuned.sh, scripts/test.sh, TEval-plus evaluation scripts and requirements via unzip -p; no code run. Official Zenodo artifact is a 1.94 GB zip with CC BY 4.0 record metadata; archive itself not downloaded in this audit. No root LICENSE in GitHub source snapshot.",
+  "license": "Paper is IEEE copyrighted; Zenodo replication record declares CC BY 4.0. Separate software license is not declared in inspected GitHub root; do not assume repository-wide MIT/Apache license.",
+  "exact_models": [
+    "Main method: Salesforce CodeT5-base (paper states 223M parameters), encoder-decoder fine-tuned 15 epochs; input lengths 256/256/256/150 and output assertion 150, Adam learning rate 1e-5, batch 8, four RTX 3090 GPUs.",
+    "CoT baseline: Qwen2.5-Coder-7B-Instruct (paper reports this exact model name), evaluated on Dataatlas/Dataintegration inference benchmark with CoT prompt; not evaluated for Defects4J bug finding.",
+    "Additional inference baselines include CodeBERT, GraphCodeBERT, CodeGPT, UnixCoder and StarCoder-1B; no hosted API model needed."
+  ],
+  "weights_status": "Paper claims trained model and outputs are included in the Zenodo replication package. Zenodo metadata confirms one public 1.94 GB EditAs2.zip but package contents/checkpoints were not downloaded or inspected. CodeT5 base is public by model name; immutable checkpoint revision is not pinned. Qwen2.5-Coder-7B-Instruct weights are public, but paper does not specify immutable commit/hash.",
+  "evaluation_route": "Read all 21,398 extracted words (1,714 lines) of the 24-page official author-hosted paper, including discussion, threats, conclusion, references and appendices; SHA-256 recorded. Paper reports EditAS2 accuracy 64.37%/54.91% on Dataatlas/Dataintegration, 19.20%/26.03% on cross-project test. Defects4J BugFound: 20.1 average bugs with EvoSuite prefixes (13.5+6.6) and 27 with supplied Defects4J prefixes (19+8); unique totals 36/19. For EvoSuite-generated assertion outputs, compilation rate 30.97%, bug-finding precision 0.42%. Exact user-relevant Qwen2.5-Coder-7B-Instruct CoT baseline scores 31.68%/12.07% accuracy and 17.79%/8.48% CodeBLEU on the two inference datasets, but no Qwen Defects4J bug-detection result. Author source has scripts, evaluator, and Defects4J metadata/generated tests; Zenodo full package is 1.94 GB. No local reproduction.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "GitHub source snapshot uses hard-coded paths (`/codet5-base-path`, `datapath`), legacy PyTorch 1.10.1/CUDA 11.3 environment and old model APIs; setup requires adaptation of paths/environment, not method reimplementation.",
+    "Exact Zenodo 1.94 GB archive is public by record metadata but was not downloaded/inspected; trained checkpoint and paper output inventory remain unverified here.",
+    "No immutable CodeT5-base or Qwen model hash is specified; source repo does not declare a top-level software license. Zenodo says CC BY 4.0 for replication package.",
+    "Paper’s main assertion datasets have within-project train/test overlap. Cross-project set avoids project overlap but has much lower accuracy (19.2%/26.03%).",
+    "Defects4J bug-finding metrics are weak in absolute terms: 30.97% compile rate and 0.42% precision on EvoSuite-generated outputs; only 588/835 bugs are considered and exception assertions are excluded.",
+    "The exact Qwen2.5-Coder-7B-Instruct baseline is measured only for exact assertion inference, not bug-finding on Defects4J. Do not claim the paper provides Qwen bug-detection performance."
+  ],
+  "concept_fit": "Very high for direct test-oracle/assertion generation on Defects4J and especially for evaluating the user’s original Qwen2.5-Coder-7B-Instruct model. Retrieval prototype + semantic edit sequence provides an explicit behavioral delta signal that can inspire concept-guided oracle checks. It does not consume issue reports, localize root cause, or label causal root causes; it is assertion synthesis from supplied test prefixes and focal methods.",
+  "recommendation": "Promote to top tier for an own-model evaluation and Defects4J assertion-generation comparison. Particularly suitable because the authors report the exact Qwen2.5-Coder-7B-Instruct baseline used in the project, and provide a public test set/source/evaluator route. First run a small exact-model inference reproduction using the paper CoT prompt and cached Dataatlas/Dataintegration examples; evaluate Defects4J only with the authors’ CodeT5/EDITAS2 route because Qwen has no paper bug-found result. Before exact source reuse, resolve software license and inspect the 1.94 GB Zenodo archive. No code/model run or source modification performed.",
+  "citations": [
+    "https://yanmeng.github.io/papers/TSE251.pdf",
+    "https://doi.org/10.5281/zenodo.15118614",
+    "https://github.com/Lhy-apple/EditAs2",
+    "https://github.com/Lhy-apple/EditAs2/blob/main/README.md"
+  ],
+  "supporting_locations": [
+    "Full text SHA-256 85ea6226f3604b6e17e2dbccf832c87f14e385a974b4cb4600423df2639a16b9; all 1,714 extracted lines / 21,398 words read in consecutive chunks, pages 1–24.",
+    "Sections III–V: Dataatlas/Dataintegration random split design, Methods2Test cross-project set, Defects4J 2.0.0 and model/training setup.",
+    "Sections VI-A/B: exact inference results, Qwen2.5-Coder-7B-Instruct CoT baseline, 588 assertion-triggerable bugs, BugFound/Unique BugFound route, compilation rate and precision.",
+    "Section VII threats: project overlap in primary test splits, preprocessing and limited examples for qualitative claims.",
+    "Appendix/Section VI-C compares EditAS2 variants; paper source links Zenodo 15118614 as containing source, trained model and results.",
+    "GitHub archive at commit 47b1a657857c23c6a5e17958364723a8bbb4092f includes retrieval/model/evaluator source, Defects4J metadata, generated tests; static-inspected selected key files, no execution.",
+    "Zenodo record metadata: matching title, CC BY 4.0, single 1.94 GB archive; archive contents not yet downloaded."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

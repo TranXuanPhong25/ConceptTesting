@@ -1,0 +1,52 @@
+{
+  "rank": 22,
+  "title": "ReProAgent: Tool-Augmented Multi-Stage Agentic Generation of Bug Reproduction Tests from Issue Reports",
+  "fulltext_read": true,
+  "read_path": "papers/reproagent/public_evidence/paper_fulltext.txt",
+  "read_sha256": "4c512e4f67e562a2df4a00b2db169d667fd20d8db50b1695975aeccfe991cb06",
+  "read_source": "https://arxiv.org/html/2607.09123v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "SWT-Bench-Lite (paper and cached outputs: 267 issues; nominal benchmark commonly 276)",
+    "SWT-Bench-Verified (paper and cached outputs: 431 issues; nominal verified cohort commonly 500)"
+  ],
+  "task": "Repository-level issue reproduction test generation; generate tests failing on buggy pre-patch version and passing after ground-truth patch.",
+  "input_setting": "Issue report and buggy repository; stages for hierarchical bug localization, execution-path root cause analysis, assertion-aware planning, test generation and Docker execution with triadic semantic review.",
+  "author_artifact_url": "https://github.com/iSEngLab/ReProAgent",
+  "author_relationship_evidence": "Public repository README uses the ReProAgent name and matching paper framework title/stages; contains source modules matching paper stages and explicitly lists precomputed GPT-5-mini results/prediction files for both datasets.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "99b112b9e1de88a451d24e273121f8bceaf3c8b4",
+  "license": "GitHub API reports license=null; no root LICENSE found. No license verified for the implementation.",
+  "exact_models": [
+    "Primary: GPT-5-mini; source config uses mutable model alias gpt-5-mini, with no dated snapshot/version pin documented.",
+    "Additional paper runs: Qwen3-Coder, DeepSeek-V3.2, GLM-4.6; exact immutable checkpoint/deployment IDs not supplied."
+  ],
+  "weights_status": "No finetuning reported. GPT-5-mini requires hosted OpenAI API. Paper names open-weight model families but does not identify exact immutable checkpoints or include their weights; source README requires an OpenAI-compatible endpoint/key.",
+  "evaluation_route": "Public README documents uv sync, Python 3.10+, Docker (Neo4j optional/in-memory fallback), generation CLI, and SWT-Bench evaluation CLI. Public author repo includes substantive src/ implementation, tests, locked dependencies, precomputed evaluation reports and per-instance prediction JSONL. At pinned commit, GPT-5-mini predictions have 267 Lite and 431 Verified rows; report JSON records 156/267 and 303/431 resolved. Static inspection only; no code executed and no paid API calls.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Paper/source outputs cover 267 Lite and 431 Verified instances, below nominal 276 and 500; paper does not explain exclusion policy. This makes comparison denominators unclear.",
+    "Paper Table 8 Verified localization groups total 430 (170 correct + 260 incorrect), while headline/table dataset total is 431; one instance is unaccounted for.",
+    "Cached Verified report JSON says completed_instances=0 while resolved_instances=303, unresolved_instances=128 and error_instances=0; report metadata needs reconciliation before treating it as a validated oracle.",
+    "GPT-5-mini alias is mutable; exact dated model snapshot, API configuration, prompts/run manifest and stochastic repeat policy are not pinned. Full generation needs a paid hosted endpoint; reported mean cost is $0.14 per instance (roughly $97.72 for the 698 cached prediction rows, estimate only).",
+    "Repository has no verified root license. Full benchmark replay requires old per-project Docker environments and substantial compute."
+  ],
+  "concept_fit": "Very high: explicit root-cause hypothesis with execution paths, minimal trigger conditions, environment setup and expected assertions; strongest direct alignment to concept-guided bug-revealing tests among the current SWT candidates.",
+  "recommendation": "Strongest current concept-aligned SWT-Bench candidate for reading its method and adapting evaluation questions, with public code and cached predictions. Exact full reproduction is conditional: resolve 267/276 and 431/500 cohort differences, Table 8 missing instance and cached Verified report inconsistency; pin GPT-5-mini route and license. It is not a Defects4J/BugsInPy study.",
+  "citations": [
+    "https://arxiv.org/html/2607.09123v1",
+    "https://github.com/iSEngLab/ReProAgent/tree/99b112b9e1de88a451d24e273121f8bceaf3c8b4",
+    "https://raw.githubusercontent.com/iSEngLab/ReProAgent/99b112b9e1de88a451d24e273121f8bceaf3c8b4/README.md",
+    "https://raw.githubusercontent.com/iSEngLab/ReProAgent/99b112b9e1de88a451d24e273121f8bceaf3c8b4/src/config.py"
+  ],
+  "supporting_locations": [
+    "Paper §§3–6, Tables 2–11; full-text cache SHA-256 4c512e4f67e562a2df4a00b2db169d667fd20d8db50b1695975aeccfe991cb06",
+    "Pinned Git tree includes src/ pipeline, tests/, pyproject.toml and uv.lock; root README generation/evaluation commands and model/API requirements.",
+    "Public output JSONL SHA-256: Lite 22f5b18304fd71e85414100a632139059f92588afe81a41ce2a3a5ec824b08d6 (267 rows); Verified d7abfb5b9e2dfe14e5b2f05524f3f4ef8cf01be94b59a450ec5274632f2c2d27 (431 rows).",
+    "Evaluation JSON SHA-256: Lite d27d0e3eb5f61a2c43a91d6479fbbab2b2d408668b4cd81e2d35894bea65942b; Verified f98ec821e0059144a905ddc1b243a29acd096789911317f5761943a0db2302ec2."
+  ],
+  "reviewed_at": "2026-10-15T11:35:13+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

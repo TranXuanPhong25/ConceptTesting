@@ -1,0 +1,61 @@
+{
+  "rank": 92,
+  "title": "SWE-Doctor: Guiding Software Engineering Agents with Runtime Diagnosis from Multi-Faceted Bug Reproduction Tests",
+  "fulltext_read": true,
+  "read_path": "papers/swe-doctor-guiding-software-engineering-agents-with-runtime-diagnosis-from--72a64b7e/public_evidence/paper_fulltext.txt",
+  "read_sha256": "3a39c1ccde1af4c60362caa96f960501b25dd851aa194718257c803f6b5e6065",
+  "read_source": "https://arxiv.org/html/2607.00990v1 (1 July 2026; full 9,646-word article with results, data availability and references)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "SWE-bench Verified: paper uses 436 bug-fixing instances from the 500 human-validated Python issue tasks.",
+    "SWE-bench Pro: 107 Python bug-fixing instances from the Pro benchmark.",
+    "Cross-language evaluation: 50 Go bug-fixing issues from SWE-bench Pro, using Delve instead of PDB.",
+    "Preliminary study: 100 randomly sampled SWE-bench Verified bug-fixing tasks; compares BRT generators with mini-SWE-agent.",
+    "SWT-Bench and TDD-Bench Verified are related-work/prior methods only; Defects4J and BugsInPy are not experimental datasets."
+  ],
+  "task": "End-to-end issue resolution with explicit test/root-cause stages: (1) decompose the issue into behavioral requirements and generate one localized BRT per facet; (2) run failing BRTs under a debugger and produce runtime-grounded diagnosis records with suspected location, symptom, propagation path, runtime values, impact and fix direction; (3) guide an issue-resolution agent with requirements + diagnosis and check patch completeness; (4) grade patch on benchmark hidden tests. The BRT and diagnosis are intermediate artifacts, not the final scored task.",
+  "input_setting": "Natural-language issue and buggy repository, with benchmark hidden tests and fixed patch used only for evaluation. Python main path uses PDB; Go generalization swaps in Delve. Models access repository tools through a mini-SWE-agent scaffold. BRT generation, diagnosis and repair can be configured separately through LiteLLM-compatible model names/endpoints.",
+  "author_artifact_url": "https://github.com/SWE-Doctor/SWE-Doctor",
+  "author_relationship_evidence": "Paper Data Availability reference [10] directly links `https://github.com/SWE-Doctor/SWE-Doctor` as the publicly released code/data artifact. Current repository README describes the same four stages (multi-faceted BRTs, runtime diagnosis, diagnosis-guided repair, benchmark grading), and includes matching Python/Go implementations and benchmark runners.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "SWE-Doctor/SWE-Doctor HEAD / only commit checked: `90ed1d949cae8345b6571394454dd59ec12dc7b2`, 2026-10-02. GitHub API tree has 426 entries; statically inspected README, MIT LICENSE.md, pyproject, BRT generation batch runner, debugger/RCA runner, repair runner/configs, benchmark evaluation wrapper and full-pipeline shell. No source was executed. The repo has no paper result/output cache or frozen issue-id lists in the tree. README describes the repository as an FSE 2027 submission artifact, postdating the July 2026 arXiv paper; exact paper-version mapping needs confirmation.",
+  "license": "Repository LICENSE.md declares MIT for SWE-Doctor code; it notes the vendored/upstream mini-swe-agent scaffold retains its original license. Paper is CC BY 4.0. Benchmark data comes from public SWE-bench datasets under their own terms.",
+  "exact_models": [
+    "GPT-5.4",
+    "GPT-5.4-mini",
+    "Claude Sonnet 4.6",
+    "DeepSeek-V4-Pro",
+    "MiMo-V2.5-Pro",
+    "The paper also describes a 100-instance preliminary study using GPT-5.4."
+  ],
+  "weights_status": "No fine-tuned weights. Current code uses LiteLLM-compatible text models and configurable model names; pipeline scripts can pass the same model to BRT generation, diagnosis and repair. README documents provider keys/endpoints and the example backend config supports a configurable API base. A local OpenAI-compatible Qwen endpoint appears technically possible through LiteLLM/model config, but has not been tested. No model/API call made.",
+  "evaluation_route": "Read all 9,646 words / 739 extracted lines including motivation, design, tables I–VII, ablations, stability, Go generalization, threats and references; SHA-256 above. Paper reports 75.7% on SWE-bench Verified (mini-SWE 73.7, live-SWE 71.8) and 59.4% on SWE-bench Pro (50.5/51.4); Go 50-task subset is 36% vs 32/30. Runtime diagnosis contributes an 8-point gain in the 50-task Pro ablation (56% full SWE-Doctor vs 48% without Stage 2), and tests earlier-generated BRT outcomes, but no ground-truth diagnosis labels/accuracy metric are reported. Current repo provides four-stage end-to-end scripts; Verified uses explicit issue-id list, dataset HF loading, Docker containers and official grader. Pro Python is runnable stage-by-stage; a bundled pipeline script is provided for Verified and Pro Go. Paper's exact 436/107/50 ID lists and raw outputs are absent from tree, so the exact cohort must be reconstructed/selected. No run performed.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The official repo's only commit is dated 2026-10-02, after the arXiv paper, and its README calls it an artifact for an FSE 2027 submission. The architecture matches, but there is no tag/older commit proving this exact code/config reproduces the July 2026 paper version; current code includes later Go support and edits.",
+    "The paper's exact issue-ID lists (436 Verified bug fixes, 107 Pro Python bugs, 50 Go bugs), paper outputs and trajectories are not present in the repository tree. Standard datasets are public, but exact subsets must be reconstructed.",
+    "Full reproduction requires Docker, benchmark repository image setup, four staged agent workflows, and significant hosted-model calls. Paper-reported average costs are $0.43 per Verified issue and $0.64 per Pro issue with the tested setup; no model calls were made.",
+    "Hosted model aliases are listed but no immutable provider snapshots are specified. A Qwen endpoint could be configured via LiteLLM, but this would be an independent model evaluation rather than a paper model replication.",
+    "Although diagnosis records explicitly include suspected root cause, propagation path and runtime evidence, evaluation measures final patch resolution, not correctness of root-cause diagnoses against human labels. There is no validated causal-root-cause dataset or precision/recall metric.",
+    "Main benchmarks are SWE-bench Verified/Pro rather than SWT-Bench, Defects4J or BugsInPy; Python dominates the main evaluation, with only a 50-task Go cross-language pilot."
+  ],
+  "concept_fit": "Very high for the user's root-cause-guided test/patch direction: it decomposes issue requirements, generates a BRT per behavior, debugs failing executions, and explicitly records suspected fault location, propagation, runtime state and suggested fix before patch generation. The paper directly studies partial-patch failures and F→P vs F→F diagnostic value. However, it does not validate diagnosis correctness with ground-truth root-cause labels, and the final benchmark metric is issue-resolution success, not test generation or diagnosis accuracy.",
+  "recommendation": "Promote as the strongest source-backed method so far for runtime-grounded root-cause diagnosis feeding test and patch generation. The MIT repo has full Python/Go pipeline, BRT generator, debugger, repair agent and official evaluators; LiteLLM config provides a plausible route for an independent local-Qwen evaluation. Reproduction remains conditional because current code is a post-paper evolving release labeled for FSE 2027, paper-specific issue IDs/results are missing, and the exact hosted-model versions are not pinned. Before treating it as an exact paper baseline, reconcile the July arXiv method/config against the October repository. It uses SWE-bench Verified/Pro, not SWT-Bench/Defects4J/BugsInPy, and does not score the correctness of its diagnosis records. No code/model run.",
+  "citations": [
+    "https://arxiv.org/abs/2607.00990",
+    "https://github.com/SWE-Doctor/SWE-Doctor/tree/90ed1d949cae8345b6571394454dd59ec12dc7b2",
+    "https://github.com/SWE-Doctor/SWE-Doctor/blob/90ed1d949cae8345b6571394454dd59ec12dc7b2/README.md"
+  ],
+  "supporting_locations": [
+    "Paper Sections II–III: preliminary failure analysis; multi-faceted requirement/BRT generation; PDB/Delve runtime diagnosis fields; diagnosis-guided patch generation.",
+    "Paper Tables II–VII: five-model Verified/Pro results, F2P/F2F analysis, 50-task ablation, five-run stability and 50-task Go generalization.",
+    "Paper Data Availability section explicitly points to SWE-Doctor GitHub repository.",
+    "GitHub commit tree: MIT code in reproduction_test_agent/, debug_agent/, repair_agent/, run_pro_test/, run_verified_test/, benchmark graders and pipeline_run/.",
+    "Static source inspection: `run_pipeline_verified.sh` passes one selected model through BRT, RCA and repair stages; `run_debug.py` and repair configs use LiteLLM; `repair_config_verified.yaml` names Claude 4.6 by default; README documents API/base endpoint configuration.",
+    "Repository tree lacks paper output caches and issue-ID lists; README requires user-supplied ID files. The only GitHub commit is 2026-10-02, while README labels the project an FSE 2027 artifact."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

@@ -1,0 +1,53 @@
+{
+  "rank": 48,
+  "title": "DPIAgent: Divide, Protocol, Isolate for Agentic Reproduction Test Generation",
+  "fulltext_read": true,
+  "read_path": "papers/dpiagent-divide-protocol-isolate-for-agentic-reproduction-test-generation-7122a47a/public_evidence/paper_fulltext.txt",
+  "read_sha256": "5177496eaa63c7eea2c68dd8f8de7a83dba5997dd8d490eae87e48467c239845",
+  "read_source": "https://arxiv.org/html/2608.23341v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "SWT-Bench Verified, 433 Python GitHub issue tasks, official Docker evaluation harness; main results average 3 runs. SWT-Bench Lite and Full are discussed but not the main evaluation cohort."
+  ],
+  "task": "Generate test patches that reproduce user-reported issues (fail on buggy code, pass after golden fix) on SWT-Bench Verified, with an explicit defect-exploration phase followed by test-generation phase and structured handoff. Optional candidate selection uses surrogate code patches.",
+  "input_setting": "Issue description plus buggy Python repository. Exploration uses a pre-built Repository Unified Graph/function-dependency and functionality graph, file viewing, and bash to diagnose location/root cause/expected-vs-actual/reproduction trigger/reference tests. A six-field diagnosis + test plan is emitted by ready_to_write_test. Test-generation phase removes exploration/search tools and permits test-file editing plus bash validation. No production-source edits allowed by the described agent.",
+  "author_artifact_url": "Project page cited in paper: https://neverwinhao.github.io/DPIAgent/ . No source-code repository URL identified.",
+  "author_relationship_evidence": "arXiv lists Hao Liu and coauthors and project URL. Official project page is reachable but contains only paper information/arXiv link and no code/data links. First-author Hao Liu’s linked GitHub account `neverwinHao` has public repositories, but repository listing/search contains no DPIAgent repository; likely relevant repos such as SWE-agent, Echo and RPG-ZeroRepo do not identify themselves as the DPIAgent artifact and do not contain the full phase orchestration/handoff implementation. Guessed `neverwinHao/DPIAgent` and Microsoft/DPIAgent GitHub routes return 404. The public RPG-ZeroRepo repository is a separate RPG/ZeroRepo project and does not establish a full DPIAgent artifact.",
+  "public_source_checked": true,
+  "source_status": "not_found",
+  "source_commit_or_archive": "No DPIAgent code, prediction logs, frozen run outputs, or source archive found. Project page has no code link; matching GitHub repository routes return 404 and first-author public repository listing/search does not expose DPIAgent. The paper references graph infrastructure and SWT-Bench but those dependencies are not the DPIAgent source.",
+  "license": "arXiv article CC BY 4.0. No software license verified because no DPIAgent source artifact was found.",
+  "exact_models": [
+    "GPT-5-Mini",
+    "GPT-5",
+    "Claude-Opus-4.5; all three backbones are named in paper, but no immutable API snapshot/revision, exact deployment parameters, or weights are released. No fine-tuning is described.",
+    "Test-selection route adds five stylistic issue rewrites (six issue variants total) and three SWE-Agent surrogate patches per task; this substantially increases calls beyond the DPI-only table result."
+  ],
+  "weights_status": "No fine-tuned weights reported; paper uses hosted GPT-5-Mini, GPT-5 and Claude Opus 4.5 APIs. Exact immutable model versions are not pinned and no model artifacts are included.",
+  "evaluation_route": "Read all 14,550 extracted words of arXiv v1 including main sections, Appendix A (system prompts/tools and phase transition), Appendix B (baseline/setup/metrics), Appendix C analyses, limitations and broader-impact section. Main evaluation uses SWT-Bench Verified (433 cases), official Docker F2P harness, three runs, GPT-5-Mini/GPT-5/Claude-Opus-4.5. DPI alone reports 74.28%, 81.76%, 78.98% success; adding selection reports 82.32%, 86.17%, 81.38%. Ablations remove Protocol/Isolate/Divide; localization evaluation compares predicted functions with functions invoked by golden test patches. Appendix A specifies a pre-built code/functionality graph and phase tools, but no implementation is public. No code/model run.",
+  "reproduction_verdict": "not_feasible",
+  "blockers": [
+    "No public DPIAgent implementation, precise source link, fixed code snapshot, evaluation scripts, predictions, or per-instance run logs found; project URL is a paper page only.",
+    "The required RUG/code graph, phase-specific action wiring, exact prompts and transition mechanism cannot be run from the public artifact; reproducing would require implementing the paper, which has not been authorized.",
+    "The three backbone models are hosted APIs with no exact immutable revisions/weights; full evaluation averages three runs over 433 tasks and uses the SWT-Bench Docker images.",
+    "Optional test selection multiplies cost: six issue-rewrite candidates plus three SWE-Agent surrogate patches per issue. No cost report or cached candidate outputs are public.",
+    "Evaluation is Python-only; paper explicitly leaves validation on additional languages for future work."
+  ],
+  "concept_fit": "Extremely high for the requested root-cause→test workflow. The exploration-to-test handoff explicitly requires a root-cause field, expected/actual behavior, triggering conditions, relevant tests and concrete test plan; it then isolates writing/verification from code exploration. This is direct prior work for concept-guided diagnosis and bug-revealing test generation. However, it records a free-form diagnosis rather than a reusable causal taxonomy or measured root-cause accuracy; test success remains F2P on buggy/fixed code.",
+  "recommendation": "Promote to the highest thematic-fit/novelty comparator for root-cause-informed reproduction tests and SWT-Bench Verified. Do not choose as a ready-to-reproduce base until authors release code and exact prompts/configs. It may be evaluated as a methodology paper only with a separately approved implementation; do not claim such an adaptation reproduces DPIAgent. Pair conceptually with #47 TestPrune: #47 is the more reproducible issue-test retrieval/minimization baseline, while DPIAgent offers the closest root-cause handoff design but currently lacks public source.",
+  "citations": [
+    "https://arxiv.org/html/2608.23341v1",
+    "https://neverwinhao.github.io/DPIAgent/",
+    "https://github.com/neverwinHao"
+  ],
+  "supporting_locations": [
+    "Full text SHA-256 5177496eaa63c7eea2c68dd8f8de7a83dba5997dd8d490eae87e48467c239845; 14,550 extracted words reviewed, including appendices A–E.",
+    "Sections 3.2–3.3 and Appendix A: explicit root-cause field, expected/actual, reproduction strategy, reference tests and test plan; mandatory phase boundary and tool isolation.",
+    "Section 4: SWT-Bench Verified 433 instances, Python-only, three runs, three backbone models and seven baselines.",
+    "Sections 5–7 and Appendix C: results, ablations, function-level localization and efficiency analysis.",
+    "Official project page linked from paper was checked; it exposes paper/arXiv but no source repository. First-author GitHub profile/repositories and exact/organization repository routes checked; no DPIAgent source found."
+  ],
+  "reviewed_at": "2026-10-15T12:46:36+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

@@ -1,0 +1,135 @@
+LLM-based Low-Level Integration Test Generation for Java
+Report GitHub Issue
+×
+Title:
+Content selection saved. Describe the issue below:
+Description:
+Submit without GitHub
+Submit in GitHub
+arXiv is now an independent nonprofit!
+Learn more
+×
+Back to arXiv
+Why HTML?
+Report Issue
+Back to Abstract
+Download PDF
+Abstract.
+1 Introduction
+2 Motivating Example
+3 Approach
+3.1 Stage I: Preparation
+3.1.1 Joern CPG
+3.1.2 ClassIndex
+3.1.3 Typestate Model
+3.2 Stage II: Iterative Plan–Generate–Validate–Fix Loop
+3.2.1 Initializer (Optional)
+3.2.2 Planner
+3.2.3 Generator
+3.2.4 Validator
+3.2.5 Fixer
+4 Experimental Design
+4.1 Research Questions
+4.2 Datasets
+4.3 Baselines
+4.4 Evaluation Metrics & Statistical Testing
+4.4.1 Effectiveness metrics
+4.4.2 Efficiency metrics
+4.4.3 Statistical Testing
+4.5 Implementation Details
+5 Experimental Results
+5.1 RQ1 Results (Effectiveness)
+5.2 RQ2 Results (Efficiency)
+5.3 RQ3 Results (Ablation Study)
+6 Threats to Validity
+7 Related Work
+7.1 Automated Unit Test Generation
+7.2 Automated Integration Test Generation
+8 Conclusion
+References
+License: CC BY 4.0
+arXiv:2605.26851v2 [cs.SE] 22 Aug 2026
+LLM-based Low-Level Integration Test Generation for JavaDOI: XXXXXXX.XXXXXXXConference: Make sure to enter the correct
+conference title from your rights confirmation email; June 03–05,
+2018; Woodstock, NYISBN: 978-1-4503-XXXX-X/2018/06CCS: Software and its engineering Software verification and validationCCS: Computing methodologies Natural language generationCCS: Software and its engineering Software testing and debugging
+Qinghua Xu
+email: qinghua.xu@ul.ie
+OrcID: 0000-0001-8104-1645
+Affiliation: Lero, the Research Ireland Centre for Software, University of Limerick
+, Limerick
+, Ireland
+,
+Guancheng Wang
+email: guancheng.wang@ul.ie
+OrcID: 0000-0002-4338-8813
+Affiliation: Lero, the Research Ireland Centre for Software, University of Limerick
+, Limerick
+, Ireland
+,
+Lionel Briand
+email: lionel.briand@lero.ie
+OrcID: 0000-0002-1393-1010
+Affiliation: Lero, the Research Ireland Centre for Software, University of Limerick
+, Limerick
+, Ireland
+Affiliation: University of Ottawa
+, Ottawa
+, Canada
+,
+Zhaoqiang Guo
+email: gzq@smail.nju.edu.cn
+OrcID: 0000-0001-8971-5755
+Affiliation: the State Key Laboratory of Blockchain and Data Security, Zhejiang University
+, Hangzhou
+, China
+and
+Kui Liu
+email: brucekuiliu@gmail.com
+OrcID: 0000-0003-0145-615X
+Affiliation: Software Engineering Application Technology Lab
+Huawei
+, Shanghai
+, China
+2018; © , 2018; Received  5 June 2009
+Abstract.
+Large language models (LLMs) have shown strong potential for automated test generation, yet most approaches target unit-level testing with mocked dependencies. In contrast, low-level integration testing exercises a class with its real, in-project dependencies, revealing faults that mock-based unit tests miss, such as incorrect object construction, invalid API call sequences, and behavioral mismatches between components. However, generating such tests is substantially harder because it requires correctly instantiating real dependencies and adhering to project-specific constraints, both of which are prone to LLM hallucinations. We identify two root causes behind these hallucinations: not knowing, where the LLM lacks sufficient project-specific context, and not following, where the LLM fails to comply with constraints even when they are provided in the prompt.
+We present IntTestGen, an LLM-based test generation approach that targets low-level integration testing by exercising real project dependencies rather than mocking them. IntTestGen is built around two strategies: context-enriched generation and constraint-enforced fixing. To mitigate not knowing, context-enriched generation mines real usage patterns from existing project code and leverages them to generate tests. To mitigate not following, constraint-enforced fixing performs two-stage repair under symbol-, protocol-, and iteration-level constraints, using a ClassIndex, a Markov typestate model, and experience memory, respectively.
+We evaluate IntTestGen against the state-of-the-art baselines (EvoSuite and PANTA) on Defects4J and Deps4J, a new post-cutoff benchmark containing more complex recent Java repositories. Experimental results show that IntTestGen improves line coverage by 19.99 and 22.69 percentage points and branch coverage by 24.90 and 15.78 percentage points on the two benchmarks, respectively, and improves mutation score by 13.67 and 0.17 percentage points. Beyond the class under test, IntTestGen also exercises more real dependency code, covering 378 and 55 additional lines in dependency classes, respectively. The improvement in test quality comes with higher total token and time costs than the baseline, since IntTestGen can continue making progress over more iterations rather than plateauing early. Nevertheless, the cost remains practical, averaging 108.97 seconds and 26.59k tokens per method on Defects4J, and 69.85 seconds and 25.46k tokens per method on Deps4J. Ablation results further confirm that all major components contribute positively to the final performance.
+Keywords: Large Language Model, Integration Testing, Automated Testing
+1. Introduction
+Software testing is essential for identifying defects early in the development lifecycle  (6; 40; 42). While unit testing has long been the cornerstone of automated test generation research, it addresses only part of the testing problem. A unit test exercises a single class or method in isolation, typically using mocking frameworks (e.g., Mockito (11), PowerMock (19)) to replace real dependencies with simulated ones (29; 37). This enables fast, deterministic checks, but it creates a fundamental blind spot: faults arising from interactions between components, such as invalid object construction, incorrect API call sequences, and behavior mismatches when a dependency’s implementation changes. Consider a streaming XML writer: a unit test with mocked dependencies passes even if the writer calls writeStartObjection() without first invoking setNextName(), because the mock silently accepts any call order. A real dependency, however, throws an IllegalStateException, exposing the protocol violation. Such integration faults are common in practice and motivate integration testing.
+In this work, we focus on low-level integration testing: testing a class together with its real, in-project dependencies (i.e., classes within the same codebase that the class under test (CUT) calls or instantiates). Unlike end-to-end integration tests that span multiple services or external systems, low-level integration tests operate within a single module or repository. They complement unit tests by validating that components work together correctly, while remaining fast enough to run in continuous integration (CI) pipelines. Despite their importance, existing automated test generation tools largely ignore low-level integration tests. Traditional automated unit-test generators (e.g., EvoSuite (12) and Randoop (30)) can execute real dependencies while testing a target class, but do not explicitly optimize dependency interactions or coverage of dependency code, that is, code the target class depends on. Recent LLM-based approaches (17; 40; 39; 8) have significantly advanced automated software testing in reducing compilation/execution errors and improving test coverage. However, they either operate at the method level without handling dependencies  (40; 39), or rely on mocking frameworks to isolate the CUT (17; 29). System-level integration testing tools (e.g., EvoMaster (4), RESTler (5)) target REST API endpoints from API specifications. These tools differ fundamentally from this work, where we generate tests directly from source code to exercise the CUT together with its real, in-project dependencies at the class level. To the best of our knowledge, no existing automated approach targets class-level integration test generation. Generating such tests poses unique challenges: the generator must correctly instantiate dependency objects (including abstract types), resolve imports, and respect stateful API protocols, which requires project-specific knowledge that LLMs do not inherently possess.
+Not knowing vs. Not following. We characterize these challenges through two root causes of hallucination. Not knowing arises when an LLM lacks project-specific context to correctly construct and use dependencies. In those cases, LLMs tend to fabricate nonexistent factory methods or use incorrect constructor signatures. Not following occurs when the model receives correct contextual information but fails to adhere to it, producing tests that violate project-specific constraints such as API call ordering or symbol correctness. These two failure modes demand complementary strategies: enriching generation with mined project knowledge, and enforcing constraints explicitly during repair.
+In this work, we propose IntTestGen, an LLM-based approach for generating low-level integration tests. IntTestGen follows an iterative plan–generate–validate–fix workflow, inspired by recent advances in LLM-based test generation (40). To enable effective low-level integration testing, we introduce two novel strategies that strengthen the generation and repair phases by addressing the limitations identified above.
+•
+Context-enriched Generation. We incorporate class usage patterns retrieved by a program slicer into the test generation process. For every dependency of the class under test, the slicer mines real instantiation/usage patterns from the project and injects them into the generator’s prompt, so that plausible-but-wrong object instantiations are less frequently generated in the first place.
+•
+Constraint-enforced Fixing. We introduce a two-stage repair mechanism that first generates a fix from execution feedback and then re-generates under explicit symbol-, protocol-, and iteration-level constraints when violations are identified. In the second stage, the LLM must produce a detailed justification of how the revised fix satisfies all constraints and resolves the failure, enabling stronger constraint adherence during repair.
+We evaluate IntTestGen against two state-of-the-art baselines representing the main paradigms of automated Java test generation: PANTA (17), a recent LLM-based approach that handles classes with dependencies and follows an iterative generate–validate–fix workflow, and EvoSuite (12; 13), a widely used state-of-the-art search-based test generator. We conduct the evaluation on Defects4J, a widely used benchmark for Java test generation (17; 21) that was also used to evaluate PANTA, enabling a direct comparison with prior results. To avoid potential data leakage and to evaluate our approach on more realistic multi-module projects, we constructed a new dataset,  Deps4J, by collecting recent Java projects released after the release of the LLM we employed (Qwen3-Coder). Unlike Defects4J, which consists of single-module projects, Deps4J contains more complex multi-module projects. Since mockless tests are intended to exercise real project dependencies, we also measure project dependency line coverage (DepLC), defined as the number of lines in dependency classes other than the CUT that are covered. Experimental results show that IntTestGen outperforms both baselines on Defects4J: it raises line coverage from 68.83% (PANTA) and 61.52% (EvoSuite) to 88.82%, mutation score from 38.33% and 35.59% to 52.00%, and DepLC from 819 and 699 to 1,197 lines per project. Similar gains hold on Deps4J. This improvement costs less than two minutes per method on average, and an ablation study confirms that all major components contribute positively.
+The contributions of this work are as follows:
+•
+We identify dependency usage patterns as critical contextual information for mockless unit test generation, and propose a novel context-enriched prompting strategy that augments the LLM with real dependency instantiation and usage examples mined from the target project. This significantly reduces hallucinations caused by insufficient contextual knowledge.
+•
+We propose a novel constraint-enforced fixing mechanism that corrects invalid tests at the symbol, protocol, and iteration levels through a two-stage repair process, in which the second stage requires the model to generate a structured justification explaining how the revised fix resolves the original failure and satisfies all constraints. This mechanism goes beyond test generation and directly targets “not following” hallucinations, a common and key bottleneck in many LLM-based tasks that require reliable adherence to explicit constraints.
+•
+To the best of our knowledge, IntTestGen is the first automated approach to explicitly target low-level integration test generation for Java. Unlike prior work that relies on mocks, is limited to method-level testing, or operates at the system API level, IntTestGen systematically addresses the challenges of dependency-aware test generation at the source code level.
+•
+We conduct a comprehensive empirical evaluation of both Defects4J and Deps4J using line coverage, branch coverage, mutation score, and a new metric, DepLC, which measures the amount of dependency code and captures the extent to which dependencies are exercised. Results show that IntTestGen consistently outperforms both the LLM-based and the search-based SOTA baselines on the effectiveness metrics (line coverage, branch coverage, and mutation score) while covering substantially more dependency code.
+2. Motivating Example
+(a) Class under test: ToXmlGenerator.
+(b) A plausible but hallucinated LLM attempt
+Figure 1. Motivating example adapted from Defects4J.
+We present a motivating example adapted from Defects4J in Figure 1a and Figure 1b. Given the CUT ToXmlGenerator, a valid test must instantiate three external objects: an IOContext, a low-level XMLStreamWriter obtained from XMLOutputFactory, and an internal Stax2WriterAdapter wrapper. In addition, setNextName(...) must be invoked before any writeStartX(...) call to avoid a runtime IllegalStateException. While a unit test using mocking frameworks can bypass these dependency instantiation and usage requirements by simulating external behaviors, it fails to exercise the real interactions among dependent components, which is precisely the gap that integration testing addresses. In contrast, an integration test generator must produce executable tests that instantiate real dependencies and respect valid object usage constraints, making the process substantially more challenging and more prone to invalid test generation. As shown in Figure 1b, when an LLM baseline is prompted with only the CUT source code, it generates plausible-looking tests exhibiting two types of generation errors mentioned in Section  1.
+Source I: Insufficient Context (“Not Knowing”).
+The LLM fabricates a ToXmlGenerator.create() factory and emits an empty anonymous subclass for XMLStreamWriter2 because it has never seen how real Jackson-XML code constructs the generator or how the abstract writer field is populated. The actual pattern should be allocating an XMLStreamWriter via XMLOutputFactory, passing it to the five-argument constructor, where Stax2WriterAdapter.wrapIfNecessary(...) yields the concrete XMLStreamWriter2. This pattern appears elsewhere in the source code but is absent from the prompt. Such errors arise from insufficient project-specific knowledge and thus can be prevented by supplying that knowledge at the input. IntTestGen therefore addresses them during generation by mining concrete usage patterns to instantiate an object.
+Source II: Unenforced Constraints (“Not Following”).
+The call gen.writeStartObject() in Figure 1b is syntactically correct but fails at runtime because _nextName was never set before invocation. This reflects a broader failure mode in which the model does not reliably follow project-specific correctness constraints, even when the required information is available. Such failures manifest at three levels. At the symbol level, the model may invent non-existent classes or invoke methods with invalid signatures. At the protocol level, it may violate required API call sequences, such as omitting setNextName(...) before writeStartObject(). At the iteration level, the model may repeatedly generate ineffective fixes because it lacks a mechanism to retain and reuse successful repair patterns across repair attempts. To address this, IntTestGen performs a two-stage repair process. The model first generates a fix from the error signals, then checks it against symbol-, protocol-, and iteration-level constraints. If it identifies violations, it triggers a second repair, requiring the model to provide a structured justification explaining why the revised fix satisfies these constraints and resolves the original failure.
+3. Approach
+IntTestGen consists of two stages: a one-time preparation stage that constructs project-specific artifacts, and an iterative multi-agent plan–generate–validate–fix loop that generates and repairs tests. The iterative loop of IntTestGen is designed around two core strategies that address the two sources of limitation identified in Section 2.
+In the preparation stage, IntTestGen analyzes the target repository to construct three project-specific artifacts that support different parts of the integration testing pipeline. The code property graph (CPG) captures dependency usage in the repository and supports slicing-based retrieval of real object construction and API-call examples. The ClassIndex records project-visible classes, methods, constructors, and imports, providing a basis for detecting hallucinated or inconsistent symbols. The initial Markov typestate model captures likely valid method-call orders for stateful APIs, providing a basis for detecting illegal call sequences. Together, these artifacts connect context acquisition and constraint enforcement: the CPG helps the model understand how dependencies are used, while the ClassIndex and typestate model help ensure that generated or repaired tests adhere to project-specific symbol and protocol constraints.
+It is worth clarifying the scope of project access in IntTestGen. The CPG, ClassIndex, and typestate model provide only construction context: they inform the Generator and Fixer about valid ways to instantiate and invoke dependencies in the generated test code. At execution time, generated tests exercise the real dependency implementations within the same Maven module as the CUT. IntTestGen never instruments, modifies, or mocks dependency behavior; project-wide analysis serves solely to make generated tests compile and execute against real dependencies. This mirrors how a developer writes an integration test: reading related source code to learn the API, then running the test against the actual components.
+After preparation, IntTestGen enters an iterative plan–generate–validate–fix loop composed of five agents: Initializer, Planner, Generator, Validator, and Fixer. The Initializer prepares the analysis artifacts and testing environment, the Planner creates a test plan by selecting uncovered CUT paths to target, the Generator produces candidate tests, the Validator compiles and executes generated tests, and the Fixer repairs failing tests based on validation feedback. Through this iterative collaboration, the framework progressively improves test quality and coverage over multiple rounds.
+Two budgets control the iterative process: NfixN_{\mathrm{fix}} limits the number of repair attempts for each failed test, and NiterN_{\mathrm{iter}} limits the number of full plan–generate–validate–fix iterations. The process terminates when the target coverage is reached, when no improvement is observed in two consecutive iterations, or when NiterN_{\mathrm{iter}} is exhausted. The final output is the set of all tests that pass during the iterative loop.
+3.1. Stage I: Preparation
+Figure 2. Overview of IntTestGen.
+In this stage, IntTestGen constructs the project-spe

@@ -1,0 +1,1158 @@
+{
+  "engineering_fixtures": {
+    "raw": {
+      "expected_instances": 18,
+      "candidate_hits": 10,
+      "exact_bound_hits": 10,
+      "false_bindings": 0,
+      "slot_errors": 0,
+      "extracted": 18,
+      "extraction_errors": 0,
+      "expected_relations": 5,
+      "exact_bound_relations": 0,
+      "missing_or_incorrect_relations": 5,
+      "relation_errors": 0,
+      "details": [
+        {
+          "id": "filter_identity",
+          "expected": [
+            "selective_filter"
+          ],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_preprocess",
+          "expected": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "candidates": [
+            "sequence_transform"
+          ],
+          "exact_bound": [
+            "sequence_transform"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_benign_mapping",
+          "expected": [
+            "element_mapping"
+          ],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_no_selection",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_effectful",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_nested",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "multiplicity_set",
+          "expected": [
+            "deduplication"
+          ],
+          "candidates": [
+            "deduplication"
+          ],
+          "exact_bound": [
+            "deduplication"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_len_set",
+          "expected": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "candidates": [
+            "cardinality",
+            "deduplication"
+          ],
+          "exact_bound": [
+            "cardinality",
+            "deduplication"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_counter",
+          "expected": [
+            "frequency_aggregation"
+          ],
+          "candidates": [
+            "frequency_aggregation"
+          ],
+          "exact_bound": [
+            "frequency_aggregation"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_length",
+          "expected": [
+            "cardinality"
+          ],
+          "candidates": [
+            "cardinality"
+          ],
+          "exact_bound": [
+            "cardinality"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_shadow",
+          "expected": [],
+          "candidates": [
+            "deduplication"
+          ],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "multiplicity_custom",
+          "expected": [],
+          "candidates": [
+            "deduplication"
+          ],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_consumed",
+          "expected": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "candidates": [
+            "position_lookup"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_guarded",
+          "expected": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "candidates": [
+            "position_lookup"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_position_only",
+          "expected": [
+            "position_lookup"
+          ],
+          "candidates": [
+            "position_lookup"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_direct",
+          "expected": [
+            "direct_indexing"
+          ],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_unknown_receiver",
+          "expected": [],
+          "candidates": [
+            "position_lookup"
+          ],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_rebound",
+          "expected": [
+            "position_lookup"
+          ],
+          "candidates": [
+            "position_lookup"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        }
+      ]
+    },
+    "concepts": {
+      "expected_instances": 18,
+      "candidate_hits": 18,
+      "exact_bound_hits": 18,
+      "false_bindings": 0,
+      "slot_errors": 0,
+      "extracted": 18,
+      "extraction_errors": 0,
+      "expected_relations": 5,
+      "exact_bound_relations": 5,
+      "missing_or_incorrect_relations": 0,
+      "relation_errors": 0,
+      "details": [
+        {
+          "id": "filter_identity",
+          "expected": [
+            "selective_filter"
+          ],
+          "candidates": [
+            "element_mapping",
+            "selective_filter",
+            "transform_then_filter"
+          ],
+          "exact_bound": [
+            "selective_filter"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_preprocess",
+          "expected": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "candidates": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "exact_bound": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_benign_mapping",
+          "expected": [
+            "element_mapping"
+          ],
+          "candidates": [
+            "element_mapping",
+            "search_position_indexing",
+            "transform_then_filter"
+          ],
+          "exact_bound": [
+            "element_mapping"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_no_selection",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_effectful",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_nested",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "multiplicity_set",
+          "expected": [
+            "deduplication"
+          ],
+          "candidates": [
+            "deduplication",
+            "distinct_cardinality",
+            "frequency_aggregation"
+          ],
+          "exact_bound": [
+            "deduplication"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_len_set",
+          "expected": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "candidates": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "exact_bound": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_counter",
+          "expected": [
+            "frequency_aggregation"
+          ],
+          "candidates": [
+            "element_mapping",
+            "frequency_aggregation",
+            "selective_filter"
+          ],
+          "exact_bound": [
+            "frequency_aggregation"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_length",
+          "expected": [
+            "cardinality"
+          ],
+          "candidates": [
+            "cardinality",
+            "search_position_indexing",
+            "sequence_transform"
+          ],
+          "exact_bound": [
+            "cardinality"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_shadow",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "multiplicity_custom",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_consumed",
+          "expected": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_guarded",
+          "expected": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_position_only",
+          "expected": [
+            "position_lookup"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_direct",
+          "expected": [
+            "direct_indexing"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "direct_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_unknown_receiver",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_rebound",
+          "expected": [
+            "position_lookup"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        }
+      ]
+    },
+    "relations": {
+      "expected_instances": 18,
+      "candidate_hits": 18,
+      "exact_bound_hits": 18,
+      "false_bindings": 0,
+      "slot_errors": 0,
+      "extracted": 18,
+      "extraction_errors": 0,
+      "expected_relations": 5,
+      "exact_bound_relations": 5,
+      "missing_or_incorrect_relations": 0,
+      "relation_errors": 0,
+      "details": [
+        {
+          "id": "filter_identity",
+          "expected": [
+            "selective_filter"
+          ],
+          "candidates": [
+            "element_mapping",
+            "selective_filter",
+            "transform_then_filter"
+          ],
+          "exact_bound": [
+            "selective_filter"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_preprocess",
+          "expected": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "candidates": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "exact_bound": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_benign_mapping",
+          "expected": [
+            "element_mapping"
+          ],
+          "candidates": [
+            "element_mapping",
+            "search_position_indexing",
+            "transform_then_filter"
+          ],
+          "exact_bound": [
+            "element_mapping"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_no_selection",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_effectful",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_nested",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "multiplicity_set",
+          "expected": [
+            "deduplication"
+          ],
+          "candidates": [
+            "deduplication",
+            "distinct_cardinality",
+            "frequency_aggregation"
+          ],
+          "exact_bound": [
+            "deduplication"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_len_set",
+          "expected": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "candidates": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "exact_bound": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_counter",
+          "expected": [
+            "frequency_aggregation"
+          ],
+          "candidates": [
+            "element_mapping",
+            "frequency_aggregation",
+            "selective_filter"
+          ],
+          "exact_bound": [
+            "frequency_aggregation"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_length",
+          "expected": [
+            "cardinality"
+          ],
+          "candidates": [
+            "cardinality",
+            "search_position_indexing",
+            "sequence_transform"
+          ],
+          "exact_bound": [
+            "cardinality"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_shadow",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "multiplicity_custom",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_consumed",
+          "expected": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_guarded",
+          "expected": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_position_only",
+          "expected": [
+            "position_lookup"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_direct",
+          "expected": [
+            "direct_indexing"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "direct_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_unknown_receiver",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_rebound",
+          "expected": [
+            "position_lookup"
+          ],
+          "candidates": [
+            "direct_indexing",
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        }
+      ]
+    },
+    "direct": {
+      "expected_instances": 18,
+      "candidate_hits": 18,
+      "exact_bound_hits": 18,
+      "false_bindings": 0,
+      "slot_errors": 0,
+      "extracted": 18,
+      "extraction_errors": 0,
+      "expected_relations": 5,
+      "exact_bound_relations": 5,
+      "missing_or_incorrect_relations": 0,
+      "relation_errors": 0,
+      "details": [
+        {
+          "id": "filter_identity",
+          "expected": [
+            "selective_filter"
+          ],
+          "candidates": [
+            "selective_filter"
+          ],
+          "exact_bound": [
+            "selective_filter"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_preprocess",
+          "expected": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "candidates": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "exact_bound": [
+            "selective_filter",
+            "sequence_transform",
+            "transform_then_filter"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_benign_mapping",
+          "expected": [
+            "element_mapping"
+          ],
+          "candidates": [
+            "element_mapping"
+          ],
+          "exact_bound": [
+            "element_mapping"
+          ],
+          "error": null
+        },
+        {
+          "id": "filter_no_selection",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_effectful",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "filter_nested",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "multiplicity_set",
+          "expected": [
+            "deduplication"
+          ],
+          "candidates": [
+            "deduplication"
+          ],
+          "exact_bound": [
+            "deduplication"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_len_set",
+          "expected": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "candidates": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "exact_bound": [
+            "cardinality",
+            "deduplication",
+            "distinct_cardinality"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_counter",
+          "expected": [
+            "frequency_aggregation"
+          ],
+          "candidates": [
+            "frequency_aggregation"
+          ],
+          "exact_bound": [
+            "frequency_aggregation"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_length",
+          "expected": [
+            "cardinality"
+          ],
+          "candidates": [
+            "cardinality"
+          ],
+          "exact_bound": [
+            "cardinality"
+          ],
+          "error": null
+        },
+        {
+          "id": "multiplicity_shadow",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "multiplicity_custom",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_consumed",
+          "expected": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "candidates": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_guarded",
+          "expected": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "candidates": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "exact_bound": [
+            "position_lookup",
+            "search_position_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_position_only",
+          "expected": [
+            "position_lookup"
+          ],
+          "candidates": [
+            "position_lookup"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_direct",
+          "expected": [
+            "direct_indexing"
+          ],
+          "candidates": [
+            "direct_indexing"
+          ],
+          "exact_bound": [
+            "direct_indexing"
+          ],
+          "error": null
+        },
+        {
+          "id": "search_unknown_receiver",
+          "expected": [],
+          "candidates": [],
+          "exact_bound": [],
+          "error": null
+        },
+        {
+          "id": "search_rebound",
+          "expected": [
+            "position_lookup"
+          ],
+          "candidates": [
+            "position_lookup"
+          ],
+          "exact_bound": [
+            "position_lookup"
+          ],
+          "error": null
+        }
+      ]
+    }
+  },
+  "unlabeled_census": {
+    "raw": {
+      "tasks": 113,
+      "errors": [],
+      "with_instances": 69,
+      "with_bindings": 54,
+      "instances": 147,
+      "bindings": 100,
+      "character_truncated_queries": 1,
+      "token_truncated_queries": 0,
+      "unknown_records": 180,
+      "relation_tasks": 3,
+      "bound_relation_tasks": 2,
+      "relations": {
+        "feeds_selection_source": 1,
+        "transform_flows_to_filter": 1,
+        "deduplication_flows_to_count": 3
+      },
+      "kinds": {
+        "cardinality": 86,
+        "element_mapping": 14,
+        "direct_indexing": 16,
+        "selective_filter": 7,
+        "deduplication": 11,
+        "position_lookup": 3,
+        "sequence_transform": 6,
+        "transform_then_filter": 1,
+        "distinct_cardinality": 3
+      },
+      "unknown_reasons": {
+        "indexed_receiver_domain_unknown": 163,
+        "effectful_or_multiple_predicate": 5,
+        "index_origin_flow_unknown": 1,
+        "nested_or_async_comprehension": 2,
+        "search_receiver_domain_unknown": 4,
+        "replace_receiver_not_known_string": 3,
+        "selection_source_flow_unknown": 1,
+        "destructured_iteration": 1
+      },
+      "domain_rules": {
+        "qualified_parameter_annotation": 39,
+        "sequence_construction": 26,
+        "alias_assignment": 17,
+        "builtin_string_split_result": 1,
+        "qualified_builtin_constructor": 14,
+        "builtin_sequence_slice": 1,
+        "builtin_string_result": 14,
+        "string_literal": 14,
+        "explicit_public_parameter_type": 5
+      }
+    },
+    "concepts": {
+      "tasks": 113,
+      "errors": [],
+      "with_instances": 69,
+      "with_bindings": 69,
+      "instances": 147,
+      "bindings": 147,
+      "character_truncated_queries": 0,
+      "token_truncated_queries": 0,
+      "unknown_records": 180,
+      "relation_tasks": 3,
+      "bound_relation_tasks": 3,
+      "relations": {
+        "feeds_selection_source": 1,
+        "transform_flows_to_filter": 1,
+        "deduplication_flows_to_count": 3
+      },
+      "kinds": {
+        "cardinality": 86,
+        "element_mapping": 14,
+        "direct_indexing": 16,
+        "selective_filter": 7,
+        "deduplication": 11,
+        "position_lookup": 3,
+        "sequence_transform": 6,
+        "transform_then_filter": 1,
+        "distinct_cardinality": 3
+      },
+      "unknown_reasons": {
+        "indexed_receiver_domain_unknown": 163,
+        "effectful_or_multiple_predicate": 5,
+        "index_origin_flow_unknown": 1,
+        "nested_or_async_comprehension": 2,
+        "search_receiver_domain_unknown": 4,
+        "replace_receiver_not_known_string": 3,
+        "selection_source_flow_unknown": 1,
+        "destructured_iteration": 1
+      },
+      "domain_rules": {
+        "qualified_parameter_annotation": 39,
+        "sequence_construction": 26,
+        "alias_assignment": 17,
+        "builtin_string_split_result": 1,
+        "qualified_builtin_constructor": 14,
+        "builtin_sequence_slice": 1,
+        "builtin_string_result": 14,
+        "string_literal": 14,
+        "explicit_public_parameter_type": 5
+      }
+    },
+    "relations": {
+      "tasks": 113,
+      "errors": [],
+      "with_instances": 69,
+      "with_bindings": 69,
+      "instances": 147,
+      "bindings": 147,
+      "character_truncated_queries": 0,
+      "token_truncated_queries": 0,
+      "unknown_records": 180,
+      "relation_tasks": 3,
+      "bound_relation_tasks": 3,
+      "relations": {
+        "feeds_selection_source": 1,
+        "transform_flows_to_filter": 1,
+        "deduplication_flows_to_count": 3
+      },
+      "kinds": {
+        "cardinality": 86,
+        "element_mapping": 14,
+        "direct_indexing": 16,
+        "selective_filter": 7,
+        "deduplication": 11,
+        "position_lookup": 3,
+        "sequence_transform": 6,
+        "transform_then_filter": 1,
+        "distinct_cardinality": 3
+      },
+      "unknown_reasons": {
+        "indexed_receiver_domain_unknown": 163,
+        "effectful_or_multiple_predicate": 5,
+        "index_origin_flow_unknown": 1,
+        "nested_or_async_comprehension": 2,
+        "search_receiver_domain_unknown": 4,
+        "replace_receiver_not_known_string": 3,
+        "selection_source_flow_unknown": 1,
+        "destructured_iteration": 1
+      },
+      "domain_rules": {
+        "qualified_parameter_annotation": 39,
+        "sequence_construction": 26,
+        "alias_assignment": 17,
+        "builtin_string_split_result": 1,
+        "qualified_builtin_constructor": 14,
+        "builtin_sequence_slice": 1,
+        "builtin_string_result": 14,
+        "string_literal": 14,
+        "explicit_public_parameter_type": 5
+      }
+    },
+    "direct": {
+      "tasks": 113,
+      "errors": [],
+      "with_instances": 69,
+      "with_bindings": 69,
+      "instances": 147,
+      "bindings": 147,
+      "character_truncated_queries": 0,
+      "token_truncated_queries": 0,
+      "unknown_records": 180,
+      "relation_tasks": 3,
+      "bound_relation_tasks": 3,
+      "relations": {
+        "feeds_selection_source": 1,
+        "transform_flows_to_filter": 1,
+        "deduplication_flows_to_count": 3
+      },
+      "kinds": {
+        "cardinality": 86,
+        "element_mapping": 14,
+        "direct_indexing": 16,
+        "selective_filter": 7,
+        "deduplication": 11,
+        "position_lookup": 3,
+        "sequence_transform": 6,
+        "transform_then_filter": 1,
+        "distinct_cardinality": 3
+      },
+      "unknown_reasons": {
+        "indexed_receiver_domain_unknown": 163,
+        "effectful_or_multiple_predicate": 5,
+        "index_origin_flow_unknown": 1,
+        "nested_or_async_comprehension": 2,
+        "search_receiver_domain_unknown": 4,
+        "replace_receiver_not_known_string": 3,
+        "selection_source_flow_unknown": 1,
+        "destructured_iteration": 1
+      },
+      "domain_rules": {
+        "qualified_parameter_annotation": 39,
+        "sequence_construction": 26,
+        "alias_assignment": 17,
+        "builtin_string_split_result": 1,
+        "qualified_builtin_constructor": 14,
+        "builtin_sequence_slice": 1,
+        "builtin_string_result": 14,
+        "string_literal": 14,
+        "explicit_public_parameter_type": 5
+      }
+    }
+  },
+  "runtime": {
+    "python": "3.11.15",
+    "sqlite": "3.50.4"
+  },
+  "model_calls": 0,
+  "target_executions": 0,
+  "canonical_used": false,
+  "generalization_claim": false
+}

@@ -1,0 +1,49 @@
+{
+  "rank": 10,
+  "title": "Doc2OracLL: Investigating the Impact of Documentation on LLM-Based Test Oracle Generation",
+  "fulltext_read": true,
+  "read_path": "papers/doc2oracll/public_evidence/paper-official-v2.txt",
+  "read_sha256": "db596601691a0a8d6e67b3470f217fcadb55838aa78ee12fc3ec5abd539b380f",
+  "read_source": "https://arxiv.org/pdf/2412.09360v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "SF110*:55575documented samples,90/5/5split;10model families/60prompt combinations",
+    "Defects4J374input prefixes:288developerJavadoc+86GPT-generated Javadoc"
+  ],
+  "task": "fine-tuned documentation-grounded assertion/exception oracle generation",
+  "input_setting": "Supplied test prefix with variants adding documentation/signature/MUT. P2 omits implementation.86missing docs generated from MUT, so provenance differs from developer specifications.",
+  "author_artifact_url": "https://doi.org/10.6084/m9.figshare.30110098.v1",
+  "author_relationship_evidence": "Original arXiv PDF says project repository but no actionable artifact link. Official author publication page only paper link. Follow-up2608.00884 by Hossain/Dwyer/Tasnim explicitly studies released Doc2OracLL and links this CC-BY author archive; archive includes named Doc2OracLL inference scripts and CodeLlama adapter.",
+  "public_source_checked": true,
+  "source_status": "partial",
+  "source_commit_or_archive": "Author follow-up Figshare30110098.v1 / file67158977, published2026-07-31; ZIP directory801entries verified through byte ranges",
+  "license": "Follow-up archive CC-BY4.0; base CodeLlama license separate",
+  "exact_models": [
+    "10 fine-tuned bases including CodeGen350M/2B,CodeParrot110M,CodeGPT,PolyCoder,Phi1,CodeLlama7B,CodeGemma2/7B",
+    "Author follow-up adapter_config verifies codellama/CodeLlama-7b-hf,LoRA r16 alpha64 q_proj/v_proj",
+    "gpt-3.5-turbo-0125 for generated Javadoc"
+  ],
+  "weights_status": "One actual CodeLlama tc_mut_doc adapter downloaded16,794,456bytes; safetensors header128tensors checked; SHA256 ee78e9cbe9985e2d84da40895b736fb0277e8e9aff79c7b98ecc2553fa8059c9. Full original60-model/prompt checkpoint suite NOT verified. No model loaded/executed.",
+  "evaluation_route": "Author follow-up scripts load base+PEFT adapter, beam5,max_new_tokens300, evaluate exception-marker subset on SF110/OE25. This supports a model-level follow-up evaluation, not original374Defects4J bug replay without further original artifacts.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Original arXiv HTML truncates afterRQ1; retrieved/read entire23page officialPDF instead",
+    "Original training/evaluation source and full fine-tuned checkpoint suite not located; same-titleGitHub/HF searches empty",
+    "Follow-up archive is a different paper artifact and focuses exception prediction; original Defects4J replay route not verified",
+    "Provided follow-up script uses absolute scratch paths and docskip file alongside tc_mut_doc variant: reconcile input ablation before evaluating",
+    "Base model revisions not pinned; no full training hyperparameter/seed manifest established for60combinations",
+    "No author inference/evaluator run; model package format inspection only"
+  ],
+  "concept_fit": "Very high documentation as normative behavior source; description/return clauses matter. Rich dependency-aware Javadoc selection via inheritDoc/see explicitly future work.",
+  "recommendation": "Upgrade from source-not-verified to limited author-model evaluation route: one genuine released CodeLlama adapter verified via later author archive. Good concept/oracle prior work; exact whole-paper reproduction remains incomplete.",
+  "citations": [
+    "https://arxiv.org/pdf/2412.09360v2",
+    "https://doi.org/10.1145/3729354",
+    "https://assert-lab.github.io/publications/",
+    "https://arxiv.org/html/2608.00884",
+    "https://doi.org/10.6084/m9.figshare.30110098.v1"
+  ],
+  "reviewed_at": "2026-10-15T08:28:13.709393+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

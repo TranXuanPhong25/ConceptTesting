@@ -1,0 +1,51 @@
+{
+  "rank": 46,
+  "title": "Agentic Bug Reproduction for Effective Automated Program Repair at Google",
+  "fulltext_read": true,
+  "read_path": "papers/agentic-bug-reproduction-for-effective-automated-program-repair-at-google-6745a56e/public_evidence/paper_fulltext.txt",
+  "read_sha256": "82e45e3fc09fbfde87a67322b519fe54af82869a3faf91796b6056ebef7e1b21",
+  "read_source": "https://arxiv.org/html/2502.01821v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "80 human-reported production bugs from Google internal GITS; 2025 version counts 80 (the cited related study later has 78 due infrastructure changes). Seven languages: Java, C++, Go, Python, Kotlin, Dart and TypeScript. Bug reports, ground-truth buggy files, fixed CLs and manually written oracle BRTs are internal/private. Defects4J and SWT-Bench are related-work references only, not experimental datasets."
+  ],
+  "task": "Generate bug reproduction tests from issue reports in Google internal repositories, then study whether generated BRTs help Google’s internal APR (Passerine) and rank generated fixes via Ensemble Pass Rate.",
+  "input_setting": "BRT Agent receives GITS issue title/description and buggy file contents; it can search/read internal repository files, edit test files with a Google-code-finetuned model, and execute Bazel tests. LIBRO additionally receives the ground-truth test file as context. The ground-truth fix/oracle is withheld from generation but used to evaluate F→P plausibility. For RQ2, selected plausible BRTs are fed to Passerine; the paper explicitly describes this as an upper bound because plausibility was determined using the ground-truth fix.",
+  "author_artifact_url": "No public BRT Agent implementation or dataset URL identified; paper describes proprietary Google GITS, code_search, Bazel infrastructure, fine-tuned Gemini and Passerine.",
+  "author_relationship_evidence": "The paper explicitly situates the system, data and infrastructure inside Google and describes an internal model fine-tuned on Google code. Exact-title/code searches found the arXiv paper and secondary indexes but no author code/data repository; the only GitHub links in references are unrelated tools/dependencies (e.g. Aider and sanitizers).",
+  "public_source_checked": true,
+  "source_status": "not_found",
+  "source_commit_or_archive": "No public implementation, frozen benchmark, data archive, or repository snapshot located. Internal Google GITS issues and proprietary code-editing model/toolchain are unavailable; referenced LIBRO/SWT-Bench/Aider code is not the paper’s implementation.",
+  "license": "The arXiv manuscript declares CC BY 4.0. No software/data license can be verified because no author artifact or internal dataset is public.",
+  "exact_models": [
+    "A Gemini model fine-tuned on Google internal code for LIBRO/code editing; exact model ID, revision, and weights are not disclosed/public.",
+    "A publicly available Gemini model for BRT Agent reasoning; paper does not give a pinned public model identifier/revision.",
+    "Gemini for Passerine runs and Gemini-as-judge; configs are temperature 0.2/top-p 0.95 for Passerine, 20 runs/bug.",
+    "Adapted LIBRO uses temperature 0.7/top-p 0.95, 50 runs/bug; BRT Agent uses temperature 0.2/top-p 0.95 for reasoning and code edit, 20 runs/bug, maximum 25 steps/run."
+  ],
+  "weights_status": "Critical code-editing Gemini weights are fine-tuned on Google internal code and not publicly available. Public reasoning Gemini identity is unspecified; no reproducible model snapshot or artifact verified.",
+  "evaluation_route": "Read all 10,291 extracted words of arXiv v2 including sections 1–8 and references. On 80 internal Google bugs BRT Agent reaches 85% candidate and 28% plausible rates, vs LIBRO 41%/10%; 86% of plausible generated patches pass manual validity criteria, while 11% modify existing tests and are invalid. RQ2 on 23 selected cases finds Passerine plausible fixes 17/23 with a generated BRT vs 13/23 without (upper-bound selection based on known ground truth); plausible-fix probability when BRT used is 33% vs 2%. EPR ranks a plausible patch first in 70% of candidate pools of 20. No public task manifest/source/model route exists and no code/model run was attempted.",
+  "reproduction_verdict": "not_feasible",
+  "blockers": [
+    "The 80 GITS bug reports, buggy/fixed Google source trees, oracle BRTs and expected outputs are proprietary; no data package found.",
+    "Core code_search, Bazel test execution, test conventions and Passerine are internal Google infrastructure.",
+    "The code-editing model is fine-tuned on Google internal code and not public; the public Gemini reasoning model is not pinned by exact ID/revision.",
+    "The paper’s headline results cannot be reproduced on Defects4J or SWT-Bench directly: those are related-work baselines/context, not this experiment’s dataset; adapting the agent to those datasets would be a new implementation/experiment."
+  ],
+  "concept_fit": "Very high task alignment for actual bug-reproduction tests: defines BRT with Fail-to-Pass behavior and discusses root-cause usefulness; issue report and buggy source are inputs, while fixed-version oracle validates the test. But it provides no explicit root-cause taxonomy or tracked semantic-concept representation; its central agent is proprietary and cross-language. Strong comparator for task definition, BRT plausibility, test validity, and separation of candidate F→X from validated F→P.",
+  "recommendation": "Use as a key related-work comparator and source of evaluation protocol distinctions (candidate vs plausible BRT, manual validity, APR utility and fix-ranking EPR). Do not select as a reproducible implementation baseline: all data, core infrastructure, trained code model and APR system are internal. For our own evaluation, use public SWT-Bench/Defects4J tasks with an independently approved implementation and report that as a new adaptation, not a reproduction of Google results.",
+  "citations": [
+    "https://arxiv.org/html/2502.01821v2",
+    "https://arxiv.org/abs/2502.01821"
+  ],
+  "supporting_locations": [
+    "Full text SHA-256 82e45e3fc09fbfde87a67322b519fe54af82869a3faf91796b6056ebef7e1b21; all 10,291 extracted words reviewed.",
+    "Sections 2.1 and 5.1 define F→P and the private 80-bug Google GITS corpus; §5.1 notes seven languages and internal bug/fix/test records.",
+    "Sections 4.1–4.2 describe private code search, Bazel, Gemini fine-tuning and ReAct-style agent.",
+    "Sections 6.1–6.3 report generation, manual-validity, Passerine and EPR results; §5.2.2 calls RQ2 an upper bound due ground-truth-based BRT selection.",
+    "Defects4J and SWT-Bench appear in related work only; no author artifact link is given."
+  ],
+  "reviewed_at": "2026-10-15T12:40:06+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

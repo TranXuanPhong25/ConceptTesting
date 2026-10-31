@@ -1,0 +1,55 @@
+{
+  "rank": 69,
+  "title": "Beyond Heuristics? Rethinking Targeted Unit Test Generation in the Era of LLM Agents",
+  "fulltext_read": true,
+  "read_path": "papers/beyond-heuristics-rethinking-targeted-unit-test-generation-in-the-era-of-ll-97173b16/public_evidence/paper_official_fulltext.txt",
+  "read_sha256": "8f31ef33ef263a32b4143d7e467b50de3eda8d34eabd55f6621a0cc24d103c2d",
+  "read_source": "Official LIPIcs ESEM 2026 PDF, 21 pages, published 2026-10-05; full 9,997-word pdftotext extraction; CC BY 4.0",
+  "dataset_use_verified": true,
+  "datasets": [
+    "New targeted Java exception benchmark: 210 runtime-exception bugs across 66 projects. The initial 169 cases are consolidated/filtered from existing sources including Defects4J, BEARS, Genesis, NPEX and VFix; 41 additional bugs were disclosed October 2025–May 2026 to reduce contamination. Exception categories include 126 NullPointerExceptions plus array, cast, argument, state, parsing and other failures.",
+    "No issue-report/BRT benchmark such as SWT-Bench is used. The task provides a buggy codebase, target exception type and target line; the agent writes a JUnit suite that must throw the target exception with the specified location at the top of the stack trace.",
+    "The paper does not identify a canonical fixed version for every benchmark item; success is a targeted runtime-exception trigger oracle, not a before-fix/after-fix F2P oracle."
+  ],
+  "task": "Targeted unit-test generation for a known Java runtime-exception location. The model receives the buggy repository plus target exception type and line-level location, but no manually selected context. It must create a single JUnit test file that triggers the specified exception at the specified top stack-trace location; a Docker harness grades this objectively.",
+  "input_setting": "Three general coding-agent scaffolds (Claude Code, OpenHands, OpenCode) crossed with three models (Claude 4.5 Sonnet, GPT-5, DeepSeek-V3.2), nine combinations. Minimal prompt: buggy repository path, exception type and target file/line; agents inspect code, generate tests and refine from execution feedback. 15-minute and $2/task limits; five repeated runs.",
+  "author_artifact_url": "https://zenodo.org/records/20283766",
+  "author_relationship_evidence": "Official DROPS paper page lists the exact Zenodo record under Supplementary Materials > Software; the paper's Data Availability statement directly says Zenodo contains the public benchmark, Docker environments and evaluation setup. Zenodo API metadata matches the exact paper title and CC BY 4.0; archive is `ESEM-2026.zip`, 2,164,140,463 bytes (MD5 34fd257d4c0c9b77c4b202856d03fda1). Read the archive's root README.md via HTTP range; it identifies itself as the replication package and describes 210 bug cases, repository files, evaluation/build scripts, agents and run command. The actual large archive source files were not fully enumerated or executed.",
+  "public_source_checked": true,
+  "source_status": "partial",
+  "source_commit_or_archive": "Zenodo `10.5281/zenodo.20283766`, public CC BY 4.0 record, file `ESEM-2026.zip` (2.164 GB, MD5 34fd257d4c0c9b77c4b202856d03fda1). Confirmed title/license/size via Zenodo API and inspected embedded root README through HTTP byte-range reads. README lists `run_evaluation.py`, `build_image.py`, Docker/JDK configs, `benchmarks/` with 210 buggy repo snapshots/submit.py and states OpenCode/Claude Code/OpenHands are runnable. The complete file manifest and substantive runner code were not inspected because the 2.16 GB ZIP has an approximately 86 MB central directory; no archive extraction, code execution or full download performed.",
+  "license": "Article and Zenodo record are CC BY 4.0. The 2.16 GB archive README claims to include benchmark/source and evaluation software, but the archive's internal LICENSE and upstream project license manifests were not inspected; preserve original project licenses.",
+  "exact_models": [
+    "Claude-4.5-Sonnet",
+    "GPT-5",
+    "DeepSeek-V3.2"
+  ],
+  "weights_status": "The paper uses closed APIs and DeepSeek-V3.2. No fine-tuned weights. The archive README asks users to configure one of OpenCode, Claude Code or OpenHands with a default model; local model endpoint support was not verified from the archive code. A Qwen/OpenAI-compatible endpoint may be possible through the open scaffolds but is untested.",
+  "evaluation_route": "Read the complete official 21-page PDF (9,997 extracted words / 1,176 lines); SHA-256 above. Benchmark: 210 bugs across 66 Java projects, 169 consolidated cases plus 41 post-cutoff additions. Top result is Claude Code + GPT-5 at 89.5%; UnitCon 49.6%, EvoSuite 39.4%, Randoop 21.3%. OpenCode + DeepSeek-V3.2 achieves 65.2% at $0.04/instance. The artifact README describes `python run_evaluation.py benchmarks/ -f opencode -t 900 -r 5`, with `-n` to select a random case subset, and per-case Docker build scripts. This offers a plausible limited own-model evaluation through OpenCode, but the 2.16 GB archive's internal evaluation code/model config was not fully inspected. No run performed.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The supplementary package is a 2.16 GB ZIP; public record and README were verified, but the full file manifest and substantive runner code were not inspected or executed, so exact reproduction feasibility remains conditional.",
+    "A full 210-task reproduction is expensive: every instance has a 15-minute cap, five repetitions were used, Docker images/build environments span 66 Java projects, and hosted APIs can cost up to the paper's $2/task cap.",
+    "Exact agent/model revisions are not pinned in the inspected artifact README; the evaluated models are GPT-5, Claude-4.5-Sonnet and DeepSeek-V3.2. Re-running with a current local Qwen would be a new evaluation and requires verifying custom endpoint support in OpenCode/OpenHands.",
+    "The benchmark is targeted exception triggering with the target line and exception supplied; it is not issue-description-to-test reproduction or hidden-fix F2P, and it does not assess oracle assertions or broad behavior correctness.",
+    "Although the paper performs manual root-cause analysis of failed trajectories (κ=0.76 agreement), its categories describe agent test-generation failures, not ground-truth causes of the underlying software bugs."
+  ],
+  "concept_fit": "High for targeted bug-revealing test generation and failure-cause analysis: the oracle requires an exact exception and target top-of-stack line, and authors categorize 200 failures (insufficient exploration 41.5%, inadequate reasoning 25.5%, tool misuse 14%, incorrect focus 11.5%). The benchmark includes Defects4J-derived real Java exceptions and 41 post-cutoff bugs. However, target location is given, so it bypasses root-cause localization; it is not an issue-report or F2P-after-fix task, and failure categories concern agent behavior rather than bug cause.",
+  "recommendation": "Promote as a strong supporting candidate for targeted Java exception-triggering tests, with a rich failure analysis and a public Zenodo artifact. It may be useful for a small local-model pilot because the README documents a random `--case-count` subset and OpenCode runner. Reproduction is conditional until the 2.16 GB package's evaluation scripts/configs and endpoint route are fully inspected; full reruns are expensive. Keep distinct from the user's core issue-to-BRT task: the model is given the exact exception and line location, and success is one targeted runtime exception, not a complete behavioral oracle. No code or model run.",
+  "citations": [
+    "https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.ESEM.2026.47",
+    "https://doi.org/10.5281/zenodo.20283766",
+    "https://github.com/rjust/defects4j"
+  ],
+  "supporting_locations": [
+    "Official 21-page PDF Sections 3.3–3.4: benchmark construction, post-cutoff additions, target exception/location input, stack-trace oracle and time/cost limits.",
+    "Tables 1–3 and Section 4.1: 210 cases/66 projects, 89.5% best agent, 49.6% UnitCon, DeepSeek cost/performance.",
+    "Section 4.3 and Figure 4: 200-failure manual coding; inter-author agreement 81.5%, Cohen's κ=.76; failure categories and proportions.",
+    "DROPS record: ESEM 2026, 21-page article, CC BY 4.0, Zenodo Software supplementary item.",
+    "Zenodo API: matching record title, CC BY 4.0, 2,164,140,463-byte `ESEM-2026.zip`.",
+    "Embedded artifact README: 210 project snapshots, `run_evaluation.py`, `build_image.py`, Docker/JDK images, random subset parameter, three agent frameworks. Full archive code was not inspected."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

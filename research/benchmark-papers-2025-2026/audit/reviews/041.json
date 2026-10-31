@@ -1,0 +1,70 @@
+{
+  "rank": 41,
+  "title": "Automated Unit Test Generation via Chain-of-Thought Prompt and Reinforcement Learning from Coverage Feedback",
+  "fulltext_read": false,
+  "read_path": null,
+  "read_sha256": null,
+  "read_source": "Official ACM DOI page, HKUST repository item and author publication page checked; final PDF unavailable. Zenodo replication package inspected separately.",
+  "access_attempts": [
+    {
+      "url": "https://doi.org/10.1145/3745765",
+      "result": "ACM publisher page/PDF returns 403; web index exposes abstract and portions, not full article."
+    },
+    {
+      "url": "https://repository.hkust.edu.hk/ir/usage-metrics/download/1783.1-172067",
+      "result": "redirects to institutional CAPTCHA; no PDF obtained."
+    },
+    {
+      "url": "https://jw-zhang-zju.github.io/",
+      "result": "author publication page links to ACM only; linked ACM page returns 403."
+    },
+    {
+      "url": "https://paperity.org/p/377061606/automated-unit-test-generation-via-chain-of-thought-prompt-and-reinforcement-learning",
+      "result": "page exposes a short opening excerpt and redirects to ACM PDF; direct request blocked."
+    },
+    {
+      "url": "https://zenodo.org/records/10390998",
+      "result": "public replication package for same-title TestCTRL work; used only to verify artifact, not as full paper text."
+    }
+  ],
+  "dataset_use_verified": true,
+  "datasets": [
+    "Defects4J test-generation and bug-detection evaluation; exact five projects/sample counts not verified from full paper."
+  ],
+  "task": "CoT-prompted test generation with CodeLlama-7B policy model, CodeGPT line-coverage reward model and PPO; coverage-driven unit-test generation, not causal root-cause analysis.",
+  "input_setting": "Focal Java method + CoT describing method intention and plausible input values; generate tests, optimize policy using predicted line-coverage reward.",
+  "author_artifact_url": "https://zenodo.org/records/10390998; https://github.com/jw-zhang-zju (author page currently links ACM only)",
+  "author_relationship_evidence": "Official author publication page lists the paper and ACM link. Zenodo record has matching title, replication-package description and files but anonymous creator and 2023 timestamp, so its relation to the final published version is plausible, not directly linked from an accessible Data Availability section.",
+  "public_source_checked": true,
+  "source_status": "partial",
+  "source_commit_or_archive": "Zenodo 10390998 (CC BY 4.0); archive manifests for checkpoints.zip and pretrain.zip inspected; README and file checksums verified. No author GitHub source for this paper located beyond the linked anonymous Zenodo package.",
+  "license": "Zenodo artifact CC BY 4.0. Paper license/access status not fully checked due publisher full text block.",
+  "exact_models": [
+    "Paper abstract and artifact README: CodeLlama-7B policy model, CodeGPT line-coverage reward model; GPT-3.5-turbo used to produce CoT prompts; baseline GPT-4-turbo-2024-04-09, GPT-3.5, StarCoder and other models."
+  ],
+  "weights_status": "No weights in Zenodo: checkpoints.zip (2,462 bytes) and pretrain.zip (1,250 bytes) contain only empty directories. Base HuggingFace weights downloadable separately; trained TestCTRL/reward checkpoints unavailable.",
+  "evaluation_route": "Official abstract reports Defects4J evaluation and repository README reports instructions for policy/reward training, PPO, and evaluation. Artifact bundles datasets, finetune/evaluation scripts and generated tests; README says 8xA800 80GB optional hardware and >50k CoT training flow. Full-scale training entails external base models, large compute and possibly GPT-3.5 CoT generation API. No code/model execution. Crucially, the 30-page final paper was not retrieved/read; only abstract, page-one excerpt and artifact README were reviewed.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Full paper text is access-blocked; snippets do not count as a full read, so this is an access-blocked verdict rather than a full-text audit.",
+    "Zenodo checkpoint and pretrain archives contain only empty directories; trained weights and base weights are not bundled.",
+    "Full reproduction requires base models, substantial training compute (README: optional 8xA800 80GB), and GPT-3.5 API if regenerating CoT prompts.",
+    "Artifact creator is anonymous and Zenodo record dates to 2023; relationship to final 2026 TOSEM publication is not directly confirmed from accessible final paper text.",
+    "Coverage reward is line-based and partly model-predicted; paper’s bug-detection claims/metrics are not fully auditable without the full paper and exact data route."
+  ],
+  "concept_fit": "Medium for coverage-guided generation and semantic intention/input sketches; low for the user’s causal root-cause target. Defects4J is used, but paper focuses on coverage rather than explaining why each bug occurs.",
+  "recommendation": "Potentially relevant as a coverage-RL baseline if the final replication-package linkage and exact data version are verified. Do not prioritize for root-cause analysis. Full-text access is still required before selection; the public artifact is useful for source/data analysis but lacks checkpoints.",
+  "citations": [
+    "https://doi.org/10.1145/3745765",
+    "https://jw-zhang-zju.github.io/",
+    "https://zenodo.org/records/10390998"
+  ],
+  "supporting_locations": [
+    "Only arXiv-style 232-byte retrieval placeholder is cached; no text read count is assigned.",
+    "Zenodo record lists dataset/evaluation/generated_test_result/finetune/checkpoint/pretrain archives and CC BY 4.0; API checksums in public_evidence/source-audit.json.",
+    "Small zip inspection confirms checkpoints.zip and pretrain.zip contain directories only."
+  ],
+  "reviewed_at": "2026-10-15T12:25:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

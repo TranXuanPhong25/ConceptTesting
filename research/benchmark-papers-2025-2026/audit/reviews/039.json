@@ -1,0 +1,53 @@
+{
+  "rank": 39,
+  "title": "A Large-Scale Empirical Study on Fine-Tuning Large Language Models for Unit Testing",
+  "fulltext_read": true,
+  "read_path": "papers/a-large-scale-empirical-study-on-fine-tuning-large-language-models-for-unit-45e877b6/public_evidence/paper_fulltext.txt",
+  "read_sha256": "c1449cdb6211c389a705e84024fa33ab113461ce5fbae7b0482b8da01567235f",
+  "read_source": "https://arxiv.org/html/2412.16620v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Test generation: filtered Methods2Test, 56,132 Java focal-method/test pairs from 780,944 mined pairs; evaluation on 163 Defects4J bugs across five projects (Apache Commons CLI/CSV/Lang, Gson, JFreeChart).",
+    "Assertion generation: Data_old, 156,760 Test-Assert Pairs derived from ATLAS.",
+    "Test evolution: 5,196 obsolete-test update samples.",
+    "Additional internal Java industrial test-generation set used for leakage robustness; confidential and not released."
+  ],
+  "task": "Large empirical comparison of 37 LLMs over test generation, assertion generation and test evolution. It also evaluates generated-test bug detection on Defects4J buggy/fixed versions. It does not classify causal root causes.",
+  "input_setting": "Test generation takes a focal Java method and generates a test; assertion generation takes focal method/test prefix without assert and predicts assertions; test evolution takes original method, updated method and original test to predict updated test. Bug-detection study runs selected model-generated tests on fixed and buggy versions.",
+  "author_artifact_url": "https://github.com/iSEngLab/LLM4UT_Empirical",
+  "author_relationship_evidence": "Paper Data Availability links this exact repository. GitHub README title and abstract match ISSTA’25 paper and identify benchmark/scripts; repository HEAD is pinned to a6e9508878df96445cfe83fa981c8c92399ebf49.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "iSEngLab/LLM4UT_Empirical commit a6e9508878df96445cfe83fa981c8c92399ebf49; 5 commits in GitHub history. Includes training scripts, inference, test-generation/Defects4J evaluation scripts, some task data and Total_result.pdf.",
+  "license": "Paper is CC BY 4.0. GitHub README claims MIT, but the referenced LICENSE path returns 404 and root file listing has no LICENSE; software license is therefore unverified.",
+  "exact_models": [
+    "37 models, 60M–16B, including CodeBERT/GraphCodeBERT/UniXcoder, CodeT5/CodeT5+, PLBART, CodeGen/2, StarCoder/2, CodeLlama, CodeGemma, DeepSeek-Coder.",
+    "Prompt baseline models include GPT-3.5 and instruction-tuned Llama/Qwen models; no immutable provider snapshots are specified."
+  ],
+  "weights_status": "No fine-tuned checkpoints found in repository listing. Base checkpoints are downloadable from model hubs; recreating paper fine-tuned weights requires training. Repository includes Total_result.pdf with aggregate results, not verified raw model outputs.",
+  "evaluation_route": "Full paper (13,203 words) read. Pinned repo README and sources inspected: training scripts for 3 tasks, inference/open-source generation script, prompt template, text-metric scripts, Defects4J test-generation/bug-detection pipeline, dataset README and JSON files. `Datasets/Test_Generation` contains only README/filter/split scripts (not the filtered 56,132-pair data); assertion and evolution data files are present. TestGen can be reconstructed from external Methods2Test if available. Defects4J source script has hard-coded `/efs_data/sy/defect4j/...` paths that need local configuration. Authors report >3,000 NVIDIA A100 GPU hours for full suite. No code/model/API run.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Full 37-model training consumed more than 3,000 NVIDIA A100 hours; no fine-tuned model checkpoints were found. Exact fine-tuned results require substantial compute.",
+    "The test-generation filtered Methods2Test dataset (56,132 pairs) is not present in the public Test_Generation folder; it contains data preparation scripts and README only.",
+    "Defects4J evaluation assumes external checkout and hard-coded author paths `/efs_data/sy/defect4j/bac` and `/efs_data/sy/defect4j/buggy_bac1`; must be configured for the reader environment.",
+    "The package README claims MIT but the linked LICENSE is absent/404.",
+    "Bug detection is weak: best reported model DeepSeek-Coder-6b finds 8/163 bugs, with 0.74% precision (12 TP and 1,622 FP); tests are not root-cause explanations."
+  ],
+  "concept_fit": "Medium for oracle correctness and runtime bug-revealing evaluation. Strong evidence that correct-test/pass rates do not imply bug detection; explicit buggy/fixed D4J evaluation and error categories are relevant. No causal taxonomy or test-guidance concepts.",
+  "recommendation": "High-value prior work for baseline selection and for justifying a separate bug-detection metric on Defects4J: the paper reports extremely low precision despite decent correct-test rates. It is less suitable as an easy exact reproduction because of 3,000 A100 hours, missing test-generation data/checkpoints and environment-specific paths. It does not answer root-cause classification. The published result PDF supports offline review; the authors’ code/data scripts could be selectively reused for one open model without reimplementing the paper.",
+  "citations": [
+    "https://doi.org/10.1145/3728951",
+    "https://arxiv.org/html/2412.16620v1",
+    "https://github.com/iSEngLab/LLM4UT_Empirical/tree/a6e9508878df96445cfe83fa981c8c92399ebf49",
+    "https://quanjunzhang.github.io/publications/"
+  ],
+  "supporting_locations": [
+    "Full paper §§1–9, Tables 2–9; text SHA-256 c1449cdb6211c389a705e84024fa33ab113461ce5fbae7b0482b8da01567235f.",
+    "Pinned repository README, Datasets README, Finetune_Script, Inference_Script/open_source.py, TGonDefects4J README and inject_and_bug_detect.py, Prompt_template.md; checksums in public_evidence/source-audit.json.",
+    "Repository has Total_result.pdf (full aggregate results), but no fine-tuned checkpoints; Test_Generation folder has only data filter/split scripts."
+  ],
+  "reviewed_at": "2026-10-15T12:21:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

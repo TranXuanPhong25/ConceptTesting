@@ -1,0 +1,46 @@
+{
+  "rank": 56,
+  "title": "CASCADE: Detecting Inconsistencies between Code and Documentation with Automatic Test Generation",
+  "fulltext_read": true,
+  "read_path": "papers/cascade-detecting-inconsistencies-between-code-and-documentation-with-autom-f330aada/public_evidence/paper_fulltext.txt",
+  "read_sha256": "f0e777747b333c7bc81fff9608984694f0195e7c122c4fdb992a2c39106cbef4",
+  "read_source": "https://arxiv.org/html/2604.19400v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "885 code/documentation pairs: 71 inconsistent, 814 consistent",
+    "142 balanced-core pairs",
+    "Mining pool includes Defects4J projects; not the standard Defects4J historical bug task set"
+  ],
+  "task": "documentation/code inconsistency detection through generated tests and implementations",
+  "input_setting": "tests and new method implementation generated from documentation/class context; original implementation checked by execution",
+  "author_artifact_url": "https://github.com/TobiasKiecker/CASCADE",
+  "author_relationship_evidence": "Paper links this author repository for MultiStepJavaTestGenerator and dataset; Data Availability names Zenodo 19483108. Repository and archive titles explicitly identify FSE 2026 paper.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "GitHub HEAD 4dc5a8d525c8967ea8dd11ae46cfe5834dbda156; Zenodo 19483108 (CASCADE.zip public)",
+  "license": "MIT",
+  "exact_models": [
+    "gpt-4.1-mini temperature 0 for RQ1/RQ2; verified dataset_config.json",
+    "gpt-4o-mini for RQ3; generator default gpt-4o-mini-2024-07-18"
+  ],
+  "weights_status": "main method uses closed API models; immutable RQ1 snapshot not pinned; retrained baseline weights linked separately on Figshare, downloads not verified",
+  "evaluation_route": "PaperEvaluation/run.sh plus eval.py; dataset.zip/coreDataset.zip; pre-computed results in Zenodo results.zip; Python>=3.10, Maven, Docker; results unpack to about 1 GB",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "No model calls or author evaluator run yet",
+    "Main API model alias unpinned; author baseline weights require independent access check",
+    "Dataset includes documentation errors; changing to standard Defects4J buggy-input setting would be an adaptation, not exact reproduction",
+    "LLM-generated code and tests can share an unsupported documentation assumption"
+  ],
+  "concept_fit": "high: documentation-derived if-condition/behavior cards already form a generation stage; independent grounding could target remaining false positives",
+  "recommendation": "Promote as an artifact-ready adjacent base; best for documentation-grounded concept/test research. Keep exact Defects4J benchmarks separate.",
+  "citations": [
+    "https://arxiv.org/html/2604.19400v1#S3",
+    "https://arxiv.org/html/2604.19400v1#S4.SS2",
+    "https://github.com/TobiasKiecker/CASCADE/tree/4dc5a8d525c8967ea8dd11ae46cfe5834dbda156/PaperEvaluation",
+    "https://zenodo.org/api/records/19483108"
+  ],
+  "reviewed_at": "2026-10-15T00:20:52.555433+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

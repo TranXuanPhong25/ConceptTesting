@@ -1,0 +1,280 @@
+ods supported by Pyinder, including 20 buggy ones and 20 non-buggy ones.
+On those methods, Pyinder detects only 5 type errors and raises 21 false positives. In contrast, rTED detects 7 bugs while producing just 2 false positives, highlighting its superior recall and precision, both of which are critical for practical usability.
+RQ1 Summary: rTED outperforms both static and dynamic baselines in detecting Python type errors, achieving the highest precision, recall, F1-score, and accuracy across two benchmarks.
+That is, it detects the most bugs, including many unique bugs, while maintaining low false positive rates. These results affirm rTED’s effectiveness for Python type error detection.
+V-B RQ2: Ablation Study
+V-B1 Process
+In this RQ, we investigate the contributions of the two key components in rTED (e.g., the constraint analysis phase and the reflection phase). To isolate their effects, we construct two variants of rTED:
+•
+rTEDw/o c{}_{w/o\text{ }c}, which removes the constraint analysis component. The LLM generates tests without guidance about type constraints, but still retains the reflection mechanism to iterate based on feedback from test execution.
+•
+rTEDw/o r{}_{w/o\text{ }r}, which removes the reflection component. The LLM is still guided by the results of type constraint analysis to generate unit tests. However, no reflection is applied if a generated test triggers a type error.
+We apply both variants to all focal methods using the same setup as RQ1 and analyze their effectiveness.
+V-B2 Results
+TABLE II: Comparison between rTED and its variants
+App.
+BugsInPy
+TypeBugs
+P
+R
+F1
+Acc
+P
+R
+F1
+Acc
+rTEDw/o c{}_{w/o\text{ }c}
+0.64
+0.25
+0.36
+0.58
+0.58
+0.33
+0.42
+0.62
+rTEDw/o r{}_{w/o\text{ }r}
+0.48
+0.58
+0.53
+0.58
+0.51
+0.59
+0.55
+0.60
+rTED
+0.78
+0.50
+0.61
+0.70
+0.69
+0.54
+0.61
+0.67
+Table II shows that both ablations lead to noticeable performance drops compared to the full rTED, confirming the importance of each component.
+Specifically, without explicit type constraint guidance, the LLM struggles to generate tests that expose type errors. This is reflected in drastically reduced recall (0.25 on BugsInPy and 0.33 on TypeBugs) and a correspondingly low F1-score (0.36 on BugsInPy and 0.42 on TypeBugs). Despite a somewhat decent precision (0.64 on BugsInPy and 0.58 on TypeBugs), this variant misses a substantial number of actual type errors, indicating that LLMs alone are insufficiently aware of subtle type issues in the absence of type constraints guidance. The lowered accuracy (0.58/0.62) further shows that this variant misidentifies many buggy methods as safe.
+In contrast, when reflection is removed, recall remains relatively high (0.58/0.59), showing that initial type-guided prompts are often effective at detecting bugs. However, precision drops sharply (to 0.48/0.51), meaning the tests also trigger many spurious errors. Without reflection, the LLM cannot refine or validate the generated tests, resulting in a higher rate of false positives. The lower accuracy (0.58/0.60) also reflects this unreliability in distinguishing true bugs.
+The full version of rTED, combining both type constraints and reflective refinement, achieves the best performance across all metrics. Notably, it achieves the highest F1-score (0.61 on both datasets) and accuracy (0.70/0.67). Compared to rTEDw/o c{}_{w/o\text{ }c}/rTEDw/o r{}_{w/o\text{ }r}, it improves F1 by 56%/13%, respectively. This shows that the synergy between the two components is critical: constraint analysis narrows the test generation space toward effective type error detection, while reflection eliminates false positives, enhancing reliability.
+RQ2 Summary: Both type constraint analysis and reflection are essential to rTED’s effectiveness. Type analysis steers test generation toward likely type errors, while reflection filters out false positives. Their combination enables rTED to achieve a strong balance of precision, recall, and accuracy.
+V-C RQ3: Detecting New Type Errors
+V-C1 Process
+In this RQ, we investigate rTED’s ability to detect previously unknown type errors in real-world, large-scale Python projects.
+As introduced in Section IV-B, we selected six open-source Python projects for evaluation. We first used Jarvis [30] to extract call graphs from each project. Then, we identified top-level entry points, and extracted downstream call chains. rTED was then applied to generate and execute unit tests for each of the call chains.
+For comparison, we applied three baseline test generation techniques to all testable public methods in each project. Pyinder was run on entire codebases as its whole-program analysis requires. All reported errors were manually verified, and potential type errors were reported to developers for confirmation.
+V-C2 Results
+TABLE III: Comparison among rTED, Pyinder, CHATTESTER, SymPrompt, and HITS in detecting bugs (Chat represents CHATTESTER and Sym represents SymPrompt)
+Bug
+Pyinder
+Chat
+Sym
+HITS
+rTED
+kivy-1
+✓
+✓
+✗
+✓
+✓
+kivy-2
+✗
+✗
+✗
+✓
+✓
+kivy-3
+✓
+✗
+✗
+✗
+✓
+kivy-4
+✗
+✗
+✗
+✗
+✓
+langchain-1
+✗
+✗
+✗
+✗
+✓
+langchain-2
+✗
+✗
+✗
+✗
+✓
+langchain-3
+✗
+✗
+✓
+✓
+✓
+luigi-1
+✗
+✗
+✗
+✗
+✓
+luigi-2
+✗
+✓
+✓
+✓
+✓
+luigi-3
+✓
+✓
+✓
+✓
+✓
+luigi-4
+✓
+✗
+✗
+✗
+✓
+pwntools-1
+✓
+✗
+✗
+✗
+✓
+scipy-1
+✓
+✗
+✗
+✗
+✓
+scrapy-1
+✓
+✓
+✗
+✗
+✓
+scrapy-2
+✗
+✗
+✗
+✓
+✓
+Total
+7
+4
+3
+6
+15
+Table III presents the detailed results.
+rTED successfully detected 12 previously unknown type errors, outperforming all other techniques.
+Additionally, three bugs (i.e., kivy-3, langchain-3, and scrapy-2) were identified as duplicates of existing reports filed by other users but had not yet been fixed (indicating already known bugs). This suggests that rTED is effective at discovering bugs that align with realistic usage scenarios encountered by actual users.
+In comparison, excluding duplicates, Pyinder detected 6 unknown bugs, HITS detected 4, while CHATTESTER and SymPrompt detected only 4 and 1 unknown bugs, respectively.
+Among the 12 unknown bugs reported by rTED, four have been confirmed or fixed by the developers.
+This result highlights rTED’s superior capability in exposing type-related issues in real-world codebases.
+Listing 1: A simplified version of pwntools-1
+⬇
+1
+getattr(input_stream, ’buffer’, input_stream).readline(_size).rstrip(b’\n’)
+Our manual analysis confirms that rTED effectively detects bugs involving subtle type constraints that are often missed by conventional test generation techniques. As shown in Listing 1, the code calls rstrip(b"\n") on the result of readline(), assuming it returns a byte string. However, if readline() instead returns a regular string, a TypeError occurs because str.rstrip() does not accept a bytes argument.
+To trigger this bug, the test input must first satisfy a reachability constraint: it must implement a readline() method whose return value supports rstrip(). Otherwise, an AttributeError would be raised before reaching the buggy line.
+Then, the input should not return the expected bytes for readline(), thereby exposing the type mismatch.
+rTED is able to detect this issue by first inferring a type that could trigger an error (e.g., str). It then propagates backward to supplement additional constraints (i.e., supports readline()), and finally uses a StringIO object as input to expose the bug.
+In contrast, all other evaluated test generation tools fail to detect this issue.
+RQ3 Summary: rTED demonstrates strong practical effectiveness in detecting previously unknown type errors in actively maintained open-source projects, highlighting its potential to enhance the reliability of modern Python software.
+VI Discussion
+TABLE IV: Generalizability of rTED on different LLMs
+App.
+BugsInPy
+TypeBugs
+P
+R
+F1
+Acc
+P
+R
+F1
+Acc
+DS
+0.78
+0.50
+0.61
+0.70
+0.69
+0.54
+0.61
+0.67
+QC
+0.81
+0.46
+0.59
+0.70
+0.81
+0.46
+0.59
+0.69
+DS + QC
+0.82
+0.50
+0.62
+0.72
+0.75
+0.57
+0.65
+0.71
+•
+DS represents DeepSeek-V3; QC represents Qwen3-Coder.
+Generalizability.
+To assess generalizability across different LLMs, we evaluated rTED with a different base LLM, Qwen3-Coder (a recent state-of-the-art model) [35], and observed comparable results across benchmarks, confirming rTED’s generalizability to LLM choice. Table IV shows the results. Specifically, precision improved slightly while recall declined, likely due to Qwen3-Coder’s stronger reasoning, which benefits reflection but less so for constraint analysis. To validate this, we replaced only the reflection agent with Qwen3-Coder, keeping the rest unchanged. This improved performance (F1-score from 0.61 to 0.62/0.65), reinforces that better reasoning models can enhance the reflection phase. This also highlights rTED’s flexibility in integrating different LLMs for specialized roles.
+Beyond LLM choice, rTED also generalizes across languages and bug types. Its high-level design is language- and error-agnostic, enabling adaptation to other languages and bug types. It follows a constraint-driven framework: given an error type (e.g., type inconsistency), rTED extracts relevant constraints, performs backward analysis along a representative call chain, and generates tests likely to violate those constraints.
+The key to generalization lies in defining constraint schemas for target errors, which is often straightforward. For example, to detect Java null pointer dereferences, one can specify that certain variables must be non-null before use and propagate this constraint backward to identify potentially violating contexts. The rest of the pipeline remains unchanged. Adapting to a new language mainly involves adjusting prompt formatting and using available call chain extraction tools, which is widely available in other ecosystems (e.g., Soot for Java).
+Overall, rTED’s modular, constraint-centric architecture supports extensibility across languages and error types.
+Listing 2: A false-positive produced by RTED
+⬇
+1
+def test_request_httprepr(self):
+2
+class HttpRequest:
+3
+def __init__(self):
+4
+self.url = ’http://example.com’
+5
+self.method = 123
+6
+self.headers = None
+7
+self.body = b’’
+8
+http_request = HttpRequest()
+9
+request_httprepr(http_request)
+False-positives produced by rTED.
+Most false positives in rTED stem from LLM hallucinations during constraint analysis.
+Listing 2 shows an example.
+The LLM generated a mock class HttpRequest with self.method = 123. Passing this object to request_httprepr() in Scrapy caused a type error, as the function expects request.method to be a string or bytes. The LLM mistakenly inferred method as an integer since it likely conflated method attributes with nearby numeric HTTP status codes/enumerations. To mitigate such issues, we plan to enhance constraint analysis with lightweight type inference/validation.
+VII Threats to Validity
+The external threat primarily stems from the generalizability of rTED. To mitigate this, we evaluated it on two established benchmarks, BugsInPy and TypeBugs, which span diverse real-world projects ranging from 3k to 316k lines of code. We also applied rTED to six recent, large-scale open-source projects, uncovering 12 previously unknown bugs. For comparison, we selected state-of-the-art techniques in type error detection and LLM-based test generation. The consistent performance improvements across both benchmarks and unseen projects mitigate this threat to some extent.
+The internal threats primarily stem from potential implementation errors in rTED or the baselines.
+To mitigate this, we used the official implementation of Pyinder [32] and adapted CHATTESTER (originally designed for Java) to Python based on its publicly available implementation.
+For SymPrompt and HITS, which do not have publicly available code, we reimplemented them according to their original papers and validated their correctness with representative examples. rTED itself underwent rigorous internal testing and review by two authors.
+The construct threats include LLM randomness, data leakage, and metric selection. To control for randomness, we set the LLM temperature to zero in line with existing work [14, 36, 37, 38]. To address data leakage, following existing work [3], we checked whether any error-triggering tests generated by rTED matched the reference unit tests in the benchmarks. We found that none of the generated tests aligned with the fixed-version tests. Moreover, all baselines use the same underlying LLM as rTED, so the performance improvements are not due to the data leakage of LLMs. Additionally, rTED successfully detected 12 bugs in recently updated open-source projects, which are not included in the LLM’s training data, further mitigating data leakage concerns.
+Regarding metrics, we used widely-used metrics, Precision, Recall, F1-score, and Accuracy, to measure effectiveness.
+We also evaluated the efficiency of rTED. The pipeline starts with Jarvis, which constructs call chains in an average of 14.16s. This is followed by type constraint analysis, test generation, and reflection, adding 77.58s per focal method on average, for a total runtime of 91.74s. Compared to baselines, rTED achieves competitive performance: CHATTESTER requires 72.72s, SymPrompt 103.81s, and HITS 153.84s. While these approaches incur similar overheads, they generate substantially more false positives and detect fewer true bugs than rTED. Considering the high manual cost of inspecting false positives, rTED’s modest runtime overhead is well justified by its higher precision. Moreover, the process can be further accelerated through parallel execution and optimized LLM inference engines such as vLLM [39].
+VIII Related Work
+LLM-based Unit Test Generation.
+LLM-based test generation approaches can be broadly categorized into two types: training-based and prompting-based [40, 15, 41]. Training-based methods, such as ATHENATEST [42] and A3Test [40], train LLMs on large-scale datasets of unit tests. While these methods have shown strong performance, they require significant computational resources and large amounts of labeled data. In contrast, prompting-based approaches like CHATTESTER [5], SymPrompt [6], HITS [7], and TELPA [15] guide LLMs using contextual prompts, offering more flexibility and reducing reliance on model fine-tuning.
+However, these methods primarily focus on improving test coverage and do not explicitly target bug detection. A recent work by Xin et al. introduces an attention-based mechanism to identify defective methods and guide LLMs to generate bug-revealing tests for Java [3]. However, this approach requires a large number of defective method examples with precise error annotations (e.g., faulty lines) for model training, making it costly in terms of time and computational resources. Moreover, such annotated data is difficult to collect in domains like Python type errors.
+In contrast to prior approaches that either focus on coverage improvement or rely on supervised training for general bug detection in Java, our method employs type constraint analysis to guide LLMs in generating tests that are more likely to trigger Python type-related bugs, and incorporates a reflection phase to mitigate false positives.
+Python Type Analysis.
+Several static type analysis tools for Python have been proposed, including Pyre [43], with support for gradual typing and custom annotations; Pyright [2], a fast and feature-rich type checker; Mypy [44], one of the earliest static type checkers in the Python community; and Pytype [45], which does not require explicit type annotations.
+Recently, Pyinder, which is discussed and compared in our evaluation, builds upon the existing tools to improve type error detection and achieves state-of-the-art performance among static analyzers.
+Different from these work, rTED takes a dynamic testing approach via step-by-step type constraint analysis and reflection mechanism to iteratively guide the test generation process, enabling more precise detection of type errors.
+Python Type Inference.
+Static analysis has been extensively applied to infer types in Python programs using techniques such as constraint-based inference [46] and abstract interpretation [47, 48]. More recently, LLM-based methods have emerged for Python type inference. For example, TypeGen [49] combines lightweight static analysis with in-context learning, crafting few-shot Chain-of-Thought (CoT) prompts to enhance type inference performance. TIGER [50] adopts a two-stage generate-then-rank framework to handle Python’s complex and diverse type system more effectively.
+Unlike these approaches, which aim to infer precise concrete types, typically at the method level. Our approach analyzes type constraints at the call-chain level and represent type constraints in a unified form instead of concrete types.
+IX Conclusion
+In this paper, we present rTED, a novel type-aware unit test generation framework for effectively detecting type errors. rTED combines step-by-step type constraint analysis and reflective validation to guide test generation while minimizing false positives. Our evaluation on two widely-used benchmarks (i.e., BugsInPy and TypeBugs) shows that rTED can detect 22∼\sim29 more benchmarked type errors than state-of-the-art techniques, including Pyinder, CHATTESTER, SymPrompt, and HITS.
+rTED is also capable of producing fewer false positives, achieving an improvement of 173.9%∼\sim245.9% in precision.
+Furthermore, rTED detects 12 previously unknown type errors in large-scale real-world Python projects, demonstrating its effectiveness and generalizability in practical application.
+Acknowledgment
+We thank all the ASE anonymous reviewers for their valuable comments.
+This work was supported by the National Key Research and Development Program of China (Grant No. 2024YFB4506300), the National Natural Science Foundation of China (Grant Nos. 62322208, 62232001), and the Emerging Frontiers Cultivation Program of Tianjin University Interdisciplinary Center.

@@ -1,0 +1,54 @@
+{
+  "rank": 58,
+  "title": "How Many Code and Test Cases Are Enough? Evaluating Test Cases Generation from a Binary-Matrix Perspective",
+  "fulltext_read": true,
+  "read_path": "papers/how-many-code-and-test-cases-are-enough-evaluating-test-cases-generation-fr-92dd5d67/public_evidence/paper_fulltext.txt",
+  "read_sha256": "a1a67164a29ef97071d180ef6d1e142eb8eb05e6a7d2d6e53dbb006772b03219",
+  "read_source": "https://arxiv.org/html/2510.08720v3 (arXiv v3, 25 March 2026; 20-page article with appendices)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "TC-Bench: 877 English-language competitive-programming problems, 9,347 wrong submissions in final benchmark, and 7,016 accepted reference solutions; source corpus 2.23M submissions across USACO/IOI/ICPC. Hugging Face dataset has one `test` split with 877 rows; individual problems contain 3–56 wrong codes and rank field.",
+    "This paper does not use Defects4J, BugsInPy, or SWT-Bench experimentally; SWT-Bench is only cited in related work."
+  ],
+  "task": "Formalize benchmark curation for algorithmic test-case generation as selecting a maximally diverse row basis from a binary matrix of wrong-code/test-case pass-fail signatures. TC-Bench then evaluates generated input/output cases on correct and wrong C++ solutions using HackRate and PassRate.",
+  "input_setting": "Natural-language competitive-programming statement + optional correct reference code depending on method; output is generated test input(s) with expected outputs. Methods include CRUX, PSEUDO, ALGO, LiveCodeBench (LCB), and HumanTest (HT). Valid generated cases must pass selected accepted solutions, then are run on selected wrong submissions. This is algorithmic test generation, not repository-level unit-test generation or historical bug reproduction.",
+  "author_artifact_url": "https://github.com/Luowaterbi/TC-Bench (data construction and evaluation code); https://huggingface.co/datasets/Luoberta/TC-Bench (877-row benchmark dataset, MIT card license).",
+  "author_relationship_evidence": "Paper links the exact GitHub repository and Hugging Face dataset. Public GitHub README labels itself official, documents construction and C++ evaluation, plus a prebuilt dataset route. Hugging Face card links arXiv:2510.08720, shows 877 rows and MIT license. API SHA observed for HF dataset: f4d482da2d015b6342a12b9891149dcb00566c92. GitHub source codeload archive comment pins 89883430c3503f206def8c5f92d6b55774ba0472; archive SHA-256 2682a8892993923fa3113e1607b99886e9ab14df519131803c0651ee2247c645.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "GitHub codeload archive for Luowaterbi/TC-Bench master, source commit 89883430c3503f206def8c5f92d6b55774ba0472, 30 KB, SHA-256 2682a8892993923fa3113e1607b99886e9ab14df519131803c0651ee2247c645. Static-inspected README, data_construction/solve.py and utilities, testcase filter, evaluation/parallel_exe.py, load_data and get_rank_result; no code run. Hugging Face Parquet dataset verified at pinned revision above, one test split/877 rows, MIT card license. GitHub source tree has no top-level LICENSE file; dataset card says MIT.",
+  "license": "Hugging Face dataset card MIT. GitHub software source has no top-level LICENSE file; benchmark submission-code provenance/license is not independently clarified.",
+  "exact_models": [
+    "Paper evaluates Qwen2.5-Coder-7B-Instruct (exact base model family corresponding to user’s local model), Qwen2.5-7B, Qwen2.5-Coder-14B/32B, Qwen2.5-32B, DeepSeek-V3, Qwen3-235B-A22B, Qwen-Coder-Plus, GPT-4o, Claude 4, Claude 4 Thinking.",
+    "Exact user-fit result: Qwen2.5-Coder-7B with LCB = 41.94% PassRate, 42.17% HackRate; with HT = 71.02% PassRate, 21.92% HackRate. The large gap illustrates that higher valid-test proportion is not higher mutation detection."
+  ],
+  "weights_status": "The paper reports a public Qwen2.5-Coder-7B-Instruct baseline; base weights are available by model family, but immutable weight revision and decoding parameters are not fully pinned in the inspected repository. Several other headline models are hosted APIs. No model/API calls made.",
+  "evaluation_route": "Read all 16,339 extracted words / 1,964 lines of arXiv v3 including appendices and full examples; SHA-256 a1a67164a29ef97071d180ef6d1e142eb8eb05e6a7d2d6e53dbb006772b03219. Main TC-Bench has 877 problems, 9,347 wrong codes and 7,016 correct solutions. At rank ×1, best model-method Claude 4 Thinking+HT reaches 60.31% HackRate (paper text also cites ≈63% in another table/variant, discrepancy noted). Qwen2.5-Coder-7B LCB scores 42.17% HackRate / 41.94% PassRate, and HT 21.92% / 71.02%. Public evaluator accepts per-problem JSONL generated tests in input/output form, validates against accepted codes, runs C++ against wrong submissions, and computes rank multipliers; suitable for running a custom local model’s generated tests if one supplies that JSONL. Artifact lacks model-generation scripts/prompts for all cited methods; the source archive contains benchmark construction/evaluation, not generation code. No code run.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The repository provides dataset/evaluator but no end-to-end generator implementation or complete reproducible prompts/configs for the five methods; exact paper regeneration must rebuild method-specific generation.",
+    "Main exact baselines include hosted GPT/Claude APIs, while model snapshots and decoding settings are not fully pinned. The user’s Qwen2.5-Coder-7B baseline is reported, but an exact run still needs prompt/temperature/sample configuration recovery.",
+    "GitHub construction script `data_construction/solve.py` hard-codes author path `/data/TestcaseBenchmark/final/data/0903/`; the GitHub source archive does not include the prebuilt dataset JSON, which must be downloaded from Hugging Face. The ready-made TC-Bench dataset is public and small (877 rows), so evaluation using it is easier than rebuilding from raw submissions.",
+    "Hugging Face dataset lists MIT, but the GitHub software has no root license; contest-submission-derived code licensing is not separately clarified.",
+    "Domain mismatch: competitive programming C++ wrong submissions, not Defects4J/BugsInPy/SWT-Bench historical repository bugs or Java unit tests. Matrix-rank adequacy is a proposed conceptual criterion; it does not label causal root causes.",
+    "A visible methodological claim deserves careful scrutiny: matrix rank is used as an upper bound on the number of test cases needed to distinguish error signatures; test-count minimum and linear rank are not automatically identical under all matrix semantics. No independent mathematical validation or replication was performed."
+  ],
+  "concept_fit": "High for an own-model test-generation adequacy evaluation: public 877-problem TC-Bench evaluates whether generated input/output tests distinguish diverse wrong code, and the paper reports the exact Qwen2.5-Coder-7B-Instruct model. Lower direct fit for the thesis’s Java/Python issue-level root-cause task: no repositories, issue reports, fixed/buggy history, or behavioral concept labels. The selected wrong codes do contain error examples but the paper does not provide a causal taxonomy.",
+  "recommendation": "Promote as the best own-Qwen model evaluation route found so far for general test-generation adequacy, if the project accepts competitive-programming tests as a separate complementary benchmark. Dataset (877 rows), wrong/accepted code, MIT-card metadata, and C++ evaluator are public; feed generated input/output JSONL into its filtering/evaluation scripts. The authors already report Qwen2.5-Coder-7B (LCB 42.17% HackRate; HT 21.92%) and Qwen2.5-Coder-14B/32B, making model comparison unusually direct. Do not use it as the main Defects4J/SWT root-cause result: it is algorithmic code, not repository bugs. Exact reproduction is conditional because generators/prompts and API model snapshots are missing, GitHub scripts have hard-coded author paths, and source code lacks a software license. No run or model calls.",
+  "citations": [
+    "https://arxiv.org/abs/2510.08720v3",
+    "https://github.com/Luowaterbi/TC-Bench",
+    "https://huggingface.co/datasets/Luoberta/TC-Bench"
+  ],
+  "supporting_locations": [
+    "Full-text SHA-256 a1a67164a29ef97071d180ef6d1e142eb8eb05e6a7d2d6e53dbb006772b03219; read all 1,964 extracted lines including Appendix A/B/C.",
+    "Sections 2–3: binary failure signatures, WrongSelect, TC-Bench construction, metrics and all model/method result tables.",
+    "Appendix A.3 explicitly reports Qwen2.5-Coder-7B-Instruct: LCB 42.17% HackRate; HT 21.92%.",
+    "Appendix C provides WrongSelect examples mapping selected wrong solutions to distinct root-cause-like code defects; this is illustrative, not a general root-cause taxonomy.",
+    "GitHub README documents generated-test JSONL format and evaluator route; static source inspection found rank basis/evaluation scripts but not model generation scripts.",
+    "Hugging Face API confirms dataset revision f4d482da2d015b6342a12b9891149dcb00566c92, MIT card license, test split with 877 rows."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

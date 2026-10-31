@@ -1,0 +1,40 @@
+{
+  "openalex_id": "https://openalex.org/W4407948936",
+  "title": "Improving Retrieval-Augmented Deep Assertion Generation via Joint Training",
+  "year": 2025,
+  "publication_date": "2025-02-26",
+  "type": "article",
+  "doi": "https://doi.org/10.1109/tse.2025.3545970",
+  "primary_url": "https://doi.org/10.1109/tse.2025.3545970",
+  "pdf_url": "https://arxiv.org/pdf/2502.10696",
+  "venue": "IEEE Transactions on Software Engineering",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 24,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_author_repo_verified; weights-link-unverified",
+  "year_venue": "2025 arXiv v2 dated 2025-02-24; IEEE TSE DOI 10.1109/TSE.2025.3545970",
+  "datasets": [
+    "Data_old: 156,760 Java focal-test/assertion TAP samples; 15,676 test split",
+    "Data_new: 265,420 TAP samples, including unknown assertion tokens; 26,542 test split",
+    "Defects4J: 835 bugs across 17 projects in separate EvoSuite-prefix fault-detection experiment"
+  ],
+  "models": [
+    "CodeT5-base 220M (main AG-RAG)",
+    "CodeBERT, GraphCodeBERT, UniXcoder (RQ3)",
+    "CodeLlama-7B quantized + LoRA with CodeT5 retriever (separate preliminary variant)"
+  ],
+  "artifact_url": "https://github.com/iSEngLab/AG-RAG",
+  "license": "Article CC BY 4.0; GitHub source/data repository has no explicit LICENSE; Google Drive checkpoint folder is linked but not inspected",
+  "input_setting": "Existing Java focal-test prefix -> assertion completion; retrieve similar test/assertion pairs from TAP corpus; separate Defects4J evaluation inserts generated assertion into EvoSuite prefix and checks buggy/fixed behavior",
+  "reproduction_grade": "B",
+  "concept_hook": "Assertion/oracle generation from test context with external behavioral examples; evaluate actual fault detection on Defects4J",
+  "limitation": "Not issue-to-BRT or root-cause localization; CodeT5/T5-specific; Qwen decoder-only is not a drop-in; checkpoints external; source license absent",
+  "rank": 86,
+  "family": "oracle_assertion_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/improving-retrieval-augmented-deep-assertion-generation-via-joint-training-b9fc61d5/NOTES.md"
+}

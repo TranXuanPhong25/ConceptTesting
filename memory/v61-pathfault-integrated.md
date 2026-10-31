@@ -1,0 +1,25 @@
+---
+name: v61-pathfault-integrated
+description: Terminal v61 pilot/scoring complete; all18writer hypotheses rejected, no instantiated concept treatment
+metadata:
+  type: project
+---
+
+2026-10-25. User objected to stopping at partial v60 and required continuing plan. New isolated successor `pipelines/v61_pathfault_integrated/` preserves v60diagnostic.
+
+Implemented stable AST-ID semantic writer/admission with required/observed/specquote/trigger/local-event uncertainty; compositional typed data predicates; bounded joint int/bool/string/nested-sequence construction with multi-model search; exact native target/local/repeat/alternative verification; final-input recertification; actual author error-pattern prompt with documented JSON adaptation; raw/concept evidence and inputpool parity; same knownbugpremise/logicalcallcaps; immutable feedback/checkpoints/resume/readiness/freeze.
+
+15targeted tests pass (11integration+4external scorer), independent code/protocol review PASS. Initialpilot generation/ archived instrumentation trial (duplicate baseline source/spec and full tracefeedback prompt caps;5response records/2chatattempts includingunknown). Packaging fixes reviewed and identity re-frozen; source snapshotc4a6f0a preserves first revision.
+
+Fresh run: `out/pipelines/v61_pathfault_integrated/pilot6_20261025/generation_v2/`; same6devcases,ngrokQwen32B8192,108physicalslots/216maxchatattempts. Endpoint only private `/tmp/...env`, never memory/repo. No scientific outcome yet. Approval identity at parent/reviewed_ready_v2.json. Runtime is /tmp/concepttester-v57-venv/bin/python. Do not edit generator .py/config while active.
+
+External supervisor `analysis/v57_completion/supervise_v61.py` awaitsreview/start: exactPID polling, boundedtransport-only resume using persistedper-slotcap, scoreonlyafterfullfreeze. Monitoringstatus outsidegenerationfolder. Independent scorer supports --integrated-v61, fivearms, request/caseprotocol checks. Historicalv57 scored freshout_reviewed after reviewerPASS:allarms1/6tasks(case85), rawconfirmedtests2/2/2/3, no solverwitnesses; report preserves limitations/provisionalreleaseflag.
+
+Latest superseding status: packaging2fixes reviewedPASS,15testsPASS; generation_v2 active (runnerPID237280 atlaunch). External supervisor reviewedPASS and startedPID238505; identitypinsmodule/resolvedout/request/starttime, terminal-onlytransportresume≤12controllerrestarts/per-slot2dispatches; stopsfataldrift/integrity/budget. `monitor_v2/status.json` sibling to generation showsgeneration_active. Atlastcheck5responseartifacts/6attempts. Automaticreviewedscoringafterfullfreeze→`analysis/v57_completion/out_integrated_v61_reviewed/`. Do not start duplicatecontroller or editv61.py/config; inspectstatus/logs. No finalv61scoreyet.
+
+**Why:** user wanted implementation carried through actual integration/evaluation, not a partial scaffolding handoff.
+**How to apply:** continue active run/supervisor, no duplicateclients or inference from old0witnessrun. Code readiness is not efficacy/fullPython; semantic status remainsunverified, private evaluator stayspostfreeze. Actual defects/source changes need newrevision/artifacts, preserveearlierattempts.
+
+2026-10-25 user correction: schedule sparse checks, do not actively watch/poll every minute. `analysis/v57_completion/schedule_v61.py` observes every15min, queues this same thread only when supervisor terminal/unavailable, no progress30min, or24h deadline; ≤3notification attempts. Observer artifacts in `monitor_v2/scheduled_observer.json`, callback receipt separate. No endpoint access/generation/scoring by observer; original supervisor continues owning reviewed runtime. Current run resumed once after case66tokenizer timeout; completed case61 and case66writer both produced no admitted construction hypotheses (priority as string, trigger as prose/string rather than data AST). Preserve these as interface failures, do not change active treatment or infer concept efficacy.
+
+2026-10-25 terminal update supersedes active statuses: generation108/108 and scoring complete; scheduled callback handled, all owned processes exited. Independent read-only audit PASS for775freeze entries, readiness/source identities and209worker receipts.18/18hypotheses rejected (11quote,7priority first failures); all18trigger/event predicates are strings and priorities textual, while prompt omitted exactIR schema and0–3priority range.0constructed inputs/witnesses/final realization checks;14/18required==observed, so serialization repair alone would not prove meaningful hypotheses. Explicitpattern1/6confirmed task131, otherfourarms0/6; FA plain2/pattern10/concept2/raw6/inputs4. Scores retain provisional semantic labels,6PUTs=5problems. This is interface failure, not concept-efficacy evidence. Probe feedback115/402branch_cap errors. Main395540tokens,102stop/6length,0unknownchat; archivedtrial terminalreceipts2received8276tokens correct earlierunknownnote. See `trickcatcher_linefacts/analysis/v57_completion/RESULTS_V61.md`. No follow-on revision/run launched; no more watcher polling needed.

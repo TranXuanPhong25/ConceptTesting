@@ -1,0 +1,99 @@
+AssertFlip: Reproducing Bugs via Inversion of LLM-Generated Passing Tests
+Report GitHub Issue
+×
+Title:
+Content selection saved. Describe the issue below:
+Description:
+Submit without GitHub
+Submit in GitHub
+arXiv is now an independent nonprofit!
+Learn more
+×
+Back to arXiv
+Why HTML?
+Report Issue
+Back to Abstract
+Download PDF
+Abstract.
+1 Introduction
+2 Related Work
+3 Pass-first then invert
+4 AssertFlip
+4.1 Localization input to the pipeline
+4.2 Test Planning
+4.3 Passing Test Generation
+4.4 Test Refinement Loop
+4.5 Inverting the Passing Test
+4.6 Test Validation
+4.7 Regeneration and Improved Planning
+4.8 Additional Utilities: Code Retrieval via get_info
+5 Evaluation
+5.1 Experimental Setup
+5.1.1 Benchmark
+5.1.2 LLM
+5.1.3 Evaluation Metrics
+5.1.4 Baselines
+5.2 Effectiveness of AssertFlip against the Baselines
+5.3 Ablation Study
+5.4 Cost Effectiveness of AssertFlip
+6 Discussion
+6.1 Does fail-to-pass rate tell the whole story?
+6.2 How does issue fix difficulty impact test generation?
+6.3 How does issue clarity impact test generation?
+6.4 Does coverage matter?
+7 Threats to validity
+8 Conclusion
+9 Data Availability
+References
+License: CC BY-NC-SA 4.0
+arXiv:2507.17542v2 [cs.SE] 07 Jan 2026
+AssertFlip: Reproducing Bugs via Inversion of LLM-Generated Passing Tests
+Lara Khatib
+Affiliation: University of Waterloo, Canada
+email: lara.khatib@uwaterloo.ca
+,
+Noble Saji Mathews
+Affiliation: University of Waterloo, Canada
+email: noblesaji.mathews@uwaterloo.ca
+and
+Meiyappan Nagappan
+Affiliation: University of Waterloo, Canada
+email: mei.nagappan@uwaterloo.ca
+Abstract.
+Bug reproduction is critical in the software debugging and repair process, yet the majority of bugs in open-source and industrial settings lack executable tests to reproduce them at the time they are reported, making diagnosis and resolution more difficult and time-consuming. To address this challenge, we introduce AssertFlip, a novel technique for automatically generating Bug Reproducible Tests (BRTs) using large language models (LLMs). Unlike existing methods that attempt direct generation of failing tests, AssertFlip first generates passing tests on the buggy behaviour and then inverts these tests to fail when the bug is present. We hypothesize that LLMs are better at writing passing tests than ones that crash or fail on purpose. Our results show that AssertFlip outperforms all known techniques in the leaderboard of SWT-Bench, a benchmark curated for BRTs. Specifically, AssertFlip achieves a fail-to-pass success rate of 43.6% on the SWT-Bench-Verified subset.
+1. Introduction
+Bug reproduction is an essential first step in the software bug-fixing process (Chaparro et al., 2019), where software developers attempt to replicate the bug to observe the faulty behaviour and understand the root cause (Vyas et al., 2014). When a bug is discovered, a report is written in natural language and submitted to a bug-tracking system, containing relevant information about the issue. These reports often include a detailed description of the issue, step-by-step reproducing instructions, observed vs. expected behaviour, software version details, and supporting materials such as screenshots and videos to help developers investigate the bug (Zimmermann et al., 2010). The reproduction steps outlined in the bug report can be converted into Bug Reproducible Test (BRT): a test case that fails when the bug is present and passes once the bug is fixed (Cheng et al., 2025; Mündler et al., 2024). Previous research has shown that developers often rely on BRTs to diagnose, debug, and fix bugs, in addition to ultimately verifying bug fixes (Beller et al., 2018). However, despite their importance, many studies show that BRTs are rarely written at the time of bug reporting in open-source projects. Instead, they are usually added after the fix to validate that the bug has been resolved and will not reoccur (Cheng et al., 2025). Mundler et al. (Mündler et al., 2024) found that in the SWE-Bench projects, no BRTs exist prior to a bug fix, and they are typically added as part of the pull request that introduces the fix. In the Defects4J dataset (Just et al., 2014), only 4% of the bug reports include a failing test case (Koyuncu et al., 2019). Even in industrial settings, BRTs are usually deferred to the fix stage because bug reports often come from sources that lack the knowledge to create them at the time of reporting (Cheng et al., 2025). This implies that most bugs are reported without a reliable executable test, and developers are left with the task of reproducing the fault, which is time-consuming and challenging (Straubinger and Fraser, 2023), and could delay bug fixing. Automatically turning bug reports into tests can make it easier to debug, validate, and fix issues, as well as reduce the time developers spend reproducing failures.
+SWT-Bench (Mündler et al., 2024), a benchmark for automated bug reproduction, demonstrates the growing potential of automatically generating BRTs. The current methods proposed for this task, which we discuss in more detail in the related work section (See Section 2), have yet to achieve strong results.
+Directly prompting an LLM creates BRTs successfully in only 3.6% of cases on SWT-Bench-Lite (Mündler et al., 2024), a subset of SWT-Bench. Recent work shows that iterative prompting and multi-step interactions with LLMs can improve success rates on generation tasks (Nashid et al., 2025; Pizzorno and Berger, 2024; Yang et al., 2024; Xia and Zhang, 2024). However, in the context of bug reproduction, two challenges remain: determining whether (a) the test has no implementation problems or bugs in the test code itself (Zhu et al., 2024; Ahmed et al., 2025; Nashid et al., 2025; Lin et al., 2024) (b) the test fails for the right reason and exercises the bug (Kang et al., 2023; Nashid et al., 2025; Wang et al., 2024).
+To address this, we introduce AssertFlip, a tool that generates bug-reproducing tests by first generating a test that passes on the buggy behaviour. If the test fails to run due to errors or setup issues, we refine it until it passes. Once we have a valid test that runs, we invert its logic to create a bug-revealing test. If the test cannot be fixed after a few rounds, we trigger a new regeneration attempt using the previous plan, test, and error to reflect on what went wrong in the earlier attempt.
+This pass-then-invert strategy can help avoid common failure modes in LLM-generated tests, such as broken syntax, setup errors, incomplete logic, or hallucinated assumptions.
+Our key intuition is that LLMs are better at writing passing tests than at writing tests designed to crash or fail on purpose. We show that AssertFlip outperforms prior methods at generating BRTs. Beyond these empirical gains, our findings point to a broader design paradigm for LLM-based bug reproduction. Prior work has treated failing-test generation as the default, but constraining the generation objective toward producing passing tests reshapes the entire workflow. Validation, coverage integration, and bug-report handling all need to be reconsidered under this premise. This shift defines a general design pattern of objective-driven generation, where explicit behavioral goals, such as “the test must pass” guide the structure of the workflow and open new directions for future research.
+In summary, our main contributions of this paper are as follows:
+(1)
+We propose a novel pass-then-invert test generation technique that helps the LLM focus on writing correct tests before transforming them into BRTs.
+(2)
+We evaluate AssertFlip on SWT-Bench and show that it outperforms prior work on fail-to-pass success rate.
+(3)
+We release our code and data to support reproducibility and to help others build on this work.
+Figure 1. Overview of AssertFlip pipeline.
+2. Related Work
+SWT-Bench (Mündler et al., 2024) is a recent benchmark developed specifically to evaluate the ability of LLMs to generate bug-reproducing tests. SWT-Bench has quickly become the standard benchmark for evaluating LLM-based bug reproduction, with many recent systems reporting results on it. It includes a public leaderboard on two subsets11
+1
+https://swtbench.com/?results=verified: SWT-Bench-Lite and SWT-Bench-Verified, the latter derived from SWE-Bench-Verified where human developers manually verified each instance to ensure a high-quality dataset (OpenAI, 2024). The benchmark was introduced alongside evaluations of several LLM-based code agents like SWE-Agent (Yang et al., 2024), AutoCodeRover (Zhang et al., 2024), and Aider (Aider, 2025), which were adapted with modified prompts for the task. The agents were evaluated on the fail-to-pass success rate, which is defined as the percentage of generated tests that fail on the buggy version of the code and pass after the corresponding fix is applied. This metric indicates whether a test correctly captures the buggy behaviour described in the issue and thus serves as a valid BRT. SWE-Agent+, a variant of SWE-Agent, achieved the highest fail-to-pass success rate reported in the SWT-Bench paper (Mündler et al., 2024), with 19.2% on SWT-Bench-Lite, compared to 15.9% for SWE-Agent and just 3.6% for direct LLM prompting.
+Amazon Q currently tops the leaderboard with 49% on SWT-Verified and 37.7% on SWT-Lite, though its architecture is undisclosed and does not rely on a single foundation model 22
+2
+https://aws.amazon.com/q/. Since Amazon Q does not disclose any details and includes minimal traces, we refrain from directly comparing to it. However, we do report it for completeness. OpenHands (Wang et al., ), an open-source developer-style agent, achieves 27.7% and 28.3% on the verified and lite subsets, respectively, using Claude 3.5 Sonnet, despite not being specifically designed for bug reproduction.
+A growing body of research has focused on LLM-driven methods for generating bug-reproducing tests from natural language issue descriptions. One of the earliest works in this area is LIBRO (Kang et al., 2023), which combines few-shot prompting, test post-processing, and heuristic ranking to generate BRTs. It was evaluated on the Defects4J and GHRB datasets (Lee et al., 2024). In the SWT-Bench paper (Mündler et al., 2024), LIBRO was adapted for Python and evaluated on SWT-Bench-Lite, achieving 14.1%. Otter (Ahmed et al., 2025) incorporates a self-reflective planner in which the LLM iteratively refines read/write/modify actions, then uses the final plan to guide test generation. Otter++ extends Otter by running multiple versions of the generation pipeline with different configurations and selecting the best test based on runtime feedback. This ensemble approach improves fail-to-pass rates on SWT-Verified from 31.4% to 37.0%, and on SWT-Lite from 25.4% to 29.0%. Issue2Test (Nashid et al., 2025) introduces a three-phase pipeline that first uses meta-prompting to extract project-specific test-writing guidelines, then performs root cause analysis, and generates test candidates. It enters an execution-feedback loop with two LLM components, one to classify test failures and another to verify that assertion failures match the original bug report. On SWT-Bench-Lite, it achieves a 30.4% fail-to-pass rate. AEGIS (Wang et al., 2024) introduces a two-agent framework for bug reproduction where a searcher agent retrieves relevant context and a reproducer agent generates and refines test scripts. Its key contribution is a finite-state machine controller that guides the reproducer through structured feedback loops, including syntax checks, execution results, and external verification. They report results only on the Lite subset, but we exclude them from our comparison in line with Otter (Ahmed et al., 2025) due to unclear evaluation (they evaluate on SWE-Bench-Lite but compare against results from SWT-Bench-Lite, which is a different dataset).
+Unlike the approaches mentioned above that attempt to generate failing tests and then attempt to analyze whether the failure is due to the intended bug or an unrelated issue, our approach starts by generating a passing test on the buggy version. If the test fails to run, we refine it until it executes successfully. We then invert its assertions to construct a BRT. AssertFlip achieves the best results amongst all known approaches on the leaderboard.
+3. Pass-first then invert
+Other work in bug reproduction prompts the LLM to write a failing test that exposes the bug, often augmenting this process with a self-reflective planner (Ahmed et al., 2025), LLM-based validation (Nashid et al., 2025), or execution and assertion matching loops (Kang et al., 2023). We hypothesize that LLMs perform better when writing correct tests than when asked to create a test that fails on purpose (Mathews and Nagappan, 2024). We believe our method works primarily because we do not leave the responsibility of deciding when to stop and accept a test solely to the LLM. We adopt a more structured approach that allows us to better isolate the tasks of understanding the fault, creating a BRT, and validating the failure.
+An LLM-generated test can fail for many reasons unrelated to the actual bug. These failures include a wide range of issues (Dou et al., 2024; Yuan et al., 2024), such as syntax errors, import errors, and unintended top-level execution (e.g., code running before the test starts). Tests may also fail due to non-self-contained logic, missing setup or teardown steps, or uninitialized variables. The LLM may introduce outdated or hallucinated APIs/classes/functions, misuse testing frameworks, or generate placeholder code (e.g., assert False, # TODO), or incomplete tests. Environment-level issues such as dependency mismatches, incorrect framework usage, or version mismatches can also cause a test to fail. If we rely solely on the LLM’s judgment to determine whether a test is valid and relevant to the bug, we risk accepting tests that fail for unrelated reasons, leading to false positives. While static analysis tools and linters such as flake8 and mypy can help catch some of these issues, many deeper issues remain undetected.
+To mitigate this, we adopt a more controlled approach. Specifically, we require that any candidate test to pass on the buggy version of the program before it is evaluated further. This ensures that we avoid common sources of test failure that are due to artifacts of code generation rather than the bug itself. Thus, we filter out invalid tests before invoking the LLM’s reasoning to assess bug relevance. This approach allows us to retain some control when using LLMs. It is easier and more reliable to confirm that a test passes under buggy conditions than to reason about the potentially numerous causes of failure. In doing so, we narrow the list of things that can go wrong and focus on one task: determining if a syntactically valid executable that passes the test indeed exercises the behaviour associated with the bug. Once a valid passing test is obtained, we invert its assertions to construct a BRT. Further details of our tool are provided in the next section.
+Figure 2. Bug report for astropy__astropy-13236 from SWT-Bench.
+Figure 3. Test plan generated for astropy__astropy-13236.
+4. AssertFlip
+This section describes AssertFlip, an LLM-based tool that generates BRTs from natural language bug reports and source code.
+To direct the LLM toward writing a valid executable test that exposes the bug, we ask it to write a test that passes on the buggy behaviour and provide it with the issue report alongside the localized buggy code. We continue refining the test using execution feedback until it passes. Rather than trying to handle all the possible reasons an LLM-generated test might fail, we first ensure the test passes. Once we have a correct working test code that reflects the bug, we invert it so the test now fails when the bug is present. Our intuition is that LLMs are better at writing passing tests than at writing failing ones, where the failure could happen for any number of unrelated reasons. This approach contrasts with prior methods proposed for bug reproduction like Otter, LIBRO, and Issue2Test, which attempt to produce failing tests directly. Figure 1 depicts the full pipeline. We describe each stage below.
+4.1. Localization input to the pipeline
+As a first step, existing tools typically begin by localizing buggy code. Among the current approaches proposed for this task, most rely on LLMs for localization. For example, Otter (Ahmed et al., 2025) uses a four-step process that first localizes test files and functions by prompting the LLM to pick the top-10 relevant test files based on the issue description, then lets the LLM pick relevant test functions within those test files, and repeats the same process for localizing focal files and focal functions. Issue2Test (Nashid et al., 2025) builds a hierarchical tree of the repository and provides it along with the issue report to the LLM to rank the most relevant files. AEGIS (Wang et al., 2024) uses a Searcher Agent that employs an LLM to retrieve relevant code and test files based on the issue report using system commands and tool-specific interfaces.
+Since the focus of this paper is on creating tests from issues rather than bug localization, we decided to assess our pipeline using localization output from an existing tool called Agentless. (Xia et al., 2024). Agentless is a popular and, importantly, modular approach that we chose to obtain realistic localization data. The modular nature makes it possible to execute the localization phase alone, unlike most other tools in the space. For completeness, Agentless first identifies suspicious files by prompting a compact repository-structure representation and refining this selection through embedding-based retrieval. It then examines these files to isolate related code elements such as class declarations, function signatures, and variable definitions. Finally, it analyzes the actual code snippets of these elements to determine precise edit

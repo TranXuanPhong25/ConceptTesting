@@ -1,0 +1,44 @@
+{
+  "openalex_id": "https://openalex.org/W7214727974",
+  "title": "Multi-SWT-Bench: A Multilingual Benchmark for Reproduction Test Generation",
+  "year": 2026,
+  "publication_date": "2026-09-28",
+  "type": "preprint",
+  "doi": "https://doi.org/10.48550/arxiv.2609.34752",
+  "primary_url": "https://doi.org/10.48550/arxiv.2609.34752",
+  "pdf_url": "https://arxiv.org/pdf/2609.34752",
+  "venue": "arXiv (Cornell University)",
+  "discovery_queries": [
+    "SWT-Bench"
+  ],
+  "discovery_score": 24,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_complete_replication_package_verified",
+  "year_venue": "2026 arXiv preprint v1, submitted 2026-09-28",
+  "datasets": [
+    "Multi-SWT-Bench: 1,963 tasks, 51 repositories, eight languages",
+    "Multi-SWT-Bench-Lite/Flash: 340 tasks; used for every paper experiment",
+    "Source is Multi-SWE-Bench issues, filtered by golden reference test F2P validity",
+    "No Defects4J or BugsInPy experimental use"
+  ],
+  "models": [
+    "GPT-5.6 Luna",
+    "Claude Sonnet 5",
+    "DeepSeek-V4-Flash",
+    "DeepSeek-V4-Pro",
+    "GPT-6 Astra",
+    "Claude Opus 5"
+  ],
+  "artifact_url": "https://doi.org/10.5281/zenodo.22961970",
+  "license": "Zenodo CC BY 4.0; embedded package code Apache-2.0; upstream code and benchmark source retain their own terms; pinned MSWE-agent fork has unresolved license metadata",
+  "input_setting": "Repository-level issue description + pre-fix code; produce tests only; score F2P and require all tests pass after golden patch",
+  "reproduction_grade": "A-",
+  "concept_hook": "Issue-conditioned behavioral oracle via fail-before-fix/pass-after-fix; multilingual failure analysis around setup and test revisions",
+  "limitation": "All experiments use 340-instance subset; hosted model aliases not pinned; Docker/multilingual setup is heavy; no Defects4J/BugsInPy experiment or causal bug taxonomy",
+  "rank": 89,
+  "family": "reproduction_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/multi-swt-bench-a-multilingual-benchmark-for-reproduction-test-generation-cc029ef4/NOTES.md"
+}

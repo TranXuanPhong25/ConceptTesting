@@ -1,0 +1,51 @@
+{
+  "rank": 8,
+  "title": "Tratto: A Neuro-Symbolic Approach to Deriving Axiomatic Test Oracles",
+  "fulltext_read": true,
+  "read_path": "papers/tratto/public_evidence/paper_fulltext.txt",
+  "read_sha256": "d7c8c1bc301dbc71ca38003a5eef669b887c7a9a11db1606640b806967259b77",
+  "read_source": "https://arxiv.org/html/2504.04251v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "34249oracle/188900token training examples,Guava heldout for model comparison",
+    "Defects4J-derived manually annotated885oracle/nonoracle examples,274methods150classes15projects",
+    "6project EvoSuite/PIT exploratory study; not standard historical-bug detection"
+  ],
+  "task": "axiomatic precondition,normal and exceptional postcondition generation",
+  "input_setting": "Method source+Javadoc+project/API context; grammar/type restrictions constrain lexical next tokens; trained evaluator abstains when no oracle. RQ5 discards generated oracles that fail current tests.",
+  "author_artifact_url": "https://anonymous.4open.science/r/tratto-replication-package-31F6",
+  "author_relationship_evidence": "Paper andofficialErnstpagelinkexactanonymouspackage. Root401butdirectREADME,ml-modelREADME,server/init/setupresources/RQ3instructionsandsource200. ExactserverusespaperCodeLlama7B.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "Exactanonymousartifact31F6;directfiles200;filehashesinexact-source-manifest.json. RelatedGitHubedd9b67a1bb8580cf8fa6f68adcb8618122b0219 isnotpaperartifact",
+  "license": "No projectLICENSEverified(directLICENSE404);paperlicenseandbasemodellicenseseparate",
+  "exact_models": [
+    "Exactartifactserver.sh:codellama/CodeLlama-7b-hf",
+    "ExactconfigLlamaForCausalLM;trainedcheckpointdirectory,multitask",
+    "GPT4-o comparator API snapshotunverified"
+  ],
+  "weights_status": "Checkpointconfig200 andsafetensorsindex200(size23950);ALL3publishedweights-shardlinks404. ActualtrainedweightsNOTdownloadablethroughpublishedlinksatchecktime.",
+  "evaluation_route": "ExactauthorartifactPython3.9/GPU>=24GB forinference;Java17Maven,SDKmanagerJava8/17;Flasknext-tokenserver+RQ3groundtruth.sh;storedmanualanalysisxlsxandRQ5PITreportsdocumented. Noauthorrun.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Correction:root401isnotwholeartifactinaccessibility;directfilesaredownloadable",
+    "AllthreepublishedtrainedCodeLlamaweights-shardURLs404;config/indexalonearenotweights",
+    "ml-model/resources/datasets.csvempty;independentdatasetsdirectoryZIPaccessnotyetverified",
+    "init.shREADME--checkpointvsparser--checkpoints mismatch;scriptcheckscheckpointsvariableafterdeclaringcheckpoint",
+    "Noimmutableanonymouscommitexposed;filehashesonly",
+    "Noauthorcode/modelrun;fullretrainingnotapprovedandtrainingdatasetrouteunresolved",
+    "Grammar/typeconstraintsdonotprovesemanticoracletruth;selectedvsfullnegativeprecision49/72differenceunchanged",
+    "RQ5discardsoraclesthatfailcurrenttests;notstandardhistoricalbugdetection"
+  ],
+  "concept_fit": "Very high: generalized pre/postconditions are executable abstract behavioral predicates; grammar constraints do not prove intended semantics or bug causality.",
+  "recommendation": "Upgradeexactsourceavailability:paperartifactreadableviaindividualfilesandCodeLlamaarchitectureconfirmed. Retainconditionalbasebecauseall3publishedtrainedweightshards404;requiresvalidweightsorverifiedtrainingroute.",
+  "citations": [
+    "https://arxiv.org/html/2504.04251v2",
+    "https://homes.cs.washington.edu/~mernst/pubs/axiomatic-oracles-issta2025-abstract.html",
+    "https://anonymous.4open.science/r/tratto-replication-package-31F6",
+    "https://github.com/AML14/tratto/tree/edd9b67a1bb8580cf8fa6f68adcb8618122b0219"
+  ],
+  "reviewed_at": "2026-10-15T08:38:44.892872+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

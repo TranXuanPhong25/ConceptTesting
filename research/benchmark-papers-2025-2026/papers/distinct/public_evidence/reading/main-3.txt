@@ -1,0 +1,225 @@
+c and 11.76% on QuixBugs-Desc. This reduction in executability directly impairs the overall utility of the test suites, leading to a 19.76% relative decrease in DDR on Defects4J-Desc and a 16.67% decrease on QuixBugs-Desc. These results confirm that iterative repair based on execution feedback is indispensable for bridging the gap between initial reasoning and valid implementations.
+Finally, comparing the full system to the individual LLM* reveals the cumulative impact of our design. The base configuration suffers catastrophic losses across all metrics, particularly in DDR (up to -59.88%) and PR (up to -35.73%). The fact that DISTINCT significantly outperforms all ablated variants across all coverage and correctness metrics demonstrates the synergy between components. The Analyzer identifies the correct semantic targets, the code context ensures these targets are grounded in the implementation, and the Validator ensures the final output is executable.
+Finding 3:
+Each module in DISTINCT is essential: the Analyzer is the primary driver for DDR, while the Validator is the main contributor to CSR. The synergy between NLD-guided analysis and iterative repair allows DISTINCT to effectively transform high-level intent into high-coverage, defect-revealing test suites.
+TABLE IV: Ablation study result of DISTINCT
+Models
+Defects4J-Desc
+QuixBugs-Desc
+CSR
+PR
+DDR
+BC
+SC
+CSR
+PR
+DDR
+BC
+SC
+DISTINCT-Ana
+30.61% (↑\uparrow4.08%)
+14.48% (↓\downarrow8.59%)
+2.04% (↓\downarrow39.82%)
+75.40% (↓\downarrow2.20%)
+76.10% (↓\downarrow6.51%)
+82.50% (↓\downarrow2.94%)
+60.00% (↓\downarrow4.00%)
+52.50% (↓\downarrow12.50%)
+89.45% (↓\downarrow2.39%)
+81.84% (↓\downarrow1.60%)
+DISTINCT-Code
+28.57% (↓\downarrow2.86%)
+10.68% (↓\downarrow32.58%)
+2.49% (↓\downarrow26.55%)
+75.90% (↓\downarrow1.56%)
+78.20% (↓\downarrow3.93%)
+85.00% (0.00%)
+62.50% (0.00%)
+57.50% (↓\downarrow4.17%)
+88.54% (↓\downarrow3.38%)
+81.69% (↓\downarrow1.78%)
+DISTINCT-Val
+25.80% (↓\downarrow12.27%)
+15.64% (↓\downarrow1.26%)
+2.72% (↓\downarrow19.76%)
+75.20% (↓\downarrow2.46%)
+77.00% (↓\downarrow5.41%)
+75.00% (↓\downarrow11.76%)
+52.50% (↓\downarrow16.00%)
+50.00% (↓\downarrow16.67%)
+89.92% (↓\downarrow1.88%)
+81.54% (↓\downarrow1.96%)
+individual LLM*
+22.40% (↓\downarrow23.84%)
+10.18% (↓\downarrow35.73%)
+1.36% (↓\downarrow59.88%)
+66.70% (↓\downarrow13.49%)
+66.70% (↓\downarrow18.06%)
+75.00% (↓\downarrow11.76%)
+42.50% (↓\downarrow32.00%)
+40.00% (↓\downarrow33.33%)
+87.46% (↓\downarrow4.56%)
+78.51% (↓\downarrow5.60%)
+DISTINCT
+29.41%
+15.84%
+3.39%
+77.10%
+81.40%
+85.00%
+62.50%
+60.00%
+91.64%
+83.17%
+Note: Values in parentheses indicate the relative differences, either increase (↑\uparrow) or decrease (↓\downarrow), to the performance of the full DISTINCT.
+TABLE V: Comparison of various models’ performance across Defects4J and QuixBugs benchmarks.
+Models
+Defects4J-Desc
+QuixBugs-Desc
+CSR
+PR
+DDR
+BC
+SC
+CSR
+PR
+DDR
+BC
+SC
+DeepSeek
+22.40%
+10.18%
+2.04%
+66.70%
+66.70%
+75.00%
+42.50%
+40.00%
+87.46%
+78.51%
+DISTINCT
+29.48% (↑\uparrow31.61%)
+15.84% (↑\uparrow55.60%)
+3.39% (↑\uparrow66.18%)
+74.20% (↑\uparrow11.24%)
+81.40% (↑\uparrow22.04%)
+85.00% (↑\uparrow13.33%)
+62.50% (↑\uparrow47.06%)
+60.00% (↑\uparrow50.00%)
+91.64% (↑\uparrow4.78%)
+83.17% (↑\uparrow5.94%)
+Llama3-70B
+10.66%
+7.03%
+0.00%
+58.40%
+62.30%
+70.00%
+37.50%
+32.50%
+85.23%
+76.32%
+DISTINCT
+26.98% (↑\uparrow153.10%)
+12.47% (↑\uparrow77.38%)
+3.17% (↑∞\uparrow\infty)
+71.80% (↑\uparrow22.95%)
+80.30% (↑\uparrow28.89%)
+80.00% (↑\uparrow14.29%)
+55.00% (↑\uparrow46.67%)
+50.00% (↑\uparrow53.85%)
+89.47% (↑\uparrow4.97%)
+81.02% (↑\uparrow6.16%)
+Llama3-8B
+6.12%
+5.57%
+0.00%
+69.50%
+73.30%
+65.00%
+35.00%
+30.00%
+82.15%
+74.18%
+DISTINCT
+19.73% (↑\uparrow222.39%)
+10.41% (↑\uparrow86.89%)
+2.95% (↑∞\uparrow\infty)
+71.50% (↑\uparrow2.88%)
+80.40% (↑\uparrow9.69%)
+75.00% (↑\uparrow15.38%)
+50.00% (↑\uparrow42.86%)
+47.50% (↑\uparrow58.33%)
+87.09% (↑\uparrow6.01%)
+79.36% (↑\uparrow6.98%)
+CodeLlama-7B
+10.66%
+5.44%
+0.45%
+58.40%
+62.30%
+65.00%
+37.50%
+32.50%
+84.06%
+75.21%
+DISTINCT
+21.09% (↑\uparrow97.84%)
+10.43% (↑\uparrow91.73%)
+2.95% (↑\uparrow555.56%)
+72.20% (↑\uparrow23.63%)
+80.90% (↑\uparrow29.86%)
+77.50% (↑\uparrow19.23%)
+52.50% (↑\uparrow40.00%)
+50.00% (↑\uparrow53.85%)
+88.53% (↑\uparrow5.32%)
+80.14% (↑\uparrow6.55%)
+Note: Values in parentheses represent the improvement rate relative to the baseline model.
+V-C RQ4 (LLM Generality)
+Table V summarizes the experimental results of DISTINCT integrated with various LLMs. For consistency, both the base models and DISTINCT were tested in the same NLD-based non-regressive setting; thus, the base model configurations are identical to those of the individual LLMs∗. Using DeepSeek as the backbone model, DISTINCT achieves the best performance. On Defects4J-Desc, it improves CSR from 22.40% to 29.48%, PR from 10.18% to 15.84%, and DDR from 2.04% to 3.39%. Code coverage also increases, with BC rising by 11.24% and SC by 22.04%. On QuixBugs-Desc, DISTINCT raises CSR to 85.00% from 75.00% and PR to 62.50% from 42.50%, while DDR improves from 40.00% to 60.00%.
+The generality of DISTINCT is further validated across LLaMA3-70B, LLaMA3-8B, and CodeLLaMA-7B.
+As can be seen, DISTINCT improves Llama3-8B by 222.39% in terms of CSR, by 86.89% in terms of PR. Llama3-8B’s DDR rises from 0% to 2.95%, and its coverage also saw a significant improvement.
+In addition, Llama3-70B and CodeLlama-7B both show substantial gains on DISTINCT compared to basic prompts as well. Specifically, Llama3-70B achieved a 153.1% increase in CSP, a 77.38% improvement in PR, and its DDR rose from 0% to 3.17%. CodeLlama-7B followed with a 97.84% increase in CSP, a 91.73% improvement in PR, and an impressive 555.56% boost in DDR. Both LLMs also saw significant improvements in coverage.
+While individual LLMs exhibit varied performance, DISTINCT with Llama3-8B underperforms those with medium-scale LLMs, such as Llama3-70B, and code-specific LLMs, such as CodeLlama-7B. This indicates that larger, more capable LLMs provide a stronger foundation for complex reasoning tasks [43, 44], and that specialized pre-training on code can offer significant advantages in program understanding and test generation [45, 46]. Moreover, even these more powerful models fall short of the state-of-the-art DeepSeek in overall capability, underscoring the continued importance of raw model scale and advanced training methodologies. Despite these underlying differences in model capability, DISTINCT achieves consistent performance improvements across all these diverse backbones.
+This consistent capability is a direct result of DISTINCT’s model-agnostic design. By integrating structured, external components, the framework provides crucial guidance that mitigates the inherent limitations of weaker or smaller LLMs. Specifically, the Analyzer refines test cases by enforcing branch consistency, and the Validator filters and repairs them based on execution signals. This comprehensive design effectively decouples test quality from the raw generative capabilities of the underlying LLMs, allowing DISTINCT to maintain high levels of Defect Detection Rate (DDR) and code coverage irrespective of the backbone model employed.
+Finding 4: DISTINCT generalizes well across LLMs of different scales and types, consistently improving key metrics including CSR, PR, DDR, and test coverage.
+Fig. 9: Performance variation of DISTINCT with diverse hyperparameter settings
+V-D RQ5 (Sensitivity Analysis)
+Figure 9(a)(b) shows the performance of our approach under varying iteration limits for the Validator (Max Iteration-Val) and Analyzer (Max Iteration-Ana) in non-regression testing on Defects4J-Desc and QuixBugs-Desc.
+To cover the practical range for both hyperparameters and avoid insufficiency with low iterations and high cost with marginal gains on high iterations, we selected the following parameter ranges based on experience.
+To be specific, we first fixed the Max Iteration-Val at 5, which is a reasonable initial value that has shown good performance in prior studies [22], and gradually increased Max Iteration-Ana starting from the smaller iteration count of 3 to identify the best combination of Max Iteration-Val and Max Iteration-Ana. Subsequently, we fixed Max Iteration-Ana at the value determined from the previous best combination, and then gradually increased Max Iteration-Val from smaller iteration counts to investigate, across different datasets, which parameter settings enable the DISTINCT framework to achieve superior performance.
+As shown in Figure 9(a), on Defects4J-Desc, when Max Iteration-Val is fixed to 5, DISTINCT fluctuates slightly around 31% in terms of CSR.
+Attributing to the iterative branch-consistency analysis within the Analyzer stage,
+DISTINCT not only prunes erroneous logical branches for generated test cases but also incorporates new ones inferred from the NLD to reveal defects progressively. This iterative process substantially improves the overall quality of the test suite, as reflected in the increase of PR, DDR, BC, and SC. In particular, DDR rises from 2.72% to 3.85%, indicating that repeated analysis is effective in strengthening defect-revealing capabilities.
+However, when Max Iteration-Ana increases from 7 to 9, performance decline on most metrics. A potential explanation is that most NLDs are not specific enough to explicitly cover all branches.
+As the number of iterations grows, generated tests increasingly conform to NLDs, leading to an over-concentration of test cases on NLD-related branches while reducing the diversity or even destroying other explored branches. Such an imbalance not only lowers branch coverage but also damages the test passing rates, ultimately decreasing the probability of exercising defect-triggering branches.
+On QuixBugs-Desc, when Max Iteration-Val is held constant to 5, increasing Max Iteration-Ana does not affect CSR, which consistently remains at 85.00%. Notably, when Max Iteration-Ana increases from 3 to 5, the generated tests exhibit marked improvements across PR, DDR, BC, and SC. However, beyond five iterations, these performance indicators converge and remain stable.
+This can be explained by the characteristics of QuixBugs-Desc, where the defects are relatively prominent and can be effectively exposed with only a small number of iterations. Nevertheless, some methods under test involve invocations of external classes, which cannot be properly used within the generated tests. Consequently, for the vast majority of comparatively simple methods under test, a small and appropriate number of iterations is sufficient. However, there also exist a few methods for which the lack of complete contextual information causes the generated tests to either fail or miss defect detection, a limitation that is difficult to overcome even by increasing the number of iterations. These findings suggest that, for comparatively simple methods under test, the Analyzer is capable of achieving strong effectiveness with only a limited number of iterations.
+Subsequently, we constrained Max Iteration-Ana of Analyzer to 7 according to optimal values determined in the preceding experiments, thereby exploring the influence of Max Iteration-Val in various values on DISTINCT.
+As shown in Figure 9(b), the experimental results on Defects4J-Desc show that when Max Iteration-Val increases from 3 to 7, almost all evaluation metrics improve.
+Specifically, CSR improves by 10.17%, PR rises by 4.48%, and DDR boosts by 21.45%, demonstrating the effectiveness of the repairing mechanism of Validator on the test case correction. However, when Max Iteration-Val exceeds 7,
+DISTINCT stagnates on most evaluation metrics owing to the high difficulty of repairing certain cases.
+On QuixBugs-Desc, the experimental results show that increasing the Max Iteration-Val can, to some extent, improve the number of compilable tests, which in turn enables the Analyzer to generate more passing and defect-revealing tests. However, a larger Max Iteration-Val does not necessarily lead to better performance of DISTINCT. Although increasing Max Iteration-Val from 7 to 9 yields more compilable test suites, the limitations of the Analyzer prevent it from detecting the defects in these methods, so the DDR does not improve. These findings indicate that moderately raising the Validator’s iteration limit can enhance compilation success and thereby facilitate defect detection, but it also requires a higher Analyzer iteration limit, which comes at the cost of greater computational expense.
+Overall, to achieve strong performance of DISTINCT across different datasets, it is necessary to appropriately tune Max Iteration-Val and Max Iteration-Ana. For complex datasets, DISTINCT usually performs well when both parameters are set to around 7, whereas for simpler datasets, fewer iterations are sufficient. Nevertheless, the optimal hyperparameter settings may still vary depending on the characteristics of each dataset.
+After discussing the maximum iteration limits of both Analyzer and Validator, we turn to explore the influence of the number of generated test cases (NN) on DISTINCT, where the specific evaluation results are shown in Figure 9(c).
+For Defects4J-Desc, CSR and PR remain almost unchanged across different NN, indicating that simply enlarging the test suite does not substantially affect compilability or executability. In contrast, DDR improves from 2.72% at N=5N=5 to 3.85% at N=10N=10. Branch coverage increases from 73.2% to 75.9%, while statement coverage rises from 77.3% to 77.9%.
+These results suggest that on Defects4J-Desc, increasing the number of test cases mainly contributes to better coverage and defect detection rather than compilability. In practice, this implies that allocating a moderate number of test cases can effectively boost DDR and coverage, without needing to push CSR or PR further.
+For QuixBugs-Desc, CSR and PR remain constant regardless of the value of NN, where the former maintains a score of 85.0% while the latter stays at 62.5%. As NN continues to increase, both coverage metrics also show further improvements. This indicates that for QuixBugs-Desc, expanding the test suite beyond 7 cases per method still brings benefits in terms of coverage, even though the DDR remains stable. Practically, this suggests that increasing NN can enhance coverage, while the improvement in defect detection may plateau earlier.
+Overall, these findings indicate that DISTINCT benefits from increasing the number of generated test cases, as this can improve both coverage and defect detection, although the degree of improvement may vary across metrics.
+Finding 5:
+Setting appropriate iteration limits for the Validator and Analyzer plays a critical role in balancing test quality and efficiency. Additionally, increasing the number of generated test cases tends to improve defect detection effectiveness, although the marginal gains in code coverage may diminish beyond a certain point.
+VI Threats to Validity
+Limited generality on Programming Languages (PLs). This study only evaluated the test case performance of DISTINCT on Java programs without experiments on other mainstream PLs, such as Python or C++. However, Java is the most representative and widespread PL used in practice and most widely studied in the test case generation field [38, 29, 22, 23, 47]. As such, we believe the threat to this validity is limited. In the future, we will further assess the effectiveness of DISTINCT on other PLs.
+Risk of Data Leakage. Another potential threat to validity lies in the risk of data leakage from the benchmark datasets. Specifically, it is possible that data from Defects4J-Desc and QuixBugs-Desc may have been included in the training corpus of LLMs (e.g., DeepSeek), potentially leading to an overestimation of their capabilities in non-regression test generation. To mitigate this concern, we compared the test cases generated by DISTINCT with the official test suites of the datasets and found almost no overlap. This suggests that the LLM did not simply memorize existing tests. Moreover, a recent empirical study [48] demonstrated through extensive experiments that data leakage exerts minimal influence on code translation tasks, as their source and target codes are unpaired during LLMs’ pre-training. The test generation task is similar to code translation, as its focal methods (inputs) and corresponding test cases (outputs) lie in different files in the wild, thus also unpaired when pre-training. Therefore, from this aspect, we infer that the risk of data leakage in our setting is also minimal.
+Neutralness of the NLDs. A further consideration is whether the constructed NLDs unintentionally reveal the underlying bugs, which could artificially inflate performance. To address this, we designed rigorous NLD construction protocols in Section IV-A to follow, and strictly circumvented any reference to the specific buggy behavior or its location.
+This ensures that the LLM generates tests based on the intended specification rather than being guided by hints about the defect, thereby upholding the reliability of our evaluation in assessing true test generation capability.
+VII Background and Related Work
+VII-A Unit Testing
+Unit testing serves as the primary verification technique to ensure that the implementation of a software component aligns with its intended logic[49, 50]. In practice, unit testing is categorized into two distinct paradigms based on the reliability of the code under test: regression testing [51] and non-regression testing [52]. The former assumes the focal method is logically sound and aims to detect future bugs during code evolution through regressions. In contrast, the latter focuses on just-in-time fault detection, where the test must serve as an independent oracle capable of revealing latent defects in the initial implementation [52, 53].
+VII-B Automated Unit Test Generation
+Writing high-quality tests is a time-intensive process. According to a survey by Daka et al.[54], developers spend approximately 15% of their working hours on writing test cases. To address this, a variety of automated testing tools have been developed in recent years. These tools aim to reduce the manual effort required for creating test cases while effectively uncovering potential software defects [55].
+Traditional approaches such as Search-Based Software Testing (SBST) [56] and symbolic execution [57] treat generation as a coverage optimization problem. Tools such as EvoSuite [58] and Pynguin [59] apply evolutionary algorithms to maximize code traversal. However, traditional approaches fundamentally rely on the existing code implementation as the primary source for search and generation. This dependency limits their ability to capture functional intentions that are not explicitly manifested in the code structure, often leading to test suites that fail to reveal latent defects within the original logic [60].
+Neural-based test generation initially focused on translating focal methods into assertions through Neural Machine Translation (NMT) architectures. ATLAS [61] first utilized NMT for assertion prediction, while subsequent retrieval-based models [62] incorporated contextual code examples to improve translation accuracy. The integration of Pre-trained Language Models (PLMs) such as BART and T5 shifted the focus toward end-to-end generation, where frameworks including AthenaTest [63] and TeCo [64] fine-tuned transformer architectures on large-scale datasets to capture the mapping between code and tests. Neural-based test generation has primarily evolved within a regression testing paradigm, where the models are trained to mirror the existing implementation. NMT and PLM-based approaches rely on large-scale datasets of correct code, causing them to inherit a bias that treats the focal method as an absolute truth. Therefore, it cannot be adapted for the non-regression test generation.
+Current state-of-the-art methods leverage LLMs through instruction-tuning[65]. Tools like ChatTester [66] and ChatUniTest [67] employ multi-turn dialogues and iterative repair to boost correctness. Advanced approaches like CoverUp [68] and SymPrompt [24] further integrate static analysis to guide models toward higher coverage targets. CodaMosa [69] enhances SBST by using LLMs to provide high-quality seeds when traditional search reaches a plateau. Existing LLM-based approaches predominantly focus on achieving high coverage based on the provided implementation. Their prompts typically instruct models to verify the code as-is, treating the current implementation as the absolute ground truth. This prioritizes characterizing actual behavior over intended logic, leaving a critical gap in non-regression scenarios.
+VIII Conclusion
+In this work, we present the first empirical study on unit test generation for non-regression testing, a common yet underexplored scenario in real-world development. We evaluate both traditional (EvoSuite) and LLM-based (ChatTester, ChatUniTest) approaches, finding that no

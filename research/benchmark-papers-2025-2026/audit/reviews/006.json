@@ -1,0 +1,40 @@
+{
+  "rank": 6,
+  "title": "An Anatomy of 488 Faults from Defects4J Based on the Control- and Data-Flow Graph Representations of Programs",
+  "fulltext_read": true,
+  "read_path": "papers/flow-graph-faults/public_evidence/paper_fulltext.txt",
+  "read_sha256": "182d792246c99cae84a9a95468313d0893aedd3309c93b64c6d2eec86b713c27",
+  "read_source": "https://arxiv.org/html/2502.02299v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Defects4J 1.2.0: 395 faults",
+    "Defects4J 3.0.1: 93 Jsoup faults"
+  ],
+  "task": "manual fault taxonomy; descriptive statistics",
+  "input_setting": "post-hoc buggy/fixed source and failing tests; author manually classifies faults",
+  "author_artifact_url": "https://doi.org/10.6084/m9.figshare.28855634",
+  "author_relationship_evidence": "Paper section 5 names this replication package; Figshare title matches paper and contains statistics.ipynb and per-project JSON.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "Figshare article 28855634; GitHub fcd4j HEAD 72872dc363607102f741c86bc4d3420d34d7db31",
+  "license": "GitHub/Zenodo classification repository MIT; archive licensing needs per-file review",
+  "exact_models": [],
+  "weights_status": "not_applicable",
+  "evaluation_route": "Author statistics.ipynb over seven project JSON files; Python, numpy, matplotlib. Classification counts independently inspected: 488 entries; def 330; use 55.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Full notebook references an absolute author path for defects4j-dissection repair-pattern data; external dataset/path must be restored.",
+    "Archive and GitHub combined JSON give 55 use labels; paper Table 1 reports 56. Verify per-project inputs before claiming exact table reproduction."
+  ],
+  "concept_fit": "high as a support taxonomy; not an automatic extractor or LLM test generator",
+  "recommendation": "Use for stratified fault-class evaluation. Keep manual ground-truth labels out of concept generation for held-out bugs.",
+  "citations": [
+    "https://arxiv.org/html/2502.02299v2#S3",
+    "https://api.figshare.com/v2/articles/28855634",
+    "https://github.com/alexvdspuy/fcd4j",
+    "https://zenodo.org/api/records/15032242"
+  ],
+  "reviewed_at": "2026-10-15T00:14:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

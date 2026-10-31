@@ -1,0 +1,202 @@
+rticle . Publication date: March 2025.
+20                                                         Soneya Binta Hossain, Raygan Taylor, and Matthew Dwyer
+
+
+4     THREATS TO VALIDITY
+In our large-scale study, we leveraged the widely recognized and open-source SF110 dataset [13].
+However, the results from this dataset may not generalize when using other datasets. To investigate
+the generalizability, we additionally perform a study on the unseen Defects4J dataset [23].
+   We developed several tools and scripts to automate various steps and data analysis. While
+there is a possibility that our implementation may contain bugs, we took several precautions to
+minimize this risk. Each experiment was repeated at least three times to ensure result consistency.
+Furthermore, we utilized publicly available libraries to reduce the likelihood of errors and performed
+comprehensive validity checks throughout the process.
+   Our qualitative evaluation involved interpreting Javadoc comments by the authors. To mitigate
+subjectivity, each author independently analyzed samples to identify helpful and harmful charac-
+teristics. We then integrated these findings to define the seven characteristics presented in RQ5 and
+used them for the larger qualitative analysis. While we did not analyze each sample by multiple
+authors, we cross-checked a random subset of each other’s analyses to ensure consistency.
+   In our investigation, we utilized the exact match metric during fine-tuning to compute oracle
+generation accuracy, a widely adopted metric in the research community. However, we acknowledge
+that this metric may underestimate accuracy, as correct test oracles can take many forms. For unseen
+inference on the Defects4J dataset, we relied on test validation. We assert that this methodology
+offers a reliable accuracy metric, as it is sensitive only to the correctness of the generated oracles,
+rather than their syntactic similarity.
+
+5     RELATED WORKS
+5.1    Automated Test Oracle Generation
+Automated test oracle generation (TOG) methods often employ a combination of approaches,
+broadly categorized into four types: fuzzing-based, search-based, specification mining-based, and
+machine learning-based. The fuzzing-based approach includes [31, 45]. Most fuzzing-based ap-
+proaches rely on implicit oracles such as exceptions thrown due to unintended behavior (e.g.,
+null dereferences, out-of-bounds exceptions). Search-based approach includes EvoSuite [12], a
+SOTA method that generates regression oracles capable of detecting bugs in future versions of
+a program. However, this type of oracle cannot detect bugs in the current implementation, as it
+assumes that an executed behavior is the expected behavior. Specification mining-based methods
+leverage natural language processing and pattern recognition to derive test oracles from specifica-
+tions [5, 6, 10, 14, 32, 39]. A recent study has shown that these methods fail to generalize effectively
+and produce test oracles with subpar bug detection effectiveness [10]. Although the SOTA neural
+method TOGA was shown to significantly outperform existing neural [40, 41, 43] and specification
+mining-based methods, and [18] indicates that TOGA generates a high number of false positives
+and oracles that exhibit poor bug detection effectiveness. TOGLL [17] has shown to outperform
+TOGA by substantial margin. Our goal in this paper is to dive deep into investigating the impact of
+Javadoc comment on the TOG task, rather than focusing strictly on outperforming other TOG methods
+– though our method did substantially outperform TOGA on real-world fault detection.
+
+6     CONCLUSION
+In this work, we conduct a thorough investigation to understand the impact of Javadoc comments on
+the test oracle generation (TOG) task. Our large-scale experimental results demonstrate that high-
+quality Javadoc comments are valuable in automating test oracles, and a minimal prompt consisting
+solely of Javadoc comments can achieve performance comparable or even better than prompts that
+include maximum contextual information. Our analysis reveals that the “description” and @return
+
+, Vol. 1, No. 1, Article . Publication date: March 2025.
+Doc2OracLL: Investigating the Impact of Documentation on LLM-based Test Oracle Generation                                    21
+
+
+tags are the most valuable for test oracle generation, and when there are constraints on prompt
+length, other details can be omitted without significantly impacting accuracy. Furthermore, our
+study shows that Javadoc can be used to generate oracles that detect faults in real-world programs
+and, importantly, those oracles outperform oracles generated from MUT implementations. This
+addresses a significant limitation of prior work, which our methods outperform.
+   This work is a first step in understanding the potential of Javadoc for TOG. More work is needed
+to understand how to provide a rich, but minimal, Javadoc context for specific TOG tasks. For
+example, most Java methods are written in the context of a class and relate to other classes. Exploring
+methods for identifying the dependencies among code elements, e.g., by following @InheritDoc or
+@see tags, and incorporating Javadoc for all of those elements has the potential to further boost
+TOG performance.
+
+REFERENCES
+ [1] Emad Aghajani, Csaba Nagy, Mario Linares-Vásquez, Laura Moreno, Gabriele Bavota, Michele Lanza, and David C Shep-
+     herd. 2020. Software documentation: the practitioners’ perspective. In Proceedings of the ACM/IEEE 42nd International
+     Conference on Software Engineering. 590–601.
+ [2] Emad Aghajani, Csaba Nagy, Olga Lucero Vega-Márquez, Mario Linares-Vásquez, Laura Moreno, Gabriele Bavota,
+     and Michele Lanza. 2019. Software documentation issues unveiled. In 2019 IEEE/ACM 41st International Conference on
+     Software Engineering (ICSE). IEEE, 1199–1210.
+ [3] Earl T Barr, Mark Harman, Phil McMinn, Muzammil Shahbaz, and Shin Yoo. 2014. The oracle problem in software
+     testing: A survey. IEEE transactions on software engineering 41, 5 (2014), 507–525.
+ [4] Emily M Bender, Timnit Gebru, Angelina McMillan-Major, and Shmargaret Shmitchell. 2021. On the dangers of
+     stochastic parrots: Can language models be too big?. In Proceedings of the 2021 ACM conference on fairness, accountability,
+     and transparency. 610–623.
+ [5] Arianna Blasi, Alberto Goffi, Konstantin Kuznetsov, Alessandra Gorla, Michael D. Ernst, Mauro Pezzè, and Sergio Del-
+     gado Castellanos. 2018. Translating Code Comments to Procedure Specifications. In Proceedings of the 27th ACM
+     SIGSOFT International Symposium on Software Testing and Analysis (Amsterdam, Netherlands) (ISSTA 2018). Association
+     for Computing Machinery, New York, NY, USA, 242–253. https://doi.org/10.1145/3213846.3213872
+ [6] Arianna Blasi, Alessandra Gorla, Michael D Ernst, Mauro Pezzè, and Antonio Carzaniga. 2021. MeMo: Automatically
+     identifying metamorphic relations in Javadoc comments for test automation. Journal of Systems and Software 181
+     (2021), 111041.
+ [7] Marcel Bohme, Van-Thuan Pham, and Abhik Roychoudhury. 2019. Coverage-Based Greybox Fuzzing as Markov Chain.
+     IEEE Transactions on Software Engineering 45, 05 (2019), 489–506.
+ [8] CodeLlama. 2024. CodeLlama-7B-Instruct Model on Hugging Face. https://huggingface.co/codellama/CodeLlama-7b-
+     Instruct-hf
+ [9] CodeParrot. [n. d.]. https://github.com/huggingface/transformers/tree/main/examples/research_projects/codeparrot.
+[10] Elizabeth Dinella, Gabriel Ryan, Todd Mytkowicz, and Shuvendu K. Lahiri. 2022. TOGA: a neural method for test oracle
+     generation. In Proceedings of the 44th International Conference on Software Engineering (Pittsburgh, Pennsylvania) (ICSE
+     ’22). Association for Computing Machinery, New York, NY, USA, 2130–2141. https://doi.org/10.1145/3510003.3510141
+[11] Madeline Endres, Sarah Fakhoury, Saikat Chakraborty, and Shuvendu K Lahiri. 2024. Can Large Language Models
+     Transform Natural Language Intent into Formal Method Postconditions? Proceedings of the ACM on Software Engineering
+     1, FSE (2024), 1889–1912.
+[12] Gordon Fraser and Andrea Arcuri. 2011. Evosuite: automatic test suite generation for object-oriented software.
+     In Proceedings of the 19th ACM SIGSOFT symposium and the 13th European conference on Foundations of software
+     engineering. 416–419.
+[13] Gordon Fraser and Andrea Arcuri. 2014. A Large-Scale Evaluation of Automated Unit Test Generation Using EvoSuite.
+     ACM Trans. Softw. Eng. Methodol. 24, 2, Article 8 (dec 2014), 42 pages. https://doi.org/10.1145/2685612
+[14] Alberto Goffi, Alessandra Gorla, Michael D. Ernst, and Mauro Pezzè. 2016. Automatic Generation of Oracles for
+     Exceptional Behaviors. In Proceedings of the 25th International Symposium on Software Testing and Analysis (Saarbrücken,
+     Germany) (ISSTA 2016). Association for Computing Machinery, New York, NY, USA, 213–224. https://doi.org/10.1145/
+     2931037.2931061
+[15] Google. 2024. CodeGemma-7B Model on Hugging Face. https://huggingface.co/google/codegemma-7b
+[16] Soneya Binta Hossain. 2024. Ensuring Critical Properties of Test Oracles for Effective Bug Detection. In Proceedings of
+     the 2024 IEEE/ACM 46th International Conference on Software Engineering: Companion Proceedings (Lisbon, Portugal)
+     (ICSE-Companion ’24). Association for Computing Machinery, New York, NY, USA, 176–180. https://doi.org/10.1145/
+
+                                                                        , Vol. 1, No. 1, Article . Publication date: March 2025.
+22                                                            Soneya Binta Hossain, Raygan Taylor, and Matthew Dwyer
+
+
+     3639478.3639791
+[17] Soneya Binta Hossain and Matthew Dwyer. 2024. TOGLL: Correct and Strong Test Oracle Generation with LLMs.
+     arXiv preprint arXiv:2405.03786 (2024).
+[18] Soneya Binta Hossain, Antonio Filieri, Matthew B. Dwyer, Sebastian Elbaum, and Willem Visser. 2023. Neural-Based
+     Test Oracle Generation: A Large-Scale Evaluation and Lessons Learned. In Proceedings of the 31st ACM Joint European
+     Software Engineering Conference and Symposium on the Foundations of Software Engineering (San Francisco, CA, USA)
+     (ESEC/FSE 2023). Association for Computing Machinery, New York, NY, USA, 120–132. https://doi.org/10.1145/3611643.
+     3616265
+[19] Soneya Binta Hossain, Nan Jiang, Qiang Zhou, Xiaopeng Li, Wen-Hao Chiang, Yingjun Lyu, Hoan Nguyen, and Omer
+     Tripp. 2024. A Deep Dive into Large Language Models for Automated Bug Localization and Repair. Proc. ACM Softw.
+     Eng. 1, FSE, Article 66 (jul 2024), 23 pages. https://doi.org/10.1145/3660773
+[20] Xinyi Hou, Yanjie Zhao, Yue Liu, Zhou Yang, Kailong Wang, Li Li, Xiapu Luo, David Lo, John Grundy, and Haoyu Wang.
+     2023. Large language models for software engineering: A systematic literature review. arXiv preprint arXiv:2308.10620
+     (2023).
+[21] Xing Hu, Xin Xia, David Lo, Zhiyuan Wan, Qiuyuan Chen, and Thomas Zimmermann. 2022. Practitioners’ expectations
+     on automated code comment generation. In Proceedings of the 44th International Conference on Software Engineering.
+     1693–1705.
+[22] Hugging Face. 2024. Hugging Face: The AI community building the future. https://huggingface.co/. Accessed:
+     2024-05-1.
+[23] René Just, Darioush Jalali, and Michael D Ernst. 2014. Defects4J: A database of existing faults to enable controlled
+     testing studies for Java programs. In Proceedings of the 2014 International Symposium on Software Testing and Analysis.
+     437–440. https://doi.org/10.1145/2610384.2628055
+[24] Alexander LeClair, Siyuan Jiang, and Collin McMillan. 2019. A neural model for generating natural language summaries
+     of program subroutines. In 2019 IEEE/ACM 41st International Conference on Software Engineering (ICSE). IEEE, 795–806.
+[25] Caroline Lemieux and Koushik Sen. 2018. Fairfuzz: A targeted mutation strategy for increasing greybox fuzz testing
+     coverage. In Proceedings of the 33rd ACM/IEEE international conference on automated software engineering. 475–485.
+[26] Zhongxin Liu, Kui Liu, Xin Xia, and Xiaohu Yang. 2023. Towards more realistic evaluation for neural test oracle
+     generation. In Proceedings of the 32nd ACM SIGSOFT International Symposium on Software Testing and Analysis. 589–600.
+[27] Shuai Lu, Daya Guo, Shuo Ren, Junjie Huang, Alexey Svyatkovskiy, Ambrosio Blanco, Colin Clement, Dawn Drain,
+     Daxin Jiang, Duyu Tang, et al. 2021. CodeXGLUE: A Machine Learning Benchmark Dataset for Code Understanding
+     and Generation. arXiv preprint arXiv:2102.04664 (2021).
+[28] Paul W McBurney and Collin McMillan. 2015. Automatic source code summarization of context for java methods.
+     IEEE Transactions on Software Engineering 42, 2 (2015), 103–119.
+[29] Erik Nijkamp, Bo Pang, Hiroaki Hayashi, Lifu Tu, Huan Wang, Yingbo Zhou, Silvio Savarese, and Caiming Xiong. 2023.
+     CodeGen: An Open Large Language Model for Code with Multi-Turn Program Synthesis. arXiv:2203.13474 [cs.LG]
+[30] Oracle. [n. d.]. https://www.oracle.com/technical-resources/articles/java/javadoc-tool.html#format.
+[31] Carlos Pacheco and Michael D Ernst. 2007. Randoop: feedback-directed random testing for Java. In Companion to the
+     22nd ACM SIGPLAN conference on Object-oriented programming systems and applications companion. 815–816.
+[32] Rahul Pandita, Xusheng Xiao, Hao Zhong, Tao Xie, Stephen Oney, and Amit Paradkar. 2012. Inferring method
+     specifications from natural language API descriptions. In 2012 34th International Conference on Software Engineering
+     (ICSE). 815–825. https://doi.org/10.1109/ICSE.2012.6227137
+[33] Phi-1. [n. d.]. https://huggingface.co/microsoft/phi-1.
+[34] Jeff Rasley, Samyam Rajbhandari, Olatunji Ruwase, and Yuxiong He. 2020. Deepspeed: System optimizations enable
+     training deep learning models with over 100 billion parameters. In Proceedings of the 26th ACM SIGKDD International
+     Conference on Knowledge Discovery & Data Mining. 3505–3506.
+[35] Devjeet Roy, Sarah Fakhoury, and Venera Arnaoudova. 2021. Reassessing automatic evaluation metrics for code
+     summarization tasks. In Proceedings of the 29th ACM Joint Meeting on European Software Engineering Conference and
+     Symposium on the Foundations of Software Engineering. 1105–1116.
+[36] Baptiste Roziere, Jonas Gehring, Fabian Gloeckle, Sten Sootla, Itai Gat, Xiaoqing Ellen Tan, Yossi Adi, Jingyu Liu, Tal
+     Remez, Jérémy Rapin, et al. 2023. Code llama: Open foundation models for code. arXiv preprint arXiv:2308.12950
+     (2023).
+[37] Max Schäfer, Sarah Nadi, Aryaz Eghbali, and Frank Tip. 2023. An empirical evaluation of using large language models
+     for automated unit test generation. IEEE Transactions on Software Engineering (2023).
+[38] Mohammed Latif Siddiq, Joanna Santos, Ridwanul Hasan Tanvir, Noshin Ulfat, Fahmid Al Rifat, and Vinicius Car-
+     valho Lopes. 2023. Exploring the effectiveness of large language models in generating unit tests. arXiv preprint
+     arXiv:2305.00418 (2023).
+
+
+
+, Vol. 1, No. 1, Article . Publication date: March 2025.
+Doc2OracLL: Investigating the Impact of Documentation on LLM-based Test Oracle Generation                                 23
+
+
+[39] Shin Hwei Tan, Darko Marinov, Lin Tan, and Gary T. Leavens. 2012. @tComment: Testing Javadoc Comments to
+     Detect Comment-Code Inconsistencies. In 2012 IEEE Fifth International Conference on Software Testing, Verification and
+     Validation. 260–269. https://doi.org/10.1109/ICST.2012.106
+[40] Michele Tufano, Dawn Drain, Alexey Svyatkovskiy, Shao Kun Deng, and Neel Sundaresan. 2020. Unit test case
+     generation with transformers and focal context. arXiv preprint arXiv:2009.05617 (2020).
+[41] Michele Tufano, Dawn Drain, Alexey Svyatkovskiy, and Neel Sundaresan. 2022. Generating accurate assert statements
+     for unit test cases using pretrained transformers. In Proceedings of the 3rd ACM/IEEE International Conference on
+     Automation of Software Test. 54–64. https://doi.org/10.1145/3524481.3527220
+[42] Chao Wang, Hao He, Uma Pal, Darko Marinov, and Minghui Zhou. 2023. Suboptimal comments in java projects: From
+     independent comment changes to commenting practices. ACM Transactions on Software Engineering and Methodology
+     32, 2 (2023), 1–33.
+[43] Cody Watson, Michele Tufano, Kevin Moran, Gabriele Bavota, and Denys Poshyvanyk. 2020. On learning meaningful
+     assert statements for unit test cases. In Proceedings of the ACM/IEEE 42nd International Conference on Software
+     Engineering. 1398–1409. https://doi.org/10.1145/3377811.3380429
+[44] Frank F. Xu, Uri Alon, Graham Neubig, and Vincent J. Hellendoorn. 2022. A Systematic Evaluation of Large Language
+     Models of Code. arXiv:2202.13169 [cs.PL]
+[45] Michal Zalewski. 2015. American Fuzzy Lop (AFL). http://lcamtuf.coredump.cx/afl/ Accessed: 29 April, 2024.
+
+
+
+
+                                                                     , Vol. 1, No. 1, Article . Publication date: March 2025.
+

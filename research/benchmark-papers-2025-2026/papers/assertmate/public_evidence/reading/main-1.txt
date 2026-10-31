@@ -1,0 +1,179 @@
+Agent-Based Test Assertion Generation via Diverse Perspective Aggregation
+Report GitHub Issue
+×
+Title:
+Content selection saved. Describe the issue below:
+Description:
+Submit without GitHub
+Submit in GitHub
+arXiv is now an independent nonprofit!
+Learn more
+×
+Back to arXiv
+Why HTML?
+Report Issue
+Back to Abstract
+Download PDF
+Abstract
+I Introduction
+II Background and Related Work
+II-A Fine-Grained Assertion Terminology
+II-B Test Assertion Generation Techniques
+II-C LLM-Based Unit Test Generation
+III Methodology
+III-A Actual Value Constructor
+III-B Multi-Perspective Expected Value Generator
+III-C Collaborative Judge Agent
+IV Experimental Setup
+IV-A Dataset Preparation
+IV-B Baselines
+IV-C Metrics
+IV-D Implementation and Environment
+V Results
+V-A RQ1: Effectiveness comparison among studied techniques
+V-B RQ2: Integration with Evosuite
+V-C RQ3: Ablation Study
+VI Discussion
+VI-A Case Study of Test Assertion Quality
+VI-B AssertMate with More Advanced LLMs
+VI-C Complementarity and Boundaries of Multi-Agent Collaboration
+VI-D Extensibility of Actual-Value Construction
+VI-E Threats to Validity
+VII Conclusion
+References
+License: CC Zero
+arXiv:2608.05822v1 [cs.SE] 06 Aug 2026
+Agent-Based Test Assertion Generation via Diverse Perspective Aggregation
+Dong Wang
+Qiaoyu Han
+Lin Yang
+Jianyi Zhou
+Guangtai Liang
+and Junjie Chen*
+††thanks:
+Dong Wang, Qiaoyu Han, Lin Yang, and Junjie Chen are with the College of Intelligence and Computing, Tianjin University, Tianjin, China.
+E-mail: {dong_w, hanqiaoyu, linyang, junjiechen}@tju.edu.cn
+Jianyi Zhou and Guangtai Liang are with Huawei Cloud Computing Technologies Co., Ltd., Beijing, China.
+E-mail: {zhoujianyi2, liangguangtai}@huawei.com
+Corresponding author: Junjie Chen.
+Abstract
+Test assertions are critical elements of unit tests, serving as checkpoints to validate expected behavior and ensure software correctness.
+Numerous techniques have been proposed to automate assertion generation, with recent progress notably driven by large language models (LLMs).
+Despite the promise, existing approaches such as ChatAssert suffer from modest accuracy, heavy reliance on oversampling, and vulnerability to model randomness due to one-shot prompting.
+To address these limitations, we propose AssertMate, a novel agent-based assertion generation framework that enhances the quality and reliability of LLM-generated assertions through three key components: (1) actual value construction that identifies assertion targets via static analysis and type-aware heuristics; (2) multi-perspective expected value prediction using code generation, retrieval-augmented generation (RAG), and chain-of-thought (CoT) reasoning agents;
+and (3) an LLM-as-a-Judge collaboration mechanism to select the most appropriate assertion.
+Evaluation on the Defects4J benchmark demonstrates that AssertMate significantly outperforms state-of-the-art techniques in compilation success and pass rates, along with substantially higher bug detection capabilities.
+Integration with EvoSuite further validates AssertMate’s practicality, yielding superior mutation coverage and kill counts.
+Ablation studies reveal that each of the three components makes a significant and complementary contribution to the overall performance.
+This work affirms the great potential of aggregating diverse perspectives to enhance the effectiveness of LLM-based assertion generation.
+Index Terms: Test Assertion Generation, Static Program Analysis, Large Language Model
+I Introduction
+Unit testing plays a pivotal role in software quality assurance by verifying functional correctness and ensuring that implementations align with specified requirements [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].
+A complete unit test consists of two essential components: a test prefix, which constructs the execution context and exercises the focal method, and one or more assertions, which serve as test oracles by specifying the expected behavior.
+While recent progress in automated LLM-based test generation has substantially improved the generation of executable test prefixes, constructing correct and effective assertions remains a fundamental challenge.
+This is because assertions ultimately determine whether the observed program behavior conforms to its expected behavior; consequently, even tests with high code coverage may fail to reveal defects when their assertions are weak, incomplete, or semantically incorrect, further limiting their fault-detection capability in practice.
+Therefore, test assertion generation has become an important standalone research problem, focusing on the construction of high-quality test oracles regardless of how test prefixes are obtained.
+To automate the assertion generation, prior research has introduced various types of automated assertion generation techniques, including traditional techniques such as Symbolic Execution [11, 12, 13, 14, 15, 16] and Specification Mining [17, 18, 19].
+While being effective in certain contexts, these traditional techniques suffer from notable limitations, particularly the path explosion [20] and the lack of structured documentation in many real-world projects [21].
+Recent advancements in deep learning (DL) and large language models (LLMs) have significantly improved automated assertion generation [6, 8, 7, 4, 1]. By leveraging their strong code comprehension capabilities, these models often outperform traditional techniques.
+Typically, these approaches take as input a focal method (i.e., the method under test) and a test prefix (i.e., a test body without assertions), and use either DL models or LLMs to generate assertions.
+Among them, ChatAssert [1] stands as the state-of-the-art LLM-based assertion generation technique, utilizing the power of ChatGPT.
+Nevertheless, while ChatAssert advances beyond earlier techniques, it still faces critical limitations and presents opportunities for further improvement.
+Its top-1 accuracy remains modest at 0.45, with only a slight increase to 0.54 in top-10 accuracy, even after applying multi-round post-processing to iteratively fix compilation and runtime errors.
+This first highlights substantial uncertainty in generating accurate assertions on the initial attempt.
+Moreover, ChatAssert’s heavy reliance on over-sampling (generating up to 10 assertions to cover a likely correct one) exposes the inefficiency and search space under-exploration of single-prompt inference, which also increases the burden of manual validation in practice.
+The 9-percentage-point gain further reflects its susceptibility to LLM randomness, limiting its reliability in contexts that demand deterministic and precise test oracles.
+These limitations align with findings from recent work [22], which observed that one-shot LLM queries often yield overconfident or erratic outputs, resulting in stubborn or inconsistent feedback during self-evaluation.
+The study further suggests that incorporating diverse problem-solving perspectives provides a more robust foundation for iterative refinement and can significantly improve output quality.
+Inspired by this insight, we theorize that adopting a multi-perspective prompting strategy holds promise for enhancing the effectiveness and reliability of LLM-based assertion generation.
+Meanwhile, it brings several unique challenges in this context.
+First, due to the under-specified nature of unit tests, the method for verifying the focal methods’ intended behavior is often ambiguous and lacks explicit contextual cues.
+LLMs may randomly interpret the test target differently per perspective-based query, leading to inconsistent or inaccurate assertions.
+Second, a multi-prompting strategy relies on selecting and combining diverse reasoning approaches, with each agent potentially emphasizing different aspects of the code.
+An inappropriate choice or combination of strategies may introduce noise or
+redundancy, undermining the complementarity from multiple perspectives, thus reducing the quality of generated assertions.
+Third, when multiple agents generate candidate assertions, selecting the most accurate and semantically aligned one becomes a non-trivial task.
+In this paper, we propose AssertMate, a novel agent-based assertion generation framework that effectively leverages LLMs for producing high-quality test assertions.
+AssertMate is designed with three core components, each tailored to address key limitations of prior work and challenges introduced by multi-perspective prompting:
+•
+Accurate Identification of Assertion Targets.
+Given a focal method and its test prefix, AssertMate first performs static analysis, assisted by LLMs, to identify a set of test targets, such as return values and modified attributes.
+It then constructs the corresponding actual values (assertion targets) using a rule-based and type-aware strategy.
+This process effectively clarifies “what to test” and narrows the task to expected value prediction, thereby reducing ambiguity and providing a solid foundation for the subsequent multi-perspective assertion generation.
+•
+Expected Value Generation from Diverse Perspectives.
+To address the overconfidence and bias inherent in single-prompt strategies, AssertMate adopts a multi-perspective reasoning approach for expected-value prediction (i.e., inferring the desired outcomes corresponding to the constructed actual values).
+Here, a perspective refers to a distinct reasoning strategy characterized by its information source and inference mechanism.
+Specifically, AssertMate employs three complementary perspectives: code-generation-based reasoning, which infers expected values directly from program semantics; retrieval-augmented reasoning (RAG), which grounds prediction on semantically similar examples; and chain-of-thought (CoT) reasoning, which derives expected values through explicit intermediate reasoning.
+To further improve reliability, AssertMate aggregates the candidate assertions generated from these complementary perspectives through a probability-based reranking mechanism that prioritizes the most promising candidates, thereby reducing the search space. The remaining candidates are then passed to the subsequent collaboration stage for final selection, effectively answering the question of “what to expect.”
+•
+“LLM-as-a-Judge” Collaboration Mechanism.
+To enhance decision-making capabilities for selecting high-quality assertions, AssertMate introduces a Judge agent based on the “LLM-as-a-Judge” [23] paradigm.
+This agent conducts an in-depth comparative analysis of candidate assertions, leveraging a CoT reasoning strategy to evaluate their semantic correctness, coherence with the test context, and alignment with the actual values, ultimately selecting the most appropriate assertion.
+To summarize, AssertMate’s novelty lies in a structured shift from monolithic assertion generation to a decomposed and software-engineered workflow, built upon two key design contributions:
+(I) Task Decoupling with Domain-Specific Optimization.
+By decomposing assertion generation into structured subtasks, such as actual value derivation through program analysis, AssertMate reduces LLM hallucinations and improves reliability.
+(II) Synergistic Agent Design.
+AssertMate combines complementary perspectives, actual-value construction, and expected-value prediction through modular components. It first uses confidence-based reranking to select one candidate from each perspective and then uses the Judge agent for cross-perspective selection, addressing the “last-mile” challenge without manual top-kk inspection.
+We evaluated AssertMate on the Defects4J [24] benchmark and compared its effectiveness against four widely adopted or state-of-the-art baseline techniques across both DL-based and language model-based approaches: EditAS, TOGLL, RetriGen, and ChatAssert∗ (without its repair module).
+Across five independent runs, AssertMate achieves mean Compilation Success Rate (CSR) and Pass Rate (PR) values of 76.78% and 60.09%, respectively; the corresponding sample standard deviations (SDs) are 0.90 and 1.07 percentage points. These results outperform the strongest baseline, ChatAssert∗, by 52.92% and 50.94% in relative terms, respectively.
+Its mean Bug Detection Rate (BDR) is 46.25%, and the corresponding SD is 1.75 percentage points. In comparison, ChatAssert∗ achieves a mean BDR of 37.32% with an SD of 1.82 percentage points. After averaging the five per-bug outcomes, a paired Wilcoxon signed-rank test indicates a significant improvement over ChatAssert∗ (p=0.0489p=0.0489, d​e​l​t​a=0.152delta=0.152).
+Furthermore, we examined the practical utility of integrating AssertMate with Evosuite [9].
+Results show that the assertions generated by AssertMate consistently yield higher CSRs and achieve the highest number of covered and killed mutants among all compared techniques. Its killed-mutant count improves by 40.49%–492.76% over ChatAssert∗, TOGLL, and EditAS.
+Ablation studies further validate the substantial contribution of AssertMate’s three core components: actual value constructor, multi-perspective expected value generation, and the collaboration mechanism.
+Notably, the actual value constructor not only mitigates hallucinations and guides LLM reasoning during assertion generation but also enhances existing LLM-based techniques when incorporated.
+Contributions. The key contributions of this paper are:
+•
+We propose a novel agent-based assertion generation framework to enhance assertion quality, with a full replication package publicly released for reproducibility [25].
+•
+Experimental results comprehensively demonstrate that AssertMate excels at generating syntactically correct and semantically rich assertions, consistently delivering superior bug-detection performance compared to all baselines.
+•
+Evaluation of AssertMate’s integration with EvoSuite affirms its practicality and scalability in real-world testing scenarios.
+II Background and Related Work
+In this section, we introduce the concept of fine-grained assertion terminology and review related work on automated test assertion generation techniques.
+II-A Fine-Grained Assertion Terminology
+Fig. 1: An illustrative example of focal method and test prefix
+Generally, assertion generation techniques take the focal method (F​MFM) and a test prefix (T​PTP) as input, and generate one or more assertions for the F​M−T​PFM-TP pair [7].
+Figure 1(a) and (b) illustrate the focal method onClearAllPushed and its corresponding test prefix testOnClearAllPushed, respectively.
+The onClearAllPushed method defines the behavior when the clear-all button is pressed: it clears all the content in the screen field and updates the state of clearAllBtn to indicate activation (i.e., false).
+In the test prefix, the testOnClearAllPushed method sets up the testing scenario by instantiating a Calculator object and invoking the focal method.
+Since the focal method performs two actions (clearing the screen and activating the button), comprehensive testing requires two corresponding assertions: one to verify the updated state and another to confirm the cleared screen.
+Moreover, the form of assertions may vary depending on the testing approach.
+For instance, to verify that the screen has been cleared, one may use assertEquals to compare the screen content with a literal string value “0”, or alternatively, use assertTrue to validate the equivalence relationship, i.e., content == "0".
+Existing work often treats assertion generation as a unified task, which leads to an excessively large search space and insufficient guidance during exploration, particularly for advanced LLM-based approaches.
+As a consequence, these methods become highly susceptible to the inherent randomness of LLMs, ultimately undermining their effectiveness.
+For example, the state-of-the-art method ChatAssert prompts ChatGPT to generate a single assertion per input.
+In doing so, the model must implicitly decide both what to test and what to expect in one step.
+Given the wide range of possible test targets and the diverse ways to validate them, generating a correct assertion on the first attempt becomes extremely difficult, especially when limited to one-shot inference.
+The top-1 response generated by ChatAssert for Figure 1 is assertFalse(calc.getClearAllBtn().getState
+()); which verifies the activation state of the clear-all button but fails to test whether the screen content has been cleared, leaving a key aspect of the behavior unverified.
+To mitigate the challenge of undirected exploration in such a vast space, we propose a formal decomposition of the assertion into three distinct components: Assertion Function, Expected Value, and Actual Value.
+This fine-grained task partitioning provides a more structured framework for guiding the assertion generation process, enabling more targeted reasoning and reducing the impact of stochastic variability.
+Figure 2 presents an example assertion formulation using the JUnit framework.
+Related assertion terminologies are defined below:
+Fig. 2: A fine-grained JUnit assertion for the illustration
+Assertion Function is the assertion method used in the test case, which defines the expected relationship between the actual value and the expected value.
+For instance, assertEquals is suitable for verifying whether the screen has been correctly set to “0”.
+Actual Value is the target element being evaluated in the assertion.
+It can take various forms, including variables, method invocations, or combinations of both.
+To more precisely describe its composition, we define the actual value as consisting of two components: the Test Target and the Resolution Path.
+The test target refers to a variable (e.g., calc) defined within the test prefix, or a field defined in the test class.
+The resolution path represents a method invocation or a sequence of invocations applied to the test target, such as the .getScreen().getContent() method in Figure 2, which specifies the extent to which the test target is inspected.
+Expected Value represents the desired outcome of the actual value in an assertion.
+Unlike the actual value, which may have a complex structure, we define expected values in an atomic form.
+Importantly, the expected value is not always a concrete data value; it can also involve selecting the appropriate assertion function that best expresses the intended condition, such as assertTrue for the equivalence relationship.
+II-B Test Assertion Generation Techniques
+As test oracles remain one of the most critical challenges in software testing, assertion generation has been widely studied in recent years [6, 8, 21, 7, 4, 1]. Existing techniques can be categorized into three groups: traditional, deep learning-based, and large language model-based approaches.
+Traditional techniques are typically divided into two major types: Symbolic Execution [11, 12, 13, 14, 15, 16] and Specification Mining [17, 18, 19].
+The former explores program paths to derive logical conditions for assertions, while the latter extracts expected behaviors from documentation to guide assertion construction.
+To address coverage, scalability, and adaptability challenges faced by traditional techniques, deep learning-based and language model-based techniques have gained increasing attention.
+Deep Learning-Based Techniques.
+ATLAS [6] is one of the earliest studies to apply deep learning to assertion generation. It takes the focal method and test prefix as input and uses a recurrent neural network to generate assertions.
+TOGA [21] formulates assertion generation as a multi-class classification problem. It first constructs a dictionary of common values and types, then generates candidate assertions, and finally uses an Assertion Oracle Ranker to select the most suitable one.
+Integrating information retrieval (IR) algorithm with deep learning models [7, 4] takes the assertions as documents, and the inputs (i.e., focal method and test prefix) as queries, and uses lexical similarity (e.g., Jaccard Similarity) as the metric for searching.
+Yu et al. [7] were among the first to propose combining IR with deep learning for this task. They used IR to retrieve assertions similar to those required for the input and then modified the retrieved assertions to better match the target context.
+EditAS [4] further advanced this idea by explicitly modeling the differences between the retrieved and actual input pairs. It learns both edit operation sequences and token-level transformations to enhance the quality and accuracy of generated assertions.
+DL models have significantly advanced assertion generation by leveraging their capabilities in code understanding and generation. However, these techniques require large amounts of labeled data for training and are prone to overfitting.
+Additionally, IR-based approaches are constrained by the similarity between retrieved and target assertions, limiting their adaptability to diverse code contexts.
+Language Model-Based Techniques.
+Language models, trained on large-scale code corpora, have demonstrated strong generalizability across a wid

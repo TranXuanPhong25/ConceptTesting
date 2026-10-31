@@ -1,0 +1,136 @@
+ods by the reviewed bug mechanisms they instantiate and report the most frequent mechanisms.
+•
+EMR (Executable Method Rate): the percentage of injection plans that eventually produce accepted injected methods.
+•
+AvgIM (Average Injected Methods): the number of accepted injected methods obtained per task.
+•
+SKR (Synthetic Kill Rate): the percentage of accepted injected methods detected by the final test suite.
+•
+FAR (Feedback Availability Rate): the percentage of tasks that obtain at least one accepted injected method.
+Together, these metrics summarize how often KITE produces executable feedback targets, how much feedback each task receives, and how much of that feedback is exercised by the final tests.
+III-D2 Results
+Table V shows KITE’s synthetic-bug feedback metrics. KITE generates 1,225 injection plans and 1,201 accepted injected methods, reaching an Executable Method Rate (EMR) of 98.04%. Overall, 168/172 tasks obtain at least one accepted injected method, giving a Feedback Availability Rate (FAR) of 97.67% and an Average Injected Methods (AvgIM) value of 6.98.
+TABLE V: RQ3 synthetic-bug feedback usefulness.
+Project
+Plans
+Acc.
+EMR
+AvgIM
+SKR
+FAR
+Cli
+185
+182
+98.38
+7.58
+84.62
+100.00
+Csv
+75
+75
+100.00
+6.82
+98.67
+100.00
+Jsoup
+405
+397
+98.02
+7.35
+86.65
+100.00
+JacksonDB
+331
+327
+98.79
+6.41
+67.89
+92.16
+Compress
+229
+220
+96.07
+6.88
+85.91
+100.00
+Overall
+1225
+1201
+98.04
+6.98
+81.85
+97.67
+TABLE VI: Top accepted bug mechanisms.
+Count
+Bug Mechanism
+Mechanism action
+Abstract edit
+99
+Bypass Config Failure Gate
+Remove failure/stop guard
+−- if (!ok) return/exit;   ++ continue
+45
+Mis-handle Dot Self-Reference Branch
+Remove special branch
+−- if special, handleSpecial(x);   ++ handleGeneric(x)
+31
+Misroute Nested Validation Break
+Convert rejection to local break
+−- if forbidden, throw Error;   ++ if forbidden, break
+21
+Drop Null Guard in Traversal
+Remove traversal null guard
+−- while node != null, use(node);   ++ unchecked traversal use
+20
+Startup Error-Flag Early Exit
+Insert entry early return
+++ if errorFlag, return ERROR before normalWork()
+18
+Unchecked Adapter-Specific Interface Cast
+Remove type/fallback check
+−- check Adapter or wrap(x);   ++ use((Adapter)x)
+17
+Escalate Benign Guard Log Severity
+Escalate benign signal
+−- log.warn(benign);   ++ log.error(benign)
+17
+Drop Global Ajax Guard
+Remove global exclusion guard
+−- if isExcludedRequest, return false;   ++ no global exclusion
+16
+Disable Quoted-Token Recognition
+Force classifier false
+−- return isQuoted(token);   ++ return false
+16
+Fail-Open Decryption Delegation
+Remove fail-closed handling
+−- if !decryptOk, reject;   ++ delegate(original)
+The final test suites detect 983/1,201 accepted injected methods, giving a Synthetic Kill Rate (SKR) of 81.85%. This result suggests that most accepted injected methods are not only executable artifacts but also actionable feedback targets for test enhancement.
+Table VI lists the ten most frequent accepted bug mechanisms. They cover concrete fault behaviors, i.e., bypassed guards, special-case removal, and weakened validation, rather than a few generic mutation patterns.
+Finding 3: KITE reliably produces synthetic-bug feedback for test enhancement, and the mechanism distribution covers diverse real-bug mechanisms rather than a few fixed mutation patterns.
+III-E RQ4: Unique Detection Analysis
+III-E1 Design
+We analyze detection overlap across all evaluated methods, focusing on bugs detected only by KITE. We then examine one representative case to trace how KITE turns the boundary required by a real bug into an executable test-enhancement target.
+III-E2 Results
+Fig. 6 summarizes the detection overlap across all 172 instances: 7 are detected by all methods, while 21 are missed by all methods. KITE detects 125 real bugs and contributes 19 KITE-only detections, far more than any other method; the largest unique-detection count among the other methods is 3. Among the 19 KITE-only cases, 16 are detected only after iterative enhancement with synthetic bugs injected from key mechanisms, accounting for 11.05% of all tasks and 15.20% of KITE’s detections.
+Fig. 6: Real-bug detection overlap across seven methods.
+Most KITE-only cases are guard-sensitive faults, i.e., faults caused by guard deletion or weakening, with fine-grained triggering conditions and strong context dependence. Their fixes often restore or adjust a guard, predicate, branch order, exception conversion, or fallback behavior. This suggests that bug mechanisms provide concrete behavioral cues about which mechanism to exercise, where it applies, and which inputs or assertions can expose the behavioral difference.
+Among the 16 instances detected only after iterative enhancement, the key mechanisms are retrieved through dual structural-semantic recall in 5 cases, structural-only recall in 5 cases, and semantic-only recall in 6 cases. We use Csv:14 as the illustrated case. This case demonstrates a structural-only path: KITE retrieves a cross-domain serialization mechanism through structural recall and converts it into a synthetic bug around the safe-character boundary.
+Fig. 7: Csv:14 structural-only recall case.
+In this case, KITE selects the historical mechanism Context-Mismatched URL Ampersand Escaping as the top-ranked recalled mechanism. Its semantic score is zero, indicating that retrieval does not depend on surface semantic similarity between URL rendering and CSV serialization; its high structural score is supported by three matched structural views. The representative evidence for this mechanism, response.write(url), is a writer-call structure in which a serialized value is written to an output object. The most direct counterpart in Csv:14 is the out.append(…) writer-call view. This structural similarity lets KITE judge that both sides can carry a mechanism of erroneous escaping or replacement before output.
+After recalling the mechanism, KITE searches across the focal method for an editable location that can reproduce the over-handling behavior, and locates it in the quote-decision logic of MINIMAL quote mode: the character-scanning loop decides whether to set quote = true according to a quote-trigger set such as LF (0x0A) and CR (0x0D). The injection stage therefore adds backslash to this quote-trigger set, causing the injected method to misclassify the safe \ (0x5C) as a character requiring quotes.
+Then, as shown in Fig. 7, per-plan feedback guides the tester to generate a plain-backslash test, asserting that MINIMAL quote mode should leave the backslash unquoted. The test passes on the correct method, fails on the injected method, and eventually also detects the buggy version, because the real bug violates the same safe-character boundary. This instance therefore shows that, by representing, generalizing, and automatically injecting historical bug mechanisms, KITE makes the semantic boundary on which a real bug depends explicit, thereby guiding the LLM to focus more on inputs and oracles that distinguish correct from buggy behavior.
+Finding 4: KITE detects the largest number of real bugs and contributes 19 KITE-only detections across all evaluated methods. A representative case shows that this added detection capability comes from representing, generalizing, and automatically injecting historical bug mechanisms as synthetic-bug feedback.
+IV Related Work
+IV-A LLM-Based Unit Test Generation
+LLMs have been widely used to generate unit tests from focal-method, class-level, or project-level context. Empirical studies show that such tests can resemble developer-written tests but remain vulnerable to missing context, API misuse, and incorrect assertions [10, 41]. Subsequent methods improve compilability and executability by organizing code, signatures, examples, or local context into prompts and repairing tests with compilation, execution, or assertion feedback [15, 11, 42, 16]. These methods mainly optimize generation validity rather than real-bug detection.
+Other studies introduce program analysis and repository knowledge. Program-analysis methods use slicing, call dependencies, or hard-to-cover branch analysis to construct inputs and path conditions [43, 44, 45]. Repository-aware and knowledge-guided methods retrieve usage, types, language-specific knowledge, or test-design knowledge to reduce hallucination and improve project fitness [13, 46, 47, 48, 49, 50, 51]. They improve coverage, executability, and project adaptation, but do not directly target real-bug triggering conditions or behavioral differences.
+Coverage- and mutation-guided methods introduce measurable feedback into the generation loop. Coverage-guided methods use uncovered code to prompt additional tests [17, 18, 52], while MuTAP and MutGen use surviving mutants or mutation feedback to improve mutation score [19, 20, 21, 22]. These signals can strengthen generated tests, but still rely on structural coverage gaps or predefined mutation operators that may not align with real-bug mechanisms and triggering conditions.
+IV-B Synthetic Bugs and Fault Knowledge
+Beyond direct test generation, recent work uses constructed faulty behaviors, failure examples, or adversarial tasks as learning and exploration signals. Code-A1, SSR, and AVIATOR construct buggy or vulnerable behaviors through adversarial evolution, self-play, or multi-agent injection [28, 29, 30], while LLM-based fuzzing generates failure-triggering inputs or protocol interactions [53, 54]. These works provide useful training or exploration signals, but primarily target model training, vulnerability data construction, or input-space exploration.
+Real-bug benchmarks provide reproducible bug-fix records for testing, debugging, and repair research [23, 24, 25, 26, 27]. Code differencing and fix-pattern mining extract edit scripts, recurring fix patterns, or common single-statement bugs [55, 33, 56, 57, 58]. These studies clarify real bugs and repairs, but focus on benchmark construction, code-edit representation, or repair-template generalization. For test generation, triggering conditions, violated semantic boundaries, and observable behavioral differences still need to be characterized as feedback targets.
+V Threats to Validity
+First, LLM-based test generation is stochastic and token-intensive. Model outputs may be affected by sampling, context length, and execution-feedback details; to mitigate this threat, we use the same model backend and temperature setting for all LLM-based methods. KITE also incurs higher token cost because its multi-stage agent workflow repeatedly provides overlapping repository context to different agents. Future implementations can reduce this overhead by applying prompt or KV caching when supported.
+Second, our benchmark has scope limitations. To control the cost of large-scale LLM experiments, we retain only real-bug instances whose production patch can be localized to a single focal method. This design helps precisely evaluate the ability of unit tests to detect real bugs, but it does not cover multi-method bugs or cross-file fixes. Future work can further expand the benchmark across projects, languages, and bug forms.
+VI Conclusion
+This paper presents KITE, a unit test generation and enhancement framework for real-bug detection. KITE constructs structural and semantic bug-mechanism knowledge from historical real-bug records and transforms recalled bug mechanisms into executable injected methods on the focal method. These injected methods provide LLM-based unit test generation with feedback signals closer to real-bug behavior than coverage or generic mutation scores. Experimental results show that KITE can reliably produce synthetic-bug feedback and substantially improve real-bug detection by generated tests.

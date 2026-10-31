@@ -1,0 +1,58 @@
+{
+  "rank": 90,
+  "title": "Mutation-Guided Unit Test Generation With a Large Language Model",
+  "fulltext_read": true,
+  "read_path": "papers/mutation-guided-unit-test-generation-with-a-large-language-model-44dfb990/public_evidence/paper_fulltext.txt",
+  "read_sha256": "04c13080ee60ea4657eecad01438113a1063f96030cb6e2611361e356e43a1b1",
+  "read_source": "https://arxiv.org/html/2506.02954v8 (15 April 2026; final IEEE TSE DOI 10.1109/TSE.2026.3682975; full 13,489-word text)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "HumanEval-Java: 104 method-level Java subjects retained from 160 after removing subjects where both MutGen and EvoSuite already achieve 100% mutation score.",
+    "Leetcode-Java: 100 randomly selected Medium/Hard Java algorithm solutions from two GitHub repositories; 50 per difficulty level.",
+    "Total main study: 204 method-level subjects, evaluated with PITest mutants (1,144 on HumanEval-Java; 1,900 on Leetcode-Java). These are not Defects4J issue tasks.",
+    "Separate Defects4J fault-detection assessment: EvoSuite-generated prefixes for 835 bugs across 17 projects; AG-RAG assertions detect 41 bugs vs 21 for EditAS. Defects4J is not used for training or main test-generation evaluation.",
+    "No BugsInPy or SWT-Bench experiment."
+  ],
+  "task": "Generate Java JUnit 4 test cases for a method-level program, using code summaries and PITest mutation feedback (killed/live/uncovered mutants) to target high mutation score; repair compile/runtime failures and iterate up to four rounds. The main oracle is mutation score against synthetic mutants. A separate experiment inserts generated assertions into EvoSuite prefixes and checks fail-before-fix/pass-after-fix on Defects4J bugs.",
+  "input_setting": "Method-level Java source with comments removed and summarized, plus mutation reports (mutant operator, changed statement/location, live/uncovered status). No issue report, root-cause label, pre/post-fix issue context or cross-module dependency task is provided. The model writes JUnit 4 tests for the focal method.",
+  "author_artifact_url": "https://github.com/Amocy-Wang/MUTGEN",
+  "author_relationship_evidence": "Paper reference [34] identifies Mutahunter and reference [20] links the AG-RAG project; Section III names `https://github.com/Amocy-Wang/MUTGEN` as the implementation. The repository README calls itself the replication package for this paper and lists data, source, evaluation and run instructions.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "Amocy-Wang/MUTGEN master HEAD `69dd37ddfab16b8c5efd22117dc3d213ab05418d` (2026-04-08; repository updated 2026-06-01). GitHub API tree has 441 entries. Static inspection covered README, requirements, `run.py`, `model.py`, `args_config.py`, `mutahunter/core/router.py`, generation loop and `runeach.sh`; no source executed. Repo includes `dataset.tar.gz` (74,369,230 bytes), benchmark Java subjects, RQ1–RQ3 scripts, cached results/predictions and evaluators. No LICENSE file or GitHub-detected software license.",
+  "license": "Article arXiv v8 is CC BY 4.0; GitHub replication repository has no LICENSE file and GitHub API reports no license, so code/data reuse permissions are unclear. README links model checkpoints from Google Drive; access and checkpoint license were not verified.",
+  "exact_models": [
+    "Llama-3.3 70B served locally via Ollama at temperature 0.0 for main MutGen experiments.",
+    "Additional CodeLlama-7B experiment: 8-bit quantization and 4M-parameter LoRA adapter, using CodeT5 encoder as retriever; this variant does not use joint retriever-generator training.",
+    "The source `LLMRouter` accepts a configurable model name and `api_base` through LiteLLM; the run script uses `ollama/llama3.3` and `http://localhost:11434`. An OpenAI-compatible local Qwen endpoint appears possible but has not been tested."
+  ],
+  "weights_status": "Llama-3.3 70B is an open model served through Ollama; weights are not stored in GitHub. README links a separate Google Drive folder for fine-tuned models. AG-RAG's main method uses T5 encoder-decoder and is not the method here; MutGen uses a generic LiteLLM text router, so Qwen via a compatible local endpoint looks much easier to evaluate than in AG-RAG, pending configuration/API compatibility. No model/API call made.",
+  "evaluation_route": "Read all 13,489 extracted words / 1,286 lines of arXiv v8 including methodology, datasets, result tables, operator analysis, ablations, Defects4J section, threats and references; SHA-256 above. Paper reports 89.5%/89.1% mutation scores on HumanEval-Java/Leetcode-Java vs Genvanilla 77.9%/69.9%; 1,144/1,900 mutants. On a separate 835-bug Defects4J detection set, AG assertions find 41 bugs vs 21 for EditAS. Training/evaluation commands and cached outputs are public in GitHub; paper uses locally served Llama-3.3 70B on one RTX 6000 Ada and three repetitions. A user Qwen model could plausibly be supplied through the configurable LiteLLM model/api_base with a subset run, without reimplementing MutGen; this has not been run. README's extraction command `tar -xzcf dataset.tar.gz` appears to combine conflicting create/extract flags and should be checked. No code run.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "GitHub repository has substantive source/data/results but no declared software license; reuse permissions should be clarified before modifying or redistributing.",
+    "Fine-tuned model checkpoints are linked via Google Drive but not in the GitHub archive and were not verified; exact weight hashes/revisions are missing.",
+    "The paper's Llama-3.3 70B run used a local Ollama model on an RTX 6000 Ada; the user's Qwen endpoint is technically plausible through LiteLLM api_base but has not been validated and will not reproduce the Llama baseline.",
+    "The Defects4J result is a separate EvoSuite-prefix assertion insertion study (41 vs 21 bugs), not the main benchmark. The main study uses synthetic PITest mutants and algorithmic HumanEval/LeetCode subjects.",
+    "Paper explicitly leaves real-world multi-module dependency resolution and evaluation on Defects4J as future work; it does not localize causes or provide fault-root-cause labels.",
+    "README's dataset extraction command appears malformed (`tar -xzcf`), and legacy Python/Java/Maven/PITest/EvoSuite versions may need environment adjustment; no setup was run."
+  ],
+  "concept_fit": "Moderate/high for mutation-guided behavioral test adequacy and assertion/oracle strength: mutation feedback highlights specific behavior changes and the separate Defects4J experiment checks whether generated assertions reveal real bugs. It does not use bug reports, root-cause concepts, or repository-level dependency analysis; main tasks are method-level synthetic mutants/algorithmic functions.",
+  "recommendation": "Promote as a practical supporting paper if the user wants to compare local Qwen-generated tests under mutation feedback: public code, dataset, prompt templates and cached outputs exist, and the text LLM wrapper accepts a model plus API base, unlike the T5-specific AG-RAG pipeline. A bounded local-Qwen run on a subset appears feasible without implementing the method, but it is not Defects4J issue reproduction; the Defects4J result is only a secondary 835-bug assertion-evaluation experiment. Resolve the absent repository license and malformed extraction command before any code reuse/run. No source or model executed.",
+  "citations": [
+    "https://arxiv.org/abs/2506.02954",
+    "https://doi.org/10.1109/TSE.2026.3682975",
+    "https://github.com/Amocy-Wang/MUTGEN/tree/69dd37ddfab16b8c5efd22117dc3d213ab05418d"
+  ],
+  "supporting_locations": [
+    "Paper Sections II–III: comment summarization, PITest mutation feedback, test repair, iterative generation and stopping after convergence.",
+    "Paper Table I: 89.5% and 89.1% mutation score; Tables II–III: operator-level kills/live/uncovered mutants; ablation discussion shows contributions of summarization, repair and mutation feedback.",
+    "Paper Section VI: separate Defects4J evaluation uses EvoSuite prefixes and reports 41 real bugs detected vs EditAS 21; authors explicitly defer full Defects4J/multimodule target generation.",
+    "Author GitHub README: replication package, dataset archive, Llama/Ollama setup, training/inference, RQ scripts and evaluation metrics.",
+    "Static source: `runeach.sh` configures model and API base; `LLMRouter` forwards model/api_base via LiteLLM; `run.py` and `unit_test_gen_with_mutants.py` implement generation/fix/iteration.",
+    "GitHub tree includes 74 MB dataset.tar.gz, HumanEval-Java subjects and results but no LICENSE file; Google Drive model checkpoint route is not verified."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

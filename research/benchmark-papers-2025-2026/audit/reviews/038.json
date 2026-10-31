@@ -1,0 +1,50 @@
+{
+  "rank": 38,
+  "title": "TAM-Eval: Evaluating LLMs for Automated Unit Test Maintenance",
+  "fulltext_read": true,
+  "read_path": "papers/tam-eval-evaluating-llms-for-automated-unit-test-maintenance-c109d85b/public_evidence/paper_fulltext.txt",
+  "read_sha256": "3f5a9d3319cc9bd8f1bce049c49ed5531862c9c08b673d097337c6f3b41c05a7",
+  "read_source": "https://arxiv.org/html/2601.18241v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "TAM-Eval v1: 1,539 test-file-level scenarios from 192 actively maintained GitHub repositories: Python 442 samples/55 repos, Java 495/55, Go 602/82. Tasks: Create (From Scratch/Add New Tests/Recover Tests), Repair, and Update.",
+    "Test repair faults include heuristic/synthetic and Qwen2.5-Coder-32B-generated broken tests; update scenarios use reverted test files with current focal code."
+  ],
+  "task": "Benchmark and evaluation harness for test-suite creation, test repair and updating at whole test-file level. Evaluates pass rate, line-coverage delta and mutation-score delta. Not issue-linked bug reproduction and not causal root-cause diagnosis.",
+  "input_setting": "Model receives focal source file and associated test file; prompt rewrites entire test file to improve coverage/effectiveness, with up to three attempts and execution/compiler feedback. Default is local focal/test context; framework permits repo context.",
+  "author_artifact_url": "https://github.com/trndcenter/TAM-Eval; secondary code mirror named by README: https://github.com/Tech871/tameval",
+  "author_relationship_evidence": "Paper abstract names the same project and explicitly links GitHub. Repository root README identifies TAM-Eval as test-maintenance benchmark, lists benchmark/v1 and source folders; root LICENSE is Apache-2.0. trndcenter/TAM-Eval HEAD 8de039bbe7551aac042f9e122e34c95483e8e8eb; Tech871/tameval HEAD 269cf23ad906e9d23d80bfcb155066b5d0bc37bd and sampled raw files match.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "trndcenter/TAM-Eval commit 8de039bbe7551aac042f9e122e34c95483e8e8eb (one-commit repo in GitHub UI); mirror Tech871/tameval commit 269cf23ad906e9d23d80bfcb155066b5d0bc37bd. Raw static source read includes run.py, generate/run.py, generate/llm_enhancer.py, setup/run.py, teval/run.py, teval/evaluator.py, prompt template and run_model_evals.sh.",
+  "license": "Apache-2.0 (LICENSE.txt). Benchmark entries point to external projects; their own licenses apply separately.",
+  "exact_models": [
+    "Paper Table II: Devstral-Small, Qwen3 Coder 480B A35B, DeepSeek V3.1 671B, GPT-OSS-120B, Gemini 2.5 Flash and GPT-5. Routed through OpenRouter; paper reports temperature 0.25 and three attempts. No immutable deployment snapshots/weights reported.",
+    "Published run_model_evals.sh currently lists Qwen2.5 Coder 32B, Gemma 3 27B, Devstral Small, Qwen3 235B A22B, o4-mini-high and DeepSeek R1; this differs materially from the paper Table II models."
+  ],
+  "weights_status": "No fine-tuning/checkpoint; API evaluation through OpenRouter with configurable model name/base URL. Several open-weight models could be served independently, but paper results are not tied to weights/snapshots.",
+  "evaluation_route": "Python 3.12 + pinned requirements + Docker; run.py orchestrates setup, test-file generation and evaluation for up to three attempts. Public benchmark/v1 and v2 directories contain scenario TOMLs; generation uses whole-file prompt and per-attempt execution feedback; evaluator computes pass/coverage/mutation metrics. README run script calls OpenRouter. No API/model or code run. The documented `outputs`/`results` directories are not present in the visible nested package file listing; no cached raw outputs were verified. Source script models differ from paper results, and root README points to a separate mirror. Exact replay therefore needs model/config/artifact reconciliation.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Paper’s reported six model names differ from the public run_model_evals.sh model list; script does not include GPT-5, GPT-OSS-120B or Gemini 2.5 Flash and uses different Qwen/DeepSeek/OpenAI variants.",
+    "No immutable model snapshots or fine-tuned weights; models are routed through OpenRouter, so exact historical behavior may not be recoverable.",
+    "README points to a separate Tech871/tameval mirror; public author-linked repo contains benchmark and code but visible package lacks documented generated outputs/results.",
+    "Full test-file rewrite evaluates pass/coverage/mutation, not actual buggy/fixed issue reproduction. No SWT-Bench, Defects4J or BugsInPy bug-version samples are used; SWT-Bench is background/related work only.",
+    "Docker and several language-specific execution/mutation toolchains (Python coverage.py/MutPy, Java JaCoCo/PIT, Go cover/go-mutesting) add environment burden."
+  ],
+  "concept_fit": "Medium-high for evaluating generated tests as meaningful rather than merely executable: mutation score measures fault-revealing strength, and repair inputs include missing assertions/weak checks. Low for root-cause analysis: benchmark has no bug-cause taxonomy or issue-linked expected fix.",
+  "recommendation": "Strong option if the priority is to evaluate the user’s own model on cross-language test maintenance and compare execution, coverage and mutation effectiveness. Public harness can accept an OpenAI-compatible model endpoint. Do not use it as SWT-Bench/Defects4J/BugsInPy bug-reproduction evidence. Exact baseline numbers are conditional until the published model-script mismatch and absent outputs/snapshot issue are resolved.",
+  "citations": [
+    "https://arxiv.org/html/2601.18241v1",
+    "https://github.com/trndcenter/TAM-Eval",
+    "https://github.com/Tech871/tameval"
+  ],
+  "supporting_locations": [
+    "Full paper 6,464 words; SHA-256 3f5a9d3319cc9bd8f1bce049c49ed5531862c9c08b673d097337c6f3b41c05a7; §§III–VII and Tables I–III.",
+    "Public root README and LICENSE; pinned run_model_evals.sh, whole_prompt.j2, generation adapter, run orchestration, setup and evaluator. Relevant hashes and findings in public_evidence/source-audit.json.",
+    "GitHub nested tree exposes benchmark/v1 and v2 scenario TOMLs plus generation/setup/evaluation modules; source README’s referenced clone URL differs from paper-linked repo."
+  ],
+  "reviewed_at": "2026-10-15T12:18:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

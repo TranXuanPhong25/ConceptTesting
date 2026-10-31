@@ -1,6 +1,6 @@
 ---
 name: v56-lcb-fresh
-description: 2026-10-25 mining done on Qwen-32B: fresh LCB cohort 11/60 buggy PUTs (wrong-output only); pipeline arms not frozen/run
+description: 2026-10-25 complete on fresh LCB (11 Qwen-32B PUTs): concept defn vs brute NO-GO (5 vs 6 tasks, 0–1) but FA 5 vs 47; family 4–2 NO-GO
 metadata:
   type: project
 ---
@@ -28,3 +28,9 @@ public_fail 60 / hidden_pass 36 / hidden_fail 15 / timeout_only 8. Cohort
 11/60 problems (easy2 med6 hard3), all wrong-output. Next: user picks the
 pipeline-arm writer (Codex quota risk, Qwen-32B, Haiku), then a freeze
 amendment before any arm run. Cap reached; do not mine more.
+
+2026-10-25 result (frozen arms.py, Codex certified reference, Qwen writer, 121/121 calls): defn 5 tasks prec .92 FA 5;
+brute 6 .51 FA 47; plain 4 .41 FA 36. All three comparisons NO-GO (defn–brute 0–1, brute–plain 4–2, defn–plain 3–2).
+Concept gives precision (fewer FA, partly abstention), not tasks. Oracle binds (3677/3720 ~0 valid programs); Qwen
+input generator MemoryError on 3/11. 3784 validator uncertified (Codex rc=1). See analysis/v56_lcb_fresh/RESULTS.md.
+**How to apply:** fresh-cohort replication of the concept/family effect failed on tasks; do not rerun or enlarge.

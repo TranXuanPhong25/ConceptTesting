@@ -1,0 +1,381 @@
+[
+  {
+    "site_id": 4,
+    "kind": "subcond",
+    "line": 13,
+    "expression": "n % 11 == 0 or n % 13 == 0",
+    "decision_line": 13,
+    "base_seen": [],
+    "source_line_executed_by_base": true,
+    "fuzz_outcomes": [
+      "T",
+      "F"
+    ],
+    "hit_indices": {
+      "T": [
+        0
+      ],
+      "F": [
+        1,
+        10,
+        12,
+        13,
+        33,
+        44,
+        58
+      ]
+    },
+    "stmt_representation": [],
+    "other_reached_fact_kinds_at_same_site_or_line": [
+      "BOUND",
+      "MUTANT"
+    ],
+    "stmt_only_by_location": false,
+    "candidates": [
+      {
+        "outcome": "T",
+        "witness_index": 0,
+        "witness_call": "fizz_buzz(0)",
+        "n_hits": 1,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      },
+      {
+        "outcome": "F",
+        "witness_index": 1,
+        "witness_call": "fizz_buzz(3)",
+        "n_hits": 7,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      }
+    ],
+    "task": 36,
+    "stmt_line_represented": false,
+    "stmt_reached_represented": false,
+    "stmt_shown_represented": false,
+    "stmt_witness_reaches_site": false,
+    "stmt_shown_witness_reaches_site": false,
+    "no_stmt_line_representation": true,
+    "base_source_line_executed": true,
+    "any_hit_bug": false
+  },
+  {
+    "site_id": 19,
+    "kind": "cond",
+    "line": 25,
+    "expression": "bracket == '>>'",
+    "decision_line": null,
+    "base_seen": [],
+    "source_line_executed_by_base": false,
+    "fuzz_outcomes": [],
+    "hit_indices": {
+      "T": [],
+      "F": []
+    },
+    "stmt_representation": [
+      {
+        "line": 25,
+        "lines": [
+          25,
+          26,
+          28
+        ],
+        "text": "Statement coverage (C1): lines 25-28 (starting with `elif bracket == '>>':`) are never executed by the existing tests.",
+        "reached": false,
+        "shown": false,
+        "witness_index": null,
+        "witness_site_outcomes": [],
+        "witness_call": null
+      }
+    ],
+    "other_reached_fact_kinds_at_same_site_or_line": [],
+    "stmt_only_by_location": false,
+    "candidates": [
+      {
+        "outcome": "T",
+        "witness_index": null,
+        "witness_call": null,
+        "n_hits": 0,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      },
+      {
+        "outcome": "F",
+        "witness_index": null,
+        "witness_call": null,
+        "n_hits": 0,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      }
+    ],
+    "task": 56,
+    "stmt_line_represented": true,
+    "stmt_reached_represented": false,
+    "stmt_shown_represented": false,
+    "stmt_witness_reaches_site": false,
+    "stmt_shown_witness_reaches_site": false,
+    "no_stmt_line_representation": false,
+    "base_source_line_executed": false,
+    "any_hit_bug": false
+  },
+  {
+    "site_id": 47,
+    "kind": "subcond",
+    "line": 48,
+    "expression": "int(date[1]) > 29",
+    "decision_line": 48,
+    "base_seen": [],
+    "source_line_executed_by_base": false,
+    "fuzz_outcomes": [],
+    "hit_indices": {
+      "T": [],
+      "F": []
+    },
+    "stmt_representation": [
+      {
+        "line": 48,
+        "lines": [
+          48,
+          49
+        ],
+        "text": "Statement coverage (C1): lines 48-49 (starting with `if int(date[1]) > 29 or int(date[1]) < 1:`) are never executed by the existing tests.",
+        "reached": false,
+        "shown": false,
+        "witness_index": null,
+        "witness_site_outcomes": [],
+        "witness_call": null
+      }
+    ],
+    "other_reached_fact_kinds_at_same_site_or_line": [],
+    "stmt_only_by_location": false,
+    "candidates": [
+      {
+        "outcome": "T",
+        "witness_index": null,
+        "witness_call": null,
+        "n_hits": 0,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      },
+      {
+        "outcome": "F",
+        "witness_index": null,
+        "witness_call": null,
+        "n_hits": 0,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      }
+    ],
+    "task": 124,
+    "stmt_line_represented": true,
+    "stmt_reached_represented": false,
+    "stmt_shown_represented": false,
+    "stmt_witness_reaches_site": false,
+    "stmt_shown_witness_reaches_site": false,
+    "no_stmt_line_representation": false,
+    "base_source_line_executed": false,
+    "any_hit_bug": false
+  },
+  {
+    "site_id": 49,
+    "kind": "subcond",
+    "line": 48,
+    "expression": "int(date[1]) < 1",
+    "decision_line": 48,
+    "base_seen": [],
+    "source_line_executed_by_base": false,
+    "fuzz_outcomes": [],
+    "hit_indices": {
+      "T": [],
+      "F": []
+    },
+    "stmt_representation": [
+      {
+        "line": 48,
+        "lines": [
+          48,
+          49
+        ],
+        "text": "Statement coverage (C1): lines 48-49 (starting with `if int(date[1]) > 29 or int(date[1]) < 1:`) are never executed by the existing tests.",
+        "reached": false,
+        "shown": false,
+        "witness_index": null,
+        "witness_site_outcomes": [],
+        "witness_call": null
+      }
+    ],
+    "other_reached_fact_kinds_at_same_site_or_line": [],
+    "stmt_only_by_location": false,
+    "candidates": [
+      {
+        "outcome": "T",
+        "witness_index": null,
+        "witness_call": null,
+        "n_hits": 0,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      },
+      {
+        "outcome": "F",
+        "witness_index": null,
+        "witness_call": null,
+        "n_hits": 0,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      }
+    ],
+    "task": 124,
+    "stmt_line_represented": true,
+    "stmt_reached_represented": false,
+    "stmt_shown_represented": false,
+    "stmt_witness_reaches_site": false,
+    "stmt_shown_witness_reaches_site": false,
+    "no_stmt_line_representation": false,
+    "base_source_line_executed": false,
+    "any_hit_bug": false
+  },
+  {
+    "site_id": 50,
+    "kind": "cond",
+    "line": 48,
+    "expression": "int(date[1]) > 29 or int(date[1]) < 1",
+    "decision_line": null,
+    "base_seen": [],
+    "source_line_executed_by_base": false,
+    "fuzz_outcomes": [],
+    "hit_indices": {
+      "T": [],
+      "F": []
+    },
+    "stmt_representation": [
+      {
+        "line": 48,
+        "lines": [
+          48,
+          49
+        ],
+        "text": "Statement coverage (C1): lines 48-49 (starting with `if int(date[1]) > 29 or int(date[1]) < 1:`) are never executed by the existing tests.",
+        "reached": false,
+        "shown": false,
+        "witness_index": null,
+        "witness_site_outcomes": [],
+        "witness_call": null
+      }
+    ],
+    "other_reached_fact_kinds_at_same_site_or_line": [],
+    "stmt_only_by_location": false,
+    "candidates": [
+      {
+        "outcome": "T",
+        "witness_index": null,
+        "witness_call": null,
+        "n_hits": 0,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      },
+      {
+        "outcome": "F",
+        "witness_index": null,
+        "witness_call": null,
+        "n_hits": 0,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      }
+    ],
+    "task": 124,
+    "stmt_line_represented": true,
+    "stmt_reached_represented": false,
+    "stmt_shown_represented": false,
+    "stmt_witness_reaches_site": false,
+    "stmt_shown_witness_reaches_site": false,
+    "no_stmt_line_representation": false,
+    "base_source_line_executed": false,
+    "any_hit_bug": false
+  },
+  {
+    "site_id": 46,
+    "kind": "cond",
+    "line": 40,
+    "expression": "i % j == 0",
+    "decision_line": null,
+    "base_seen": [],
+    "source_line_executed_by_base": false,
+    "fuzz_outcomes": [
+      "T",
+      "F"
+    ],
+    "hit_indices": {
+      "T": [
+        13,
+        16,
+        139,
+        247,
+        336,
+        358
+      ],
+      "F": [
+        1,
+        13,
+        16,
+        139,
+        145,
+        172,
+        247,
+        336,
+        346,
+        358,
+        392
+      ]
+    },
+    "stmt_representation": [
+      {
+        "line": 39,
+        "lines": [
+          39,
+          40,
+          41
+        ],
+        "text": "Statement coverage (C1): lines 39-41 (starting with `for j in range(2, i):`) are never executed by the existing tests.",
+        "reached": true,
+        "shown": true,
+        "witness_index": 1,
+        "witness_site_outcomes": [
+          "F"
+        ],
+        "witness_call": "intersection((0, 4), (0, 4))"
+      }
+    ],
+    "other_reached_fact_kinds_at_same_site_or_line": [
+      "DU",
+      "MUTANT"
+    ],
+    "stmt_only_by_location": false,
+    "candidates": [
+      {
+        "outcome": "T",
+        "witness_index": 13,
+        "witness_call": "intersection((-5, 5), (-5, 5))",
+        "n_hits": 6,
+        "represented_by_existing_stmt_witness": false,
+        "represented_by_shown_stmt_witness": false
+      },
+      {
+        "outcome": "F",
+        "witness_index": 1,
+        "witness_call": "intersection((0, 4), (0, 4))",
+        "n_hits": 11,
+        "represented_by_existing_stmt_witness": true,
+        "represented_by_shown_stmt_witness": true
+      }
+    ],
+    "task": 127,
+    "stmt_line_represented": true,
+    "stmt_reached_represented": true,
+    "stmt_shown_represented": true,
+    "stmt_witness_reaches_site": true,
+    "stmt_shown_witness_reaches_site": true,
+    "no_stmt_line_representation": false,
+    "base_source_line_executed": false,
+    "any_hit_bug": true
+  }
+]

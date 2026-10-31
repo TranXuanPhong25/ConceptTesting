@@ -23,3 +23,10 @@ terminal partial run reports complete paired prefix descriptively only. No cap
 borrowing, enlargement or completed rerun. Feedback is packed in user content;
 no assistant reasoning passback. Empty answers fail an arm with no resend.
 Exact launch commands/costs/tests are in CHANGELOG. Related: [[v76-ossmodel]].
+
+2026-10-26 (Codex): user narrows the proposed comparison to **two arms only**:
+combined (`concept-hybrid-ft`) versus original `concept-hybrid`, following the
+K=1 cost discussion. Immediate request is an explanation of the merge pipeline;
+no paid launch requested. Existing frozen v77 remains six arms/K3; this preference
+has not been implemented or registered as a new protocol. Reduced execution must
+remove unused dispatches, not merely hide exported arms.

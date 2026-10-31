@@ -1,0 +1,254 @@
+d 2), they guide the verification of L-norm and selectFetchSize, directly
+helping in assertion oracles generation.
+
+                                                                     , Vol. 1, No. 1, Article . Publication date: March 2025.
+12                                                          Soneya Binta Hossain, Raygan Taylor, and Matthew Dwyer
+
+
+ // Example : 1                                             // Example : 2
+ ===================                                        ===================
+ " /**                                                      " /**
+ * @param x The horizontal position of the                  * @see de . outstare . fortbattleplayer .
+         center of the symbol .                             *                            model . Sector # getHeight ()
+ * @param y The vertical position of the                    */ "
+         center of the symbol .                             ----------------------
+ **/ "                                                      public void test20 () {
+ ----------------------                                           CharacterClass cC0 = CharacterClass . SOLDIER ;
+ public void test0 () {                                           SimpleSector sS0 = new SimpleSector (1838 ,
+       BoxURSymbol symbol0 = new BoxURSymbol () ;                        true , true , 1838 , 1838 , true , 1838 ,
+       symbol0 . generatePoints (( -2016) , ( -2016) );                  cC0 );
+       symbol0 . generatePoints (( -1209) , 198) ;                boolean boolean0 = sS0 . equals (( Object ) null );
+ }                                                          }
+ ----------------------                                     ----------------------
+ // w/ @param : assertEquals (8 , symbol0 . getSize () );   // w / @see : assertEquals (1838 , sS0 . getHeight () );
+ /// /w/o @param : exception                                /// /w /0 @see : assertEquals ( false , boolean0 ) ;
+
+
+
+        Fig. 6. Impact of removing @param tag (left) and @see tag (right) on test oracle generation.
+
+
+   To further investigate this overlap, we removed both the description and the @return tags,
+affecting 10% of the samples (288). Removing the description alone caused a 10 pp accuracy drop,
+while removing the @return tags alone resulted in a 5 pp drop. Combined, this led to a 25 pp accuracy
+drop, as shown in Column 8 of Table 2. In nearly all 288 affected cases, the description and
+return tag contained the same information, providing the same hints for oracle generation.
+   With the removal of the @param, @throws, and @see tags, we observed that the accuracy
+dropped by less than 1 pp on average. In examining the 27 samples where removing the @param tag
+caused the generated oracle to differ from the ground truth oracle, we found that the ground truth
+oracles were more verbose, using fully qualified variable names within the assertion predicates.
+These fully qualified names were often learned from the @param tag description. Although these 27
+samples did not match the ground truth, the oracles generated without the @param tag were generally
+more concise. In Figure 6, we present two examples where the @param and @see tags provided
+hints in generating assertion oracles that aligned with the ground truth oracles.
+   Regarding the @throws tag removal, we observed that for 4 out of 10 LLMs, accuracy actually
+improved slightly, though this improvement was negligible. In reviewing some samples, we found that
+when the @throws tag specified a null pointer exception for null values, the generated assertion
+oracles often check not null condition using a assertNotNull() oracle. While these oracles did
+not exactly match the ground truth, they were still correct.
+
+      RQ2 Finding: The description and @return tags provide the richest behavioral information
+      about the MUT and are most valuable for automated TOG. These components also signifi-
+      cantly overlap. In contrast, @param, @throws, and @see tags contribute little to TOG and
+      can be omitted without significant accuracy loss.
+
+
+3.3    RQ3: Assessing GPT-Generated Javadoc Comments
+In RQ1 and RQ2, we investigate the impact of Javadoc comments and their individual components
+on TOG, relying on developer-written or derived documentation. However, source code often lacks
+sufficient documentation—56% of the SF110 dataset, for example, lacks method-level comments. This
+raises the question of whether GPT-generated Javadoc comments, which summarize MUT behavior,
+can similarly support TOG. To explore this, we generate Javadoc comments directly from the method
+implementation using a GPT model and evaluate their impact on TOG accuracy.
+
+, Vol. 1, No. 1, Article . Publication date: March 2025.
+Doc2OracLL: Investigating the Impact of Documentation on LLM-based Test Oracle Generation                                                   13
+
+
+ // Example : 1                                                         // Example : 2
+ ============================                                           ============================
+ --- GPT - generated Javadoc                                            --- GPT - generated Javadoc
+ " /**                                                                  " /**
+   * Returns whether the object is coded or not .                         * This method retrieves the current index value .
+   * @return true if the object is coded , false otherwise                * @return The current index value .
+   */ "                                                                   */ "
+ ----------------------                                                 ----------------------
+ public void test14 () {                                                public void test0 () {
+   RawVariable rV = new RawVariable () ;                                  Object obj = new Object () ;
+   SupportingDocument sDoc =                                              NoteListDataEvent event = new NoteListDataEvent ( obj ,
+        new SupportingDocument () ;                                              2) ;
+   boolean b0 =                                                           int type = event . getType () ;
+        rV . containsSupportingDocument ( sDoc ) ;                      }
+ }                                                                      ----------------------
+ ----------------------                                                 // Same as ground truth assertion
+ // Same as ground truth assertion                                      // w / GPT - doc : assertEquals (2 , event . getIndex () ) ;
+ // w/ GPT - doc : assertEquals ( false , rV . isCoded () ) ;
+                                                                        /// / w / o GPT - doc : assertEquals (2 , type ) ;
+ /// /w/o GPT - doc : assertEquals ( false , rV . isCleaned () ) ;
+
+
+             Fig. 7. Impact of GPT-generated Javadoc comments on ground truth oracle generation.
+
+
+3.3.1 Experimental Setup. For the test portion of the SF110* dataset, consisting of 2,780 input sam-
+ples, we generate Javadoc comments using OpenAI’s gpt-3.5-turbo-0125 model. The generation
+prompt can be found in our project repository.
+
+    Table 3. Percentage of ground-truth test oracles generated with GPT-generated Javadoc comments.
+
+         Model   CodeGPT   CodeParrot   CodeGen    PolyCoder    Phi    CodeGen    CodeGemma     PolyCoder    CodeLlama       CodeGemma
+                                                                                                                                         Avg.
+Prompt            110M       110M        350M        400M       1.3B     2B           2B           2.7B         7B               7B
+
+      P1          56.80       58.96       58.06      57.63     58.42    57.34        58.35         56.04        58.38          59.53     57.95
+
+     P1 +
+ GPT-generated    66.07       70.79       69.71      64.42     67.73    70.54        67.30         67.87        66.90          66.72     67.80
+   Javadoc
+
+
+
+
+3.3.2 Results. In Table 3, we present the TOG performance of 10 different fine-tuned models on two
+distinct prompts. The first prompt (P1) includes only the test prefix, while the second prompt (P1 +
+GPT-generated Javadoc) incorporates both the test prefix and the generated Javadoc comments. The
+purpose of using these two prompts is to isolate the impact of GPT-generated Javadoc comments
+on TOG. When using P1, the average accuracy is 57.95%. Incorporating GPT-generated Javadoc
+comments increases the average accuracy to 67.8%, indicating a 10 pp improvement.
+   From the samples showing improvement (from no match to match) after adding generated
+Javadoc comments, we manually investigated 20 cases. When comparing the test oracles generated
+using P1 (test prefix only) to those generated with P1 + GPT-generated Javadoc, we observed that
+the GPT Javadoc provided useful hints that were instrumental in constructing the oracle statements.
+Figure 7 illustrates two representative examples of generated Javadoc comments (light blue), the
+assertions generated using only the test prefix (red), and the assertions generated using both the
+test prefix and the GPT-generated Javadoc comments (green). Each Javadoc comment includes a
+summary of the MUT and a @return tag, explicitly specifying the method’s return behavior. In
+RQ2, we established that the method summary and @return tag are the most impactful components
+for automated test oracle generation. These examples further reinforce this finding.
+
+                                                                                 , Vol. 1, No. 1, Article . Publication date: March 2025.
+14                                                                       Soneya Binta Hossain, Raygan Taylor, and Matthew Dwyer
+
+
+
+      RQ3 Finding: We find that including GPT-generated Javadoc comments with the test prefix
+      improves TOG accuracy by 10 pp. This generalizes the finding in RQ1 that Javadoc comment
+      provides additional context about MUT behavior, enhancing the generation of effective
+      test oracles. Moreover, GPT-generated Javadoc comments that contributed to generating
+      ground truth oracles consistently include a method description and a @return tag, further
+      supporting the RQ2 finding that these components are the most valuable for TOG.
+
+3.4    RQ4: Impact of Javadoc Comments on Real Bug Detection
+In the previous RQs, we examined the correctness of automatically generated test oracles. While
+correctness is a critical property [16], the ability to detect bugs—referred to as the strength property—is
+equally important. In this research question, we investigate the impact of Javadoc comments on
+bug detection using Defects4J, a widely adopted real-world Java bug benchmark. We evaluate
+multiple fine-tuned LLMs and prompts to compare the relative strengths of the generated oracles
+and benchmark our results against two state-of-the-art methods.
+Table 4. Defects4J bug detection performance of model-prompt pairs on the dataset subset (288/374), where
+each input sample includes a Javadoc comment.
+
+                                   Model
+                                              CodeParrot-110M   CodeGen-350M   Phi-1.3B   CodeLlama-7B   CodeGemma-7B
+                      Prompt
+
+                          prefix (P1)             44 (4)           44 (4)       42 (4)       42 (5)         45 (4)
+
+                             prefix +
+                     Javadoc comments (P2)
+                                                  44 (4)          50 (10)       42 (4)      48 (11)         48 (7)
+
+                    Total Bugs ( Unique ) :         48              54           46           53             52
+
+
+
+3.4.1 Experimental Setup. Details of the Defects4J dataset are provided in Section 2.2.1. Similar to
+prior works [10, 11, 17], this dataset includes a total of 374 input samples. Each sample comprises
+a test prefix, a method under test, and its corresponding Javadoc comments. For the 86 samples
+where Javadoc comments were unavailable, we generated them using the procedure described in
+RQ3 (Section 3.3).
+   Based on RQ1 results, we selected the top five models that performed best on prompt P2 while
+ensuring diversity by avoiding repetition within the same model family: CodeParrot-110M,
+CodeGen-350M, Phi-1.3B, CodeLlama-7B, and CodeGemma-7B.
+   After an initial study on all five models using P1 and P2 on the Defects4J dataset (Table 4), we
+selected the top three for further analysis: CodeGen-350M, CodeLlama-7B, and CodeGemma-
+7B. Using these models and prompt pairs (P1, P2) and (P5, P6), we generated test oracles to detect
+Defects4J bugs. Table 5 reports the total number of unique bugs detected by different model-prompt
+combinations.
+3.4.2 Results. Table 4 presents the Defects4J bug detection performance of five models using
+prompts P1 and P2. Here, P1 includes only the test prefix, while P2 includes both the test prefix
+and Javadoc comments. This study evaluates 288 input samples, all containing Javadoc comments.
+Most models generated stronger test oracles and detected more bugs with P2 than with P1. This
+enhanced bug detection performance can be directly attributed to the Javadoc comments, as they are
+the only distinguishing feature between these two prompts.
+   For example, CodeGen-350M, CodeLlama-7B, and CodeGemma-7B detected more bugs with P2,
+highlighting the value of Javadoc comments in generating stronger test oracles. CodeGen-350M
+
+, Vol. 1, No. 1, Article . Publication date: March 2025.
+Doc2OracLL: Investigating the Impact of Documentation on LLM-based Test Oracle Generation                              15
+
+
+               Table 5. Defects4J bug detection performance of various model-prompt pairs
+
+                                      Model
+                                                   CodeGen-350M   CodeLlama-7B      CodeGemma-7B
+                  Prompt
+
+                        prefix (P1)                   59 (5)          58 (8)             62 (3)
+
+                  prefix + Javadoc comments (P2)     67 (13)          63 (13)            68 (9)
+                    Total Unique (P1+ P2):             72               71                 71
+
+                      prefix + MUT (P5)               62 (4)          68 (5)             62 (4)
+
+                        prefix + MUT +
+                    Javadoc comments (P6)
+                                                      63 (5)          73 (10)            65 (7)
+
+                    Total Unique (P5+ P6):             67               78                 69
+
+
+and CodeLlama-7B detected 10 and 11 unique bugs, respectively, using Javadoc comments. The last
+row shows the total number of unique bugs detected when combining P1 and P2.
+   For CodeParrot-110M and Phi-1.3B, the inclusion of Javadoc comments does not improve perfor-
+mance, suggesting that different fine-tuned models generalize differently during unseen inference.
+CodeParrot-110M, the smallest model in this study, and Phi-1.3B, pre-trained on Python datasets,
+may have limited generalization capabilities for Java code generation. Despite performing well
+in RQ1, these models struggle to generalize effectively in the TOG task. Based on these results,
+we select the top three models—CodeGen-350M, CodeLlama-7B, and CodeGemma-7B—for deeper
+investigation.
+   Table 5 presents the bug detection results for the top three models across all 374 input samples.
+This study evaluates two prompt pairs, totaling four distinct prompts. Notably, including all 374
+samples in this evaluation resulted in a higher total bug detection count for both prompts compared
+to Table 4.
+   Row 2 presents bugs detected using P1 (test prefix), while Row 3 shows results for P2 (test prefix +
+Javadoc comments). With Javadoc comments, CodeGen-350M, CodeLlama-7B, and CodeGemma-7B
+detected 8, 5, and 6 additional bugs, respectively. A similar trend is observed between P5 and P6 .
+In summary, Javadoc comments, as a complementary source of information, consistently led to the
+detection of more Defects4J bugs.
+   Comparing results from P2 and P5 , we find that Javadoc comments alone can encode sufficient
+contextual information to replace the MUT code entirely, achieving comparable or even superior
+performance in TOG and bug detection. P2 (prefix + Javadoc comments) detects a maximum of 68
+and an average of 66 bugs, while P5 (prefix + MUT) detects a maximum of 68 and an average of 64
+bugs. This suggests that Javadoc comments can be used in place of MUT implementation for TOG.
+   We also find that for 2 of the 3 models, using MUT implementation does not improve bug
+detection compared to Javadoc comments (P2 vs. P6 ). A possible reason is that models may struggle
+to extract high-level behavioral insights from complex MUT code, while Javadoc comments offer a
+more accessible, natural-language summary.
+   In summary, Javadoc comments, when used as a standalone input, achieved comparable or better
+performance than MUT code. Thus, they have the potential to replace MUT while maintaining
+similar performance. The impact of Javadoc comments remains significant even when the code
+for the MUT is included. When Javadoc comments are used with the prefix and MUT (Row 6), the
+total number of detected bugs increases in all cases. Notably, the best performance is achieved by
+CodeLlama-7B, which detected a total of 73 bugs. Furthermore, the total number of unique bugs is
+
+                                                                  , Vol. 1, No. 1, Article . Publication date: March 2025.
+16                                                                  Soneya Binta Hossain, Raygan Taylor, and Matthew Dwyer
+
+
+                        Table 6. Impact of Javadoc comments on Defects4J bug detection.
+
+       Bug ID           Cli, 34                                            Csv, 6
+                        getParsedOptionValue returns null unless
+                        Option.type gets explicitly set.
+                  

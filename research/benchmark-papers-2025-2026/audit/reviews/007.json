@@ -1,0 +1,49 @@
+{
+  "rank": 7,
+  "title": "Test vs Mutant: Adversarial LLM Agents for Robust Unit Test Generation",
+  "fulltext_read": true,
+  "read_path": "papers/advertest/public_evidence/paper_fulltext.txt",
+  "read_sha256": "ce799c24f0bd740d57f652b1fbce2b5b233e5445f8c20ea8b0d498b847c6d0ac",
+  "read_source": "https://arxiv.org/html/2602.08146v3",
+  "dataset_use_verified": true,
+  "datasets": [
+    "200 sampled Defects4J bugs +47 GrowingBugs bugs,727 focal methods",
+    "12 SWE-Rebench2026-02 Python issues; S1+S2 detects7/12, adding S3 detects11/12"
+  ],
+  "task": "adversarial mutation-guided regression test generation",
+  "input_setting": "Generate both tests and mutants on FIXED reference code; historical buggy code used for evaluation. Patch-touched method scope supplied.",
+  "author_artifact_url": "https://github.com/jmueducn/AdverTest",
+  "author_relationship_evidence": "Paper Data Availability and artifact README name exact paper; Java and Python pipelines substantively public.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "ef64ea33a9997796b459a3279b5bc72b7a375c17",
+  "license": "No project-level license verified; GitHub license null",
+  "exact_models": [
+    "DeepSeek-V3.2 and GPT-OSS-120B on Defects4J",
+    "DeepSeek-V3 on GrowingBugs",
+    "GPT-OSS-120B on12Python instances",
+    "Paper temperature0; Java wrapper0, Python make_llm_call default0.7"
+  ],
+  "weights_status": "No finetuning required; Java uses mutable deepseek-chat alias; paper GPT-OSS Tinker route not documented in public wrapper. Exact provider snapshots not pinned.",
+  "evaluation_route": "download.py -> generate.py -> mutation/TC augmentation -> test.py dual-version checks; Java8/JUnit4, patched Defects4J build/JARs; Python pytest+coverage and SWEbench harness.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "No local model/code run",
+    "README/paper fixed five T-M-T-M-T actions differs from generate.py: MS threshold70 chooses each action,4actions plus conditional finalTC",
+    "Python evaluator uses buggy_set != fixed_set plus timeout/collection-error branches, rather than paper nonempty buggy_set minus fixed_set; can count failing-set shrinkage without any new failure",
+    "Java evaluator compares failure counts/raw stdout and execution status, not explicit failing-test-set subtraction",
+    "Python input contexts/data files referenced but python_eval/data has no tracked blobs; no verified200bug sample manifest",
+    "Python temperature default0.7 differs from paper0",
+    "Reference generation includes fix-introduced code; paper explicitly acknowledges this can recreate historical defect and expose unavailable clues in buggy-input setting",
+    "No project license and no immutable API/model configuration"
+  ],
+  "concept_fit": "High mutation-derived behavioral weakness feedback; RIP reachability/infection/propagation classification explicitly left future work. Current survivor diff is not proof of failure mechanism.",
+  "recommendation": "Keep as close mutation-guided prior work and conditional reference-version base. Downgrade exact reproduction readiness until algorithm/evaluator/data discrepancies are reconciled; do not silently patch author source.",
+  "citations": [
+    "https://arxiv.org/html/2602.08146v3",
+    "https://github.com/jmueducn/AdverTest/tree/ef64ea33a9997796b459a3279b5bc72b7a375c17"
+  ],
+  "reviewed_at": "2026-10-15T08:23:17.584672+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

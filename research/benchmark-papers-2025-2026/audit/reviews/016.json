@@ -1,0 +1,45 @@
+{
+  "rank": 16,
+  "title": "Knowledge-Guided Synthetic Bug Feedback for LLM-Based Unit Test Generation",
+  "fulltext_read": true,
+  "read_path": "papers/kite-mechanisms/public_evidence/paper_fulltext.txt",
+  "read_sha256": "cbfd54995c510185dbc19ed6ba095fded025cafe6045181da67f254c0e318a76",
+  "read_source": "https://arxiv.org/html/2607.11573v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "172single-focal-methodDefects4JtasksfromCli/Compress/Csv/JacksonDatabind/Jsoup",
+    "Offline5benchmarkbugsources excludingevaluationprojects:2069records,1686unitstructures,1325reviewedmechanisms"
+  ],
+  "task": "historicalmechanismguidedsyntheticbugfeedbackforregressiontestgeneration",
+  "input_setting": "AllgenerationandbaselinesreceiveCORRECTversion;buggyversiononlyfinalevaluation. Mechanismsprovidewhat/where/how summaries;ASTanchorstructuresplussemanticrecall;injectedvariantsguide tests.",
+  "author_artifact_url": null,
+  "author_relationship_evidence": "No author artifact URL in completepaper;currentexacttitle/arXiv/GitHubrepositorysearchesfoundnoconfirmedauthorimplementation orKBrelease.",
+  "public_source_checked": true,
+  "source_status": "not_found",
+  "source_commit_or_archive": null,
+  "license": "No source license/artifactverified;arXivpaperlicense separate",
+  "exact_models": [
+    "OpenAIgpt-5.4,temp0.1 forallLLMmethods;max5generation/enhancementrounds"
+  ],
+  "weights_status": "ClosedAPIalias;noauthormodelcheckpoint/releasedKB/data/pipelinefound. No finetuningmentioned,butexactretrievalembedding/configsnotavailable.",
+  "evaluation_route": "Unifiedmethod-levelcorrect/buggy evaluator,JaCoCo/Major;mechanism-injectionacceptancegates+canonicaltestpromotion preservingpreviouskills. Cannotrunoriginalpipelinewithoutsource/KB.",
+  "reproduction_verdict": "unknown",
+  "blockers": [
+    "Noauthorimplementation,1325mechanismKB,172taskmanifest or evaluatorreleaseverified",
+    "Currentpaperdoesnotspecifyretrievalembeddingcheckpoint,thresholds,constructionreviewdetails or executablegatewitnessprocedure sufficientlyforexactrun",
+    "Usesfixedreferencecodeandrelatedtests;notbuggy-inputunknown-bugdiscovery",
+    "RBDRall172tasksbutcoverage/mutation/tokencostoncommon-successsubset;ablationfullmetricsdifferentcohortasexplicitlynoted",
+    "Approximately177k–225ktokens/method;noAPIbudgetspendauthorized",
+    "Noindependentmatched-budget placebo/no-mechanismcontrol established beyondreportedablations;onebackend,stochasticrepetition/confidenceevidenceabsent",
+    "Noauthorcode/modelrunorreimplementation"
+  ],
+  "concept_fit": "Veryhigh:transferablebugmechanisms+what/where/howapplicability+ASTstructure+executablefeedback. Injecteddiffandwitness signalsmaydriveimprovementindependentlyofabstractconceptwording.",
+  "recommendation": "Highest-priorityclosepriorworkforconcept/mechanismnovelty;keepoutofimmediatereproductionbaseuntiloriginalKB/source/evaluatoravailable. Separatefixed-referencegenerationfrombuggyinputresearch.",
+  "citations": [
+    "https://arxiv.org/html/2607.11573v1",
+    "https://arxiv.org/abs/2607.11573"
+  ],
+  "reviewed_at": "2026-10-15T10:25:55.792335+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

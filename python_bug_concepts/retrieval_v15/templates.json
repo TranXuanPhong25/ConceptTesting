@@ -1,0 +1,366 @@
+[
+  {
+    "id": "concept.selective_filter",
+    "kind": "selective_filter",
+    "family": "filtering",
+    "title": "Selective filtering preserves selected elements",
+    "description": "identity selection predicate true retained false removed iteration order occurrence preservation",
+    "slots": {
+      "source": "iterable",
+      "element": "element",
+      "predicate": "condition",
+      "result": "sequence"
+    },
+    "relations": [],
+    "partitions": [
+      {
+        "id": "all_predicate_true",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "all_predicate_false",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "mixed_predicate_outcomes",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "repeated_elements",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.sequence_transform",
+    "kind": "sequence_transform",
+    "family": "filtering",
+    "title": "Sequence transformation by text replacement",
+    "description": "replace matching text fragments source pattern replacement preservation of unmatched content",
+    "slots": {
+      "source": "text",
+      "pattern": "text",
+      "replacement": "text",
+      "result": "text"
+    },
+    "relations": [],
+    "partitions": [
+      {
+        "id": "pattern_absent",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "single_match",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "repeated_matches",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "mixed_unmatched_content",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.element_mapping",
+    "kind": "element_mapping",
+    "family": "filtering",
+    "title": "Element-wise sequence mapping",
+    "description": "map each element to expression transformation input output occurrence positions",
+    "slots": {
+      "source": "iterable",
+      "element": "element",
+      "transform": "expression",
+      "result": "sequence"
+    },
+    "relations": [],
+    "partitions": [
+      {
+        "id": "empty_sequence",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "single_element",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "distinct_elements",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "repeated_elements",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.deduplication",
+    "kind": "deduplication",
+    "family": "multiplicity",
+    "title": "Collapse occurrences to equality membership",
+    "description": "set frozenset occurrences collapse to equality membership multiplicity representation",
+    "slots": {
+      "source": "iterable",
+      "result": "value"
+    },
+    "relations": [],
+    "partitions": [
+      {
+        "id": "all_distinct",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "all_equal",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "mixed_multiplicities",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "equal_support_different_counts",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.frequency_aggregation",
+    "kind": "frequency_aggregation",
+    "family": "multiplicity",
+    "title": "Aggregate element occurrence frequencies",
+    "description": "Counter aggregate occurrence frequencies counts duplicate equality multiplicity",
+    "slots": {
+      "source": "iterable",
+      "result": "value"
+    },
+    "relations": [],
+    "partitions": [
+      {
+        "id": "no_occurrence",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "single_occurrence",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "repeated_element",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "equal_support_different_counts",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.cardinality",
+    "kind": "cardinality",
+    "family": "multiplicity",
+    "title": "Measure collection cardinality",
+    "description": "len measure collection size count length boundary after transformations",
+    "slots": {
+      "source": "iterable",
+      "result": "value"
+    },
+    "relations": [],
+    "partitions": [
+      {
+        "id": "empty_collection",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "singleton",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "several_elements",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "same_length_different_values",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.position_lookup",
+    "kind": "position_lookup",
+    "family": "search_indexing",
+    "title": "Search produces a position or absence outcome",
+    "description": "find rfind index search needle source position missing found negative sentinel exception",
+    "slots": {
+      "source": "sequence",
+      "needle": "element",
+      "position": "index"
+    },
+    "relations": [],
+    "partitions": [
+      {
+        "id": "needle_absent",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "first_position",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "last_position",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "repeated_matches",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.search_position_indexing",
+    "kind": "search_position_indexing",
+    "family": "search_indexing",
+    "title": "Search position flows into an indexed read",
+    "description": "search result consumed as index position flows to index missing found boundary position partitions search source indexed source",
+    "slots": {
+      "search_source": "sequence",
+      "needle": "element",
+      "position": "index",
+      "indexed_source": "sequence",
+      "result": "element"
+    },
+    "relations": [
+      "position_flows_to_index"
+    ],
+    "partitions": [
+      {
+        "id": "needle_absent_nonempty_source",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "first_position",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "last_position",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "repeated_matches",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.direct_indexing",
+    "kind": "direct_indexing",
+    "family": "search_indexing",
+    "title": "Indexed element access",
+    "description": "indexed element access direct index boundary partition sequence position",
+    "slots": {
+      "source": "sequence",
+      "position": "index",
+      "result": "element"
+    },
+    "relations": [],
+    "partitions": [
+      {
+        "id": "first_valid_index",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "last_valid_index",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "negative_index_if_allowed",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      },
+      {
+        "id": "out_of_range_if_allowed",
+        "obligation": "Construct valid inputs in this partition at the bound operation; expected values require the public contract/oracle."
+      }
+    ],
+    "requirement_policy": "Public requirements remain separate; concept presence is not a fault verdict."
+  },
+  {
+    "id": "concept.transform_then_filter",
+    "kind": "transform_then_filter",
+    "family": "filtering",
+    "title": "Text transformation flows into selective filtering",
+    "description": "text transformation precedes identity selection original input and filtered source may differ transform flows to filter preservation",
+    "slots": {
+      "input_source": "text",
+      "pattern": "text",
+      "replacement": "text",
+      "filter_source": "iterable",
+      "element": "element",
+      "predicate": "condition",
+      "result": "sequence"
+    },
+    "relations": [
+      "transform_flows_to_filter"
+    ],
+    "partitions": [
+      {
+        "id": "pattern_absent_mixed_selection",
+        "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle."
+      },
+      {
+        "id": "pattern_present_with_retained_content",
+        "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle."
+      },
+      {
+        "id": "repeated_pattern_with_repeated_retained_content",
+        "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle."
+      },
+      {
+        "id": "pattern_present_all_remaining_removed",
+        "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle."
+      }
+    ],
+    "requirement_policy": "No defect or whole-program preservation inferred."
+  },
+  {
+    "id": "concept.distinct_cardinality",
+    "kind": "distinct_cardinality",
+    "family": "multiplicity",
+    "title": "Count distinct equality classes",
+    "description": "deduplication flows to count equality classes rather than total occurrences same support different multiplicities",
+    "slots": {
+      "source": "iterable",
+      "distinct": "value",
+      "result": "value"
+    },
+    "relations": [
+      "deduplication_flows_to_count"
+    ],
+    "partitions": [
+      {
+        "id": "all_distinct",
+        "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle."
+      },
+      {
+        "id": "all_equal",
+        "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle."
+      },
+      {
+        "id": "mixed_multiplicities",
+        "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle."
+      },
+      {
+        "id": "equal_support_different_counts",
+        "obligation": "Construct valid original inputs realizing the joint operation partition; verify reachability separately. Expected values require public contract/oracle."
+      }
+    ],
+    "requirement_policy": "No defect or whole-program preservation inferred."
+  }
+]

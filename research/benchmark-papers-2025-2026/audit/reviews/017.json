@@ -1,0 +1,43 @@
+{
+  "rank": 17,
+  "title": "Fail-Aware and Explainable Test Oracle Prediction",
+  "fulltext_read": true,
+  "read_path": "papers/focal/public_evidence/paper_fulltext.txt",
+  "read_sha256": "cb6aa2fbdd868e29d2ea688a5b4a5321bb1fca0ac4d183989ff7b1acd959a97f",
+  "read_source": "https://arxiv.org/html/2607.11342v1",
+  "dataset_use_verified": true,
+  "datasets": [
+    "2.22M Defects4J-derived test/mutant pairs",
+    "229401 TOGA unseen-project pairs"
+  ],
+  "task": "discriminative pass/fail prediction, not executable assertion generation",
+  "input_setting": "test prefix + method; mutation-derived supervised labels",
+  "author_artifact_url": null,
+  "author_relationship_evidence": "No author-code/checkpoint release found in full text or targeted paper-title/author/code searches; paper links only generic tools/references.",
+  "public_source_checked": true,
+  "source_status": "not_found",
+  "source_commit_or_archive": null,
+  "license": "Paper CC-BY-4.0; software unavailable/unverified",
+  "exact_models": [
+    "Shared CodeT5 encoder + LoRA r8/alpha16 + pair classifier; exact backbone ID/revision not specified"
+  ],
+  "weights_status": "No trained adapter/classifier checkpoint verified",
+  "evaluation_route": "Train focal-classification plus margin-ranking losses; group-aware/project-separated pass/fail metrics; IG deletion/keep/counterfactual checks",
+  "reproduction_verdict": "unknown",
+  "blockers": [
+    "No public implementation/trained head/adapter found",
+    "Synthetic-pair construction and exact backbone/data artifacts unresolved",
+    "CodeT5 base weights alone cannot reproduce trained predictions",
+    "Model attribution flips are not execution-validated bug explanations or repairs"
+  ],
+  "concept_fit": "supporting prior work on evidence/explanations; not a direct concept-guided test generator",
+  "recommendation": "Do not select as main reproducible base under current constraints.",
+  "citations": [
+    "https://arxiv.org/html/2607.11342v1#S3",
+    "https://arxiv.org/html/2607.11342v1#S4.SS1",
+    "https://arxiv.org/html/2607.11342v1#S6"
+  ],
+  "reviewed_at": "2026-10-15T08:12:53.501994+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

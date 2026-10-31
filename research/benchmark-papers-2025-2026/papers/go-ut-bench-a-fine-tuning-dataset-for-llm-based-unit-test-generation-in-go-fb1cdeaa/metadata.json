@@ -1,0 +1,32 @@
+{
+  "openalex_id": "https://openalex.org/W4416335863",
+  "title": "Go-UT-Bench: A Fine-Tuning Dataset for LLM-Based Unit Test Generation in Go",
+  "year": 2025,
+  "publication_date": "2025-11-14",
+  "type": "preprint",
+  "doi": "https://doi.org/10.48550/arxiv.2511.10868",
+  "primary_url": "https://doi.org/10.48550/arxiv.2511.10868",
+  "pdf_url": "https://arxiv.org/pdf/2511.10868",
+  "venue": "arXiv (Cornell University)",
+  "discovery_queries": [
+    "SWT-Bench"
+  ],
+  "discovery_score": 24,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_public_dataset_verified_no_code",
+  "year_venue": "2025 (discovery metadata; venue/year not primary-verified)",
+  "datasets": "Go-UT-Bench 5,264 code/test pairs; 10 Go repositories; train 3684/test790/val790.",
+  "models": "DeepSeek-Coder-V2-Lite-Instruct LoRA, Llama-3.2-3B full tune, GPT-4o-mini judge.",
+  "artifact_url": "https://huggingface.co/datasets/Nutanix/GO-UNITTEST-BENCH",
+  "license": "Paper CC BY 4.0; HF dataset has no license metadata; paper claims source repos permissive, per-record terms should be checked.",
+  "input_setting": "Go source file → generated test, fine-tuning on existing paired tests; judge compares with ground truth.",
+  "reproduction_grade": "No code or weights; exact experiment not feasible from public artifact.",
+  "concept_hook": "Public Go unit test pairs for task-specific SFT; highlights LLM judge limitations.",
+  "limitation": "No runtime/compile/coverage or bug reveal metrics; single GPT-4o-mini judge; no Defects4J/BugsInPy/SWT experiment.",
+  "rank": 81,
+  "family": "testing_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/go-ut-bench-a-fine-tuning-dataset-for-llm-based-unit-test-generation-in-go-fb1cdeaa/NOTES.md"
+}

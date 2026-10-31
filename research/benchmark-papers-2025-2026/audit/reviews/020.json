@@ -1,0 +1,47 @@
+{
+  "rank": 20,
+  "title": "AssertFlip: Reproducing Bugs via Inversion of LLM-Generated Passing Tests",
+  "fulltext_read": true,
+  "read_path": "papers/assertflip/public_evidence/paper_fulltext.txt",
+  "read_sha256": "a3ed6c2761a11590f60e63b7c5e56d663990f83edbb5856908e4bc486b0cf4ed",
+  "read_source": "https://arxiv.org/html/2507.17542v2",
+  "dataset_use_verified": true,
+  "datasets": [
+    "SWT-Bench-Verified433issues (paper generates326;189BRT;43.6%all/58%generated)",
+    "SWT-Bench-Lite276issues (99BRT;36%);Verified overlap88andLite-only188"
+  ],
+  "task": "bug reproduction test generation from issue reports using pass-then-invert",
+  "input_setting": "Agentlesslocalizationoutputs+buggycode/issue. Generate working test that asserts buggybehavior onbuggytree, invertassertions,LLMvalidatefailure reason;BRTmustfailbuggy/passfixed.",
+  "author_artifact_url": "https://github.com/uw-swag/AssertFlip",
+  "author_relationship_evidence": "PaperDataAvailability, README officialreplicationpackagename andmatchingpaper title;source, datasets,preds,evaluation outputspublic.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "a5cd61992e0791b6a167549b1e2eca13627eed3f",
+  "license": "Apache-2.0",
+  "exact_models": [
+    "azure/gpt-4o (papersaysGPT-4o; sourcealiasazure/gpt-4o),temperature0; deploymentversionnotpinned",
+    "10 regeneration cycles; test/refinementattempts<=10; repeat generatedtestexecution5"
+  ],
+  "weights_status": "No finetuning; Azure GPT-4o endpoint/key required, model snapshot/deployment not pinned. No API requests made.",
+  "evaluation_route": "Python>=3.10,Docker;datasets/SWT-Bench Agentless skeleton;Agentless localization, run_parallel;generated predictions and official SWT-Bench evaluation results cached. Inputs actual evaluated pipeline and covered subset recorded.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Noauthor inference/evaluator run",
+    "Closed Azure GPT4o accessneeded to regenerate;Azure deployment name notversion pin",
+    "Code defaultmodel/temperature aligns,but article usesconfiguration/state time-sensitive;model API updates/data leakage October2023 cutoff concern",
+    "Verified denominator433 but system intentionally generates326 issues;claimed43.6% all-instance vs58% amonggenerated;compare conditionalcoverage/abstentionbaselinefairly",
+    "UsesAgentless localizations external input;realistic vsperfect localization changes resolved issue sets",
+    "Per-instance cost~$1 at10 regen, not free",
+    "No initialstart-to-finish run;some cached datasets/output andprojectsetup Docker prebuiltimage versusreconstructcost"
+  ],
+  "concept_fit": "Highforbehavioral oracle discipline and failure attribution: generate passing characterization then invert; related to oracle generation, but no intermediate reusable concepts/plans beyond bug-report test plan.",
+  "recommendation": "Strong SWT-Bench public code/data candidate, conditional on Azure API and Agentless localization; first choice for reproducible bug-reproduction workflow if exact model route is available. Report generation coverage/abstentions separately from conditional success.",
+  "citations": [
+    "https://arxiv.org/html/2507.17542v2",
+    "https://github.com/uw-swag/AssertFlip/tree/a5cd61992e0791b6a167549b1e2eca13627eed3f",
+    "https://swtbench.com/"
+  ],
+  "reviewed_at": "2026-10-15T10:38:47.071723+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

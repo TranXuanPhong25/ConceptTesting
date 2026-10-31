@@ -1,0 +1,37 @@
+{
+  "openalex_id": "https://openalex.org/W7168179469",
+  "title": "Multi-Agent LLM Collaboration for Unit Test Generation via Human-Testing-Inspired Workflows",
+  "year": 2026,
+  "publication_date": "2026-07-10",
+  "type": "preprint",
+  "doi": "https://doi.org/10.48550/arxiv.2607.09101",
+  "primary_url": "https://doi.org/10.48550/arxiv.2607.09101",
+  "pdf_url": "https://arxiv.org/pdf/2607.09101",
+  "venue": "arXiv (Cornell University)",
+  "discovery_queries": [
+    "Defects4J"
+  ],
+  "discovery_score": 26,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_verified_related_tool_source_partial_link",
+  "year_venue": "2026 arXiv preprint v1; no peer-reviewed venue verified",
+  "datasets": [
+    "RQ1–RQ3: six Java projects and 1,454 focal methods; five subjects are selected from Defects4J projects (Cli, Csv, Gson, Chart, Lang) plus Event-Ruler, but used as current-version unit-test generation subjects, not historical buggy/fixed Defects4J tasks.",
+    "RQ4: 658 focal methods from four private industrial Java projects (UTXXX); data/code not public.",
+    "RQ6: 141 methods in nine modules from three Python projects (Dataclasses-json, Apimd, Thonny).",
+    "Non-regression/bug-finding discussion: 167 suspected failures from generated tests on six public Java projects; 154 manually confirmed real defects (92.22% precision), with a five-type root-cause taxonomy. These are not Defects4J benchmark bug IDs."
+  ],
+  "models": "GPT-4o, DeepSeek-V3, Qwen3-30B-A3B; o3-mini/DeepSeek-R1/Qwen3-235B vote for defect confirmation.",
+  "artifact_url": "Paper itself does not link an artifact. Closest public source is the related TestAgent VS Code demo repository https://github.com/iSEngLab/TestAgent-VSCode-Extension (official FSE 2026 demonstration by overlapping authors; same architecture and headline metrics).",
+  "license": "Related implementation MIT with placeholder copyright; manuscript CC BY 4.0.",
+  "input_setting": "Given a focal method/current repository, extract test requirements and generate unit tests; no issue report or pre-existing buggy/fixed task pair is required. Failures are triaged as test issues versus potential defects. Defects found are manually confirmed. Main benchmark code is drawn from Defects4J projects but evaluated as current-source unit-test generation, not historical bug reproduction.",
+  "reproduction_grade": "C+ (related implementation available; exact study data and main artifact linkage unresolved)",
+  "concept_hook": "Very high: explicit test requirements, review loop and root-cause category analysis of detected faults.",
+  "limitation": "Not issue-reproduction or historical Defects4J/SWT bug task. Companion tool repo not explicitly linked to main paper; industrial data and exact 154 bug cases absent.",
+  "rank": 61,
+  "family": "testing_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/multi-agent-llm-collaboration-for-unit-test-generation-via-human-testing-in-78a3b4d0/NOTES.md"
+}

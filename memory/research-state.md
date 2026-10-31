@@ -6,6 +6,18 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-10-30 vr15 COMPLETE after user requested improvement: domain evidence and
+two composites;33tests+independent prefreeze review. Census67→69tasks,131→147
+instances,5edges/3tasks;all16newinstances/5edges conditionally source-supported.
+Directlookup=structuredBM25(147bindings),no retrievalincrement;partitions remain
+unexecuted and sometimesunreachable.0model/targetcalls,noactivejob/defaultchange/
+v11integration/automaticVR16;VR14frozenpreserved. See [[concept-template-query-direction]].
+2026-10-30 vr14concepttemplates COMPLETE: user-approved source-only prototype,
+20tests + independent review/freeze. Authored bindings10/16raw vs16/16structured;
+unlabeled census56→67/113bindingtasks,98→131instances,zero relationedges.
+86/131cardinality; structuredarmsidentical, task51replacementdomainunknown.
+No demonstrated relational/efficacygain,0model/targetcalls/canonicaluse;noactivejob,
+defaultchange/v11integration/newtestgen. See [[concept-template-query-direction]].
 2026-10-29 vr9 CPU READY, endpoint BLOCKED404: user-authorized applicability+
 retention repair aftervr8.48CPUchecks/12exactcontrolreplays pass;CPUselected19→24,
 task51zero→4. Expected outputs/final scoring pending,0newcompletions/tokens;
@@ -39,6 +51,13 @@ See [[v85-retrievalhybrid]] for active work root; older stop notice superseded.
 0outstanding requests,3historical unknowns.1094refs remain then scoring.
 Portable checkpoint: trickcatcher_linefacts/handoffs/v85_20261029/README.md.
 Do not restart local inference; older running notices below are superseded.
+
+2026-10-25 v61 terminal: ngrok integrated pilot108responses/6cases and postfreeze scoring complete, independent artifact auditPASS. All18writer hypotheses rejected: intended concept treatment never instantiated. Explicitpattern1/6confirmed, otherfourarms0/6; not concept-efficacy evidence. See [[v61-pathfault-integrated]] and `analysis/v57_completion/RESULTS_V61.md`. Sparse scheduled callback handled, no owned job remains active.
+
+2026-10-25 terminal pathfault (supersedes launch below): v63 continuation complete/audited108responses, fivearms pattern1/6confirmed others0/6.14admitted/57nativewitnesses but hypothesis semantics weak, no conceptgain; actual447667tokens. Scorerlabels provisional, noactiveownedjobs/observer. Read [[v63-scopeguard]].
+
+2026-10-25 latest pathfault: v62 writer contract works14/18admitted but case85empty-scope verifier crashed. Reviewed v63 isolated continuation launched01:21UTC, reusing6writers/5checkpoints; remainingarms pending.30min observer, no efficacy verdict. See [[v63-scopeguard]].
+
 Setting = TrickCatcher EvalPlus: LLM-written PUTs pass the HumanEval base tests but are buggy; the generator gets
 spec (docstring) + PUT code + base tests and must write assertions that reveal the bug. Model: Qwen2.5-Coder-7B-Instruct
 (fp16, vLLM 0.7.3) served from the user's Kaggle notebook through ngrok (see [[working-rules]] for how to use it).
@@ -170,6 +189,21 @@ No automatic retry/substitution; see [[astra-concept-agent-diagnostic]], RESULTS
 semantic correctness/utility not yet reviewed, latercalls running. No duplicate
 launch/treatmentrepair. Quota81%, stop<=15, terminalcallback queues originalthread
 for all8×3 postfreezeaudit/costs. See [[astra-concept-agent-diagnostic]].
+
+2026-10-21 focused prior-work comparison requested by user COMPLETE: KITE,
+ReProAgent, UnitCon and RTED method/source review with supplementary novelty checks.
+Generic RCA/trigger/test/feedback/hypothesis discrimination cannot be claimed new.
+Conditional proposal focuses semantic validation and adaptive queries, reusing v40
+mechanism diagnostic rather than another chain. Latest v41 CPU no-go incorporated;
+no new inference/reproduction/benchmark in this research task. Read
+[[concept-priorwork-proposal]] and linked final report before proposing more work.
+
+2026-10-21 user grants autonomous concept-research follow-through. Saved-data audit
+of complete v40retry3 (72responses,65acceptedturns) and v41 now gives **no-go** for
+the proposed concept/adaptive package: all3arms discover same4/4 unsupplied-witness
+episodes, CA has concrete semantic retention/revision failures. No D2, larger run
+or training launched. See [[concept-research-autonomy]]; owner lifecycle reports
+remain untouched and no new model/native execution was needed for this decision.
 
 
 2026-10-21 v40 retry3 terminal COMPLETE/REVIEWED supersedes running status.72/72

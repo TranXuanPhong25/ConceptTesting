@@ -1,0 +1,58 @@
+{
+  "rank": 86,
+  "title": "Improving Retrieval-Augmented Deep Assertion Generation via Joint Training",
+  "fulltext_read": true,
+  "read_path": "papers/improving-retrieval-augmented-deep-assertion-generation-via-joint-training-b9fc61d5/public_evidence/paper_fulltext.txt",
+  "read_sha256": "eeed171c68d94648c3d1e8f7ba970c4b5b0f535dc9ae09aa051b1eb9ee0b6612",
+  "read_source": "https://arxiv.org/html/2502.10696v2 (24 February 2025; final TSE article DOI 10.1109/TSE.2025.3545970; full 13,872-word extraction)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Data_old: 156,760 Java focal-test/assertion TAP samples; held-out test set has 15,676 examples.",
+    "Data_new: 265,420 TAP samples, extending Data_old with 108,660 examples containing previously unknown assertion tokens; held-out test set has 26,542 examples.",
+    "Defects4J: 835 bugs across 17 Java projects are used in a separate realistic bug-detection experiment. EvoSuite generates test prefixes 10 times per bug; generated assertions are inserted, then tests are run on buggy/fixed versions. AG-RAG detects 41 bugs vs EditAS 21.",
+    "BugsInPy and SWT-Bench are not used. The main task is assertion completion on existing focal-test prefixes, not issue-report-conditioned reproduction or root-cause localization."
+  ],
+  "task": "Given an existing Java focal method plus a test prefix without assertion, retrieve similar test-assert pairs and generate the expected assertion. AG-RAG jointly trains a dense CodeT5-based retriever and retrieval-augmented encoder-decoder generator. A separate Defects4J evaluation plugs generated assertions into EvoSuite prefixes and counts fail-before-fix/pass-after-fix bug detections.",
+  "input_setting": "Assertion-only completion: focal-test context and retrieved TAP examples are input; the exact assertion text is the primary target. For Defects4J, EvoSuite supplies the test prefix, the model fills an assertion, and the assembled test is run against buggy/fixed versions. No issue description or root-cause text is provided.",
+  "author_artifact_url": "https://github.com/iSEngLab/AG-RAG",
+  "author_relationship_evidence": "Paper reference [20] explicitly links the AG-RAG project website to `github.com/iSEngLab/AG-RAG`. The repository title/README matches the paper and contains RQ1–RQ3 training/evaluation scripts, old/new dataset archive, baseline outputs, generated predictions, evaluator, and CodeT5/CodeBERT/GraphCodeBERT/UniXcoder implementations.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "Author repository master HEAD checked at `47d69677e371209d9b6665ae879df3708886b1bb` (last commit 2025-02-15; repo last updated 2025-05-22). GitHub API tree has 154 entries, including `dataset.tar.gz` (74,369,230 bytes), RQ1–RQ3 source, result/gold/prediction files, `run.py`, `model.py`, argument configs, and train/test shell scripts. Static-inspected README, requirements, CodeT5 model, args, training/inference loop and run script. No repository LICENSE file/GitHub license metadata; no source code executed.",
+  "license": "Paper: CC BY 4.0. GitHub repo has no LICENSE file and GitHub API reports no software license; source/data reuse permissions are therefore unclear. README links a separate Google Drive folder for fine-tuned checkpoints, but access and checkpoint contents were not verified.",
+  "exact_models": [
+    "Primary AG-RAG: CodeT5-base (220M parameters) as joint encoder retriever + encoder-decoder generator; two RTX 4090 GPUs, Ubuntu 20.04; top-5 retrieved TAPs, batch size 8, up to 20 epochs, beam size 10.",
+    "RQ3: CodeBERT, GraphCodeBERT and UniXcoder.",
+    "Additional model experiment: CodeLlama-7B with CodeT5 retriever, 8-bit quantization and LoRA adapter; this variant does not use joint training and retrieves one exemplar.",
+    "The paper does not use the user's Qwen2.5-Coder-7B model."
+  ],
+  "weights_status": "The GitHub repository does not contain trained checkpoints in its tree; README points to a Google Drive folder for fine-tuned model downloads, not verified in this audit. Base CodeT5/other PLMs are publicly downloadable. Model implementation is explicitly based on T5 encoder-decoder classes, so the user's decoder-only Qwen2.5-Coder-7B is not a drop-in AG-RAG backbone. Adapting it would require substantial architecture/pipeline changes; no such work performed.",
+  "evaluation_route": "Read the full 13,872-word arXiv v2, including methods, both datasets, all RQs, Defects4J experiment, threats and references; SHA-256 above. AG-RAG reports 64.59% exact accuracy on Data_old and 56.33% on Data_new, vs EditAS 53.46% / 44.36%. On the separate 835-bug Defects4J test-prefix experiment, AG-RAG detects 41 bugs vs EditAS 21. Training 10 epochs on Data_old takes about 29.22 hours with the joint retriever on two RTX 4090s; CodeT5 direct fine-tuning takes about 18.59 hours. Repository has scripts/results and a 74 MB dataset archive; test can be re-scored with published metrics. README's dataset extraction command is written `tar -xzcf dataset.tar.gz`, which appears to combine extract/create flags and should be checked. A CodeT5/CodeLlama reproduction is conditional on dependencies/checkpoint access; evaluating the user's Qwen would not be a drop-in run because the model is T5-specific. No code/model run.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The public GitHub repo has no explicit software license, so code reuse terms are unclear even though it is viewable and contains substantive scripts/data/results.",
+    "Fine-tuned model checkpoints are linked from Google Drive but not present in the repository and were not accessed; exact checkpoint identities/hashes remain unverified.",
+    "AG-RAG's custom model class is CodeT5/T5 encoder-decoder-specific. The user's Qwen2.5-Coder-7B is decoder-only and cannot be used as a direct drop-in without adapting/reimplementing the architecture (not performed).",
+    "Full retraining is expensive (about 29.22 hours for 10 AG-RAG epochs on two RTX 4090 GPUs) and requires legacy PyTorch/Transformers/CUDA-compatible dependencies.",
+    "The full Data_old/Data_new benchmark split is inherited from prior work; the paper specifies an 8:1:1 split but does not establish a project-disjoint split, leaving potential within-project leakage.",
+    "Main metrics are exact assertion match/BLEU/CodeBLEU. The Defects4J fault experiment provides useful F2P evidence but does not label or evaluate causal root-cause reasoning."
+  ],
+  "concept_fit": "High for oracle/assertion quality and Defects4J bug detection. It directly studies expected-output assertions and shows that better retrieval can improve real-bug detection when combined with generated test prefixes. It is complementary to concept-guided test generation but does not perform issue-to-test generation, root-cause localization, or requirements-driven diagnosis.",
+  "recommendation": "Promote as a strong Defects4J assertion/oracle comparator with a substantial public experimental repository and cached outputs. It is suitable for source/data/result analysis and CodeT5-based reproduction if checkpoints/dependencies can be recovered. It is not an easy direct evaluation of the user's Qwen2.5-Coder model: the method is T5 encoder-decoder-specific, and the CodeLlama extension is a distinct non-joint-training variant. The GitHub code has no declared license; resolve that before reuse. Use the 41-vs-21 Defects4J bug-detection result as oracle-quality context, not as evidence of root-cause analysis. No code/model run.",
+  "citations": [
+    "https://arxiv.org/abs/2502.10696",
+    "https://doi.org/10.1109/TSE.2025.3545970",
+    "https://github.com/iSEngLab/AG-RAG/tree/47d69677e371209d9b6665ae879df3708886b1bb"
+  ],
+  "supporting_locations": [
+    "Paper Sections III–IV: dense retrieval, retrieval-augmented generation, joint training, Data_old/Data_new split and CodeT5 training setup.",
+    "Paper Tables II–V: 64.59%/56.33% AG-RAG exact assertion accuracy, EditAS comparison, joint-training and alternate-PLM ablations.",
+    "Paper Discussion: Defects4J evaluation uses EvoSuite prefixes and 835 bugs/17 projects; AG-RAG detects 41 bugs versus EditAS 21.",
+    "Paper Threats: metrics primarily exact match/BLEU/CodeBLEU; dynamic bug detection only added for Defects4J; model leakage and benchmark scope discussed.",
+    "Author GitHub repo contains dataset.tar.gz, RQ1–RQ3 scripts, predictions/results, model implementation and train/test commands; no LICENSE is present.",
+    "README links Google Drive fine-tuned checkpoints; public access/contents not checked."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

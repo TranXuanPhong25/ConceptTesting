@@ -1,0 +1,53 @@
+{
+  "rank": 30,
+  "title": "Bigger Is Not Always Better: Performance and Sustainability Trade-Offs in LLMs for Python Bug-Fixing Tasks",
+  "fulltext_read": true,
+  "read_path": "papers/bigger-not-better/public_evidence/paper-official.txt",
+  "read_sha256": "27ad4c24d81c7ddd7667fba7dd99fcb05ffd1bd8fd05c93aae32447b7b33e0b7",
+  "read_source": "https://drops.dagstuhl.de/storage/00lipics/lipics-vol394-esem2026/LIPIcs.ESEM.2026.34/LIPIcs.ESEM.2026.34.pdf",
+  "dataset_use_verified": true,
+  "datasets": [
+    "BugsInPy40selectedbugs;paperbalancedanalysis35bugs/6models/10runs=2100runs",
+    "Publicresults40.csv2401rows/7modelIDs;selected_bugs.json40IDsbutdifferentproject/subsetthanresults"
+  ],
+  "task": "localizedfunction/classblockprogramrepairandGPUenergymeasurement",
+  "input_setting": "Buglocation/blockgiven;fixedzero-shotpromptrequestscompletereplacementblock;pytestoutcomesusedforplausiblecorrectness. Not test/oracle generation.",
+  "author_artifact_url": "https://github.com/syedfakhar25/empirical-llm-bugfix-benchmark",
+  "author_relationship_evidence": "PublisherSupplementaryMaterialandPDFfirstpageexplicitlylinkthisrepo;paperDataAvailabilityadditionallynamesesem2026-ai-study/empirical-llm-bugfix-study,bothpublicandsubstantivelymatching.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "e3cc68f625c69eacd334437f1c9c1343aae6b348;publisherSWHdirectorye2f5ea38e5e8b633db8ef0baf818d58b194468a9;secondrepoHEADb88be6298829f326509e1a831a009ecd9b6bc865",
+  "license": "No project-levelLICENSEverified;GitHubnull.PaperCC-BY4.0separate.",
+  "exact_models": [
+    "Qwen/Qwen2.5-Coder-1.5B",
+    "stabilityai/stablecode-3b",
+    "deepseek-ai/deepseek-coder-6.7b-instruct",
+    "bigcode/starcoder2-7b",
+    "codellama/CodeLlama-13b-Instruct-hf",
+    "bigcode/starcoder2-15b"
+  ],
+  "weights_status": "No fine-tuningneeded;publicHFmodelIDsverifiedinCSV/source,noimmutableHFrevisionsorweightsdownloadchecked. CurrentinferenceFP16GPU,512inputtokens,1000maxnewtokens,do_sample=False.",
+  "evaluation_route": "Authorrun_experiment.py->run_llm.py->blockinsertion->bugspecific/fullpytest;V10032GB,128GBRAMpaper;NVML0.1secondpowerintegration;CSV/notebookforofflineanalysis. Static/dataauditonly.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "Noauthorevaluator/modelrun",
+    "Currentrun_experiment.pystripsMarkdown/dedents/extractsASTblockcontrarytopaperpolicyofnotcleaningoutputs",
+    "CurrentGPUenergysubtracts5secondidleENERGYfromgenerationENERGYwithoutrescalingbaselinebygenerationduration;notduration-normalizedidlepowercorrection",
+    "do_sample=Falsemakes10repeatsdeterministicconditionalonhardware;nosamplingdiversityclaim",
+    "Publicmanifest40IDsnotmatching9projectresults;balanced35bug/2100runselectionneedsreconstructionfromCSV/notebook",
+    "CurrentCSV2401rowswith7modelsandmissing/duplicatebug-modelruns;cannotassumepaperbalancedtablefromallrows",
+    "Nopinneddependencyenvironmentorprojectlicense;largelegacyBugsInPydependencysetup",
+    "Passingsuppliedtestmeansplausiblepatch,notsemanticcorrectness;localizedblockscopeexcludesrepositoryrepair"
+  ],
+  "concept_fit": "Lowdirecttestconceptfit;usefulBugsInPyexecutionharnessandbudget/modelcostsupport,withknownfaultlocations.",
+  "recommendation": "SupportingAPR/compute-costpaper,notcoreconcept-guidedtestgenerationbase. SmalloriginalmodelsandpublicCSVareuseful,butresolveartifact/paperandenergymeasurementdiscrepanciesfirst.",
+  "citations": [
+    "https://doi.org/10.4230/LIPIcs.ESEM.2026.34",
+    "https://github.com/syedfakhar25/empirical-llm-bugfix-benchmark/tree/e3cc68f625c69eacd334437f1c9c1343aae6b348",
+    "https://github.com/esem2026-ai-study/empirical-llm-bugfix-study",
+    "https://doi.org/10.4230/artifacts.28073"
+  ],
+  "reviewed_at": "2026-10-15T10:24:50.020166+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}

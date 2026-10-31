@@ -1,0 +1,52 @@
+{
+  "rank": 52,
+  "title": "How Does Killing Surviving Mutants Help Detect Real Bugs with Assertion Generation? A Controlled Experiment",
+  "fulltext_read": true,
+  "read_path": "papers/how-does-killing-surviving-mutants-help-detect-real-bugs-with-assertion-gen-4376685d/public_evidence/paper_fulltext.txt",
+  "read_sha256": "1d2f3a46880b83a58bb7c97d8b6b389031de7ab0724fd8a5bc9d6ec6a1affcf1",
+  "read_source": "https://superhangdu.com/publications/issta-26/ISSTA26.pdf (official first-author publication page; full 24-page PDF)",
+  "dataset_use_verified": true,
+  "datasets": [
+    "Defects4J 3.0.1: paper states 854 bugs/17 subjects in corpus; after excluding Mockito and Closure, studies 642 real-bug versions across 15 subjects. The controlled mutant analysis focuses on 104 bugs with revealability gaps."
+  ],
+  "task": "Controlled empirical study of whether targeted assertion augmentation to kill surviving Major mutants helps reveal Defects4J real bugs; compares fault-derived and mutation-derived assertions and models random mutant-killing budgets.",
+  "input_setting": "Remove developer triggering tests to construct bug-ignorant suite T; generate Major mutants on fixed version; use passing tests and compare state collected on fixed vs mutant versions; add one localized assertion and validate it passes fixed/fails faulty. For real-bug analysis, directly compare fixed and buggy versions. Not issue-report input, root-cause localization, or LLM test generation.",
+  "author_artifact_url": "https://github.com/spideruci/Defects4j_for_Coupling_Effect_Analysis_Through_Killing_Surviving_Mutants; paper cites Zenodo DOI 10.5281/zenodo.21328338; GitHub README links prebuilt Docker example archive DOI 10.5281/zenodo.21013232.",
+  "author_relationship_evidence": "First author official publication page lists the paper and links its PDF. Paper data-availability section names the artifact repository; repository README identifies itself as the ISSTA 2026 paper artifact and says it extends Defects4J 3.0.1. README documents source locations, datasets, generated assertions, Docker example, and CI workflows. GitHub LICENSE attributes copyright to the paper authors and contains MIT permission terms.",
+  "public_source_checked": true,
+  "source_status": "public_implementation",
+  "source_commit_or_archive": "Public author repository default branch master checked 2026-10-15 (mutable; exact commit SHA not independently resolved). Substantive code in framework/bin, SourceCodeInstrumentation, observerForSpecification, state_utils, mutation_testing_utils, plus Dockerfile and CI. MIT license. Author README links reproducible Cli-2 Docker archive (2.3 GB) and describes CI for Cli-2 and Lang-6b.",
+  "license": "Paper CC BY 4.0. Author repo LICENSE: MIT. Dataset/Zenodo package-specific license not independently verified.",
+  "exact_models": [
+    "No learned model or LLM. Deterministic fault-based assertion augmentation; Major mutation operators; ASM instrumentation; JavaParser AST rewriting."
+  ],
+  "weights_status": "Not applicable.",
+  "evaluation_route": "Read all 14,945 extracted words from the 24-page official author PDF, including all main sections, threats, conclusion, data-availability and references (text SHA-256 recorded). Paper reports 1,177 total experimental hours across three machines. Defects4J 3.0.1, 642 bugs/15 subjects; Major eight operators. 104 revealability-gap bugs yield 13,266 direct bug assertions; 11,832 relevant surviving mutants, of which 3,742 (31.63%) are assertion-killable; 63/104 bugs detectable through mutant-derived assertions. At 30% randomly selected mutant-killing intensity, modeled mean detection probability 84.5% among those 63. Official author README now documents a single-project Docker route and CI smoke/e2e examples, while warning that it does not rerun the full study. No local source execution or reproduction.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "The full study is expensive (paper reports approximately 1,177 hours; README says full experiment nearly two months). The artifact documents small per-bug runs and CI, making a smoke reproduction feasible, but full 642-bug rerun is not a quick replication.",
+    "Repository master is mutable and no immutable paper release commit was confirmed in this check.",
+    "Paper cites Zenodo DOI 10.5281/zenodo.21328338; current README documents Docker example archive DOI 10.5281/zenodo.21013232. The exact Zenodo package set corresponding to the full paper archive and data license still needs direct record resolution.",
+    "Scope is explicitly assertion augmentation for revealability gaps: 104/642 bugs; 538 remaining bugs were reachability/infection-propagation cases outside this technique. Does not test issue-report-to-root-cause reasoning or LLM-generated tests.",
+    "No author source was run; local reproduction remains false."
+  ],
+  "concept_fit": "High for behavioral oracle and fault-effect analysis on Defects4J: identifies revealability gaps, maps runtime-state differences to localized assertions, validates fixed-pass/buggy-fail behavior, and analyzes which mutation-induced states overlap with real-bug effects. Useful mechanistic explanation and evaluation protocol for oracle strength/root-cause-related assertions. It does not generate tests from issue reports or classify semantic root causes, and should not be presented as SWT-Bench/BugsInPy issue reproduction.",
+  "recommendation": "Select as the strongest source-backed Defects4J oracle/assertion comparator in this audit so far. Public author code, MIT license, documented Docker/CI and small examples make a smoke rerun/reanalysis feasible; full-study reproduction remains heavy. Use its revealability-gap framing and mutation-vs-real fault state overlap analysis to design root-cause/behavioral oracle metrics, but pair with an issue-level BRT paper for root-cause handoff. No code or model was run.",
+  "citations": [
+    "https://superhangdu.com/publications/",
+    "https://superhangdu.com/publications/issta-26/ISSTA26.pdf",
+    "https://github.com/spideruci/Defects4j_for_Coupling_Effect_Analysis_Through_Killing_Surviving_Mutants",
+    "https://doi.org/10.5281/zenodo.21328338"
+  ],
+  "supporting_locations": [
+    "Full text SHA-256 1d2f3a46880b83a58bb7c97d8b6b389031de7ab0724fd8a5bc9d6ec6a1affcf1; all 1,440 text lines (14,945 words) read in consecutive chunks across pages 1–24, including references.",
+    "Sections 3–4: localized state-difference assertions and controlled random mutant-killing model; Sections 5–6: Defects4J 3.0.1 setup and RQ1–RQ5 results.",
+    "Section 5 reports 1,177 hours total across Apple M4, Apple M1 Pro and Intel i7-950; 642 studied bugs after excluding Mockito and Closure.",
+    "Sections 6–8: 104 revealability-gap bugs; 63 detectable via mutation-derived assertions; 84.5% mean modeled detection at 30% killing; validity scope limited to assertion augmentation.",
+    "Official author GitHub README confirms Defects4J extension, source directories, generated data, CLI-2 Docker example, and CI examples for Cli-2/Lang-6b.",
+    "GitHub LICENSE text is MIT; paper states CC BY 4.0. Zenodo DOI mismatch/record identity remains unresolved."
+  ],
+  "reviewed_at": "2026-10-15",
+  "review_complete": true,
+  "locally_reproduced": false
+}

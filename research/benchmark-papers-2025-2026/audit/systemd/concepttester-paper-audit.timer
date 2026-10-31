@@ -1,0 +1,12 @@
+[Unit]
+Description=Resume paper audit at 02:20 and 07:20 Vietnam time
+
+[Timer]
+OnCalendar=*-*-* 02:20:15 Asia/Ho_Chi_Minh
+OnCalendar=*-*-* 07:20:15 Asia/Ho_Chi_Minh
+AccuracySec=1s
+Persistent=true
+Unit=concepttester-paper-audit.service
+
+[Install]
+WantedBy=timers.target

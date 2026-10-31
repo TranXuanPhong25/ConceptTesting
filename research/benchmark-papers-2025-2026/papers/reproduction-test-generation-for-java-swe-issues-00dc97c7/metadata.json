@@ -1,0 +1,40 @@
+{
+  "openalex_id": "https://openalex.org/W7160497577",
+  "title": "Reproduction Test Generation for Java SWE Issues",
+  "year": 2026,
+  "publication_date": "2026-05-05",
+  "type": "preprint",
+  "doi": "https://doi.org/10.48550/arxiv.2605.04320",
+  "primary_url": "https://doi.org/10.48550/arxiv.2605.04320",
+  "pdf_url": "https://arxiv.org/pdf/2605.04320",
+  "venue": "arXiv (Cornell University)",
+  "discovery_queries": [
+    "Defects4J",
+    "SWT-Bench"
+  ],
+  "discovery_score": 22,
+  "dataset_use_verified": true,
+  "artifact_verified": true,
+  "model_verified": true,
+  "verification_status": "fulltext_and_public_benchmark_evaluator_verified",
+  "year_venue": "2026 arXiv preprint, version 2 dated 2026-05-07; manuscript CC BY 4.0",
+  "datasets": [
+    "TDD-Bench-Java: 250 Java issue-reproduction tasks across 13 repositories, derived from Java samples in Multi-SWE-bench and SWE-PolyBench",
+    "Proprietary IBM Java dataset: 150 issues, not public",
+    "SWT-Bench/TDD-Bench-Verified are related Python benchmarks; Defects4J only related work"
+  ],
+  "models": [
+    "Claude-Sonnet-4.5",
+    "GPT-5.2"
+  ],
+  "artifact_url": "https://github.com/IBM/TDD-Bench-Verified/tree/main/TDD-Bench-Java",
+  "license": "Apache-2.0 public benchmark/evaluator repository; CC BY 4.0 article; upstream repositories retain their own licenses",
+  "input_setting": "Issue description + pre-fix Java repository; hide the code fix at generation time; score test patches on pre-fix/fixed versions with fail-to-pass",
+  "reproduction_grade": "B",
+  "concept_hook": "Issue-to-test behavioral oracle, directly checked by a pre-fix fail / post-fix pass",
+  "limitation": "Paper generator code is proprietary; exact Claude/GPT revisions are not pinned; no causal root-cause labels; no Defects4J/BugsInPy/SWT-Bench experiment",
+  "rank": 98,
+  "family": "reproduction_candidate",
+  "scope_group": "unverified_candidates",
+  "notes_path": "papers/reproduction-test-generation-for-java-swe-issues-00dc97c7/NOTES.md"
+}

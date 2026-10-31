@@ -1,0 +1,45 @@
+{
+  "rank": 43,
+  "title": "Large Language Models for Unit Test Generation: Achievements, Challenges, and Opportunities",
+  "fulltext_read": true,
+  "read_path": "papers/large-language-models-for-unit-test-generation-achievements-challenges-and--fd53598c/public_evidence/paper_fulltext.txt",
+  "read_sha256": "67c0e08723c0a09da7ca0e76726a6688a0e09b0350da7195152062ebe78d2cf6",
+  "read_source": "https://arxiv.org/html/2511.21382v3",
+  "dataset_use_verified": false,
+  "datasets": [
+    "Systematic literature review/mapping study; 178 publications selected through 31 July 2026. No new test-generation benchmark or Defects4J/SWT experiments are performed by this survey."
+  ],
+  "task": "Lifecycle-oriented systematic review of LLM-based unit test generation, from context and input/prefix construction through oracles, validation, repair, optimization, and maintainability.",
+  "input_setting": "Secondary study; reviews publication full texts and aggregates methods/evaluation practices; no generation model input or original test-generation system.",
+  "author_artifact_url": "https://anonymous.4open.science/r/csur_utgen-3F52",
+  "author_relationship_evidence": "Paper states an anonymous replication package provides search queries, execution dates, counts, and logs; retrieval metadata lists this repository candidate. Current unauthenticated 4Open route returns 401 not_connected, and git endpoint returns repository-not-found; no source files were accessible.",
+  "public_source_checked": true,
+  "source_status": "restricted",
+  "source_commit_or_archive": "No downloadable or Git-based snapshot verified. The anonymous 4Open candidate is inaccessible (HTTP 401 not_connected; git ls-remote reports repository not found).",
+  "license": "arXiv manuscript; no separate software/data license verified because the replication package is inaccessible.",
+  "exact_models": [
+    "Not applicable; survey covers 178 studies and does not train or evaluate an original model."
+  ],
+  "weights_status": "Not applicable.",
+  "evaluation_route": "Full 23,333-word arXiv v3 text read. Survey reports 14,785 initial search hits, 6,536 unique candidates, 495 retrieval candidates, and 178 included publications. It uses 11 quality criteria (QC1–QC8 must each score 2, total ≥18/22), two-author independent screening, 60-study extraction audit and independent classification on 20 studies. The 2026 corpus cutoff is 31 July; searches were run on 18 August 2026. Anonymous artifact intended to provide exact queries/counts/logs but was inaccessible. No code/model calls or original experiments.",
+  "reproduction_verdict": "conditional",
+  "blockers": [
+    "This is a survey, so there is no algorithm/model to reproduce or evaluate directly.",
+    "The anonymous replication package with search queries, logs, extraction and count records is inaccessible at current URL (401 not_connected); independently rerunning the systematic search would require reconstructing its databases and screening protocol.",
+    "It is a fast-moving literature map through 31 July 2026; later publications are outside its cutoff and findings are secondary synthesis, not direct experimental results."
+  ],
+  "concept_fit": "High as a taxonomy and prioritization guide: distinguishes test construction (context/input/prefix/oracle) from quality assurance (execution, repair, coverage/mutation and selection) and stresses that executability/coverage do not prove oracle correctness or fault detection. No causal root-cause benchmark.",
+  "recommendation": "Use this survey to organize related work and to identify primary papers, not as a reproducible baseline. Its strongest implication for our project is to keep coverage, pass rate, oracle validity and real bug detection as separate outcomes, with explicit resource/model version accounting. The author’s underlying search package is currently inaccessible.",
+  "citations": [
+    "https://arxiv.org/html/2511.21382v3",
+    "https://anonymous.4open.science/r/csur_utgen-3F52"
+  ],
+  "supporting_locations": [
+    "Full text SHA-256 67c0e08723c0a09da7ca0e76726a6688a0e09b0350da7195152062ebe78d2cf6; sections 1–9 and references read.",
+    "Sections 3.1–3.5 describe review pipeline and quality screen; sections 4–6 cover test construction/QA taxonomy, challenges and opportunities.",
+    "Artifact access outcome recorded in public_evidence/source-audit.json."
+  ],
+  "reviewed_at": "2026-10-15T12:32:00+07:00",
+  "review_complete": true,
+  "locally_reproduced": false
+}
