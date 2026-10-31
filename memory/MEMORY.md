@@ -1,3 +1,4 @@
+- [Git artifact hygiene](git-artifact-hygiene.md) — ignore downloads/cache/logs/local tools; preserve source/reports and all local checkpoints
 - [VR11/VR13 binder + VR12 expansion](vr11-vr13-binding-vr12-expansion.md) — VR12 complete11,ref9/9/9/8;39calls;all scores verified pinned3.11,audit mismatch was Unicode/runtime drift
 - [VR9 applicability repair](vr9-applicability.md) — COMPLETE6/4arms;ref6/6R1ceiling;retention19→24/exposure2→1;5calls3742tokens,no promotion
 - [VR10 V7 dense diagnostic](vr10-retrieval-diagnostic.md) — NO_GO;12tasks/28queries/117blindedbindings,0new supported dense wins;no integration
