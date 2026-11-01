@@ -1,8 +1,0 @@
-# @after 4
-import os
-version = os.environ['VERSION']
-# @after 8
-# only bugs we actually checked out
-buggy_fix_info_dirs = [d for d in buggy_fix_info_dirs if os.path.isdir(os.path.join(proj_base_dir, os.path.basename(os.path.dirname(d)), version))]
-print(len(buggy_fix_info_dirs), 'bugs with checkout')
-os.makedirs('data/prompts/rq1', exist_ok=True)

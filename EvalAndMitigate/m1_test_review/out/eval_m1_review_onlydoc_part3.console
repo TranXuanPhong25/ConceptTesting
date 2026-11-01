@@ -1,24 +1,0 @@
-/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language.build_library is deprecated. Use the new bindings instead.
-  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
-/venv/lib/python3.12/site-packages/tree_sitter/__init__.py:36: FutureWarning: Language(path, name) is deprecated. Use Language(ptr, name) instead.
-  warn("{} is deprecated. Use {} instead.".format(old, new), FutureWarning)
-/repo
-Current PATH: /venv/bin:/defects4j/framework/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-Updated PATH: /defects4j/framework/bin:/venv/bin:/defects4j/framework/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-Total items in data: 21
-17
-Logging to file: /repo/data/rq1/logs/Gemini-2-5-flash_gen_test_evaluate_buggy_gen_test_non_private_or_default_m1_review_onlydoc_part3_log_1.log
-Processing items:   0%|          | 0/21 [00:00<?, ?item/s]Processing Lang_45_buggy:   0%|          | 0/21 [00:00<?, ?item/s]Pre-test compiling Lang_45_buggy:   0%|          | 0/21 [00:01<?, ?item/s]Pre-test compiling buggy Lang_45_buggy:   0%|          | 0/21 [00:02<?, ?item/s]Compiling tests of Lang_45_buggy:   0%|          | 0/21 [00:04<?, ?item/s]      Running tests of Lang_45_buggy:   0%|          | 0/21 [00:25<?, ?item/s]  Running buggy tests of Lang_45_buggy:   0%|          | 0/21 [00:57<?, ?item/s]Running buggy tests of Lang_45_buggy:   5%|▍         | 1/21 [01:11<23:53, 71.70s/item]Processing Lang_46_buggy:   5%|▍         | 1/21 [01:11<23:53, 71.70s/item]            Pre-test compiling Lang_46_buggy:   5%|▍         | 1/21 [01:12<23:53, 71.70s/item]Pre-test compiling buggy Lang_46_buggy:   5%|▍         | 1/21 [01:13<23:53, 71.70s/item]Compiling tests of Lang_46_buggy:   5%|▍         | 1/21 [01:13<23:53, 71.70s/item]      Compiling tests of Lang_46_buggy:   5%|▍         | 1/21 [01:25<28:26, 85.34s/item]
-Traceback (most recent call last):
-  File "/repo/run/out/eval_m1_review_onlydoc_part3.py", line 1477, in <module>
-    new_res = compile_and_test(
-              ^^^^^^^^^^^^^^^^^
-  File "/repo/utils/cal_rate.py", line 38, in compile_and_test
-    execute_res = check_test(bug_id, test_class_sig,jacoco_report_base, compile_res["buggy_pass"])
-                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/repo/utils/d4j_utils.py", line 1096, in check_test
-    buggy_res = _test_and_collect_results(buggy_dir, target_bz_file=bz_file_path)
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/repo/utils/d4j_utils.py", line 791, in _test_and_collect_results
-    os.chdir(cur_dir)
-FileNotFoundError: [Errno 2] No such file or directory: '/repo/d4j_proj_base/Lang_45/fixed'

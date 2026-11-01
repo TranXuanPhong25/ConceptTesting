@@ -1,262 +1,0 @@
-#0 building with "desktop-linux" instance using docker driver
-
-#1 [internal] load build definition from Dockerfile.pilot
-#1 transferring dockerfile: 762B done
-#1 DONE 0.0s
-
-#2 [internal] load metadata for docker.io/library/dfuzz:arm64
-#2 DONE 0.1s
-
-#3 [internal] load .dockerignore
-#3 transferring context: 2B done
-#3 DONE 0.0s
-
-#4 [1/4] FROM docker.io/library/dfuzz:arm64@sha256:d0286e467f769a0e1dd6cb23d288b837dc01a6457439809517db5a6d9047d976
-#4 resolve docker.io/library/dfuzz:arm64@sha256:d0286e467f769a0e1dd6cb23d288b837dc01a6457439809517db5a6d9047d976 done
-#4 DONE 0.0s
-
-#5 [2/4] RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
-#5 1.026 Get:1 http://ports.ubuntu.com/ubuntu-ports jammy InRelease [270 kB]
-#5 2.579 Get:2 http://ports.ubuntu.com/ubuntu-ports jammy-updates InRelease [128 kB]
-#5 2.960 Get:3 http://ports.ubuntu.com/ubuntu-ports jammy-backports InRelease [127 kB]
-#5 3.339 Get:4 http://ports.ubuntu.com/ubuntu-ports jammy-security InRelease [129 kB]
-#5 3.730 Get:5 http://ports.ubuntu.com/ubuntu-ports jammy/multiverse arm64 Packages [224 kB]
-#5 3.906 Get:6 http://ports.ubuntu.com/ubuntu-ports jammy/universe arm64 Packages [17.2 MB]
-#5 9.312 Get:7 http://ports.ubuntu.com/ubuntu-ports jammy/main arm64 Packages [1758 kB]
-#5 9.390 Get:8 http://ports.ubuntu.com/ubuntu-ports jammy/restricted arm64 Packages [24.2 kB]
-#5 9.392 Get:9 http://ports.ubuntu.com/ubuntu-ports jammy-updates/restricted arm64 Packages [8296 kB]
-#5 11.44 Get:10 http://ports.ubuntu.com/ubuntu-ports jammy-updates/universe arm64 Packages [1712 kB]
-#5 12.10 Get:11 http://ports.ubuntu.com/ubuntu-ports jammy-updates/multiverse arm64 Packages [70.2 kB]
-#5 12.10 Get:12 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 Packages [4558 kB]
-#5 13.81 Get:13 http://ports.ubuntu.com/ubuntu-ports jammy-backports/main arm64 Packages [82.5 kB]
-#5 13.81 Get:14 http://ports.ubuntu.com/ubuntu-ports jammy-backports/universe arm64 Packages [33.7 kB]
-#5 13.81 Get:15 http://ports.ubuntu.com/ubuntu-ports jammy-security/multiverse arm64 Packages [63.4 kB]
-#5 13.81 Get:16 http://ports.ubuntu.com/ubuntu-ports jammy-security/universe arm64 Packages [1416 kB]
-#5 13.82 Get:17 http://ports.ubuntu.com/ubuntu-ports jammy-security/main arm64 Packages [4208 kB]
-#5 15.31 Get:18 http://ports.ubuntu.com/ubuntu-ports jammy-security/restricted arm64 Packages [7930 kB]
-#5 17.78 Fetched 48.2 MB in 18s (2752 kB/s)
-#5 17.78 Reading package lists...
-#5 18.80 Reading package lists...
-#5 19.73 Building dependency tree...
-#5 19.97 Reading state information...
-#5 20.16 The following additional packages will be installed:
-#5 20.16   git-man libbrotli1 libcurl3-gnutls liberror-perl libexpat1 libgdbm-compat4
-#5 20.16   libgdbm6 libldap-2.5-0 libnghttp2-14 libperl5.34 libpsl5 librtmp1 libsasl2-2
-#5 20.16   libsasl2-modules-db libssh-4 openssl perl perl-base perl-modules-5.34
-#5 20.16 Suggested packages:
-#5 20.16   gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-email git-gui
-#5 20.16   gitk gitweb git-cvs git-mediawiki git-svn gdbm-l10n perl-doc
-#5 20.16   libterm-readline-gnu-perl | libterm-readline-perl-perl make
-#5 20.16   libtap-harness-archive-perl
-#5 20.16 Recommended packages:
-#5 20.16   patch less ssh-client libldap-common publicsuffix libsasl2-modules netbase
-#5 20.24 The following NEW packages will be installed:
-#5 20.24   ca-certificates git git-man libbrotli1 libcurl3-gnutls liberror-perl
-#5 20.24   libexpat1 libgdbm-compat4 libgdbm6 libldap-2.5-0 libnghttp2-14 libperl5.34
-#5 20.24   libpsl5 librtmp1 libsasl2-2 libsasl2-modules-db libssh-4 openssl perl
-#5 20.24   perl-modules-5.34
-#5 20.24 The following packages will be upgraded:
-#5 20.24   perl-base
-#5 20.80 1 upgraded, 20 newly installed, 0 to remove and 9 not upgraded.
-#5 20.80 Need to get 16.5 MB of archives.
-#5 20.80 After this operation, 74.3 MB of additional disk space will be used.
-#5 20.80 Get:1 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 perl-base arm64 5.34.0-3ubuntu1.9 [1711 kB]
-#5 23.13 Get:2 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 perl-modules-5.34 all 5.34.0-3ubuntu1.9 [2977 kB]
-#5 24.72 Get:3 http://ports.ubuntu.com/ubuntu-ports jammy/main arm64 libgdbm6 arm64 1.23-1 [34.1 kB]
-#5 24.72 Get:4 http://ports.ubuntu.com/ubuntu-ports jammy/main arm64 libgdbm-compat4 arm64 1.23-1 [6294 B]
-#5 24.72 Get:5 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 libperl5.34 arm64 5.34.0-3ubuntu1.9 [4724 kB]
-#5 26.01 Get:6 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 perl arm64 5.34.0-3ubuntu1.9 [232 kB]
-#5 26.05 Get:7 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 openssl arm64 3.0.2-0ubuntu1.30 [1160 kB]
-#5 26.37 Get:8 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 ca-certificates all 20260601~22.04.1 [141 kB]
-#5 26.40 Get:9 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 libexpat1 arm64 2.4.7-1ubuntu0.9 [83.5 kB]
-#5 26.43 Get:10 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 libnghttp2-14 arm64 1.43.0-1ubuntu0.4 [76.2 kB]
-#5 26.45 Get:11 http://ports.ubuntu.com/ubuntu-ports jammy/main arm64 libpsl5 arm64 0.21.0-1.2build2 [58.3 kB]
-#5 26.47 Get:12 http://ports.ubuntu.com/ubuntu-ports jammy/main arm64 libbrotli1 arm64 1.0.9-2build6 [314 kB]
-#5 26.57 Get:13 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 libsasl2-modules-db arm64 2.1.27+dfsg2-3ubuntu1.2 [21.1 kB]
-#5 26.57 Get:14 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 libsasl2-2 arm64 2.1.27+dfsg2-3ubuntu1.2 [55.6 kB]
-#5 26.58 Get:15 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 libldap-2.5-0 arm64 2.5.20+dfsg-0ubuntu0.22.04.1 [182 kB]
-#5 26.63 Get:16 http://ports.ubuntu.com/ubuntu-ports jammy/main arm64 librtmp1 arm64 2.4+20151223.gitfa8646d.1-2build4 [59.2 kB]
-#5 26.65 Get:17 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 libssh-4 arm64 0.9.6-2ubuntu0.22.04.8 [187 kB]
-#5 26.77 Get:18 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 libcurl3-gnutls arm64 7.81.0-1ubuntu1.29 [281 kB]
-#5 26.80 Get:19 http://ports.ubuntu.com/ubuntu-ports jammy/main arm64 liberror-perl all 0.17029-1 [26.5 kB]
-#5 26.81 Get:20 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 git-man all 1:2.34.1-1ubuntu1.17 [954 kB]
-#5 27.08 Get:21 http://ports.ubuntu.com/ubuntu-ports jammy-updates/main arm64 git arm64 1:2.34.1-1ubuntu1.17 [3222 kB]
-#5 28.43 debconf: delaying package configuration, since apt-utils is not installed
-#5 28.46 Fetched 16.5 MB in 8s (2130 kB/s)
-#5 28.48 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 4387 files and directories currently installed.)
-#5 28.50 Preparing to unpack .../perl-base_5.34.0-3ubuntu1.9_arm64.deb ...
-#5 28.51 Unpacking perl-base (5.34.0-3ubuntu1.9) over (5.34.0-3ubuntu1.8) ...
-#5 29.54 Setting up perl-base (5.34.0-3ubuntu1.9) ...
-#5 29.56 Selecting previously unselected package perl-modules-5.34.
-#5 29.56 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 4387 files and directories currently installed.)
-#5 29.56 Preparing to unpack .../00-perl-modules-5.34_5.34.0-3ubuntu1.9_all.deb ...
-#5 29.56 Unpacking perl-modules-5.34 (5.34.0-3ubuntu1.9) ...
-#5 29.81 Selecting previously unselected package libgdbm6:arm64.
-#5 29.81 Preparing to unpack .../01-libgdbm6_1.23-1_arm64.deb ...
-#5 29.81 Unpacking libgdbm6:arm64 (1.23-1) ...
-#5 29.83 Selecting previously unselected package libgdbm-compat4:arm64.
-#5 29.83 Preparing to unpack .../02-libgdbm-compat4_1.23-1_arm64.deb ...
-#5 29.83 Unpacking libgdbm-compat4:arm64 (1.23-1) ...
-#5 29.84 Selecting previously unselected package libperl5.34:arm64.
-#5 29.84 Preparing to unpack .../03-libperl5.34_5.34.0-3ubuntu1.9_arm64.deb ...
-#5 29.85 Unpacking libperl5.34:arm64 (5.34.0-3ubuntu1.9) ...
-#5 30.07 Selecting previously unselected package perl.
-#5 30.08 Preparing to unpack .../04-perl_5.34.0-3ubuntu1.9_arm64.deb ...
-#5 30.08 Unpacking perl (5.34.0-3ubuntu1.9) ...
-#5 30.11 Selecting previously unselected package openssl.
-#5 30.11 Preparing to unpack .../05-openssl_3.0.2-0ubuntu1.30_arm64.deb ...
-#5 30.11 Unpacking openssl (3.0.2-0ubuntu1.30) ...
-#5 30.17 Selecting previously unselected package ca-certificates.
-#5 30.18 Preparing to unpack .../06-ca-certificates_20260601~22.04.1_all.deb ...
-#5 30.18 Unpacking ca-certificates (20260601~22.04.1) ...
-#5 30.24 Selecting previously unselected package libexpat1:arm64.
-#5 30.24 Preparing to unpack .../07-libexpat1_2.4.7-1ubuntu0.9_arm64.deb ...
-#5 30.24 Unpacking libexpat1:arm64 (2.4.7-1ubuntu0.9) ...
-#5 30.27 Selecting previously unselected package libnghttp2-14:arm64.
-#5 30.27 Preparing to unpack .../08-libnghttp2-14_1.43.0-1ubuntu0.4_arm64.deb ...
-#5 30.27 Unpacking libnghttp2-14:arm64 (1.43.0-1ubuntu0.4) ...
-#5 30.28 Selecting previously unselected package libpsl5:arm64.
-#5 30.29 Preparing to unpack .../09-libpsl5_0.21.0-1.2build2_arm64.deb ...
-#5 30.29 Unpacking libpsl5:arm64 (0.21.0-1.2build2) ...
-#5 30.30 Selecting previously unselected package libbrotli1:arm64.
-#5 30.30 Preparing to unpack .../10-libbrotli1_1.0.9-2build6_arm64.deb ...
-#5 30.31 Unpacking libbrotli1:arm64 (1.0.9-2build6) ...
-#5 30.32 Selecting previously unselected package libsasl2-modules-db:arm64.
-#5 30.32 Preparing to unpack .../11-libsasl2-modules-db_2.1.27+dfsg2-3ubuntu1.2_arm64.deb ...
-#5 30.33 Unpacking libsasl2-modules-db:arm64 (2.1.27+dfsg2-3ubuntu1.2) ...
-#5 30.34 Selecting previously unselected package libsasl2-2:arm64.
-#5 30.34 Preparing to unpack .../12-libsasl2-2_2.1.27+dfsg2-3ubuntu1.2_arm64.deb ...
-#5 30.35 Unpacking libsasl2-2:arm64 (2.1.27+dfsg2-3ubuntu1.2) ...
-#5 30.37 Selecting previously unselected package libldap-2.5-0:arm64.
-#5 30.37 Preparing to unpack .../13-libldap-2.5-0_2.5.20+dfsg-0ubuntu0.22.04.1_arm64.deb ...
-#5 30.37 Unpacking libldap-2.5-0:arm64 (2.5.20+dfsg-0ubuntu0.22.04.1) ...
-#5 30.40 Selecting previously unselected package librtmp1:arm64.
-#5 30.40 Preparing to unpack .../14-librtmp1_2.4+20151223.gitfa8646d.1-2build4_arm64.deb ...
-#5 30.40 Unpacking librtmp1:arm64 (2.4+20151223.gitfa8646d.1-2build4) ...
-#5 30.42 Selecting previously unselected package libssh-4:arm64.
-#5 30.42 Preparing to unpack .../15-libssh-4_0.9.6-2ubuntu0.22.04.8_arm64.deb ...
-#5 30.43 Unpacking libssh-4:arm64 (0.9.6-2ubuntu0.22.04.8) ...
-#5 30.45 Selecting previously unselected package libcurl3-gnutls:arm64.
-#5 30.45 Preparing to unpack .../16-libcurl3-gnutls_7.81.0-1ubuntu1.29_arm64.deb ...
-#5 30.45 Unpacking libcurl3-gnutls:arm64 (7.81.0-1ubuntu1.29) ...
-#5 30.48 Selecting previously unselected package liberror-perl.
-#5 30.48 Preparing to unpack .../17-liberror-perl_0.17029-1_all.deb ...
-#5 30.48 Unpacking liberror-perl (0.17029-1) ...
-#5 30.50 Selecting previously unselected package git-man.
-#5 30.50 Preparing to unpack .../18-git-man_1%3a2.34.1-1ubuntu1.17_all.deb ...
-#5 30.51 Unpacking git-man (1:2.34.1-1ubuntu1.17) ...
-#5 30.54 Selecting previously unselected package git.
-#5 30.54 Preparing to unpack .../19-git_1%3a2.34.1-1ubuntu1.17_arm64.deb ...
-#5 30.55 Unpacking git (1:2.34.1-1ubuntu1.17) ...
-#5 30.70 Setting up libexpat1:arm64 (2.4.7-1ubuntu0.9) ...
-#5 30.70 Setting up libpsl5:arm64 (0.21.0-1.2build2) ...
-#5 30.71 Setting up libbrotli1:arm64 (1.0.9-2build6) ...
-#5 30.71 Setting up libnghttp2-14:arm64 (1.43.0-1ubuntu0.4) ...
-#5 30.72 Setting up perl-modules-5.34 (5.34.0-3ubuntu1.9) ...
-#5 30.72 Setting up libsasl2-modules-db:arm64 (2.1.27+dfsg2-3ubuntu1.2) ...
-#5 30.73 Setting up librtmp1:arm64 (2.4+20151223.gitfa8646d.1-2build4) ...
-#5 30.73 Setting up libsasl2-2:arm64 (2.1.27+dfsg2-3ubuntu1.2) ...
-#5 30.73 Setting up libssh-4:arm64 (0.9.6-2ubuntu0.22.04.8) ...
-#5 30.74 Setting up git-man (1:2.34.1-1ubuntu1.17) ...
-#5 30.74 Setting up openssl (3.0.2-0ubuntu1.30) ...
-#5 30.75 Setting up libgdbm6:arm64 (1.23-1) ...
-#5 30.76 Setting up libldap-2.5-0:arm64 (2.5.20+dfsg-0ubuntu0.22.04.1) ...
-#5 30.76 Setting up ca-certificates (20260601~22.04.1) ...
-#5 30.82 debconf: unable to initialize frontend: Dialog
-#5 30.82 debconf: (TERM is not set, so the dialog frontend is not usable.)
-#5 30.82 debconf: falling back to frontend: Readline
-#5 31.09 Updating certificates in /etc/ssl/certs...
-#5 31.40 121 added, 0 removed; done.
-#5 31.42 Setting up libgdbm-compat4:arm64 (1.23-1) ...
-#5 31.42 Setting up libperl5.34:arm64 (5.34.0-3ubuntu1.9) ...
-#5 31.43 Setting up libcurl3-gnutls:arm64 (7.81.0-1ubuntu1.29) ...
-#5 31.43 Setting up perl (5.34.0-3ubuntu1.9) ...
-#5 31.44 Setting up liberror-perl (0.17029-1) ...
-#5 31.45 Setting up git (1:2.34.1-1ubuntu1.17) ...
-#5 31.46 Processing triggers for libc-bin (2.35-0ubuntu3.14) ...
-#5 31.51 Processing triggers for ca-certificates (20260601~22.04.1) ...
-#5 31.51 Updating certificates in /etc/ssl/certs...
-#5 31.72 0 added, 0 removed; done.
-#5 31.72 Running hooks in /etc/ca-certificates/update.d...
-#5 31.72 done.
-#5 DONE 31.9s
-
-#6 [3/4] RUN uv venv -p 3.11 /opt/pilot && uv pip install -p /opt/pilot google-genai openai==0.27.10 cachetools networkx     tree-sitter tree-sitter-cpp pyyaml
-#6 0.684 Downloading cpython-3.11.16-linux-aarch64-gnu (download) (29.7MiB)
-#6 9.669  Downloaded cpython-3.11.16-linux-aarch64-gnu (download)
-#6 9.837 Using CPython 3.11.16
-#6 9.837 Creating virtual environment at: /opt/pilot
-#6 9.965 Using Python 3.11.16 environment at: /opt/pilot
-#6 11.56 Resolved 40 packages in 1.59s
-#6 11.71 Downloading google-genai (1.1MiB)
-#6 11.71 Downloading cryptography (4.5MiB)
-#6 11.71 Downloading pydantic-core (1.9MiB)
-#6 11.79 Downloading networkx (2.0MiB)
-#6 11.79 Downloading aiohttp (1.7MiB)
-#6 14.90  Downloaded google-genai
-#6 15.72  Downloaded aiohttp
-#6 15.87  Downloaded pydantic-core
-#6 15.93  Downloaded networkx
-#6 16.82  Downloaded cryptography
-#6 16.82 Prepared 31 packages in 5.24s
-#6 17.19 Installed 40 packages in 369ms
-#6 17.19  + aiohappyeyeballs==2.7.1
-#6 17.19  + aiohttp==3.14.3
-#6 17.19  + aiosignal==1.4.0
-#6 17.19  + annotated-types==0.8.0
-#6 17.19  + anyio==4.15.1
-#6 17.19  + attrs==26.1.0
-#6 17.19  + cachetools==7.2.0
-#6 17.19  + certifi==2026.7.22
-#6 17.19  + cffi==2.1.1
-#6 17.19  + charset-normalizer==3.5.2
-#6 17.19  + cryptography==50.0.2
-#6 17.19  + distro==1.9.0
-#6 17.19  + frozenlist==1.8.0
-#6 17.19  + google-auth==2.59.1
-#6 17.19  + google-genai==2.26.0
-#6 17.19  + h11==0.16.0
-#6 17.19  + httpcore==1.0.9
-#6 17.19  + httpx==0.28.1
-#6 17.19  + idna==3.20
-#6 17.19  + multidict==6.9.1
-#6 17.19  + networkx==3.6.1
-#6 17.19  + openai==0.27.10
-#6 17.19  + propcache==0.5.4
-#6 17.19  + pyasn1==0.6.4
-#6 17.19  + pyasn1-modules==0.4.2
-#6 17.19  + pycparser==3.0
-#6 17.19  + pydantic==2.13.5
-#6 17.19  + pydantic-core==2.46.5
-#6 17.19  + pyyaml==6.0.3
-#6 17.19  + requests==2.34.2
-#6 17.19  + sniffio==1.3.1
-#6 17.19  + tenacity==9.1.4
-#6 17.19  + tqdm==4.70.1
-#6 17.19  + tree-sitter==0.26.0
-#6 17.19  + tree-sitter-cpp==0.23.4
-#6 17.19  + typing-extensions==4.16.0
-#6 17.19  + typing-inspection==0.4.4
-#6 17.19  + urllib3==2.8.0
-#6 17.19  + websockets==16.1.1
-#6 17.19  + yarl==1.25.1
-#6 DONE 17.6s
-
-#7 [4/4] RUN /opt/pilot/bin/python -c "import google.genai, openai, tree_sitter_cpp, tree_sitter; print(openai.version.VERSION)"
-#7 1.622 0.27.10
-#7 DONE 1.7s
-
-#8 exporting to image
-#8 exporting layers
-#8 exporting layers 5.9s done
-#8 exporting manifest sha256:2992db4d89e54e655546aefe3c1bf5e9ae65798fea8a2637ab1aa7dda88597fe
-#8 exporting manifest sha256:2992db4d89e54e655546aefe3c1bf5e9ae65798fea8a2637ab1aa7dda88597fe 0.0s done
-#8 exporting config sha256:c69416458ef9301f1d8c88606c8765d284eaa987db4dd5a3de35bc1036b4a189 0.0s done
-#8 exporting attestation manifest sha256:4cd87a04d2832b8a1e81f0b520bdc4c70589e2999f4cc365bbe7d8924b9df4a3 done
-#8 exporting manifest list sha256:710d9a0569a9f92463ebbd71806cb4ba4c558101e40cb38ae2be69169c7b2e64 done
-#8 naming to docker.io/library/dfuzz-pilot:arm64 done
-#8 unpacking to docker.io/library/dfuzz-pilot:arm64
-#8 unpacking to docker.io/library/dfuzz-pilot:arm64 2.1s done
-#8 DONE 8.1s
-
-View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/on1cn7js5ixqx3ye8aoro0qzk
