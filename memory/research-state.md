@@ -6,6 +6,65 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-11-01 final/ TERMINAL COMPLETE164/157eligible;plain78/classical74/contrast78
+raw;matchedprimaryp.7483,no demonstratedconceptgain. User-requested class/module
+refactor final/modular ready15checks/164read-onlyreplay/2296events,fullsummary
+parity;23originalhashes unchanged,0newcalls/nativebenchmark,nojobs. Eacharmmodule,
+eachstageclass,insert_stage for extension. Newpipeline/refactor staysuncommitted.
+See [[final-humaneval-pipeline]];allolder running/waiting notices superseded.
+2026-10-31 12:17UTC final/ endpoint recovered;auto-resumedcontroller121309 and
+scheduler115270 alive. Inputs99/164,487responses,0scored;99/100firstattempts
+inflight,93/94cleared. User continue;no duplicate/source/cohort changes. Older
+waiting notices superseded;see [[final-humaneval-pipeline]].
+2026-10-31 10:59UTC final/ scheduler115270 WAITING_FOR_ENDPOINT/models404;
+controller115608 exited tokenizer404(no new completion sent).Inputs93/164,
+458responses,0scored;93contrastive/94classical partial streams archived,never
+used. Cached cohort unchanged. Metadata-only polling;automatic resume on live
+expected model,no duplicate scheduler. Older running notices superseded.
+2026-10-31 09:34UTC final/ recovery alive115608/115270;inputs81/164,
+395responses,0scored,task81/82inflight. Task41/placebo timeout automatically
+recovered;partial archived,neverusedassuite. Legacy16+41historicalunknowns
+retained. No new launch/repair;older counts superseded. See [[final-humaneval-pipeline]].
+2026-10-31 07:04UTC final/ recovery RUNNING controller115608/scheduler115270;
+inputs26/164,131responses,task16cleared,2inflight/0newunknown,0scored. Frozen
+cohort164/1634PUT/1465basepass unchanged. Inspect recovery/status.json;older
+waiting/stopped notices superseded. See [[final-humaneval-pipeline]].
+2026-10-31 final/ transport recovery READY42checks/reviewclear;user requests fix
+and retry after20min. Scheduler115270 waits06:38:15UTC/13:38:15Vietnam;endpoint
+currently404,metadata-only polling afterdeadline untilready. Original cohort164/
+1634PUT/1465basepass reused;331artifacts/91responses/18inputtasks imported with
+hashes,92requests identical. Streaming + persistent3attempt cap, no model/source
+method changes. See [[final-humaneval-pipeline]] and recovery_schedule/status.json;
+controller not started at release,no duplicate scheduler. Older notices superseded.
+2026-10-31 final/ readability-audit status: controller107832 exited/interrupted;
+cohort FROZEN164tasks/1634PUTs/1465basepasses.18inputtaskfiles,0scored;tester
+task16/classical1unknown,plus historicalwriterunknown retained. User asked code
+readability review;no APIretry/source changes in this turn. See [[code-readability]]
+and final/review/READABILITY.md. Older running notices below superseded.
+2026-10-31 final/ USER RETRY RUNNING controller107832;metadata200/samemodel8192,
+source hashes unchanged,1603cachedfiles preserved. Reuses118tasks/1175PUTs/
+1086basepasses;originaltask118unknown archived/accounted;retryinflight,new119
+response received. No tester/scoring yet. See [[final-humaneval-pipeline]] and
+live status;older stopped notices below superseded,no duplicate launch.
+2026-10-31 latest final/ status: controller93111 exited;interrupted RuntimeError
+from ModelError task118/programs_00,1unknown/noresponse. Durable cohort118tasks,
+1175PUTs,1086basepasses (117mainprogress+1drained).0tester/scored tasks. Endpoint
+currently200/samemodel;jobisnotrunning. Preserve caches/no blind unknown replay.
+See [[final-humaneval-pipeline]];older running notices below superseded.
+2026-10-30 latest: user clarifies fixed-PUT concept-utility benchmark with actual
+reference oracle;generate cohort once,alllaterconcept runsreuse. New isolated
+final/experiments/concept_reference_v1 with library CFG/DFG/boundary/partition,
+classical/plain primary + contrastive/placebo/toolinput/witness controls.27checks,
+164canonical pass;realqwen3.5-27b-awq33tokenprobe pass,ctx8192. Full164 detached
+controller93111 launched buildingcohort;inspect final/out/concept_reference_v1/
+status.json and cohort status before action. No efficacyresult/no duplicate launch.
+See [[final-humaneval-pipeline]];old waiting-for-endpoint notice below superseded.
+2026-10-30 user-requested independent `final/` pipeline READY, awaiting user model/
+endpoint. Scope explicitly all164HumanEval;10structurally distinct programs/task,
+base filtering,1sharedtester call/task,additional-failure metrics.17engineering
+checks+164/164canonicalpreflight pass;review complete;0realmodelcalls/nobenchmark
+results. See [[final-humaneval-pipeline]] and final/README.md;do not substitute an
+old backend or auto-launch before user sends the selected endpoint/model.
 2026-10-30 vr15 COMPLETE after user requested improvement: domain evidence and
 two composites;33tests+independent prefreeze review. Census67→69tasks,131→147
 instances,5edges/3tasks;all16newinstances/5edges conditionally source-supported.

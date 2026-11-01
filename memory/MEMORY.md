@@ -1,3 +1,5 @@
+- [Code readability](code-readability.md) — user quen Java; ưu tiên tên đầy đủ, explicit loops/intermediates, ít shorthand; final/ readability audit
+- [Final concept/reference benchmark](final-humaneval-pipeline.md) — COMPLETE164;class/module refactor final/modular ready15checks/164replay/fullsummary parity;no newcalls/jobs;uncommitted
 - [Concept-template query direction](concept-template-query-direction.md) — vr15complete;69/113tasks,16newinstances/5edges;direct=BM25,no testgen/efficacy claim
 - [Git artifact hygiene](git-artifact-hygiene.md) — ignore downloads/cache/logs/local tools; preserve source/reports and all local checkpoints
 - [VR11/VR13 binder + VR12 expansion](vr11-vr13-binding-vr12-expansion.md) — VR12 complete11,ref9/9/9/8;39calls;all scores verified pinned3.11,audit mismatch was Unicode/runtime drift
