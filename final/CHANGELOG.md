@@ -1,5 +1,19 @@
 # CHANGELOG
 
+## 2026-11-03 — four course-based development subsets
+
+- Read test_slides functional/control/data-flow criteria and review all164task
+  specifications; manually assign primary boundary47/equivalence47/C1 31/DU39,
+  with secondary labels rather than claiming mutually exclusive bug classes.
+- Add offline `development_groups.py` using original AST/coverage.py/python-graphs
+  source analysis and frozen base caches. Ready primary task counts44/46/15/35.
+- Export6savedPUT/group smoke sets,development≤12/check4task-disjoint, preserving
+  original sources/program IDs and base records; no PUT/model/reference execution.
+-9engineering checks and independent read-only review pass. Reports/manual review
+  in `review/development_groups/`; no four new concept generators implemented yet.
+- Preserve the active concept-inputs run and all105manifest source hashes.
+  No new source version folder, no commit/push.
+
 ## 2026-10-30 — clarified concept benchmark, active run
 
 - User clarified reference-program oracle, boundary/equivalence/CFG/def-use concepts,
