@@ -16,6 +16,7 @@ toàn bộ kết quả cũ. Xem [VALIDATION.md](VALIDATION.md).
 | `arms/placebo.py` | `PlaceboArm` | Covered facts làm control |
 | `arms/toolinput.py` | `ToolInputArm` | Gợi ý input từ sampler |
 | `arms/witness_only.py` | `WitnessOnlyArm` | Dùng witness trực tiếp, không gọi model |
+| `arms/v11_concept.py` | `V11ConceptArm` | Concept v11, generator inputs-only của bản mới |
 
 `ExperimentArm` quy định `build_guidance()` và `run()`. Cơ chế gọi model/parse
 response dùng chung; không có chuỗi `if arm == ...` để dispatch từng loại chạy.
@@ -29,6 +30,7 @@ Muốn thêm arm: tạo subclass/module mới và truyền instance vào `Benchm
 | `program_generation.py` | `ProgramGenerationStage` | Chương trình khác cấu trúc; chỉ khi chủ động tạo cohort mới |
 | `base_tests.py` | `BaseTestFilterStage` | Base outcomes và cohort task |
 | `frozen_cohort.py` | `FrozenCohortStage` | Nạp cohort đã có, không sinh lại |
+| `v11_concept.py` | `V11ConceptStage` | Chỉ B5 mining và facts/top3/spec fallback của v11 |
 | `concept_analysis.py` | `ConceptAnalysisStage` | Concept cards, code visibility, common prompt |
 | `witness_sampling.py` | `WitnessSamplingStage` | Input pool và valid witnesses |
 | `input_generation.py` | `InputGenerationStage` | Input cho các arm đã chọn |
@@ -108,3 +110,45 @@ Chưa commit/push bản refactor này theo yêu cầu giữ pipeline mới ở l
 
 Chạy `--arms witness_only` không tạo model hay gọi tokenizer. Core analysis/sampler
 và reference/PUT evaluation vẫn chạy trên CPU khi đây là một run mới.
+
+## Concept v11 + generator của bản mới
+
+User đổi workflow: sửa trên code hiện có, không copy thêm folder version và
+không commit trước khi user review. Arm mới được thêm ngay trong `final/modular/`:
+
+`frozen PUTs → V11 concept extraction → common prompt + concept cards →
+1 call/task sinh inputs-only → freeze toàn bộ inputs → reference → tất cả PUT pass base`.
+
+V11 chỉ cung cấp B5 mining, coverage/mutation/fuzz facts, ranking/G-prime và spec
+fallback qua đúng kernels gốc. Không chạy V11 round1, hybrid, assertions, expected
+output hay retry sinh test. `V11ConceptArm` kế thừa nguyên `ConceptArm.run()` nên
+cùng prompt nền, parser, seed, temperature, input/output budget và oracle với các
+arm mới. Guidance chỉ có id/kind/text; không truyền witness, tool input, mutant
+source, strategy code hoặc output của reference. Các arm mặc định vẫn là sáu arm
+cũ để replay không thay đổi; chọn `v11_concept` một cách tường minh.
+
+Concept được tạo cho từng PUT. Từ top3 gốc của các PUT thấy trong prompt, lấy tối
+đa4card theo rank rồi round-robin theo thứ tự PUT đang hiển thị; không chọn dựa
+trên output/lỗi. Vị trí line được đối chiếu AST về raw source, vị trí không ánh xạ
+được ghi rõ là line của V11 view. Đây là adaptation từ per-PUT sang prompt chung
+theo task, không phải toàn bộ V11 hybrid. Xem [PREREG.md](PREREG.md).
+
+Mặc định đọc lại concept cache từ `final/out/v11_clean_runtimefix/`. Kiểm tra raw
+source, view, spec/base, model, tool versions và source hashes trước khi import;
+không đọc file result/oracle của run cũ. Thiếu cache thì chỉ chạy mining/facts
+và checkpoint riêng ở output mới. `--v11-cache-only` cấm tính lại concept.
+Reference và PUT evaluation giữ nguyên. Giữ cả quy tắc skip shortfall của bản mới:
+164 task records,157 task eligible/1454 PUT trong cohort hiện tại; khác run full
+V11 vốn giữ cả các task shortfall. Không so raw count hai protocol như cùng budget.
+
+Lệnh cho run **sau khi review**, chưa chạy benchmark trong lần sửa này:
+
+```bash
+final/.venv/bin/python -m final.modular.run --mode run \
+  --artifacts final/out/v11_concept_inputs --arms plain v11_concept
+```
+
+Output directory mới là nơi giữ kết quả cấu hình mới, không phải một version
+source mới. `v11_concept_extraction` có stage events và từng PUT có progress riêng;
+`v11_concept_preparation` trong summary tách chi phí mining khỏi tester calls.
+Concept import có lịch sử request đã dùng, không được gọi là concept miễn phí.

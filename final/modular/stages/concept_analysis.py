@@ -11,6 +11,12 @@ class ConceptAnalysisStage(PipelineStage):
 
     def __init__(self, arms):
         self.arms = tuple(arms)
+        preparation_names = []
+        for arm in self.arms:
+            for stage in arm.preparation_stages():
+                if stage.name not in preparation_names:
+                    preparation_names.append(stage.name)
+        self.requires = ("frozen_cohort", *preparation_names)
 
     def configuration(self):
         return {"arms": [arm.name for arm in self.arms]}
@@ -39,6 +45,8 @@ class ConceptAnalysisStage(PipelineStage):
         while visible_programs:
             common_text = common_prompt(context.task, visible_programs, context.metadata["contract"], context.settings.input_budget)
             analysis = analyze_task(dict(cohort_task, programs=visible_programs))
+            for arm in self.arms:
+                arm.extend_analysis(context, visible_programs, analysis)
             for arm_name in ("classical", "contrastive", "placebo"):
                 for card in analysis[arm_name]:
                     card["text"] = card["text"][:800]

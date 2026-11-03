@@ -12,6 +12,17 @@ class ExperimentArm(ABC):
     name: str
     uses_model: bool = True
 
+    def preparation_stages(self):
+        """Optional analysis stages; test-generation mechanics stay shared."""
+        return ()
+
+    def reporting_stage(self):
+        """Optional reporting extension for an arm's extra preparation work."""
+        return None
+
+    def extend_analysis(self, context, visible_programs, analysis):
+        """Attach this arm's guidance before the shared prompt is budgeted."""
+
     def configuration(self) -> dict:
         if vars(self):
             raise NotImplementedError("Configured arms must expose their configuration for cache invalidation")

@@ -6,6 +6,30 @@ from final.pipeline import Settings
 from .artifacts import ArtifactStore
 
 
+class ConceptPreparationCallError(Exception):
+    """A model/cache failure must not become an empty concept preparation result."""
+
+
+class V11PreparationCalls:
+    """Keep call failures outside V11's method/parser fallback exception classes."""
+
+    def __init__(self, backend):
+        self.backend = backend
+
+    def complete(self, *arguments, **parameters):
+        from final.experiments.concept_reference_v1_recovery.model import TransportError
+        from final.experiments.concept_reference_v1_recovery.checkpoint import CompletionRetryLimit
+
+        try:
+            return self.backend.complete(*arguments, **parameters)
+        except (TransportError, CompletionRetryLimit):
+            raise
+        except (RuntimeError, ValueError, TypeError) as error:
+            raise ConceptPreparationCallError(
+                f"Concept model/cache call failed: {type(error).__name__}"
+            ) from None
+
+
 class CachedModelCalls:
     """No network or model construction; verify exact request identity before replay."""
 

@@ -21,3 +21,24 @@
   `final/out/modular_validation/original_hashes.json`.
 - New runtime code has no1–2character local binding names. Syntax compilation and
   diff whitespace checks pass. Source remains uncommitted per user instruction.
+
+## 2026-11-02 — V11 concept-only arm
+
+- **26 engineering checks passed**: the original15 plus11new checks. New checks
+  cover one modern inputs-only generation call, exact shared settings/seed/common
+  prompt, witness/mutant/reference exclusion, immutable imports, wrong PUT/spec/
+  model/source rejection, cache-only/read-only execution bans, mining/facts-only
+  dispatch, location translation, visible-owner selection, dependency order,
+  checkpoint reuse and propagation of model/cache/CPU-idle infrastructure failures.
+- A read-only upstream-cache integration check imported **525selected V11 cards
+  from264PUTs/28complete task caches**, without inference, native work or scoring.
+  All selected locations with a method line mapped to raw source in that sample.
+- Historical **164task/2296stage-event** replay still reconstructs the full saved
+  summary. This validates the default six-arm behavior; it is not a benchmark
+  result for the new arm. Default CLI remains read-only replay.
+- All23original snapshot hashes and4533completed artifacts from the user-stopped
+  full-V11 run remain unchanged. That service is inactive/MainPID0, with STOP marker
+  and user_stopped statuses;288durable results remain available as checkpoints.
+- No model request, new benchmark input suite or outcome was produced for the
+  new arm. No independent review of this new arm or efficacy claim is asserted.
+  Changes are local and uncommitted for user review; no automatic launch.

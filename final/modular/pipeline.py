@@ -42,8 +42,26 @@ class BenchmarkPipeline:
             self.calls = CachedModelCalls(artifacts)
         self.cohort_stage = FrozenCohortStage(cohort_path)
         self.reporting_stage = ReportingStage()
+        reporting_extension = None
+        preparation_stages = {}
+        for arm in self.arms:
+            arm_reporting = arm.reporting_stage()
+            if arm_reporting is not None:
+                if reporting_extension is not None and (
+                    type(reporting_extension) is not type(arm_reporting)
+                    or reporting_extension.configuration() != arm_reporting.configuration()
+                ):
+                    raise ValueError("Conflicting arm reporting extensions")
+                reporting_extension = arm_reporting
+            for stage in arm.preparation_stages():
+                previous = preparation_stages.get(stage.name)
+                if previous is not None and previous.configuration() != stage.configuration():
+                    raise ValueError(f"Conflicting preparation stage configuration: {stage.name}")
+                preparation_stages[stage.name] = stage
+        if reporting_extension is not None:
+            self.reporting_stage = reporting_extension
         self.generation_stages = [
-            self.cohort_stage, ConceptAnalysisStage(self.arms),
+            self.cohort_stage, *preparation_stages.values(), ConceptAnalysisStage(self.arms),
             WitnessSamplingStage(ToolInputArm()), InputGenerationStage(self.arms),
         ]
         self.evaluation_stages = [ReferenceOracleStage(), PutEvaluationStage(), self.reporting_stage]
@@ -262,6 +280,8 @@ class BenchmarkPipeline:
         for folder_name in ("concept_reference_v1", "concept_reference_v1_recovery"):
             for source_path in (final_directory / "experiments" / folder_name).glob("*.py"):
                 source_paths.add(source_path)
+        for stage in self.generation_stages + self.evaluation_stages:
+            source_paths.update(stage.source_dependencies())
         for instance in self.generation_stages + self.evaluation_stages + list(self.arms):
             source_paths.add(Path(inspect.getfile(type(instance))).resolve())
         if self.calls is not None:

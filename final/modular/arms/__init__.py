@@ -4,16 +4,26 @@ from .contrastive import ContrastiveArm
 from .placebo import PlaceboArm
 from .toolinput import ToolInputArm
 from .witness_only import WitnessOnlyArm
+from .v11_concept import V11ConceptArm
 
 
 def default_arms():
     return (PlainArm(), ClassicalArm(), ContrastiveArm(), PlaceboArm(), ToolInputArm(), WitnessOnlyArm())
 
 
-def selected_arms(names):
+def available_arms():
+    return default_arms() + (V11ConceptArm(),)
+
+
+def selected_arms(names, *, v11_cache_directory=None, v11_cache_only=False):
     available = {}
-    for arm in default_arms():
+    for arm in available_arms():
         available[arm.name] = arm
+    if "v11_concept" in names:
+        configuration = {"cache_only": v11_cache_only}
+        if v11_cache_directory is not None:
+            configuration["cache_directory"] = v11_cache_directory
+        available["v11_concept"] = V11ConceptArm(**configuration)
     result = []
     for name in names:
         if name not in available:

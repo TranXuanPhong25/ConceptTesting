@@ -8,6 +8,10 @@ class PipelineStage(ABC):
     name: str
     requires: tuple[str, ...] = ()
 
+    def source_dependencies(self):
+        """Extra source files imported by this stage, included in the run manifest."""
+        return ()
+
     @abstractmethod
     def run(self, context: TaskContext) -> None:
         """Read explicit context fields, then fill the fields needed by later stages."""
