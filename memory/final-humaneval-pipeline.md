@@ -1,9 +1,155 @@
 ---
 name: final-humaneval-pipeline
-description: Frozen cohort164/1634PUT/1465basepass; streaming recovery ready42tests, scheduler115270 retry13:38:15Vietnam
+description: Full V11 stopped288/1634; new v11_concept arm uses V11 concepts with the modern inputs-only generator; uncommitted for review
 metadata:
   type: project
 ---
+
+2026-11-03 latest user instruction authorizes splitting current changes into
+commits on main, superseding earlier leave-uncommitted notices for these changes.
+Groups: V11runtime/adapters, modernconceptarm, fourcourse development subsets,
+PUTqualityaudit,sharedmemory.49engineeringchecks passed before commits;105active
+sourcehashes unchanged. Commits a790f504/runtime,19c786cd/conceptarm,40c31400/
+developmentgroups,15f3a48d/PUTaudit plus sharedmemory commit. No push requested. Outputs/checkpoints/workerenvs and
+detaileddevelopmentinventory stay local/ignored;source105hashesverifiedunchanged.
+
+2026-11-03 latest: user says keep current run/settings and endpoint alive again.
+Configured endpoint models404, but other previously supplied endpoint metadata200,
+expectedqwen27/context8192/tokenizer13 verified; private configuration updated only
+outside repo. Source105hashes unchanged;3122completed caches snapshotted. Service
+concepttester-v11-concept-inputs restarted PID60795, reached task83concept extraction
+using83inputtaskrecords/162testerresponses/772conceptcheckpoints. FullV11 stays
+stopped; no generator/protocol changes or PUT regeneration. This supersedes prior
+interrupted/36821active notices; check live files for progress.
+
+2026-11-03 user supplies refreshed private endpoint and authorizes resume.
+Concept-inputs service restarted controller36821 after models200/expectedqwen27/
+context8192 and105sourcehashes verified. Reached HumanEval60 concept extraction
+again;747saved inputs/responses/concept checkpoints snapshotted in resume_audit.
+Previous stop was tokenize404 before completion. Resume frozen60inputtasks/
+118testerresponses/569conceptrecords; no regeneration or retry-cap reset. Output
+final/out/v11_concept_inputs; inspect live progress. FullV11 stays stopped.
+
+2026-11-02 user requests redundant-code removal: deleted obsolete final/v11_clean/
+source copy only. Keep final/v11_clean_runtimefix/ adapters required by active
+modular concept arm; original V11/history and ALL outputs/checkpoints preserved.
+Active run manifest source hashes verified unchanged; service15805 stays active.
+No commit/push.
+
+2026-11-02 user explicitly authorizes RUN with refreshed private endpoint. Metadata
+expectedqwen27/context8192 and real17tokenprobe passed;26engineeringchecks and
+independent read-only review cleared single launch. New service
+concepttester-v11-concept-inputs.service ACTIVE controller15805; output
+final/out/v11_concept_inputs. Arms plain+v11_concept ONLY, modern one-call/task
+inputs-only generator; no fullV11 restart. First task imported9conceptcheckpoints
+and entered input_generation; verify actual response progress before reporting
+completion. KeepAlive20min separate, bounded transport retries, lifecycle status,
+source/config manifest and stage events. No automatic terminal-failure restart
+configured; preserve caches and inspect errors before retry. FullV11 remains
+user_stopped. This launch supersedes prior awaiting-review/no-launch notices.
+No source folder fork, commit or push. Endpoint stays outside repository.
+
+2026-11-02 latest user clarification: new versions/arms modify existing source,
+without copying another version folder; leave changes uncommitted for user review.
+Requested arm is ONLY V11 concept extraction with the modern test generator.
+Implemented in final/modular/: V11ConceptArm, V11ConceptStage, generic arm hooks
+for preparation/guidance/reporting, and separate preparation-cost reporting. Actual
+V11 mining/facts/top3/spec fallback reused read-only; no V11 hybrid/assertion/LLM
+expected-output generation. Modern common prompt/one-call inputs-only parser,
+reference oracle and shared-suite/all-PUT evaluation unchanged. Aggregate at most
+4cards from visible PUTs, rank-first round-robin, with AST-translated locations.
+Imports validate method source/model/tools/raw PUT/view/spec and never read old
+result/oracle files. Missing cache mines only concepts; infrastructure/model-cache
+errors propagate. Existing modern shortfall policy means157eligible/1454PUTs,
+not full-V11's1465. Cache-only validation imported525cards/264PUTs/28tasks, no
+inference/outcome execution. Historical164task/2296event replay still matches.
+26engineering checks pass; documented in final/modular/VALIDATION.md. No new benchmark run,
+automatic launch, commit or push before user review.
+
+Full V11 STOPPED by explicit user reply:288durable results(271complete,
+16base_rejected,1preparation failure). concepttester-v11-clean-runtimefix.service
+inactive/MainPID0, STOP marker and both statuses user_stopped; no automatic resume.
+4533completed result/response/concept hashes verified unchanged in
+final/out/v11_clean_runtimefix/stop_audit/20261101T165215Z/. Preserve all partial
+request history as well; new arm's optional source cache reads this stopped run.
+This supersedes every running/active notice below.
+
+Runtimefix later status: controller62479/service62463 alive,241/1634durable cases
+(226complete,14base_rejected,1preparation_or_execution_failed).3266responses saved,
+heartbeat8s old,NRestarts0;cases240/242inV11hybrid,factscomplete. Case197(HumanEval19/
+program7,sort_numbers) has nativefacts worker_errorNameError;explicitzero-evidence
+case,not a runstop. No newcoverage deadlock visible. Preliminaryrawconcept24/plain17/
+placebo25/tool25/witness4atlastsummary;no terminal/matched conclusion or methodchange.
+
+Runtimefix live verification: checkpoint advanced155→156/1634;case156finished FULL
+pipeline including reference evaluation. Case151facts also finished and is inhybrid.
+Controller62479/service62463active;2149responses saved atcheck. Old4439artifacts
+preserved. This confirms progress beyond the observed collector deadlock, not just
+aliveprocess/heartbeat. No efficacy conclusion from partial run.
+
+V11 runtimefix ACTIVE supersedes old 'normalCPU' report: user correctly noticed
+155case count stopped. Both workers151/156were DEADLOCKED at coverage.collector
+_clear_data→flush_data/get_data,0CPUdelta,singlethreadfutex,despiteparentheartbeat.
+Oldservice stopped+disabled. New isolated final/v11_clean_runtimefix supported
+COVERAGE_CORE=pytrace with same7.16.2/tools/kernels; originalsource unchanged.
+14engineeringtests+independentreviewpass;4439completedartifacthashes imported;
+freshscratch native retry once on120sCPUidle,oneoverallwallbudget; recurringidle
+or deadlineafteridle raises infrastructure WorkerStalled,nevermethodzero.
+Newservice concepttester-v11-clean-runtimefix.service supervisor62463/controller
+62479alive,guard72files. Formerstuck151/156both consumed~40CPUseconds/40wallsecs,
+idle0s atcheck;stillfactsnotyetnewcompletedcase. Activeout final/out/v11_clean_runtimefix,
+schedule final/out/v11_clean_runtimefix_schedule;inspect worker_progress CPU/idle,
+not justprocessalive. No newmodelrequests during initialresumedCPUwork;cohort,
+savedmodelresponses and completedresults preserved. No commit/push.
+
+V11 clean progress check ~5h after launch: service/supervisor44127/controller44418
+alive,heartbeat16s old,NRestarts0.155/1634case results:145complete,10base_rejected,
+0preparation/runtime failures.2142receivedresponses,3historicalunreceivedattempts;
+both activecases151/156currentlyoriginalCPUfacts. Preliminary raw detections at
+lastsummary:concept6/plain3/placebo7/tool8/witness2;not terminal/matched conclusion.
+No launch/change/newanalysis in this status turn;keep fullrun and checkpoints.
+
+V11 clean live end-to-end follow-up: first2PUTcases0/1 completed all B5/facts/
+hybrid-controls/reference-on-raw-source evaluation; cases2/3nowinhybrid.28actual
+responses saved atcheck,controller44418/service44127alive. No interpretation of
+early efficacy, no extra sampling or source changes. Sourceguard71hashes stillmatch.
+
+2026-11-01 V11 CLEAN ACTUALLY RUNNING after user25min deadline: supervisor44127
+(systemd concepttester-v11-clean.service) launched controller44418 after07:05:32UTC.
+Endpoint exact qwen3.5-27b-awq/context8192. First2cases(0,1) completed B5/domain
+mining and original native facts, now V11 hybrid generation;14realresponses saved,
+no case result/efficacy conclusion yet.10tests/static1634views/review/hashguard71
+remain valid. Per-class files mining/facts/round_one/hybrid;stage_factories allows
+extension. Monitoring30s and keepalive20min separate;same frozen cohort,no regen.
+Check v11_clean/status.json +v11_clean_schedule/heartbeat.json before action.
+
+2026-11-01 user authorizes clean V11 arm/stages + full existingcohort run and
+autonomous progresschecks/fixes; endpoint said available25minlater. New isolated
+final/v11_clean uses originalV11 B5/domain/facts/spec/hybrid kernels/prompts,
+K1/qwen27/canonical-reference/perPUTalias adaptations registered. Controls matched
+plain/placebohybrids +toolinput/witness; own-PUT suites only,task-total valid-budget
+diagnostic. Manifest includesall1634/1465basepass,169base rejectslogged;no regen.
+10engineering tests/review PASS;1634views compile/body-preserved;original51V11
+files unchanged. Earliest launch07:05:32UTC/14:05:32Vietnam01Nov;readyguard71files.
+Systemd user service concepttester-v11-clean.service active supervisor44127,
+waitingdeadline atrelease; no completion yet. Progress30s,20minrecordedkeepalive,
+transientboundedrecovery,terminalcaps/source-driftneedreview. Endpointprivateconfig
+outside repo; userstop requires STOP marker in v11_clean_schedule and service stop.
+Inspect final/out/v11_clean_schedule/{status,heartbeat}.json and v11_clean/status;
+do not duplicate launch. Newpipeline remainslocal/uncommitted;no efficacyresultyet.
+
+2026-11-01 saved-data PUT quality audit (user asks whether old LineFacts PUTs are
+better): vendor151files,method139cachedbasepasses/138plus-failing(task66zero);
+v7bundle133=113dev+20pilot,all133source matchvendor. New1465basepasses/159tasks,
+1454evaluated;all-arm reference-disagreement union171PUTs/40tasks is lowerbound,
+not total defect rate. ASTcanonical matches21modules/22entryfunctions,not evidence
+of mass identical copying. Median branches3both. Olddocmismatch69/108/116/131/152,
+task50specambiguity,oldpoolheavilyuseddevelopment. Recommend oldcuratedpool as
+development benchmark for targeted bugfinding,newpool supplementary;no change
+to completedrun,no newcalls/nativeexec. Before integration revalidate qualification
+and separate frozenonePUT/taskcohort/settings target1;no adapter/run implemented.
+Report final/review/put_quality/REPORT.md + audit.py/SUMMARY.json.83zero-valid-budget
+pairs/258graphfailures in currentrun remain pipeline limitations independent ofpool.
 
 2026-11-01 user-requested modular refactor COMPLETE in final/modular/: separate
 arm modules/classes, PipelineStage.run(TaskContext), per-stage classes, shared

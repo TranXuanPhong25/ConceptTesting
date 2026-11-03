@@ -26,8 +26,12 @@ Keep a ping loop (every 20 min) during long runs so the notebook does not idle-k
 `V4_PYTHON=` the dedicated venv in `pipelines/<v>/config.json` (Hypothesis 6.169, mutmut 3.8, coverage 7.16, libcst).
 Baselines tests use `CoverUp_concept/.venv/bin/python -m pytest` (has httpx + pytest).
 
-**Folders:** every change to a pipeline goes in a **new folder** copied from the best one, with a `CHANGELOG.md`
-(what changed, files, commits, status) — never edit the best folder in place ([[pipeline-folder-workflow]]).
+**Folders (latest user clarification2026-11-01):** implement new versions/arms in
+the existing code, without copying a new version folder. Leave changes uncommitted
+for user review. This supersedes the old new-folder-per-method rule. Keep separate
+arm modules/stage classes, record changes in the existing CHANGELOG, and preserve
+checkpoints/results; distinct run configurations still use separate output data
+directories ([[pipeline-folder-workflow]]).
 
 **Science:** register in `PREREG.md` before running (append-only; amendments dated, before reading outputs). Dev (113)
 for design, pilot (20) reported separately, held-out (VibePass, MBPP+ real-12) run once with a frozen config. Always

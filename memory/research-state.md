@@ -6,6 +6,18 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-11-03 user wants separate boundary/equivalence/C1/def-use development from
+test_slides, small subsets before combining.164tasks manually reviewed in
+final/review/development_groups/, offline selector final/development_groups.py.
+6PUT smoke/group exported,dev≤12/check4;9checks+independentreview pass;no new
+model/native outcomes. Existingconcept-inputsservice36821active/source105unchanged.
+See [[four-course-development-groups]]. This is subset preparation,not4newgenerators.
+2026-11-02 final/ latest: user stopped fullV11 at288/1634durable results;4533saved
+artifact hashes preserved,service inactive/STOP marker. New v11_concept arm added
+in existing final/modular code: oldV11 mining/facts only → modern one-call/task
+inputs-only generator → reference. Changes uncommitted for user review; no new
+benchmark launch/outcomes. Latest workflow edits existing code rather than copying
+new version folders. See [[final-humaneval-pipeline]]. Overrides older run notices.
 2026-11-01 final/ TERMINAL COMPLETE164/157eligible;plain78/classical74/contrast78
 raw;matchedprimaryp.7483,no demonstratedconceptgain. User-requested class/module
 refactor final/modular ready15checks/164read-onlyreplay/2296events,fullsummary

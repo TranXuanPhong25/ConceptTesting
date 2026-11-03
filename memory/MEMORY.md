@@ -1,5 +1,6 @@
 - [Code readability](code-readability.md) — user quen Java; ưu tiên tên đầy đủ, explicit loops/intermediates, ít shorthand; final/ readability audit
-- [Final concept/reference benchmark](final-humaneval-pipeline.md) — COMPLETE164;class/module refactor final/modular ready15checks/164replay/fullsummary parity;no newcalls/jobs;uncommitted
+- [Four course development groups](four-course-development-groups.md) —164task reviewed; boundary47/equivalence47/C1 31/DU39;6savedPUT smoke/group, improve separately before combining
+- [Final concept/reference benchmark](final-humaneval-pipeline.md) — fullV11 stopped288; concept-inputs60795resumed task83,772concepts;previous alternate endpoint alive;inspect live output
 - [Concept-template query direction](concept-template-query-direction.md) — vr15complete;69/113tasks,16newinstances/5edges;direct=BM25,no testgen/efficacy claim
 - [Git artifact hygiene](git-artifact-hygiene.md) — ignore downloads/cache/logs/local tools; preserve source/reports and all local checkpoints
 - [VR11/VR13 binder + VR12 expansion](vr11-vr13-binding-vr12-expansion.md) — VR12 complete11,ref9/9/9/8;39calls;all scores verified pinned3.11,audit mismatch was Unicode/runtime drift
@@ -39,7 +40,7 @@
 - [Codex quota fallback](codex-quota-fallback.md) — Codex 5h quota out → my subagents; reset within ~30 min → schedule Codex
 - [Version tree diagram](version-tree-diagram.md) — after every new variant update the artifact: version tree, results + glossary, concept kinds, papers
 - [Reply vocabulary](reply-vocabulary.md) — Vietnamese sentences, all technical terms in English (task, input, hint, oracle, false alarm…)
-- [Pipeline folder workflow](pipeline-folder-workflow.md) — best pipeline in pipelines/<ver>/; new experiment = copy folder + CHANGELOG.md, edit the copy; big changes wait for Codex
+- [Pipeline folder workflow](pipeline-folder-workflow.md) — edit existing pipeline code for new arms/fixes; no version-folder copies; preserve checkpoints, commit when user asks
 - [Prefer standard libraries](prefer-standard-libraries.md) — swap own code for libraries when results equal (user: fewer reviewer objections)
 - [Do not fix unasked](dont-fix-unasked.md) — pasted errors are context; never edit the Kaggle notebook unless asked
 - [Held-out final readiness](heldout-final-readiness.md) — CPU ready; amendment 1 fixes shared 10+4 TC pool; GPU waits for dev review and VibePass mining
