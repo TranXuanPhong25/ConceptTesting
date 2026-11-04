@@ -1,6 +1,8 @@
+- [Boundary test applicability/module](boundary-test-applicability.md) — plain+BVA smoke6prepared/frozen,60checks;endpoint404,awaiting endpoint;0calls/no controller
 - [Code readability](code-readability.md) — user quen Java; ưu tiên tên đầy đủ, explicit loops/intermediates, ít shorthand; final/ readability audit
 - [Four course development groups](four-course-development-groups.md) —164task reviewed; boundary47/equivalence47/C1 31/DU39;6savedPUT smoke/group, improve separately before combining
-- [Final concept/reference benchmark](final-humaneval-pipeline.md) — fullV11 stopped288; concept-inputs60795resumed task83,772concepts;previous alternate endpoint alive;inspect live output
+- [Spec-mining paper reading](spec-mining-paper-reading.md) —3PDFs read;S2F extracts constraints,Grounding labels Tested/Untested,formalcontracts+SMTconstruct inputs;different evidence and protocols
+- [Final concept/reference benchmark](final-humaneval-pipeline.md) — concept-inputs COMPLETE164/1437PUT;rawconcept90/plain72;matchedp.9703,wins5–5,no gain;serviceinactive
 - [Concept-template query direction](concept-template-query-direction.md) — vr15complete;69/113tasks,16newinstances/5edges;direct=BM25,no testgen/efficacy claim
 - [Git artifact hygiene](git-artifact-hygiene.md) — ignore downloads/cache/logs/local tools; preserve source/reports and all local checkpoints
 - [VR11/VR13 binder + VR12 expansion](vr11-vr13-binding-vr12-expansion.md) — VR12 complete11,ref9/9/9/8;39calls;all scores verified pinned3.11,audit mismatch was Unicode/runtime drift

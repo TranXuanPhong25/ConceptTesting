@@ -225,3 +225,48 @@ input stages, literal/batch rejection before oracle execution, task-wide freeze,
 cache identity and read-only replay; old comparison fixtures use legacy_arms()
 explicitly. The validation reorganization keeps checks enabled and does not claim
 that schema/quote validation proves LLM semantic constraints.
+
+## 2026-11-05 — user-authorized plain vs BVA boundary smoke run
+
+User explicitly asks to run plain and BVA on the direction-specific dataset
+already prepared. Start with the existing boundary smoke tier, following the
+saved small-group development protocol: HumanEval0,5,18,81,99,120, PUT0each.
+Do not regenerate PUTs, alter sources, replace representatives, expand the tier
+or select by reference/plus outcomes. Existing subset selection is outcome-blind.
+Selection file: final/out/development_groups/boundary/smoke/selection.json.
+Subset cohort_sha256:
+3dce7e980e164f6e161febc08455f0ade571a921297e1755d61a42563cdbccfa.
+Parent cohort_sha256:
+2a32bae531c339f2e403d748984ce5775734bdd8fd0fc9a02620392fbc23c7ed.
+
+Output: final/out/boundary_smoke_plain_bva_20261105. Arms plain,boundary;
+target_programs1;input_budget20perarm/pertask;input_tokens2048;input_temperature0.7;
+input_seed314159+tasknumber;reference_seed271828+tasknumber;timeout3seconds;
+reference/evaluation repeated twice;alltaskinputs frozen before oracle execution.
+Backend: the existing user-supplied qwen3.5-27b-awq endpoint, context8192. Verify
+metadata/tokenizer before launch; no paid router substitution or fallback model.
+Endpoint/credentials remain outside the repository and all logs.
+
+BVA: max4boundary proposals/PUT,selection temperature0,max2048completiontokens;
+generation temperature0.7,max2048completiontokens. At most6plain+6selection+
+6construction logicalcalls=18. Each logical request retains the existing at-most3
+physicalcompletionattempt policy, no reset on resume. The existing20minute
+keepalive is recorded separately. No semantic retry/repair or plain fallback for
+no-boundary/invalid/truncated selections; keep invalid/no-input reasons
+in checkpoints. Transport failures propagate and preserve received responses.
+
+This is a6PUT development smoke, not an efficacy/heldout evaluation. Report raw
+valid novel inputs and detected PUTs per arm/task, selected boundary counts,
+selection/construction/validation failures and known/unknown token/call costs.
+Any per-task matched-valid-input comparison is descriptive and must retain zero
+budgets; BVA's2logicalcalls/PUT are not call-matched to plain's1call/task.
+Use the existing trusted domain/reference oracle; LLM prose constraints are not
+independently proved. Preserve all partial/negative/skip outcomes and do not tune
+the method after seeing this run's outputs and silently reuse the same run ID.
+
+Prelaunch60targetedengineeringchecks pass. Same-agent read-only readiness review
+verified subset hashes/basepass membership,absence of reference data in prompts,
+input budgets,skip paths,global freeze,reference/PUT repeats,call accounting and
+detached/resumable execution. No independent reviewer was invoked in this turn.
+At registration the stored endpoint returns404on/models;0completion requests have
+been sent. Ask for the current endpoint and keep readiness artifacts until live.

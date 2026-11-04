@@ -6,6 +6,41 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-11-05 user authorizes plain+BVA run on existing boundary group. Smoke6PUT
+configured/frozen in final/out/boundary_smoke_plain_bva_20261105,67sourcefiles,
+input20perarm/task,target1,expectedQwen27/context8192,max18logicalcalls;60checks
+pass. Storedendpointmodels404;asked forcurrentendpoint,0completions/nocontroller.
+See [[boundary-test-applicability]] and final/review/boundary_smoke_run_2026-11-05.md.
+2026-11-04 latest user steering:main pipeline now accepts InputGenerator via
+dependency inversion;input-producing stages compose with MethodInputGenerator.
+Removed initial concept/witness stages from modern flow,default plain;BVA remains
+opt-in.Legacy adapter explicit.Shared input contract→freeze→reference→evaluation;
+validation functions/START-ENDblocks.93checks pass,no live model/cohort run.
+See [[boundary-test-applicability]] and final/modular/generators/README.md.
+2026-11-04 BoundaryArm now integrated into main BenchmarkPipeline/CLI opt-in:
+fixedtaskbudget→perPUTBVA→dedup→freeze→reference→evaluation/report;explicit skips,
+boundary-only noCFG/witness work.85modularchecks pass;no live model/cohort run,
+no default-arm change or commit. See [[boundary-test-applicability]].
+2026-11-04 BoundaryValueAnalysis module implemented at user request in existing
+final/modular/boundary_value_analysis:input types→templates→LLM boundary/domain
+selection→LLM inputs;early skips,immutable cache,41engineering checks and6PUT
+offline extraction pass. Prose constraints remain unverified;no live LLM/PUT/
+reference run,default-arm integration or commit. See [[boundary-test-applicability]].
+2026-11-04 16:38Vietnam:83538active/stilltask139;PUT5 preparation_failed/RuntimeError
+after~60min,nowPUT6 factworker84585~100%CPU54min. Inputs139/responses268/scored0;
+keepalive16:23received,no edits/restart. See [[final-humaneval-pipeline]].
+2026-11-04 15:23Vietnam:concept-inputs83538active,stilltask139/PUT5 factworker;
+nativePython83762~100%CPU for40min,heartbeatcurrent/idle0. Inputs139/responses268/
+scored0 unchanged;keepalive15:03received,no newerror/restart. See live artifacts and
+[[final-humaneval-pipeline]];serviceactive alone does not mean task progress.
+2026-11-04 14:43Vietnam user supplies endpoint;concept-inputs resumedPID83538 at
+HumanEval139 extraction,actual fresh response received. Metadata27B/8192/tokenizer
+verified,105sourcehashes unchanged,139savedinputtasks reused. FullV11stopped;
+supersedes failed notice below. See [[final-humaneval-pipeline]] and live status.
+2026-11-04 latest status check: no local experiment running. Concept-inputs service
+failed10:40:04Vietnam,tokenizeHTTP404 during HumanEval139 concept extraction;
+MainPID0/statusinterrupted. FullV11inactive;no restart. Supersedes active notices.
+See [[final-humaneval-pipeline]] and live output status/events.
 2026-11-03 user wants separate boundary/equivalence/C1/def-use development from
 test_slides, small subsets before combining.164tasks manually reviewed in
 final/review/development_groups/, offline selector final/development_groups.py.

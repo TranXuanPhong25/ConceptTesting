@@ -5,6 +5,87 @@ metadata:
   type: project
 ---
 
+2026-11-04 16:38Vietnam read-only check:83538stillactive/task139. PUT5 finished
+with preparation_failed/RuntimeError/cards[] after~60min; do not treat as successful
+concept extraction. NowPUT6/v11_facts nativePython84585~99.8%CPU/~54min since15:44.
+139inputs/268testerresponses/0scored unchanged;4172conceptresponses total(+5since
+15:23),latest15:44:02;keepalive16:23:33received. No fix/restart/settings change.
+
+2026-11-04 15:23Vietnam read-only check: service83538active but still task139,
+PUTindex5/v11_facts/fact_worker since14:43:46. Native sandbox Python83762 consumes
+99.8%CPU/~39m40CPUtime;worker progress heartbeat current,idle0s,not waiting on API.
+Only5newconceptresponses since resume(latest14:43:45);keepalive15:03received.
+139inputrecords/268testerresponses/0scored unchanged; no terminal result/no repair
+or restart performed. CPU work advancing does not establish useful task progress.
+
+2026-11-04 user supplies refreshed private endpoint; resume authorized. Metadata
+expectedqwen27/context8192 and tokenizer13 verified. All105sourcehashes unchanged;
+69531artifacthashes snapshotted under resume_audit/20261104T074310Z. Existing
+concept-inputs service restarted14:43:25Vietnam,PID83538/statusrunning, resumed
+HumanEval139 concept extraction; actual fresh received conceptresponse observed.
+139inputtaskrecords/268testerresponses at resume. Same arms/settings/cohort and
+20mkeepalive;no PUTregeneration. FullV11 remains stopped. Supersedes failed notice
+below;inspect live status before further action. Endpoint stored only outside repo.
+
+2026-11-04 status check (Codex): no local experiment process running. Concept-inputs
+service failed/exited1 at10:40:04Vietnam;MainPID0,status interrupted. Tokenize
+HTTP404/TransportError during HumanEval139 concept extraction; completion_started
+false for this failed operation. FullV11 service inactive. No restart or endpoint
+calls during this check; prior active notices superseded. Live status and events:
+final/out/v11_concept_inputs/{status.json,stage_events.jsonl}.
+
+2026-11-04 TERMINAL COMPLETE supersedes all running/offline notices: concept-inputs
+controller95119exited0,serviceinactive.164input/result records,156eligible tasks,
+8explicit skips;1437evaluatedbase-passPUTs after17userresourceexclusions (original
+sourcecohort1634/1465;11more basepasses in original shortfall tasks not evaluated).
+Raw own-run detections plain72/18tasks vs v11_concept90/24tasks;validinputs1530/
+1528. Primarytask-matched validbudget macro.05211895vs.05259972,p=.970303,
+taskwins5–5;85of156pairszero validbudget. No demonstrated matched conceptgain.
+312testergenresponses;conceptprep1437records(273imported/1164computed),19failures,
+2342cards,4984received/4987prep invocations,2,085,985knownpreptokens;historical
+mining1192requestkeys referenced separately. These are terminal counts,not old
+completedv1'splain78. Summary totals,all164inputfreezehashes,1437denominator,and
+excludedPUTabsencefromevaluation verifiedread-only. REPORT.md and
+modular_summary.json in final/out/v11_concept_inputs;no newexecution/commit/push.
+
+2026-11-04 user requests continue: prior endpointB models200/tokenizerOK,
+expectedqwen27/context8192;other prior endpoint still404.107reviewed source/plan
+hashes verified,1693completed primaryartifacts snapshotted. Service restarted
+PID95119with --v11-resource-exclusions flag;fresh task142concept-extraction started
+verified against newstatus/filemtime (oldfailed event must not count asresume).
+Resumes142inputrecords;17user-authorized PUTexclusions active;expected1437evaluated.
+FullV11 remains stopped;no regeneration/sourcechange/retrycapreset or commit.
+This supersedes endpoint-offline notices below;inspectlivefilesforprogress.
+
+2026-11-04 latest user explicitly authorizes excluding likely expensive remaining
+PUTs from BOTH concept preparation and evaluation (not preparation-only skips).
+Reviewed181unfinished base-pass sources;exclude17:144/9;147/1,2,3,5,6,7,9;
+150/0,2,3,4,6,7,8,9;160/6. Source/spec/cohort-bound plan in
+final/review/resource_risk/resource_exclusions.json and run output. OptionalCLI
+--v11-resource-exclusions filters context before mining,sharedBOTH-arm prompts,
+witnesssampling,evaluation;160explicitall-base-pass-excludedskip. Original frozen
+cohort unchanged;expected evaluated1454→1437. Existing completedfailedrecords
+notreclassified.56checks+independentreviewpass;PREREGamendmentrecorded.
+Originalmanifest+6oldsourcefiles+19514cachedartifacthashes archived/preserved in
+resume_audit/resource_exclusions_20261104T124232Z;runmanifest amended withplan,
+source/config changes only.17exclusionmarkers appliedoffline,no model/PUTexec.
+Service flagconfigured but serviceFAILED/MainPID0 aftertokenize404;bothprevious
+endpointsmodels404. Readinessready_waiting_endpoint;cached142inputrecords/
+1273conceptrecords atstartofaudit. Resume only whenendpointworking,withnewflag;
+no newversionfolder orcommit/push. Updatedcode stayslocal forreview.
+
+2026-11-04 diagnosis of task139(special_factorial) slowness: saved mining strategy
+is st.tuples(st.integers(min_value=1)),no upper bound. Original facts fuzz400inputs;
+completed task139caches contain huge n (e.g.3762591980434786304). PUT9computes list
+of math.factorial(i) for i=1..n then product. Per-call trace has20s wall safety net,
+coverage1s,outerfacts3600s; many huge/slow inputs multiply cost.7of9base-pass PUTs
+in task139now preparation_failed after3600s each;other2facts finished554.1s/135.2s.
+Worker had realCPUprogress before its timeout,so evidence supports expensive
+unbounded fuzzing rather than the earlier zeroCPUcoverage deadlock. No stack could
+be captured once worker exited;do not claim exact inner loop stack measured.
+Service83538subsequentlyfailed tokenize404 again;verify checkpoint counts from
+actual files before resume. No runtime/method sourcechange.
+
 2026-11-03 latest user instruction authorizes splitting current changes into
 commits on main, superseding earlier leave-uncommitted notices for these changes.
 Groups: V11runtime/adapters, modernconceptarm, fourcourse development subsets,
