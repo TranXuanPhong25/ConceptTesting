@@ -1,5 +1,62 @@
 # CHANGELOG
 
+## 2026-11-04 — injectable input generator and explicit validation blocks
+
+- User requests removing initial concept stages from the main flow and making
+  input generation injectable. Core now depends on `InputGenerator`; methods or
+  input-producing stages compose through `MethodInputGenerator` without requiring
+  ExperimentArm inheritance, concept packets or a model backend.
+- Default method is now plain. Modern plain/boundary use lightweight eligibility/
+  visibility preparation; core no longer imports/constructs concept or witness
+  stages. Original generation steps remain in an explicit legacy adapter for
+  archived experiments; CLI requires --legacy-generation for those methods.
+- Shared output contract validates task/method batches and literals before
+  checkpoint/freeze. Reference/oracle/evaluation consume the same named batches
+  from every generator. Manifest freezes generator source/config; read-only replay
+  never invokes a producer on a missing checkpoint.
+- Extract selection/generation response validation, per-input validation and task
+  signature validation into named functions. Mark validation call sites/API/
+  context/cache/reference checks with VALIDATION START / VALIDATION END comments.
+- Full regression93checks pass, including8new injection tests: independent producer,
+  ordinary input stage, no-model/no-packet flow, invalid output rejection, config
+  invalidation, default no-concept flow, checkpoint/replay and all-task freeze.
+- No live model or cohort benchmark, source-copying, commit or push.
+
+## 2026-11-04 — integrate boundary into the main modular pipeline
+
+- Add opt-in `BoundaryArm` / `--arms boundary`, keeping default arms unchanged.
+  Split the existing task input budget equally across template-eligible visible
+  PUTs; fixed shares, no fallback or redistribution; deduplicate merged inputs.
+- Reuse generation freeze, trusted contract/reference oracle, PUT evaluation and
+  existing caches. Report boundary task/PUT statuses and logical selection/input
+  calls through generic arm summary hooks, compatible with V11 reporting.
+- Boundary-only generation bypasses shared prompts, CFG/DFG analysis and witness
+  sampling. Empty suites do not execute reference/PUT code; arm skip survives
+  evaluation. Existing arm prompts and historical replay stay covered by regression.
+- Add explicit CLI task subset, target-program count and task input budget flags
+  so the saved1PUT/task smoke cohort can run through the main entry point.
+- Validation:11new integration checks; full modular suite85pass. Only synthetic
+  fixtures and their sandbox executions; no live model/cohort benchmark or commit.
+
+## 2026-11-04 — BoundaryValueAnalysis module
+
+- Implement user-requested per-PUT flow in `boundary_value_analysis/`: input type
+  extraction → reusable templates → LLM boundary/domain selection → LLM inputs.
+- Source types from saved input calls plus PUT/task annotations without executing
+  PUTs. Support scalar, length, numeric elements and sum; relational thresholds
+  may reference another input value/length/sum. Preserve type provenance.
+- Explicit no-template/no-boundary/unsupported/invalid/no-input statuses; no plain
+  fallback. Two logical LLM calls maximum, configured budgets and prompt limits.
+- Check quote presence, schema, literals, signatures, exact declared boundary
+  targets and duplicate inputs. Prose constraints remain explicitly unverified;
+  external contract/reference validation is still required before scoring.
+- Immutable input/source/config/model identities, per-PUT lock, stage checkpoints,
+  transport-error propagation and read-only replay. Existing ModelCalls transport
+  and artifact store reused; no registration as a default benchmark arm.
+- Validation:41engineering checks pass; offline type/template extraction succeeds
+  on all6saved boundary-smoke PUTs with0rejected observations. No real LLM/PUT/
+  reference calls, no detection results, no commit/push.
+
 ## 2026-11-04 — prospective resource exclusions requested by user
 
 - Audit181remaining PUTs,exclude17source-bound likely resource-heavy programs

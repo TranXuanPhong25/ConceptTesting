@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from ..context import TaskContext
+from ..context import TaskContext, JsonObject
 
 
 class PipelineStage(ABC):
@@ -13,8 +13,8 @@ class PipelineStage(ABC):
         return ()
 
     @abstractmethod
-    def run(self, context: TaskContext) -> None:
-        """Read explicit context fields, then fill the fields needed by later stages."""
+    def run(self, context: TaskContext) -> JsonObject | None:
+        """Update context; input-producing stages may return a batch for MethodInputGenerator."""
 
     def configuration(self) -> dict:
         """Override when a custom stage introduces configurable behavior."""

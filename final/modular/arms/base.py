@@ -11,6 +11,9 @@ from ..context import TaskContext, JsonObject
 class ExperimentArm(ABC):
     name: str
     uses_model: bool = True
+    uses_shared_prompt: bool = True
+    requires_classical_analysis: bool = True
+    requires_witness_pool: bool = True
 
     def preparation_stages(self):
         """Optional analysis stages; test-generation mechanics stay shared."""
@@ -22,6 +25,13 @@ class ExperimentArm(ABC):
 
     def extend_analysis(self, context, visible_programs, analysis):
         """Attach this arm's guidance before the shared prompt is budgeted."""
+
+    def extend_summary(self, contexts, summary, reporting):
+        """Optional arm-specific accounting after shared evaluation/reporting."""
+
+    def render_summary(self, summary):
+        """Optional report text; default arms preserve the historical report."""
+        return ""
 
     def configuration(self) -> dict:
         if vars(self):

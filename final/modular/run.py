@@ -9,18 +9,33 @@ from final.run import load_tasks
 from .artifacts import ArtifactStore
 from .calls import RecoveryModelCalls
 from .pipeline import BenchmarkPipeline
-from .arms import available_arms, default_arms, selected_arms
+from .context import PipelineSettings
+from .arms import available_arms, LEGACY_METHOD_NAMES, default_arms, selected_arms
 from final.pipeline import save
 from final.experiments.concept_reference_v1_recovery.keepalive import KeepAlive
+
+
+def positive_integer(value):
+    number = int(value)
+    if number < 1:
+        raise argparse.ArgumentTypeError("Expected a positive integer")
+    return number
 
 
 def main(arguments=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--mode", choices=("replay", "run"), default="replay")
     parser.add_argument("--cohort", type=Path, default=Path("final/out/cohorts/qwen35_27b_humaneval164/cohort.json"))
-    parser.add_argument("--artifacts", type=Path, default=Path("final/out/concept_reference_v1_recovery"))
-    parser.add_argument("--arms", nargs="+", choices=[arm.name for arm in available_arms()],
-                        help="Choose run types; replay of the original run requires all six")
+    parser.add_argument("--artifacts", type=Path, default=Path("final/out/modular_pipeline"))
+    parser.add_argument("--legacy-generation", action="store_true",
+                        help="Explicit compatibility mode for archived concept/witness arms")
+    parser.add_argument("--arms", nargs="+", choices=[arm.name for arm in available_arms()] + list(LEGACY_METHOD_NAMES),
+                        help="Input methods: plain (default), boundary; archived methods require --legacy-generation")
+    parser.add_argument("--task-ids", nargs="+", help="Explicit subset, e.g. HumanEval/0 HumanEval/18")
+    parser.add_argument("--target-programs", type=positive_integer, default=10,
+                        help="Expected frozen programs per task; use 1 for representative smoke cohorts")
+    parser.add_argument("--input-budget", type=positive_integer, default=20,
+                        help="Total input budget per arm per task, including the boundary arm")
     parser.add_argument("--v11-concept-cache", type=Path,
                         help="Read-only source of matching V11 concept bundles; default: existing runtimefix run")
     parser.add_argument("--v11-cache-only", action="store_true",
@@ -28,12 +43,23 @@ def main(arguments=None):
     parser.add_argument("--v11-resource-exclusions", type=Path,
                         help="Explicit source-bound resource exclusions from preparation, prompts and evaluation")
     options = parser.parse_args(arguments)
+    modern_names = {arm.name for arm in available_arms()}
+    if not options.legacy_generation and set(options.arms or ()) - modern_names:
+        parser.error("Archived concept/witness methods require explicit --legacy-generation")
     read_only = options.mode == "replay"
     artifacts = ArtifactStore(options.artifacts, read_only=read_only)
     arms = (selected_arms(options.arms, v11_cache_directory=options.v11_concept_cache,
                           v11_cache_only=options.v11_cache_only,
                           v11_resource_exclusions=options.v11_resource_exclusions)
             if options.arms else default_arms())
+    tasks = load_tasks()
+    if options.task_ids:
+        requested_ids = set(options.task_ids)
+        known_ids = {task["task_id"] for task in tasks}
+        if requested_ids - known_ids or len(requested_ids) != len(options.task_ids):
+            parser.error("--task-ids must contain unique known task IDs")
+        tasks = [task for task in tasks if task["task_id"] in requested_ids]
+    settings = PipelineSettings(target_programs=options.target_programs, input_budget=options.input_budget)
     calls = None
     if not read_only:
         # New experiments must have their own directory. Never modify a frozen v1 run.
@@ -44,14 +70,14 @@ def main(arguments=None):
             calls = RecoveryModelCalls(QwenModel(), artifacts)
     metadata_path = Path(__file__).resolve().parents[1] / "experiments/concept_reference_v1/data/contracts.json"
     metadata = json.loads(metadata_path.read_text())
-    pipeline = BenchmarkPipeline(options.cohort, artifacts, calls=calls, arms=arms)
+    pipeline = BenchmarkPipeline(options.cohort, artifacts, calls=calls, arms=arms, settings=settings)
     if read_only:
-        summary = pipeline.run(load_tasks(), metadata)
+        summary = pipeline.run(tasks, metadata)
     else:
         save(artifacts.path("status.json"), {"state": "running", "pid": os.getpid(), "updated_utc": time.time()})
         try:
             with KeepAlive(artifacts.directory):
-                summary = pipeline.run(load_tasks(), metadata)
+                summary = pipeline.run(tasks, metadata)
         except BaseException as error:
             details = error.details() if hasattr(error, "details") else None
             save(artifacts.path("status.json"), {"state": "interrupted", "pid": os.getpid(),

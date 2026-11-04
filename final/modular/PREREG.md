@@ -143,3 +143,85 @@ existing run's manifest through an audited user-authorized amendment, preserving
 the old manifest and all completed artifact hashes; no new source-version folder,
 no additional retries or changed sampler/model/oracle/call budgets. Resume only
 after independent review and engineering checks; do not restart fullV11.
+
+## 2026-11-04 — BoundaryValueAnalysis implementation, before live inference
+
+User authorizes a separate boundary module in the existing source tree. Flow:
+extract input types → candidate templates → LLM selects characteristic/threshold/
+constraints or no-boundary → LLM constructs inputs. No-template and no-boundary
+exit early; do not substitute plain generation. This is an implementation scope,
+not a registered efficacy benchmark or authorization for paid/full-cohort runs.
+
+Per PUT default: max4boundaries, max20input records, two logical LLM calls maximum,
+2048completion tokens each, selection temperature0, input temperature0.7,
+context8192, seed314159+tasknumber. Shared ModelCalls transport controls physical
+retries. Input type evidence uses saved base calls/annotations; no native analysis,
+reference code, plus inputs or expected outputs enter prompts. Up to12base examples
+are shown; duplicate filtering uses all saved base inputs. Supported initial
+characteristics: scalar numeric value, length, numeric elements, sum; relational
+thresholds may reference another supported scalar characteristic.
+
+Schema/quote validation is not semantic entailment. Literal/signature/target-hit
+checks are not proof of the LLM's prose domain constraints. Preserve unverified
+domain labels and require external contract/reference validation before bug scoring.
+No solver proof is inferred from failed construction. Persist unsupported,
+no-template, no-boundary, invalid, no-input and transport failures separately.
+
+Validation in this change is engineering fixtures and offline extraction on saved
+boundary smoke records only. Before a live method comparison, freeze selected
+PUTs/model and task-level budgets/controls, account for both LLM calls, obtain the
+required independent review, then freeze inputs before any reference outcomes.
+The module is not inserted into default arms or the running V11 experiment.
+
+## 2026-11-04 — main-pipeline boundary adapter, before live inference
+
+User requests integration into the main pipeline. Register opt-in `boundary`,
+without changing the default six arms or launching an experiment. Use retained
+base-passing programs in the shared visibility order. Determine template eligibility
+offline; divide the existing per-task input budget equally over eligible visible
+PUTs (at most input_budget PUTs), assigning remainder slots in visibility order.
+Unallocated PUTs have explicit budget-exhausted/no-template/unsupported statuses.
+Do not redistribute an unused share after seeing LLM selection or generation.
+
+Each allocated PUT has at most one selection and one construction logical call.
+Deduplicate merged task inputs and namespace concept IDs by owning PUT. All
+retained task PUTs are evaluated using the merged suite after the existing global
+generation freeze. Keep original domain/oracle validation and per-task denominator;
+an empty boundary arm contributes zero inputs/detections with an explicit status,
+not an outcome-dependent task exclusion. No ordinary/plain fallback is added.
+
+The input-count budget matches other arms, but logical/physical call budgets do
+not match one-call plain. Report descriptive results and both phase counts; do
+not automatically add an efficacy comparison claiming call matching. A future
+live comparison still needs its model/cohort/cost controls frozen and reviewed.
+
+Boundary-only preparation requires neither classical graph analysis nor witness
+sampling. Mixed runs retain requirements of the other selected arms. Empty total
+suites skip native oracle/PUT execution. API/CLI support explicit smoke subsets
+and target_programs1; default full-cohort settings are unchanged.
+Validation: engineering integration fixtures and historical-compatibility tests;
+no live model, HumanEval outcome computation or benchmark launch in this change.
+
+## 2026-11-04 — dependency inversion for input generation, no live experiment
+
+User requests moving validation into named functions/marked blocks and removing
+the initial concept-generation steps from the main flow. Main orchestration now
+accepts InputGenerator; optional preparation is provided by that dependency.
+Input-producing methods/stages return batches through MethodInputGenerator, or a
+custom generator returns the common task envelope directly. No mandatory concept
+packet or native analysis is required. Default generation is plain only; modern
+boundary/plain do not execute the former concept/witness stages. Explicit legacy
+selection retains archived protocol adapters and source/checkpoints.
+
+Shared format validation precedes inputs.json and the existing all-task generation
+freeze. Oracle/domain validation and PUT scoring remain after that freeze, using
+the same inputs schema. Generator class/config/helper sources enter the manifest;
+old protocol manifests are not silently migrated. New default output directory:
+final/out/modular_pipeline. Model/run budget selection and paid authorization are
+not changed by this structural refactor; no live run is launched.
+
+Engineering validation includes injectable model-free producers, custom ordinary
+input stages, literal/batch rejection before oracle execution, task-wide freeze,
+cache identity and read-only replay; old comparison fixtures use legacy_arms()
+explicitly. The validation reorganization keeps checks enabled and does not claim
+that schema/quote validation proves LLM semantic constraints.

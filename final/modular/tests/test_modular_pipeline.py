@@ -13,7 +13,7 @@ from final.experiments.concept_reference_v1.prompts import messages as historica
 from final.experiments.concept_reference_v1.benchmark import generate_inputs
 from final.experiments.concept_reference_v1_recovery.benchmark import score_task, report
 from final.experiments.concept_reference_v1.tests.test_concept_benchmark import FixtureModel, TASK, META
-from final.modular.arms import default_arms
+from final.modular.arms import legacy_arms
 from final.modular.artifacts import ArtifactStore
 from final.modular.calls import CachedModelCalls, RecoveryModelCalls
 from final.modular.context import TaskContext, PipelineSettings
@@ -69,7 +69,7 @@ def cached_run(tmp_path):
 def test_all_arm_prompts_match_frozen_implementation(cached_run):
     cohort_path, cohort_task, output_directory, summary = cached_run
     packet = json.loads((output_directory / "tasks/0/packet.json").read_text())
-    for arm in default_arms():
+    for arm in legacy_arms():
         if arm.uses_model:
             assert arm.build_messages(packet) == historical_messages(packet["common"], arm.name, packet["analysis"], packet["witnesses"])
 
@@ -82,7 +82,7 @@ def test_full_stage_replay_reconstructs_inputs_outcomes_and_entire_summary(cache
 
     for module_name in ("reference_oracle", "put_evaluation", "witness_sampling"):
         monkeypatch.setattr(f"final.modular.stages.{module_name}.execute", forbidden_execution)
-    pipeline = BenchmarkPipeline(cohort_path, ArtifactStore(output_directory, read_only=True))
+    pipeline = BenchmarkPipeline(cohort_path, ArtifactStore(output_directory, read_only=True), arms=legacy_arms())
     actual_summary = pipeline.run([TASK], {TASK["task_id"]: META})
     assert actual_summary == expected_summary
     assert actual_summary["arms"]["classical"]["detected"] == 8
@@ -100,7 +100,7 @@ def test_custom_stage_is_inserted_and_tracks_its_dependency(cached_run):
         def run(self, context):
             context.extensions["card_count"] = len(context.packet["analysis"]["classical"])
 
-    pipeline = BenchmarkPipeline(cohort_path, ArtifactStore(output_directory, read_only=True))
+    pipeline = BenchmarkPipeline(cohort_path, ArtifactStore(output_directory, read_only=True), arms=legacy_arms())
     pipeline.insert_stage(TraceStage(), after="concept_analysis")
     assert pipeline.run([TASK], {TASK["task_id"]: META}) == expected_summary
     stage_names = [event["stage"] for event in pipeline.stage_events if event["state"] == "complete"]
@@ -117,7 +117,7 @@ def test_invalid_stage_insertion_rolls_back(cached_run):
         def run(self, context):
             raise AssertionError("Invalidly ordered stage must not run")
 
-    pipeline = BenchmarkPipeline(cohort_path, ArtifactStore(output_directory, read_only=True))
+    pipeline = BenchmarkPipeline(cohort_path, ArtifactStore(output_directory, read_only=True), arms=legacy_arms())
     with pytest.raises(ValueError, match="requires earlier"):
         pipeline.insert_stage(InvalidStage(), after="concept_analysis")
     assert all(stage.name != "invalid" for stage in pipeline.generation_stages)
@@ -172,7 +172,7 @@ def test_new_run_config_changes_cannot_reuse_previous_inputs(cached_run, tmp_pat
     # The writer already happened in the frozen cohort; use tester fixture behavior.
     model.writer_calls = 2
     calls = FixtureCalls(model, new_directory)
-    pipeline = BenchmarkPipeline(cohort_path, artifacts, calls=calls)
+    pipeline = BenchmarkPipeline(cohort_path, artifacts, calls=calls, arms=legacy_arms())
     result = pipeline.run([TASK], {TASK["task_id"]: META})
     assert result["arms"] == expected_summary["arms"]
     assert model.writer_calls == 2
@@ -186,7 +186,8 @@ def test_new_run_config_changes_cannot_reuse_previous_inputs(cached_run, tmp_pat
     with pytest.raises(ValueError, match="modular_manifest"):
         pipeline.run([TASK], changed_metadata)
     with pytest.raises(ValueError, match="modular_manifest"):
-        changed = BenchmarkPipeline(cohort_path, artifacts, calls=calls, settings=replace(PipelineSettings(), input_seed=7))
+        changed = BenchmarkPipeline(cohort_path, artifacts, calls=calls, arms=legacy_arms(),
+                                    settings=replace(PipelineSettings(), input_seed=7))
         changed.run([TASK], {TASK["task_id"]: META})
     with pytest.raises(ValueError, match="modular_manifest"):
         pipeline.run([dict(TASK, canonical_solution="    return 999\n")], {TASK["task_id"]: META})

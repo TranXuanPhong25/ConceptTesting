@@ -56,3 +56,43 @@ original manifest/source snapshots.17PUTs excluded with explicit user selection
 from preparation,prompts and evaluation;source cohort unchanged. No new model
 completion,reference evaluation or native PUT execution during this amendment.
 Both available endpoint histories currently return404;resume readiness is saved.
+
+## 2026-11-04 — BoundaryValueAnalysis module
+
+41engineering checks pass using scripted LLM responses: type provenance and
+no-code-execution extraction,0/1/2call paths,strict boundary schema/source quotes,
+invalid/truncated responses,relational and adjacent-float targets,literal parsing,
+signature binding,duplicate filtering,input budget,transport resume,source/model/
+config identity,read-only replay and concurrent-controller lock.
+
+Offline extraction on the existing6PUT boundary smoke cohort succeeded for
+HumanEval0,18,81,99,120,5 (PUT0each),with0rejected observations. Candidate counts
+4/2/3/1/4/4,respectively. This only verifies extraction/template plumbing; it does
+not measure semantic selection,input generation quality or bug detection.
+No live model call,native PUT execution,reference outcome or benchmark launch.
+
+## 2026-11-04 — boundary integration into BenchmarkPipeline
+
+Full `final/modular/tests` suite: **85 passed** (60.93s), including41module checks,
+11new integration checks and existing modular/V11/resource-exclusion checks.
+
+New checks exercise opt-in registration,V11 reporting composition,fixed task-budget
+allocation,unsupported/no-template/no-boundary/budget skip paths,cross-PUT duplicate
+filtering,avoidance of unrelated graph/witness work,CLI subset/settings plumbing,
+generation freeze,real sandbox reference/PUT evaluation on tiny synthetic programs,
+two-call accounting,plain+boundary coexistence,checkpoint reuse and read-only replay.
+Empty suites demonstrably execute no reference/PUT code. Existing default prompt
+and historical fixture replay tests pass. No live model or real cohort benchmark.
+
+## 2026-11-04 — input-generator dependency inversion
+
+Full modular suite: **93 passed** (62.88s). Eight new checks verify the modern
+default flow has no concept/witness work, direct injected generation requires no
+arm/packet/model, an ordinary PipelineStage can produce an input batch, malformed
+outputs are rejected before input checkpoint/freeze/reference, generator config
+drift fails before execution, and every task generates before any reference runs.
+Cache resume/replay and prior boundary integration/legacy parity checks pass.
+
+Validation code is now named methods with START/END blocks at call sites. No
+validation policy was disabled. Only engineering fixtures and tiny synthetic
+sandbox programs were executed; no live model or real-cohort result computation.

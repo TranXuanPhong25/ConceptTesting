@@ -13,15 +13,12 @@ from dataclasses import asdict
 from pathlib import Path
 
 from final.pipeline import digest
-from .arms import default_arms
-from .arms.toolinput import ToolInputArm
+from .generators import InputGenerator, default_input_generator, generator_for_arms
 from .artifacts import ArtifactStore
 from .calls import CachedModelCalls
 from .context import PipelineSettings, TaskContext
 from .stages.base import PipelineStage
 from .stages.frozen_cohort import FrozenCohortStage
-from .stages.concept_analysis import ConceptAnalysisStage
-from .stages.witness_sampling import WitnessSamplingStage
 from .stages.input_generation import InputGenerationStage
 from .stages.reference_oracle import ReferenceOracleStage
 from .stages.put_evaluation import PutEvaluationStage
@@ -30,51 +27,29 @@ from .stages.reporting import ReportingStage
 
 class BenchmarkPipeline:
     def __init__(self, cohort_path: Path, artifacts: ArtifactStore, *, arms=None,
-                 settings: PipelineSettings | None = None, calls=None):
+                 settings: PipelineSettings | None = None, calls=None,
+                 input_generator: InputGenerator | None = None):
         self.artifacts = artifacts
         self.settings = settings or PipelineSettings()
-        self.arms = tuple(default_arms() if arms is None else arms)
-        self.validate_arm_names()
+        if input_generator is not None and arms is not None:
+            raise ValueError("Inject input_generator or supply arms, not both")
+        if input_generator is None:
+            input_generator = default_input_generator() if arms is None else generator_for_arms(arms)
+        self.input_generator = input_generator
+        # Compatibility surface for callers inspecting selected legacy arms.
+        self.arms = tuple(getattr(input_generator, "methods", ()))
         self.calls = calls
         if self.artifacts.read_only and calls is not None and not isinstance(calls, CachedModelCalls):
             raise ValueError("Read-only replay only accepts cached model calls")
         if self.artifacts.read_only and calls is None:
             self.calls = CachedModelCalls(artifacts)
         self.cohort_stage = FrozenCohortStage(cohort_path)
-        self.reporting_stage = ReportingStage()
-        reporting_extension = None
-        preparation_stages = {}
-        for arm in self.arms:
-            arm_reporting = arm.reporting_stage()
-            if arm_reporting is not None:
-                if reporting_extension is not None and (
-                    type(reporting_extension) is not type(arm_reporting)
-                    or reporting_extension.configuration() != arm_reporting.configuration()
-                ):
-                    raise ValueError("Conflicting arm reporting extensions")
-                reporting_extension = arm_reporting
-            for stage in arm.preparation_stages():
-                previous = preparation_stages.get(stage.name)
-                if previous is not None and previous.configuration() != stage.configuration():
-                    raise ValueError(f"Conflicting preparation stage configuration: {stage.name}")
-                preparation_stages[stage.name] = stage
-        if reporting_extension is not None:
-            self.reporting_stage = reporting_extension
+        self.reporting_stage = input_generator.reporting_stage() or ReportingStage()
         self.generation_stages = [
-            self.cohort_stage, *preparation_stages.values(), ConceptAnalysisStage(self.arms),
-            WitnessSamplingStage(ToolInputArm()), InputGenerationStage(self.arms),
+            self.cohort_stage, *input_generator.preparation_stages(), InputGenerationStage(input_generator),
         ]
         self.evaluation_stages = [ReferenceOracleStage(), PutEvaluationStage(), self.reporting_stage]
         self.stage_events = []
-
-    def validate_arm_names(self):
-        names = set()
-        for arm in self.arms:
-            if not arm.name or not arm.name.replace("_", "").isalnum() or arm.name in names:
-                raise ValueError("Arm names must be unique nonempty identifiers")
-            names.add(arm.name)
-        if not names:
-            raise ValueError("At least one arm is required")
 
     def insert_stage(self, stage: PipelineStage, *, after: str):
         """Add a stage without changing orchestration code or a central switch."""
@@ -122,6 +97,7 @@ class BenchmarkPipeline:
                 context.inputs_frozen = True
                 self.execute_stages(self.evaluation_stages, context)
             summary = self.reporting_stage.build_summary(contexts, self.cohort_stage.cohort)
+            self.input_generator.extend_summary(contexts, summary, self.reporting_stage)
             if self.artifacts.read_only and self.artifacts.exists("summary.json"):
                 historical_summary = self.artifacts.read("summary.json")
                 if historical_summary != summary:
@@ -129,7 +105,9 @@ class BenchmarkPipeline:
             else:
                 self.artifacts.write("modular_summary.json", summary)
             if not self.artifacts.read_only:
-                self.artifacts.path("REPORT.md").write_text(self.reporting_stage.render(summary))
+                report_text = self.reporting_stage.render(summary)
+                report_text += self.input_generator.render_summary(summary)
+                self.artifacts.path("REPORT.md").write_text(report_text)
             return summary
 
     def execute_stages(self, stages, context):
@@ -227,6 +205,8 @@ class BenchmarkPipeline:
                                          "name": arm.name, "configuration": arm.configuration()})
                 if historical["arms"] != current_arms:
                     raise ValueError("Modular replay arms mismatch")
+                if historical.get("input_generator") != self.generator_configuration():
+                    raise ValueError("Modular replay input generator mismatch")
                 current_stages = []
                 for stage in self.generation_stages + self.evaluation_stages:
                     current_stages.append({"name": stage.name, "class": type(stage).__module__ + "." + type(stage).__qualname__,
@@ -256,9 +236,10 @@ class BenchmarkPipeline:
         for task_id in task_ids:
             selected_metadata[task_id] = metadata[task_id]
         self.artifacts.write("modular_manifest.json", {
-            "protocol": "class-based-refactor-v1", "tasks": task_ids,
+            "protocol": "injectable-input-generator-v1", "tasks": task_ids,
             "cohort_sha256": self.cohort_stage.cohort["cohort_sha256"],
             "settings": asdict(self.settings), "stages": stages, "arms": arm_classes,
+            "input_generator": self.generator_configuration(),
             "sources": self.source_hashes(), "metadata_sha256": digest(selected_metadata),
             "task_data_sha256": digest(tasks),
             "model": self.calls.model_id if self.calls is not None else None,
@@ -282,7 +263,9 @@ class BenchmarkPipeline:
                 source_paths.add(source_path)
         for stage in self.generation_stages + self.evaluation_stages:
             source_paths.update(stage.source_dependencies())
-        for instance in self.generation_stages + self.evaluation_stages + list(self.arms):
+        source_paths.update(self.input_generator.source_dependencies())
+        dependencies = list(self.input_generator.dependency_objects())
+        for instance in self.generation_stages + self.evaluation_stages + [self.input_generator] + dependencies:
             source_paths.add(Path(inspect.getfile(type(instance))).resolve())
         if self.calls is not None:
             source_paths.add(Path(inspect.getfile(type(self.calls))).resolve())
@@ -292,6 +275,10 @@ class BenchmarkPipeline:
         for source_path in sorted(source_paths):
             result[str(source_path)] = hashlib.sha256(source_path.read_bytes()).hexdigest()
         return result
+
+    def generator_configuration(self):
+        return {"class": type(self.input_generator).__module__ + "." + type(self.input_generator).__qualname__,
+                "configuration": self.input_generator.configuration()}
 
     @contextmanager
     def run_lock(self):

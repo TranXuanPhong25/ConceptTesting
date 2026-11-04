@@ -31,7 +31,8 @@ class PutEvaluationStage(PipelineStage):
                     "atol": context.metadata["atol"], "timeout": context.settings.timeout_seconds,
                     "seed": context.settings.reference_seed + context.task_number,
                 }
-                result = context.artifacts.load_or_compute(relative_path, lambda: execute(job))
+                result = context.artifacts.load_or_compute(
+                    relative_path, lambda: execute(job) if context.oracle["tests"] else {"tests": []})
                 repeated_results.append(result["tests"])
             failing_indices = []
             unstable_indices = []
@@ -54,6 +55,10 @@ class PutEvaluationStage(PipelineStage):
                 "valid_inputs": len(selected_indices), "detected_put_ids": detected_programs,
                 "detected": len(detected_programs),
             }
+            generation_record = context.inputs["arms"][arm_name]
+            if "status" in generation_record:
+                arm_results[arm_name]["generation_status"] = generation_record["status"]
+                arm_results[arm_name]["generation_skip"] = generation_record.get("skip")
         return {
             "task_id": context.task["task_id"], "base_pass": len(passing_programs), "arms": arm_results,
             "arm_indices": context.oracle["arm_indices"], "outcomes": program_outcomes,

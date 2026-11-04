@@ -39,14 +39,22 @@ class ConceptAnalysisStage(PipelineStage):
                 reason = "all_base_pass_resource_excluded"
             context.packet = {"task_id": context.task["task_id"], "skip": reason}
             return
-        requires_model = any(arm.uses_model for arm in self.arms)
+        shared_model_arms = [arm for arm in self.arms if arm.uses_model and arm.uses_shared_prompt]
+        requires_model = bool(shared_model_arms)
         if context.calls is None and requires_model:
             raise RuntimeError("Preparing new prompts requires tokenization")
         visible_programs = sorted(passing_programs, key=lambda program: hashlib.sha256(
             f"{context.task_number}:{program['id']}".encode()).hexdigest())
         while visible_programs:
-            common_text = common_prompt(context.task, visible_programs, context.metadata["contract"], context.settings.input_budget)
-            analysis = analyze_task(dict(cohort_task, programs=visible_programs))
+            common_text = ""
+            if any(arm.uses_shared_prompt for arm in self.arms):
+                common_text = common_prompt(context.task, visible_programs, context.metadata["contract"], context.settings.input_budget)
+            if any(arm.requires_classical_analysis for arm in self.arms):
+                analysis = analyze_task(dict(cohort_task, programs=visible_programs))
+            else:
+                analysis = {"task_id": context.task["task_id"], "analyses": [], "classical": [],
+                            "contrastive": [], "placebo": [], "contrastive_available": False,
+                            "all_missing_cards": 0, "status": "not_requested"}
             for arm in self.arms:
                 arm.extend_analysis(context, visible_programs, analysis)
             for arm_name in ("classical", "contrastive", "placebo"):
@@ -54,15 +62,14 @@ class ConceptAnalysisStage(PipelineStage):
                     card["text"] = card["text"][:800]
             partial_packet = {"common": common_text, "analysis": analysis, "witnesses": []}
             token_counts = {}
-            for arm in self.arms:
-                if arm.uses_model and arm.name != "toolinput":
+            for arm in shared_model_arms:
+                if arm.name != "toolinput":
                     token_counts[arm.name] = context.calls.token_count(arm.build_messages(partial_packet))
             # With only toolinput selected, budget its common prompt even before
             # witness examples are added. The standard six-arm packet stays identical.
             if not token_counts:
-                for arm in self.arms:
-                    if arm.uses_model:
-                        token_counts[arm.name] = context.calls.token_count(arm.build_messages(partial_packet))
+                for arm in shared_model_arms:
+                    token_counts[arm.name] = context.calls.token_count(arm.build_messages(partial_packet))
             prompt_limit = context.settings.context_tokens - context.settings.input_tokens - 128
             if max(token_counts.values(), default=0) <= prompt_limit:
                 break
@@ -77,3 +84,6 @@ class ConceptAnalysisStage(PipelineStage):
             "task_id": context.task["task_id"], "visible_put_ids": visible_identifiers,
             "common": common_text, "analysis": analysis, "prompt_tokens": token_counts,
         }
+        if not any(arm.requires_witness_pool for arm in self.arms):
+            context.packet["witnesses"] = []
+            context.packet["witness_sampling_status"] = "not_requested"

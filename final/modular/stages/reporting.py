@@ -83,14 +83,15 @@ class ReportingStage(PipelineStage):
         diagnostics = {"card_kinds": {}, "unsupported_graphs": 0, "visible_puts": 0,
                        "tasks_with_contrast": 0, "generation_rejections": {}, "oracle_rejections": {}}
         for context in contexts:
-            packet = context.packet
-            if packet.get("skip"):
+            packet = context.packet or {}
+            if context.inputs.get("skip"):
                 continue
-            diagnostics["visible_puts"] += len(packet["visible_put_ids"])
-            diagnostics["tasks_with_contrast"] += packet["analysis"]["contrastive_available"]
-            for program_analysis in packet["analysis"]["analyses"]:
+            diagnostics["visible_puts"] += len(packet.get("visible_put_ids", []))
+            analysis = packet.get("analysis", {})
+            diagnostics["tasks_with_contrast"] += analysis.get("contrastive_available", False)
+            for program_analysis in analysis.get("analyses", []):
                 diagnostics["unsupported_graphs"] += program_analysis["graph_error"] is not None
-            for card in packet["analysis"]["classical"]:
+            for card in analysis.get("classical", []):
                 self.increment(diagnostics["card_kinds"], card["kind"])
             for arm_name, arm_record in context.inputs["arms"].items():
                 for rejection in arm_record.get("rejected", []):

@@ -7,8 +7,10 @@ class ReferenceOracleStage(PipelineStage):
     requires = ("input_generation",)
 
     def run(self, context):
+        # VALIDATION START: generation must finish and freeze before oracle execution.
         if not context.inputs_frozen:
             raise RuntimeError("All task inputs must be frozen before reference execution")
+        # VALIDATION END: generation must finish and freeze before oracle execution.
         if context.inputs.get("skip"):
             return
         raw_inputs = []
@@ -28,7 +30,7 @@ class ReferenceOracleStage(PipelineStage):
         reference_runs = []
         for repeat_index in range(2):
             relative_path = context.task_directory + f"/oracle_{repeat_index}.json"
-            outcome = context.artifacts.load_or_compute(relative_path, lambda: execute(job))
+            outcome = context.artifacts.load_or_compute(relative_path, lambda: execute(job) if raw_inputs else {"tests": []})
             reference_runs.append(outcome["tests"])
         valid_tests = []
         rejected_inputs = []
@@ -38,6 +40,7 @@ class ReferenceOracleStage(PipelineStage):
         for raw_index, input_record in enumerate(raw_inputs):
             first_reference_result = reference_runs[0][raw_index]
             second_reference_result = reference_runs[1][raw_index]
+            # VALIDATION START: domain/reference acceptance, repeat stability and base duplicates.
             if first_reference_result["status"] != "ok" or second_reference_result["status"] != "ok":
                 rejected_inputs.append({"index": raw_index, "reason": "domain_or_reference_rejects",
                                         "outcomes": [first_reference_result, second_reference_result]})
@@ -50,6 +53,7 @@ class ReferenceOracleStage(PipelineStage):
             if input_key in base_input_keys:
                 rejected_inputs.append({"index": raw_index, "reason": "base_duplicate"})
                 continue
+            # VALIDATION END: domain/reference acceptance, repeat stability and base duplicates.
             if input_key not in valid_index_by_input_key:
                 valid_index_by_input_key[input_key] = len(valid_tests)
                 valid_tests.append({
