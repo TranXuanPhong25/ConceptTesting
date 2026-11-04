@@ -42,3 +42,17 @@
 - No model request, new benchmark input suite or outcome was produced for the
   new arm. No independent review of this new arm or efficacy claim is asserted.
   Changes are local and uncommitted for user review; no automatic launch.
+
+## 2026-11-04 — explicit resource exclusions
+
+56combined checks pass:26modular+14native-runtime+9development-selection+7new
+exclusion checks. New checks cover source/spec/cohort/plan integrity,early
+filtering before prompts/preparation,all-excludedtaskskip,denominator reduction,
+consistent evaluation membership,immutable resume markers and refusal of
+retroactive exclusions. Independent read-only review found no blocker.
+
+Audited manifest amendment preserved19514existing artifact hashes and the
+original manifest/source snapshots.17PUTs excluded with explicit user selection
+from preparation,prompts and evaluation;source cohort unchanged. No new model
+completion,reference evaluation or native PUT execution during this amendment.
+Both available endpoint histories currently return404;resume readiness is saved.

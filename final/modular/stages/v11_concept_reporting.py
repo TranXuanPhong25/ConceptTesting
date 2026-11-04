@@ -26,12 +26,12 @@ class V11ConceptReportingStage(ReportingStage):
             for record in context.extensions.get("v11_concepts", []):
                 preparation["programs"] += 1
                 preparation["concept_cards"] += len(record["cards"])
-                preparation["failed_programs"] += record["state"] != "complete"
+                preparation["failed_programs"] += record["state"] == "preparation_failed"
                 provenance = record["provenance"]
                 if provenance["origin"] == "imported":
                     preparation["imported_programs"] += 1
                     historical_requests.update(provenance["historical_mining_request_keys"])
-                else:
+                elif provenance["origin"] == "computed":
                     preparation["computed_programs"] += 1
         preparation["historical_mining_requests_referenced"] = len(historical_requests)
         requests_directory = contexts[0].artifacts.directory / "v11_concept_preparation/requests"
@@ -44,10 +44,26 @@ class V11ConceptReportingStage(ReportingStage):
             preparation["responses_with_missing_usage_footer"] += usage.get("usage_footer_complete") is False
         preparation["unknown"] = preparation["invocations"] - preparation["received"]
         summary["v11_concept_preparation"] = preparation
+        exclusions = [record for context in contexts for record in context.extensions.get("resource_exclusions", [])]
+        if exclusions:
+            summary["resource_exclusions"] = {
+                "programs": len(exclusions), "records": exclusions,
+                "scope": "preparation_prompt_and_evaluation",
+                "original_cohort_base_pass": summary["base_pass"],
+                "cohort_base_pass_after_exclusions": summary["base_pass"] - len(exclusions),
+                "actually_evaluated_base_pass": summary["evaluated_base_pass"],
+            }
         return summary
 
     def render(self, summary):
-        return super().render(summary) + (
+        exclusion_note = ""
+        if summary.get("resource_exclusions"):
+            exclusions = summary["resource_exclusions"]
+            exclusion_note = (f"\nResource exclusions: {exclusions['programs']} PUTs omitted from concept preparation, "
+                              "test-generation prompts and evaluation for BOTH arms. "
+                              f"Actually evaluated base passes: {exclusions['actually_evaluated_base_pass']}. "
+                              "The frozen-source cohort counts above describe the original cohort.\n")
+        return super().render(summary) + exclusion_note + (
             "\nV11 concept preparation is accounted separately from the one-call inputs-only tester. "
             "Imported mining costs are historical shared costs, not zero-cost concept construction. "
             "No V11 hybrid/assertion/expected-output generation is used by this arm.\n\n"

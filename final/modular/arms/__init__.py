@@ -15,7 +15,8 @@ def available_arms():
     return default_arms() + (V11ConceptArm(),)
 
 
-def selected_arms(names, *, v11_cache_directory=None, v11_cache_only=False):
+def selected_arms(names, *, v11_cache_directory=None, v11_cache_only=False,
+                  v11_resource_exclusions=None):
     available = {}
     for arm in available_arms():
         available[arm.name] = arm
@@ -23,6 +24,8 @@ def selected_arms(names, *, v11_cache_directory=None, v11_cache_only=False):
         configuration = {"cache_only": v11_cache_only}
         if v11_cache_directory is not None:
             configuration["cache_directory"] = v11_cache_directory
+        if v11_resource_exclusions is not None:
+            configuration["resource_exclusions"] = v11_resource_exclusions
         available["v11_concept"] = V11ConceptArm(**configuration)
     result = []
     for name in names:

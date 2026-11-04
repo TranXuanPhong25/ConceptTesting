@@ -111,3 +111,35 @@ existing bounded physical retries, checkpoint reuse and separately accounted
 20minute keepalive. Default replay remains read-only. Prelaunch metadata/probe
 confirmed expected model/context8192; probe17tokens is diagnostic, not arm cost.
 Independent read-only review and engineering checks required before first outcome.
+
+## 2026-11-04 user-authorized prospective resource exclusions
+
+User requested inspecting remaining PUTs for task139-like resource blowups and
+explicitly selected excluding those programs from BOTH concept preparation and
+result evaluation. This supersedes the initially suggested preparation-only skip.
+
+Review181unfinished base-pass PUTs using source/algorithmic resource cost, without
+reference outcomes, model generation or executing candidate PUTs. Exclude17:
+HumanEval144/PUT9;147/PUT1,2,3,5,6,7,9;150/PUT0,2,3,4,6,7,8,9;160/PUT6.
+Reasons/source hashes/spec hashes are frozen in the resource-exclusion plan.
+These are prospective likely-cost decisions, not proofs of timeout or incorrectness.
+Keep constant-time147/0,4,8 and modular primality150/5. Do not erase/reclassify
+previously completed/failed preparations such as task139.
+
+An optional resource-exclusion plan filters task-local programs before concept
+extraction; the filtered task context is used by analysis, BOTH arm prompts, witness
+sampling and evaluation. Source cohort file remains unchanged. Preserve original
+generation count; recompute retained base-pass count. An affected task with zero
+retained base passes is explicitly skipped (160). Compare both arms on identical
+retained PUTs and report exclusions with source/effective/evaluated denominators.
+Original eligible1454basepass minus17exclusions gives1437planned evaluated PUTs,
+subject to the existing explicit task skips; source cohort remains1634/1465basepass.
+
+Per-task exclusion markers must precede any task prompt/input/oracle/result and
+remain immutable. Refuse retrospective application to a generated task without
+the existing same marker. No affected task has a generated packet/input at review.
+Hash the exclusion plan in arm/stage config and source dependencies. Update the
+existing run's manifest through an audited user-authorized amendment, preserving
+the old manifest and all completed artifact hashes; no new source-version folder,
+no additional retries or changed sampler/model/oracle/call budgets. Resume only
+after independent review and engineering checks; do not restart fullV11.

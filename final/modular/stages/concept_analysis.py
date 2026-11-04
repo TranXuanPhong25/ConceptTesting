@@ -35,6 +35,8 @@ class ConceptAnalysisStage(PipelineStage):
                 passing_programs.append(program)
         if cohort_task["generated"] != context.settings.target_programs or not passing_programs:
             reason = "generation_shortfall" if cohort_task["generated"] != context.settings.target_programs else "no_base_pass"
+            if reason == "no_base_pass" and cohort_task.get("resource_exclusions"):
+                reason = "all_base_pass_resource_excluded"
             context.packet = {"task_id": context.task["task_id"], "skip": reason}
             return
         requires_model = any(arm.uses_model for arm in self.arms)

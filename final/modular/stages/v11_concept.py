@@ -18,6 +18,7 @@ from final.v11_clean_runtimefix.sandbox import V11Sandbox, WorkerStalled
 from final.experiments.concept_reference_v1_recovery.model import TransportError
 from final.experiments.concept_reference_v1_recovery.checkpoint import CompletionRetryLimit
 from .base import PipelineStage
+from .resource_exclusions import ResourceExclusionPlan
 from ..calls import V11PreparationCalls
 
 
@@ -101,25 +102,34 @@ class V11ConceptStage(PipelineStage):
     name = "v11_concept_extraction"
     requires = ("frozen_cohort",)
 
-    def __init__(self, cache_directory=None, *, cache_only=False):
+    def __init__(self, cache_directory=None, *, cache_only=False, resource_exclusions=None):
         self.cache_directory = Path(cache_directory).resolve() if cache_directory is not None else None
         self.cache_only = cache_only
         self.calls = None
         self.sandbox = None
+        self.exclusion_plan = ResourceExclusionPlan(resource_exclusions) if resource_exclusions is not None else None
 
     def source_dependencies(self):
-        return tuple(Path(filename) for filename in method_source_hashes())
+        dependencies = tuple(Path(filename) for filename in method_source_hashes())
+        if self.exclusion_plan is not None:
+            dependencies += (self.exclusion_plan.path,)
+        return dependencies
 
     def configuration(self):
-        return {
+        configuration = {
             "cache_directory": str(self.cache_directory) if self.cache_directory is not None else None,
             "cache_only": self.cache_only,
             "method": "V11MiningStage+V11FactsStage;original-top3-with-spec-fallback",
             "worker_packages": WORKER_PACKAGES,
             "coverage_core": "pytrace",
         }
+        if self.exclusion_plan is not None:
+            configuration["resource_exclusions"] = self.exclusion_plan.configuration()
+        return configuration
 
     def run(self, context):
+        if self.exclusion_plan is not None:
+            self.exclusion_plan.apply(context, self.identity)
         cohort_task = context.cohort_task
         passing_programs = [program for program in cohort_task["programs"] if program["base"]["status"] == "pass"]
         if cohort_task["generated"] != context.settings.target_programs or not passing_programs:

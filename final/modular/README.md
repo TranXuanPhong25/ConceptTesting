@@ -152,3 +152,12 @@ Output directory mới là nơi giữ kết quả cấu hình mới, không ph�
 source mới. `v11_concept_extraction` có stage events và từng PUT có progress riêng;
 `v11_concept_preparation` trong summary tách chi phí mining khỏi tester calls.
 Concept import có lịch sử request đã dùng, không được gọi là concept miễn phí.
+
+## Resource exclusions đã được user chọn
+
+`--v11-resource-exclusions <plan.json>` áp dụng danh sách PUT được loại khỏi
+**preparation, prompt của cả hai arm và evaluation**. Plan gắn source/spec/cohort
+hash và lý do từng PUT; per-task marker phải được ghi trước khi task sinh inputs.
+Không dùng tùy chọn này để đổi task đã có kết quả. Cohort nguồn/checkpoint cũ giữ
+nguyên; report phân biệt số base-pass gốc, số bị loại và số thực sự được chấm.
+Nếu loại hết base-pass của task thì task được ghi skip rõ ràng.

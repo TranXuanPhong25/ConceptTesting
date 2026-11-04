@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-11-04 — prospective resource exclusions requested by user
+
+- Audit181remaining PUTs,exclude17source-bound likely resource-heavy programs
+  from preparation, BOTH generation prompts and evaluation, as explicitly selected
+  by user. Keep source cohort/checkpoints; log effective denominators and task160
+  all-base-pass exclusion. No outcome-based selection or retroactive result edits.
+- Add optional `--v11-resource-exclusions`, immutable per-task markers and plan
+  source/spec/cohort integrity checks. Existing source folder and protocol amendment.
+-18targeted checks pass (11existing+7new); full regression/review before resume.
+  No commit/push requested.
+
 ## 2026-11-03 — user authorizes grouped commits
 
 - User reviewed the change categories and explicitly requested separate commits.

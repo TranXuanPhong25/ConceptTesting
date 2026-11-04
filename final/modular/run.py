@@ -25,11 +25,14 @@ def main(arguments=None):
                         help="Read-only source of matching V11 concept bundles; default: existing runtimefix run")
     parser.add_argument("--v11-cache-only", action="store_true",
                         help="Fail on missing V11 concept caches instead of mining new concepts")
+    parser.add_argument("--v11-resource-exclusions", type=Path,
+                        help="Explicit source-bound resource exclusions from preparation, prompts and evaluation")
     options = parser.parse_args(arguments)
     read_only = options.mode == "replay"
     artifacts = ArtifactStore(options.artifacts, read_only=read_only)
     arms = (selected_arms(options.arms, v11_cache_directory=options.v11_concept_cache,
-                          v11_cache_only=options.v11_cache_only)
+                          v11_cache_only=options.v11_cache_only,
+                          v11_resource_exclusions=options.v11_resource_exclusions)
             if options.arms else default_arms())
     calls = None
     if not read_only:
