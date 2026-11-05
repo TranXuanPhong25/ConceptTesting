@@ -15,7 +15,7 @@ import pathlib
 import sys
 class RejectHistoricalImports(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
-        forbidden = ("final.experiments", "final.v11_clean_runtimefix", "trickcatcher_linefacts", "final.pipeline", "final.run")
+        forbidden = ("final.experiments", "final.v11_clean_runtimefix", "trickcatcher_linefacts", "final.pipeline", "final.run", "final.src.pipeline", "final.src.run", "final.src.contracts", "final.src.prompts", "final.src.execution", "final.src.worker")
         if any(fullname == name or fullname.startswith(name + ".") for name in forbidden):
             raise ImportError("Historical dependency: " + fullname)
 sys.meta_path.insert(0, RejectHistoricalImports())

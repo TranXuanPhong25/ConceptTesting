@@ -228,7 +228,7 @@ class BenchmarkPipeline:
             if "tests" not in source_path.parts:
                 source_paths.add(source_path)
         final_directory = module_directory.parent
-        for file_name in ("core_model.py", "contracts.py", "prompts.py"):
+        for file_name in ("core_model.py",):
             source_paths.add(final_directory / file_name)
         source_paths.update((final_directory / "runtime").glob("*.py"))
         source_paths.add(final_directory.parent / "data/humaneval.jsonl")

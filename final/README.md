@@ -9,7 +9,7 @@ final/
 │   ├── runtime/            # Sandbox, worker, model transport và checkpoint
 │   ├── audits/             # Audit offline trên artifacts đã lưu
 │   ├── development_groups.py
-│   └── ...                 # Model interface và plain baseline ban đầu
+│   └── core_model.py       # Model interface
 ├── data/                   # HumanEval, corrected references, contracts, inventory
 ├── tests/                  # Tests cho baseline và development selection
 ├── out/                    # Run outputs, execution cache và checkpoints
@@ -34,7 +34,5 @@ Chi tiết: [pipeline](src/modular/README.md), [runtime](src/runtime/README.md),
 không sửa manifest cũ để ép resume. Frozen-input rescore vẫn có thể dùng input cũ:
 `python -m final.src.modular.rescore --help`.
 
-Code concept_reference_v1, recovery và V11 cũ đã được gỡ. Documentation lịch sử
-vẫn ở các folder cũ; source gốc tra qua Git history, results/checkpoints giữ ở
-`out/`. Plain baseline ban đầu còn tại `python -m final.src.run`; pipeline hiện tại
-không phụ thuộc entry point đó.
+Các bản concept và baseline cũ đã được gỡ; source và tài liệu cũ có thể tra qua
+Git history. Reports và checkpoints phục vụ truy nguyên vẫn được giữ.

@@ -1,4 +1,4 @@
-- [Runtime refactor](runtime-refactor.md) — final/src + final/data; retired concept code deleted;214tests/153397artifacthashespass
+- [Runtime refactor](runtime-refactor.md) — final/src + final/data; obsolete/duplicatefilesremoved;212tests;historicalartifactspreserved
 - [Input execution cache](input-execution-cache.md) — per-input SQLite cache, isolated misses and independent repeats; reference/PUT reuse across runs
 - [Boundary test applicability/module](boundary-test-applicability.md) — plain+BVA smoke6prepared/frozen,60checks;endpoint404,awaiting endpoint;0calls/no controller
 - [Code readability](code-readability.md) — user quen Java; ưu tiên tên đầy đủ, explicit loops/intermediates, ít shorthand; final/ readability audit

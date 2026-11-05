@@ -16,7 +16,7 @@ from pathlib import Path
 
 from final.src.runtime.execution import execute
 from final.src.modular.execution_cache import InputExecutionCache
-from final.src.pipeline import digest
+from final.src.runtime.artifacts import digest
 
 ROOT = Path(__file__).resolve().parents[3]
 COHORT = ROOT / "final/out/development_groups/boundary/all/cohort.json"

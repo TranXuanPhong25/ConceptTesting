@@ -1,7 +1,7 @@
 import json
 
-from final.src.contracts import fingerprint, parse_json
-from final.src.prompts import programs as program_prompt
+from final.src.runtime.contracts import fingerprint, parse_json
+from ..program_prompts import programs as program_prompt
 from .base import PipelineStage
 
 

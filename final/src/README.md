@@ -6,8 +6,8 @@
 - `audits/`: offline result/source audits; reports go to `final/review`.
 - `development_groups.py`: offline grouping/export from frozen PUTs/base evidence.
 - `core_model.py`: model interface and compatible backend.
-- `contracts.py`, `prompts.py`, `pipeline.py`, `execution.py`, `worker.py`, `run.py`:
-  original plain baseline, retained separately from the current modular workflow.
+- `modular/program_prompts.py`: specification-only writer prompt.
+- `runtime/contracts.py`: shared parsing, fingerprint and sandbox validation helpers.
 
 Use module entry points from the repository root:
 

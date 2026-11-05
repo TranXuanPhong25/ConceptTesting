@@ -5,7 +5,7 @@ import json
 import statistics
 from pathlib import Path
 
-from final.src.contracts import fingerprint
+from final.src.runtime.contracts import fingerprint
 
 REPOSITORY = Path(__file__).resolve().parents[3]
 

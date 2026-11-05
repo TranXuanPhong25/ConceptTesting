@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 2026-11-05 — remove redundant files
+
+- Remove31obsolete baseline/archival/validation/snapshot files; recover historical
+  versions from Git instead of carrying duplicate runtime and inventory files.
+- Keep shared helpers in runtime/contracts.py and the unchanged writer prompt in
+  modular/program_prompts.py. Update audits and source hashing.
+- Retain parser/sandbox safety tests against the current runtime; retire2tests for
+  the deleted baseline workflow.212tests pass;independent review has no must-fix.
+- Preserve current data, research/papers, reports and original run/checkpoints.
+
+
 ## 2026-11-05 — standalone runtime and plain/BVA pipeline
 
 - Extract sandbox execution, streaming transport, checkpoint retry and keepalive

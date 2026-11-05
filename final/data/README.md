@@ -6,9 +6,9 @@
   with no hidden input arrays. Provenance: [reference notes](references_README.md).
 - `contracts.json`, `evalplus_LICENSE`: unchanged domain/tolerance metadata.
 - `development_groups/`: manual task labels, structural inventory and subset plans.
-  `archive/` preserves the exact pre-layout inventory/subset snapshots. Offline
-  rebuild changes only the builder source hash and its dependent inventory hash;
-  task records and selected task/PUT identities remain unchanged.
+  Pre-layout snapshots are recoverable from Git history. Offline rebuild changed
+  only the builder source hash and its dependent inventory hash; task records and
+  selected task/PUT identities remain unchanged.
 - `fixtures/`: synthetic/saved inputs used by engineering tests.
 - `humaneval_bugs.json`: reference-bug notes, when present.
 

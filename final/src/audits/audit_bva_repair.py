@@ -4,7 +4,7 @@ import json
 from collections import Counter
 from pathlib import Path
 
-from final.src.run import load_tasks
+from final.src.modular.dataset import load_tasks
 from final.src.modular.boundary_value_analysis import BoundaryValueAnalysis, BoundarySettings
 from final.src.modular.boundary_value_analysis.pipeline import BoundaryContext
 from final.src.modular.boundary_value_analysis.stages import BoundarySelection

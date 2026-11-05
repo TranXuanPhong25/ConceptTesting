@@ -84,5 +84,5 @@ final/.venv/bin/python -m pytest final/src/modular/tests -q
 Tests bao gồm sandbox execution, plain/BVA integration, corrected references,
 freeze barrier, cache invalidation/reuse, manifest drift, read-only replay và
 transport/retry. Dependency test chặn import historical research packages để bảo
-đảm pipeline hiện tại chạy độc lập. Results/checkpoints cũ được giữ để truy nguyên;
-code và test dành riêng cho concept arms đã được gỡ khỏi `final/src/modular`.
+đảm pipeline hiện tại chạy độc lập. Results/checkpoints cũ được giữ để truy nguyên. Code concept và baseline cũ đã
+được gỡ; chỉ còn một runtime cho pipeline hiện tại.

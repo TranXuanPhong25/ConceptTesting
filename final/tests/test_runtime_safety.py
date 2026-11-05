@@ -1,13 +1,9 @@
 """Engineering fixtures only. No benchmark inference or real model calls."""
-import json
-
 import pytest
 
-from final.src.contracts import fingerprint, validate_test
-from final.src.core_model import CoreModel, ModelResponse
-from final.src.execution import execute
-from final.src.pipeline import Pipeline, Settings, UnknownInvocation, summarize
-from final.src.run import load_tasks
+from final.src.runtime.contracts import fingerprint, validate_test
+from final.src.runtime.execution import execute
+from final.src.modular.dataset import load_tasks
 
 
 def test_dataset_is_full_original_set():
@@ -104,68 +100,3 @@ def test_infinite_program_is_a_timeout():
     result = execute(dict(mode='base', source='def f():\n    while True: pass', entry='f',
                           base='def check(candidate): candidate()', timeout=0.1))
     assert result['status'] == 'timeout'
-
-
-class FixtureModel(CoreModel):
-    """A small absolute-value fixture exercises counting, not a paper/model mock."""
-    def __init__(self):
-        self.calls = []
-
-    @property
-    def model_id(self):
-        return 'engineering-fixture'
-
-    def generate(self, messages, **kwargs):
-        self.calls.append(messages)
-        if len(self.calls) == 1:
-            programs = [dict(approach=f'fixture{i}', code=f'def f(x):\n    return x if x > -{i} else -x')
-                        for i in range(10)]
-            # Renaming/formatting copy must be rejected, without reducing the cohort.
-            programs.insert(1, dict(approach='duplicate', code='def f(y):\n    return y if y > -0 else -y'))
-            return ModelResponse(json.dumps(dict(programs=programs)), {'total_tokens': 12})
-        if len(self.calls) == 2:
-            return ModelResponse(json.dumps(dict(tests=[
-                dict(args='(-1,)', kwargs='{}', assertion='result == 1'),
-                dict(args='(2,)', kwargs='{}', assertion='result == 2'),
-                dict(args='()', kwargs="{'x': 2}", assertion='result == 2'),
-                dict(args='(3,)', kwargs='{}', assertion='result == 99'),
-                dict(args='(-1,)', kwargs='{}', assertion='result > 0'),
-            ])), {'total_tokens': 8})
-        raise AssertionError('Unexpected additional model invocation')
-
-
-TASK = dict(task_id='HumanEval/0', entry_point='f', prompt='def f(x):\n    """Return absolute value."""\n',
-            canonical_solution='    return abs(x)\n', test='def check(candidate): assert candidate(2) == 2')
-
-
-def test_pipeline_counts_new_failures_rejects_bad_or_duplicate_tests_and_resumes(tmp_path):
-    model = FixtureModel()
-    pipeline = Pipeline(model, tmp_path, Settings())
-    result = pipeline.run_task(TASK)
-    assert result['generated'] == result['base_pass'] == result['evaluated_programs'] == 10
-    assert result['detected_programs'] == 8
-    assert result['valid_tests'] == 1
-    assert len(model.calls) == 2
-    assert 'canonical_solution' not in json.dumps(model.calls)
-    assert 'return abs(x)' not in json.dumps(model.calls)
-    assert {r['reason'] for r in result['test_rejections']} == {
-        'base_input_duplicate', 'reference_rejects', 'new_input_duplicate'}
-    assert pipeline.run_task(TASK) == result
-    assert len(model.calls) == 2
-    summary = summarize(tmp_path, 1)
-    assert summary['detected_fraction_of_base_pass'] == .8
-    assert summary['received_responses'] == 2
-    assert summary['known_usage']['total_tokens'] == 20
-
-
-def test_checkpoint_replays_known_response_but_never_unknown_invocation(tmp_path):
-    model = FixtureModel()
-    pipeline = Pipeline(model, tmp_path, Settings())
-    kwargs = dict(temperature=.9, max_tokens=100, seed=1)
-    first = pipeline.query(tmp_path, 'programs', [], **kwargs)
-    assert pipeline.query(tmp_path, 'programs', [], **kwargs) == first
-    assert len(model.calls) == 1
-    (tmp_path / 'calls/programs/response.json').unlink()
-    with pytest.raises(UnknownInvocation):
-        pipeline.query(tmp_path, 'programs', [], **kwargs)
-    assert len(model.calls) == 1

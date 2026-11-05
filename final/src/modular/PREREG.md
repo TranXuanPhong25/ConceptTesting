@@ -544,3 +544,18 @@ Layout review amendment: preserve the original plain baseline default output at
 final/out/humaneval164 and route the moved PUT-quality audit summary explicitly to
 final/review/put_quality/SUMMARY.json. Source relocation must not redirect outputs
 into src. Both paths corrected before any new baseline/audit execution.
+
+## 2026-11-05 — remove redundant retired files
+
+User requests deleting excess files. Remove retired concept documentation/locks,
+original plain baseline executor/pipeline/CLI, obsolete baseline validation files,
+and redundant pre-layout inventory snapshots now preserved in Git. Keep current
+source/data, research notes/papers, original reports and final/out checkpoints.
+Use existing byte-identical runtime contract helpers and retain only the program
+writer prompt in modular/program_prompts.py. Port baseline sandbox/parser safety
+checks to current runtime; retire tests dedicated to the deleted baseline workflow.
+No model/benchmark runs or changes to input-generation/reference semantics.
+
+Independent cleanup review complete: no dangling imports; writer prompt AST and
+contract helper bytes match; source manifests retain runtime/prompt identity.
+No model/benchmark calls or efficacy claims.

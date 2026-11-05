@@ -1,5 +1,14 @@
 # Validation — 2026-11-01
 
+## 2026-11-05 — redundant-file cleanup
+
+**212 tests pass** (15.79s). The prior214included2tests for the removed baseline
+workflow; its parser/sandbox safety tests now exercise the current runtime.
+Independent review:26targeted tests pass,no dangling imports,writer prompt AST
+unchanged,contract helper bytes unchanged,and runtime/prompt sources still hashed.
+Reports and final/out checkpoints are retained.
+
+
 ## 2026-11-05 — src/data consolidation and concept-code retirement
 
 **214 tests pass** (18.00s), including original baseline, modular/runtime and
