@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-11-05 — LangChain completion transport
+
+- Replace manual completion JSON serialization/SSE decoding with ChatOpenAI and
+  the OpenAI SDK. Keep vLLM tokenizer, endpoint/model checks and context budgets.
+- Preserve finish/nonempty acceptance, partial output, raw provider usage,
+  sanitized failures, byte/deadline guards and checkpoint-owned retries. Disable
+  LangChain tracing and SDK retries. Record transport library versions in new manifests.
+- Exercise actual LangChain/SDK code via offline HTTP fixtures; no remote model
+  calls or changes to saved run/checkpoint artifacts.
+
 ## 2026-11-05 — remove redundant files
 
 - Remove31obsolete baseline/archival/validation/snapshot files; recover historical

@@ -218,7 +218,8 @@ class BenchmarkPipeline:
             "calls_backend": type(self.calls).__module__ + "." + type(self.calls).__qualname__,
             "python": platform.python_version(), "python_executable": str(Path(sys.executable).resolve()),
             "packages": {name: importlib.metadata.version(name) for name in
-                         ("coverage", "numpy", "scipy", "evalplus")},
+                         ("coverage", "numpy", "scipy", "evalplus", "langchain-openai",
+                          "langchain-core", "openai", "httpx")},
         })
 
     def source_hashes(self):

@@ -11,6 +11,11 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+import httpx
+import openai
+from langchain_openai import ChatOpenAI
+from langsmith import tracing_context
+
 from final.src.core_model import CoreModel, ModelError, ModelResponse
 
 
@@ -34,6 +39,57 @@ class TransportError(ModelError):
             "completion_started": self.completion_started,
             "partial_text_characters": len(self.partial_text),
         }
+
+
+class _CompletionStream(httpx.SyncByteStream):
+    """Bound network bytes/time before the SDK decodes SSE (including comments)."""
+
+    def __init__(self, stream, started_at):
+        self.stream = stream
+        self.started_at = started_at
+
+    def __iter__(self):
+        response_bytes = 0
+        for data in self.stream:
+            if time.monotonic() - self.started_at > 1800:
+                raise TransportError("completion", "GenerationDeadline", completion_started=True)
+            response_bytes += len(data)
+            if response_bytes > 16 * 1024 * 1024:
+                raise TransportError("completion", "ResponseTooLarge", completion_started=True)
+            yield data
+
+    def close(self):
+        self.stream.close()
+
+
+class _QwenChatOpenAI(ChatOpenAI):
+    """Keep choice-zero/raw usage policy at LangChain's decoded-chunk boundary.
+
+    This small override is the only private LangChain hook; transport tests cover
+    it against the installed version. JSON serialization and SSE decoding remain
+    entirely owned by LangChain/OpenAI SDK.
+    """
+
+    def _convert_chunk_to_generation_chunk(self, chunk, default_chunk_class, base_generation_info):
+        if not isinstance(chunk, dict) or not isinstance(chunk.get("choices", []), list):
+            raise TransportError("completion", "InvalidStreamEvent", retryable=True, completion_started=True)
+        choices = []
+        for choice in chunk.get("choices", []):
+            if not isinstance(choice, dict):
+                raise TransportError("completion", "InvalidStreamChoice", retryable=True, completion_started=True)
+            if choice.get("index") not in (None, 0):
+                continue
+            delta = choice.get("delta") or {}
+            if not isinstance(delta, dict):
+                raise TransportError("completion", "InvalidStreamDelta", retryable=True, completion_started=True)
+            if delta.get("content") is not None and not isinstance(delta["content"], str):
+                raise TransportError("completion", "InvalidStreamContent", retryable=True, completion_started=True)
+            choices.append(dict(choice, delta=delta))
+        chunk = dict(chunk, choices=choices)
+        result = super()._convert_chunk_to_generation_chunk(chunk, default_chunk_class, base_generation_info)
+        if result is not None and chunk.get("usage"):
+            result.message.response_metadata["provider_usage"] = chunk["usage"]
+        return result
 
 
 @dataclass(frozen=True)
@@ -154,66 +210,56 @@ class QwenModel(CoreModel):
             raise TransportError("tokenize", "PromptExceedsContext")
         return PreparedGeneration(messages, prompt_tokens, output_tokens)
 
+    def _completion_http_client(self, started_at):
+        def bound_response(response):
+            response.stream = _CompletionStream(response.stream, started_at)
+
+        return httpx.Client(timeout=self.timeout, event_hooks={"response": [bound_response]})
+
     def generate_prepared(self, prepared, *, temperature, seed):
-        request_body = {
-            "model": self.expected_model,
-            "messages": prepared.messages,
-            "temperature": temperature,
-            "max_tokens": prepared.output_tokens,
-            "seed": seed,
-            "stream": True,
-            "stream_options": {"include_usage": True},
-            "chat_template_kwargs": {"enable_thinking": False},
-        }
+        self.refresh_configuration()
         text_fragments = []
         usage = {}
         finish_reason = None
-        response_bytes = 0
-        generation_started_at = time.monotonic()
         usage_footer_complete = False
+        generation_started_at = time.monotonic()
         try:
-            with self.request("completion", request_body) as response:
-                for response_line in response:
-                    if time.monotonic() - generation_started_at > 1800:
-                        raise TransportError("completion", "GenerationDeadline", completion_started=True)
-                    response_bytes += len(response_line)
-                    if response_bytes > 16 * 1024 * 1024:
-                        raise TransportError("completion", "ResponseTooLarge", completion_started=True)
-                    response_line = response_line.strip()
-                    if not response_line.startswith(b"data:"):
-                        continue
-                    event_data = response_line[5:].strip()
-                    if event_data == b"[DONE]":
-                        break
-                    event = json.loads(event_data)
-                    if not isinstance(event, dict) or not isinstance(event.get("choices", []), list):
-                        raise TransportError("completion", "InvalidStreamEvent", retryable=True, completion_started=True)
-                    if event.get("usage"):
-                        usage = event["usage"]
-                        usage_footer_complete = True
-                    for choice in event.get("choices", []):
-                        if not isinstance(choice, dict):
-                            raise TransportError("completion", "InvalidStreamChoice", retryable=True, completion_started=True)
-                        if choice.get("index", 0) != 0:
-                            continue
-                        delta = choice.get("delta") or {}
-                        if not isinstance(delta, dict):
-                            raise TransportError("completion", "InvalidStreamDelta", retryable=True, completion_started=True)
-                        content = delta.get("content")
-                        if content is not None and not isinstance(content, str):
-                            raise TransportError("completion", "InvalidStreamContent", retryable=True, completion_started=True)
-                        if content:
-                            text_fragments.append(content)
-                        if choice.get("finish_reason") is not None:
-                            finish_reason = choice["finish_reason"]
-        except (OSError, ValueError, http.client.HTTPException) as error:
-            if finish_reason is None:
-                raise TransportError("completion", type(error).__name__, retryable=True,
-                    completion_started=True, partial_text="".join(text_fragments)) from None
+            with self._completion_http_client(generation_started_at) as http_client:
+                model = _QwenChatOpenAI(
+                    model=self.expected_model, base_url=self.base_url,
+                    api_key=self.api_key or "EMPTY", http_client=http_client,
+                    timeout=self.timeout, max_retries=0, temperature=temperature,
+                    seed=seed, stream_usage=True, use_responses_api=False,
+                    default_headers={"ngrok-skip-browser-warning": "1"},
+                    extra_body={"max_tokens": prepared.output_tokens,
+                                "chat_template_kwargs": {"enable_thinking": False}},
+                )
+                # This runtime records locally; never export prompts or private endpoints.
+                with tracing_context(enabled=False):
+                    stream = model.stream(prepared.messages)
+                    try:
+                        for chunk in stream:
+                            if isinstance(chunk.content, str) and chunk.content:
+                                text_fragments.append(chunk.content)
+                            if chunk.response_metadata.get("provider_usage"):
+                                usage = chunk.response_metadata["provider_usage"]
+                                usage_footer_complete = True
+                            if chunk.response_metadata.get("finish_reason") is not None:
+                                finish_reason = chunk.response_metadata["finish_reason"]
+                    finally:
+                        stream.close()
         except TransportError as error:
             if finish_reason is None:
                 error.partial_text = "".join(text_fragments)
                 raise
+        except (openai.APIError, httpx.HTTPError, OSError, ValueError,
+                TypeError, KeyError, AttributeError, IndexError) as error:
+            if finish_reason is None:
+                status = getattr(error, "status_code", None)
+                raise TransportError("completion", "HTTPError" if status else type(error).__name__,
+                    http_status=status,
+                    retryable=status in (408, 429, 500, 502, 503, 504) if status else True,
+                    completion_started=True, partial_text="".join(text_fragments)) from None
         complete_text = "".join(text_fragments)
         if finish_reason is None or not complete_text.strip():
             raise TransportError("completion", "IncompleteStream", retryable=True,

@@ -1,0 +1,942 @@
+{
+  "scope": "Offline fixtures only; no remote/model/benchmark calls; active backend unchanged",
+  "versions": {
+    "langchain-openai": "1.6.2",
+    "langchain-core": "1.6.3",
+    "openai": "3.14.0",
+    "httpx": "0.28.1"
+  },
+  "checks": {
+    "normal_text_equal": true,
+    "normal_finish_equal": true,
+    "compatibility_request_equal": true,
+    "no_implicit_retries": true,
+    "usage_counts_equal": true,
+    "partial_text_preserved": true,
+    "finish_visible_before_footer_failure": true
+  },
+  "cases": {
+    "complete_usage": {
+      "legacy": {
+        "accepted": true,
+        "text": "{\"text\":\"Việt 🧪\"}",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 10,
+          "completion_tokens": 6,
+          "total_tokens": 16,
+          "completion_tokens_details": {
+            "reasoning_tokens": 2
+          },
+          "provider_extra": 7,
+          "tokenizer_prompt_tokens": 10,
+          "requested_output_budget": 32,
+          "usage_footer_complete": true
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": null,
+        "text": "{\"text\":\"Việt 🧪\"}",
+        "finish_reason": "stop",
+        "usage_metadata": {
+          "input_tokens": 10,
+          "output_tokens": 6,
+          "total_tokens": 16,
+          "input_token_details": {},
+          "output_token_details": {
+            "reasoning": 2
+          }
+        },
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": true
+      }
+    },
+    "missing_finish": {
+      "legacy": {
+        "accepted": false,
+        "error_type": "IncompleteStream",
+        "partial_text": "partial",
+        "details": {
+          "operation": "completion",
+          "error_type": "IncompleteStream",
+          "http_status": null,
+          "retryable": true,
+          "completion_started": true,
+          "partial_text_characters": 7
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": null,
+        "text": "partial",
+        "finish_reason": null,
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": false
+      }
+    },
+    "timeout_before_finish": {
+      "legacy": {
+        "accepted": false,
+        "error_type": "TimeoutError",
+        "partial_text": "partial",
+        "details": {
+          "operation": "completion",
+          "error_type": "TimeoutError",
+          "http_status": null,
+          "retryable": true,
+          "completion_started": true,
+          "partial_text_characters": 7
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": "OpenAITimeoutError",
+        "text": "partial",
+        "finish_reason": null,
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": false
+      }
+    },
+    "timeout_after_finish": {
+      "legacy": {
+        "accepted": true,
+        "text": "{\"text\":\"Việt 🧪\"}",
+        "finish_reason": "stop",
+        "usage": {
+          "tokenizer_prompt_tokens": 10,
+          "requested_output_budget": 32,
+          "usage_footer_complete": false
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": "OpenAITimeoutError",
+        "text": "{\"text\":\"Việt 🧪\"}",
+        "finish_reason": "stop",
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": true
+      }
+    },
+    "empty_finished": {
+      "legacy": {
+        "accepted": false,
+        "error_type": "IncompleteStream",
+        "partial_text": "",
+        "details": {
+          "operation": "completion",
+          "error_type": "IncompleteStream",
+          "http_status": null,
+          "retryable": true,
+          "completion_started": true,
+          "partial_text_characters": 0
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": null,
+        "text": "",
+        "finish_reason": "stop",
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": false
+      }
+    },
+    "malformed_json_before_finish": {
+      "legacy": {
+        "accepted": false,
+        "error_type": "JSONDecodeError",
+        "partial_text": "partial",
+        "details": {
+          "operation": "completion",
+          "error_type": "JSONDecodeError",
+          "http_status": null,
+          "retryable": true,
+          "completion_started": true,
+          "partial_text_characters": 7
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": "JSONDecodeError",
+        "text": "partial",
+        "finish_reason": null,
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": false
+      }
+    },
+    "malformed_json_after_finish": {
+      "legacy": {
+        "accepted": true,
+        "text": "{\"text\":\"Việt 🧪\"}",
+        "finish_reason": "stop",
+        "usage": {
+          "tokenizer_prompt_tokens": 10,
+          "requested_output_budget": 32,
+          "usage_footer_complete": false
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": "JSONDecodeError",
+        "text": "{\"text\":\"Việt 🧪\"}",
+        "finish_reason": "stop",
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": true
+      }
+    },
+    "crlf": {
+      "legacy": {
+        "accepted": true,
+        "text": "{\"text\":\"Việt 🧪\"}",
+        "finish_reason": "stop",
+        "usage": {
+          "prompt_tokens": 10,
+          "completion_tokens": 6,
+          "total_tokens": 16,
+          "completion_tokens_details": {
+            "reasoning_tokens": 2
+          },
+          "provider_extra": 7,
+          "tokenizer_prompt_tokens": 10,
+          "requested_output_budget": 32,
+          "usage_footer_complete": true
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": null,
+        "text": "{\"text\":\"Việt 🧪\"}",
+        "finish_reason": "stop",
+        "usage_metadata": {
+          "input_tokens": 10,
+          "output_tokens": 6,
+          "total_tokens": 16,
+          "input_token_details": {},
+          "output_token_details": {
+            "reasoning": 2
+          }
+        },
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": true
+      }
+    },
+    "multiline_sse": {
+      "legacy": {
+        "accepted": false,
+        "error_type": "JSONDecodeError",
+        "partial_text": "",
+        "details": {
+          "operation": "completion",
+          "error_type": "JSONDecodeError",
+          "http_status": null,
+          "retryable": true,
+          "completion_started": true,
+          "partial_text_characters": 0
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": null,
+        "text": "ok",
+        "finish_reason": "stop",
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": true
+      }
+    },
+    "nonzero_choice": {
+      "legacy": {
+        "accepted": false,
+        "error_type": "IncompleteStream",
+        "partial_text": "",
+        "details": {
+          "operation": "completion",
+          "error_type": "IncompleteStream",
+          "http_status": null,
+          "retryable": true,
+          "completion_started": true,
+          "partial_text_characters": 0
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": null,
+        "text": "wrong choice",
+        "finish_reason": "stop",
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": true
+      }
+    },
+    "error_event": {
+      "legacy": {
+        "accepted": false,
+        "error_type": "IncompleteStream",
+        "partial_text": "",
+        "details": {
+          "operation": "completion",
+          "error_type": "IncompleteStream",
+          "http_status": null,
+          "retryable": true,
+          "completion_started": true,
+          "partial_text_characters": 0
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": "APIError",
+        "text": "",
+        "finish_reason": null,
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": false
+      }
+    },
+    "http_503": {
+      "legacy": {
+        "accepted": false,
+        "error_type": "HTTPError",
+        "partial_text": "",
+        "details": {
+          "operation": "completion",
+          "error_type": "HTTPError",
+          "http_status": 503,
+          "retryable": true,
+          "completion_started": true,
+          "partial_text_characters": 0
+        },
+        "requests": [
+          {
+            "model": "fixture",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Return JSON."
+              },
+              {
+                "role": "user",
+                "content": "Tiếng Việt: 🧪"
+              }
+            ],
+            "temperature": 0.7,
+            "max_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ]
+      },
+      "langchain": {
+        "stream_raised": "OpenAIAPIError",
+        "text": "",
+        "finish_reason": null,
+        "usage_metadata": {},
+        "requests": [
+          {
+            "messages": [
+              {
+                "content": "Return JSON.",
+                "role": "system"
+              },
+              {
+                "content": "Tiếng Việt: 🧪",
+                "role": "user"
+              }
+            ],
+            "model": "fixture",
+            "max_completion_tokens": 32,
+            "seed": 123,
+            "stream": true,
+            "stream_options": {
+              "include_usage": true
+            },
+            "temperature": 0.7,
+            "chat_template_kwargs": {
+              "enable_thinking": false
+            }
+          }
+        ],
+        "accepted_with_existing_finish_policy": false
+      }
+    }
+  },
+  "compatible_serialization": {
+    "stream_raised": null,
+    "text": "{\"text\":\"Việt 🧪\"}",
+    "finish_reason": "stop",
+    "usage_metadata": {
+      "input_tokens": 10,
+      "output_tokens": 6,
+      "total_tokens": 16,
+      "input_token_details": {},
+      "output_token_details": {
+        "reasoning": 2
+      }
+    },
+    "requests": [
+      {
+        "messages": [
+          {
+            "content": "Return JSON.",
+            "role": "system"
+          },
+          {
+            "content": "Tiếng Việt: 🧪",
+            "role": "user"
+          }
+        ],
+        "model": "fixture",
+        "seed": 123,
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "temperature": 0.7,
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "max_tokens": 32
+      }
+    ],
+    "accepted_with_existing_finish_policy": true
+  }
+}

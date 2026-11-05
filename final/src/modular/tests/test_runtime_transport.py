@@ -6,6 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
+import httpx
 
 from final.src.core_model import ModelResponse
 from final.src.runtime.artifacts import digest, save
@@ -26,104 +27,175 @@ def transport_model(monkeypatch, tmp_path):
     return QwenModel(expected_model="fixture")
 
 
-def test_streaming_collects_tokens_and_final_usage(transport_model, monkeypatch):
-    response_bytes = b"".join([
+@pytest.fixture
+def completion_fixture(transport_model, monkeypatch):
+    from final.src.runtime.model import _CompletionStream
+
+    def install(pieces, *, failure=None, status=200):
+        requests = []
+        closed = []
+
+        class FixtureBytes(httpx.SyncByteStream):
+            def __iter__(self):
+                for piece in pieces:
+                    # Split across SSE framing and UTF-8 boundaries.
+                    for offset in range(0, len(piece), 3):
+                        yield piece[offset:offset + 3]
+                if failure:
+                    raise failure
+
+            def close(self):
+                closed.append(True)
+
+        def factory(started_at):
+            def handler(request):
+                requests.append(request)
+                response = httpx.Response(status, headers={"content-type": "text/event-stream"},
+                                          stream=FixtureBytes())
+                return response
+
+            def bound_response(response):
+                response.stream = _CompletionStream(response.stream, started_at)
+
+            return httpx.Client(transport=httpx.MockTransport(handler),
+                                event_hooks={"response": [bound_response]})
+
+        monkeypatch.setattr(transport_model, "_completion_http_client", factory)
+        return requests, closed
+
+    return install
+
+
+def test_streaming_collects_tokens_and_final_usage(transport_model, completion_fixture):
+    provider_usage = {"prompt_tokens": 10, "completion_tokens": 6, "total_tokens": 16,
+                      "completion_tokens_details": {"reasoning_tokens": 2}, "provider_extra": 7}
+    pieces = [
         streaming_event({"choices": [{"delta": {"content": '{"inputs":'}, "finish_reason": None}]}),
         streaming_event({"choices": [{"delta": {"content": '[]}'}, "finish_reason": "stop"}]}),
-        streaming_event({"choices": [], "usage": {"prompt_tokens": 10, "completion_tokens": 6, "total_tokens": 16}}),
-        b"data: [DONE]\n\n",
-    ])
-    captured_requests = []
-
-    def open_fixture(operation, request_body):
-        captured_requests.append(request_body)
-        return io.BytesIO(response_bytes)
-
-    monkeypatch.setattr(transport_model, "request", open_fixture)
-    prepared = PreparedGeneration([], 10, 2048)
+        streaming_event({"choices": [], "usage": provider_usage}), b"data: [DONE]\n\n",
+    ]
+    requests, closed = completion_fixture(pieces)
+    prepared = PreparedGeneration([{"role": "user", "content": "Việt 🧪"}], 10, 2048)
     result = transport_model.generate_prepared(prepared, temperature=.7, seed=314175)
     assert result.text == '{"inputs":[]}'
+    assert result.usage["prompt_tokens"] == 10
+    assert result.usage["completion_tokens"] == 6
     assert result.usage["total_tokens"] == 16
+    assert result.usage["completion_tokens_details"]["reasoning_tokens"] == 2
+    assert result.usage["provider_extra"] == 7
+    assert result.usage["tokenizer_prompt_tokens"] == 10
+    assert result.usage["requested_output_budget"] == 2048
     assert result.usage["usage_footer_complete"] is True
-    request_body = captured_requests[0]
-    assert request_body["stream"] is True
-    assert request_body["temperature"] == .7
-    assert request_body["seed"] == 314175
-    assert request_body["max_tokens"] == 2048
+    assert len(requests) == 1
+    assert json.loads(requests[0].content) == {
+        "model": "fixture", "messages": prepared.messages, "stream": True,
+        "stream_options": {"include_usage": True}, "temperature": .7,
+        "seed": 314175, "max_tokens": 2048, "chat_template_kwargs": {"enable_thinking": False}}
+    assert requests[0].headers["ngrok-skip-browser-warning"] == "1"
+    assert closed
 
 
-def test_incomplete_stream_is_never_accepted(transport_model, monkeypatch):
-    partial_response = streaming_event({"choices": [{"delta": {"content": '{"inputs":'}, "finish_reason": None}]})
-    monkeypatch.setattr(transport_model, "request", lambda *args: io.BytesIO(partial_response))
+@pytest.mark.parametrize("finish, text", [(None, "partial"), ("stop", "")])
+def test_incomplete_stream_is_never_accepted(transport_model, completion_fixture, finish, text):
+    completion_fixture([streaming_event({"choices": [{"delta": {"content": text}, "finish_reason": finish}]})])
     with pytest.raises(TransportError) as failure:
         transport_model.generate_prepared(PreparedGeneration([], 10, 2048), temperature=.7, seed=1)
     assert failure.value.error_type == "IncompleteStream"
-    assert failure.value.partial_text == '{"inputs":'
-
-
-def test_finished_output_survives_lost_usage_footer(transport_model, monkeypatch):
-    class FooterTimeout:
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *arguments):
-            return False
-
-        def __iter__(self):
-            yield streaming_event({"choices": [{"delta": {"content": "complete"}, "finish_reason": "stop"}]})
-            raise TimeoutError()
-
-    monkeypatch.setattr(transport_model, "request", lambda *args: FooterTimeout())
-    result = transport_model.generate_prepared(PreparedGeneration([], 10, 32), temperature=0, seed=1)
-    assert result.text == "complete"
-    assert result.usage["usage_footer_complete"] is False
+    assert failure.value.partial_text == text
 
 
 @pytest.mark.parametrize("finished", [False, True])
-def test_truncated_chunked_stream_before_and_after_finish(transport_model, monkeypatch, finished):
-    class TruncatedResponse:
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *arguments):
-            return False
-
-        def __iter__(self):
-            yield streaming_event({"choices": [{"delta": {"content": "text"},
-                                                "finish_reason": "stop" if finished else None}]})
-            raise http.client.IncompleteRead(b"truncated")
-
-    monkeypatch.setattr(transport_model, "request", lambda *args: TruncatedResponse())
+@pytest.mark.parametrize("network_error", [httpx.ReadTimeout("private URL/key"),
+                                           httpx.RemoteProtocolError("private URL/key")])
+def test_stream_failure_before_and_after_finish(transport_model, completion_fixture, finished, network_error):
+    requests, closed = completion_fixture([
+        streaming_event({"choices": [{"delta": {"content": "text"},
+                                      "finish_reason": "stop" if finished else None}]})], failure=network_error)
     prepared = PreparedGeneration([], 10, 2048)
     if finished:
-        assert transport_model.generate_prepared(prepared, temperature=.7, seed=1).text == "text"
+        result = transport_model.generate_prepared(prepared, temperature=.7, seed=1)
+        assert result.text == "text"
+        assert result.usage["usage_footer_complete"] is False
     else:
         with pytest.raises(TransportError) as failure:
             transport_model.generate_prepared(prepared, temperature=.7, seed=1)
-        assert failure.value.error_type == "IncompleteRead"
         assert failure.value.partial_text == "text"
+        assert "private" not in str(failure.value)
+        assert failure.value.completion_started
+    assert len(requests) == 1
+    assert closed
 
 
-def test_finished_output_survives_generation_deadline_in_footer(transport_model, monkeypatch):
+@pytest.mark.parametrize("finished", [False, True])
+def test_generation_deadline_including_comment_footer(transport_model, completion_fixture, monkeypatch, finished):
     import final.src.runtime.model as model_module
     elapsed_seconds = [0]
 
-    class SlowFooter:
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *arguments):
-            return False
-
-        def __iter__(self):
-            elapsed_seconds[0] = 1
-            yield streaming_event({"choices": [{"delta": {"content": "done"}, "finish_reason": "stop"}]})
-            elapsed_seconds[0] = 1801
-            yield b"\n"
+    def pieces():
+        elapsed_seconds[0] = 1
+        yield streaming_event({"choices": [{"delta": {"content": "done"},
+                                            "finish_reason": "stop" if finished else None}]})
+        elapsed_seconds[0] = 1801
+        yield b": keepalive\n\n"
 
     monkeypatch.setattr(model_module, "time", SimpleNamespace(monotonic=lambda: elapsed_seconds[0]))
-    monkeypatch.setattr(transport_model, "request", lambda *args: SlowFooter())
-    assert transport_model.generate_prepared(PreparedGeneration([], 10, 2048), temperature=.7, seed=1).text == "done"
+    completion_fixture(pieces())
+    if finished:
+        assert transport_model.generate_prepared(PreparedGeneration([], 10, 32), temperature=0, seed=1).text == "done"
+    else:
+        with pytest.raises(TransportError) as failure:
+            transport_model.generate_prepared(PreparedGeneration([], 10, 32), temperature=0, seed=1)
+        assert failure.value.error_type == "GenerationDeadline"
+        assert failure.value.partial_text == "done"
+
+
+@pytest.mark.parametrize("status, retryable", [(401, False), (429, True), (503, True)])
+def test_http_failure_is_sanitized_without_sdk_retry(transport_model, completion_fixture, status, retryable):
+    requests, closed = completion_fixture([b'{"error":{"message":"private URL/key"}}'], status=status)
+    with pytest.raises(TransportError) as failure:
+        transport_model.generate_prepared(PreparedGeneration([], 10, 32), temperature=0, seed=1)
+    assert failure.value.http_status == status
+    assert failure.value.retryable is retryable
+    assert "private" not in str(failure.value)
+    assert len(requests) == 1
+    assert closed
+
+
+def test_nonzero_choice_cannot_supply_output(transport_model, completion_fixture):
+    completion_fixture([streaming_event({"choices": [
+        {"index": 1, "delta": {"content": "wrong"}, "finish_reason": "stop"}]})])
+    with pytest.raises(TransportError) as failure:
+        transport_model.generate_prepared(PreparedGeneration([], 10, 32), temperature=0, seed=1)
+    assert failure.value.error_type == "IncompleteStream"
+    assert failure.value.partial_text == ""
+
+
+@pytest.mark.parametrize("finished", [False, True])
+def test_malformed_json_before_and_after_finish(transport_model, completion_fixture, finished):
+    completion_fixture([streaming_event({"choices": [{"delta": {"content": "text"},
+                         "finish_reason": "stop" if finished else None}]}), b"data: {bad}\n\n"])
+    if finished:
+        assert transport_model.generate_prepared(PreparedGeneration([], 10, 32), temperature=0, seed=1).text == "text"
+    else:
+        with pytest.raises(TransportError) as failure:
+            transport_model.generate_prepared(PreparedGeneration([], 10, 32), temperature=0, seed=1)
+        assert failure.value.partial_text == "text"
+
+
+def test_multiline_sse_and_crlf(transport_model, completion_fixture):
+    completion_fixture([b'data: {"choices":\r\ndata: [{"index":0,"delta":{"content":"ok"},"finish_reason":"stop"}]}\r\n\r\n'])
+    assert transport_model.generate_prepared(PreparedGeneration([], 10, 32), temperature=0, seed=1).text == "ok"
+
+
+def test_wire_size_guard_counts_comments(monkeypatch):
+    from final.src.runtime.model import _CompletionStream
+    stream = _CompletionStream(iter([b":" * (16 * 1024 * 1024), b"x"]), 0)
+    monkeypatch.setattr("final.src.runtime.model.time.monotonic", lambda: 1)
+    iterator = iter(stream)
+    assert len(next(iterator)) == 16 * 1024 * 1024
+    with pytest.raises(TransportError) as failure:
+        next(iterator)
+    assert failure.value.error_type == "ResponseTooLarge"
 
 
 def test_tokenizer_read_failure_retries_without_completion(transport_model, monkeypatch):

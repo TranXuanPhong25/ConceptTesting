@@ -133,3 +133,4 @@
 - [v78 learned concept selection](v78-learned-select.md) — 2026-10-26 grouped CPU replay NO-GO: context18 vs random18.25/prior20.5; spec-only21=context-free; 33 PUTs/24 problems, $0 API
 - [v83 Reka full quarter](v83-reka-quarter.md) — 2026-10-27 terminal partial 26/28; 1 unknown-charge stop, offline scoring recovered (o0 4–4, ref/full 3–4), descriptive only; no retry allowed
 - [v84 Reka completion addendum](v84-reka-completion.md) — completed missing tasks154/158; combined28/28 descriptive, mixed-run exploratory (o0 4–4, ref/full3–4), $0.0542 new; no efficacy verdict
+- [LangChain transport](langchain-transport.md) — active completion uses LangChain; 258 tests pass; live smoke passes models/tokenize/Unicode JSON/usage, 54 tokens
