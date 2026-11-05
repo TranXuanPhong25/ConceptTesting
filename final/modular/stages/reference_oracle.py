@@ -1,10 +1,17 @@
 from final.experiments.concept_reference_v1.execution import execute
 from .base import PipelineStage
+from ..execution_cache import cached_execution
 
 
 class ReferenceOracleStage(PipelineStage):
     name = "reference_oracle"
     requires = ("input_generation",)
+
+    def __init__(self, execution_cache=None):
+        self.execution_cache = execution_cache
+
+    def configuration(self):
+        return {"execution_cache": self.execution_cache.configuration()} if self.execution_cache is not None else {}
 
     def run(self, context):
         # VALIDATION START: generation must finish and freeze before oracle execution.
@@ -30,7 +37,7 @@ class ReferenceOracleStage(PipelineStage):
         reference_runs = []
         for repeat_index in range(2):
             relative_path = context.task_directory + f"/oracle_{repeat_index}.json"
-            outcome = context.artifacts.load_or_compute(relative_path, lambda: execute(job) if raw_inputs else {"tests": []})
+            outcome = cached_execution(context, relative_path, job, repeat_index, execute, self.execution_cache)
             reference_runs.append(outcome["tests"])
         valid_tests = []
         rejected_inputs = []

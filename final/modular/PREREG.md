@@ -270,3 +270,43 @@ input budgets,skip paths,global freeze,reference/PUT repeats,call accounting and
 detached/resumable execution. No independent reviewer was invoked in this turn.
 At registration the stored endpoint returns404on/models;0completion requests have
 been sent. Ask for the current endpoint and keep readiness artifacts until live.
+
+## 2026-11-05 — input execution cache, before the authorized live smoke run
+
+User asks to cache previously executed inputs and then run plain+BVA with the
+newly supplied Qwen27endpoint, authorizing repairs when needed. Add shared
+per-input reference/PUT execution caching to the modern pipeline before sending
+any benchmark completion. Same cohort, arms, generation settings and input budgets
+as the registration above. No generation skip based on hidden/cache outcomes.
+
+Cache policy isolated-input-execution-v1: each missed input/repeat executes in a
+fresh existing bwrap sandbox, eliminating dependence on preceding suite inputs or
+imported-module mutations. This changes batch isolation granularity and must be
+reported; old batched native outcomes are not automatically imported as equivalent
+per-input observations. Exact run checkpoint replay remains unchanged. On a cold
+cache there may be more sandbox startups; speedup depends on repeated input reuse.
+
+Cache identity includes the full reference/PUT source and context, contract,
+entrypoint, seed, timeout, comparison tolerance, expected output for PUT checks,
+typed bound input values (including signed zero and dict insertion order),
+Python/platform/package/harness identity, executor implementation and the repeat
+index. Stability repeats0and1remain independent observations. Cache hit preserves
+the observed result and historical duration, not a newly measured runtime.
+Timeouts and infrastructure failures are not reused. Corrupt entries are recomputed.
+File locks plus SQLite transactions prevent simultaneous duplicate computation.
+
+Default shared store final/out/execution_cache/results.sqlite3; modern API defaults
+to a sibling execution_cache directory. Both arms can reuse post-freeze outcomes,
+but no generator sees expected outputs or PUT verdicts from the cache. Per-run
+execution receipts report hits, misses, executions, uncached outcomes and missing
+receipts; read-only replay requires existing run artifacts and never executes on
+a missing cache. Legacy generation retains original execution unless changed
+explicitly. CLI supports --execution-cache and --no-execution-cache.
+
+Preserve/archive the earlier readiness manifest/config; there are no completion
+attempts or generated task inputs in that prepared run. Re-freeze it with the new
+cache/source configuration before launch. Engineering cache tests include real
+sandbox isolation, cross-run reuse, typed input identity, expected/source/config/
+runtime invalidation, independent repeats, corruption repair, concurrency and
+no-execution read-only behavior. Results remain descriptive development smoke,
+with equal input caps and unequal LLM call counts.

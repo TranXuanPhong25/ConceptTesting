@@ -1,11 +1,18 @@
 from final.experiments.concept_reference_v1.execution import execute
 from .base import PipelineStage
+from ..execution_cache import cached_execution
 
 
 class PutEvaluationStage(PipelineStage):
     name = "put_evaluation"
     requires = ("reference_oracle",)
     failure_statuses = ("fail", "error", "timeout")
+
+    def __init__(self, execution_cache=None):
+        self.execution_cache = execution_cache
+
+    def configuration(self):
+        return {"execution_cache": self.execution_cache.configuration()} if self.execution_cache is not None else {}
 
     def run(self, context):
         if context.inputs.get("skip"):
@@ -31,8 +38,7 @@ class PutEvaluationStage(PipelineStage):
                     "atol": context.metadata["atol"], "timeout": context.settings.timeout_seconds,
                     "seed": context.settings.reference_seed + context.task_number,
                 }
-                result = context.artifacts.load_or_compute(
-                    relative_path, lambda: execute(job) if context.oracle["tests"] else {"tests": []})
+                result = cached_execution(context, relative_path, job, repeat_index, execute, self.execution_cache)
                 repeated_results.append(result["tests"])
             failing_indices = []
             unstable_indices = []

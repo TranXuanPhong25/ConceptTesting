@@ -212,3 +212,26 @@ classical CFG/DFG hoặc witness sampler; empty suite không execute reference/P
 Inputs qua literal/signature/boundary-target checks vẫn có constraints dạng prose
 chưa được verify. Reference stage áp dụng trusted contract hiện có; không biến
 mọi LLM constraint thành proven fact. Xem module README cho schema và giới hạn V1.
+
+## Cache input execution
+
+Pipeline hiện đại mặc định cache kết quả reference/domain và PUT theo từng input.
+CLI dùng `final/out/execution_cache/results.sqlite3`; có thể đổi bằng
+`--execution-cache <directory>`, hoặc dùng `--no-execution-cache` để chạy batch cũ.
+Python API nhận `execution_cache=InputExecutionCache(path)`, `False` để tắt;
+default tạo cache ở sibling directory của run artifacts.
+
+Cache chỉ reuse khi source,context,contract,input,expected,seed,timeout,tolerance
+và runtime/harness đều khớp. Args positional/keyword/default được bind về cùng
+signature; input types,signed zero và insertion order của dict được giữ riêng.
+Repeat0và1có entries riêng,không dùng kết quả lượt đầu thay lượt stability thứhai.
+Cache miss chạy một input trong sandbox mới; vì vậy không phụ thuộc side effects
+của các inputs trước trong suite. Cold run có thể tốn thêm startup; các run lặp
+giảm execution tương ứng với hits,không tự giảm số LLM generation calls.
+
+Timeout/infrastructure failure không được reuse. Old batched native outputs không
+tự import vào cache vì khác isolation policy. Existing run checkpoints vẫn được
+replay trực tiếp. Summary/report có `input_execution_cache`,với hits,misses,
+executed_inputs,not_cached và corrupt/missing receipts. Cache hits giữ duration
+lịch sử; không được đọc nó như fresh timing measurement. Generators không đọc
+cache outcomes,reference chỉ dùng cache sau khi inputs đã freeze.

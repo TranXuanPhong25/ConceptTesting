@@ -1,3 +1,4 @@
+- [Input execution cache](input-execution-cache.md) — per-input SQLite cache, isolated misses and independent repeats; reference/PUT reuse across runs
 - [Boundary test applicability/module](boundary-test-applicability.md) — plain+BVA smoke6prepared/frozen,60checks;endpoint404,awaiting endpoint;0calls/no controller
 - [Code readability](code-readability.md) — user quen Java; ưu tiên tên đầy đủ, explicit loops/intermediates, ít shorthand; final/ readability audit
 - [Four course development groups](four-course-development-groups.md) —164task reviewed; boundary47/equivalence47/C1 31/DU39;6savedPUT smoke/group, improve separately before combining

@@ -119,3 +119,23 @@
   facts, view, model and sandbox adapters; source hashes remain unchanged.
 - Preserve original V11 paper/history sources and every output/checkpoint.
   Active concept-inputs run continues; no commit/push.
+
+## 2026-11-05 — shared per-input execution cache
+
+- User requests reusing already executed inputs, then launching plain+BVA.
+  Add SQLite-backed InputExecutionCache for reference/domain and PUT outcomes,
+  shared across modern runs and isolated from generators/model prompts.
+- Key by source/context/contract/expected/timeout/seed/tolerance/runtime and typed
+  bound inputs; preserve dict order,float bits and separate repeat slots. Execute
+  each cache miss in a fresh sandbox; deduplicate matching inputs across arms/runs.
+- Keep run checkpoints authoritative for replay; track cache receipts/hits/misses/
+  executed inputs in summary/report. Do not reuse timeout or infrastructure failures.
+  Corrupt entries recompute; per-key locks prevent concurrent duplicate work.
+- Enable on modern pipeline,retain original legacy execution,allow explicit cache
+  directory or disable flag. Initial cache population adds sandbox-startup cost;
+  do not claim wall-time improvement until repeated workload is measured.
+-19cache engineering checks pass,including real sandbox and cross-run reuse.
+  Existing19boundary/injection integration checks pass with caching enabled.
+- Fullmodular112checks pass. Authorized6PUTplain+BVA smoke complete:80/19valid
+  inputs,0/0additional PUTfailures,16responses/0unknown. Warm real-workload audit
+  yields432hits/0new executions;fullread-only replay/source/input hashes verified.

@@ -96,3 +96,24 @@ Cache resume/replay and prior boundary integration/legacy parity checks pass.
 Validation code is now named methods with START/END blocks at call sites. No
 validation policy was disabled. Only engineering fixtures and tiny synthetic
 sandbox programs were executed; no live model or real-cohort result computation.
+
+## 2026-11-05 — shared per-input execution cache
+
+Full modular suite: **112 passed** (63.66s), including19new cache checks.
+Coverage includes per-input/repeat reuse,cross-run reference/PUT reuse,independent
+stability slots,source/spec/contract/seed/timeout/tolerance/expected/runtime
+invalidation,typed values and signed zero,dict insertion order,concurrent callers,
+corruption repair,uncached timeouts,read-only refusal and real sandbox isolation
+against imported-module state mutation. Existing modern and legacy checks pass.
+
+Small synthetic timing check (8integer inputs,same pinned Python3.11sandbox):
+cold0.5399seconds/8executions;warm0.0115seconds/8hits/0executions;outputs exactly
+equal. This measures repeated fixture execution,not LLM generation or end-to-end
+benchmark speedup. No benchmark outcomes were used to design/cache these checks.
+
+Authorized live smoke subsequently completed6/6tasks:plain80validinputs/BVA19,
+0additional PUTfailures each;16responses/0unknown/0retries. Cold-cache432records/
+428executions/4hits. A postrun warm-cache audit forbidding subprocess creation
+reused all432records,0native/modelcalls,exact equality to original artifacts in
+.1202seconds. Fullread-only replay reproduces the complete summary;68source and
+6input-freeze hashes verified. See review/boundary_smoke_run_2026-11-05.md.

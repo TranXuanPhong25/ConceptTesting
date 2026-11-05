@@ -10,6 +10,7 @@ from .artifacts import ArtifactStore
 from .calls import RecoveryModelCalls
 from .pipeline import BenchmarkPipeline
 from .context import PipelineSettings
+from .execution_cache import InputExecutionCache
 from .arms import available_arms, LEGACY_METHOD_NAMES, default_arms, selected_arms
 from final.pipeline import save
 from final.experiments.concept_reference_v1_recovery.keepalive import KeepAlive
@@ -36,6 +37,9 @@ def main(arguments=None):
                         help="Expected frozen programs per task; use 1 for representative smoke cohorts")
     parser.add_argument("--input-budget", type=positive_integer, default=20,
                         help="Total input budget per arm per task, including the boundary arm")
+    parser.add_argument("--execution-cache", type=Path, default=Path("final/out/execution_cache"),
+                        help="Shared per-input reference/PUT execution cache")
+    parser.add_argument("--no-execution-cache", action="store_true", help="Use the original batch execution without shared input caching")
     parser.add_argument("--v11-concept-cache", type=Path,
                         help="Read-only source of matching V11 concept bundles; default: existing runtimefix run")
     parser.add_argument("--v11-cache-only", action="store_true",
@@ -70,7 +74,10 @@ def main(arguments=None):
             calls = RecoveryModelCalls(QwenModel(), artifacts)
     metadata_path = Path(__file__).resolve().parents[1] / "experiments/concept_reference_v1/data/contracts.json"
     metadata = json.loads(metadata_path.read_text())
-    pipeline = BenchmarkPipeline(options.cohort, artifacts, calls=calls, arms=arms, settings=settings)
+    cache = False if options.no_execution_cache or options.legacy_generation else InputExecutionCache(
+        options.execution_cache, read_only=read_only)
+    pipeline = BenchmarkPipeline(options.cohort, artifacts, calls=calls, arms=arms, settings=settings,
+                                 execution_cache=cache)
     if read_only:
         summary = pipeline.run(tasks, metadata)
     else:

@@ -77,6 +77,21 @@ class ReportingStage(PipelineStage):
             if response.get("usage", {}).get("usage_footer_complete") is False:
                 missing_footer_count += 1
         summary["responses_with_missing_usage_footer"] = missing_footer_count
+        cache_receipts = [receipt for context in contexts
+                          for receipt in context.extensions.get("input_execution_cache", {}).values()]
+        if cache_receipts:
+            summary["input_execution_cache"] = self.cache_accounting(cache_receipts)
+        return summary
+
+    @staticmethod
+    def cache_accounting(receipts):
+        summary = {"input_records": 0, "hits": 0, "misses": 0, "executed_inputs": 0,
+                   "not_cached": 0, "corrupt_entries": 0, "missing_receipts": 0}
+        for receipt in receipts:
+            for name in summary:
+                if name != "missing_receipts":
+                    summary[name] += receipt.get(name, 0)
+            summary["missing_receipts"] += receipt.get("state") == "receipt_missing"
         return summary
 
     def collect_diagnostics(self, contexts):
@@ -119,6 +134,9 @@ class ReportingStage(PipelineStage):
         lines.extend(["", f"Writer accounting (shared frozen-cohort cost): {summary['writer_calls']}.",
                       f"Tester accounting: {summary['tester_calls']}.", f"Diagnostics: {summary['diagnostics']}.",
                       f"Explicit skips: {summary['skips']}."])
+        if "input_execution_cache" in summary:
+            lines.extend(["", f"Per-input execution cache: {summary['input_execution_cache']}.",
+                          "Cached executions retain separate stability-repeat slots; stored durations are historical."])
         lines.extend(["", "Expected outputs come exclusively from the reference program after all arm inputs freeze.",
                       "EvalPlus input contracts filter the domain; EvalPlus floating tolerances and polynomial-root property",
                       "handle accepted non-unique roots. Reference oracle limitations remain; this is detection on this",

@@ -4,6 +4,7 @@ from .methods import MethodInputGenerator
 
 class LegacyArmInputGenerator(MethodInputGenerator):
     """Old preparation is opt-in and absent from the modern orchestration module."""
+    cache_input_execution = False
 
     def __init__(self, arms):
         from ..stages.concept_analysis import ConceptAnalysisStage

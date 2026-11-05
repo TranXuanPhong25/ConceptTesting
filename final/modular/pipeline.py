@@ -16,6 +16,7 @@ from final.pipeline import digest
 from .generators import InputGenerator, default_input_generator, generator_for_arms
 from .artifacts import ArtifactStore
 from .calls import CachedModelCalls
+from .execution_cache import InputExecutionCache
 from .context import PipelineSettings, TaskContext
 from .stages.base import PipelineStage
 from .stages.frozen_cohort import FrozenCohortStage
@@ -28,7 +29,7 @@ from .stages.reporting import ReportingStage
 class BenchmarkPipeline:
     def __init__(self, cohort_path: Path, artifacts: ArtifactStore, *, arms=None,
                  settings: PipelineSettings | None = None, calls=None,
-                 input_generator: InputGenerator | None = None):
+                 input_generator: InputGenerator | None = None, execution_cache=None):
         self.artifacts = artifacts
         self.settings = settings or PipelineSettings()
         if input_generator is not None and arms is not None:
@@ -48,7 +49,12 @@ class BenchmarkPipeline:
         self.generation_stages = [
             self.cohort_stage, *input_generator.preparation_stages(), InputGenerationStage(input_generator),
         ]
-        self.evaluation_stages = [ReferenceOracleStage(), PutEvaluationStage(), self.reporting_stage]
+        if execution_cache is None and input_generator.cache_input_execution:
+            execution_cache = InputExecutionCache(artifacts.directory.parent / "execution_cache",
+                                                  read_only=artifacts.read_only)
+        self.execution_cache = None if execution_cache is False else execution_cache
+        self.evaluation_stages = [ReferenceOracleStage(self.execution_cache),
+                                  PutEvaluationStage(self.execution_cache), self.reporting_stage]
         self.stage_events = []
 
     def insert_stage(self, stage: PipelineStage, *, after: str):

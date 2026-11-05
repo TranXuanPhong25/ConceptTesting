@@ -18,6 +18,7 @@ class InputMethod(Protocol):
 
 class InputGenerator(ABC):
     """Generate named input batches consumed by the existing reference stage."""
+    cache_input_execution = True
 
     def preparation_stages(self):
         return ()
