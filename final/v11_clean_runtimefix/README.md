@@ -1,3 +1,5 @@
+> Archived documentation. Executable code was retired on 2026-11-05. Current entry point: `python -m final.src.modular.run`. Original source remains in Git history; saved outputs/checkpoints remain unchanged.
+
 # Runtime fix continuation
 
 Trạng thái mới nhất: full-V11 đã dừng theo user ở288case, giữ checkpoint. Run

@@ -3,11 +3,11 @@ import json
 
 import pytest
 
-from final.contracts import fingerprint, validate_test
-from final.core_model import CoreModel, ModelResponse
-from final.execution import execute
-from final.pipeline import Pipeline, Settings, UnknownInvocation, summarize
-from final.run import load_tasks
+from final.src.contracts import fingerprint, validate_test
+from final.src.core_model import CoreModel, ModelResponse
+from final.src.execution import execute
+from final.src.pipeline import Pipeline, Settings, UnknownInvocation, summarize
+from final.src.run import load_tasks
 
 
 def test_dataset_is_full_original_set():

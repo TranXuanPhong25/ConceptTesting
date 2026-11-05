@@ -1,3 +1,5 @@
+> Archived documentation. Executable code was retired on 2026-11-05. Current entry point: `python -m final.src.modular.run`. Original source remains in Git history; saved outputs/checkpoints remain unchanged.
+
 # Concept benchmark với reference oracle
 
 User đã làm rõ mục tiêu: đo **concept giúp sinh input bắt lỗi như thế nào**, giữ

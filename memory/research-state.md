@@ -6,6 +6,8 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+
+2026-11-05 latest userapproved final/src + final/data consolidation and retired concept code deletion.214tests pass;153397recorded output/checkpoint hashes unchanged;group inventory evidence/selections identical after offline rebuild. No new model/benchmark;userrequestsConventionalCommit/pushmain,noattribution. See [[runtime-refactor]].
 2026-11-05 user authorizes plain+BVA run on existing boundary group. Smoke6PUT
 configured/frozen in final/out/boundary_smoke_plain_bva_20261105,67sourcefiles,
 input20perarm/task,target1,expectedQwen27/context8192,max18logicalcalls;60checks

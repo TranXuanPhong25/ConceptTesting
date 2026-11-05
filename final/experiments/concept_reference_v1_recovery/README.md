@@ -1,3 +1,5 @@
+> Archived documentation. Executable code was retired on 2026-11-05. Current entry point: `python -m final.src.modular.run`. Original source remains in Git history; saved outputs/checkpoints remain unchanged.
+
 # Tiếp tục run với transport ổn định hơn
 
 Đây là bản sửa kết nối cho experiment v1 đang dừng tại task16/classical. Giữ nguyên

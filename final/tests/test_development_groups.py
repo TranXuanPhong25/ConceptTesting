@@ -5,16 +5,16 @@ from pathlib import Path
 
 import pytest
 
-from final.development_groups import COHORT, DevelopmentGroups, GROUPS, REVIEW, ProgramStructure, read_review
-from final.experiments.concept_reference_v1.cohort import load_cohort
-from final.modular.context import PipelineSettings
+from final.src.development_groups import COHORT, DevelopmentGroups, GROUPS, DATA, ProgramStructure, read_review
+from final.src.modular.cohort import load_cohort
+from final.src.modular.context import PipelineSettings
 
 
 @pytest.fixture(scope="module")
 def inventory():
-    if not COHORT.is_file() or not (REVIEW / "inventory.json").is_file():
+    if not COHORT.is_file() or not (DATA / "inventory.json").is_file():
         pytest.skip("Requires the local frozen PUT cohort and offline development_groups build")
-    return json.loads((REVIEW / "inventory.json").read_text())
+    return json.loads((DATA / "inventory.json").read_text())
 
 
 def test_all_tasks_have_one_primary_and_valid_secondary_groups(inventory):

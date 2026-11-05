@@ -6,7 +6,7 @@
 [subsets.json](subsets.json) khóa bộ nhỏ và PUT representative được chọn.
 
 `inventory.json` là artifact chi tiết được gitignore, giữ trên máy và tạo lại bằng
-`python -m final.development_groups build`. Source, phân loại thủ công, báo cáo và
+`python -m final.src.development_groups build`. Source, phân loại thủ công, báo cáo và
 subsets tổng hợp được giữ trong Git. Các checks cần cohort/inventory sẽ skip rõ lý
 do nếu checkout không có local artifacts; synthetic checks vẫn chạy bình thường.
 
@@ -59,10 +59,10 @@ cohort hoặc khẳng định qualification của bộ cũ trên runtime hiện 
 
 ```bash
 # Offline inventory: không gọi model/reference, không execute PUT.
-final/.venv/bin/python -m final.development_groups build
+final/.venv/bin/python -m final.src.development_groups build
 
 # Export6PUT từ6task boundary, mỗi task1PUT đã lưu.
-final/.venv/bin/python -m final.development_groups export \
+final/.venv/bin/python -m final.src.development_groups export \
   --group boundary --tier smoke --output final/out/dev_boundary_smoke
 ```
 

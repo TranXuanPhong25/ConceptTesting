@@ -1,0 +1,210 @@
+{
+  "schema": "saved-bva-regression-put-inputs-1",
+  "source_cohort_sha256": "437c5af3e92d4fcbeb9c2c408ad537adbbbd6971a2d68666cba090f72de70885",
+  "tasks": [
+    {
+      "task_id": "HumanEval/99",
+      "generated": 1,
+      "base_pass": 1,
+      "base_input_keys": [
+        "('dict', ((('str', \"'value'\"), ('str', \"'-15.5'\")),))",
+        "('dict', ((('str', \"'value'\"), ('str', \"'0'\")),))",
+        "('dict', ((('str', \"'value'\"), ('str', \"'10'\")),))",
+        "('dict', ((('str', \"'value'\"), ('str', \"'14.5'\")),))",
+        "('dict', ((('str', \"'value'\"), ('str', \"'15.3'\")),))"
+      ],
+      "programs": [
+        {
+          "id": 0,
+          "code": "import math\n\ndef closest_integer(value):\n    num = float(value)\n    if num >= 0:\n        if num - math.floor(num) >= 0.5:\n            return math.ceil(num)\n        else:\n            return math.floor(num)\n    else:\n        # For negative numbers: -14.5 -> floor is -15, ceil is -14\n        # Distance to -15 is 0.5, distance to -14 is 0.5\n        # We need the one farthest from zero: -15\n        if num - math.floor(num) >= 0.5:\n            return math.floor(num)\n        else:\n            return math.ceil(num)",
+          "base": {
+            "status": "pass",
+            "calls": [
+              {
+                "args": "('10',)",
+                "kwargs": "{}",
+                "bound": {
+                  "value": "'10'"
+                }
+              },
+              {
+                "args": "('14.5',)",
+                "kwargs": "{}",
+                "bound": {
+                  "value": "'14.5'"
+                }
+              },
+              {
+                "args": "('-15.5',)",
+                "kwargs": "{}",
+                "bound": {
+                  "value": "'-15.5'"
+                }
+              },
+              {
+                "args": "('15.3',)",
+                "kwargs": "{}",
+                "bound": {
+                  "value": "'15.3'"
+                }
+              },
+              {
+                "args": "('0',)",
+                "kwargs": "{}",
+                "bound": {
+                  "value": "'0'"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "task_id": "HumanEval/124",
+      "generated": 1,
+      "base_pass": 1,
+      "base_input_keys": [
+        "('dict', ((('str', \"'date'\"), ('str', \"''\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'01-01-2007'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'03-11-2000'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'03-32-2011'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'04-0-2040'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'04-12-2003'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'04-2003'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'04-31-3000'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'04122003'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'06-04-2020'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'06-06-2005'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'15-01-2012'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'2003-04'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'2003-04-12'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'20030412'\")),))",
+        "('dict', ((('str', \"'date'\"), ('str', \"'21-31-2000'\")),))"
+      ],
+      "programs": [
+        {
+          "id": 0,
+          "code": "def valid_date(date):\n    if not date:\n        return False\n    \n    parts = date.split('-')\n    if len(parts) != 3:\n        return False\n    \n    mm_str, dd_str, yyyy_str = parts\n    \n    # Check format: mm-dd-yyyy implies exactly 3 parts separated by '-'\n    # Also need to ensure no extra characters or empty parts\n    if not mm_str or not dd_str or not yyyy_str:\n        return False\n    \n    try:\n        mm = int(mm_str)\n        dd = int(dd_str)\n        yyyy = int(yyyy_str)\n    except ValueError:\n        return False\n    \n    # Rule 3: Months 1-12\n    if mm < 1 or mm > 12:\n        return False\n    \n    # Rule 2: Days limits\n    # Months 1,3,5,7,8,10,12 -> 31 days\n    # Months 4,6,9,11 -> 30 days\n    # Month 2 -> 29 days (simplified per spec, ignoring leap year logic not mentioned)\n    \n    if mm in [1, 3, 5, 7, 8, 10, 12]:\n        max_days = 31\n    elif mm in [4, 6, 9, 11]:\n        max_days = 30\n    elif mm == 2:\n        max_days = 29\n    else:\n        return False\n    \n    if dd < 1 or dd > max_days:\n        return False\n    \n    # Additional check for leading zeros/format strictness if implied by examples\n    # The spec says format mm-dd-yyyy. Usually implies 2 digits for mm/dd.\n    # Example '15-01-2012' is False (15 is not a month), but '06-04-2020' is True.\n    # Example '04-0-2040' is False (day 0 is invalid).\n    # However, '3-11-2000' vs '03-11-2000': The example uses '03'.\n    # Strict format usually requires 2 digits for mm and dd.\n    if len(mm_str) != 2 or len(dd_str) != 2:\n        # Check if it's just a number representation issue or strict format.\n        # The example '15-01-2012' failed because 15 is not a month.\n        # The example '04-0-2040' failed because day is 0.\n        # Let's check if the string representation matches the integer without leading zeros.\n        # If input is '3-11-2000', int('3') is 3. But format mm usually implies 2 chars.\n        # Given '03-11-2000' is True, strict 2-digit is likely required.\n        return False\n    \n    return True\n",
+          "base": {
+            "status": "pass",
+            "calls": [
+              {
+                "args": "('03-11-2000',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'03-11-2000'"
+                }
+              },
+              {
+                "args": "('15-01-2012',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'15-01-2012'"
+                }
+              },
+              {
+                "args": "('04-0-2040',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'04-0-2040'"
+                }
+              },
+              {
+                "args": "('06-04-2020',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'06-04-2020'"
+                }
+              },
+              {
+                "args": "('01-01-2007',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'01-01-2007'"
+                }
+              },
+              {
+                "args": "('03-32-2011',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'03-32-2011'"
+                }
+              },
+              {
+                "args": "('',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "''"
+                }
+              },
+              {
+                "args": "('04-31-3000',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'04-31-3000'"
+                }
+              },
+              {
+                "args": "('06-06-2005',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'06-06-2005'"
+                }
+              },
+              {
+                "args": "('21-31-2000',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'21-31-2000'"
+                }
+              },
+              {
+                "args": "('04-12-2003',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'04-12-2003'"
+                }
+              },
+              {
+                "args": "('04122003',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'04122003'"
+                }
+              },
+              {
+                "args": "('20030412',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'20030412'"
+                }
+              },
+              {
+                "args": "('2003-04',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'2003-04'"
+                }
+              },
+              {
+                "args": "('2003-04-12',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'2003-04-12'"
+                }
+              },
+              {
+                "args": "('04-2003',)",
+                "kwargs": "{}",
+                "bound": {
+                  "date": "'04-2003'"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
