@@ -41,6 +41,28 @@ Only writer prompt remains in modular/program_prompts.py; use shared runtime
 contracts. Baseline safety tests now target current runtime;2obsolete workflow
 tests removed.212tests pass;independent review no must-fix. User requested committing and pushing this cleanup on main without attribution.
 
+2026-11-05 userrequestsHTMLslidesforfullpipelineandcodelevelstage/moduleflows.
+Created `final/slides/pipeline.html`:20offline slides,interactive SVG diagrams,
+37exact embedded source snapshots,source inspector,notes,keyboard navigation,
+TOC and print/PDF layout. Covers existing-cohort full164run,optional writer/base
+classes (no cohort-builder CLI),subset task IDs,target counts,plain/BVA,freeze,
+corrected oracle,cache,sandbox,scoring and replay/rescore. Browser QA desktop/mobile
+and20pageprint pass;Bash snippets syntaxchecked;no model/benchmark run. Uncommitted.
+
+2026-11-05 user asks for lightweight workflow alternatives (research only).
+Reviewed official PocketFlow/Tawazi/ApacheHamilton/ApacheBurr/Luigi docs and current
+PyPI metadata. Shortlist:Burr for existing shared-state stages + persistence,
+Hamilton for explicit dataflow functions/DAG,Luigi for artifact-target batch tasks;
+PocketFlow minimal but retains own persistence work. No library installed or code
+migration. Recommendation provisional,not measured LOC reduction. Preserve global
+input freeze,source/contract/runtime/repeat cache identity,and unknown LLM attempt
+history regardless of framework. Hamilton cache docs explicitly exclude nested
+helper/library changes from automatic code versioning. Sources:
+https://burr.apache.org/docs/concepts/state-persistence/
+https://hamilton.apache.org/concepts/caching/
+https://luigi.readthedocs.io/en/latest/tasks.html
+https://the-pocket.github.io/PocketFlow/
+
 **Why:** current reference execution must have clear ownership instead of importing
 shared helpers from an experiment whose folder name suggests obsolete concepts.
 **How to apply:** trace reference/PUT execution via `final/src/runtime/execution.py`

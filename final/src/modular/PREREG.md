@@ -559,3 +559,152 @@ No model/benchmark runs or changes to input-generation/reference semantics.
 Independent cleanup review complete: no dangling imports; writer prompt AST and
 contract helper bytes match; source manifests retain runtime/prompt identity.
 No model/benchmark calls or efficacy claims.
+
+## 2026-11-05 — boundary prompt v4 smoke
+
+User asks to try prompt v4 from final/review/boundary_prompt_v4_proposal_2026-11-05.md.
+Protocol: five-step selection worksheet (order, spec/code/edge transitions, alignment,
+reach/infect/propagate, selection) and context rules (one factor, reach, propagate).
+Schema boundary-value-analysis-4; fresh output final/out/boundary_smoke_prompt_v4_20261105.
+Scope: 6 outcome-blind smoke PUTs (HumanEval/0, 5, 18, 81, 99, 120), arm boundary only,
+at most 12 logical calls, target_programs 1, input budget 20, corrected references.
+
+Descriptive interface check only: selected boundaries, sides, origins, retained inputs and
+rejections. Smoke tasks are development tasks, no plain/placebo comparison, no efficacy claim.
+Prompt was written after reading saved cohort failures, so this is not held-out evidence.
+
+Smoke amendment 2026-11-05: output final/out/boundary_smoke_prompt_v4_20261105 finished
+6/6, 8 calls, 12 inputs, 1 PUT (HumanEval/99). Tasks 81 and 120 and one boundary of task 0
+were lost to invalid_constraint because the v4 example no longer showed the constraint
+object. This is a prompt defect, fixed by restoring that shape. Saved artifacts stay as is;
+any rerun needs a fresh output directory.
+
+## 2026-11-05 — boundary known-bug diagnostic
+
+User approves running prompt v4 (constraint example fixed) on 10 PUTs from
+final/review/boundary_known_bug_tasks_2026-11-05.md. Cohort
+final/out/development_groups/boundary/known_bug_10, output
+final/out/boundary_known_bug10_prompt_v4_20261105, arm boundary only, target_programs 1,
+input budget 20, corrected references, at most 20 logical calls.
+
+PUTs were selected by outcome, so this is diagnostic only: does the generator reach the known
+boundary? Report per task selection status, whether the witness boundary was selected, and
+detection. No detection rate, plain comparison or efficacy claim. Tasks 16 and 23 are not
+expressible with current characteristics and are expected misses.
+
+## 2026-11-05 — boundary selection/context repair (offline only)
+
+User requests fixing the diagnosed selection/context losses. This amendment is
+after inspecting the outcome-selected known-bug10 diagnostic. Separate public
+domain evidence from code/natural-edge threshold evidence; do not require a spec
+rule change for code/edge candidates. Increase default selection tokens to4096
+and distinguish length-truncated selection from invalid JSON or no applicability.
+Context families may include valid sign extremes, empty/token-only strings and
+endpoint placement, with the same family reused across sides within the budget.
+
+Add optional bounded declarative context requirements (palindrome, element signs,
+token-only strings), check them on constructed calls, and preserve palindrome
+when constructing sums where the supplied shape permits it. Unsupported or unmet
+requirements are explicit construction rejections, not feasibility proofs. Prose
+reach/propagation and remaining contract constraints stay unverified. Keep the
+numeric-string binding guard and existing characteristic coverage unchanged.
+
+Protocol boundary-value-analysis-5 requires fresh artifacts. Validation is offline
+engineering tests only: no model calls, diagnostic rerun, benchmark scoring or
+new efficacy claim. Historical run outputs remain unchanged.
+
+## 2026-11-05 — protocol5 known-bug10 rerun authorization
+
+User now requests rerunning the repaired method. Same outcome-selected10PUT
+cohort and task order as v4, cohort_sha256
+274e5251c97682d2d0c43d53fb936a859822737ec3d33f54e05e09aac3eb48c1.
+Fresh output:final/out/boundary_known_bug10_prompt_v5_20261105. Boundary only,
+target_programs1,input_budget20/task,selection4096/input2048/context8192,
+selection temperature0,input temperature0.7,input seed314159+tasknumber,
+reference seed271828+tasknumber,timeout3s,two separate native-repeat slots.
+Same qwen3.5-27b-awq model via user-supplied endpoint; no paid-provider/model
+substitution. At most20logical task calls,existing at-most3physical completion
+attempts/slot; no semantic retry or expansion.20minute keepalive separately
+recorded. Never log/store endpoint URLs or credentials in repo artifacts.
+
+Corrected pinned HumanEval+v0.1.10 references are used only after all10tasks'
+generation freezes. Shared exact execution-cache reuse remains enabled. Compare
+per-task selected characteristics, abstentions/truncation, context families,
+declared requirement checks, valid inputs, detections and costs with frozenv4.
+Both this repair and rerun are post-hoc on these10PUTs; no detection-rate,
+call-matched efficacy or held-out generalization claim. No task-specific witness
+inputs or known-boundary annotations are supplied to the generator.16/23still
+lack character-code characteristics; numeric-string binding guard stays intact.
+
+Pre-inference independent Codex review found two residual contradictions:
+candidate metadata still required spec-supported thresholds/spec_evidence;
+context propagation still demanded a side_rules difference. Both corrected
+before inference so template metadata and context match the selection contract.
+Freeze source/data/old-output hashes before launch; keep all original outputs.
+
+## 2026-11-05 — compact selection prompt diagnostic
+
+User approves shortening the prompt and trying the previously discussed semantic
+failures on23/72/157. This is a post-hoc diagnostic of prompt compression, not a
+new efficacy benchmark or a pure causal test of token length. Prior workload/raw
+vs structured diagnostics include v72_diagnosisprobe and the v33 chain comparison;
+this experiment changes only the current BVA selection instruction wording.
+
+Replace selection instructions with a shorter version of the same task; keep
+system message, task-data object, candidate menu, output schema/example, compiler,
+validators and context prompt unchanged. No task-specific byte/character, prefix
+sum, polarity or hypotenuse hints/examples are added. Selection budget4096,
+generation2048/context8192,input cap20/task,existing seeds/temperatures, same
+qwen3.5-27b-awq. Protocol6 records the instruction change; fresh output only:
+final/out/boundary_compact_selection3_20261105. At most6logical task calls,
+existing max3physical completion attempts/slot, no semantic retries or expansion.
+Use exact23/72/157PUTs from the frozen known_bug_10 cohort. No PUT regeneration.
+
+Comparator: saved protocol5 requests/responses on these same3PUTs, not fresh
+long-prompt controls. Verify identical task-data objects, system message, model,
+budgets and output example before inference. All3generation results freeze before
+corrected HumanEval+reference/PUT evaluation. Shared cache and two native repeat
+slots remain. Paid-provider substitution is outside this diagnostic scope.
+
+Primary review is semantic, recorded separately from schema validity and detection:
+23distinguishes intended string length from implementation byte length; an
+unsupported_characteristic response with correct explanation counts as semantic
+recognition, not generated-input success.72distinguishes total sum from partial
+accumulation rather than alleging an unsupported operator mismatch.157does not
+call positive-domain acceptance and nonpositive rejection an operator mismatch;
+recognition of the arithmetic/tolerance issue is reported separately. An empty
+or vague response is not semantic success. Report exact text and unknowns rather
+than forcing a binary judgment when evidence is insufficient.
+
+Secondary: selected boundaries/statuses, valid yield, context properties and native
+outcomes, plus actual prompt/completion tokens and known/unknown usage. Three
+post-hoc cases and rewritten wording cannot isolate length from salience or
+instruction deletion/rephrasing; no efficacy/generalization claim. Independent
+read-only review, offline checks and source/prior-output snapshots precede calls.
+
+### 2026-11-06 pre-inference review/control amendment
+
+Independent review confirms exact context instruction/output-example retention
+and no task-specific added hints. Selection text5908→3347characters.234modular
+tests pass. Review also identifies a historical confound: runtime transport
+changed from v5's urllib/SSE to LangChain/OpenAI, alongside pipeline metadata and
+input-generation source edits. Thus the historical v5 contrast is not prompt-only.
+
+Before observing any new response, add3fresh long-selection controls using the
+exact saved v5 messages/settings on the current backend. Interleave the6selection
+calls in task pairs:23long→short,72short→long,157long→short. Both variants keep
+the same model/data/menu/system message/output example/budgets/seed/temperature.
+Use normal checkpointed calls; cache short selections under their normal call
+keys so the subsequent standard BVA pipeline consumes them without new selection
+completions. Only the short variant may generate contexts (up to3morecalls), then
+all3short results freeze before normal reference/PUT evaluation.
+
+Total cap is now9logical task calls:3long controls +3short selections +atmost3
+short contexts, existing max3physical attempts each. This replaces the6call cap;
+no additional tasks/repetitions/semantic repair. Current local date is Nov6, so
+fresh output is final/out/boundary_compact_selection3_20261106, replacing the
+unused planned Nov5output. Long controls live in its long_selection_control/
+subdirectory, with separate accounting. Periodic20minute keepalive is separate.
+Primary comparison is the fresh pair on the current runtime; historical v5 is
+secondary context. This still tests the compression/rephrasing bundle rather
+than isolating token length, and remains a post-hoc three-case diagnostic.

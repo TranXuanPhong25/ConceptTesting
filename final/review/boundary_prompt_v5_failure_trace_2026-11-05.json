@@ -1,0 +1,2623 @@
+{
+  "scope": "saved protocol5 failed tasks; no model, PUT or reference execution; pure constructor replay only for72/157",
+  "tasks": [
+    {
+      "task": 2,
+      "put_id": "6",
+      "artifact_directory": "final/out/boundary_known_bug10_prompt_v5_20261105/tasks/2/boundary/6",
+      "specification": "\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, it can be decomposed into\n    and integer part (largest integer smaller than given number) and decimals\n    (leftover part always smaller than 1).\n\n    Return the decimal part of the number.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n",
+      "contract": "\n    assert number > 0, \"invalid inputs\" # $_CONTRACT_$\n    assert isinstance(number, float), \"invalid inputs\" # $_CONTRACT_$\n    assert number != float(\"+inf\"), \"invalid inputs\" # $_CONTRACT_$\n",
+      "put_source": "from fractions import Fraction\n\ndef truncate_number(number: float) -> float:\n    \"\"\" Given a positive floating point number, return the decimal part.\n    >>> truncate_number(3.5)\n    0.5\n    \"\"\"\n    f = Fraction(number).limit_denominator()\n    integer_part = f.numerator // f.denominator\n    fractional_num = f.numerator - (integer_part * f.denominator)\n    return float(Fraction(fractional_num, f.denominator))",
+      "templates": [
+        {
+          "id": "number:value",
+          "family": "ordered_scalar",
+          "characteristic": {
+            "parameter": "number",
+            "operation": "value"
+          },
+          "numeric_kind": "float",
+          "neighborhood_modes": [
+            "step",
+            "float_adjacent"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        }
+      ],
+      "candidate_guards": [
+        {
+          "template_id": "number:value",
+          "characteristic": {
+            "parameter": "number",
+            "operation": "value"
+          },
+          "comparison": ">",
+          "threshold": {
+            "kind": "constant",
+            "value": 0
+          },
+          "source_quote": "number > 0",
+          "origin": "contract",
+          "necessary_domain": true
+        }
+      ],
+      "selection": {
+        "status": "no_applicable_boundary",
+        "reason": "The specification defines a continuous mathematical operation (extracting the fractional part) without any stated thresholds, ranges, or cutoffs that create distinct behavior partitions. The domain contract only excludes non-positive values and infinity, but the function's behavior is uniform across the entire valid domain (0, +inf). No code transitions or natural edges (like integer boundaries) are specified to alter the output behavior in a way that justifies boundary value analysis.",
+        "boundaries": [],
+        "rejected": [],
+        "better_technique": "equivalence_partitioning"
+      },
+      "accepted_inputs": [],
+      "artifacts_read_only": true,
+      "stop_stage": "selection",
+      "context_call_exists": false
+    },
+    {
+      "task": 11,
+      "put_id": "1",
+      "artifact_directory": "final/out/boundary_known_bug10_prompt_v5_20261105/tasks/11/boundary/1",
+      "specification": "from typing import List\n\n\ndef string_xor(a: str, b: str) -> str:\n    \"\"\" Input are two strings a and b consisting only of 1s and 0s.\n    Perform binary XOR on these inputs and return result also as a string.\n    >>> string_xor('010', '110')\n    '100'\n    \"\"\"\n",
+      "contract": "\n    assert isinstance(a, str) and isinstance(b, str), \"invalid inputs\" # $_CONTRACT_$\n    assert len(a) == len(b), \"invalid inputs\" # $_CONTRACT_$\n    assert set(a).issubset({\"0\", \"1\"}) and set(b).issubset({\"0\", \"1\"}), \"invalid inputs\" # $_CONTRACT_$\n",
+      "put_source": "from typing import List\n\n\ndef string_xor(a: str, b: str) -> str:\n    \"\"\" Input are two strings a and b consisting only of 1s and 0s.\n    Perform binary XOR on these inputs and return result also as a string.\n    >>> string_xor('010', '110')\n    '100'\n    \"\"\"\n    n = len(a)\n    val_a = int(a, 2)\n    val_b = int(b, 2)\n    result_val = val_a ^ val_b\n    binary_res = bin(result_val)[2:]\n    return binary_res.zfill(n)",
+      "templates": [
+        {
+          "id": "a:length",
+          "family": "cardinality",
+          "characteristic": {
+            "parameter": "a",
+            "operation": "length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "a:run_length",
+          "family": "consecutive_run",
+          "characteristic": {
+            "parameter": "a",
+            "operation": "run_length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {
+            "token": "one-character string"
+          },
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "a:parsed_float",
+          "family": "parsed_numeric_string",
+          "characteristic": {
+            "parameter": "a",
+            "operation": "parsed_float"
+          },
+          "numeric_kind": "float",
+          "neighborhood_modes": [
+            "step",
+            "float_adjacent"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "b:length",
+          "family": "cardinality",
+          "characteristic": {
+            "parameter": "b",
+            "operation": "length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "b:run_length",
+          "family": "consecutive_run",
+          "characteristic": {
+            "parameter": "b",
+            "operation": "run_length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {
+            "token": "one-character string"
+          },
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "b:parsed_float",
+          "family": "parsed_numeric_string",
+          "characteristic": {
+            "parameter": "b",
+            "operation": "parsed_float"
+          },
+          "numeric_kind": "float",
+          "neighborhood_modes": [
+            "step",
+            "float_adjacent"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        }
+      ],
+      "candidate_guards": [
+        {
+          "template_id": "a:length",
+          "characteristic": {
+            "parameter": "a",
+            "operation": "length"
+          },
+          "comparison": "==",
+          "threshold": {
+            "kind": "expression",
+            "parameter": "b",
+            "operation": "length"
+          },
+          "source_quote": "len(a) == len(b)",
+          "origin": "contract",
+          "necessary_domain": true
+        }
+      ],
+      "selection": {
+        "status": "no_applicable_boundary",
+        "reason": "No numeric thresholds or ordered ranges exist in the specification or code for the string length or content; the only constraint is equality between two parameters, which does not define a boundary value for a single quantity.",
+        "boundaries": [],
+        "rejected": [],
+        "better_technique": "equivalence_partitioning"
+      },
+      "accepted_inputs": [],
+      "artifacts_read_only": true,
+      "stop_stage": "selection",
+      "context_call_exists": false
+    },
+    {
+      "task": 16,
+      "put_id": "4",
+      "artifact_directory": "final/out/boundary_known_bug10_prompt_v5_20261105/tasks/16/boundary/4",
+      "specification": "\n\ndef count_distinct_characters(string: str) -> int:\n    \"\"\" Given a string, find out how many distinct characters (regardless of case) does it consist of\n    >>> count_distinct_characters('xyzXYZ')\n    3\n    >>> count_distinct_characters('Jerry')\n    4\n    \"\"\"\n",
+      "contract": "\n    assert isinstance(string, str), \"invalid inputs\" # $_CONTRACT_$\n",
+      "put_source": "def count_distinct_characters(string: str) -> int:\n    seen = [False] * 256\n    count = 0\n    for char in string.lower():\n        code = ord(char)\n        if code < 256 and not seen[code]:\n            seen[code] = True\n            count += 1\n    return count",
+      "templates": [
+        {
+          "id": "string:length",
+          "family": "cardinality",
+          "characteristic": {
+            "parameter": "string",
+            "operation": "length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "string:run_length",
+          "family": "consecutive_run",
+          "characteristic": {
+            "parameter": "string",
+            "operation": "run_length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {
+            "token": "one-character string"
+          },
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "string:parsed_float",
+          "family": "parsed_numeric_string",
+          "characteristic": {
+            "parameter": "string",
+            "operation": "parsed_float"
+          },
+          "numeric_kind": "float",
+          "neighborhood_modes": [
+            "step",
+            "float_adjacent"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        }
+      ],
+      "candidate_guards": [],
+      "selection": {
+        "status": "selected",
+        "reason": "Code uses a fixed 256-element array for character codes, creating a boundary at code 255 where behavior changes from counting to ignoring characters.",
+        "boundaries": [
+          {
+            "id": "b1",
+            "template_id": "string:length",
+            "characteristic": {
+              "parameter": "string",
+              "operation": "length"
+            },
+            "threshold": {
+              "kind": "constant",
+              "value": 1
+            },
+            "comparison": ">=",
+            "boundary_kind": "behavior",
+            "neighborhood": {
+              "mode": "step",
+              "step": 1
+            },
+            "target_sides": [
+              "below",
+              "at",
+              "above"
+            ],
+            "constraints": [
+              {
+                "description": "string must be a valid string",
+                "source_quote": "assert isinstance(string, str), \"invalid inputs\""
+              }
+            ],
+            "source_quote": "Given a string, find out how many distinct characters",
+            "explanation": "Testing the transition from an empty string (length 0) to a single character (length 1) to verify the loop and counting logic initializes correctly.",
+            "origin": "edge",
+            "code_quote": "for char in string.lower():",
+            "alignment": "code_only",
+            "reach": "string is a valid str instance",
+            "infect": "0, 1",
+            "side_rules": {
+              "below": "return 0",
+              "at": "return 1",
+              "above": "return count of distinct chars"
+            },
+            "numeric_kind": "int",
+            "binding_status": "llm_semantic_hypothesis"
+          },
+          {
+            "id": "b2",
+            "template_id": "string:length",
+            "characteristic": {
+              "parameter": "string",
+              "operation": "length"
+            },
+            "threshold": {
+              "kind": "constant",
+              "value": 256
+            },
+            "comparison": "<=",
+            "boundary_kind": "behavior",
+            "neighborhood": {
+              "mode": "step",
+              "step": 1
+            },
+            "target_sides": [
+              "below",
+              "at",
+              "above"
+            ],
+            "constraints": [
+              {
+                "description": "string must be a valid str instance",
+                "source_quote": "assert isinstance(string, str), \"invalid inputs\""
+              }
+            ],
+            "source_quote": "Given a string, find out how many distinct characters",
+            "explanation": "The code uses a fixed array of size 256; strings containing characters with ord >= 256 will be ignored, creating a behavioral boundary based on content rather than just length, but length 256 is the minimum length to potentially contain all 256 ASCII codes.",
+            "origin": "code",
+            "code_quote": "seen = [False] * 256",
+            "alignment": "code_only",
+            "reach": "string contains characters with ord >= 256",
+            "infect": "255, 256, 257",
+            "side_rules": {
+              "below": "count all valid chars",
+              "at": "count all valid chars (if all < 256)",
+              "above": "count only chars < 256"
+            },
+            "numeric_kind": "int",
+            "binding_status": "llm_semantic_hypothesis"
+          }
+        ],
+        "rejected": [],
+        "finish_reason": "stop",
+        "semantic_status": "llm_proposed_with_verified_quote_not_entailment_proof"
+      },
+      "accepted_inputs": [],
+      "artifacts_read_only": true,
+      "compiled": {
+        "status": "compiled",
+        "obligations": [
+          {
+            "id": "b1:below",
+            "boundary_id": "b1",
+            "side": "below",
+            "characteristic": {
+              "parameter": "string",
+              "operation": "length"
+            },
+            "target": 0,
+            "context_budget": 4
+          },
+          {
+            "id": "b2:below",
+            "boundary_id": "b2",
+            "side": "below",
+            "characteristic": {
+              "parameter": "string",
+              "operation": "length"
+            },
+            "target": 255,
+            "context_budget": 4
+          },
+          {
+            "id": "b1:at",
+            "boundary_id": "b1",
+            "side": "at",
+            "characteristic": {
+              "parameter": "string",
+              "operation": "length"
+            },
+            "target": 1,
+            "context_budget": 3
+          },
+          {
+            "id": "b2:at",
+            "boundary_id": "b2",
+            "side": "at",
+            "characteristic": {
+              "parameter": "string",
+              "operation": "length"
+            },
+            "target": 256,
+            "context_budget": 3
+          },
+          {
+            "id": "b1:above",
+            "boundary_id": "b1",
+            "side": "above",
+            "characteristic": {
+              "parameter": "string",
+              "operation": "length"
+            },
+            "target": 2,
+            "context_budget": 3
+          },
+          {
+            "id": "b2:above",
+            "boundary_id": "b2",
+            "side": "above",
+            "characteristic": {
+              "parameter": "string",
+              "operation": "length"
+            },
+            "target": 257,
+            "context_budget": 3
+          }
+        ],
+        "blocked": [],
+        "closed_scalar": false,
+        "closed_inputs": [],
+        "unused_input_budget": 0
+      },
+      "generation_stream": {
+        "finish_reason": "length",
+        "completion_tokens": 2048,
+        "characters": 6088,
+        "complete_prefix_records": [
+          {
+            "obligation_id": "b1:below",
+            "seed_length": 0,
+            "max_character_code": null,
+            "small_seed": "",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:below",
+            "seed_length": 0,
+            "max_character_code": null,
+            "small_seed": "",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:below",
+            "seed_length": 0,
+            "max_character_code": null,
+            "small_seed": "",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:below",
+            "seed_length": 0,
+            "max_character_code": null,
+            "small_seed": "",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:at",
+            "seed_length": 1,
+            "max_character_code": 97,
+            "small_seed": "a",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:at",
+            "seed_length": 1,
+            "max_character_code": 97,
+            "small_seed": "a",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:at",
+            "seed_length": 1,
+            "max_character_code": 97,
+            "small_seed": "a",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:above",
+            "seed_length": 2,
+            "max_character_code": 98,
+            "small_seed": "ab",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:above",
+            "seed_length": 2,
+            "max_character_code": 97,
+            "small_seed": "aa",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b1:above",
+            "seed_length": 2,
+            "max_character_code": 66,
+            "small_seed": "AB",
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b2:below",
+            "seed_length": 486,
+            "max_character_code": 126,
+            "small_seed": null,
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b2:below",
+            "seed_length": 486,
+            "max_character_code": 126,
+            "small_seed": null,
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b2:below",
+            "seed_length": 486,
+            "max_character_code": 126,
+            "small_seed": null,
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b2:below",
+            "seed_length": 486,
+            "max_character_code": 126,
+            "small_seed": null,
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b2:at",
+            "seed_length": 487,
+            "max_character_code": 126,
+            "small_seed": null,
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b2:at",
+            "seed_length": 487,
+            "max_character_code": 126,
+            "small_seed": null,
+            "context_requirements": []
+          },
+          {
+            "obligation_id": "b2:at",
+            "seed_length": 487,
+            "max_character_code": 126,
+            "small_seed": null,
+            "context_requirements": []
+          }
+        ],
+        "note": "Forensic prefix inspection only; no partial JSON was accepted or executed."
+      }
+    },
+    {
+      "task": 23,
+      "put_id": "7",
+      "artifact_directory": "final/out/boundary_known_bug10_prompt_v5_20261105/tasks/23/boundary/7",
+      "specification": "\n\ndef strlen(string: str) -> int:\n    \"\"\" Return length of given string\n    >>> strlen('')\n    0\n    >>> strlen('abc')\n    3\n    \"\"\"\n",
+      "contract": "\n    assert isinstance(string, str), \"invalid inputs\" # $_CONTRACT_$\n",
+      "put_source": "def strlen(string: str) -> int:\n    \"\"\" Return length of given string\n    >>> strlen('')\n    0\n    >>> strlen('abc')\n    3\n    \"\"\"\n    return len(string.encode('utf-8'))",
+      "templates": [
+        {
+          "id": "string:length",
+          "family": "cardinality",
+          "characteristic": {
+            "parameter": "string",
+            "operation": "length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "string:run_length",
+          "family": "consecutive_run",
+          "characteristic": {
+            "parameter": "string",
+            "operation": "run_length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {
+            "token": "one-character string"
+          },
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "string:parsed_float",
+          "family": "parsed_numeric_string",
+          "characteristic": {
+            "parameter": "string",
+            "operation": "parsed_float"
+          },
+          "numeric_kind": "float",
+          "neighborhood_modes": [
+            "step",
+            "float_adjacent"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        }
+      ],
+      "candidate_guards": [],
+      "selection": {
+        "status": "no_applicable_boundary",
+        "reason": "No numeric thresholds, ranges, or cutoffs are defined in the specification or contract for string length; the function simply returns the byte length of the input string.",
+        "boundaries": [],
+        "rejected": [],
+        "better_technique": "equivalence_partitioning"
+      },
+      "accepted_inputs": [],
+      "artifacts_read_only": true,
+      "stop_stage": "selection",
+      "context_call_exists": false
+    },
+    {
+      "task": 72,
+      "put_id": "4",
+      "artifact_directory": "final/out/boundary_known_bug10_prompt_v5_20261105/tasks/72/boundary/4",
+      "specification": "\ndef will_it_fly(q,w):\n    '''\n    Write a function that returns True if the object q will fly, and False otherwise.\n    The object q will fly if it's balanced (it is a palindromic list) and the sum of its elements is less than or equal the maximum possible weight w.\n\n    Example:\n    will_it_fly([1, 2], 5) ➞ False \n    # 1+2 is less than the maximum possible weight, but it's unbalanced.\n\n    will_it_fly([3, 2, 3], 1) ➞ False\n    # it's balanced, but 3+2+3 is more than the maximum possible weight.\n\n    will_it_fly([3, 2, 3], 9) ➞ True\n    # 3+2+3 is less than the maximum possible weight, and it's balanced.\n\n    will_it_fly([3], 5) ➞ True\n    # 3 is less than the maximum possible weight, and it's balanced.\n    '''\n",
+      "contract": "\n    assert type(q) == list and all(type(x) in [int, float] for x in q), \"invalid inputs\" # $_CONTRACT_$\n    assert type(w) in [int, float], \"invalid inputs\" # $_CONTRACT_$\n",
+      "put_source": "def will_it_fly(q, w):\n    weight = 0\n    n = len(q)\n    for i in range(n):\n        weight += q[i]\n        if weight > w:\n            return False\n        # Check symmetry against the corresponding index from the end\n        if q[i] != q[n - 1 - i]:\n            return False\n    return True",
+      "templates": [
+        {
+          "id": "q:length",
+          "family": "cardinality",
+          "characteristic": {
+            "parameter": "q",
+            "operation": "length"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "q:elements",
+          "family": "element_values",
+          "characteristic": {
+            "parameter": "q",
+            "operation": "elements"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "q:sum",
+          "family": "aggregate",
+          "characteristic": {
+            "parameter": "q",
+            "operation": "sum"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "q:range",
+          "family": "extrema_difference",
+          "characteristic": {
+            "parameter": "q",
+            "operation": "range"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "q:minimum",
+          "family": "extremum",
+          "characteristic": {
+            "parameter": "q",
+            "operation": "minimum"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "q:maximum",
+          "family": "extremum",
+          "characteristic": {
+            "parameter": "q",
+            "operation": "maximum"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "w:value",
+          "family": "ordered_scalar",
+          "characteristic": {
+            "parameter": "w",
+            "operation": "value"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        }
+      ],
+      "candidate_guards": [],
+      "selection": {
+        "status": "selected",
+        "reason": "Identified boundary for list length (empty vs non-empty) and sum threshold relative to w.",
+        "boundaries": [
+          {
+            "id": "b1",
+            "template_id": "q:length",
+            "characteristic": {
+              "parameter": "q",
+              "operation": "length"
+            },
+            "threshold": {
+              "kind": "constant",
+              "value": 0
+            },
+            "comparison": ">=",
+            "boundary_kind": "behavior",
+            "neighborhood": {
+              "mode": "step",
+              "step": 1
+            },
+            "target_sides": [
+              "at",
+              "above"
+            ],
+            "constraints": [
+              {
+                "description": "q must be a list of integers or floats",
+                "source_quote": "assert type(q) == list and all(type(x) in [int, float] for x in q), \"invalid inputs\""
+              }
+            ],
+            "source_quote": "The object q will fly if it's balanced (it is a palindromic list)",
+            "explanation": "An empty list is technically a palindrome, but the code iterates and may behave differently or the spec implies non-empty objects.",
+            "origin": "edge",
+            "code_quote": "for i in range(n):",
+            "alignment": "code_only",
+            "reach": "w is any valid number",
+            "infect": "0",
+            "side_rules": {
+              "at": "accept",
+              "above": "accept"
+            },
+            "numeric_kind": "int",
+            "binding_status": "llm_semantic_hypothesis"
+          },
+          {
+            "id": "b2",
+            "template_id": "q:sum",
+            "characteristic": {
+              "parameter": "q",
+              "operation": "sum"
+            },
+            "threshold": {
+              "kind": "expression",
+              "parameter": "w",
+              "operation": "value"
+            },
+            "comparison": "<=",
+            "boundary_kind": "behavior",
+            "neighborhood": {
+              "mode": "step",
+              "step": 1
+            },
+            "target_sides": [
+              "below",
+              "at",
+              "above"
+            ],
+            "constraints": [
+              {
+                "description": "q must be a list of integers or floats",
+                "source_quote": "assert type(q) == list and all(type(x) in [int, float] for x in q), \"invalid inputs\""
+              },
+              {
+                "description": "w must be an integer or float",
+                "source_quote": "assert type(w) in [int, float], \"invalid inputs\""
+              }
+            ],
+            "source_quote": "sum of its elements is less than or equal the maximum possible weight w",
+            "explanation": "The spec defines a strict boundary at sum == w where behavior changes from True to False.",
+            "origin": "spec",
+            "code_quote": "if weight > w:",
+            "alignment": "operator",
+            "reach": "q is a palindromic list",
+            "infect": "w",
+            "side_rules": {
+              "below": "accept",
+              "at": "accept",
+              "above": "reject"
+            },
+            "numeric_kind": "int",
+            "binding_status": "llm_semantic_hypothesis"
+          }
+        ],
+        "rejected": [],
+        "finish_reason": "stop",
+        "semantic_status": "llm_proposed_with_verified_quote_not_entailment_proof"
+      },
+      "accepted_inputs": [
+        {
+          "args": "([], 10)",
+          "kwargs": "{}",
+          "guidance_id": "b1",
+          "boundary_id": "b1",
+          "side": "at",
+          "obligation_id": "b1:at",
+          "construction": "compiled-target",
+          "context_requirements": [],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "none_declared",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "([3], 10)",
+          "kwargs": "{}",
+          "guidance_id": "b1",
+          "boundary_id": "b1",
+          "side": "above",
+          "obligation_id": "b1:above",
+          "construction": "compiled-target",
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "passed",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "([1, 7, 1], 10)",
+          "kwargs": "{}",
+          "guidance_id": "b2",
+          "boundary_id": "b2",
+          "side": "below",
+          "obligation_id": "b2:below",
+          "construction": "compiled-target",
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "passed",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "([2, 2, 2], 6)",
+          "kwargs": "{}",
+          "guidance_id": "b2",
+          "boundary_id": "b2",
+          "side": "at",
+          "obligation_id": "b2:at",
+          "construction": "compiled-target",
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "passed",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "([3, 1, 3], 6)",
+          "kwargs": "{}",
+          "guidance_id": "b2",
+          "boundary_id": "b2",
+          "side": "above",
+          "obligation_id": "b2:above",
+          "construction": "compiled-target",
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "passed",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "([9], 10)",
+          "kwargs": "{}",
+          "guidance_id": "b2",
+          "boundary_id": "b2",
+          "side": "below",
+          "obligation_id": "b2:below",
+          "construction": "compiled-target",
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "passed",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "([6], 5)",
+          "kwargs": "{}",
+          "guidance_id": "b2",
+          "boundary_id": "b2",
+          "side": "above",
+          "obligation_id": "b2:above",
+          "construction": "compiled-target",
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "passed",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        }
+      ],
+      "artifacts_read_only": true,
+      "compiled": {
+        "status": "compiled",
+        "obligations": [
+          {
+            "id": "b1:at",
+            "boundary_id": "b1",
+            "side": "at",
+            "characteristic": {
+              "parameter": "q",
+              "operation": "length"
+            },
+            "target": 0,
+            "context_budget": 4
+          },
+          {
+            "id": "b2:below",
+            "boundary_id": "b2",
+            "side": "below",
+            "characteristic": {
+              "parameter": "q",
+              "operation": "sum"
+            },
+            "target": null,
+            "context_budget": 4
+          },
+          {
+            "id": "b1:above",
+            "boundary_id": "b1",
+            "side": "above",
+            "characteristic": {
+              "parameter": "q",
+              "operation": "length"
+            },
+            "target": 1,
+            "context_budget": 4
+          },
+          {
+            "id": "b2:at",
+            "boundary_id": "b2",
+            "side": "at",
+            "characteristic": {
+              "parameter": "q",
+              "operation": "sum"
+            },
+            "target": null,
+            "context_budget": 4
+          },
+          {
+            "id": "b2:above",
+            "boundary_id": "b2",
+            "side": "above",
+            "characteristic": {
+              "parameter": "q",
+              "operation": "sum"
+            },
+            "target": null,
+            "context_budget": 4
+          }
+        ],
+        "blocked": [],
+        "closed_scalar": false,
+        "closed_inputs": [],
+        "unused_input_budget": 0
+      },
+      "raw_context_records": [
+        {
+          "obligation_id": "b1:at",
+          "arguments": {
+            "q": [],
+            "w": 10
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:above",
+          "arguments": {
+            "q": [
+              3
+            ],
+            "w": 10
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ]
+        },
+        {
+          "obligation_id": "b2:below",
+          "arguments": {
+            "q": [
+              1,
+              2,
+              1
+            ],
+            "w": 10
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ]
+        },
+        {
+          "obligation_id": "b2:at",
+          "arguments": {
+            "q": [
+              2,
+              2,
+              2
+            ],
+            "w": 6
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ]
+        },
+        {
+          "obligation_id": "b2:above",
+          "arguments": {
+            "q": [
+              3,
+              3,
+              3
+            ],
+            "w": 6
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ]
+        },
+        {
+          "obligation_id": "b2:below",
+          "arguments": {
+            "q": [
+              1
+            ],
+            "w": 10
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ]
+        },
+        {
+          "obligation_id": "b2:at",
+          "arguments": {
+            "q": [
+              5
+            ],
+            "w": 5
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ]
+        },
+        {
+          "obligation_id": "b2:above",
+          "arguments": {
+            "q": [
+              6
+            ],
+            "w": 5
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ]
+        }
+      ],
+      "construction_trace": [
+        {
+          "raw_index": 0,
+          "obligation_id": "b1:at",
+          "seed_arguments": {
+            "q": [],
+            "w": 10
+          },
+          "target": 0,
+          "constructed_arguments": {
+            "q": [],
+            "w": 10
+          },
+          "context_requirements": [],
+          "outcome": "accepted",
+          "args": "([], 10)",
+          "static_prefix_sums": []
+        },
+        {
+          "raw_index": 1,
+          "obligation_id": "b1:above",
+          "seed_arguments": {
+            "q": [
+              3
+            ],
+            "w": 10
+          },
+          "target": 1,
+          "constructed_arguments": {
+            "q": [
+              3
+            ],
+            "w": 10
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "outcome": "accepted",
+          "args": "([3], 10)",
+          "static_prefix_sums": [
+            3
+          ]
+        },
+        {
+          "raw_index": 2,
+          "obligation_id": "b2:below",
+          "seed_arguments": {
+            "q": [
+              1,
+              2,
+              1
+            ],
+            "w": 10
+          },
+          "target": 9,
+          "constructed_arguments": {
+            "q": [
+              1,
+              7,
+              1
+            ],
+            "w": 10
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "outcome": "accepted",
+          "args": "([1, 7, 1], 10)",
+          "static_prefix_sums": [
+            1,
+            8,
+            9
+          ]
+        },
+        {
+          "raw_index": 3,
+          "obligation_id": "b2:at",
+          "seed_arguments": {
+            "q": [
+              2,
+              2,
+              2
+            ],
+            "w": 6
+          },
+          "target": 6,
+          "constructed_arguments": {
+            "q": [
+              2,
+              2,
+              2
+            ],
+            "w": 6
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "outcome": "accepted",
+          "args": "([2, 2, 2], 6)",
+          "static_prefix_sums": [
+            2,
+            4,
+            6
+          ]
+        },
+        {
+          "raw_index": 4,
+          "obligation_id": "b2:above",
+          "seed_arguments": {
+            "q": [
+              3,
+              3,
+              3
+            ],
+            "w": 6
+          },
+          "target": 7,
+          "constructed_arguments": {
+            "q": [
+              3,
+              1,
+              3
+            ],
+            "w": 6
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "outcome": "accepted",
+          "args": "([3, 1, 3], 6)",
+          "static_prefix_sums": [
+            3,
+            4,
+            7
+          ]
+        },
+        {
+          "raw_index": 5,
+          "obligation_id": "b2:below",
+          "seed_arguments": {
+            "q": [
+              1
+            ],
+            "w": 10
+          },
+          "target": 9,
+          "constructed_arguments": {
+            "q": [
+              9
+            ],
+            "w": 10
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "outcome": "accepted",
+          "args": "([9], 10)",
+          "static_prefix_sums": [
+            9
+          ]
+        },
+        {
+          "raw_index": 6,
+          "obligation_id": "b2:at",
+          "seed_arguments": {
+            "q": [
+              5
+            ],
+            "w": 5
+          },
+          "target": 5,
+          "constructed_arguments": {
+            "q": [
+              5
+            ],
+            "w": 5
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "outcome": "rejected",
+          "reason": "duplicate_input",
+          "static_prefix_sums": [
+            5
+          ]
+        },
+        {
+          "raw_index": 7,
+          "obligation_id": "b2:above",
+          "seed_arguments": {
+            "q": [
+              6
+            ],
+            "w": 5
+          },
+          "target": 6,
+          "constructed_arguments": {
+            "q": [
+              6
+            ],
+            "w": 5
+          },
+          "context_requirements": [
+            {
+              "parameter": "q",
+              "property": "palindrome"
+            }
+          ],
+          "outcome": "accepted",
+          "args": "([6], 5)",
+          "static_prefix_sums": [
+            6
+          ]
+        }
+      ],
+      "pure_constructor_replay_matches_saved_inputs": true
+    },
+    {
+      "task": 157,
+      "put_id": "3",
+      "artifact_directory": "final/out/boundary_known_bug10_prompt_v5_20261105/tasks/157/boundary/3",
+      "specification": "\ndef right_angle_triangle(a, b, c):\n    '''\n    Given the lengths of the three sides of a triangle. Return True if the three\n    sides form a right-angled triangle, False otherwise.\n    A right-angled triangle is a triangle in which one angle is right angle or \n    90 degree.\n    Example:\n    right_angle_triangle(3, 4, 5) == True\n    right_angle_triangle(1, 2, 3) == False\n    '''\n",
+      "contract": "\n    assert type(a) in [int, float] and type(b) in [int, float] and type(c) in [int, float], \"invalid inputs\" # $_CONTRACT_$\n    assert a > 0 and b > 0 and c > 0, \"invalid inputs\" # $_CONTRACT_$\n",
+      "put_source": "import math\n\ndef right_angle_triangle(a, b, c):\n    if a <= 0 or b <= 0 or c <= 0:\n        return False\n    sides = sorted([a, b, c])\n    lhs = sides[0]**2 + sides[1]**2\n    rhs = sides[2]**2\n    return abs(lhs - rhs) < 1e-9",
+      "templates": [
+        {
+          "id": "a:value",
+          "family": "ordered_scalar",
+          "characteristic": {
+            "parameter": "a",
+            "operation": "value"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "b:value",
+          "family": "ordered_scalar",
+          "characteristic": {
+            "parameter": "b",
+            "operation": "value"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        },
+        {
+          "id": "c:value",
+          "family": "ordered_scalar",
+          "characteristic": {
+            "parameter": "c",
+            "operation": "value"
+          },
+          "numeric_kind": "int",
+          "neighborhood_modes": [
+            "step"
+          ],
+          "template": "Below, at, and above a spec, code, or natural-edge threshold; retain only defined input behavior.",
+          "threshold_sources": [
+            "spec_constant",
+            "code_transition",
+            "natural_edge",
+            "input_value",
+            "input_length",
+            "input_sum",
+            "input_extrema"
+          ],
+          "required_slots": {},
+          "requires": [
+            "public_domain_or_quantity_evidence",
+            "threshold_rationale",
+            "domain_constraints",
+            "feasible_input"
+          ]
+        }
+      ],
+      "candidate_guards": [
+        {
+          "template_id": "a:value",
+          "characteristic": {
+            "parameter": "a",
+            "operation": "value"
+          },
+          "comparison": ">",
+          "threshold": {
+            "kind": "constant",
+            "value": 0
+          },
+          "source_quote": "a > 0",
+          "origin": "contract",
+          "necessary_domain": true
+        },
+        {
+          "template_id": "b:value",
+          "characteristic": {
+            "parameter": "b",
+            "operation": "value"
+          },
+          "comparison": ">",
+          "threshold": {
+            "kind": "constant",
+            "value": 0
+          },
+          "source_quote": "b > 0",
+          "origin": "contract",
+          "necessary_domain": true
+        },
+        {
+          "template_id": "c:value",
+          "characteristic": {
+            "parameter": "c",
+            "operation": "value"
+          },
+          "comparison": ">",
+          "threshold": {
+            "kind": "constant",
+            "value": 0
+          },
+          "source_quote": "c > 0",
+          "origin": "contract",
+          "necessary_domain": true
+        }
+      ],
+      "selection": {
+        "status": "selected",
+        "reason": "Code uses strict inequality (<= 0) for rejection while contract requires strict positivity (> 0), creating a boundary mismatch at 0.",
+        "boundaries": [
+          {
+            "id": "b1",
+            "template_id": "a:value",
+            "characteristic": {
+              "parameter": "a",
+              "operation": "value"
+            },
+            "threshold": {
+              "kind": "constant",
+              "value": 0
+            },
+            "comparison": ">",
+            "boundary_kind": "behavior",
+            "neighborhood": {
+              "mode": "step",
+              "step": 1
+            },
+            "target_sides": [
+              "below",
+              "at",
+              "above"
+            ],
+            "constraints": [
+              {
+                "description": "a must be a positive number",
+                "source_quote": "assert a > 0 and b > 0 and c > 0, \"invalid inputs\""
+              }
+            ],
+            "source_quote": "assert a > 0 and b > 0 and c > 0, \"invalid inputs\"",
+            "explanation": "The contract defines the valid domain as strictly greater than 0, while the code rejects values less than or equal to 0, creating a potential mismatch at the boundary value 0.",
+            "origin": "spec",
+            "code_quote": "if a <= 0 or b <= 0 or c <= 0:",
+            "alignment": "operator",
+            "reach": "no earlier return",
+            "infect": "0",
+            "side_rules": {
+              "below": "invalid",
+              "at": "invalid",
+              "above": "valid"
+            },
+            "numeric_kind": "int",
+            "binding_status": "matched_public_guard",
+            "binding_evidence": {
+              "template_id": "a:value",
+              "characteristic": {
+                "parameter": "a",
+                "operation": "value"
+              },
+              "comparison": ">",
+              "threshold": {
+                "kind": "constant",
+                "value": 0
+              },
+              "source_quote": "a > 0",
+              "origin": "contract",
+              "necessary_domain": true
+            }
+          }
+        ],
+        "rejected": [],
+        "finish_reason": "stop",
+        "semantic_status": "llm_proposed_with_verified_quote_not_entailment_proof"
+      },
+      "accepted_inputs": [
+        {
+          "args": "(1, 4, 5)",
+          "kwargs": "{}",
+          "guidance_id": "b1",
+          "boundary_id": "b1",
+          "side": "above",
+          "obligation_id": "b1:above",
+          "construction": "compiled-target",
+          "context_requirements": [],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "none_declared",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "(1, 6, 8)",
+          "kwargs": "{}",
+          "guidance_id": "b1",
+          "boundary_id": "b1",
+          "side": "above",
+          "obligation_id": "b1:above",
+          "construction": "compiled-target",
+          "context_requirements": [],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "none_declared",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "(1, 7, 25)",
+          "kwargs": "{}",
+          "guidance_id": "b1",
+          "boundary_id": "b1",
+          "side": "above",
+          "obligation_id": "b1:above",
+          "construction": "compiled-target",
+          "context_requirements": [],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "none_declared",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "(1, 5, 7)",
+          "kwargs": "{}",
+          "guidance_id": "b1",
+          "boundary_id": "b1",
+          "side": "above",
+          "obligation_id": "b1:above",
+          "construction": "compiled-target",
+          "context_requirements": [],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "none_declared",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "(1, 12, 13)",
+          "kwargs": "{}",
+          "guidance_id": "b1",
+          "boundary_id": "b1",
+          "side": "above",
+          "obligation_id": "b1:above",
+          "construction": "compiled-target",
+          "context_requirements": [],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "none_declared",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        },
+        {
+          "args": "(1, 8, 17)",
+          "kwargs": "{}",
+          "guidance_id": "b1",
+          "boundary_id": "b1",
+          "side": "above",
+          "obligation_id": "b1:above",
+          "construction": "compiled-target",
+          "context_requirements": [],
+          "validation": {
+            "signature": "passed",
+            "boundary_target": "passed",
+            "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+            "context_requirements": "none_declared",
+            "reach_propagation": "unverified",
+            "oracle": "not_run"
+          }
+        }
+      ],
+      "artifacts_read_only": true,
+      "compiled": {
+        "status": "compiled",
+        "obligations": [
+          {
+            "id": "b1:below",
+            "boundary_id": "b1",
+            "side": "below",
+            "characteristic": {
+              "parameter": "a",
+              "operation": "value"
+            },
+            "target": -1,
+            "context_budget": 7
+          },
+          {
+            "id": "b1:at",
+            "boundary_id": "b1",
+            "side": "at",
+            "characteristic": {
+              "parameter": "a",
+              "operation": "value"
+            },
+            "target": 0,
+            "context_budget": 7
+          },
+          {
+            "id": "b1:above",
+            "boundary_id": "b1",
+            "side": "above",
+            "characteristic": {
+              "parameter": "a",
+              "operation": "value"
+            },
+            "target": 1,
+            "context_budget": 6
+          }
+        ],
+        "blocked": [],
+        "closed_scalar": false,
+        "closed_inputs": [],
+        "unused_input_budget": 0
+      },
+      "raw_context_records": [
+        {
+          "obligation_id": "b1:below",
+          "arguments": {
+            "a": -1,
+            "b": 4,
+            "c": 5
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:below",
+          "arguments": {
+            "a": -1,
+            "b": 6,
+            "c": 8
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:below",
+          "arguments": {
+            "a": -1,
+            "b": 7,
+            "c": 25
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:below",
+          "arguments": {
+            "a": -1,
+            "b": 5,
+            "c": 7
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:below",
+          "arguments": {
+            "a": -1,
+            "b": 12,
+            "c": 13
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:below",
+          "arguments": {
+            "a": -1,
+            "b": 8,
+            "c": 17
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:below",
+          "arguments": {
+            "a": -1,
+            "b": 55,
+            "c": 73
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:at",
+          "arguments": {
+            "a": 0,
+            "b": 4,
+            "c": 5
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:at",
+          "arguments": {
+            "a": 0,
+            "b": 6,
+            "c": 8
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:at",
+          "arguments": {
+            "a": 0,
+            "b": 7,
+            "c": 25
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:at",
+          "arguments": {
+            "a": 0,
+            "b": 5,
+            "c": 7
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:at",
+          "arguments": {
+            "a": 0,
+            "b": 12,
+            "c": 13
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:at",
+          "arguments": {
+            "a": 0,
+            "b": 8,
+            "c": 17
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:at",
+          "arguments": {
+            "a": 0,
+            "b": 55,
+            "c": 73
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:above",
+          "arguments": {
+            "a": 1,
+            "b": 4,
+            "c": 5
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:above",
+          "arguments": {
+            "a": 1,
+            "b": 6,
+            "c": 8
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:above",
+          "arguments": {
+            "a": 1,
+            "b": 7,
+            "c": 25
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:above",
+          "arguments": {
+            "a": 1,
+            "b": 5,
+            "c": 7
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:above",
+          "arguments": {
+            "a": 1,
+            "b": 12,
+            "c": 13
+          },
+          "context_requirements": []
+        },
+        {
+          "obligation_id": "b1:above",
+          "arguments": {
+            "a": 1,
+            "b": 8,
+            "c": 17
+          },
+          "context_requirements": []
+        }
+      ],
+      "construction_trace": [
+        {
+          "raw_index": 0,
+          "obligation_id": "b1:below",
+          "seed_arguments": {
+            "a": -1,
+            "b": 4,
+            "c": 5
+          },
+          "target": -1,
+          "constructed_arguments": {
+            "a": -1,
+            "b": 4,
+            "c": 5
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 8
+        },
+        {
+          "raw_index": 1,
+          "obligation_id": "b1:below",
+          "seed_arguments": {
+            "a": -1,
+            "b": 6,
+            "c": 8
+          },
+          "target": -1,
+          "constructed_arguments": {
+            "a": -1,
+            "b": 6,
+            "c": 8
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 27
+        },
+        {
+          "raw_index": 2,
+          "obligation_id": "b1:below",
+          "seed_arguments": {
+            "a": -1,
+            "b": 7,
+            "c": 25
+          },
+          "target": -1,
+          "constructed_arguments": {
+            "a": -1,
+            "b": 7,
+            "c": 25
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 575
+        },
+        {
+          "raw_index": 3,
+          "obligation_id": "b1:below",
+          "seed_arguments": {
+            "a": -1,
+            "b": 5,
+            "c": 7
+          },
+          "target": -1,
+          "constructed_arguments": {
+            "a": -1,
+            "b": 5,
+            "c": 7
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 23
+        },
+        {
+          "raw_index": 4,
+          "obligation_id": "b1:below",
+          "seed_arguments": {
+            "a": -1,
+            "b": 12,
+            "c": 13
+          },
+          "target": -1,
+          "constructed_arguments": {
+            "a": -1,
+            "b": 12,
+            "c": 13
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 24
+        },
+        {
+          "raw_index": 5,
+          "obligation_id": "b1:below",
+          "seed_arguments": {
+            "a": -1,
+            "b": 8,
+            "c": 17
+          },
+          "target": -1,
+          "constructed_arguments": {
+            "a": -1,
+            "b": 8,
+            "c": 17
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 224
+        },
+        {
+          "raw_index": 6,
+          "obligation_id": "b1:below",
+          "seed_arguments": {
+            "a": -1,
+            "b": 55,
+            "c": 73
+          },
+          "target": -1,
+          "constructed_arguments": {
+            "a": -1,
+            "b": 55,
+            "c": 73
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 2303
+        },
+        {
+          "raw_index": 7,
+          "obligation_id": "b1:at",
+          "seed_arguments": {
+            "a": 0,
+            "b": 4,
+            "c": 5
+          },
+          "target": 0,
+          "constructed_arguments": {
+            "a": 0,
+            "b": 4,
+            "c": 5
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 9
+        },
+        {
+          "raw_index": 8,
+          "obligation_id": "b1:at",
+          "seed_arguments": {
+            "a": 0,
+            "b": 6,
+            "c": 8
+          },
+          "target": 0,
+          "constructed_arguments": {
+            "a": 0,
+            "b": 6,
+            "c": 8
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 28
+        },
+        {
+          "raw_index": 9,
+          "obligation_id": "b1:at",
+          "seed_arguments": {
+            "a": 0,
+            "b": 7,
+            "c": 25
+          },
+          "target": 0,
+          "constructed_arguments": {
+            "a": 0,
+            "b": 7,
+            "c": 25
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 576
+        },
+        {
+          "raw_index": 10,
+          "obligation_id": "b1:at",
+          "seed_arguments": {
+            "a": 0,
+            "b": 5,
+            "c": 7
+          },
+          "target": 0,
+          "constructed_arguments": {
+            "a": 0,
+            "b": 5,
+            "c": 7
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 24
+        },
+        {
+          "raw_index": 11,
+          "obligation_id": "b1:at",
+          "seed_arguments": {
+            "a": 0,
+            "b": 12,
+            "c": 13
+          },
+          "target": 0,
+          "constructed_arguments": {
+            "a": 0,
+            "b": 12,
+            "c": 13
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 25
+        },
+        {
+          "raw_index": 12,
+          "obligation_id": "b1:at",
+          "seed_arguments": {
+            "a": 0,
+            "b": 8,
+            "c": 17
+          },
+          "target": 0,
+          "constructed_arguments": {
+            "a": 0,
+            "b": 8,
+            "c": 17
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 225
+        },
+        {
+          "raw_index": 13,
+          "obligation_id": "b1:at",
+          "seed_arguments": {
+            "a": 0,
+            "b": 55,
+            "c": 73
+          },
+          "target": 0,
+          "constructed_arguments": {
+            "a": 0,
+            "b": 55,
+            "c": 73
+          },
+          "context_requirements": [],
+          "outcome": "rejected",
+          "reason": "recognized_domain_constraint_failed",
+          "absolute_pythagorean_residual": 2304
+        },
+        {
+          "raw_index": 14,
+          "obligation_id": "b1:above",
+          "seed_arguments": {
+            "a": 1,
+            "b": 4,
+            "c": 5
+          },
+          "target": 1,
+          "constructed_arguments": {
+            "a": 1,
+            "b": 4,
+            "c": 5
+          },
+          "context_requirements": [],
+          "outcome": "accepted",
+          "args": "(1, 4, 5)",
+          "absolute_pythagorean_residual": 8
+        },
+        {
+          "raw_index": 15,
+          "obligation_id": "b1:above",
+          "seed_arguments": {
+            "a": 1,
+            "b": 6,
+            "c": 8
+          },
+          "target": 1,
+          "constructed_arguments": {
+            "a": 1,
+            "b": 6,
+            "c": 8
+          },
+          "context_requirements": [],
+          "outcome": "accepted",
+          "args": "(1, 6, 8)",
+          "absolute_pythagorean_residual": 27
+        },
+        {
+          "raw_index": 16,
+          "obligation_id": "b1:above",
+          "seed_arguments": {
+            "a": 1,
+            "b": 7,
+            "c": 25
+          },
+          "target": 1,
+          "constructed_arguments": {
+            "a": 1,
+            "b": 7,
+            "c": 25
+          },
+          "context_requirements": [],
+          "outcome": "accepted",
+          "args": "(1, 7, 25)",
+          "absolute_pythagorean_residual": 575
+        },
+        {
+          "raw_index": 17,
+          "obligation_id": "b1:above",
+          "seed_arguments": {
+            "a": 1,
+            "b": 5,
+            "c": 7
+          },
+          "target": 1,
+          "constructed_arguments": {
+            "a": 1,
+            "b": 5,
+            "c": 7
+          },
+          "context_requirements": [],
+          "outcome": "accepted",
+          "args": "(1, 5, 7)",
+          "absolute_pythagorean_residual": 23
+        },
+        {
+          "raw_index": 18,
+          "obligation_id": "b1:above",
+          "seed_arguments": {
+            "a": 1,
+            "b": 12,
+            "c": 13
+          },
+          "target": 1,
+          "constructed_arguments": {
+            "a": 1,
+            "b": 12,
+            "c": 13
+          },
+          "context_requirements": [],
+          "outcome": "accepted",
+          "args": "(1, 12, 13)",
+          "absolute_pythagorean_residual": 24
+        },
+        {
+          "raw_index": 19,
+          "obligation_id": "b1:above",
+          "seed_arguments": {
+            "a": 1,
+            "b": 8,
+            "c": 17
+          },
+          "target": 1,
+          "constructed_arguments": {
+            "a": 1,
+            "b": 8,
+            "c": 17
+          },
+          "context_requirements": [],
+          "outcome": "accepted",
+          "args": "(1, 8, 17)",
+          "absolute_pythagorean_residual": 224
+        }
+      ],
+      "pure_constructor_replay_matches_saved_inputs": true
+    }
+  ]
+}

@@ -2,6 +2,8 @@
 
 Code nằm trong `src/`, dataset và metadata trong `data/`.
 
+[Slides HTML: cách chạy full pipeline và luồng code từng stage/module](slides/pipeline.html).
+
 ```text
 final/
 ├── src/

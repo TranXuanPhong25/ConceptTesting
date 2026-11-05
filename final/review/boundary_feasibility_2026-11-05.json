@@ -1,0 +1,1776 @@
+{
+  "scope": "post-hoc boundary feasibility audit; not generated-method efficacy",
+  "tasks": 44,
+  "candidate_inputs": 15691,
+  "valid_novel_inputs": 15575,
+  "semantic_boundary_witness_tasks": [
+    "HumanEval/99",
+    "HumanEval/124"
+  ],
+  "implementation_resource_witness_tasks": [
+    "HumanEval/83"
+  ],
+  "no_witness_in_bounded_search": 41,
+  "llm_calls": 0,
+  "hidden_test_inputs_used": false,
+  "original_artifact_count": 1375,
+  "original_artifacts_changed": [],
+  "corpora_sha256": "54c6346b0aa1509f539284cf156bc40353b2afe488613b8847675af592afa3a9",
+  "neighbor_confirmations": {
+    "HumanEval/83": [
+      {
+        "input": {
+          "args": "(992,)",
+          "kwargs": "{}",
+          "boundary": "n=1/2/3; implementation recursion depth transition near n=1000"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'n'\"), ('int', '992')),))",
+              "expected": "18000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "duration": 8.684000931680202e-06
+            },
+            "put": {
+              "status": "pass",
+              "actual": "18000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'n'\"), ('int', '992')),))",
+              "expected": "18000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "duration": 8.714006980881095e-06
+            },
+            "put": {
+              "status": "pass",
+              "actual": "18000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "args": "(993,)",
+          "kwargs": "{}",
+          "boundary": "n=1/2/3; implementation recursion depth transition near n=1000"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "duration": 8.907984010875225e-06,
+              "expected": "180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "input_key": "('dict', ((('str', \"'n'\"), ('int', '993')),))",
+              "status": "ok"
+            },
+            "put": {
+              "exception": "RecursionError",
+              "status": "error"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "duration": 9.216018952429295e-06,
+              "expected": "180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "input_key": "('dict', ((('str', \"'n'\"), ('int', '993')),))",
+              "status": "ok"
+            },
+            "put": {
+              "exception": "RecursionError",
+              "status": "error"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "args": "(994,)",
+          "kwargs": "{}",
+          "boundary": "n=1/2/3; implementation recursion depth transition near n=1000"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'n'\"), ('int', '994')),))",
+              "expected": "1800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "duration": 8.11999780125916e-06
+            },
+            "put": {
+              "status": "error",
+              "exception": "RecursionError"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'n'\"), ('int', '994')),))",
+              "expected": "1800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "duration": 8.6759973783046e-06
+            },
+            "put": {
+              "status": "error",
+              "exception": "RecursionError"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "HumanEval/99": [
+      {
+        "input": {
+          "args": "('-0.5000000000000001',)",
+          "kwargs": "{}",
+          "boundary": "parsed numeric string: integer/sign and half-integer float neighbors"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'value'\"), ('str', \"'-0.5000000000000001'\")),))",
+              "expected": "-1",
+              "duration": 8.667993824928999e-06
+            },
+            "put": {
+              "status": "fail",
+              "actual": "0"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'value'\"), ('str', \"'-0.5000000000000001'\")),))",
+              "expected": "-1",
+              "duration": 7.791997632011771e-06
+            },
+            "put": {
+              "status": "fail",
+              "actual": "0"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "args": "('-0.5',)",
+          "kwargs": "{}",
+          "boundary": "parsed numeric string: integer/sign and half-integer float neighbors"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "duration": 6.4699852373450994e-06,
+              "expected": "-1",
+              "input_key": "('dict', ((('str', \"'value'\"), ('str', \"'-0.5'\")),))",
+              "status": "ok"
+            },
+            "put": {
+              "actual": "-1",
+              "status": "pass"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "duration": 6.596004823222756e-06,
+              "expected": "-1",
+              "input_key": "('dict', ((('str', \"'value'\"), ('str', \"'-0.5'\")),))",
+              "status": "ok"
+            },
+            "put": {
+              "actual": "-1",
+              "status": "pass"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "args": "('-0.49999999999999994',)",
+          "kwargs": "{}",
+          "boundary": "parsed numeric string: integer/sign and half-integer float neighbors"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'value'\"), ('str', \"'-0.49999999999999994'\")),))",
+              "expected": "0",
+              "duration": 7.777998689562082e-06
+            },
+            "put": {
+              "status": "fail",
+              "actual": "-1"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'value'\"), ('str', \"'-0.49999999999999994'\")),))",
+              "expected": "0",
+              "duration": 8.638977305963635e-06
+            },
+            "put": {
+              "status": "fail",
+              "actual": "-1"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "HumanEval/124": [
+      {
+        "input": {
+          "args": "('01-01-200',)",
+          "kwargs": "{}",
+          "boundary": "parsed month/day endpoints; year width 3/4/5; total length 9/10/11"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "duration": 5.516019882634282e-06,
+              "expected": "False",
+              "input_key": "('dict', ((('str', \"'date'\"), ('str', \"'01-01-200'\")),))",
+              "status": "ok"
+            },
+            "put": {
+              "actual": "True",
+              "status": "fail"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "duration": 5.752022843807936e-06,
+              "expected": "False",
+              "input_key": "('dict', ((('str', \"'date'\"), ('str', \"'01-01-200'\")),))",
+              "status": "ok"
+            },
+            "put": {
+              "actual": "True",
+              "status": "fail"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "args": "('01-01-2000',)",
+          "kwargs": "{}",
+          "boundary": "parsed month/day endpoints; year width 3/4/5; total length 9/10/11"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'date'\"), ('str', \"'01-01-2000'\")),))",
+              "expected": "True",
+              "duration": 7.822003681212664e-06
+            },
+            "put": {
+              "status": "pass",
+              "actual": "True"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "status": "ok",
+              "input_key": "('dict', ((('str', \"'date'\"), ('str', \"'01-01-2000'\")),))",
+              "expected": "True",
+              "duration": 7.599999662488699e-06
+            },
+            "put": {
+              "status": "pass",
+              "actual": "True"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "args": "('01-01-20000',)",
+          "kwargs": "{}",
+          "boundary": "parsed month/day endpoints; year width 3/4/5; total length 9/10/11"
+        },
+        "stable": true,
+        "repeats": [
+          {
+            "oracle": {
+              "duration": 5.312002031132579e-06,
+              "expected": "False",
+              "input_key": "('dict', ((('str', \"'date'\"), ('str', \"'01-01-20000'\")),))",
+              "status": "ok"
+            },
+            "put": {
+              "actual": "True",
+              "status": "fail"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          },
+          {
+            "oracle": {
+              "duration": 5.452980985864997e-06,
+              "expected": "False",
+              "input_key": "('dict', ((('str', \"'date'\"), ('str', \"'01-01-20000'\")),))",
+              "status": "ok"
+            },
+            "put": {
+              "actual": "True",
+              "status": "fail"
+            },
+            "cache_receipts": {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 1,
+                "misses": 0,
+                "executed_inputs": 0,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "task_assessments": [
+    {
+      "task_id": "HumanEval/0",
+      "entry": "has_close_elements",
+      "program_id": 0,
+      "candidate_count": 80,
+      "valid_novel_count": 80,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 80
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "27e705f7b0272f862d11641e1fdca957c9d58b3a68daa211cd395eadc6f419ee",
+      "boundary_examined": "len 0/1/2; khoảng cách so với threshold",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/2",
+      "entry": "truncate_number",
+      "program_id": 0,
+      "candidate_count": 17,
+      "valid_novel_count": 17,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 17
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "e4aa7facb4eccc425b755e1b4abdae3a50f45c65dc312132345e8670e4764289",
+      "boundary_examined": "float dương sát 0 và sát số nguyên",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/5",
+      "entry": "intersperse",
+      "program_id": 0,
+      "candidate_count": 123,
+      "valid_novel_count": 123,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 123
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "e283210deaaea3c8d0682641e3255fe0626d094955d995bc3ee1a0bafacf6e48",
+      "boundary_examined": "list rỗng/1/2 phần tử; vị trí chèn",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/10",
+      "entry": "make_palindrome",
+      "program_id": 0,
+      "candidate_count": 132,
+      "valid_novel_count": 131,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 132
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "f1dd8130d497d578c2e652dac0d14f5364866d850ce90fae8e7195f0bcccd7b3",
+      "boundary_examined": "string rỗng; suffix palindrome",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/14",
+      "entry": "all_prefixes",
+      "program_id": 0,
+      "candidate_count": 132,
+      "valid_novel_count": 131,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 132
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "31891bbb85735cf9cb3f2f3aa070d26c0c1d21a56a625861c95159abc1f83f79",
+      "boundary_examined": "string rỗng/1 ký tự; vị trí prefix",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/15",
+      "entry": "string_sequence",
+      "program_id": 0,
+      "candidate_count": 36,
+      "valid_novel_count": 33,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 36
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "124bef8798fa9b57da5b3b15b0902d5b67015fc276c95b130e9db0afc6dd1241",
+      "boundary_examined": "n=0/1; mốc chữ số",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/18",
+      "entry": "how_many_times",
+      "program_id": 0,
+      "candidate_count": 882,
+      "valid_novel_count": 882,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 882
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "37bc06bf0ff75d4e7de144a9622e9a04ffd8649a03813c21d513473b61fb2881",
+      "boundary_examined": "độ dài text so với substring; overlap",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/20",
+      "entry": "find_closest_elements",
+      "program_id": 0,
+      "candidate_count": 363,
+      "valid_novel_count": 363,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 363
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "2b5294f468260d564b28097cea4c9239021aa0d6d271800a6e3d9c5e43093d9f",
+      "boundary_examined": "len>=2; khoảng cách bằng nhau",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/21",
+      "entry": "rescale_to_unit",
+      "program_id": 0,
+      "candidate_count": 111,
+      "valid_novel_count": 111,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 111
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "9a1521175dcecbba7d80921ad619e0cf4284b814f3e7b23b99b16e9c128b95b2",
+      "boundary_examined": "len>=2; max-min sát 0",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "entry": "strlen",
+      "program_id": 0,
+      "candidate_count": 132,
+      "valid_novel_count": 131,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 132
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "831c4d6a608f99826ae7fb5dc85b3f25a5aebf7643e2dec1468c8a442c7f751b",
+      "boundary_examined": "độ dài string 0/1",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/30",
+      "entry": "get_positive",
+      "program_id": 0,
+      "candidate_count": 121,
+      "valid_novel_count": 120,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 121
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "6c4739d427079261cbe033406c842c74dd0e86b7dce3549c81d8fcdb69598fce",
+      "boundary_examined": "giá trị phần tử -1/0/1",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/36",
+      "entry": "fizz_buzz",
+      "program_id": 0,
+      "candidate_count": 163,
+      "valid_novel_count": 159,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 163
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "9c0a58987bdc18796d4e37ce9599393f01a5784eb584191dfa2701263c081a93",
+      "boundary_examined": "cận range; bội 11/13; chữ số 7",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/38",
+      "entry": "decode_cyclic",
+      "program_id": 0,
+      "candidate_count": 132,
+      "valid_novel_count": 132,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 132
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "e7ea229a4cc26eecde019a181d07ccb1ad71d813f263385d40a1879c8bcb9547",
+      "boundary_examined": "độ dài nhóm 2/3/4",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/41",
+      "entry": "car_race_collision",
+      "program_id": 0,
+      "candidate_count": 103,
+      "valid_novel_count": 98,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 103
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "f38fdd39454da2597579f6b63c9a1fb27d98a3f3378f76d1df43fc0eafb4dfe4",
+      "boundary_examined": "n>=1; n lớn",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/44",
+      "entry": "change_base",
+      "program_id": 0,
+      "candidate_count": 883,
+      "valid_novel_count": 872,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 883
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "3b4a9dd8a3eb0cb693ac2281a2ba26d6aae26cf81d93390b85afbf86ba621310",
+      "boundary_examined": "base 2..9; x quanh base**k",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "entry": "triangle_area",
+      "program_id": 0,
+      "candidate_count": 49,
+      "valid_novel_count": 48,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 49
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "5ad2d8cfe820814dd10b3c0fd0a3dddcc5135de03ed398e29d56eab9bf4bc606",
+      "boundary_examined": "a,h dương sát 0; độ lớn số",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/47",
+      "entry": "median",
+      "program_id": 0,
+      "candidate_count": 366,
+      "valid_novel_count": 366,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 366
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "be2e46e41fb6ab9417b9ddb2c42015f1ec45e94ba783ce0426f25b19a482218e",
+      "boundary_examined": "len 1/2; chẵn/lẻ; giá trị giữa",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/52",
+      "entry": "below_threshold",
+      "program_id": 0,
+      "candidate_count": 164,
+      "valid_novel_count": 164,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 164
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "6c26bdc692f3706e5c7d739c726437f24bc259a260122d9cd51dc078abb19fb5",
+      "boundary_examined": "x<t tại t-1/t/t+1",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/60",
+      "entry": "sum_to_n",
+      "program_id": 0,
+      "candidate_count": 103,
+      "valid_novel_count": 98,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 103
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "c0acc3451423ffa04f7ad4a5925936122b6ae9dabfcc26a5745c1c33170c0578",
+      "boundary_examined": "n=1; số nguyên lớn",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/69",
+      "entry": "search",
+      "program_id": 0,
+      "candidate_count": 382,
+      "valid_novel_count": 378,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 382
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "d041723aaeb054c6318be5275896eba4b87b1e1f2aaec01bc48cfb86cb7bea8d",
+      "boundary_examined": "count(x) quanh x",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/71",
+      "entry": "triangle_area",
+      "program_id": 0,
+      "candidate_count": 112,
+      "valid_novel_count": 109,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 112
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "30d5985630acd3a6608e473183776c2c91ac7c9ed48a9eb5edb5be180ca25f39",
+      "boundary_examined": "a+b quanh c; tam giác suy biến",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/72",
+      "entry": "will_it_fly",
+      "program_id": 0,
+      "candidate_count": 363,
+      "valid_novel_count": 363,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 363
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "ce8a6be5186c55fe8dc426896185dd4a89f7741dcb5107896316420cbc82ea65",
+      "boundary_examined": "sum(q) quanh w; palindrome",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/74",
+      "entry": "total_match",
+      "program_id": 0,
+      "candidate_count": 1600,
+      "valid_novel_count": 1599,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 1600
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "0c7dacf54d6f451ecc747350861a3b219e760b46abae1bbac3bf7693465a6b53",
+      "boundary_examined": "tổng độ dài hai list bằng nhau",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/77",
+      "entry": "iscube",
+      "program_id": 0,
+      "candidate_count": 219,
+      "valid_novel_count": 213,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 219
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "d1eb15458da0e94bb8f670c35874b477aa0936a9561b6dfd92c51e2369c800d1",
+      "boundary_examined": "số âm/0/dương; k**3 +/-1",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/79",
+      "entry": "decimal_to_binary",
+      "program_id": 0,
+      "candidate_count": 173,
+      "valid_novel_count": 170,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 173
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "0e39da7009ce54f92d6706a97c1eceeb52afe01c1ac70628fb34bf4f9c63d296",
+      "boundary_examined": "0; 2**k +/-1",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/80",
+      "entry": "is_happy",
+      "program_id": 0,
+      "candidate_count": 1098,
+      "valid_novel_count": 1095,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 1098
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "87e468fceff4da0d9f8cc744742b4d55415bd41571ebeb2e0d0294a7b308cd69",
+      "boundary_examined": "len 2/3/4; cửa sổ ba ký tự",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/81",
+      "entry": "numerical_letter_grade",
+      "program_id": 0,
+      "candidate_count": 35,
+      "valid_novel_count": 34,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 35
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "696263b0ac9d931de6831fe32f74651249e67ed0062543b3dc430853b6d02a0b",
+      "boundary_examined": "hai float kề mỗi threshold điểm",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/83",
+      "entry": "starts_one_ends",
+      "program_id": 2,
+      "candidate_count": 81,
+      "valid_novel_count": 76,
+      "screen_failures": 28,
+      "witnesses": [
+        {
+          "candidate_index": 53,
+          "input": {
+            "args": "(993,)",
+            "kwargs": "{}",
+            "boundary": "n=1/2/3; implementation recursion depth transition near n=1000",
+            "expected": "180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+          },
+          "confirmed_in_two_isolated_runs": true,
+          "repeats": [
+            {
+              "oracle": {
+                "status": "ok",
+                "input_key": "('dict', ((('str', \"'n'\"), ('int', '993')),))",
+                "expected": "180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                "duration": 8.907984010875225e-06
+              },
+              "put": {
+                "status": "error",
+                "exception": "RecursionError"
+              }
+            },
+            {
+              "oracle": {
+                "status": "ok",
+                "input_key": "('dict', ((('str', \"'n'\"), ('int', '993')),))",
+                "expected": "180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                "duration": 9.216018952429295e-06
+              },
+              "put": {
+                "status": "error",
+                "exception": "RecursionError"
+              }
+            }
+          ],
+          "cache_receipts": [
+            {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            },
+            {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          ]
+        }
+      ],
+      "oracle_statuses": {
+        "ok": 81
+      },
+      "status": "witness_found",
+      "exhaustive_public_domain": false,
+      "put_sha256": "865911437a4c904f2e4f34f751128ab815d598a91b760976d836eaa8d9fae299",
+      "boundary_examined": "n=1/2/3; recursion transition 992/993",
+      "conclusion": "implementation_recursion_limit_witness"
+    },
+    {
+      "task_id": "HumanEval/96",
+      "entry": "count_up_to",
+      "program_id": 0,
+      "candidate_count": 201,
+      "valid_novel_count": 191,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 201
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "3fa08627f5c2f739155a2dfe4441c5f1f2e9e3972e383778cab977be9de972e7",
+      "boundary_examined": "n=0/1/2; cận trên loại prime",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/97",
+      "entry": "multiply",
+      "program_id": 0,
+      "candidate_count": 1681,
+      "valid_novel_count": 1678,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 1681
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "c028d6fa234f9283b806d728f75037e1abd04acd484ad55dbabe38ca6993deb2",
+      "boundary_examined": "dấu; đơn vị số tại bội 10",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "entry": "closest_integer",
+      "program_id": 0,
+      "candidate_count": 144,
+      "valid_novel_count": 144,
+      "screen_failures": 50,
+      "witnesses": [
+        {
+          "candidate_index": 0,
+          "input": {
+            "args": "('-11.000000000000002',)",
+            "kwargs": "{}",
+            "boundary": "parsed numeric string: integer/sign and half-integer float neighbors",
+            "expected": "-11"
+          },
+          "confirmed_in_two_isolated_runs": true,
+          "repeats": [
+            {
+              "oracle": {
+                "status": "ok",
+                "input_key": "('dict', ((('str', \"'value'\"), ('str', \"'-11.000000000000002'\")),))",
+                "expected": "-11",
+                "duration": 9.17899888008833e-06
+              },
+              "put": {
+                "status": "fail",
+                "actual": "-12"
+              }
+            },
+            {
+              "oracle": {
+                "status": "ok",
+                "input_key": "('dict', ((('str', \"'value'\"), ('str', \"'-11.000000000000002'\")),))",
+                "expected": "-11",
+                "duration": 1.642899587750435e-05
+              },
+              "put": {
+                "status": "fail",
+                "actual": "-12"
+              }
+            }
+          ],
+          "cache_receipts": [
+            {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            },
+            {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          ]
+        }
+      ],
+      "oracle_statuses": {
+        "ok": 144
+      },
+      "status": "witness_found",
+      "exhaustive_public_domain": false,
+      "put_sha256": "b6cf513357f91e1967bf3c0cb421ae94a5a70eebfc0e8cfcd3f2ce610b2eebb9",
+      "boundary_examined": "số parse từ string quanh số nguyên và n+0.5",
+      "conclusion": "semantic_boundary_witness"
+    },
+    {
+      "task_id": "HumanEval/103",
+      "entry": "rounded_avg",
+      "program_id": 1,
+      "candidate_count": 920,
+      "valid_novel_count": 915,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 920
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "8fe517d7bee3dc0a10ed6333ae0077c06358a2229fca5c645ce27ddadcf48013",
+      "boundary_examined": "n so với m; mean nguyên/bán nguyên; số lớn",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/107",
+      "entry": "even_odd_palindrome",
+      "program_id": 0,
+      "candidate_count": 1000,
+      "valid_novel_count": 992,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 1000
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": true,
+      "put_sha256": "cef2fbdc3c3117952f36edd9e3ee93168b157d1ea1f5aee94afae69a48ec5ff2",
+      "boundary_examined": "liệt kê n=1..1000",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/115",
+      "entry": "max_fill",
+      "program_id": 0,
+      "candidate_count": 252,
+      "valid_novel_count": 252,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 252
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "d8a66f4c4e7988e7d5e9cad140a932a262c68e548223c22e3866b2ffc6aa7b89",
+      "boundary_examined": "số ô nước quanh capacity; cạnh grid/capacity",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/120",
+      "entry": "maximum",
+      "program_id": 0,
+      "candidate_count": 17,
+      "valid_novel_count": 17,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 17
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "826d89431c9ed2917db2dc2a1d73e777d6365717e9067364b08e85576440b426",
+      "boundary_examined": "len 1/1000; k=0/len; giá trị +/-1000",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/122",
+      "entry": "add_elements",
+      "program_id": 0,
+      "candidate_count": 84,
+      "valid_novel_count": 84,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 84
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "01a7695d711c0cc23feac673ecc06e65e9b11d90e1d76be5d73320a8b47dc079",
+      "boundary_examined": "giá trị +/-99/100; k=1/len; len=1/100",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "entry": "valid_date",
+      "program_id": 0,
+      "candidate_count": 217,
+      "valid_novel_count": 216,
+      "screen_failures": 54,
+      "witnesses": [
+        {
+          "candidate_index": 41,
+          "input": {
+            "args": "('01-01-0',)",
+            "kwargs": "{}",
+            "boundary": "parsed month/day endpoints; year width 3/4/5; total length 9/10/11",
+            "expected": "False"
+          },
+          "confirmed_in_two_isolated_runs": true,
+          "repeats": [
+            {
+              "oracle": {
+                "status": "ok",
+                "input_key": "('dict', ((('str', \"'date'\"), ('str', \"'01-01-0'\")),))",
+                "expected": "False",
+                "duration": 5.7270226534456015e-06
+              },
+              "put": {
+                "status": "fail",
+                "actual": "True"
+              }
+            },
+            {
+              "oracle": {
+                "status": "ok",
+                "input_key": "('dict', ((('str', \"'date'\"), ('str', \"'01-01-0'\")),))",
+                "expected": "False",
+                "duration": 5.679001333191991e-06
+              },
+              "put": {
+                "status": "fail",
+                "actual": "True"
+              }
+            }
+          ],
+          "cache_receipts": [
+            {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 0,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            },
+            {
+              "oracle": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "oracle",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              },
+              "put": {
+                "policy": "isolated-input-execution-v1",
+                "mode": "evaluate",
+                "repeat_index": 1,
+                "input_records": 1,
+                "hits": 0,
+                "misses": 1,
+                "executed_inputs": 1,
+                "not_cached": 0,
+                "corrupt_entries": 0
+              }
+            }
+          ]
+        }
+      ],
+      "oracle_statuses": {
+        "ok": 217
+      },
+      "status": "witness_found",
+      "exhaustive_public_domain": false,
+      "put_sha256": "d116558b59e29d60231e8d77f30c2964d568db709e3f438e0dfd3ba7a10c9108",
+      "boundary_examined": "month/day; năm 3/4/5 ký tự; len 9/10/11",
+      "conclusion": "semantic_boundary_witness"
+    },
+    {
+      "task_id": "HumanEval/133",
+      "entry": "sum_squares",
+      "program_id": 0,
+      "candidate_count": 55,
+      "valid_novel_count": 55,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 55
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "96ca4ab8dbb8d9cfb4e86f1c0232c78db6bb3fdaf1be4b1067d2a36a78461dc3",
+      "boundary_examined": "ceil tại hai float kề số nguyên",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/138",
+      "entry": "is_equal_to_sum_even",
+      "program_id": 0,
+      "candidate_count": 64,
+      "valid_novel_count": 56,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 64
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "8757e774a807f2e8bcf57b022951e3239f2b37c2ab22793ea6e43ecf0b0d8477",
+      "boundary_examined": "7/8/9; chẵn/lẻ",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/140",
+      "entry": "fix_spaces",
+      "program_id": 0,
+      "candidate_count": 532,
+      "valid_novel_count": 532,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 532
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "c63e2dff4448a6ffd91ef1d826176c31aa518b02d04f0e03d05a207103427a78",
+      "boundary_examined": "run space 2/3; đầu/cuối string",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/146",
+      "entry": "specialFilter",
+      "program_id": 0,
+      "candidate_count": 135,
+      "valid_novel_count": 134,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 135
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "a9c22aa6626fe206bb43955dff8d24bc6c09f99be59e633b9a3d5795a7ad402b",
+      "boundary_examined": "10/11; chữ số đầu/cuối lẻ",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/156",
+      "entry": "int_to_mini_roman",
+      "program_id": 0,
+      "candidate_count": 1000,
+      "valid_novel_count": 986,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 1000
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": true,
+      "put_sha256": "b3d6c1638038c793c7832223354746226b2050bfe496e9479c5e999e154a6d26",
+      "boundary_examined": "liệt kê number=1..1000",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "entry": "right_angle_triangle",
+      "program_id": 0,
+      "candidate_count": 1018,
+      "valid_novel_count": 1011,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 1018
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "0417e6a781ba560325bf7d401f114376268c0a4c416283dc1089064021b95db2",
+      "boundary_examined": "đẳng thức Pythagoras; hoán vị và float kề",
+      "conclusion": "no_witness_in_bounded_search"
+    },
+    {
+      "task_id": "HumanEval/159",
+      "entry": "eat",
+      "program_id": 0,
+      "candidate_count": 216,
+      "valid_novel_count": 216,
+      "screen_failures": 0,
+      "witnesses": [],
+      "oracle_statuses": {
+        "ok": 216
+      },
+      "status": "no_witness_in_bounded_search",
+      "exhaustive_public_domain": false,
+      "put_sha256": "0d68e556cccaccc33d23ea09117762914dc8c882cb66695a1e22be251206f294",
+      "boundary_examined": "0/1000; need so với remaining",
+      "conclusion": "no_witness_in_bounded_search"
+    }
+  ]
+}

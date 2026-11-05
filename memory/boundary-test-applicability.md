@@ -5,6 +5,42 @@ metadata:
   type: reference
 ---
 
+2026-11-05 usercontinueafteraudit→stringBVArepairimplementedinplace. parsed_float
+template/evaluator/inverseconstructor,publicprojectionevidence,nearestinteger
+midpointandfixedformatlengthderivations;behaviornotdomain,noautofallback. Schema/
+armprotocolv3;oldgenerationcheckpointsincompatible,1375oldartifactbytesunchanged.
+205 checksPASS(196 modular+9 development),40 new. ScriptedactualPUT99/124integration
+exercisesinjection/globalfreeze/correctedoracle/tworepeatsandfindsknownbugs;
+notfreshLLMselection/efficacy. Offline44projection99,derivedguards99/124.0new
+model/benchmarkcalls. Reportfinal/review/boundary_string_repair_2026-11-05.md.
+Task83resourceboundary993notaddedassemanticthreshold. Supervisorreportunchanged.
+
+2026-11-05 userasksactualboundary-witnessfeasibilityforall44PUTs;CPUauditDONE.
+15,691public-spec/contract/PUT-derivedcandidatesfrozen,15,575novelvalid,0LLM/
+hiddeninputs. Confirmedsemanticboundarybugs99(negativehalf-integer rounding)
+and124(yearwidth3/4/5);83/PUT2RecursionErrorat993(992passes),environment/resource
+boundary,notsemanticdomainthreshold. Allneighbortripletsstableintwoisolatedruns.
+41othersnowitnessinboundedsearch,notcorrectnessproof.1375priorrunartifacts
+unchanged. Reportfinal/review/boundary_feasibility_2026-11-05.mdandJSON;rawplan/
+screen/repeatsinfinal/out/boundary_witness_audit_20261105. No generatorrepair.
+Mechanism:99needsparsednumericcharacteristicbeyondstringlength;124lengthtemplate
+alreadyexistsbutLLMmisseslen10entailedbymm-dd-yyyy;83selectedonlybase-covered1/2.
+Userclarifiespipeline_statusMDistobesenttosupervisor:academicprose,brief,only
+initialpipeline/baseline+BVAapproach,excludeallnewrunresults. Updatedseparately.
+
+2026-11-05 TERMINAL repairedrunCOMPLETE09:51:35UTC;199379exited,44/44results.
+Plain840valid novelinputs/2detectedPUTs(99/0,124/0),BVA67/0.99received/1unknown
+physicalattempt,178554known tokens;no historyreset.77source/44inputfreezehashes
+andindependentresultaggregationPASS. BVA18no_boundary/15generated/3uncertain/
+2no_inputs/3invalid_selection/2covered/1invalid_generation;44selection11context
+calls. No matchedgainclaim/posthoctuning/newcalls. EarlierRUNNINGnoticessuperseded.
+Userrequestsbriefpipeline/baseline/BVAreportusingno-ai-slop;writtenat
+final/review/pipeline_status_2026-11-05.md. Initialfullrun1634PUT/169basefail/
+1465basepass/1454evaluated/plain78rawdisagreements;originaloracle,cannotcall78
+confirmedbugs. DistinguishlaterV11plain72andcurrentboundaryplain2.
+Userclarification:samebriefreportmustuseproseparagraphs,coverinitialpipeline
+countsandBVAmethodonly;omitnewboundaryrunresults. MDupdatedaccordingly.
+
 2026-11-04 research requested by user completed; detailed evidence and page
 references in `final/review/boundary_applicability_2026-11-04.md`.
 
@@ -74,5 +110,82 @@ Endpoint models404;asked user for current endpoint. No controller/completion/
 task input/reference result yet. Prepared launch.sh uses private runtime env
 outside repo. Do not claim running or substitute a paid backend.
 
+2026-11-05 user supplies new Qwen27endpoint and authorizes run after adding input
+execution cache,with autonomous error fixes. Endpoint metadata8192/tokenizer13
+verified.112modularchecks pass;cache amendment registered before benchmark calls.
+Archived0completion readiness artifacts,refroze68sourcefiles+cache config;source
+cohort/settings unchanged. Detached controller156764RUNNING,statusrunning and
+HumanEval0/plain attempt1started verified. No scored outcome yet. Same output
+directory and6PUT smoke. See [[input-execution-cache]];do not duplicate launch.
+
+2026-11-05 TERMINAL COMPLETE supersedes running:6/6tasks scored,controller156764
+finished. Plain80valid novelinputs/0detectedPUTs;BVA19/0.16requests/responses,
+0unknown/0retries,32785tokens (plain6calls9043;BVA6selection11382+4construction
+12360). BVA statuses:3generated,2no_boundary,1no_inputs. Task0all20BVAproposals
+miss exactfloat-adjacentboundary;plain81scalar-vs-list and99missing singleton
+tuplecomma lose40inputs. No method repair/extra generation in this frozen run.
+Tiny smoke does not show efficacy or prove6PUTs correct. Coldcache428executions/
+4hits;warmaudit432hits/0nativecalls,fullread-only replay and68source/6inputhashes
+verified. Detailed results:final/review/boundary_smoke_run_2026-11-05.md.
+
+2026-11-05 user scope correction:run the dataset from final/development_groups.py,
+not merely smoke6. Actual --groupboundary --tierall export has44tasks/44selected
+PUTs. Frozennewrun final/out/boundary_all_plain_bva_20261105;6generation tasks/
+16requests imported after exactidentity checks,122files;38fresh tasks remain.
+Same BVA/plain methods/config,existingnativecache;no method tuning. Currentprivate
+endpointmodels404. Detachedsupervisor168654alive/waiting_endpoint,polls60seconds,
+no newcontroller/completion. See [[four-course-development-groups]] and
+final/review/boundary_all_run_2026-11-05.md. Do not count imported6asfreshprogress.
+
+2026-11-05 latest: refreshed userendpoint verifiedQwen27/context8192/tokenizer13.
+All44boundarygroup now RUNNINGdetachedcontroller170173,supervisor168654;
+freshHumanEval2/plainrequeststarted verified.68sources unchanged;6inputtaskfiles
+imported,not fresh. User explicitly wants background execution;no all44resultyet.
+
+2026-11-05 all44TERMINAL COMPLETE:plain595validinputs/3PUTs vsBVA121/3PUTs.
+Both44/122;plainonly97;BVAonly140;union4. BVA21generated/17no_boundary/
+5no_inputs/1invalid_selection.114receivedrequests,0unknown(16imported/98fresh),
+187202known tokens incl32785imported. Cache486hits/2692executions of3178records.
+44inputfreeze and68sourcehashesverified,no drift;controllers exited0. No matched
+call/yield efficacyclaim. Report:final/review/boundary_all_run_2026-11-05.md.
+
+2026-11-05 postrununique-caseaudit:97plain-onlyand140BVA-onlyarebothfalsealarms
+from originalHumanEvalreference,correctedHumanEval+agreesPUTin2repeats/case.
+140plainalreadyproposedtwospaces,butmalformedargslosesall20records;BVAwholelen
+bindingalsodiffersfromspace-runcount. Raw3vs3notconfirmedbugcounts;44/122not
+audited. No source/oracle/result changes. See [[reference-oracle-bugs]].
+
+Latest2026-11-05 userauthorizesoraclefix:correctedHumanEval+v0.1.10defaultmodern,
+model-free44taskrescore COMPLETE0vs0PUTs;595/121validinputsunchanged,original1336
+artifacts/freezeunchanged,0newLLMcalls.122checks/fullreplaypass. Priorraw3vs3are
+referencefalsealarms. Then user asks check/propose improving boundary;plan only.
+Mechanismaudit:473records→121retained,272targetmiss/41format/21side/18duplicate;
+17no_boundary,5no_inputs,1invalidselection. See [[reference-oracle-bugs]] and
+final/review/boundary_improvement_plan_2026-11-05.md. No newBVAimplementation/run.
+
 **How to apply:** consult the report before claiming boundary-ready or boundary
 coverage; distinguish input boundary coverage from assertions and bug detection.
+
+2026-11-05 latest usersteering:fix BVA after proposal,not another benchmark run.
+Implemented compiled targets/named context default,shared CallBuilder for plain/
+BVA,run/range/extrema operators,public guard hints,domain-role checks,binding
+evidence,obligation quotas and closed-scalar/base-duplicate skipping. Literal
+compatibility retained.165checks pass incl34new cases;offline49recheck43structural
+passes/6blocked,not semantic precision. Original1336artifacts unchanged;0new live
+model/benchmark calls. Report:final/review/boundary_repair_2026-11-05.md. Need fresh
+run output for this changed protocol;do not resume old generation checkpoints.
+
+2026-11-05 user explicitly requests live run after repairs,supplies currentprivate
+endpoint. Newrun final/out/boundary_all_plain_bva_compiled_20261105 usesall44tasks,
+freshplain/BVA generation,namedcodec/compiledtargets,correctedHumanEval+v0.1.10,
+sharednativecache,input20perarm/task,max132logicalcalls.165checks/type/ref44pass;
+77source/datafilesfrozen.Qwen27/context8192/tokenizer13verified. Detachedcontroller
+199379RUNNING;task0/plainfreshresponse received(20namedrecords/1959tokens),BVA
+selectionstarted. No resultyet;do not duplicate or import old literal generation.
+Report:final/review/boundary_compiled_run_2026-11-05.md.
+
+2026-11-05 09:07UTC livecheck:199379alive,7/44inputbatches,task20eighthinprogress,
+15freshresponses.1plain/task10RemoteDisconnectedunknownusage preserved;bounded
+retry succeeded.77source/datahashesmatch,noengineeringcrash. BVA compiledscalar
+path generated2inputs;4no_boundary/2generated/1uncertain among7completedtasks.
+No oracle/PUTscoreyet;generationcountsarenotvalidity/efficacy. Do not duplicate.

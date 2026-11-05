@@ -6,8 +6,88 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-11-06 compact selection3 paired diagnostic COMPLETE:3fresh long responses
+matchv5; short23recognizes character/byte difference but yields no novel input;
+72/157semantic errors persist,157invalid origin.11valid/0bug,8calls/0unknown;
+full replay/hash audit pass. Post-hoc compression/rephrasing, not pure-length or
+efficacy evidence. See [[boundary-prompt-v4-proposal]] and the compact report.
+
+
+2026-11-05/06 userrequestsfixedplainreuse+lock. Latest3BVA diagnostics have no fresh plain calls. Completed44task compiledrun sealed read-only;1375originalhashesmatch;plain840inputs/2PUTs. No new generation/scoring. See [[plain-baseline-seal]].
+2026-11-05 latest protocol5 known-bug10 rerun COMPLETE:64valid/16calls, bug tasks
+76/99/124/140vs v4only124. Outcome-selected post-hoc diagnostic, not efficacy.
+Source drift from another session blocks current-tree full replay; frozen inputs,
+prior outputs and native evidence audited. See [[boundary-prompt-v4-proposal]].
+
+
+2026-11-05 latest user rejects Burr and explicitly requests deletion. Entire untracked final/workflow_burr folder, local dependencies and trial outputs removed. Keep current pipeline;no migration. See [[workflow-burr-trial]].
+2026-11-05 latest BVA userrequested selection/context repair is implemented as
+protocol5;223 modular engineering tests pass. No new model/diagnostic/benchmark
+run or efficacy claim. See [[boundary-prompt-v4-proposal]] and the module README.
 
 2026-11-05 latest userapproved final/src + final/data consolidation and retired concept code deletion.214tests pass;153397recorded output/checkpoint hashes unchanged;group inventory evidence/selections identical after offline rebuild. No new model/benchmark;userrequestsConventionalCommit/pushmain,noattribution. See [[runtime-refactor]].
+
+2026-11-05 userrequested runtime/naming refactor: active modular now plain/BVA only, shared execution/transport in final/runtime, obsolete concept arms/stages/CLI removed. Historical artifacts preserved; no new model/benchmark. See [[runtime-refactor]].
+
+2026-11-05 latestusercontinue:stringBVArepairv3DONE,parsed_float+publicspec
+projection/nearestmidpoints/fixedformatlengthhints,injectedpipelineunchanged.
+205 checksPASSincl40 new;scripted99/124realPUTintegrationfindsknownbugs,notfresh
+LLMefficacy.44offlineinspectionpass,1375oldartifactsunchanged;0newmodelrun.
+See [[boundary-test-applicability]]/final/review/boundary_string_repair_2026-11-05.md.
+2026-11-05 userrequested44PUTboundaryfeasibilityauditDONE:15,691candidates,
+15,575novelvalid,0LLMcalls;semanticwitnesses99/124,resourceRecursionError83at993.
+41othersnowitnessinboundedsearch,notproof. Twoisolatedrepeats/neighbortriplets
+stable,1375priorartifactsunchanged. final/review/boundary_feasibility_2026-11-05.md.
+Supervisorreportpipeline_statusMDrewrittenacademicprose,nonewrunresults.
+2026-11-05 repairedBVAterminalCOMPLETE44/44at09:51UTC,199379exited. Plain840valid/
+2PUTs(99,124),BVA67/0;99responses/1unknown,77source+44freezehashesandtotalsPASS.
+No callmatchedgain. Briefuserreportfinal/review/pipeline_status_2026-11-05.md:
+initialfullrun1634PUTs,169basefail,plain78raworiginaloracle(notconfirmedbugs).
+This supersedes live199379notices below;see [[boundary-test-applicability]].
+2026-11-05 09:07UTC currentrepairedrun199379alive:7/44inputtasks,15freshresponses,
+task20inprogress.1unknownphysicalattempt archived,existingretry succeeded;
+77sourcehashesmatch.No scoresyet;see [[boundary-test-applicability]].
+2026-11-05 repairedplain+compiledBVA/all44LIVE RUNNINGcontroller199379,newoutput
+boundary_all_plain_bva_compiled_20261105. Freshgeneration44,correctedHumanEval+
+v0.1.10/sharedcache,77source/datahashesfrozen;165checks/preflight44pass;Qwen27/
+8192/tokenizer13verified. Actualtask0plainresponse(20namedrecords/1959tokens),
+BVAselectionstarted.No scored outcomesyet. See [[boundary-test-applicability]].
+2026-11-05 BVArepairimplemented atuserrequest:compiled targets,named contexts,
+sharedCallBuilder,typedrun/range/extrema,publicguard/domain-rolechecks,quotas and
+scalarbase-skip.165checks pass;offline49structuralrecheck43pass/6blocked. No new
+model/benchmark;1336oldartifactsunchanged,lastcorrected44result0vs0. See
+[[boundary-test-applicability]] andfinal/review/boundary_repair_2026-11-05.md.
+2026-11-05 oraclefixdone:moderndefaultcorrectedHumanEval+v0.1.10;exact44inputs
+rescore0vs0PUTs,595/121validinputsunchanged,0LLMcalls,1336oldartifactsunchanged,
+122checks/fullreplay/118sourcehashespass. UsernowasksBVAimprovementproposal:
+saved473records→121retained,272targetmiss/41format;binding140/138/21andno-boundary
+30/52/146issues. Planonly,noBVAalgorithmchange/newgeneration. See
+[[reference-oracle-bugs]] andfinal/review/boundary_improvement_plan_2026-11-05.md.
+2026-11-05 uniqueplain/BVAdetectionaudit:97and140bothfalsealarmsfromoriginal
+HumanEvalreferences;correctedHumanEval+agreesPUT2repeats/case.140plainalsohad
+samecasebutmalformedargs;raw3vs3notconfirmedbugs. Shared44/122notaudited.
+No pipeline/oracle modification. See [[reference-oracle-bugs]].
+2026-11-05 boundary/all44COMPLETE:plain595validinputs/3PUTs,BVA121/3PUTs;
+both44/122,plainonly97,BVAonly140.114responses/0unknown,98fresh/16imported;
+cache486hits/2692exec,44freeze/68sourcehashesverified.Controllersdone.No efficacy
+claim.See [[four-course-development-groups]]/[[boundary-test-applicability]].
+2026-11-05 refreshed userendpoint verifiedQwen27/context8192/tokenizer13;
+boundary/all44nowRUNNINGbackgroundcontroller170173,supervisor168654;freshtask2/
+plainrequeststarted verified.68sourcesmatch,6generationtasksreused/38newatlaunch.
+No all44scoresyet;see [[four-course-development-groups]]/[[boundary-test-applicability]].
+2026-11-05 usercorrectsscopefromsmoke6to development_groups.py boundarydataset.
+Exportedscriptboundary/tierall44readytasks,1PUTeach;newrunboundary_all_plain_bva_
+20261105frozen;6generationcheckpoints/16requestsreused,38freshtasksremaining.
+Endpointmodels404;supervisor168654alive/waiting/polling60s,nofreshcompletions/
+nocontroller. See [[four-course-development-groups]]/[[boundary-test-applicability]].
+2026-11-05 plain+BVA smoke6COMPLETE:plain80vsBVA19validinputs,0vs0detectedPUTs;
+16calls/0unknown/32785tokens,no efficacyclaim. Model packaging/target misses
+recorded,no posthocrepair. Cache cold428exec/4hits,warm432hits/0exec,fullreplay
+andhashauditpass. See [[boundary-test-applicability]]/[[input-execution-cache]].
+2026-11-05 plain+BVA smoke6RUNNINGcontroller156764;actualHumanEval0/plainrequest
+started. New userendpointQwen27/context8192/tokenizer13verified. Sharedperinput
+executioncacheimplemented,112checks,registeredandrefrozen68sourcesbeforecalls;
+no scored outcomes yet. See [[boundary-test-applicability]]/[[input-execution-cache]].
 2026-11-05 user authorizes plain+BVA run on existing boundary group. Smoke6PUT
 configured/frozen in final/out/boundary_smoke_plain_bva_20261105,67sourcefiles,
 input20perarm/task,target1,expectedQwen27/context8192,max18logicalcalls;60checks

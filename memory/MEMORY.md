@@ -1,6 +1,10 @@
-- [Runtime refactor](runtime-refactor.md) — final/src + final/data; obsolete/duplicatefilesremoved;212tests;historicalartifactspreserved
-- [Input execution cache](input-execution-cache.md) — per-input SQLite cache, isolated misses and independent repeats; reference/PUT reuse across runs
-- [Boundary test applicability/module](boundary-test-applicability.md) — plain+BVA smoke6prepared/frozen,60checks;endpoint404,awaiting endpoint;0calls/no controller
+- [Fixed plain baseline](plain-baseline-seal.md) — reuse compatible plain;44taskcompiledrunsealedreadonly,1375hashesverified
+- [V11 boundary arm assessment](v11-boundary-arm-plan.md) — BOUND-only witness producer integration points; sampler fidelity/trace sandbox limits; analysis only
+- [Burr trial rejected](workflow-burr-trial.md) — user requested deletion;folder/deps/outputs removed;keep current pipeline
+- [Runtime refactor](runtime-refactor.md) — final/src + final/data; obsolete/duplicatefilesremoved;212tests;historicalartifactspreserved;20HTMLslideswithcodeflows
+- [Reference oracle bugs](reference-oracle-bugs.md) — fixedHumanEval+oracle;44rescore0vs0,0LLMcalls;BVAmechanism473→121audit/proposal,no newgeneration
+- [Input execution cache](input-execution-cache.md) — per-input SQLite cache,isolated misses,separate repeats,112checks;reference/PUT reuse across runs
+- [Boundary test applicability/module](boundary-test-applicability.md) — stringBVA v3 repaired:parsed_float/format hints,205 checks;44audit bugs99/124+resource83;no fresh LLM run
 - [Code readability](code-readability.md) — user quen Java; ưu tiên tên đầy đủ, explicit loops/intermediates, ít shorthand; final/ readability audit
 - [Four course development groups](four-course-development-groups.md) —164task reviewed; boundary47/equivalence47/C1 31/DU39;6savedPUT smoke/group, improve separately before combining
 - [Spec-mining paper reading](spec-mining-paper-reading.md) —3PDFs read;S2F extracts constraints,Grounding labels Tested/Untested,formalcontracts+SMTconstruct inputs;different evidence and protocols
@@ -133,4 +137,5 @@
 - [v78 learned concept selection](v78-learned-select.md) — 2026-10-26 grouped CPU replay NO-GO: context18 vs random18.25/prior20.5; spec-only21=context-free; 33 PUTs/24 problems, $0 API
 - [v83 Reka full quarter](v83-reka-quarter.md) — 2026-10-27 terminal partial 26/28; 1 unknown-charge stop, offline scoring recovered (o0 4–4, ref/full 3–4), descriptive only; no retry allowed
 - [v84 Reka completion addendum](v84-reka-completion.md) — completed missing tasks154/158; combined28/28 descriptive, mixed-run exploratory (o0 4–4, ref/full3–4), $0.0542 new; no efficacy verdict
+- [Boundary prompt v4/repair](boundary-prompt-v4-proposal.md) — compact diagnostic COMPLETE:23semantic partial gain,72/157stillwrong;11valid/0bug,8calls, replay/hashPASS
 - [LangChain transport](langchain-transport.md) — active completion uses LangChain; 258 tests pass; live smoke passes models/tokenize/Unicode JSON/usage, 54 tokens

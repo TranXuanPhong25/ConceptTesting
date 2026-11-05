@@ -228,3 +228,73 @@
   keep historical documentation and results, with source recoverable from Git.
 - Current entry points use python -m final.src.modular.run/rescore; preserve final/out
   and final/review output locations after moving source deeper.
+
+## 2026-11-05 — boundary prompt v4
+
+- Replace compiled selection and context prompts with the BVA worksheet from
+  final/review/boundary_prompt_v4_proposal_2026-11-05.md; literal mode is unchanged.
+- Keep origin, alignment, code_quote, reach, infect, side_rules and better_technique.
+  Verify origin values and that code_quote occurs in the PUT source.
+- Schema boundary-value-analysis-4; existing checkpoints need a fresh output directory.
+
+## 2026-11-05 — boundary selection/context repair (protocol5)
+
+- Separate public domain/quantity evidence from code/edge threshold evidence;
+  the same spec rule across sides does not exclude an implementation boundary.
+- Default selection budget4096 in both standalone BVA and BoundaryArm; explicit
+  selection_truncated status, with no implicit retry or applicability claim.
+- Replace ordinary-only context guidance with valid path-sensitive families and
+  supported target placements within the existing per-obligation budgets.
+- Optional bounded context_requirements are checked after construction and on
+  literal fallbacks. Sum construction can preserve a requested palindrome by
+  adjusting the center; incompatible shapes and sign/token violations are explicit
+  rejections. Unstated/prose reach and propagation remain unverified.
+- Keep numeric-string binding safeguards and existing characteristic coverage.
+  Schema boundary-value-analysis-5; fresh outputs required, historical runs intact.
+- Validation:223modular tests pass, including context-preservation and truncation
+  regressions; git diff --check passes. Offline engineering only; no new
+  model/benchmark run or efficacy claim.
+
+### Pre-inference review amendment
+
+- Independent review before the user-requested known-bug10 rerun removed two
+  residual spec-threshold/rule-change requirements from candidate metadata and
+  the context propagation instruction. Same protocol5; no response observed
+  before these changes. See the rerun entry in PREREG.md for fixed scope.
+
+### Known-bug10 diagnostic terminal result
+
+- User-requested protocol5 rerun completed10/10:64valid inputs,16received calls,
+  bug tasks76/99/124/140vs v4only124. No unknown task calls. Outcome-selected,
+  post-hoc mechanism evidence; no detection-rate or efficacy claim.
+- All291v4output files unchanged;10input-freeze hashes and stable repeated
+  failure evidence verified. Concurrent runtime/pipeline edits from another
+  session after launch block full current-tree replay; no hash-guard bypass.
+  Exact launch controller source evidence retained. See
+  final/review/boundary_prompt_v5_diagnostic_2026-11-05.md and postrun_audit.json.
+
+## 2026-11-06 — compact BVA selection diagnostic (protocol6)
+
+- Compress selection instructions5908→3347characters; retain the exact output
+  JSON example, context instructions, candidate data/menu and budgets. No
+  task-specific semantic hints added. Only run identity changes to protocol6.
+-234modular tests pass. Independent review clears implementation and requires
+  documenting the transport change since v5; prospective amendment adds3fresh
+  long-selection controls to3short selections plus at most3short contexts.
+- Same saved23/72/157PUTs; fresh output boundary_compact_selection3_20261106.
+  Frozen v5remains historical context, not the sole prompt comparison.
+- Semantic understanding, schema validity and detection are assessed separately;
+  no pure-length, efficacy or generalization claim from these post-hoc cases.
+
+### Compact diagnostic result
+
+- Completed3pairs plus2short context calls:8responses/0unknown,25,308tokens.
+  All3fresh long-control response texts match savedv5exactly.
+- Short23recognizes non-ASCII byte/character difference but selects length0;
+  context generates only duplicate ASCII/empty inputs.72retains false operator
+  mismatch;157retains it and adds invalid origin=contract on3boundaries.
+- Short pipeline:11valid inputs,0detected;234prelaunch tests pass, full read-only
+  replay matches.76source/data and312prior-output hashes unchanged.
+- Tested candidate retained for review, no expansion/retuning. Report:
+  final/review/boundary_compact_selection_2026-11-06.md. No broad promotion or
+  pure-length/efficacy conclusion is supported by this three-case diagnostic.

@@ -1,8 +1,61 @@
 # BoundaryValueAnalysis
 
+## Compact selection candidate (protocol6)
+
+Current selection instructions are the shorter candidate tested on23/72/157;
+context instructions and the output JSON example retain their protocol5bytes.
+Three fresh long controls on the current runtime reproduce the v5response texts.
+The compact prompt adds partial semantic recognition on23but no new useful
+inputs there;72/157retain their semantic mistakes, and157also emits an invalid
+origin. Short pipeline:11valid inputs/0detected,8total paired-diagnostic calls.
+The candidate remains for review; this diagnostic supports no broader promotion.
+See the [paired report](../../../review/boundary_compact_selection_2026-11-06.md).
+
+## Selection/context repair (protocol5)
+
+Public spec/contract quotes establish the input domain or quantity. Code and
+natural-edge candidates do not require an explicit spec threshold or different
+spec rules on each side. Selection defaults to4096 completion tokens; generation
+keeps2048. `selection_truncated` records an output-budget failure, with applicability
+unknown, independently of invalid JSON or `no_applicable_boundary`.
+
+Context families can use valid negative/mixed-sign inputs, empty/token-only text
+and supported endpoint placement. Each family reuses its seed/non-target values
+across sides, subject to compiled context budgets. This is prompt guidance, not a
+guarantee that the model covers every family or executes the desired path.
+
+Named-context records may include `context_requirements`, for example:
+
+```json
+{"obligation_id":"b1:at","arguments":{"xs":[-2,-1,-2],"limit":-6},
+ "context_requirements":[{"parameter":"xs","property":"palindrome"},
+                         {"parameter":"xs","property":"all_negative"}]}
+```
+
+Supported properties: `palindrome` (str/list/tuple), `all_negative`,
+`all_nonpositive`, `all_positive`, `all_nonnegative` (nonempty numeric list/tuple),
+and `token_only` (str plus a one-character `token`; empty text is allowed).
+These are context choices, not inferred domain preconditions. They are checked
+on final calls, including literal fallbacks. A requested palindrome sum changes
+the center element or equal center pair rather than the last element, preserving
+integer element types for integer targets. Odd integer totals on even integer
+seeds are rejected as `context_shape_cannot_realize_target`; a different shape
+may still work. Unmet properties give `context_requirement_not_met`.
+
+Only these declared properties are checked. Prose reach/propagation stays
+unverified, and full domain validation still requires the external contract.
+The numeric-string binding guard and characteristic coverage are unchanged.
+Protocol5 requires a fresh output directory; historical checkpoints are preserved.
+Prelaunch validation passed223modular engineering tests. The subsequent
+user-requested known-bug10 diagnostic produced64valid inputs/16calls and exposed
+tasks76/99/124/140, compared with124alone in v4. This is post-hoc mechanism
+evidence, not efficacy. See the [diagnostic report](../../../review/boundary_prompt_v5_diagnostic_2026-11-05.md)
+for remaining losses and the concurrent runtime-source drift that blocks full
+replay on the current working tree. Dated scope is recorded in CHANGELOG/PREREG.
+
 ## String characteristics and format derivations
 
-After the 44-PUT feasibility audit, the compiled protocol is now version3.
+After the 44-PUT feasibility audit, protocol3 introduced the following changes.
 String candidates include `parsed_float`: a finite Python float read from a
 numeric string. Public numeric-string declarations are required to bind this
 projection; numeric observations or a PUT-side conversion alone are insufficient.
@@ -121,7 +174,7 @@ vào chỉ vì muốn thêm robustness case. Behavior boundaries có thể xét 
 | `no_inputs` | Không sinh/không giữ được input; 2 calls, không claim infeasible |
 | `generated` | Có input đã qua signature/target checks; 2 calls |
 
-Default tối đa4boundaries,20input records,2048completion tokens cho mỗi call,
+Default tối đa4boundaries,20input records,4096selection/2048generation completion tokens,
 context8192, selection temperature0 và generation temperature0.7. Không có model
 retry/fallback ở module này; transport adapter giữ retry policy riêng của nó.
 Prompt generation hiển thị tối đa12base calls đầu tiên; duplicate validation vẫn
