@@ -13,7 +13,7 @@ class BoundaryArm(InputGenerationMethod):
     name = "boundary"
     uses_shared_prompt = False
 
-    def __init__(self, *, boundary_budget=4, selection_tokens=2048, base_example_limit=12, construction_mode="compiled"):
+    def __init__(self, *, boundary_budget=4, selection_tokens=4096, base_example_limit=12, construction_mode="compiled"):
         # Validate the arm-specific settings using the module's public contract.
         BoundarySettings(boundary_budget=boundary_budget, selection_tokens=selection_tokens,
                          base_example_limit=base_example_limit, construction_mode=construction_mode)

@@ -25,7 +25,7 @@ class BoundarySettings:
     boundary_budget: int = 4
     input_budget: int = 20
     base_example_limit: int = 12
-    selection_tokens: int = 2048
+    selection_tokens: int = 4096
     input_tokens: int = 2048
     selection_temperature: float = 0.0
     input_temperature: float = 0.7
@@ -149,7 +149,7 @@ class BoundaryValueAnalysis:
         if artifacts.read_only and previous is not None:
             model_id = previous["model"]
         identity = {
-            "schema": "boundary-value-analysis-3", "task_number": context.task_number, "program_id": context.program_id,
+            "schema": "boundary-value-analysis-5", "task_number": context.task_number, "program_id": context.program_id,
             "input_sha256": digest({"specification": context.specification, "contract": context.contract,
                                     "entry_point": context.entry_point, "program_source": context.program_source,
                                     "base_inputs": context.base_inputs}),

@@ -80,3 +80,10 @@ distinction but context yields only duplicates;72still false operator mismatch;
 Report:final/review/boundary_compact_selection_2026-11-06.md. Full read-only replay
 matches;76source/data+312prior files unchanged. Candidate prompt retained for
 review, no retune/expansion; no general efficacy or pure-length conclusion.
+
+2026-11-06 user selects v5default and explicitly requests commit/push to main,
+then trials of the proposed semantic-grounding improvements. Restored exact
+v5selection/context bytes and schema5; compact instructions archived for review.
+Default remains diagnostic evidence, not globally best. Grounding trials follow
+as separately recorded experimental work; preserve prior outputs and other
+sessions' uncommitted files.

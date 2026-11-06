@@ -8,8 +8,13 @@ import re
 from .prompts import selection_messages, generation_messages
 from .characteristics import number, characteristic_values, boundary_target
 from .binding import validate_binding
+from .context_requirements import parse_context_requirements, validate_context_requirements
 from .construction import TargetCompiler, base_identities as compiled_base_identities, input_identity as compiled_input_identity
 from .types import entry_function, input_signature, literal_arguments, literal_value, finite_literal
+
+
+BOUNDARY_ORIGINS = ("spec", "code", "edge")
+BETTER_TECHNIQUES = ("equivalence_partitioning", "decision_table", "none")
 
 
 def required_text(value):
@@ -41,6 +46,37 @@ def supported_quote(quote, context):
     raise ValueError("quote_not_in_spec_or_contract")
 
 
+def supported_code_quote(quote, context):
+    quote = required_text(quote)
+    if " ".join(quote.split()) not in " ".join(context.program_source.split()):
+        raise ValueError("code_quote_not_in_put")
+    return quote
+
+
+def worksheet_fields(boundary, context):
+    """Keep the LLM worksheet for the context stage; only the code quote is verifiable."""
+    worksheet = {}
+    origin = boundary.get("origin")
+    if origin is not None:
+        if origin not in BOUNDARY_ORIGINS:
+            raise ValueError("invalid_boundary_origin")
+        worksheet["origin"] = origin
+    code_quote = boundary.get("code_quote")
+    if code_quote:
+        worksheet["code_quote"] = supported_code_quote(code_quote, context)
+    elif origin == "code":
+        raise ValueError("code_origin_requires_code_quote")
+    for name in ("alignment", "reach", "infect"):
+        if boundary.get(name) is not None:
+            worksheet[name] = required_text(boundary[name])
+    side_rules = boundary.get("side_rules")
+    if side_rules is not None:
+        if not isinstance(side_rules, dict) or any(side not in ("below", "at", "above") for side in side_rules):
+            raise ValueError("invalid_side_rules")
+        worksheet["side_rules"] = {side: required_text(rule) for side, rule in side_rules.items()}
+    return worksheet
+
+
 class BoundarySelection:
     name = "selection"
 
@@ -50,6 +86,10 @@ class BoundarySelection:
                                  context.settings.selection_temperature)
         if response is None:
             return {"status": "prompt_too_large", "boundaries": [], "rejected": []}
+        if response.finish_reason == "length":
+            return {"status": "selection_truncated", "boundaries": [],
+                    "rejected": [{"reason": "truncated_response"}], "finish_reason": response.finish_reason,
+                    "reason": "Selection output reached its token budget; applicability is unknown."}
         # VALIDATION START: selection response schema and status consistency.
         try:
             record = self.validate_response(response, context.settings.boundary_budget)
@@ -66,7 +106,10 @@ class BoundarySelection:
                 for guard in context.guidance.get("candidate_guards", [])
             ):
                 status = "uncertain_binding"
-            return {"status": status, "reason": reason, "boundaries": [], "rejected": []}
+            result = {"status": status, "reason": reason, "boundaries": [], "rejected": []}
+            if record.get("better_technique") in BETTER_TECHNIQUES:
+                result["better_technique"] = record["better_technique"]
+            return result
         accepted = []
         rejected = []
         identifiers = set()
@@ -187,6 +230,7 @@ class BoundarySelection:
             "source_quote": supported_quote(boundary.get("source_quote"), context),
             "explanation": required_text(boundary.get("explanation")),
         }
+        result.update(worksheet_fields(boundary, context))
         if context.settings.construction_mode == "compiled":
             result["numeric_kind"] = template["numeric_kind"]
             validate_binding(result, context)
@@ -245,9 +289,21 @@ class BoundaryInputGeneration:
                         raise ValueError("obligation_budget_exceeded")
                 if isinstance(input_record, dict) and "arguments" in input_record and context.settings.construction_mode == "compiled":
                     obligation = obligations[obligation_id]
-                    validated_input = TargetCompiler.build_input(context, obligation, input_record["arguments"], compiled_seen)
+                    requirements = input_record.get("context_requirements", [])
+                    # null is invalid, just like other malformed requirement lists.
+                    parse_context_requirements(requirements, signature)
+                    validated_input = TargetCompiler.build_input(context, obligation, input_record["arguments"],
+                                                                 compiled_seen, requirements)
                 else:
                     validated_input, identity = self.validate_input(input_record, signature, boundaries, seen)
+                    requirements = parse_context_requirements(input_record.get("context_requirements", []), signature)
+                    arguments, keywords = literal_arguments(validated_input)
+                    bound = signature.bind(*arguments, **keywords)
+                    bound.apply_defaults()
+                    validate_context_requirements(requirements, bound.arguments)
+                    validated_input["context_requirements"] = requirements
+                    validated_input["validation"]["context_requirements"] = "passed" if requirements else "none_declared"
+                    validated_input["validation"]["reach_propagation"] = "unverified"
                     seen.add(identity)
                     if context.settings.construction_mode == "compiled":
                         shared_identity = compiled_input_identity(signature, validated_input)

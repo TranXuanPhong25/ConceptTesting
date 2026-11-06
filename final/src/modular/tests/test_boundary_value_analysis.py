@@ -152,7 +152,6 @@ def test_unsupported_or_ungrounded_selection_never_calls_generator(tmp_path, mut
 
 @pytest.mark.parametrize("response", [
     ModelResponse("not JSON"),
-    ModelResponse(json.dumps(selection()), finish_reason="length"),
     {"status": "selected", "reason": "empty", "boundaries": []},
     {"status": "no_boundary", "reason": "contradiction", "boundaries": selection()["boundaries"]},
 ])
@@ -160,6 +159,16 @@ def test_parse_failures_are_distinct_from_legitimate_no_boundary(tmp_path, respo
     calls = ScriptedCalls(response)
     assert run(tmp_path, calls)["status"] == "invalid_selection"
     assert len(calls.requests) == 1
+
+
+@pytest.mark.parametrize("text", ['{"status":"selected",', json.dumps(selection())])
+def test_truncated_selection_is_an_output_failure_not_no_boundary(tmp_path, text):
+    calls = ScriptedCalls(ModelResponse(text, finish_reason="length"))
+    result = run(tmp_path, calls)
+    assert result["status"] == "selection_truncated"
+    assert result["rejected"] == [{"reason": "truncated_response"}]
+    assert result["logical_calls"] == {"selection": True, "generation": False}
+    assert calls.requests[0]["settings"]["max_tokens"] == 4096
 
 
 def test_wrong_side_wrong_target_and_base_duplicates_are_rejected(tmp_path):
@@ -360,3 +369,45 @@ def test_same_program_lock_prevents_duplicate_controller(tmp_path):
         with pytest.raises(BlockingIOError):
             run(tmp_path, calls)
     assert not calls.requests
+
+
+def selection_with_worksheet(**fields):
+    record = selection()
+    record["boundaries"][0].update(fields)
+    return record
+
+
+def test_selection_worksheet_reaches_the_input_prompt(tmp_path):
+    worksheet = {"origin": "code", "alignment": "code_only", "code_quote": "return sum(xs)", "reach": "any call",
+                 "infect": "2", "side_rules": {"at": "sum", "above": "sum"}}
+    calls = ScriptedCalls(selection_with_worksheet(**worksheet), {"inputs": [], "reason": "No context."})
+    result = run(tmp_path, calls)
+    assert result["boundaries"][0]["reach"] == "any call"
+    assert '"side_rules"' in calls.requests[1]["messages"][1]["content"]
+
+
+@pytest.mark.parametrize("fields, reason", [
+    ({"origin": "code"}, "code_origin_requires_code_quote"),
+    ({"origin": "code", "code_quote": "xs[0] > 2"}, "code_quote_not_in_put"),
+    ({"origin": "guess"}, "invalid_boundary_origin"),
+    ({"side_rules": {"inside": "sum"}}, "invalid_side_rules"),
+])
+def test_invalid_worksheet_rejects_the_boundary_and_skips_generation(tmp_path, fields, reason):
+    calls = ScriptedCalls(selection_with_worksheet(**fields))
+    run(tmp_path, calls)
+    saved = json.loads((tmp_path / "tasks/7/boundary/2/selection.json").read_text())
+    assert saved["rejected"] == [{"index": 0, "reason": reason}]
+    assert len(calls.requests) == 1
+
+
+def test_no_boundary_keeps_the_suggested_technique(tmp_path):
+    response = {"status": "no_applicable_boundary", "reason": "Unordered labels.", "boundaries": [],
+                "better_technique": "decision_table"}
+    run(tmp_path, ScriptedCalls(response))
+    saved = json.loads((tmp_path / "tasks/7/boundary/2/selection.json").read_text())
+    assert saved["better_technique"] == "decision_table"
+
+
+def test_context_prompt_has_no_copyable_parameter_placeholder():
+    from final.src.modular.boundary_value_analysis.prompts import CONTEXT_INSTRUCTIONS
+    assert '"parameter":"JSON value"' not in CONTEXT_INSTRUCTIONS.format(input_budget=20)

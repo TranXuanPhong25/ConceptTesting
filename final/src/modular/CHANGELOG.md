@@ -298,3 +298,11 @@
 - Tested candidate retained for review, no expansion/retuning. Report:
   final/review/boundary_compact_selection_2026-11-06.md. No broad promotion or
   pure-length/efficacy conclusion is supported by this three-case diagnostic.
+
+## 2026-11-06 — restore protocol5 for commit
+
+- User selects v5as the stable default. Restore exact selection/context instruction
+  bytes and schema5; preserve compact prompt as a review artifact and keep all
+  historical outputs. No claim that v5is globally best or semantically complete.
+- Next user-authorized grounding trials start from this committed checkpoint;
+  experimental changes remain separate and require their own offline audit/review.

@@ -1,14 +1,17 @@
 # BoundaryValueAnalysis
 
-## Compact selection candidate (protocol6)
+## Current default: restored protocol5
 
-Current selection instructions are the shorter candidate tested on23/72/157;
-context instructions and the output JSON example retain their protocol5bytes.
+The user selected protocol5 as the stable default after the compact diagnostic.
+Selection and context instruction bytes match the saved protocol5 prompts.
+The shorter protocol6 candidate tested on23/72/157is archived under
+final/review/prompts/boundary_selection_compact_v6.txt; historical run artifacts
+remain unchanged.
 Three fresh long controls on the current runtime reproduce the v5response texts.
 The compact prompt adds partial semantic recognition on23but no new useful
 inputs there;72/157retain their semantic mistakes, and157also emits an invalid
 origin. Short pipeline:11valid inputs/0detected,8total paired-diagnostic calls.
-The candidate remains for review; this diagnostic supports no broader promotion.
+The compact candidate is not the active default; the diagnostic supports no broader promotion.
 See the [paired report](../../../review/boundary_compact_selection_2026-11-06.md).
 
 ## Selection/context repair (protocol5)

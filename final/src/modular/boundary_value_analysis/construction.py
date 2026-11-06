@@ -8,6 +8,7 @@ import re
 from ..call_builder import CallBuilder, MAX_CONTAINER_ITEMS
 from .characteristics import number, characteristic_values, boundary_target, parsed_float
 from .binding import validate_known_domain
+from .context_requirements import parse_context_requirements, validate_context_requirements
 
 
 def input_identity(signature, record):
@@ -74,7 +75,7 @@ def validated_size(target):
     return int(target)
 
 
-def instantiate_value(expression, target, seed):
+def instantiate_value(expression, target, seed, *, preserve_palindrome=False):
     operation = expression["operation"]
     if operation == "value":
         return target
@@ -122,7 +123,22 @@ def instantiate_value(expression, target, seed):
         values = [max(value, target) for value in values]
         values[0] = target
     elif operation == "sum":
-        values[-1] = target - sum(values[:-1])
+        if preserve_palindrome:
+            if values != values[::-1]:
+                raise ValueError("context_seed_is_not_palindrome")
+            middle = len(values) // 2
+            if len(values) % 2:
+                values[middle] = target - sum(values[:middle] + values[middle + 1:])
+            else:
+                remainder = target - sum(values[:middle - 1] + values[middle + 1:])
+                integer_target = type(target) is int and all(type(value) is int for value in values)
+                if integer_target and remainder % 2:
+                    raise ValueError("context_shape_cannot_realize_target")
+                center = remainder // 2 if integer_target else remainder / 2
+                values[middle - 1] = center
+                values[middle] = center
+        else:
+            values[-1] = target - sum(values[:-1])
     elif operation == "range":
         if target < 0:
             raise ValueError("range_cannot_be_negative")
@@ -195,8 +211,10 @@ class TargetCompiler:
                 "unused_input_budget": context.settings.input_budget - sum(item["context_budget"] for item in active)}
 
     @staticmethod
-    def build_input(context, obligation, named_arguments, seen):
+    def build_input(context, obligation, named_arguments, seen, context_requirements=None):
         builder = CallBuilder.for_source(context.program_source, context.entry_point)
+        requirements = parse_context_requirements(
+            [] if context_requirements is None else context_requirements, builder.signature)
         values = builder.decode_arguments(named_arguments)
         boundary = next(item for item in context.selection["boundaries"] if item["id"] == obligation["boundary_id"])
         parameter = boundary["characteristic"]["parameter"]
@@ -207,7 +225,10 @@ class TargetCompiler:
         seed = values.get(parameter)
         if seed is None:
             seed = parameter_seed(context, parameter)
-        values[parameter] = instantiate_value(boundary["characteristic"], target, seed)
+        preserve_palindrome = any(requirement["parameter"] == parameter and requirement["property"] == "palindrome"
+                                  for requirement in requirements)
+        values[parameter] = instantiate_value(boundary["characteristic"], target, seed,
+                                              preserve_palindrome=preserve_palindrome)
         encoded = builder.build_values(values, guidance_id=boundary["id"])
         bound = builder.signature.bind(*ast.literal_eval(encoded["args"]), **ast.literal_eval(encoded["kwargs"]))
         bound.apply_defaults()
@@ -216,6 +237,7 @@ class TargetCompiler:
         if target not in actual_values:
             raise ValueError("constructor_did_not_realize_target")
         validate_known_domain(bound.arguments, context.guidance.get("domain_guards", []))
+        validate_context_requirements(requirements, bound.arguments)
         identity = input_identity(builder.signature, encoded)
         if identity in seen:
             raise ValueError("duplicate_input")
@@ -223,5 +245,8 @@ class TargetCompiler:
         seen.add(identity)
         return {**encoded, "boundary_id": boundary["id"], "side": obligation["side"],
                 "obligation_id": obligation["id"], "construction": "compiled-target",
+                "context_requirements": requirements,
                 "validation": {"signature": "passed", "boundary_target": "passed",
-                               "domain_constraints": "recognized-clauses-passed;remaining-unverified", "oracle": "not_run"}}
+                               "domain_constraints": "recognized-clauses-passed;remaining-unverified",
+                               "context_requirements": "passed" if requirements else "none_declared",
+                               "reach_propagation": "unverified", "oracle": "not_run"}}

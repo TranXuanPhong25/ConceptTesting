@@ -65,9 +65,9 @@ class BoundaryFixtureModel:
     def generate(self, messages, **settings):
         self.requests.append(messages)
         assert "REFERENCE_ONLY_MARKER" not in json.dumps(messages)
-        if "select specification-supported" in messages[0]["content"]:
+        if "applying boundary value analysis" in messages[0]["content"]:
             record = selection()
-        elif "construct concrete boundary inputs" in messages[0]["content"]:
+        elif "boundary" in messages[0]["content"]:
             record = {"inputs": [generated()]}
         else:
             record = {"inputs": [{"args": "([7, 8],)", "kwargs": "{}", "guidance_id": None}]}
