@@ -33,6 +33,8 @@ def characteristic_values(expression, arguments):
         return [parsed_float(value)]
     if operation == "length" and type(value) in (str, list, tuple, set, dict):
         return [len(value)]
+    if operation == "code_point" and isinstance(value, str):
+        return [ord(character) for character in value]
     if operation == "run_length" and isinstance(value, str):
         token = expression["token"]
         if not isinstance(token, str) or len(token) != 1:

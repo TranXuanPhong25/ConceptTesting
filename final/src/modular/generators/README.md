@@ -13,7 +13,9 @@ FrozenCohortStage
   → ReportingStage
 ```
 
-Default là `plain`; `boundary` dùng module BoundaryValueAnalysis.
+Default là `plain`; `boundary` dùng soft BVA qua module BoundaryValueAnalysis,
+một completion trực tiếp cho mỗi PUT được cấp budget. Flow selection/compiler cũ
+nằm trong `boundary_value_analysis/legacy/` và không được chọn bởi CLI `boundary`.
 Context preparation kiểm cohort eligibility, chọn visibility order và chuẩn bị
 prompt cho method cần nó. Execution và model transport nằm ở `final/src/runtime`.
 
@@ -125,12 +127,14 @@ batch shape, tổng records per method không vượt task budget và literal sy
 trước khi ghi `inputs.json`. Contract này chỉ kiểm format; input validity và output
 correctness tiếp tục do reference/domain stage xử lý sau generation freeze.
 
-Các validation của BVA được gom vào hàm:
+Các validation của soft BVA và shared pipeline:
 
-- `BoundarySelection.validate_response()` và `validate()`.
-- `BoundaryInputGeneration.validate_response()` và `validate_input()`.
-- `BoundaryArm.validate_task_input()`.
+- `boundary_value_analysis.inputs.decode_inputs()` kiểm strict envelope, budget,
+  truncation, encode named arguments và duplicates.
 - `validate_generated_inputs()` và `validate_input_literal()` ở shared contract.
+
+Selection, target và context validators của flow cũ nằm trong
+`boundary_value_analysis/legacy/`.
 
 Chỗ gọi validation được đánh dấu `# VALIDATION START: ...` và
 `# VALIDATION END: ...`. API arguments, budgets/cache identity và reference checks

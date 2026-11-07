@@ -708,3 +708,275 @@ subdirectory, with separate accounting. Periodic20minute keepalive is separate.
 Primary comparison is the fresh pair on the current runtime; historical v5 is
 secondary context. This still tests the compression/rephrasing bundle rather
 than isolating token length, and remains a post-hoc three-case diagnostic.
+
+## 2026-11-06 — opt-in checked grounding diagnostic after v5 checkpoint
+
+User requests restoring/committing v5then trying the proposed improvements.
+Stable checkpoint13d92ee9was pushed to main before this trial. Prior relevant
+attempts: v10spec predicates (no gain), v47menu ranking (no gain), v66construction
+engineering success/v68no concept gain, v69typedIR without semantic sensitivity.
+This is an engineering repair of existing BVA, not a paper reproduction.
+
+Add opt-in grounding_mode=checked; default mode keeps v5instruction bytes and
+behavior. Scope: bounded AST facts for quantity identity, builtin string codepoint/
+encoded length, simple prefix accumulations and immediate False-return polarity.
+Facts state supported syntax/assumptions, not NL entailment or proven bug labels.
+Complex/ambiguous mutation, shadowed builtins and unsupported arithmetic remain
+unknown. Never execute the PUT to infer intent or query reference during generation.
+
+Recognized necessary scalar type assertions can widen observed-int templates to
+float; contracts are not mined from outputs. Prune concrete side targets that
+violate recognized guards for that target alone before dividing context budgets.
+Other joint constraints are still checked on full calls. Add raw code-point
+characteristic (not interchangeable with transformed ord or byte length), with
+explicit receipts for transformations. Source-derived context requests describe
+supported non-ASCII and proper-prefix-vs-total conditions; requested properties
+are checked after construction. Do not fill missing tests using known witnesses.
+Do not reject all task inputs just because semantic correspondence is unknown.
+
+First run offline engineering tests and artifact audit of the existing six misses.
+After independent review, at most12logical calls for same6PUTs2/11/16/23/72/157,
+input20/task,selection4096/context8192,generation2048,seeds/temperatures as v5,
+same exact qwen3.5-27b-awq. Fresh output final/out/boundary_checked6_20261106;
+no new PUTs, model substitutions, semantic retries or larger cohort. Standard
+transport retries remain bounded; all inputs freeze before corrected reference
+and native evaluation. Report mechanism changes and unknowns, not detection rate.
+Candidate pool/context hints/type repairs all change together; no isolated gain
+of semantic ranking versus pool expansion without future matched controls.
+Keep experiment uncommitted for review after the stablev5commit; preserve all
+previous outputs. Failed readiness/endpoint checks do not authorize retries of
+unknown completions beyond the existing recorded policy.
+
+### Checked grounding independent-review amendment (before live diagnostic)
+
+Reviewer found unsupported-syntax false receipts. Fixes were applied before the
+offline artifact audit or model calls. This amendment was written just after the
+offline audit completed, before inspecting its findings; it is not a prospective
+registration of that offline result. Applied conservative unknown handling for nested scopes,
+wildcard imports, prior unsupported loops/mutations, annotated/walrus writes and
+keyword-offset sum calls. Character-origin aliases are separate from actual ord
+results; unsupported operators do not emit code-point comparisons. Type evidence
+abstains on shadowed contract type builtins. Added regression cases:44grounding
+engineering tests pass. These repairs constrain source receipts; they do not
+prove general NL binding. Non-ASCII context goals only derive from recognized
+UTF-8 encoding, not arbitrary encodings. Live old endpoint returned404before any
+completion; user asked for a new endpoint. Offline trial proceeds independently.
+
+### Checked6 live readiness after endpoint reply
+
+User resent the endpoint; exact qwen3.5-27b-awq metadata/context8192now pass.
+278modular tests pass incl44grounding cases, independent review cleared. All6
+selection prompts fit with4096output+128reserve; observed prompt tokens range
+2273–3463. No source change after these readiness checks. Proceed with the
+registered6miss-only diagnostic, max12logical calls, using fresh checked6output.
+Capture source/prior-output snapshots and runner hash before launch. No known
+witnesses or reference data enter prompts. Keep stablev5commit separate from
+these uncommitted trials, and report all capability/pool/guidance confounds.
+
+## 2026-11-06 — GPT-5.6 Luna direct inputs with failure feedback
+
+User explicitly asks to inform exactgpt-5.6-lunaabout the failures and require
+immediate input-only output without tools. Scope is the3record-rejection cases
+23/72/157, same PUTs7/4/3. One bundled native Codex CLI invocation, model
+gpt-5.6-luna/low, no retries/fallback or model substitution. CLI exposes no
+enforceable output-token cap; actual usage reported. No Qwen/paid API calls.
+
+Prompt includes only public spec/contract/PUT and prior generated bad records
+with validator/arithmetic failure feedback. No corrected-reference outputs,
+hidden inputs or known successful witness supplied. Up to20named input calls
+per task, no analysis/assertions/selection schema/tool calls. This is an assisted
+post-hoc input-construction diagnostic, not a matched model or BVA efficacy test.
+
+Use the existing native Luna client with ephemeral empty cwd, user config/rules
+ignored, shell/code-mode host/browser/apps/plugins/subagents disabled, web off.
+Tool schemas may remain exposed by the CLI; accept only agent-message/reasoning
+events and abort on tool or denied-router attempts. No model-executed tools.
+Exact identity is requested CLI-m/local catalog unless server events report it.
+Do not use a provider with tools or switch to another Luna/stronger model.
+
+Freeze all3returned batches before reference/native execution. Standard contract,
+corrected HumanEval+oracle and two native repeat slots remain evaluation-only.
+Use a frozen direct-input producer injected into existing pipeline, not the
+working-tree method generator currently edited by another session. Preserve
+those edits. Model output schema failures are reported without response repair
+or extra LLM calls. Independent pre-inference review precedes the single call.
+Fresh output:final/out/boundary_luna_direct3_20261106. Prior checked6outputs
+preserved. Return actual accepted inputs and failure reasons, not just counts.
+
+Luna pre-inference review cleared the single call with no blocking changes.
+Tool schemas may remain exposed, so report zero observed tool use only after
+event/router audit. Exact3task IDs, <=20named calls/task and no extra assertion/
+analysis fields are validated before all-batch freeze; no JSON repair/retry.
+
+## 2026-11-06 — naive inputs rescore on exact known_bug10 PUTs
+
+User asks for boundary/naive numbers on these exact10PUTs. Existing naive164
+cached labels use a different reference protocol, so rescore its frozen plain
+inputs only against current corrected HumanEval+oracle and exact known_bug10
+cohort. Zero new model/generation calls. No baseline unsealing/mutation or input
+repair/augmentation. Export a source-hashed plain-only10task slice and use the
+existing FrozenInputsGenerator+standard pipeline; all10batches freeze before
+reference/evaluation. Existing input budget20,timeout3s,seeds,2repeat slots/cache.
+Fresh output:final/out/naive_known_bug10_rescore_20261106. Report source-generated
+versus valid inputs and detection per exacttask/PUT, alongside boundaryv5.
+The original naive prompt saw its historical cohort, so a shared corrected oracle
+does not make this a matched-prompt/visibility/call-budget causal comparison.
+Outcome-selected10sample remains diagnostic; do not call counts detection rates.
+
+## 2026-11-06 — matched prompt-style diagnostic after user agreement
+
+User agrees with the hypothesis that restrictive scaffolding can constrain the
+model's natural exploration. Test on the3previously discussed v5losses2/11/157,
+same exactPUTs6/1/3. Prior art in this repo: v33chain/direct showed hard-gate loss;
+compact-selection3rewrote instructions but retained the selection schema/gates;
+Luna direct3changed model and added failure feedback. This trial removes those
+specific confounds for a bounded prompt-style comparison, not a new efficacy study.
+
+Three arms: direct generation; direct with a short nonbinding BVA suggestion;
+an adapted five-step v5worksheet applied internally before returning inputs.
+All arms use the same public spec/contract, one identical PUT and same existing
+base calls, same system message, named-input-only output schema, cap20inputs,
+qwen3.5-27b-awq,temperature0.7,seed314159+task,completion2048/context8192.
+No alternative PUTs, failure feedback, known witnesses, implementation receipts,
+candidate templates/menu, model-provided assertions or reference labels. Only
+the instruction-style block differs; no continuation or semantic retry.
+
+Exactly9logical requests in balanced task/arm order:
+2direct→soft→worksheet;11soft→worksheet→direct;157worksheet→direct→soft.
+Existing max3physical transport attempts/slot retained; unknowns disclosed.
+Endpoint metadata/tokenization, read-only review and source/request snapshots
+precede inference. Fresh output final/out/boundary_prompt_style3_20261106.
+
+All9outputs freeze before shared corrected-reference/PUT evaluation,2native
+repeats and exact execution cache. No target compiler or applicability/selection
+gate in any arm. Keep raw generated values unchanged; common CallBuilder/schema/
+domain/duplicate checks apply to all. Do not repair malformed/truncated responses.
+Use frozen-input producer injection; preserve unrelated method-generator edits.
+
+This compares free/soft/worksheet instruction bundles under one-stage direct
+output, not the entire current two-stage BVA pipeline. It cannot isolate prompt
+length, information content, latent search randomness or hard-gate effects from
+one sample per task/arm. Post-hoc tasks and BVA hints do not support held-out or
+general detection-rate claims. Report novel valid yield, per-PUT detection,
+actual boundary-related inputs, input diversity and raw response failure modes.
+No retuning, extra tasks/repeats, baseline regeneration or default replacement.
+
+Clarification before inference: the3direct-arm calls are fresh matched experimental
+controls because their one-PUT/context packet differs from historical naive.
+They do not regenerate, unseal or replace the user's fixed44task baseline.
+Existing naive9/10PUT prompts cannot serve as identical-context controls here.
+
+Pre-inference independent review confirms exact matched data/system/settings.
+Reviewer found a residual unavailable-helper cue in adapted worksheet: removed
+the claim that float_adjacent supplies values since no arm has a constructor.
+Changed worksheet's "write briefly" to "consider briefly" to keep reasoning
+internal and retain the common input-only output contract. No response observed
+before these changes; worksheet remains an explicitly adapted instruction arm.
+
+User now explicitly schedules the existing endpoint check/run20minutes later,
+expecting server startup then. Scheduled UTC2026-11-06T12:51:15Z
+(19:51:15Asia/Ho_Chi_Minh), anchored to the schedule request's clock check.
+Detached local controller sleeps until that time, verifies frozen source/requests
+and old outputs, checks exact model/context and tokenizes all9requests before
+any completion. If any check fails, record blocked state and stop; no model
+substitution, automatic rescheduling, source changes or completion retries beyond
+the existing per-slot transport policy. On successful readiness, launch the frozen
+runner once, supervise terminal status and emit a mechanical result digest.
+No completion before due time. Existing fixed baseline and defaultv5unchanged.
+
+Scheduler review amendment before launch: persist exclusive one-shot readiness
+and launch reservations before HTTP/Popen. The process lock alone did not cover
+crash/restart windows. Consumed reservations stop later automatic restarts;
+frozen scheduler/runner/schedule/request source hashes include these fixes.
+
+## 2026-11-07 — prepare executable full10 prompt-style command, no launch
+
+User asks to try all10cases and requests an executable .sh file. Generalize the
+matched direct/soft/worksheet runner into final/src/audits/run_prompt_style.py,
+with final/run_prompt_style10.sh and exact frozen3task style JSON. Do not launch
+from the preparation turn. This extends existing diagnostic, not a new method;
+all10known-bugPUTs remain outcome-selected/post-hoc, not held-out efficacy data.
+
+Default:10tasks×3arms=30slots,input20/task/arm,temperature.7,seed314159+task,
+completion2048/context8192/exactQwen27. Reuse the9completed3task responses only
+when full messages/sampling/budgets/model label match; keep import receipts and
+historical token usage separate. Thus21newlogical model calls planned. Explicit
+--no-reuse permits30fresh slots when user chooses it; unchanged fixed44baseline
+is not regenerated or modified. Reused versus new time epochs/order are disclosed.
+No successful-witness selection, response repair, prompt edits or semantic retries.
+
+New output directory per invocation; default shell launches detached and prints
+PID/log/status paths. Offline --check-only prepares/checks identity without any
+network/model/evaluation calls. Metadata/tokenize allslots before inference;
+all30slot outputs freeze before corrected-reference/evaluation and read-only
+replay. Existing bounded transport retry policy remains; one-shot worker marker
+prevents accidental second controller. All source/request/reused/prior hashes
+are bound to the prepared run. Private endpoint stays in external env file.
+
+Verification at preparation:chmod755,bash-n,help and offline full10identitycheck
+pass;30prepared/9reused/21newplanned,0modelcalls. Read-only independent review
+requested before delivering the runnable command. Keep code uncommitted for review.
+
+Full10command review cleared after adding reuse attempt checksum validation:
+attempt.request_idmust match digest(oldrequest), in addition to exact requested
+messages/settings/model and received state. Offline full10check and a deliberately
+tampered receipt negative control pass.9reused decode results match completed
+3task artifacts. No model/network/native-reference calls in preparation/review.
+
+## 2026-11-07 — mechanical recovery after full10 test-file hash interruption
+
+The user-run output boundary_prompt_style10_20261107_113807 stopped after receiving
+all3task16 responses because a test file was edited during execution. The source
+freeze incorrectly included tests. Preserve the failed directory, its snapshot
+and ledgers; do not overwrite hashes or restart its one-shot worker.
+
+New-run source freezes exclude tests while retaining all production Python,
+requests, data and imported response dependencies. Add --continue-from to import
+both received checkpoints and inherited reused_calls into a fresh directory.
+Require a stopped source, its worker lock, exact complete request identity,
+received state/request checksum and inherited receipt/content hashes. Validate
+the old freeze, allowing only this recovery controller and tests to differ;
+other production/data/request drift blocks continuation. Unresolved attempts
+block instead of being regenerated. Prompts, settings, parsing and scoring stay
+unchanged. The source run has12available responses and18remaining slots.
+
+Verification before delivering continuation:21offline tests PASS; actual-source
+check-only gives30slots/12reused/18new,12decode-parity checks PASS, source directory
+byte hashes unchanged, new-attempt count0, no model/native evaluation launched.
+The shell remains foreground by default at the user's preference.
+
+## 2026-11-07 — user promotes soft BVA as the boundary arm
+
+User explicitly selects soft BVA as the main BVA pipeline and asks to place
+deprecated implementations in a subfolder of the BVA module. `--arms boundary`
+now runs direct soft-guided input generation. Keep the exact registered soft
+system/common/guidance and single-PUT packet at input_budget20; spec/contract
+remain normative, and code only encodes the JSON values supplied by the model.
+There is one completion per allocated PUT, with no template eligibility,
+selection call, abstention gate, target compiler or worksheet stage.
+
+Main BoundarySettings contains only input/base-example/token/context/temperature/
+seed settings. The adapter splits the existing task input budget equally over
+visible base-passing PUTs in existing visibility order. It allocates no more PUTs
+than input slots, records budget-exhausted PUTs explicitly, deduplicates and never
+redistributes unused shares. Multi-PUT allocation is an engineering extension;
+the10task diagnostic evaluated one PUT per task, not this multi-PUT setting.
+
+Typed-selection/context/compiler/literal and checked-grounding implementations
+move to boundary_value_analysis/legacy/ with explicit legacy imports in their
+audits/tests. Legacy is not a default/fallback. Restore method invocation in the
+currently empty composition adapter so the selected method is actually executed.
+The shared encoder, domain/reference validation, generation freeze, native repeats,
+cohort/data keys and CLI method name remain in use. New soft checkpoints/call keys
+are disjoint from legacy checkpoints. Preserve historical outputs/manifests;
+strict historical replay still requires its original source/environment. Frozen
+input rescore restores the original method's accounting from saved protocol
+configuration, so old selection/compiler inputs are not relabeled as soft.
+
+Validation:342modular/development tests PASS, including new single-call soft
+integration, strict decoding, budget/dedup, no-template gating removal, no legacy
+runtime imports, source/settings mismatch and immutable read-only replay checks.
+Offline replay of all10saved soft responses gives exact request/decode parity.
+No new model/benchmark/native-cohort experiment launched. Unit integration tests
+use synthetic fixtures. Results7soft/6direct on outcome-selected10tasks remain
+descriptive; promotion is a user decision, not a general efficacy conclusion.

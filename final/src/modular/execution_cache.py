@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 from final.src.runtime.artifacts import digest
-from .boundary_value_analysis.types import entry_function, input_signature
+from .call_builder import entry_function, input_signature
 
 
 CACHE_POLICY = "isolated-input-execution-v1"

@@ -9,6 +9,7 @@ from .prompts import selection_messages, generation_messages
 from .characteristics import number, characteristic_values, boundary_target
 from .binding import validate_binding
 from .context_requirements import parse_context_requirements, validate_context_requirements
+from .grounding import checked, context_goals, goal_coverage, audit_boundary
 from .construction import TargetCompiler, base_identities as compiled_base_identities, input_identity as compiled_input_identity
 from .types import entry_function, input_signature, literal_arguments, literal_value, finite_literal
 
@@ -179,7 +180,7 @@ class BoundarySelection:
             if set(threshold) != {"kind", "parameter", "operation"}:
                 raise ValueError("invalid_threshold_expression")
             expression = {"parameter": threshold["parameter"], "operation": threshold["operation"]}
-            if threshold["operation"] in ("elements", "run_length") or not any(
+            if threshold["operation"] in ("elements", "run_length", "code_point") or not any(
                 candidate["characteristic"] == expression for candidate in templates.values()
             ):
                 raise ValueError("unsupported_threshold_expression")
@@ -234,6 +235,8 @@ class BoundarySelection:
         if context.settings.construction_mode == "compiled":
             result["numeric_kind"] = template["numeric_kind"]
             validate_binding(result, context)
+        if checked(context):
+            result["grounding_findings"] = audit_boundary(result, context.guidance)
         return result
 
 
@@ -325,8 +328,11 @@ class BoundaryInputGeneration:
             rejected.append({"reason": "input_budget_exceeded",
                              "count": len(record["inputs"]) - context.settings.input_budget})
         # VALIDATION END: generated input budget.
-        return {"status": "generated" if accepted else "no_inputs", "inputs": accepted, "rejected": rejected,
-                "reason": record.get("reason", ""), "finish_reason": response.finish_reason, "model_call_used": True}
+        result = {"status": "generated" if accepted else "no_inputs", "inputs": accepted, "rejected": rejected,
+                  "reason": record.get("reason", ""), "finish_reason": response.finish_reason, "model_call_used": True}
+        if checked(context):
+            result["context_goal_coverage"] = goal_coverage(context_goals(context), accepted, signature)
+        return result
 
     @staticmethod
     def validate_response(response):

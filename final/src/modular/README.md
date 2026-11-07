@@ -15,7 +15,8 @@ frozen PUT cohort → input preparation → input generation
 | `generators/` | Interface sinh input có thể thay thế; đọc lại frozen inputs |
 | `arms/plain.py` | LLM sinh input trực tiếp |
 | `arms/boundary.py` | Chia budget và gọi BVA cho từng PUT |
-| `boundary_value_analysis/` | Trích type, chọn boundary, dựng target và input |
+| `boundary_value_analysis/` | Soft BVA: một completion trực tiếp sinh concrete inputs mỗi allocated PUT |
+| `boundary_value_analysis/legacy/` | Flow selection/context/compiler và checked grounding cũ |
 | `call_builder.py` | Encode named arguments thành Python literals |
 | `dataset.py`, `cohort.py` | Load specs/domain metadata và frozen PUT cohort |
 | `references.py` | Chọn corrected HumanEval+ reference |

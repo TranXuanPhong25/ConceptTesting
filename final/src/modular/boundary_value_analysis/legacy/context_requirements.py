@@ -3,7 +3,7 @@ from .characteristics import number
 
 
 PROPERTIES = {"palindrome", "all_negative", "all_nonpositive", "all_positive",
-              "all_nonnegative", "token_only"}
+              "all_nonnegative", "token_only", "non_ascii", "prefix_exceeds_limit"}
 
 
 def parse_context_requirements(requirements, signature):
@@ -24,6 +24,11 @@ def parse_context_requirements(requirements, signature):
             token = requirement.get("token")
             if not isinstance(token, str) or len(token) != 1:
                 raise ValueError("invalid_context_token")
+        if property_name == "prefix_exceeds_limit":
+            expected_keys.add("limit_parameter")
+            limit = requirement.get("limit_parameter")
+            if not isinstance(limit, str) or limit not in signature.parameters or limit == parameter:
+                raise ValueError("invalid_context_limit_parameter")
         if set(requirement) != expected_keys:
             raise ValueError("invalid_context_requirement")
     return requirements
@@ -38,6 +43,19 @@ def validate_context_requirements(requirements, arguments):
             valid = type(value) in (str, list, tuple) and value == value[::-1]
         elif property_name == "token_only":
             valid = isinstance(value, str) and all(item == requirement["token"] for item in value)
+        elif property_name == "non_ascii":
+            valid = isinstance(value, str) and any(ord(character) > 127 for character in value)
+        elif property_name == "prefix_exceeds_limit":
+            limit = arguments[requirement["limit_parameter"]]
+            valid = (type(value) in (list, tuple) and len(value) > 1 and all(number(item) for item in value)
+                     and number(limit) and sum(value) <= limit)
+            if valid:
+                total = 0
+                exceeded = False
+                for item in value[:-1]:
+                    total += item
+                    exceeded = exceeded or total > limit
+                valid = exceeded
         elif property_name in ("all_negative", "all_nonpositive", "all_positive", "all_nonnegative"):
             valid = type(value) in (list, tuple) and bool(value) and all(number(item) for item in value)
             if valid:

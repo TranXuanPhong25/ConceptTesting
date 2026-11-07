@@ -6,6 +6,13 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-11-07 user explicitly chooses soft BVA as main `boundary` pipeline and moves
+typed selection/compiler/context/checked-grounding implementations into BVA/legacy.
+Implemented:342tests PASS, exact10saved soft request/decode parity,
+no new live model/cohort run. Current full10diagnostic soft7/direct6/worksheet7;
+only soft-only task72, outcome-selected sample. Historical defaultv5statements
+below describe earlier decisions. See [[bva-soft-default]].
+
 2026-11-06 compact selection3 paired diagnostic COMPLETE:3fresh long responses
 matchv5; short23recognizes character/byte difference but yields no novel input;
 72/157semantic errors persist,157invalid origin.11valid/0bug,8calls/0unknown;

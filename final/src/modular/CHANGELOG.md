@@ -306,3 +306,89 @@
   historical outputs. No claim that v5is globally best or semantically complete.
 - Next user-authorized grounding trials start from this committed checkpoint;
   experimental changes remain separate and require their own offline audit/review.
+
+## 2026-11-06 — opt-in checked grounding trial (uncommitted)
+
+- Stable v5checkpoint13d92ee9pushed before this experiment. Keep off mode as
+  default; checked mode is explicit on BoundarySettings/BoundaryArm.
+- Bounded AST receipts expose quantity/unit/transform/scope and logical complement
+  of immediate False-return predicates. Unsupported scopes, mutation and shadowing
+  remain unknown; source receipts are not spec entailment or bug verdicts.
+- Recognized scalar contract types can widen observed-int float neighborhoods.
+  Code-point templates control raw input scalar values, distinct from transformed
+  ord/byte length. Concrete domain-excluded sides are pruned before context quotas.
+- Context goals use UTF-8/non-ASCII and proper-prefix-vs-final-total properties;
+  declared properties are checked after construction and unmet goals are recorded.
+-44grounding tests plus independent read-only review. Existing10selection prompts
+  and menus reproduce v5byte-for-byte in default off mode. Offline saved-selection
+  audit identifies16quantity confusion,72scope confusion and157polarity confusion.
+- Live6miss diagnostic is authorized/preregistered but not launched: old endpoint
+  /models returned404and replacement requested. No new model task calls or efficacy
+  result. Preserve all previous outputs; trial awaits endpoint and user review.
+
+### Checked6 terminal diagnostic after endpoint reply
+
+- User resent endpoint; readiness/tokenization6pass and frozen checked6run
+  completed:8responses/0unknown,23valid inputs, bug task16(15stable failing inputs).
+  Known task tokens26,573. No semantic retries or cohort expansion.
+-16selects raw code_point;23recognizes byte/character distinction but omits the
+  boundaries field;72recognizes prefix-vs-total but5targeted contexts fail checked
+  property;157uses match/domain_lower but includes forbidden atside.
+- Full read-only replay matches;79source/data+723prior-output hashes and6input
+  freezes verified. Still opt-in/uncommitted; v5commit13d92ee9remains checkpoint.
+  Report:final/review/boundary_checked_grounding_2026-11-06.md. Pool and guidance
+  changes are confounded; this is post-hoc mechanism evidence, not efficacy.
+
+## 2026-11-07 — executable full10 prompt-style command (not launched)
+
+- Add final/run_prompt_style10.sh, mode755, plus reusable audits.run_prompt_style
+  CLI and byte-identical style config archived from the completed3task diagnostic.
+- Same10known-bugPUTs×3prompts; exact-request/model/checksum reuse of9completed
+  responses means21new calls by default. --no-reuse explicitly requests30fresh.
+- Detached run with one-shot worker, source/request/prior hashes, readiness and
+  all-input freeze before corrected scoring/replay. No target adjustment/repair.
+- bash-n/help/offline full10check,9decode parity checks, corrupt-reuse negative
+  control and independent read-only review pass. No model or evaluation launched.
+
+### Full10 endpoint configuration repair
+
+- User's foreground invocation failed MissingEndpoint after /tmpconfig disappeared;
+  confirmed0completion attempts in the failed output. Preserve that output.
+- Restore shell argument forwarding while preserving the current foreground default.
+  --detach is still an explicit option. Resolve private endpoint configuration via
+  explicit file/env/process URL, persistent XDG config, then legacy/tmpfallback.
+- Validate config before preparing a new run, with actionable sanitized errors.
+  Existing transport/model defaults for other pipelines are unchanged.
+-8network-free config/CLI tests, shell syntax and outside-repo full10check-only
+  pass. Metadata-only check confirms exactQwen27/context8192; no experiment launch.
+
+### Full10 checkpoint continuation after test-file hash interruption
+
+- Exclude tests from new-run production source freezes. An agent test edit during
+  the user's run caused the interruption; retain the original snapshot unchanged.
+- Add --continue-from for a fresh output directory, importing both received calls
+  and inherited reused_calls with exact request/checksum/receipt validation.
+  Keep the old worker locked during import; reject unresolved attempts and changes
+  to frozen production/data dependencies other than this recovery controller.
+-21offline tests PASS. Check-only on the actual interrupted run confirms12reused,
+  18remaining calls; all12decoded batches match, old directory hashes unchanged,
+  no new completion or native evaluation launched. Prompts/settings unchanged.
+
+## 2026-11-07 — soft BVA is the main boundary pipeline
+
+- Per user instruction, `--arms boundary` now uses soft guidance and a single
+  direct JSON-input completion per allocated PUT. Keep the diagnostic prompt
+  bytes/settings at20inputs; encode model values without target calculation.
+- Move typed selection, templates, compiler/literal construction, context checks,
+  worksheet prompts and checked grounding to boundary_value_analysis/legacy/.
+  Their audits/tests import legacy explicitly; default generation does not.
+- Split task budget equally over visible base-passing PUTs without semantic
+  eligibility gating; retain unused-share policy, explicit skips and deduplication.
+  Restore the method adapter's invocation loop so CLI methods execute.
+- Add soft identity/checkpoints, strict response parser and generation-only
+  accounting. Keep old results/manifests; rescore selects original legacy/soft
+  accounting from saved configuration. Shared cache imports signature helpers
+  directly from CallBuilder, avoiding a dependency on archived BVA types.
+-342tests PASS;10saved requests and decoded batches match offline. No live model
+  run or new cohort evaluation. Multi-PUT behavior remains an unmeasured extension
+  of the one-PUT diagnostic; no general superiority claim or automatic launch.

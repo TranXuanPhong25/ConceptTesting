@@ -1,4 +1,4 @@
-"""Boundary pipeline behavior with scripted model responses, no endpoint/PUT execution."""
+"""Legacy selection/context behavior with scripted responses; no endpoint/PUT execution."""
 import json
 from dataclasses import replace
 
@@ -6,7 +6,7 @@ import pytest
 
 from final.src.core_model import ModelResponse
 from final.src.modular.artifacts import ArtifactStore
-from final.src.modular.boundary_value_analysis import BoundarySettings, BoundaryValueAnalysis
+from final.src.modular.boundary_value_analysis.legacy import BoundarySettings, BoundaryValueAnalysis
 
 
 SPECIFICATION = 'def choose(xs: list[int]):\n    """Return the sum. xs has at least two elements."""\n'
@@ -409,5 +409,5 @@ def test_no_boundary_keeps_the_suggested_technique(tmp_path):
 
 
 def test_context_prompt_has_no_copyable_parameter_placeholder():
-    from final.src.modular.boundary_value_analysis.prompts import CONTEXT_INSTRUCTIONS
+    from final.src.modular.boundary_value_analysis.legacy.prompts import CONTEXT_INSTRUCTIONS
     assert '"parameter":"JSON value"' not in CONTEXT_INSTRUCTIONS.format(input_budget=20)

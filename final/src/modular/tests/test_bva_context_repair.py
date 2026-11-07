@@ -5,10 +5,10 @@ import json
 import pytest
 
 from final.src.modular.artifacts import ArtifactStore
-from final.src.modular.arms.boundary import BoundaryArm
-from final.src.modular.boundary_value_analysis import BoundarySettings, BoundaryValueAnalysis
-from final.src.modular.boundary_value_analysis.construction import instantiate_value
-from final.src.modular.boundary_value_analysis.context_requirements import validate_context_requirements
+from final.src.modular.boundary_value_analysis.legacy.arm import BoundaryArm
+from final.src.modular.boundary_value_analysis.legacy import BoundarySettings, BoundaryValueAnalysis
+from final.src.modular.boundary_value_analysis.legacy.construction import instantiate_value
+from final.src.modular.boundary_value_analysis.legacy.context_requirements import validate_context_requirements
 from final.src.modular.tests.test_boundary_value_analysis import ScriptedCalls
 
 

@@ -1,4 +1,5 @@
 """Reusable candidate families. No observed value becomes a semantic bound."""
+from .grounding import checked, declared_scalar_types
 
 
 class BoundaryTemplates:
@@ -6,6 +7,7 @@ class BoundaryTemplates:
 
     def run(self, context):
         candidates = []
+        declared = declared_scalar_types(context) if checked(context) else {}
         for parameter in context.input_types["parameters"]:
             characteristics = []
             numeric_kinds = set()
@@ -29,12 +31,16 @@ class BoundaryTemplates:
                     if kind == "str":
                         characteristics.append(("run_length", "consecutive_run"))
                         characteristics.append(("parsed_float", "parsed_numeric_string"))
+                        if checked(context):
+                            characteristics.append(("code_point", "raw_character_code"))
+            if parameter["name"] in declared and "float" in declared[parameter["name"]]["types"]:
+                numeric_kinds.add("float")
             seen = set()
             for operation, family in characteristics:
                 if operation in seen:
                     continue
                 seen.add(operation)
-                integer = operation in ("length", "run_length") or (
+                integer = operation in ("length", "run_length", "code_point") or (
                     operation != "parsed_float" and numeric_kinds == {"int"})
                 candidates.append({
                     "id": f"{parameter['name']}:{operation}", "family": family,

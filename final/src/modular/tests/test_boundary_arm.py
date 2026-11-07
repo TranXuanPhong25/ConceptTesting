@@ -1,4 +1,4 @@
-"""Main-pipeline integration: synthetic fixtures only, no live model or benchmark."""
+"""Legacy BVA integration and shared fixtures; explicit archived imports only."""
 import json
 from dataclasses import replace
 
@@ -8,7 +8,7 @@ from final.src.core_model import ModelResponse
 from final.src.runtime.artifacts import digest, save
 from final.src.modular.dataset import DATA_SHA256
 from final.src.modular.arms import available_arms, default_arms, selected_arms
-from final.src.modular.arms.boundary import BoundaryArm
+from final.src.modular.boundary_value_analysis.legacy.arm import BoundaryArm
 from final.src.modular.arms.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings, TaskContext
@@ -80,7 +80,7 @@ class BoundaryFixtureModel:
 def test_arm_registration_only_exposes_plain_and_boundary():
     assert [arm.name for arm in available_arms()] == ["plain", "boundary"]
     assert [arm.name for arm in default_arms()] == ["plain"]
-    assert isinstance(selected_arms(["boundary"])[0], BoundaryArm)
+    assert selected_arms(["boundary"])[0].configuration()["pipeline_contract"] == "soft-bva-v1"
     with pytest.raises(ValueError, match="Unknown input-generation method"):
         selected_arms(["v11_concept"])
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 import ast
 import inspect
 import math
-from ..call_builder import entry_function, input_signature
+from ...call_builder import entry_function, input_signature
 
 
 MAX_LITERAL_LENGTH = 16000

@@ -18,13 +18,33 @@ from .pipeline import BenchmarkPipeline
 from .references import HumanEvalPlusReferencePrograms
 
 
+def methods_for_rescore(records):
+    """Preserve historical method accounting without relabeling old BVA as soft."""
+    methods = []
+    for record in records:
+        configuration = record.get("configuration", {})
+        if record["name"] == "boundary" and configuration.get("pipeline_contract") == "typed-target-context-v3":
+            from .boundary_value_analysis.legacy.arm import BoundaryArm as LegacyBoundaryArm
+            options = {key: configuration[key] for key in ("boundary_budget", "selection_tokens", "base_example_limit",
+                       "construction_mode", "grounding_mode") if key in configuration}
+            methods.append(LegacyBoundaryArm(**options))
+        elif record["name"] == "boundary" and configuration.get("pipeline_contract") == "soft-bva-v1":
+            from .arms.boundary import BoundaryArm
+            methods.append(BoundaryArm(base_example_limit=configuration["base_example_limit"]))
+        elif record["name"] == "plain":
+            methods.extend(selected_arms(["plain"]))
+        else:
+            raise ValueError("Unsupported historical input-method configuration")
+    return tuple(methods)
+
+
 def build_rescore_pipeline(source_directory, cohort_path, output_directory, *, cache_directory):
     source = ArtifactStore(source_directory, read_only=True)
     manifest = source.read("modular_manifest.json")
     method_names = [record["name"] for record in manifest["arms"]]
     if set(method_names) - {"plain", "boundary"}:
         raise ValueError("This rescorer supports modern plain/boundary input batches")
-    generator = FrozenInputsGenerator(source_directory, methods=selected_arms(method_names))
+    generator = FrozenInputsGenerator(source_directory, methods=methods_for_rescore(manifest["arms"]))
     tasks_by_id = {task["task_id"]: task for task in load_tasks()}
     tasks = [tasks_by_id[task_id] for task_id in manifest["tasks"]]
     metadata_path = Path(__file__).resolve().parents[2] / "data/contracts.json"

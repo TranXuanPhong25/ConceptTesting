@@ -1,3 +1,6 @@
+- [BVA soft default](bva-soft-default.md) — user selected soft as main boundary pipeline; old selection/compiler/grounding under legacy;342tests/10saved parity;no new live run
+- [BVA prompt style diagnostic](bva-prompt-style-diagnostic.md) — full10 soft7/direct6;input audit:joint-negative72gain,7soft base duplicates;miss11/16/99;historical naive distinct control
+- [BVA checked grounding](bva-checked-grounding.md) — Luna direct3COMPLETE:1nativecall/0tools,3valid/3bugtasks;feedback-assisted,notmatched;checked6historyretained
 - [Fixed plain baseline](plain-baseline-seal.md) — reuse compatible plain;44taskcompiledrunsealedreadonly,1375hashesverified
 - [V11 boundary arm assessment](v11-boundary-arm-plan.md) — BOUND-only witness producer integration points; sampler fidelity/trace sandbox limits; analysis only
 - [Burr trial rejected](workflow-burr-trial.md) — user requested deletion;folder/deps/outputs removed;keep current pipeline

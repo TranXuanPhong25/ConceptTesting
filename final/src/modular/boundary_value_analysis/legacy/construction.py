@@ -5,10 +5,11 @@ import ast
 import copy
 import re
 
-from ..call_builder import CallBuilder, MAX_CONTAINER_ITEMS
+from ...call_builder import CallBuilder, MAX_CONTAINER_ITEMS
 from .characteristics import number, characteristic_values, boundary_target, parsed_float
 from .binding import validate_known_domain
 from .context_requirements import parse_context_requirements, validate_context_requirements
+from .grounding import checked
 
 
 def input_identity(signature, record):
@@ -84,6 +85,12 @@ def instantiate_value(expression, target, seed, *, preserve_palindrome=False):
         if parsed_float(encoded) != target:
             raise ValueError("unrepresentable_float_target")
         return encoded
+    if operation == "code_point":
+        if type(target) is not int or not 0 <= target <= 0x10ffff or 0xd800 <= target <= 0xdfff:
+            raise ValueError("unsupported_unicode_scalar_target")
+        if not isinstance(seed, str):
+            raise ValueError("code_point_seed_must_be_string")
+        return chr(target) + seed[1:]
     if operation in ("length", "run_length"):
         target = validated_size(target)
         if operation == "run_length":
@@ -176,6 +183,17 @@ class TargetCompiler:
                     except (ValueError, OverflowError) as error:
                         reason = str(error) if type(error) is ValueError else "arithmetic_overflow"
                         blocked.append({"obligation_id": obligation["id"], "reason": reason})
+                        continue
+                if checked(context) and obligation["target"] is not None:
+                    # Only necessary guards on exactly this scalar quantity are safe without a full context.
+                    from .binding import COMPARISONS, expression_key
+                    excluded = any(
+                        guard["threshold"]["kind"] == "constant"
+                        and expression_key(guard["characteristic"]) == expression_key(boundary["characteristic"])
+                        and not COMPARISONS[guard["comparison"]](obligation["target"], guard["threshold"]["value"])
+                        for guard in context.guidance.get("domain_guards", []))
+                    if excluded:
+                        blocked.append({"obligation_id": obligation["id"], "reason": "target_outside_recognized_domain"})
                         continue
                 obligations.append(obligation)
         queues = {}

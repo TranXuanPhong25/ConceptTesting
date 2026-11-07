@@ -8,16 +8,16 @@ from pathlib import Path
 import pytest
 
 from final.src.modular.artifacts import ArtifactStore
-from final.src.modular.arms.boundary import BoundaryArm
-from final.src.modular.boundary_value_analysis import BoundarySettings, BoundaryValueAnalysis
-from final.src.modular.boundary_value_analysis.binding import BoundaryGuidance
-from final.src.modular.boundary_value_analysis.characteristics import characteristic_values, parsed_float
-from final.src.modular.boundary_value_analysis.construction import instantiate_value, TargetCompiler
-from final.src.modular.boundary_value_analysis.pipeline import BoundaryContext
-from final.src.modular.boundary_value_analysis.prompts import selection_messages
-from final.src.modular.boundary_value_analysis.stages import BoundarySelection
-from final.src.modular.boundary_value_analysis.templates import BoundaryTemplates
-from final.src.modular.boundary_value_analysis.types import InputTypeExtraction
+from final.src.modular.boundary_value_analysis.legacy.arm import BoundaryArm
+from final.src.modular.boundary_value_analysis.legacy import BoundarySettings, BoundaryValueAnalysis
+from final.src.modular.boundary_value_analysis.legacy.binding import BoundaryGuidance
+from final.src.modular.boundary_value_analysis.legacy.characteristics import characteristic_values, parsed_float
+from final.src.modular.boundary_value_analysis.legacy.construction import instantiate_value, TargetCompiler
+from final.src.modular.boundary_value_analysis.legacy.pipeline import BoundaryContext
+from final.src.modular.boundary_value_analysis.legacy.prompts import selection_messages
+from final.src.modular.boundary_value_analysis.legacy.stages import BoundarySelection
+from final.src.modular.boundary_value_analysis.legacy.templates import BoundaryTemplates
+from final.src.modular.boundary_value_analysis.legacy.types import InputTypeExtraction
 from final.src.modular.context import PipelineSettings
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.tests.test_boundary_value_analysis import ScriptedCalls

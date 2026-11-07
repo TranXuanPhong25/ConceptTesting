@@ -9,14 +9,14 @@ import pytest
 
 from final.src.modular.dataset import load_tasks
 from final.src.modular.call_builder import CallBuilder
-from final.src.modular.boundary_value_analysis import BoundarySettings, BoundaryValueAnalysis
-from final.src.modular.boundary_value_analysis.pipeline import BoundaryContext
-from final.src.modular.boundary_value_analysis.types import InputTypeExtraction
-from final.src.modular.boundary_value_analysis.templates import BoundaryTemplates
-from final.src.modular.boundary_value_analysis.binding import BoundaryGuidance
-from final.src.modular.boundary_value_analysis.characteristics import characteristic_values
-from final.src.modular.boundary_value_analysis.construction import TargetCompiler
-from final.src.modular.boundary_value_analysis.stages import BoundarySelection
+from final.src.modular.boundary_value_analysis.legacy import BoundarySettings, BoundaryValueAnalysis
+from final.src.modular.boundary_value_analysis.legacy.pipeline import BoundaryContext
+from final.src.modular.boundary_value_analysis.legacy.types import InputTypeExtraction
+from final.src.modular.boundary_value_analysis.legacy.templates import BoundaryTemplates
+from final.src.modular.boundary_value_analysis.legacy.binding import BoundaryGuidance
+from final.src.modular.boundary_value_analysis.legacy.characteristics import characteristic_values
+from final.src.modular.boundary_value_analysis.legacy.construction import TargetCompiler
+from final.src.modular.boundary_value_analysis.legacy.stages import BoundarySelection
 from final.src.modular.tests.test_boundary_value_analysis import ScriptedCalls
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import TaskContext, PipelineSettings
