@@ -6,6 +6,30 @@ metadata:
 ---
 
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-11-07 latest fullBVAcontinuationACTIVE:NEWoutput
+final/out/boundary_soft_humaneval164_resume_20261107_195417,PID103140.493responses/
+52batches reused unchanged in isolated original frozen runtime;961newcallcap.
+Latest525received/56inputbatches/0evaluation. Original full2repeat scoring is
+retained for this registered continuation;current worktree conditional-confirmation
+policy is untouched.4recoverytests+native/replay smokePASS. Old stopped output
+preserved;see [[bva-full-humaneval]] for newlive paths and no-duplicate rule.
+
+2026-11-07 fullHumanEval BVA run INTERRUPTED:PID78543exited,sourceguard reports
+put_evaluation.py changed after the user-requested repeat explanation comment.
+Lastprogress52/164inputtasks(task51),0evaluated;all checkpoints preserved in
+final/out/boundary_soft_humaneval164_20261107_171955. No automatic restart or
+new generation/scoring in this edit. User separately approves evaluator policy:
+first pass stops;only fail/error/timeout gets a second confirmation. Reference
+still twice;unstable covers retested inputs only. See [[bva-full-humaneval]] and
+[[input-execution-cache]]. Older ACTIVE notices are historical.
+
+2026-11-07 soft precision trials COMPLETE:PhaseA0calls,generic8vssoft7(new99,
+no losses). Conditional PhaseB10responses/16206tokens,seed/concept/generic4;
+gateFAILdominatedby5Markdownfence rejects and7/8bad directives. Separate envelope
+audit seed/concept7;autonomousprecision8but loses72due to quota displacement.
+Read-only replay/integrity verified at run completion;soft main unchanged,no
+automaticretune/defaultpromotion. See [[bva-precision-tools]] and combinedreport.
+
 2026-11-07 user explicitly chooses soft BVA as main `boundary` pipeline and moves
 typed selection/compiler/context/checked-grounding implementations into BVA/legacy.
 Implemented:342tests PASS, exact10saved soft request/decode parity,

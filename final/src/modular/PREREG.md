@@ -980,3 +980,234 @@ Offline replay of all10saved soft responses gives exact request/decode parity.
 No new model/benchmark/native-cohort experiment launched. Unit integration tests
 use synthetic fixtures. Results7soft/6direct on outcome-selected10tasks remain
 descriptive; promotion is a user decision, not a general efficacy conclusion.
+
+## 2026-11-07 — user-authorized soft precision-tool diagnostic, Phase A
+
+User says to continue the precision-tool plan, then requests a trace explaining
+which weakness remains and why naive/direct sometimes succeeds. Implement and
+evaluate Phase A before changing the active soft default. No model calls.
+Prior art/limits: archived BVA v5 constructed targets but lost selection/context;
+v47menu selection was no-go. This diagnostic measures construction from existing
+seeds, not whether an LLM selects concepts well.
+
+Frozen source:boundary_prompt_style10_20261107_120909, exact10known-bugPUT cohort.
+Read saved soft/direct decoded inputs and validate saved response/request identity;
+do not consult reference/native outcomes during candidate generation or selection.
+Task/PUT ids do not choose transformations. Extract complete named seed values by
+literal parsing/binding to the task signature; use original decoded input order.
+
+Supported anchors are top-level parameters whose seed value is a finite Python
+float, plus string parameters with a syntactically direct float(parameter) call
+in the supplied PUT or public contract. Recognition is a location cue, not a
+semantic/domain guarantee; unsupported syntax remains unsupported. No integer
+widening, nested-container mutation, character-code tool or relational solver.
+For each eligible seed/parameter, preserve other arguments and construct the
+finite math.nextafter neighbor below and above, round-tripping numeric strings
+with repr(). Record adjacent float bits and unchanged non-target arguments.
+Do not construct inf/NaN. Base/domain filtering remains post-freeze reference work.
+
+Anchor order:seed index ascending, then declared parameter order. Enumerate all
+below candidates in that order, then all above candidates (one per anchor per
+round). Deduplicate against all original seeds and earlier generated candidates
+using exact encoded args/kwargs. Construction receipts are checked independently
+of task outcomes. This order is fixed before additional native evaluation.
+
+Primary fixed20policy:retain the first10distinct original soft seeds, append up
+to10distinct expansions from the above order, then fill any remaining slots from
+the remaining original seeds. No rejection-driven replacement after domain/base
+filtering and no score-based selection. Compare with original soft/direct batches
+under budget20. Separately evaluate the full original-soft-plus-expansion pool as
+a construction ceiling, explicitly outside the primary20input budget. All fixed
+and pool inputs for all10tasks freeze before any new reference/native evaluation.
+
+Use standard corrected reference/domain checks, two native repeats, shared input
+cache and immutable read-only replay. New output directory; source artifacts and
+prior report hashes are frozen and must remain unchanged. Report rejected domain,
+base duplicates, wrong value vs timeout, seed retention and whether an exposing
+candidate was absent, unselected, rejected or executed without exposing the PUT.
+
+Phase A gate:fixed20must add at least one stable value-mismatch PUT relative to
+original soft and retain every soft-detected PUT (including its resource case).
+Unlimited-pool gains alone do not pass. No post-outcome budget/order/transform
+tuning to rescue a failed gate. Phase B remains conditional; its writer/interface
+and controls need a prospective amendment before model calls. These10outcome-
+selected tasks are post-hoc mechanism checks, not general efficacy evidence.
+
+## 2026-11-07 — conditional Phase B, before any new model generation
+
+Phase A completed at boundary_precision_phase_a_20261107_152738:fixed20tool8PUTs,
+soft7,direct6; new stable value-mismatch99and no soft losses. Pool ceiling8also.
+The predeclared gate passed. Continue the user's authorized plan to test direction
+selection with one new writer response per each of the same10tasks. This is a
+known-case mechanism diagnostic, not an expanded/held-out efficacy trial.
+
+Use the same source PUT/spec/contract/base packet,Qwen27,sampling seed314159+task,
+temperature.7,completion2048/context8192,input20. Adapt the soft output envelope
+to inputs plus expansions. Request at most2optional directives containing only
+seed_index,parameter,quantity(float/parsed_float),anchor,neighbors(adjacent).
+An anchor must equal the referenced seed's finite scalar value (after float()
+for a supported numeric string). No new anchor injection, nested contexts,
+unbounded tools or mandatory selector. Unsupported directives do not discard
+otherwise valid seeds. Truncated/malformed seed JSON follows the strict policy;
+no semantic retry, repair, model fallback or outcome feedback to the writer.
+
+Generate the same float candidate pool as Phase A from each new seed batch.
+Concept order follows the request list, then below/above; use only candidates
+whose receipt matches a valid directive. A directive can provide at most2new
+neighbors; total distinct selected expansionsK<=4. Generic control takes the
+firstKdistinct candidates from that identical writer's pool. Both retain the
+same first10seeds and fill the remaining budget20with remaining seeds in order.
+Matching actual K prevents a concept benefit from merely keeping more seeds.
+When K=0both controls are the full new seed batch. Record unsupported/empty
+directives explicitly; generic controls are conditioned on K, not independent
+autonomous tool policies. Also report the new20seed-only batch and original saved
+soft batch. Existing direct/Phase A evidence remains separate, not regenerated.
+
+Preflight metadata and tokenize all10requests before completion dispatch. Use
+recorded bounded transport and one-shot worker. Freeze all new seed/directive
+responses and all four input-policy batches before any corrected reference/PUT
+evaluation; use the standard corrected reference/domain stage,2native repeats,
+execution cache and immutable replay. Disclose shared writer cost once, separate
+from historical soft costs. Invalid/incomplete requests are outcomes, not replaced.
+
+Phase B gate requires at least one task with a new stable value mismatch for
+concept-directed expansion over the matched generic control, no generic-detected
+task loss, and retention of all original soft-detected tasks. New seeds vs old
+soft is not a causal concept comparison because output instructions differ.
+If concept and generic tie, or only the changed seed writer improves, report no
+demonstrated concept-selection gain and keep the active default unchanged.
+Never retune schemas, quota, ordering or thresholds after seeing these outputs.
+
+## 2026-11-07 — post-hoc interface-loss audit, not a Phase B rerun
+
+Phase B completed10received responses/0unknown/0truncation,16206known tokens.
+Primary seed/concept/generic policies each detect4PUTs vs original soft7; the
+gate failed. Five responses (2/76/99/124/140) have a single outer Markdown JSON
+fence and were rejected as invalid_writer_envelope by the frozen strict parser.
+Other request errors include boolean/list neighbors instead of the required
+adjacent string and a wrong seed-index/anchor binding. Only one directive was
+admitted, on72, so the primary result provides little coverage of direction
+selection. It must not be presented as evidence that concept selection intrinsically
+finds only4bugs or that the tool cannot construct appropriate values.
+
+User asks for the exact loss mechanism. Perform a separate read-only response
+audit: strip only a complete single outer ```json...``` fence, then pass the
+unchanged interior to the same writer/seed/directive validators. Do not repair
+any values, requests, neighbors mode, quantity or indices. Freeze the derived
+batches for all10tasks before scoring with standard reference/domain and2PUT
+repeats. Reuse completed writer responses;0newmodel calls. Label the new output
+post-hoc envelope-normalization audit; do not overwrite original responses,
+primary snapshots/metrics or gate. Compare recovered seeds, matched concept/
+generic, and an explicitly separate autonomous Phase A generic fixed20policy
+on the same recovered seeds. The latter diagnoses available construction
+capability; its Kdiffers and cannot establish concept-selection value. No new
+prompt run, retuning or default promotion follows from this audit.
+
+## 2026-11-07 — user requests full HumanEval soft BVA run
+
+Run the active boundary arm over all164HumanEval tasks using the existing frozen
+qwen35_27b_humaneval164cohort, not new PUT generation. Cohort SHA256 identity:
+2a32bae531c339f2e403d748984ce5775734bdd8fd0fc9a02620392fbc23c7ed.
+It contains1634generated PUTs and1465base passes. Preserve existing eligibility:
+32/136skip generation_shortfall;65/127/132/145/163skip no_base_pass. Expected
+eligible157tasks/1454base-passing PUTs, at most1454logical generation calls.
+No prior V11-specific resource exclusions are silently applied to this new run.
+
+Use current BoundaryArm/soft-bva-v1, target_programs10,input_budget20per task,
+equal fixed shares in existing visibility order, no redistribution. This implies
+typically2–3inputs per PUT, unlike the known10diagnostic's20inputs for one PUT.
+An optional budget preference was requested while preparing; absent a user
+override, run the existing pipeline configuration. No precision expansion,
+concept requests, legacy selection/compiler or plain regeneration is enabled.
+Qwen served modelqwen3.5-27b-awq,context8192,completion2048,temp.7,seed314159+task.
+Use the current strict JSON parser; no fence recovery, schema/semantic retries
+or post-outcome tuning. Existing bounded transport retries are recorded separately.
+
+Before launch, inspect all164task signatures/cohort eligibility and prepare exact
+request identity hashes for every allocated PUT. Require exact endpoint model/
+context and tokenizer readiness. Freeze production code/data/cohort/settings/plan
+and verify before model tokenization/completions and each task stage. A guarded
+recorded client only dispatches registered request identities. New output folder,
+exclusive one-shot worker and detached controller; no automatic restart/reset.
+Source snapshot copies allow inspecting the frozen source while the job runs.
+Keepalive every20min is recorded separately. Endpoint/keys stay in private config
+outside the repo; never archive environment files or log credentials.
+
+All164task input batches freeze before corrected HumanEval+reference/domain and
+PUT evaluation. Use3sper-input timeout,two native repeats and existing execution
+cache. Controller writes progress/status, checks read-only replay on completion,
+then writes a result digest and report. Preserve sealed plain baselines and all
+previous diagnostic checkpoints; no reuse/regeneration of an unmatched baseline.
+This full run reports current BVA behavior and costs. There is no call-matched
+plain control or held-out efficacy claim. Explicit skips,context-limit failures,
+generation rejections and resource outcomes remain in the denominator breakdown.
+
+Prelaunch engineering checks:368modular/development tests PASS, including exact
+full-cohort eligibility/request planning, dispatch guard rejection, source/archive
+drift and stopping keepalive before final summary accounting. Offline preparation
+on the actual cohort confirms164requested/157eligible/1454planned calls. Exact
+Qwen27/context8192metadata and tokenizer probe13PASS,0experiment completions at
+this point. Archive the preregistration; later unrelated note edits are not live
+execution dependencies. Tests and unrelated audit scripts are excluded from
+runtime guards; executed production modules/data/request plan remain frozen.
+
+## 2026-11-07 — continuation after live scoring/runtime edits
+
+User requests status check. The full run stopped on a source guard at493received
+responses and52complete input batches, before all-input freeze or any evaluation.
+Live put_evaluation.py changed from full2repeat policy to confirmation of only
+first failures;worker.py also acquired a comment after the stop. Do not overwrite
+those live-worktree changes or silently mix the new scoring policy into the run.
+
+Continue the original user-authorized full run in a fresh output using a read-only
+copy of its intact source archive. Pin imports with Python -P and an isolated
+PYTHONPATH;native sandboxes copy worker/contracts from that same frozen runtime.
+Only inert package namespace initializers absent from the original archive are
+bootstrapped;no generator,parser,scoring or data logic changes. Keep original
+Python/dependency versions. Full164cohort,model/settings/request identities and
+20input/task allocation remain identical. Share the existing execution cache.
+
+Import all493received request/response/attempt checkpoints after exact request
+hash/received-state checks, including unsuccessful generation outputs; preserve
+the2archived unknown transport attempts. Copy the52completed input/packet batches
+unchanged, recording source/content hashes. Partial-task calls replay through
+the recorded client;do not reset any attempt counters. At most961newlogical calls
+remain out of the original1454cap. Imported usage is historical and disclosed
+separately. Preserve old stopped output byte-for-byte;new worker has its own
+one-shot marker and no automatic restart. Live-worktree source edits no longer
+affect the isolated execution;the frozen runtime/data/imported artifacts remain
+guarded. Existing keepalive,global input freeze,full2native repeats and terminal
+read-only replay/report are unchanged.
+
+Recovery checks before launch:4checkpoint-preservation/mismatch/unknown/archive
+tests pass. Actual offline import confirms493responses/52batches/961remaining and
+original artifact hashes unchanged. Import probe resolves both scorer and worker
+to the frozen runtime. A synthetic native smoke (0modelcalls) executes both full
+repeats for failing and passing inputs and matches immutable replay.
+This is mechanical continuation,not a new method,scoring amendment or rerun of
+received requests. Do not classify this as endpoint failure;endpoint checks200.
+
+## 2026-11-07 — user-authorized conditional PUT confirmation
+
+User explicitly accepts: first PUT pass stops; first fail/error/timeout receives
+one confirmation run, counted as detection only if that also fails/errors/times
+out. Implement this evaluator optimization without generating or scoring a new
+benchmark. Every input keeps repeat0; only first-run failures use repeat1with the
+same seed, timeout, expected output and tolerance. Shared cache identities remain
+separate per repeat. Reference/domain validation still repeats all inputs twice.
+
+Record original input indices in each program's outcomes.retested. The unstable
+field now covers only those retested inputs, so it no longer measures first-pass
+inputs that might have failed on a second run. Stage configuration identifies
+confirm-first-failures-v1/retested-inputs. Confirmation artifacts use a distinct
+_retry_1.json path to avoid interpreting old full-suite second-run checkpoints
+as a subset. Existing frozen runs/results remain historical and are not migrated
+or automatically resumed. Validate subset indexing, transient failures, all-pass
+and empty batches, cache/no-cache operation and immutable replay with engineering
+fixtures and local sandbox checks; no model calls or new benchmark run.
+
+Default per-input cache execution isolates each call. Without that cache, the
+confirmation job contains only the failing subset, so it omits state changes
+from first-pass successes. Stateful batch execution therefore has a different
+history from the historical full-suite second run;do not claim replay equivalence
+across these protocols. Both are recorded through stage configuration/checkpoints.

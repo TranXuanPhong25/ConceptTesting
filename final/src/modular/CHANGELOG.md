@@ -1,5 +1,20 @@
 # CHANGELOG
 
+## 2026-11-07 — retry only first-run PUT failures
+
+- Skip second PUT executions for first-run passes. Confirm fail/error/timeout
+  using the same seed and the independent repeat1cache slot before detection.
+- Record original retested input indices; unstable now covers only those inputs.
+  Use separate retry checkpoints and expose the policy in stage configuration.
+- Keep reference/domain validation repeats unchanged; preserve historical runs.
+- Validation:378modular/development checks pass, including cache/no-cache subset
+  mapping, transient failures, empty/all-pass batches, sandbox execution and replay.
+
+## 2026-11-07 — document evaluation repeats
+
+- Explain why PUT evaluation repeats each test twice with the same seed and
+  requires failure in both runs before counting a detection.
+
 ## 2026-11-05 — LangChain completion transport
 
 - Replace manual completion JSON serialization/SSE decoding with ChatOpenAI and
@@ -392,3 +407,73 @@
 -342tests PASS;10saved requests and decoded batches match offline. No live model
   run or new cohort evaluation. Multi-PUT behavior remains an unmeasured extension
   of the one-PUT diagnostic; no general superiority claim or automatic launch.
+
+## 2026-11-07 — opt-in precision tool and concept-direction diagnostics
+
+- Add a scalar float/numeric-string adjacent-neighbor primitive with construction
+  receipts and an explicit fixed20seed/expansion policy. Production soft unchanged.
+- Phase A uses frozen seeds,0newmodel calls:fixed20detects8PUTs vs soft7,direct6;
+  gains99with no original soft loss. Unlimited pool8is reported separately.
+- Conditional Phase B uses10newseed+request responses,16206tokens,0unknown or
+  truncation. Strict interface admits5responses; seed/concept/generic each4vs
+  originalsoft7. Failed gate retained; no repair/retry to rescue primary metrics.
+- Separate0model-call envelope audit removes only outer JSON fences. Recovered
+  seed/concept/matched-generic each7; only1of8raw directives admitted. Autonomous
+  fixed20precision gets8but drops the72negative context while adding2/99.
+- Tests cover exact binary64neighbors,string round trips,preserved context,
+  raw-index binding,matched quotas,strict parsing and freeze tampering. Reports:
+  final/review/boundary_soft_tool_results_2026-11-07.md and phaseA/direction/interface
+  JSON receipts. Soft remains main; experimental files uncommitted pending review.
+
+## 2026-11-07 — prepare user-requested full164soft BVA run
+
+- Add run_bva_full controller around the current pipeline, with exact offline
+  request identities, source/data copies and guards before dispatch/task stages.
+- Full existing cohort:164requested,157eligible,1454base-pass PUTs/call cap;
+  preserve7explicit cohort skips.20inputs/task in fixed per-PUT shares, no tools
+  or plain regeneration. One-shot detached worker,20minrecorded keepalive,
+  progress/checkpoints and automatic terminal replay/report.
+-368tests PASS; full-cohort prepare-only and endpoint/tokenizer readiness PASS.
+  Controller stops observer writes before final summary to keep replay accounting
+  stable. Source/notes archived; unrelated note/test edits cannot interrupt it.
+
+### Isolated frozen-runtime continuation
+
+- Original full run stopped at493responses/52input batches after a live scorer
+  source edit. Preserve the old output and the separately modified current scorer.
+- Add resume_bva_full to import received checkpoints/history and completed input
+  batches into a new output, running the intact archived generator/scorer/native
+  worker with isolated imports. Original policy/request identities retained;
+  961newlogical calls remain. No canonical unknown attempt is reset or regenerated.
+-4recoverytests and a frozen-runtime native/full-repeat/immutable-replay smoke
+  pass. New worker PID103140/outputboundary_soft_humaneval164_resume_20261107_195417
+  is running and has produced new responses. Historical observer cost is recorded
+  separately from new keepalive receipts; active worktree source edits do not
+  affect the isolated runtime.
+
+Launch audit:full run started detached atboundary_soft_humaneval164_20261107_171955,
+PID78543,exactmodel/context/tokenizer ready,worker lock held and first generation
+response received. Current state running; no terminal detection result claimed.
+
+## 2026-11-07 — confirm only initially failing PUT inputs
+
+- First-pass successes stop;fail/error/timeout inputs receive one confirmation
+  with the same seed. Detection still requires two failing observations. Reference
+  and domain validation keep their existing two observations for all inputs.
+- Record original retested indices and limit unstable status reporting to that
+  subset. Use a distinct retry checkpoint and policy identity to prevent old
+  full-suite repeat files from being interpreted as a subset.
+- Tests cover subset indices, transient failures, empty/all-pass batches, cache
+  reuse, real-worker outcomes and immutable replay. No-cache batch execution has
+  a different input history from the old second full suite;document that limit.
+
+### Commit review of diagnostics and controllers
+
+- Precision audit readers accept both historical full repeats and indexed failure
+  confirmations. They preserve original input indices, retain single observations
+  for first-pass successes and require two observations for stable value mismatch.
+- Full-run guards include package initializers. Continuation plans expose the
+  parent keepalive cost separately;no received request or historical retry is reset.
+-387modular/development tests PASS.40saved Phase A audit batches are unchanged
+  under the compatible reader,with0newmodel/native calls. Precision stays opt-in;
+  current full run retains its isolated original runtime and scoring policy.

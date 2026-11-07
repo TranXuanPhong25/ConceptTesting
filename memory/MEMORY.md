@@ -1,4 +1,6 @@
-- [BVA soft default](bva-soft-default.md) — user selected soft as main boundary pipeline; old selection/compiler/grounding under legacy;342tests/10saved parity;no new live run
+- [BVA full HumanEval](bva-full-humaneval.md) — RUNNING isolated snapshot PID103140;1031responses/112input batches,0evaluation;493reused,endpoint200
+- [BVA precision tools](bva-precision-tools.md) — A generic8vssoft7;B gateFAIL(interface);envelope audit seed/concept7,auto8loses72context;10calls/16206tokens;defaultunchanged
+- [BVA soft default](bva-soft-default.md) — soft main/legacy archived;342tests/10saved parity;precision trials completed, default remains soft
 - [BVA prompt style diagnostic](bva-prompt-style-diagnostic.md) — full10 soft7/direct6;input audit:joint-negative72gain,7soft base duplicates;miss11/16/99;historical naive distinct control
 - [BVA checked grounding](bva-checked-grounding.md) — Luna direct3COMPLETE:1nativecall/0tools,3valid/3bugtasks;feedback-assisted,notmatched;checked6historyretained
 - [Fixed plain baseline](plain-baseline-seal.md) — reuse compatible plain;44taskcompiledrunsealedreadonly,1375hashesverified
