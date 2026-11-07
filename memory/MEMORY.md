@@ -6,7 +6,7 @@
 - [Burr trial rejected](workflow-burr-trial.md) — user requested deletion;folder/deps/outputs removed;keep current pipeline
 - [Runtime refactor](runtime-refactor.md) — final/src + final/data; obsolete/duplicatefilesremoved;212tests;historicalartifactspreserved;20HTMLslideswithcodeflows
 - [Reference oracle bugs](reference-oracle-bugs.md) — fixedHumanEval+oracle;44rescore0vs0,0LLMcalls;BVAmechanism473→121audit/proposal,no newgeneration
-- [Input execution cache](input-execution-cache.md) — per-input SQLite cache,isolated misses,separate repeats,112checks;reference/PUT reuse across runs
+- [Input execution cache](input-execution-cache.md) — user approves first-pass stop;confirm only fail/error/timeout,limited unstable;separate repeat cache,reference still twice
 - [Boundary test applicability/module](boundary-test-applicability.md) — stringBVA v3 repaired:parsed_float/format hints,205 checks;44audit bugs99/124+resource83;no fresh LLM run
 - [Code readability](code-readability.md) — user quen Java; ưu tiên tên đầy đủ, explicit loops/intermediates, ít shorthand; final/ readability audit
 - [Four course development groups](four-course-development-groups.md) —164task reviewed; boundary47/equivalence47/C1 31/DU39;6savedPUT smoke/group, improve separately before combining

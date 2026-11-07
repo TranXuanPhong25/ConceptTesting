@@ -21,7 +21,7 @@ frozen PUT cohort → input preparation → input generation
 | `dataset.py`, `cohort.py` | Load specs/domain metadata và frozen PUT cohort |
 | `references.py` | Chọn corrected HumanEval+ reference |
 | `stages/reference_oracle.py` | Kiểm domain, chạy reference lấy expected output |
-| `stages/put_evaluation.py` | Chạy PUT, so sánh output trong hai stability repeats |
+| `stages/put_evaluation.py` | Chạy PUT một lần; chỉ chạy lại input fail/error/timeout để xác nhận detection |
 | `execution_cache.py` | Cache kết quả từng input/program/repeat bằng SQLite |
 | `../runtime/execution.py` | Tạo subprocess và sandbox `bwrap` |
 | `../runtime/worker.py` | Load Python function và gọi bằng `args`/`kwargs` |
@@ -32,6 +32,18 @@ frozen PUT cohort → input preparation → input generation
 `prompt + canonical_solution` tạo thành reference source hoàn chỉnh. Worker load
 source bằng `compile`/`exec`, lấy function theo `entry_point`, rồi gọi với input.
 Reference source và output chỉ được dùng sau input freeze.
+
+PUT evaluation dừng sau lần đầu nếu input pass. Input fail/error/timeout được
+chạy lại cùng seed; chỉ tính detection khi lần hai cũng fail/error/timeout.
+`outcomes.retested` lưu index gốc của các input chạy lại, theo thứ tự kết quả
+trong checkpoint `evaluation/<program_id>_retry_1.json`. `unstable` chỉ kiểm tra
+status thay đổi trong nhóm này; input pass lần đầu không được kiểm tra stability.
+Reference/domain checks vẫn chạy hai lần cho mọi input.
+
+Mặc định execution cache chạy mỗi input trong sandbox riêng. Khi tắt cache,
+confirmation batch chỉ chứa các input fail lần đầu; global state từ các passing
+calls bị bỏ qua không được tái tạo trong batch này. Historical full-suite repeats
+giữ policy gốc, không được xem là cùng protocol với confirmation subset.
 
 ## Chạy
 

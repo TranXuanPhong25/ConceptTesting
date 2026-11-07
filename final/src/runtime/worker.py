@@ -168,6 +168,7 @@ def oracle(job):
 def equivalent(job, args, kwargs, actual, expected):
     import numpy as np
     if job['entry']=='find_zero':
+        #HumanEval task 32 https://github.com/evalplus/evalplus/blob/master/evalplus/eval/_special_oracle.py
         from evalplus.eval._special_oracle import _poly
         specification=load(job['context'],job['entry'])[job['entry']]
         bound=inspect.signature(specification).bind(*args,**kwargs)

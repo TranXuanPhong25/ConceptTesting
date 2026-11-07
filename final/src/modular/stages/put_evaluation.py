@@ -12,7 +12,10 @@ class PutEvaluationStage(PipelineStage):
         self.execution_cache = execution_cache
 
     def configuration(self):
-        return {"execution_cache": self.execution_cache.configuration()} if self.execution_cache is not None else {}
+        configuration = {"repeat_policy": "confirm-first-failures-v1", "unstable_scope": "retested-inputs"}
+        if self.execution_cache is not None:
+            configuration["execution_cache"] = self.execution_cache.configuration()
+        return configuration
 
     def run(self, context):
         if context.inputs.get("skip"):
@@ -29,27 +32,46 @@ class PutEvaluationStage(PipelineStage):
                 passing_programs.append(program)
         program_outcomes = {}
         for program in passing_programs:
-            repeated_results = []
-            for repeat_index in range(2):
-                relative_path = context.task_directory + f"/evaluation/{program['id']}_{repeat_index}.json"
-                job = {
-                    "mode": "evaluate", "context": context.task["prompt"], "source": program["code"],
-                    "entry": context.task["entry_point"], "tests": context.oracle["tests"],
-                    "atol": context.metadata["atol"], "timeout": context.settings.timeout_seconds,
-                    "seed": context.settings.reference_seed + context.task_number,
-                }
-                result = cached_execution(context, relative_path, job, repeat_index, execute, self.execution_cache)
-                repeated_results.append(result["tests"])
+            evaluation_path = context.task_directory + f"/evaluation/{program['id']}"
+            job = {
+                "mode": "evaluate", "context": context.task["prompt"], "source": program["code"],
+                "entry": context.task["entry_point"], "tests": context.oracle["tests"],
+                "atol": context.metadata["atol"], "timeout": context.settings.timeout_seconds,
+                "seed": context.settings.reference_seed + context.task_number,
+            }
+            first_result = cached_execution(context, evaluation_path + "_0.json", job, 0,
+                                            execute, self.execution_cache)
+            if len(first_result["tests"]) != len(job["tests"]):
+                raise ValueError("First PUT evaluation result count does not match input count")
+            # A first-run pass cannot fail both runs, so only retry fail/error/timeout.
+            # Keep the same seed and confirm failure to reduce transient detections.
+            retested_indices = []
+            retested_inputs = []
+            for test_index, outcome in enumerate(first_result["tests"]):
+                if outcome["status"] in self.failure_statuses:
+                    retested_indices.append(test_index)
+                    retested_inputs.append(context.oracle["tests"][test_index])
             failing_indices = []
             unstable_indices = []
-            for test_index in range(len(context.oracle["tests"])):
-                first_status = repeated_results[0][test_index]["status"]
-                second_status = repeated_results[1][test_index]["status"]
-                if first_status in self.failure_statuses and second_status in self.failure_statuses:
-                    failing_indices.append(test_index)
-                if first_status != second_status:
-                    unstable_indices.append(test_index)
-            program_outcomes[str(program["id"])] = {"failing": failing_indices, "unstable": unstable_indices}
+            if retested_indices:
+                retry_job = dict(job)
+                retry_job["tests"] = retested_inputs
+                # A separate path avoids reusing an old full-suite second-run checkpoint.
+                second_result = cached_execution(context, evaluation_path + "_retry_1.json", retry_job, 1,
+                                                 execute, self.execution_cache)
+                if len(second_result["tests"]) != len(retested_indices):
+                    raise ValueError("PUT confirmation result count does not match retested input count")
+                for retry_index, test_index in enumerate(retested_indices):
+                    first_status = first_result["tests"][test_index]["status"]
+                    second_status = second_result["tests"][retry_index]["status"]
+                    if second_status in self.failure_statuses:
+                        failing_indices.append(test_index)
+                    # Only retested inputs have two observations to compare.
+                    if first_status != second_status:
+                        unstable_indices.append(test_index)
+            program_outcomes[str(program["id"])] = {
+                "failing": failing_indices, "unstable": unstable_indices, "retested": retested_indices,
+            }
         arm_results = {}
         for arm_name, selected_indices in context.oracle["arm_indices"].items():
             detected_programs = []

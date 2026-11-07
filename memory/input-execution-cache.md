@@ -30,7 +30,15 @@ also matches summary. No claim that this warm execution time includes generation
 
 **Why:** inputs repeat across methods and development runs while reference/PUT
 source often stays fixed. Reuse should save execution time without leaking outputs
-to generators or silently removing the second stability observation.
+to generators or silently removing a required confirmation observation.
 
 **How to apply:** retain complete cache identity and isolated-input semantics;
 change generation methods using a fresh run directory but the same shared cache.
+
+2026-11-07 user explicitly approves conditional PUT confirmation: stop after a
+first pass; repeat only first fail/error/timeout and count detection only when the
+confirmation also fails/errors/timesout. This supersedes always repeating every
+PUT/input. Reference/domain acceptance remains two observations. See the dated
+PREREG amendment and final/src/modular/stages/put_evaluation.py; unstable now covers
+only retested inputs, whose original indices are recorded. New retry checkpoints
+and stage policy distinguish this from historical full-suite repeat artifacts.
