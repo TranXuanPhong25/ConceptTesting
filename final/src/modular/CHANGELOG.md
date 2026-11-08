@@ -1,5 +1,21 @@
 # CHANGELOG
 
+## 2026-11-08 — reuse cached naive inputs for the full BVA comparison
+
+- Export the original admitted `plain` records with receipts for their source
+  freezes. Preserve empty/rejected batches and historical resource skips; make
+  no new model calls and do not repair raw responses.
+- Continue evaluation in an isolated frozen runtime with preserved checkpoints,
+  bounded infrastructure recovery, input hashes and immutable read-only replay.
+- Compare exact task-local PUT identities on all 1,454 targets and the historical
+  common 1,437 targets. Report input coverage, failure witnesses, writer costs
+  and the preregistered secondary uniform valid-input-budget expectation.
+- Completed report: `final/review/naive_vs_soft_bva_full164_2026-11-08.md`.
+  BVA 61 versus naive 44; all 30 BVA-only detections have no executable novel
+  naive input, so the raw gain does not demonstrate better boundary selection.
+- Validation: 396 checks before scoring; three comparator tests separately,
+  rerun after report formatting. Both completed input/hash and replay checks pass.
+
 ## 2026-11-07 — retry only first-run PUT failures
 
 - Skip second PUT executions for first-run passes. Confirm fail/error/timeout
@@ -477,3 +493,32 @@ response received. Current state running; no terminal detection result claimed.
 -387modular/development tests PASS.40saved Phase A audit batches are unchanged
   under the compatible reader,with0newmodel/native calls. Precision stays opt-in;
   current full run retains its isolated original runtime and scoring policy.
+
+## 2026-11-07 — evaluation-only infrastructure continuation
+
+- Full generation completed1454responses/164globally frozen batches;worker then
+  stopped at33task results on FileNotFoundError spawning bwrap. No PUT result is
+  inferred from that infrastructure failure. Binary currently exists and smoke
+  passes;exact transient cause remains unestablished.
+- Add a model-free continuation using original frozen runtime/scoring,validated
+  input ledger,restored visibility and imported native/reference checkpoints.
+  Detached controller pins PATH,archives itself and verifies a cold sandbox before
+  execution. No unsandboxed fallback or new model requests;one narrowly bounded
+  recorded retry is permitted for the same spawn error after a passing smoke.
+-4recovery tests PASS;actual workerPID192257past task33,44task results and0model
+  attempts at launch audit. Terminal input-freeze/replay checks remain automatic.
+
+### Full164soft BVA terminal result
+
+- Evaluation completed164task records,157eligible/1454base-pass PUTs:1449novel
+  valid inputs,61confirmed detected PUTs across22tasks.46PUTs have stable value
+  mismatch witnesses;15detections have no stable value mismatch. Outcome-kind
+  counts can overlap;resource/exception detections are disclosed separately.
+- Global input freeze and all1454generation response hashes match;immutable
+  read-only replay passed. Evaluation-only recovery made0model calls and consumed
+  no sandbox retry. Parent stopped outputs/checkpoints remain unchanged.
+- Generation used1454received calls/1,423,485known tokens;3034encoded inputs lose
+  1550cross-PUT duplicates before1484retained inputs and35reference/base rejects.
+  This is descriptive full-cohort behavior under20inputs/task,not a matched plain
+  or held-out efficacy comparison. Full report:boundary_soft_humaneval164_results_
+  2026-11-07.{md,json};no active benchmark worker or automatic rerun remains.

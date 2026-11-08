@@ -1211,3 +1211,74 @@ confirmation job contains only the failing subset, so it omits state changes
 from first-pass successes. Stateful batch execution therefore has a different
 history from the historical full-suite second run;do not claim replay equivalence
 across these protocols. Both are recorded through stage configuration/checkpoints.
+
+## 2026-11-07 — evaluation-only continuation after sandbox spawn failure
+
+Full generation is complete:1454received responses and164globally frozen input
+batches in boundary_soft_humaneval164_resume_20261107_195417. The worker stopped
+after33task results at task33PUT evaluation, with FileNotFoundError naming bwrap
+at subprocess spawn,not a PUT outcome. The binary is currently present in the
+standard system path and a fresh frozen-runtime sandbox smoke passes. Exact
+transient cause is unestablished;do not label the failure as a detected bug.
+
+Continue only evaluation in a fresh output using FrozenInputsGenerator and the
+same isolated original generator/scorer/native-worker runtime. No model backend,
+endpoint dependency,generation request or keepalive is needed. Validate all164
+input hashes against the completed freeze,restore original visibility packets,
+and copy completed reference/native checkpoints with content receipts. Reuse
+the same per-input execution cache. Preserve both earlier stopped outputs.
+Original full2repeat policy,3stimeout,seed,oracle,cohort and input budget stay fixed.
+
+Pin parent PATH to os.defpath so the sandbox executable lookup and subprocess
+PATH agree. Preflight its binary/hash and a real cold native smoke in the detached
+worker. Do not change the frozen executor or fall back to unsandboxed execution.
+If the same bwrap spawn FileNotFoundError recurs while the binary exists, allow
+one recorded evaluation-only retry after a passing smoke;reuse all checkpoints/
+cache entries. Other failures stop. No retry or regeneration of LLM responses.
+
+Archive the evaluation controller itself and freeze source/input/checkpoint
+dependencies. New one-shot worker and separate progress/status. Require identical
+global input freeze and immutable read-only replay at completion. Report parent
+generation costs separately from0newmodel calls and disclose imported execution
+checkpoints. This repairs infrastructure/continuation only;no scoring optimization,
+new testing method,post-outcome input change or default promotion is introduced.
+
+## 2026-11-07 — compare full soft BVA with the stored naive baseline
+
+User explicitly points out cached naiveLLM data and requests its use. Reuse only
+the unchanged admitted plain batches in v11_concept_inputs. Its164task ledger,
+cohort SHA,task/spec/domain metadata and sampling settings match the completed
+BVA run. Original naive156writer responses,2481admitted calls,31empty generated
+batches and8source task skips are preserved. Do not reparse/repair raw responses,
+generate missing calls or synthesize new inputs. Missing source plain batch means
+an empty input set,with its original source skip recorded.
+
+Export a plain-only frozen input view in a new directory with receipts tying each
+record to its original whole-batch freeze. Evaluate on BVA's exact full cohort
+(157eligible tasks/1454base-pass PUTs) under the same corrected HumanEval+reference,
+original full2repeat scorer,3stimeout,seed and execution cache/frozen runtime.
+No model calls. Old naive verdict72must not be subtracted directly from BVA61,
+because the old evaluation/reference protocol differs. Preserve the old source
+and the sealed44task baseline entirely unchanged.
+
+Original naive input generation/evaluation excluded17resource-risk PUTs;its cohort
+checksum itself was unchanged. Validate those source-bound exclusions and report
+both full1454target results and the1437common historical target intersection.
+No current BVA or naive input is discarded based on detections. BVA's completed
+native verdicts remain fixed;rescore naive only. Report shared/BVA-only/naive-only
+PUTs and per-task lists,wrong-value versus resource/exception detections,and valid
+input yield. Verify immutable replay and unchanged source hashes at completion.
+
+This is a retrospective same-target/oracle comparison of two stored generators,
+not a prompt-only or call-matched experiment. Both use a nominal20inputs/task,
+but BVA made1454per-PUT writer calls,naive156task calls;visibility/output schemas
+and generation epochs differ. Disclose costs and original empty/skip batches;
+do not interpret a raw winner count as an isolated effect of BVA knowledge.
+
+Secondary descriptive normalization is fixed before inspecting the new naive
+verdicts:for each task,k=min(valid_BVA,valid_naive). Average each PUT's detection
+over uniform k-subsets of that method's valid inputs using1-C(n-f,k)/C(n,k),where
+fcounts its recorded confirmed failing inputs. No new execution or selected
+prefixes;zero-k tasks contribute0. This analytical conditional mean is not the
+primary result,a new trial or a statistical superiority claim. Primary remains
+observed shared/BVA-only/naive-only on full1454and historical common1437targets.
