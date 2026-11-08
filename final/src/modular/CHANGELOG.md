@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 2026-11-08 — Prefect local preset console
+
+- Use Prefect3.9.2for editable run forms,presets,scheduling,history and artifacts;
+  isolated orchestration venv leaves benchmark dependencies unchanged.
+- Add full/known10/smoke paired-batch and per-PUT shared-budget presets with
+  complete resolved settings and explicit input-budget units.
+- Freeze config/code/cohort per launch;keep endpoint credentials outside tracked
+  parameters;retain transport budgets,source guards,native lock and replay.
+- Import historical records read-only. Preview-only runs make0model/nativecalls.
+  New model experiments are started by the user from the console.
+- Validation:444testsPASS,independent console reviewPASS;UI smoke preview-only.
+
 ## 2026-11-08 — continue paired batch without repeating saved responses
 
 - Add isolated recovery for the stopped matched batch: retain226received calls,

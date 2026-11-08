@@ -1,0 +1,6 @@
+[
+  {"name":"full-batch-direct-soft","description":"Full HumanEval · Direct vs Soft BVA. 20 inputs/task/arm; 1 call/task/arm; tối đa314 logical calls. Chỉ guidance khác nhau.","parameters":{"cohort":"humaneval164","mode":"batch","arms":["direct","soft_bva"]}},
+  {"name":"known10-batch-direct-soft","description":"10 known-bug PUTs · cùng batch prompt/schema của run mới. 20 inputs/PUT/arm; tổng20 calls. Không phải exact replay prompt-style lịch sử.","parameters":{"cohort":"known_bug10","mode":"batch","arms":["direct","soft_bva"]}},
+  {"name":"smoke3-batch-direct-soft","description":"3 task2/11/72 · Direct vs Soft, tổng6 calls. Dùng preview_only để chỉ xem budget, không gọi LLM.","parameters":{"cohort":"humaneval164","task_numbers":[2,11,72],"mode":"batch","arms":["direct","soft_bva"]}},
+  {"name":"full-soft-per-put-shared20","description":"Per-PUT mode lịch sử:20 inputs cho CẢ task, chia cho cácPUT; thường2–3inputs/call. Tối đa1454 calls. Không phải20inputs/PUT.","parameters":{"cohort":"humaneval164","mode":"per_put","arms":["boundary"]}}
+]

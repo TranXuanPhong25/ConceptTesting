@@ -6,8 +6,9 @@ from .model import QwenModel, TransportError
 
 
 class KeepAlive:
-    def __init__(self, output_directory):
+    def __init__(self, output_directory, *, model_factory=None):
         self.output_directory = output_directory
+        self.model_factory = model_factory or (lambda: QwenModel(timeout=60))
         self.stop_event = threading.Event()
         self.thread = threading.Thread(target=self.run, daemon=True)
 
@@ -30,7 +31,7 @@ class KeepAlive:
             sequence_number += 1
             completion_started = False
             try:
-                model = QwenModel(timeout=60)
+                model = self.model_factory()
                 model.check_endpoint()
                 prepared = model.prepare_generation([{"role": "user", "content": "ping"}], 1)
                 completion_started = True

@@ -1397,3 +1397,39 @@ require source/input hashes and immutable replay. Worker one-shot and detached;
 metadata-only wait for expected endpoint if unavailable. Independent recovery
 review and tests must pass before completion calls. No new method/benchmark,
 generation quota change,automatic semantic repair or default promotion.
+
+## 2026-11-08 — user-operated local preset console
+
+User requests persistent run/config history and interactive settings,with future
+experiments launched by the user from presets. Use existing self-hosted Prefect
+3.9.2rather than a new UI/server. Prefect dependencies live in a separate venv;
+benchmark subprocesses retain final/.venv. Current approved batch28517continues
+in its previously frozen runtime and is not adopted/restarted by the console.
+
+Register full resolved parameters for each deployment:full paired batch,
+known10paired batch,3task smoke,and historical per-PUT shared20allocation.
+Parameters explicitly include seeds/token/context/input budgets,tasksubset,
+arms,model and scorer. Input unit is per TASK per ARM;per-PUT mode divides it.
+No LLM/native calls from preset creation,history import or preview_only=True.
+User pressing Run with preview_only=False authorizes the selected bounded run;
+agents prepare/review presets and do not auto-launch new model experiments.
+
+Each real run freezes its resolved config,cohort/code/data and sampling into a
+new directory before generation. Endpoint/APIkey stay in private600profiles
+outside repo and outside Prefect parameters. Batch arms share a single packet,
+parser/builder and tokenization fit,alternate arm order;only guidance differs.
+Existing reference/scorer/cache/method implementations are reused. Full2repeat
+and conditional confirmation are explicit separate scorer choices. Native jobs
+share the existing flock;one console flow at a time and external-writer checks.
+Stop/resume preserves calls,unknown history and attempt caps in a new output;
+never reset marker/ledger. Path-only reference/identity metadata may be rebuilt
+with original bytes preserved in receipts. All actual runs require input freeze,
+source hashes and immutable replay. Completed reporting separates error/timeout
+from stable returned-value mismatch through the existing paired analyzer.
+
+Historical outputs indexed read-only as imported records/artifacts;no hidden
+replay,generation or inference. Self-hosted localSQLite/UI127.0.0.1:4200only.
+Independent reviewer prefect_console_review PASS after fixes to private-profile
+uniqueness,full preset defaults,observer join,cancelled/stale resume,and service
+port identity.444benchmark/development/unit tests PASS before listener enable.
+Browser/API smoke uses preview_only=True and must produce0model/nativecalls.

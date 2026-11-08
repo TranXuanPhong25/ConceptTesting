@@ -2,6 +2,11 @@
 
 Code nằm trong `src/`, dataset và metadata trong `data/`.
 
+Local run console: `./final/run_console.sh start`, mở
+<http://127.0.0.1:4200/deployments> để chọn preset, chỉnh settings và tự bấm Run.
+Prefect chạy trong venv riêng; đăng ký preset không tự gọi LLM.
+[Hướng dẫn presets/history/resume](src/orchestration/README.md).
+
 [Slides HTML: cách chạy full pipeline và luồng code từng stage/module](slides/pipeline.html).
 
 ```text
