@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 2026-11-08 — resume full matched batch evaluation after blocked C call
+
+- Giữ nguyên314responses, frozen inputs/settings và confirm-first-failures scorer;
+  tiếp tục từ60task checkpoints trong output mới,0model/tokenizercalls.
+- Thêm active-user-call marker để outer wall guard chỉ ghi single-input timeout
+  khi C call không dispatch SIGALRM;startup hang vẫn là infrastructure error.
+- Copy frozen runtime với đúng2file executor/worker được sửa;giữ nguồn cũ,ghi
+  before/after hashes,checkpoint receipts và yêu cầu immutable replay.
+- Dùng native lock cũ;report tiếng Việt phân biệt detection và wrong-value witness.
+
 ## 2026-11-08 — Prefect local preset console
 
 - Use Prefect3.9.2for editable run forms,presets,scheduling,history and artifacts;

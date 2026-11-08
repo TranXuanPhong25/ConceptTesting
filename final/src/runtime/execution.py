@@ -24,6 +24,8 @@ def execute(job: dict) -> dict:
     python = Path(sys.executable).resolve()
     with tempfile.TemporaryDirectory(prefix="final-eval-") as temp:
         directory = Path(temp)
+        progress = directory / "progress"
+        progress.mkdir()
         for name in ("worker.py", "contracts.py"):
             shutil.copyfile(HERE / name, directory / name)
         (directory / "job.json").write_text(json.dumps(job))
@@ -38,6 +40,7 @@ def execute(job: dict) -> dict:
             command += ["--ro-bind", prefix, prefix]
         command += ['--ro-bind', sysconfig.get_paths()['purelib'], '/deps']
         command += ["--proc", "/proc", "--dev", "/dev", "--tmpfs", "/tmp",
+                    "--bind", str(progress), "/execution-progress",
                     "--ro-bind", temp, "/work", "--chdir", "/work",
                     str(python), "-S", "-B", "-P", "-c",
                         "import sys,runpy;sys.path[:0]=['/work','/deps'];"
@@ -46,6 +49,7 @@ def execute(job: dict) -> dict:
         # No site packages or implicit cwd on sys.path. Unlike -I, this honors
         # the single Python environment setting we provide: PYTHONHASHSEED.
         env = {"PATH": os.defpath, "LANG": "C.UTF-8", "HOME": "/tmp", "PYTHONHASHSEED": "0",
+               "FINAL_EXECUTION_PROGRESS": "/execution-progress/active.json",
                'OPENBLAS_NUM_THREADS': '1', 'OMP_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1'}
         wall = 10 + job["timeout"] * max(1, len(job.get("tests", [])))
         with (directory / "stdout").open("wb") as stdout, (directory / "stderr").open("wb") as stderr:
@@ -55,6 +59,17 @@ def execute(job: dict) -> dict:
             except subprocess.TimeoutExpired:
                 os.killpg(proc.pid, signal.SIGKILL)
                 proc.wait()
+                # A C-level call can delay Python's SIGALRM handler indefinitely.
+                # Attribute a hard timeout only after the worker entered this
+                # single input's user call, never during sandbox startup/import.
+                try:
+                    active = json.loads((progress / "active.json").read_text())
+                except (OSError, ValueError):
+                    active = None
+                if (job.get("mode") in ("oracle", "evaluate")
+                        and len(job.get("tests", [])) == 1
+                        and active == {"mode": job["mode"], "input_index": 0}):
+                    return {"tests": [{"status": "timeout", "timeout_source": "sandbox_wall_guard"}]}
                 raise ExecutionError("Sandbox exceeded overall wall timeout") from None
         if proc.returncode != 0:
             raise ExecutionError(f"Sandbox infrastructure exited {proc.returncode}")

@@ -100,3 +100,40 @@ def test_infinite_program_is_a_timeout():
     result = execute(dict(mode='base', source='def f():\n    while True: pass', entry='f',
                           base='def check(candidate): candidate()', timeout=0.1))
     assert result['status'] == 'timeout'
+
+
+def test_c_level_input_timeout_does_not_abort_evaluation():
+    # reduce(operator.add) does not dispatch Python's pending SIGALRM handler.
+    result = execute(dict(mode='evaluate', context='def f(n):\n    pass\n',
+        source='from functools import reduce\nfrom operator import add\ndef f(n): return reduce(add, range(n), 0)',
+        entry='f', tests=[dict(args='(1000000000000,)', kwargs='{}', expected='0')], timeout=0.1))
+    assert result == {'tests': [{'status': 'timeout', 'timeout_source': 'sandbox_wall_guard'}]}
+
+
+def test_sandbox_startup_hang_is_not_counted_as_a_put_timeout(monkeypatch):
+    import subprocess
+    from final.src.runtime import execution
+
+    class StuckSandbox:
+        pid = 999999
+
+        def __init__(self, *args, **kwargs):
+            self.killed = False
+
+        def wait(self, timeout=None):
+            if timeout is not None:
+                raise subprocess.TimeoutExpired('engineering fixture', timeout)
+            return -9
+
+    monkeypatch.setattr(execution.subprocess, 'Popen', StuckSandbox)
+    monkeypatch.setattr(execution.os, 'killpg', lambda *args: None)
+    with pytest.raises(execution.ExecutionError, match='overall wall timeout'):
+        execute(dict(mode='evaluate', source='def f(): return 1', entry='f',
+                     tests=[dict(args='()', kwargs='{}', expected='1')], timeout=0.1))
+
+
+def test_missing_user_dependency_remains_an_error():
+    result = execute(dict(mode='evaluate', context='def f(n):\n    pass\n',
+        source='import missing_engineering_fixture_module\ndef f(n): return n', entry='f',
+        tests=[dict(args='(1,)', kwargs='{}', expected='1')], timeout=1))
+    assert result == {'tests': [{'status': 'error', 'exception': 'ModuleNotFoundError'}]}

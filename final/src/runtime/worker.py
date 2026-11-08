@@ -8,6 +8,7 @@ import copy
 import inspect
 import json
 import math
+import os
 import random
 import resource
 import signal
@@ -15,6 +16,14 @@ import sys
 import time
 
 from contracts import SAFE_BUILTINS, validate_test
+
+
+def execution_progress(mode=None, input_index=None):
+    """Tell the parent whether a user call is active if SIGALRM cannot fire."""
+    path = os.environ.get("FINAL_EXECUTION_PROGRESS")
+    if path is not None:
+        with open(path, "w") as handle:
+            json.dump({"mode": mode, "input_index": input_index} if mode else {}, handle)
 
 
 class Deadline(BaseException):
@@ -133,7 +142,7 @@ def domain_function(job):
 
 def oracle(job):
     results = []
-    for record in job['tests']:
+    for input_index, record in enumerate(job['tests']):
         try:
             with deadline(job['timeout']):
                 args, kwargs = validate_input(record)
@@ -151,6 +160,7 @@ def oracle(job):
                 random.seed(job.get('seed',0))
                 fn = load(job['source'],job['entry'])[job['entry']]
                 started = time.monotonic()
+                execution_progress(job['mode'], input_index)
                 value = fn(*copy.deepcopy(args),**copy.deepcopy(kwargs))
                 duration = time.monotonic()-started
                 literal = repr(value)
@@ -162,6 +172,8 @@ def oracle(job):
             results.append(dict(status='timeout'))
         except BaseException as exc:
             results.append(dict(status='error',exception=type(exc).__name__))
+        finally:
+            execution_progress()
     return dict(tests=results)
 
 
@@ -192,13 +204,14 @@ def equivalent(job, args, kwargs, actual, expected):
 
 def evaluate(job):
     results=[]
-    for record in job['tests']:
+    for input_index, record in enumerate(job['tests']):
         try:
             with deadline(job['timeout']):
                 random.seed(job.get('seed',0))
                 args,kwargs=validate_input(record)
                 expected=ast.literal_eval(record['expected'])
                 ns=load(job['source'],job['entry'],job.get('context',''))
+                execution_progress(job['mode'], input_index)
                 actual=ns[job['entry']](*copy.deepcopy(args),**copy.deepcopy(kwargs))
                 matched=equivalent(job,args,kwargs,actual,expected)
                 results.append(dict(status='pass' if matched else 'fail',actual=repr(actual)[:2000]))
@@ -206,6 +219,8 @@ def evaluate(job):
             results.append(dict(status='timeout'))
         except BaseException as exc:
             results.append(dict(status='error',exception=type(exc).__name__))
+        finally:
+            execution_progress()
     return dict(tests=results)
 
 

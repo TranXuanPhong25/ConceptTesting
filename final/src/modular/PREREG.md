@@ -1433,3 +1433,32 @@ Independent reviewer prefect_console_review PASS after fixes to private-profile
 uniqueness,full preset defaults,observer join,cancelled/stale resume,and service
 port identity.444benchmark/development/unit tests PASS before listener enable.
 Browser/API smoke uses preview_only=True and must produce0model/nativecalls.
+
+## 2026-11-08 — infrastructure amendment: resume matched batch evaluation
+
+User explicitly authorizes fixing the stopped Direct/Soft batch and continuing.
+Source:bva_batch_matched164_resume_20261108_104541;314receivedresponses covering
+157eligible tasks/two arms,164frozen input batches,60finished evaluation tasks.
+Task60PUT7 uses reduce(operator.add,range(1,n+1),0),with n2147483647 in Direct.
+A pending Python SIGALRM cannot interrupt that C call;outer wall guard aborted
+the whole evaluator. This is an execution recovery,not a new generation trial.
+
+Before resuming,add a worker marker around actual oracle/PUT calls. Only a
+single-input oracle/evaluate job whose marker is active at the outer wall
+deadline may return timeout(sandbox_wall_guard). Startup/import without active
+user call,invalid marker and multi-input jobs still raise infrastructure error.
+Keep timeout3s,existing outer10+timeout wall allowance,reference/comparator,
+confirm-first-failures policy,both arm inputs/visibility/settings/seeds unchanged.
+No fresh model/tokenizer calls. Runtime patch changes only execution.py/worker.py
+in a new copy of the frozen runtime;old source/output remain immutable.
+
+Reuse completed native checkpoint bytes,record every copy;rebuild only path-based
+reference provenance in the new runtime. Existing execution-cache identity
+includes both patched files,so new executions cannot accidentally hit old-runtime
+cache entries. New run uses original shared native lock. Native NumPy pass/fail
+smoke,regression for blocked C call versus startup hang,ledger/source hash checks
+and immutable replay required. Do not use partial counts as final comparison.
+Final Vietnamese report includes shared/direct-only/soft-only PUTs,valid inputs,
+task totals,wrong-value witnesses separately from timeout/error,total received
+responses/known tokens/unknown historical attempt,and0newmodelcalls.
+Publish one Prefect record for the new output;old stopped rows stay suppressed.
