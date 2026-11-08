@@ -1282,3 +1282,118 @@ fcounts its recorded confirmed failing inputs. No new execution or selected
 prefixes;zero-k tasks contribute0. This analytical conditional mean is not the
 primary result,a new trial or a statistical superiority claim. Primary remains
 observed shared/BVA-only/naive-only on full1454and historical common1437targets.
+
+## 2026-11-08 — packaging diagnostic and matched batch Direct/Soft BVA
+
+User explicitly authorizes both steps and requests LLM calls after40minutes.
+Request timestamp2026-11-07T18:37:40Z;not-before2026-11-07T19:17:40Z
+(2026-11-08 02:17:40Asia/Ho_Chi_Minh). No endpoint/tokenizer/completion/keepalive
+before the deadline. Prepare/review/tests and CPU-only repair audit may run now.
+This follows the prior prompt-style diagnostic(first10soft7/direct6) and full
+retrospective comparison(BVA61/naive44). All30BVA-onlyhave0naive novel inputs;
+this diagnostic tests packaging losses,not an untouched held-out efficacy claim.
+
+Step1: authenticate every original raw plain response against the pre-existing
+export source snapshot,plus all admitted batches against their original freeze.
+Apply fixed rules to all164tasks,not a list selected by detections. Only parse
+complete JSON responses using the existing parse_json fence handling;do not
+recover truncated/invalid JSON,execute expressions,change values or generate new
+records. Keep at most the original20raw slots. A repaired view has one encoding
+per raw slot. Existing viable admitted bindings are retained byte-for-byte;
+unchanged source and receipts preserve every original admitted/raw record.
+
+Wrap a single literal as the sole required positional argument only if static
+annotation or unconditional contract type/iteration proves it compatible and
+the old binding is absent or incompatible. Literal-only decoding;empty kwargs;
+no defaults,keyword-only,multiple parameters or unproven type repairs. Bare list
+args can be ambiguous;preserve a compatible existing binding. Infer iterable
+requirement only from unconditional contract iteration/first generator in a
+top-level assert all;ignore short circuits/conditionals/rebinding. No oracle or
+PUT result is used to select/authorize repairs. Unsupported cases stay rejected.
+Record raw index,old/new literals,old admitted record and static proof. Preserve
+the original baseline and sealed44run. New repaired export/freeze/receipts and
+evaluation live in a fresh directory. Same1454targets,original frozen full2repeat
+scorer/reference/3stimeout/cache as the completed61/44comparison. Compare repaired
+naive to original44 and BVA61 with exact task-local identities,including old30.
+This is a packaging sensitivity diagnostic,not a fresh matched generator trial.
+
+Step2: two new arms direct and soft_bva,one batch completion per eligible task
+per arm(max314logical calls). Same frozen cohort157eligible/1454base-passPUTs,
+same common spec/contract/base/code packet,named-arguments-v1schema,CallBuilder,
+shared InputGenerationMethod parser,20inputs/task,2048output tokens,8192context,
+temperature0.7,seed314159+task. Direct appends empty guidance;Soft appends the
+existing GUIDANCE verbatim. No other arm-specific prompt/schema/mechanics changes.
+All generated inputs run against every base-pass PUT of their task,including
+PUTs removed from writer visibility for context size. Pre-tokenize BOTH prompts,
+select one common visible list fitting the larger prompt+completion+128reserve,
+and freeze the complete request/visibility plan before any completion. If neither
+can fit one PUT,record empty inputs for both but retain targets in evaluation.
+Task eligibility skips remain unchanged. Arm order alternates by task parity.
+No generation retry after received invalid/schema/truncated responses;existing
+bounded transport retries(max3) are retained and unknown attempts disclosed.
+
+Freeze every batch before reference/native execution. Both fresh arms use the
+same current confirm-first-failures-v1scorer,corrected reference repeated twice,
+seed271828+task,3stimeout and cache. This differs from the original full2repeat
+runtime retained for Step1;do not interpret fresh versus historical totals as a
+prompt-only effect. Primary comparisons are WITHIN the fresh paired run,using
+all eligible tasks,including empty/invalid generations. Report exact shared/
+direct-only/soft-only PUTs,per-task paired counts,stable wrong values separately
+from exceptions/timeouts,input validity/coverage,actual writer tokens/calls and
+transport/keepalive costs. No post-outcome prompt tuning or task selection.
+
+Independent read-only reviewer before outcomes:batch_fairness_review. Must-fixes
+incorporated before launch:conservative ambiguity proof,one raw slot/record,
+corrected receipt hashes/unchanged flags,shared context trimming,parity order,
+review/test+deadline gates,isolated readonly runtime,observer cost accounting and
+native serialization. Repair and fresh native scorers acquire the same flock;
+remote Step2 generation may start at deadline during Step1CPUscoring,then waits
+for the lock. No KeepAlive before deadline. Endpoint metadata-only polls after
+deadline for up to6h if expected Qwen27/context8192not available;no substitution.
+Detached one-shot worker,never reset markers/unknown ledgers. Replay and frozen
+source/data/input checks required. User did not request commit/default promotion.
+
+Prelaunch review receipt2026-11-07T18:54Z:independent batch_fairness_review PASS,
+including packaging-specific(not unchanged-input) reporting and waitable metadata
+states ExpectedModelMissing/ContextTooSmall.422tests passed before CPU launch;
+31targeted offline tests passed after final reporting/scheduler changes. Repair
+evaluation is detached;fresh batch worker has not called model and is scheduled
+only after this final review. Source/test hashes recorded in readiness receipt.
+
+## 2026-11-08 — resume matched batch after endpoint tokenizer404
+
+User supplies the endpoint again and explicitly requests continuation. Stopped
+source bva_batch_matched164_20261108_021740 has226received responses/113perarm,
+314frozen requests and88missing logical responses. One archived unknown attempt
+for115/soft_bva remains attempt1under the original max3transport policy. No global
+input freeze or native scoring was reached. Private local configuration pointed
+to a different endpoint;updated outside repo to the supplied endpoint,expected
+Qwen27/context8192and tokenizer13verified,0newcompletions before recovery review.
+
+Continue into a fresh output,never reset old one-shot markers or old attempt
+ledgers. Validate old runtime/request_plan/visibility hashes and every received
+request/attempt identity. Capture current response byte hashes as recovery
+receipts;do not claim an earlier response freeze that did not exist. Copy all
+received calls,unknown history,complete batches and keepalive receipts. Re-decode
+saved batches using cached calls only before model initialization. Leave the
+original source directory byte-for-byte unchanged and require final hash match.
+
+Restore the exact frozen runtime/data/cohort,adding only an isolated recovery
+controller. Reuse original generate/evaluate/paired_verdicts and the saved request
+plan;do not call prepare_packets or reselect visibility. Imported received calls
+are read from cache,including a received arm of a partial task. Only88missing
+logical responses remain eligible for new inference. Preserve request-level
+attempt counts/max3,unknown transport histories,sampling,20input/task budget,
+named argument schema/parser,arm order,reference,3stimeout and original paired
+confirm-first-failures scorer. Generation epochs differ after service recovery;
+disclose without replacing inputs or tuning prompts.
+
+Keepalive receipts and writer tokens include imports exactly once;report new
+continuation usage separately. Mutable unreceived current checkpoint files are
+not frozen before transport recovery;their original versions remain in source
+and receipts. Archived unknowns and received responses stay immutable. Freeze all
+task inputs before native scoring,serialize native phase with the original lock,
+require source/input hashes and immutable replay. Worker one-shot and detached;
+metadata-only wait for expected endpoint if unavailable. Independent recovery
+review and tests must pass before completion calls. No new method/benchmark,
+generation quota change,automatic semantic repair or default promotion.

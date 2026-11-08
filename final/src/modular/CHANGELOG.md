@@ -1,5 +1,30 @@
 # CHANGELOG
 
+## 2026-11-08 — continue paired batch without repeating saved responses
+
+- Add isolated recovery for the stopped matched batch: retain226received calls,
+  frozen314request plan/visibility and unknown transport history;only88responses
+  remain to generate. Preserve request attempt caps and original run bytes.
+- Re-decode imported batches with cached responses,then reuse the exact frozen
+  generator/scorer. Keep cumulative imports once and separate continuation costs.
+- Preserve one-shot launch,source guards,native lock,input freeze and replay.
+
+## 2026-11-08 — packaging audit and scheduled matched batch comparison
+
+- Audit all historical plain responses with static signature/contract evidence.
+  Repair only provably invalid argument wrapping, preserving literal values and
+  one encoding per original raw slot; authenticate sources and save old/new proofs.
+- Add opt-in Direct/Soft BVA batch arms sharing the same prompt packet, schema,
+  parser, CallBuilder, sampling and 20-input budget. Only guidance differs.
+- Pre-tokenize both arms and freeze joint visibility/requests before generation.
+  Alternate arm order, retain empty outputs, record exact PUT overlap/witnesses.
+- Schedule one-shot detached generation at the requested 40-minute deadline.
+  Frozen runtime, review/test gates, metadata-only endpoint waiting and a shared
+  native lock prevent early inference and concurrent timeout-sensitive scoring.
+- Validation: 422 checks passed before CPU audit launch; 31 targeted offline
+  checks passed after final reporting/scheduler changes. Independent review PASS.
+  Existing production per-PUT BVA default and historical runs are preserved.
+
 ## 2026-11-08 — reuse cached naive inputs for the full BVA comparison
 
 - Export the original admitted `plain` records with receipts for their source
