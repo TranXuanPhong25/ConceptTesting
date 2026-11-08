@@ -72,3 +72,31 @@ def test_keepalive_counts_actual_observer_receipts(tmp_path):
     runner.save(tmp_path / 'keepalive/1.json', {'state': 'unknown'})
     runner.save(tmp_path / 'keepalive/2.json', {'state': 'not_sent'})
     assert runner.keepalive_usage(tmp_path) == {'records': 3, 'received': 1, 'unknown': 1, 'not_sent': 1, 'known_total_tokens': 9}
+
+
+def test_response_json_falls_back_to_python_literal_only_after_strict_json_fails():
+    from final.src.modular.response_json import load_response_json
+    decoded, repairs = load_response_json('{"inputs":[{"arguments":{"lst":[True, False, None, 1]},"g":null}]}')
+    assert decoded["inputs"][0]["arguments"]["lst"] == [True, False, None, 1]
+    assert decoded["inputs"][0]["g"] is None and repairs == ["python_literal_fallback"]
+    decoded, _ = load_response_json('{"inputs":[{"arguments":{"txt":"!!!", "v":[1, (2, 3)], "s":"\\x00"},},]}')
+    assert decoded["inputs"][0]["arguments"] == {"txt": "!!!", "v": [1, (2, 3)], "s": "\x00"}
+    assert load_response_json('```json\n{"inputs":[true]}\n```') == ({"inputs": [True]}, [])
+    for broken in ('{"inputs":[{"a":"unterminated', '{"inputs":[__import__("os")]}', '{"inputs":[1+2]}'):
+        with pytest.raises(ValueError):
+            load_response_json(broken)
+
+
+def test_batch_arm_keeps_inputs_when_model_writes_python_booleans():
+    from final.src.core_model import ModelResponse
+    task = {'task_id': 'HumanEval/151', 'prompt': 'def double_the_difference(lst):\n    pass\n',
+            'entry_point': 'double_the_difference', 'test': ''}
+    class Calls:
+        def complete(self, *arguments, **options):
+            return ModelResponse('{"inputs":[{"arguments":{"lst":[True, False, 1, 2, 3]},"guidance_id":null},'
+                                 '{"arguments":{"lst":[]},"guidance_id":null}]}', finish_reason='stop')
+    context = SimpleNamespace(task=task, task_number=151, packet={'common': 'x'}, calls=Calls(),
+                              settings=PipelineSettings())
+    result = DirectBatchArm().run(context)
+    assert [row['args'] for row in result['inputs']] == ['([True, False, 1, 2, 3],)', '([],)']
+    assert result['rejected'] == [] and result['response_repairs'] == ['python_literal_fallback']

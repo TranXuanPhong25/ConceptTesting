@@ -6,6 +6,7 @@ from pathlib import Path
 from prefect import serve
 from .config import ROOT,normalize
 from .flows import benchmark,resume_saved_batch
+from .names import RESUME_PRESET_NAME
 
 
 def source_revision():
@@ -28,7 +29,7 @@ def main():
     deployments=[benchmark.to_deployment(name=preset['name'],parameters={**normalize(preset['parameters']),'preview_only':False},
         description=preset['description'],tags=['ConceptTester','preset',preset['parameters']['mode']],
         version=version,concurrency_limit=1,enforce_parameter_schema=True) for preset in presets]
-    deployments.append(resume_saved_batch.to_deployment(name='resume-saved-run',
+    deployments.append(resume_saved_batch.to_deployment(name=RESUME_PRESET_NAME,
         description='Resume run Console hoặc matched-batch đã dừng. Giữ nguyên responses/config/retry budget. Dùng deployment này thay cho Retry một flow ID cũ.',
         tags=['ConceptTester','resume'],version=version,concurrency_limit=1,enforce_parameter_schema=True))
     serve(*deployments,limit=1,pause_on_shutdown=False)

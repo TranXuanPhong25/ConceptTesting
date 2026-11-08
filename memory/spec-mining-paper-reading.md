@@ -10,6 +10,17 @@ concrete inputs that satisfy them. Static CFG/dataflow extraction, semantic spec
 mining, base-test gap verification and solver/input construction are separate
 steps; do not conflate their evidence or claim all are solved by one library.
 
+2026-11-06 follow-up: user asks how to fix BVA semantic grounding. Re-read local
+methods against protocol5/6trace; read public Jdoctor/nl2spec/VeriSpecGen PDFs and
+ISLa docs plus holistic-spec evaluation. Notes in separate final/spec-minign/
+folders; synthesis in final/review/boundary_semantic_grounding_research_2026-11-06.md.
+Key protocol limit: VeriSpecGen uses black-box reference/oracle labels during
+refinement, whereas current generator sees reference only after input freeze.
+Recommendation is scoped quantity/scope/polarity evidence and executable context
+obligations, checked against v7/v10/v47/v57/v66/v68/v69/v33 history; not a new
+untried spec→predicate→solver claim. No implementation/reproduction/model task
+calls/benchmark; one user-requested1token endpoint ping received separately.
+
 Read all3PDFs user added under `final/spec-minign/`. Individual paper folders and
 cross-paper synthesis are in that folder; original PDFs unchanged. No paper
 simulation/reimplementation, model call, benchmark change or commit authorized

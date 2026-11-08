@@ -158,3 +158,24 @@ def test_managed_adapter_freezes_and_replays_with_offline_empty_writer(prepared,
     assert result['read_only_replay_matches'] is True
     assert all(row['valid_inputs']==row['detected']==0 for row in result['arms'].values())
     assert (prepared/'generation_frozen.json').exists()
+
+
+def test_task_error_log_reads_saved_records(tmp_path):
+    import json
+    from final.src.orchestration.task_log import task_error_rows
+    task = tmp_path / 'tasks' / '7'
+    (task / 'evaluation').mkdir(parents=True)
+    (task / 'calls' / 'direct').mkdir(parents=True)
+    (task / 'calls' / 'direct' / 'response.json').write_text(json.dumps({'text': '{', 'finish_reason': 'length'}))
+    (task / 'inputs.json').write_text(json.dumps({'task_id': 'HumanEval/7', 'arms': {
+        'direct': {'inputs': [], 'rejected': [{'reason': 'invalid_response'}]}}}))
+    (task / 'oracle_valid.json').write_text(json.dumps({'tests': [], 'rejected': [
+        {'index': 0, 'reason': 'domain_or_reference_rejects', 'outcomes': [{'status': 'timeout'}, {'status': 'timeout'}]}]}))
+    (task / 'result.json').write_text(json.dumps({'arms': {'direct': {'detected': 1}}, 'outcomes': {
+        '3': {'failing': [0], 'unstable': [], 'retested': [0]}}}))
+    (task / 'evaluation' / '3_0.json').write_text(json.dumps({'tests': [{'status': 'error', 'exception': 'RecursionError'}]}))
+    row = task_error_rows(tmp_path)[0]
+    assert row['task'] == 'HumanEval/7'
+    assert 'rejected invalid_response×1' in row['generation'] and 'truncated' in row['generation']
+    assert row['reference_rejected'] == 'domain_or_reference_rejects(timeout)×1'
+    assert row['put_confirmed_failures'] == 'error:RecursionError×1'

@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import ast
-import json
 from abc import ABC, abstractmethod
 
 from ..context import TaskContext, JsonObject
 from ..call_builder import CallBuilder
+from ..response_json import load_response_json
 
 
 class InputGenerationMethod(ABC):
@@ -54,9 +54,10 @@ class InputGenerationMethod(ABC):
             seed=settings.input_seed + context.task_number,
         )
         rejected_records = []
+        response_repairs = []
         try:
-            response_text = response.text.strip().removeprefix("```json").removesuffix("```").strip()
-            input_records = json.loads(response_text)["inputs"]
+            decoded_response, response_repairs = load_response_json(response.text)
+            input_records = decoded_response["inputs"]
             if not isinstance(input_records, list):
                 raise ValueError("inputs must be a list")
         except (KeyError, TypeError, ValueError):
@@ -78,7 +79,10 @@ class InputGenerationMethod(ABC):
                 if isinstance(input_record, dict) and "arguments" in input_record and type(error) is ValueError:
                     reason = str(error)
                 rejected_records.append({"index": record_index, "reason": reason})
-        return {"inputs": accepted_records, "rejected": rejected_records, "finish_reason": response.finish_reason}
+        result = {"inputs": accepted_records, "rejected": rejected_records, "finish_reason": response.finish_reason}
+        if response_repairs:
+            result["response_repairs"] = response_repairs
+        return result
 
     @staticmethod
     def parse_input(input_record: JsonObject) -> JsonObject:

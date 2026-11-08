@@ -13,8 +13,11 @@ from pydantic import Field
 from prefect import flow,get_run_logger
 from prefect.artifacts import create_markdown_artifact,create_table_artifact
 from prefect.context import get_run_context
+from prefect.client.orchestration import get_client
 
 from .config import ROOT,normalize,preview
+from .names import benchmark_run_name,historical_run_name
+from .task_log import task_error_rows
 
 BENCHMARK_PYTHON=ROOT/'final/.venv/bin/python'
 OUT=ROOT/'final/out'
@@ -81,12 +84,21 @@ async def watch_worker(arguments,directory,env):
         task.cancel()
         try:await task
         except BaseException:pass
+        # Keep the per-task error log visible for stopped or failed runs too.
+        try:
+            error_rows=task_error_rows(directory)
+            if error_rows:await create_table_artifact(table=error_rows,key='task-error-log',
+                description='Log lỗi theo task của run bị dừng/lỗi, từ record đã lưu')
+        except Exception:pass
         raise
 
 
 async def attach_outputs(directory):
     snapshot=json.loads((directory/'config_snapshot.json').read_text()) if (directory/'config_snapshot.json').exists() else {}
     await create_markdown_artifact(markdown='### Config snapshot\n\n```json\n'+json.dumps(snapshot,ensure_ascii=False,indent=2)+'\n```\n\nArtifacts: `'+str(directory)+'`',key='config-snapshot')
+    error_rows=task_error_rows(directory)
+    if error_rows:await create_table_artifact(table=error_rows,key='task-error-log',
+        description='Log lỗi theo task từ record đã lưu: generation, reference rejection, PUT failure')
     summary_path=directory/'result_digest.json'
     if summary_path.exists():
         result=json.loads(summary_path.read_text())
@@ -138,6 +150,8 @@ async def benchmark(
     parameters=locals().copy();parameters.pop('preview_only')
     config=normalize(parameters);description=preview(config)
     run_id=str(get_run_context().flow_run.id)
+    async with get_client() as client:
+        await client.update_flow_run(get_run_context().flow_run.id,name=benchmark_run_name(config,preview_only))
     directory=OUT/('console_'+run_id)
     directory.mkdir(parents=True,exist_ok=False)
     (directory/'submitted_config.json').write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n')
@@ -174,6 +188,8 @@ async def resume_saved_batch(source_directory:str):
     if not source.is_relative_to(OUT) or not ((source/'request_plan.json').exists() or (source/'config_snapshot.json').exists()):
         raise ValueError('Select a saved console/matched-batch run directory under final/out')
     if active_external_writers():raise ValueError('An existing model writer is still active; wait before resuming')
+    async with get_client() as client:
+        await client.update_flow_run(get_run_context().flow_run.id,name='Resume · '+historical_run_name(source))
     directory=OUT/('console_resume_'+str(get_run_context().flow_run.id))
     managed=(source/'config_snapshot.json').exists() and not (source/'request_plan.json').exists()
     module='final.src.orchestration.worker' if managed else 'final.src.audits.resume_bva_batch'

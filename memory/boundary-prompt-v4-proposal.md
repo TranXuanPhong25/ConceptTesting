@@ -87,3 +87,6 @@ v5selection/context bytes and schema5; compact instructions archived for review.
 Default remains diagnostic evidence, not globally best. Grounding trials follow
 as separately recorded experimental work; preserve prior outputs and other
 sessions' uncommitted files.
+
+Restoration completed:234tests pass, commit13d92ee9pushed to main. Subsequent
+opt-in trial/status in [[bva-checked-grounding]]; does not replace defaultv5.

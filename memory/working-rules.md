@@ -7,15 +7,46 @@ metadata:
 
 Consolidated from many sessions (Claude, through 2026-10-14). Details and reasons in the linked memories.
 
+**Quyền chạy (user nhắc lại2026-11-08):** người dùng quyết định mọi lần chạy
+experiment/evaluation/inference. Mặc định chuẩn bị code/preset/config rồi để
+người dùng tự bấm Run; agent chỉ launch/schedule/resume/rerun khi có lệnh rõ ràng
+cho run đó và trong scope/budget được cấp. “Check” chỉ kiểm tra trạng thái/kết quả,
+không cấp quyền chạy thêm. Run đã được cho phép xong thì report và chờ quyết định
+tiếp theo. Rule9AGENTS.md;không tự mở rộng benchmark hoặc chain thêm experiment.
+
 **Communication:** reply in Vietnamese sentences with technical terms in English, B1–B2 level ([[reply-vocabulary]]).
 The user gets angry at English replies and at unrequested fixes ([[dont-fix-unasked]]).
+
+**Prefect/report (user2026-11-08):** publish authorized experiment/evaluation runs
+with config/progress/results/report to local Prefect; reuse flow IDs per source,
+verify artifacts and provide a direct run link. Reports/explanations in Vietnamese,
+technical terms and existing schema fields in English. Explain metric units and
+denominators; incomplete metrics remain pending. Cleanup requested by the user
+backs up metadata and preserves source outputs/checkpoints. See AGENTS.md rules7–8
+and [[run-console]].
+
+**Input/output contracts (user2026-11-08):** fix routine serialization/schema/
+adapter contract failures autonomously and rerun authorized work; do not stop
+to report these failures as the result. Preserve old artifacts and internal
+amendments, keep semantic checks and budgets intact. See
+[[repair-io-contract-autonomously]].
+
+**Flow explanations (user2026-11-07):** use visualization skills to draw a linked HTML graph when the user asks about a flow; do not output text/ASCII flow diagrams. Keep the requested module scope. See [[flow-diagrams-html]]. Explain each stage's mechanism, input/output and LLM/parser responsibilities with concrete examples; stage names or dependency edges alone are insufficient (user correction2026-11-07).
+
 
 **Git:** `AGENTS.md` rules (no AI attribution lines, push to main, no paper reimplementation without approval, keep
 vendor/ untouched, one folder per paper, keys via `scripts/*_env.sh`). In `trickcatcher_linefacts/`: commit + push your
 own files after each finding, even negative ones; elsewhere only when asked ([[commit-only-when-asked]]). Never stage
 files you did not write (other sessions leave untracked files, e.g. AUDIT_*, diagrams/, research/, pipelines/v12_outcome_audit).
 
-**Secrets / endpoint:** never print or write the ngrok URL or keys into repo files or logs. Pass the URL through a
+**Secrets / endpoint:** never print the ngrok URL or keys into logs, and never write keys into repo files.
+User exception (2026-11-08): the endpoint URL may be hardcoded only in the single
+`scripts/ping_endpoint.sh`, explicitly requested together with removing its env-file dependency.
+Do not inspect credential-bearing env files with cat/read commands that emit their
+contents into tool output; load scripts/research_env.sh and other key env files
+only by silently sourcing for authorized runs. Reviewer tasks have the same rule.
+
+Pass the endpoint through a
 heredoc (`read -r QWEN_BASE_URL <<'EOF' ... EOF`) and export `QWEN_BASE_URL`, `QWEN_MODEL=qwen2.5-coder-7b-instruct`;
 redact logs with `sed -E 's#https://[a-z0-9.-]+ngrok[a-z.-]*#<url>#g'`. Ask the user for the URL if unknown. Check
 liveness with `curl $QWEN_BASE_URL/models`. **Never edit the Kaggle notebook** (`trickcatcher_linefacts/kaggle/`).
@@ -49,7 +80,12 @@ real LLM calls. After a new variant, Claude updates the diagram artifact ([[vers
 version that tried the same core idea and its result ([[check-version-tree-before-proposing]]). Borderline result →
 look for a go/no-go signal in existing outputs; never enlarge runs to salvage it ([[signal-not-more-data]]).
 
-**Endpoint keepalive (2026-10-20):** `scripts/ping_endpoint.sh <env-file>` (URL only from env/env-file, logs status codes only) every 20 min: GET /models + 1-token chat. Keep the env file outside the repo (session scratchpad, chmod 600). Current GPU model: qwen2.5-coder-32b-instruct (AWQ, ctx 8192).
+**Endpoint keepalive (user update 2026-11-08):** use only `scripts/ping_endpoint.sh`;
+remove the duplicate `final/ping_endpoint.sh`. URL/model/interval are hardcoded in
+the script, no env file or environment variables required. Preserve the current
+600-second interval. GET /models + 1-token chat; logs contain status codes only.
+This supersedes the 2026-10-20 env-file requirement for keepalive only; other
+runtime/API credential rules remain in force.
 
 **Retrieval version names (user2026-10-29):** new retrieval/concept-gate experiments use `vr8`, `vr9`, ... rather than LineFacts `vNN`. Preserve earlier names/history; current implementation folder is `trickcatcher_linefacts/pipelines/vr8_semanticgate`.
 

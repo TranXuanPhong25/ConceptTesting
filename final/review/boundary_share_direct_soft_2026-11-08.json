@@ -1,0 +1,2527 @@
+{
+  "definition": "Share of boundary inputs among bug-revealing inputs, per arm (saved artifacts only).\n\nNo model call and no PUT execution. An input counts as a boundary input when:\n\n- natural_edge: some value is an empty container/string, a one-element container,\n  a one-character string, or the number 0, 1 or -1; or\n- reference_threshold: running the reference solution on it, some numeric\n  comparison (<, <=, >, >=, ==, !=) is evaluated with both sides equal, or with\n  both sides integers that differ by exactly 1 (at or adjacent to the threshold).\n\nThe reference is instrumented with an AST rewrite of single comparisons and run\nin a subprocess with a timeout. This is a heuristic approximation of \"boundary\";\nit does not say that the boundary caused the failure.\n",
+  "evaluation": "final/out/bva_batch_matched164_reparse_20261108_192012/evaluation",
+  "arms": [
+    "direct",
+    "soft_bva"
+  ],
+  "summary": {
+    "failing_shared": {
+      "inputs": 25,
+      "natural_edge": 13,
+      "reference_threshold": 19,
+      "boundary_either": 21,
+      "natural_edge_pct": 52.0,
+      "reference_threshold_pct": 76.0,
+      "boundary_either_pct": 84.0,
+      "threshold_unknown": 0
+    },
+    "failing_direct_only": {
+      "inputs": 52,
+      "natural_edge": 9,
+      "reference_threshold": 24,
+      "boundary_either": 25,
+      "natural_edge_pct": 17.3,
+      "reference_threshold_pct": 46.2,
+      "boundary_either_pct": 48.1,
+      "threshold_unknown": 0
+    },
+    "failing_soft_bva_only": {
+      "inputs": 57,
+      "natural_edge": 17,
+      "reference_threshold": 21,
+      "boundary_either": 25,
+      "natural_edge_pct": 29.8,
+      "reference_threshold_pct": 36.8,
+      "boundary_either_pct": 43.9,
+      "threshold_unknown": 0
+    },
+    "failing_direct_all": {
+      "inputs": 77,
+      "natural_edge": 22,
+      "reference_threshold": 43,
+      "boundary_either": 46,
+      "natural_edge_pct": 28.6,
+      "reference_threshold_pct": 55.8,
+      "boundary_either_pct": 59.7,
+      "threshold_unknown": 0
+    },
+    "failing_soft_bva_all": {
+      "inputs": 82,
+      "natural_edge": 30,
+      "reference_threshold": 40,
+      "boundary_either": 46,
+      "natural_edge_pct": 36.6,
+      "reference_threshold_pct": 48.8,
+      "boundary_either_pct": 56.1,
+      "threshold_unknown": 0
+    },
+    "all_valid_direct": {
+      "inputs": 2962,
+      "natural_edge": 1244,
+      "reference_threshold": 1394,
+      "boundary_either": 2008,
+      "natural_edge_pct": 42.0,
+      "reference_threshold_pct": 47.1,
+      "boundary_either_pct": 67.8,
+      "threshold_unknown": 0
+    },
+    "all_valid_soft_bva": {
+      "inputs": 2951,
+      "natural_edge": 1345,
+      "reference_threshold": 1420,
+      "boundary_either": 2084,
+      "natural_edge_pct": 45.6,
+      "reference_threshold_pct": 48.1,
+      "boundary_either_pct": 70.6,
+      "threshold_unknown": 0
+    },
+    "puts_direct": {
+      "detected": 78,
+      "revealed_by_some_boundary_input": 55,
+      "only_non_boundary_inputs": 23
+    },
+    "puts_soft_bva": {
+      "detected": 73,
+      "revealed_by_some_boundary_input": 62,
+      "only_non_boundary_inputs": 11
+    },
+    "failing_tasks": {
+      "HumanEval/1": 14,
+      "HumanEval/2": 3,
+      "HumanEval/6": 2,
+      "HumanEval/10": 4,
+      "HumanEval/11": 1,
+      "HumanEval/13": 2,
+      "HumanEval/15": 4,
+      "HumanEval/20": 1,
+      "HumanEval/23": 7,
+      "HumanEval/39": 1,
+      "HumanEval/40": 2,
+      "HumanEval/43": 12,
+      "HumanEval/45": 14,
+      "HumanEval/49": 1,
+      "HumanEval/60": 4,
+      "HumanEval/61": 1,
+      "HumanEval/72": 1,
+      "HumanEval/76": 9,
+      "HumanEval/91": 12,
+      "HumanEval/97": 2,
+      "HumanEval/99": 9,
+      "HumanEval/107": 2,
+      "HumanEval/124": 7,
+      "HumanEval/126": 6,
+      "HumanEval/140": 2,
+      "HumanEval/151": 3,
+      "HumanEval/157": 8
+    }
+  },
+  "rows": [
+    {
+      "task_id": "HumanEval/1",
+      "index": 1,
+      "args": "('()()()',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 5,
+      "args": "('()(())',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 6,
+      "args": "('(())()',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 7,
+      "args": "('((()))((()))',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 8,
+      "args": "('()()()()',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 10,
+      "args": "('((()))()(())',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 11,
+      "args": "('()((()))()',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 12,
+      "args": "('((())())(())',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 14,
+      "args": "('((()))((()()))',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 15,
+      "args": "('()()()()()',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 16,
+      "args": "('((()))((()))((()))',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 18,
+      "args": "('()((())())',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 19,
+      "args": "('((()))()((()))',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary nested paren string; no empty, single-group or spacing edge"
+    },
+    {
+      "task_id": "HumanEval/1",
+      "index": 24,
+      "args": "('()()',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Two minimal groups; ordinary, no empty or nesting edge"
+    },
+    {
+      "task_id": "HumanEval/2",
+      "index": 11,
+      "args": "(3.9999999,)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "6"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "just below integer 4 (3.9999999) rounding edge"
+    },
+    {
+      "task_id": "HumanEval/2",
+      "index": 21,
+      "args": "(0.999999999,)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "6"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "just below integer 1 (0.999999999) truncation edge"
+    },
+    {
+      "task_id": "HumanEval/2",
+      "index": 24,
+      "args": "(2.999999999,)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "6"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "just below integer 3 (2.999999999) truncation edge"
+    },
+    {
+      "task_id": "HumanEval/6",
+      "index": 20,
+      "args": "('( )',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "space splits a group; separator edge inside nesting"
+    },
+    {
+      "task_id": "HumanEval/6",
+      "index": 21,
+      "args": "('(( ))',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "space splits a group; separator edge inside nesting"
+    },
+    {
+      "task_id": "HumanEval/10",
+      "index": 21,
+      "args": "('abcb',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "1",
+        "6"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Longest palindromic suffix bcb is ordinary; no edge"
+    },
+    {
+      "task_id": "HumanEval/10",
+      "index": 23,
+      "args": "('aab',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "1",
+        "6"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Longest palindromic suffix is a single character (minimal edge)"
+    },
+    {
+      "task_id": "HumanEval/10",
+      "index": 24,
+      "args": "('baa',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "1",
+        "6"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary palindromic suffix aa; no edge value"
+    },
+    {
+      "task_id": "HumanEval/10",
+      "index": 26,
+      "args": "('noo',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "1",
+        "6"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary palindromic suffix oo; no edge value"
+    },
+    {
+      "task_id": "HumanEval/11",
+      "index": 0,
+      "args": "('', '')",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "1",
+        "7"
+      ],
+      "natural_edge": true,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "empty strings; empty-input edge"
+    },
+    {
+      "task_id": "HumanEval/13",
+      "index": 14,
+      "args": "(15, 25)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "2"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary positive operands; no zero or equal-value edge"
+    },
+    {
+      "task_id": "HumanEval/13",
+      "index": 15,
+      "args": "(25, 15)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "2"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Swapped ordinary operands; no zero or equal-value edge"
+    },
+    {
+      "task_id": "HumanEval/15",
+      "index": 15,
+      "args": "(1000,)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "2",
+        "5"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "spec defines no limit; large interior n"
+    },
+    {
+      "task_id": "HumanEval/15",
+      "index": 16,
+      "args": "(1001,)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "2",
+        "5"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "spec defines no limit; large interior n"
+    },
+    {
+      "task_id": "HumanEval/15",
+      "index": 17,
+      "args": "(10000,)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "2",
+        "5"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "spec defines no limit; large interior n"
+    },
+    {
+      "task_id": "HumanEval/15",
+      "index": 18,
+      "args": "(10001,)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "2",
+        "5"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "spec defines no limit; large interior n"
+    },
+    {
+      "task_id": "HumanEval/20",
+      "index": 7,
+      "args": "([3.0, 1.0, 2.0],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "2"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Tied nearest distances, but spec gives no tie rule; ambiguous"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "index": 24,
+      "args": "('世界',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary two-character unicode string; no length threshold"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "index": 25,
+      "args": "('🚀',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": true,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Single code point emoji; len behavior does not change at 1"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "index": 26,
+      "args": "('café',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary accented word; no behavior change point"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "index": 27,
+      "args": "('über',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary accented word; no behavior change point"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "index": 28,
+      "args": "('👩\\u200d❤️\\u200d👩',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Unicode ZWJ sequence; only unicode property, not a spec edge (unsure)"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "index": 29,
+      "args": "('a\\x80b',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Non-ASCII escape character inside word; no spec edge"
+    },
+    {
+      "task_id": "HumanEval/23",
+      "index": 31,
+      "args": "('�',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": true,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Single replacement character; len unchanged at length one"
+    },
+    {
+      "task_id": "HumanEval/39",
+      "index": 1,
+      "args": "(12,)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary n=12 in the sequence; no spec limit nearby"
+    },
+    {
+      "task_id": "HumanEval/40",
+      "index": 0,
+      "args": "([0, 0, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Duplicate zeros test the 'three distinct elements' requirement"
+    },
+    {
+      "task_id": "HumanEval/40",
+      "index": 5,
+      "args": "([0, 0, 0, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Duplicate zeros test the 'three distinct elements' requirement"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 0,
+      "args": "([0, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "1"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "two zeros sum to zero; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 12,
+      "args": "([1, 0, -1],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero element beside 1/-1 sign-change pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 17,
+      "args": "([-1, 0, 1],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero between -1/1 sign-change pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 18,
+      "args": "([5, -5, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero present with 5/-5 pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 20,
+      "args": "([0, 0, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "1"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "all zeros; minimal zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 21,
+      "args": "([1, -1, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero with 1/-1 sign-change pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 22,
+      "args": "([0, 1, -1],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero with 1/-1 sign-change pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 28,
+      "args": "([5, 0, -5],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero with 5/-5 pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 29,
+      "args": "([0, 5, -5],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero with 5/-5 pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 30,
+      "args": "([-10, 10, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero with -10/10 pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 31,
+      "args": "([10, -10, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero with 10/-10 pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/43",
+      "index": 32,
+      "args": "([0, 10, -10],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "zero with 10/-10 pair; zero-sum edge"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 0,
+      "args": "(1e-07, 1e-07)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Spec has no threshold; tiny but ordinary positive floats"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 1,
+      "args": "(1e-10, 1e-10)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Spec has no threshold; tiny positive floats, no behavior change point"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 2,
+      "args": "(1.5, 2.5)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary positive floats; no spec threshold involved"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 3,
+      "args": "(3.3333333333333335, 6.0)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary repeating-decimal float; no spec threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 6,
+      "args": "(100, 0.01)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary mixed-magnitude positive values; no threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 7,
+      "args": "(0.01, 100)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary mixed-magnitude positive values; no threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 8,
+      "args": "(2.0, 3.0)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary positive floats; no spec threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 9,
+      "args": "(4.0, 5.0)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary positive floats; no spec threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 10,
+      "args": "(6.0, 7.0)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary positive floats; no spec threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 11,
+      "args": "(8.0, 9.0)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary positive floats; no spec threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 12,
+      "args": "(0.1, 0.1)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary equal small floats; spec defines no equality behavior"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 16,
+      "args": "(2.5, 1.5)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary positive floats; no spec threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 20,
+      "args": "(0.001, 0.001)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary small positive floats; no spec threshold"
+    },
+    {
+      "task_id": "HumanEval/45",
+      "index": 25,
+      "args": "(0.5, 0.5)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary equal floats; spec defines no equality behavior"
+    },
+    {
+      "task_id": "HumanEval/49",
+      "index": 0,
+      "args": "(0, 1)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "n=0 exponent edge and p=1 modulus edge"
+    },
+    {
+      "task_id": "HumanEval/60",
+      "index": 0,
+      "args": "(2147483647,)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Large n; int32 max not a spec limit (Python ints unbounded)"
+    },
+    {
+      "task_id": "HumanEval/60",
+      "index": 1,
+      "args": "(1000000,)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Large ordinary n far from any spec threshold"
+    },
+    {
+      "task_id": "HumanEval/60",
+      "index": 2,
+      "args": "(999999999,)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Large ordinary n; spec defines no limit"
+    },
+    {
+      "task_id": "HumanEval/60",
+      "index": 18,
+      "args": "(1000,)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Ordinary positive n far from the n=1 threshold"
+    },
+    {
+      "task_id": "HumanEval/61",
+      "index": 0,
+      "args": "('',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "4",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Empty string edge"
+    },
+    {
+      "task_id": "HumanEval/72",
+      "index": 18,
+      "args": "([-1, -1], -2)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "4",
+        "6",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Sum equals weight exactly (-2 vs -2); tests less-or-equal"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 0,
+      "args": "(0, 2)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "x=0 zero edge for simple-power check"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 1,
+      "args": "(0, 5)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "x=0 zero edge for simple-power check"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 7,
+      "args": "(1, 0)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "n=0 base edge; x=1 equals n**0 threshold"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 8,
+      "args": "(1, -1)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "n=-1 sign edge; x=1 equals n**0"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 20,
+      "args": "(0, 0)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "x and n both zero; zero edges"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 22,
+      "args": "(1, -2)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "n=-2 negative base; x=1 equals n**0"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 23,
+      "args": "(-1, -1)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Negative x and n at -1 sign edge"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 24,
+      "args": "(-8, -2)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Negative x; sign change around zero"
+    },
+    {
+      "task_id": "HumanEval/76",
+      "index": 25,
+      "args": "(-27, -3)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Negative x; sign change around zero"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 0,
+      "args": "('I.',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "lone I directly followed by delimiter at string end"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 1,
+      "args": "('I? I!',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "I adjacent to ? and ! delimiters; two sentences"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 3,
+      "args": "(\"I'm fine.\",)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "I versus I'm: word-boundary edge for sentence start"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 4,
+      "args": "(\"I am. I'm.\",)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "4"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "I versus I' word-boundary edge at sentence start"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 6,
+      "args": "('I. I. I.',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "repeats minimal I-sentence edge; no new change point"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 21,
+      "args": "('I',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "single character I; minimal string edge"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 22,
+      "args": "('I?',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "single I with question delimiter; delimiter edge"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 23,
+      "args": "('I!',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "single I with exclamation delimiter; delimiter edge"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 27,
+      "args": "(' I',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "leading whitespace before sentence-starting I"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 28,
+      "args": "(' I.',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "leading whitespace before I plus delimiter"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 30,
+      "args": "('I. I. I. I',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "final sentence I lacks terminating delimiter"
+    },
+    {
+      "task_id": "HumanEval/91",
+      "index": 31,
+      "args": "('I. I. I. I.',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "all sentences terminated; repeats I-sentence edge"
+    },
+    {
+      "task_id": "HumanEval/97",
+      "index": 11,
+      "args": "(123456789, -987654321)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "negative operand; spec sign-handling case (14,-15)"
+    },
+    {
+      "task_id": "HumanEval/97",
+      "index": 12,
+      "args": "(-123456789, 987654321)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "negative operand; spec sign-handling case (14,-15)"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 2,
+      "args": "('0.499999999999999999999999999999',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "2"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Just below 0.5 tie point; rounding direction flips to 1"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 3,
+      "args": "('-0.499999999999999999999999999999',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "2"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Just above -0.5 tie point; rounding direction flips"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 12,
+      "args": "('3.5000000000000004',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "7",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Just above x.5 tie point; away-from-zero rounding applies"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 13,
+      "args": "('-3.5000000000000004',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "7",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Just beyond negative x.5 tie point; away-from-zero rounding"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 15,
+      "args": "('-123.456789',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Interior negative value far from any tie point"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 16,
+      "args": "('0.50000000000000001',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exactly at 0.5 tie point; rounds away from zero to 1"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 17,
+      "args": "('-0.50000000000000001',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exactly at -0.5 tie point; rounds away from zero to -1"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 18,
+      "args": "('999999999999999999999999999999.5',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "2",
+        "6",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exact x.5 tie at huge magnitude; away-from-zero rule applies"
+    },
+    {
+      "task_id": "HumanEval/99",
+      "index": 19,
+      "args": "('-999999999999999999999999999999.5',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "2",
+        "6",
+        "9"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exact negative x.5 tie at huge magnitude; away-from-zero rule"
+    },
+    {
+      "task_id": "HumanEval/107",
+      "index": 15,
+      "args": "(999,)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "2"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "n=999 adjacent below stated upper bound 10^3"
+    },
+    {
+      "task_id": "HumanEval/107",
+      "index": 16,
+      "args": "(1000,)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "2"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "n=1000 exactly at stated upper range limit 10^3"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "index": 10,
+      "args": "('01-01-20',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "2",
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "year has 2 digits, one below required 4"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "index": 11,
+      "args": "('01-01-20202',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "2",
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "year has 5 digits, one above required 4"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "index": 17,
+      "args": "('01-01-202001',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "2",
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": false,
+      "boundary_manual_reason": "6-digit year, far from format length edge; ambiguous"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "index": 18,
+      "args": "('01-01-2020 ',)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "trailing space makes length exceed exact mm-dd-yyyy"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "index": 21,
+      "args": "('02-29-1900',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Feb 29 is the maximum February day"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "index": 23,
+      "args": "('01-01-202',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "2",
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "year has 3 digits, one below required 4"
+    },
+    {
+      "task_id": "HumanEval/124",
+      "index": 24,
+      "args": "('01-01-20200',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "2",
+        "3"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "year has 5 digits, one above required 4"
+    },
+    {
+      "task_id": "HumanEval/126",
+      "index": 2,
+      "args": "([0, 0, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "5"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Value appears exactly 3 times; duplicate limit is 2 vs more"
+    },
+    {
+      "task_id": "HumanEval/126",
+      "index": 3,
+      "args": "([1, 1, 1, 2],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "5"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Value appears exactly 3 times at duplicate-count threshold"
+    },
+    {
+      "task_id": "HumanEval/126",
+      "index": 12,
+      "args": "([2, 1],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "3"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Simple descending pair; no duplicate threshold involved"
+    },
+    {
+      "task_id": "HumanEval/126",
+      "index": 22,
+      "args": "([1, 0],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "3"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": false,
+      "boundary_manual_reason": "Simple descending pair; no duplicate threshold involved"
+    },
+    {
+      "task_id": "HumanEval/126",
+      "index": 24,
+      "args": "([2, 2, 2, 3],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "5"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Value appears exactly 3 times at duplicate-count threshold"
+    },
+    {
+      "task_id": "HumanEval/126",
+      "index": 26,
+      "args": "([5, 5, 5],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "5"
+      ],
+      "natural_edge": false,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Value appears exactly 3 times at duplicate-count threshold"
+    },
+    {
+      "task_id": "HumanEval/140",
+      "index": 22,
+      "args": "('  ',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exactly two consecutive spaces; the more-than-2 threshold"
+    },
+    {
+      "task_id": "HumanEval/140",
+      "index": 23,
+      "args": "(' ',)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "7"
+      ],
+      "natural_edge": true,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Single space; minimal run length at space-handling edge"
+    },
+    {
+      "task_id": "HumanEval/151",
+      "index": 3,
+      "args": "([True, False, 1, 2, 3],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Booleans sit on integer/non-integer type edge (unsure)"
+    },
+    {
+      "task_id": "HumanEval/151",
+      "index": 4,
+      "args": "([1, True, 3, False, 5],)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Booleans sit on integer/non-integer type edge (unsure)"
+    },
+    {
+      "task_id": "HumanEval/151",
+      "index": 17,
+      "args": "([True, False, 1, 3],)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "0",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9"
+      ],
+      "natural_edge": true,
+      "reference_threshold": true,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Booleans sit on integer/non-integer type edge (unsure)"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "index": 0,
+      "args": "(0.1, 0.1, 0.1414213562373095)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "3",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "a^2+b^2 approximately equals c^2; right-angle equality point (float-near)"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "index": 2,
+      "args": "(1.0, 1.0, 1.4142135623730951)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "3",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exact right-angle equality a^2+b^2=c^2 (1+1=2)"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "index": 15,
+      "args": "(1.0, 2.0, 2.23606797749979)",
+      "kwargs": "{}",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "3",
+        "8"
+      ],
+      "natural_edge": true,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exact right-angle equality a^2+b^2=c^2 (1+4=5)"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "index": 16,
+      "args": "(2.0, 3.0, 3.605551275463989)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "3",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exact right-angle equality a^2+b^2=c^2 (4+9=13)"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "index": 17,
+      "args": "(3.0, 4.0, 5.000000000000001)",
+      "kwargs": "{}",
+      "arms": [
+        "direct"
+      ],
+      "revealed_puts": [
+        "3",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Right-angle equality with float drift (5.000000000000001)"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "index": 20,
+      "args": "(0.5, 1.2, 1.3)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "3",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exact right-angle equality a^2+b^2=c^2 (0.25+1.44=1.69)"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "index": 21,
+      "args": "(0.001, 0.002, 0.0022360679775)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "3",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Small-scale right-angle equality point, approximate float"
+    },
+    {
+      "task_id": "HumanEval/157",
+      "index": 32,
+      "args": "(5.5, 13.2, 14.3)",
+      "kwargs": "{}",
+      "arms": [
+        "soft_bva"
+      ],
+      "revealed_puts": [
+        "1",
+        "3",
+        "4",
+        "7",
+        "8"
+      ],
+      "natural_edge": false,
+      "reference_threshold": false,
+      "boundary_manual": true,
+      "boundary_manual_reason": "Exact right-angle equality a^2+b^2=c^2 (204.49)"
+    }
+  ],
+  "new_model_calls": 0,
+  "manual_labels": {
+    "labeler": "Claude Haiku subagents (3 parts), blind to arm and heuristic",
+    "definition": "spec behavior-change point at/adjacent, relational threshold, natural edges (empty/single/zero/sign/integer crossing), length/count limits"
+  }
+}

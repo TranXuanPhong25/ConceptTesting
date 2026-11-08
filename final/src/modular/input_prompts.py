@@ -29,8 +29,8 @@ def structured_input_prompt(task, programs, contract, budget):
     return f'''Generate up to {budget} small, distinct new calls to expose specification violations
 in these base-passing implementations. INPUTS ONLY: no assertions or expected outputs.
 The reference supplies outputs later. Use the specification/domain, not majority correctness.
-Do not repeat base inputs. Keep values finite and inputs small enough for the execution budget;
-resource caps are not semantic boundaries. Fewer valid calls are better than padding.
+Do not repeat base inputs. Keep floats finite, integers bounded, strings/lists modest
+(normally <=30 elements), and execution under 3 seconds. Fewer valid calls are better than padding.
 Return JSON: {{"inputs":[{{"arguments":{{"parameter_name":"a value of the correct type"}},"guidance_id":null}}]}}.
 arguments maps the EXACT function parameter names to JSON values. A list parameter needs a
 nested JSON array as its value; a string parameter needs a string value. Do not write Python

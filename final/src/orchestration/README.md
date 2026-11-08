@@ -25,11 +25,18 @@ defaults into deployment parameters, so queued runs retain their exact values.
 
 | Preset | Allocation | Maximum calls |
 |---|---|---:|
-| `full-batch-direct-soft` | 20 inputs/task/arm, one call/task/arm | 314 |
-| `known10-batch-direct-soft` | 20 inputs/selected PUT/arm | 20 |
-| `smoke3-batch-direct-soft` | Tasks 2/11/72, same full cohort | 6 |
-| `full-soft-per-put-shared20` | 20 inputs/task shared across PUTs, usually 2–3/call | 1,454 |
-| `resume-saved-run` | Continue a stopped Console/matched-batch directory | Missing slots only |
+| `Full164 · Direct vs Soft BVA · batch` | 20 inputs/task/arm, one call/task/arm | 314 |
+| `Known10 · Direct vs Soft BVA · 1 PUT mỗi task` | 20 inputs/selected PUT/arm | 20 |
+| `Smoke3 · Direct vs Soft BVA · tasks 2, 11, 72` | Tasks 2/11/72, same full cohort | 6 |
+| `Full164 · Soft BVA · per-PUT, shared 20` | 20 inputs/task shared across PUTs, usually 2–3/call | 1,454 |
+| `Resume · Tiếp tục run đã dừng` | Continue a stopped Console/matched-batch directory | Missing slots only |
+
+Tên run hiển thị scope, arm và kiểu generation; historical run hoàn tất có thêm
+số PUT detected. Source directory, JSON fields và flow-run ID giữ nguyên khi đổi
+tên. `names.py` quản lý nhãn; run preview có prefix `Preview`. Trang Runs:
+<http://127.0.0.1:4200/runs>. Prefect không hỗ trợ rename deployment qua update API
+ở version hiện tại; thay tên preset cần đăng ký deployment mới và gỡ bản tên cũ
+sau khi kiểm tra parameters/schedules và không có managed run đang hoạt động.
 
 The known10 preset uses the *new common batch prompt*, not an exact replay of the
 historical three-style prompt diagnostic. The per-PUT preset does **not** allocate
@@ -70,7 +77,7 @@ while a console-owned flow is queued/running.
 ## Stop/resume
 
 Use Prefect's **Cancel** for a Console-owned run. Saved responses/checkpoints and
-attempt caps remain. Then launch **resume-saved-run** with the source artifact
+attempt caps remain. Then launch **Resume · Tiếp tục run đã dừng** with the source artifact
 directory (`.../console_<id>/run`, not its parent submission directory).
 Do **not** use generic Prefect Retry on the same flow ID: snapshot directories are
 intentionally immutable. Resume creates a new output and preserves the old one.

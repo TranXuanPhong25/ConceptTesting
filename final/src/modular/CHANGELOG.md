@@ -1,5 +1,28 @@
 # CHANGELOG
 
+## 2026-11-08 — common batch prompt: dùng câu kích thước của naive
+
+- `input_prompts.structured_input_prompt` (Direct và Soft batch): bỏ câu "Keep values finite and inputs small
+  enough for the execution budget; resource caps are not semantic boundaries." và thay bằng câu của naive cũ:
+  "Keep floats finite, integers bounded, strings/lists modest (normally <=30 elements), and execution under
+  3 seconds." Lý do (người dùng): PUT timeout/RecursionError khi reference chạy kịp là lỗi thật; câu cũ trùng với
+  việc Direct/Soft sinh ít input lớn (>=1e3: 59/68 vs naive 179) và thua cột resource.
+- Run đã có giữ nguyên prompt cũ trong runtime snapshot; run mới qua console dùng prompt này. Chưa chạy run mới.
+
+## 2026-11-08 — batch arm parser: Python literal fallback
+
+- `final/src/modular/response_json.py`: thử strict JSON trước; chỉ khi lỗi mới đọc
+  lại bằng `ast.literal_eval` (map `true/false/null`). Chấp nhận `True/False/None`,
+  tuple, trailing comma, escape `\x00`; response bị truncation vẫn bị reject.
+  Validation từng input (CallBuilder) không đổi. Kết quả ghi `response_repairs`.
+- Dùng trong `InputGenerationMethod.run` (Direct và Soft batch). Decoder strict của
+  two-stage BVA module (`boundary_value_analysis/inputs.py`) giữ nguyên.
+- Replay response đã lưu của batch 140053, 0 model call: Direct khôi phục task 22
+  (19 input) và 151 (20); Soft khôi phục 22, 52, 57, 125, 162 (mỗi task 20).
+  Soft task 99 vẫn reject vì `finish_reason=length`. Output/checkpoint cũ không đổi;
+  detection chưa được chấm lại.
+- 406 modular tests pass (2 test mới trong `test_batch_bva.py`).
+
 ## 2026-11-08 — resume full matched batch evaluation after blocked C call
 
 - Giữ nguyên314responses, frozen inputs/settings và confirm-first-failures scorer;

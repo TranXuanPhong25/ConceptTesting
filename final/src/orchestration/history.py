@@ -16,8 +16,13 @@ from prefect import flow
 from prefect.client.orchestration import get_client
 from prefect.client.schemas.actions import ArtifactCreate
 from prefect.states import Completed,Failed,Running,Pending
+from prefect.exceptions import ObjectNotFound
 
 from .config import ROOT
+from .names import historical_run_name
+from .task_log import task_error_rows
+
+TASK_LOG_VERSION='task-error-log-v1'
 
 PREFIXES=('boundary_prompt_style','boundary_soft_humaneval164','bva_batch_matched164',
           'naive_vs_soft_bva','naive_packaging_audit','v11_concept_inputs')
@@ -95,20 +100,26 @@ async def sync_once(state_directory):
                 record=inspect_run(directory)
                 if record is None:continue
                 parameters,description,report,state=record
-                signature=hashlib.sha256(json.dumps([parameters,description,report],sort_keys=True).encode()).hexdigest()
+                signature=hashlib.sha256(json.dumps([parameters,description,report,TASK_LOG_VERSION],sort_keys=True).encode()).hexdigest()
                 previous=mapping.get(directory.name,{})
                 flow_run_id=previous.get('flow_run_id')
+                display_name=historical_run_name(directory, description['metrics'])
                 if previous.get('signature')==signature and flow_run_id:
-                    try:await client.read_flow_run(flow_run_id)
-                    except Exception:flow_run_id=None
-                    else:continue
+                    try:existing_run=await client.read_flow_run(flow_run_id)
+                    except ObjectNotFound:flow_run_id=None
+                    else:
+                        if existing_run.name!=display_name:
+                            await client.update_flow_run(existing_run.id,name=display_name)
+                        continue
                 if not flow_run_id:
-                    run=await client.create_flow_run(historical_record,name=directory.name,parameters=parameters,
+                    run=await client.create_flow_run(historical_record,name=display_name,parameters=parameters,
                         tags=['ConceptTester','historical','read-only-index'],state=state)
                     flow_run_id=run.id
                     await client.create_artifact(ArtifactCreate(key='historical-config',type='markdown',
                         data='### Original config\n\n```json\n'+json.dumps(parameters,ensure_ascii=False,indent=2)+'\n```',flow_run_id=flow_run_id))
-                else:await client.set_flow_run_state(flow_run_id,state,force=True)
+                else:
+                    await client.update_flow_run(flow_run_id,name=display_name)
+                    await client.set_flow_run_state(flow_run_id,state,force=True)
                 await client.create_artifact(ArtifactCreate(key='historical-progress',type='markdown',
                     data='### Artifact status\n\n```json\n'+json.dumps(description,ensure_ascii=False,indent=2)+'\n```',flow_run_id=flow_run_id))
                 if description['metrics']:
@@ -116,6 +127,11 @@ async def sync_once(state_directory):
                         data=[{'arm':arm,**metrics} for arm,metrics in description['metrics'].items()],flow_run_id=flow_run_id))
                 if report and description['source_state']=='complete':
                     await client.create_artifact(ArtifactCreate(key='historical-report',type='markdown',data=report,flow_run_id=flow_run_id))
+                error_rows=clean(task_error_rows(directory))
+                if error_rows:
+                    await client.create_artifact(ArtifactCreate(key='task-error-log',type='table',data=error_rows,
+                        description='Log lỗi theo task từ record đã lưu: generation, reference rejection, PUT failure (read-only)',
+                        flow_run_id=flow_run_id))
                 mapping[directory.name]={'flow_run_id':str(flow_run_id),'signature':signature}
                 changed+=1
         temporary=mapping_path.with_suffix('.tmp');temporary.write_text(json.dumps(mapping,indent=2)+'\n');temporary.replace(mapping_path)

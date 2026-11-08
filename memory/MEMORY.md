@@ -1,10 +1,17 @@
-- [BVA full HumanEval](bva-full-humaneval.md) — RUNNING isolated snapshot PID103140;1031responses/112input batches,0evaluation;493reused,endpoint200
+- [Test slides arm/module plan](test-slides-arm-module-plan.md) — chỉ EP/BVA/DT;weakEP+normalBVA single-fault,ep_bva chính;catalogue tối giản,prompt ≤8 dòng kiểu soft BVA,ràng buộc chuyển sang checker;0newruns
+- [Repair I/O contracts autonomously](repair-io-contract-autonomously.md) — user requires fix+rerun; never present routine interface failure as terminal research result
+- [Prefect publication and Vietnamese reports](run-console.md) — rules7–8;7run names dễ đọc/IDgiữ nguyên,5presets migrated;names.py quản lý nhãn,0newworkload
+- [Người dùng quyết định chạy](working-rules.md) — AGENTS.md rule9: mặc định chuẩn bị preset/config cho user bấm Run; check không cấp quyền launch/resume/rerun
+- [Boundary input generation prior work](boundary-input-generation-priorwork.md) — GroundedCOMPLETE/replay4PASS:valid30/8/32/9,detected0all;236fullresponses316073tokens;Prefect98959f77Completed
+- [Flow diagrams as HTML](flow-diagrams-html.md) — explain mechanism, per-stage input/logic/output and LLM/parser roles; names-only graphs rejected; BVA walkthrough with saved response
+- [BVA full HumanEval](bva-full-humaneval.md) — comparisonCOMPLETE61vs44,shared31/only30–13;allBVA-onlybaselineinputloss;0newLLMcalls/replayPASS,no active jobs
+- [BVA matched batch comparison](bva-batch-comparison.md) — COMPLETE Direct68/Soft73,wrong-value46/59;old82vsnew68diff:153same-contexttasks,151JSONboolreject loses10PUTs;option2 resource split: nonresource old56/Direct49/Soft60; old-Direct net14=resource7+interface5(151vs99)+content2;REPARSE COMPLETE Direct78/Soft73,nonresource59/60(≈tie),Prefect7f4424a3;naive format repair87(nonres61)≈tie,Prefect1a674c37;0newcalls/Prefect5319cd2e
 - [BVA precision tools](bva-precision-tools.md) — A generic8vssoft7;B gateFAIL(interface);envelope audit seed/concept7,auto8loses72context;10calls/16206tokens;defaultunchanged
 - [BVA soft default](bva-soft-default.md) — soft main/legacy archived;342tests/10saved parity;precision trials completed, default remains soft
 - [BVA prompt style diagnostic](bva-prompt-style-diagnostic.md) — full10 soft7/direct6;input audit:joint-negative72gain,7soft base duplicates;miss11/16/99;historical naive distinct control
 - [BVA checked grounding](bva-checked-grounding.md) — Luna direct3COMPLETE:1nativecall/0tools,3valid/3bugtasks;feedback-assisted,notmatched;checked6historyretained
-- [Fixed plain baseline](plain-baseline-seal.md) — reuse compatible plain;44taskcompiledrunsealedreadonly,1375hashesverified
-- [V11 boundary arm assessment](v11-boundary-arm-plan.md) — BOUND-only witness producer integration points; sampler fidelity/trace sandbox limits; analysis only
+- [Fixed plain baseline](plain-baseline-seal.md) — exact10naive4=BVA4;3lossestraced:hardgate2/11,wrongtarget157;naivesees9–10PUTsvs1
+- [V11 boundary trial discarded](v11-boundary-arm-plan.md) — userrequestedworktreedeletion;code/outputsremoved;historical10PUT13valid/1bug
 - [Burr trial rejected](workflow-burr-trial.md) — user requested deletion;folder/deps/outputs removed;keep current pipeline
 - [Runtime refactor](runtime-refactor.md) — final/src + final/data; obsolete/duplicatefilesremoved;212tests;historicalartifactspreserved;20HTMLslideswithcodeflows
 - [Reference oracle bugs](reference-oracle-bugs.md) — fixedHumanEval+oracle;44rescore0vs0,0LLMcalls;BVAmechanism473→121audit/proposal,no newgeneration
@@ -12,7 +19,7 @@
 - [Boundary test applicability/module](boundary-test-applicability.md) — stringBVA v3 repaired:parsed_float/format hints,205 checks;44audit bugs99/124+resource83;no fresh LLM run
 - [Code readability](code-readability.md) — user quen Java; ưu tiên tên đầy đủ, explicit loops/intermediates, ít shorthand; final/ readability audit
 - [Four course development groups](four-course-development-groups.md) —164task reviewed; boundary47/equivalence47/C1 31/DU39;6savedPUT smoke/group, improve separately before combining
-- [Spec-mining paper reading](spec-mining-paper-reading.md) —3PDFs read;S2F extracts constraints,Grounding labels Tested/Untested,formalcontracts+SMTconstruct inputs;different evidence and protocols
+- [Spec-mining paper reading](spec-mining-paper-reading.md) —BVA grounding proposal:local3+Jdoctor/nl2spec/VeriSpecGen/ISLa;reference-refinement protocol gap;research only
 - [Final concept/reference benchmark](final-humaneval-pipeline.md) — concept-inputs COMPLETE164/1437PUT;rawconcept90/plain72;matchedp.9703,wins5–5,no gain;serviceinactive
 - [Concept-template query direction](concept-template-query-direction.md) — vr15complete;69/113tasks,16newinstances/5edges;direct=BM25,no testgen/efficacy claim
 - [Git artifact hygiene](git-artifact-hygiene.md) — ignore downloads/cache/logs/local tools; preserve source/reports and all local checkpoints
@@ -36,7 +43,7 @@
 - [LineFacts relational research](linefacts-relational-research.md) — 9 primary papers; grounded obligation graph và conditional metamorphic concepts, proposal only
 - [LineFacts new trials](linefacts-new-trials.md) — B3/B4/repaired v14/v15 complete; no concept promotion, all queues ended
 - [Research state](research-state.md) — START HERE: thesis direction, where files live, key results, next steps
-- [Working rules](working-rules.md) — all user rules: Vietnamese replies, git, secrets/ngrok, GPU runs, folders+CHANGELOG, PREREG
+- [Working rules](working-rules.md) — Vietnamese/git/secrets/runs; Nov8: single hardcoded scripts/ping_endpoint.sh, no env, 10min
 - [Session 2026-10-13 (Claude)](session-2026-10-13-claude.md) — digest of the long session: user requests/quotes, decisions, lessons, open items, transcript path
 - [CoverUp concept verdict](coverup-concept-verdict.md) — seed 1 null; site-hint smoke p=7e-6 is an artifact (truncation + clustered mutants)
 - [Thesis concept requirement](thesis-concept-requirement.md) — thesis MUST have a "concept" guiding tests; never propose dropping concepts
@@ -142,5 +149,7 @@
 - [v78 learned concept selection](v78-learned-select.md) — 2026-10-26 grouped CPU replay NO-GO: context18 vs random18.25/prior20.5; spec-only21=context-free; 33 PUTs/24 problems, $0 API
 - [v83 Reka full quarter](v83-reka-quarter.md) — 2026-10-27 terminal partial 26/28; 1 unknown-charge stop, offline scoring recovered (o0 4–4, ref/full 3–4), descriptive only; no retry allowed
 - [v84 Reka completion addendum](v84-reka-completion.md) — completed missing tasks154/158; combined28/28 descriptive, mixed-run exploratory (o0 4–4, ref/full3–4), $0.0542 new; no efficacy verdict
-- [Boundary prompt v4/repair](boundary-prompt-v4-proposal.md) — compact diagnostic COMPLETE:23semantic partial gain,72/157stillwrong;11valid/0bug,8calls, replay/hashPASS
+- [Boundary prompt v4/repair](boundary-prompt-v4-proposal.md) — userselectedv5restored for commit;compactarchived;groundingtrials authorized after checkpoint
 - [LangChain transport](langchain-transport.md) — active completion uses LangChain; 258 tests pass; live smoke passes models/tokenize/Unicode JSON/usage, 54 tokens
+- [Custom Palenight theme](palenight-custom-theme.md) — standalone Phong Palenight; screenshot background #282A37; local VSIX without Vira
+- [Local Prefect run console](run-console.md) — server36897/presets83876/history42656 on localhost4200; 4 unit-explicit presets, settings form, 18 read-only history records, preview-only option

@@ -5,7 +5,98 @@ metadata:
   type: project
 ---
 
+2026-11-08 user-authorized grounded4pipeline rerun ACTIVEcontroller330903,
+output final/out/bucket_candidates_grounded_20261108_171000;LISPprobePASS/full44
+started,other3queuedserial. Prefect98959f77-8974-4e8a-b040-d34a02503f11. Source
+frozen,cold sandbox/readinessPASS;khôngduplicate/edit. Outcome mới pending; xem
+[[boundary-input-generation-priorwork]] và actualstatus.
+
+2026-11-08 bốn input-bucket adapters đã sửa applicability theo yêu cầu;191
+engineering checks PASS,0newmodel/benchmark runs, hiệu quả sau sửa chưa đo.
+HTML ý tưởng4pipeline+report đã publish vào existing Prefect record; xem
+[[boundary-input-generation-priorwork]]. Không tự khởi chạy experiment mới.
+
 **Thesis:** LLM test-case generation guided by **concepts** (must stay central, see [[thesis-concept-requirement]]).
+2026-11-08 matchedbatchTERMINALCOMPLETE:Direct68vsSoft73,shared52/only16vs21,
+wrong-value46vs59,on1454PUTs/all164taskrecords. Inputcounts2926vs2851;21vs23tasks.
+Immutable replay/sourceinputhashesPASS;0newevaluationmodelcalls. Prefect5319cd2e
+Completed/output140053;worker158735exited. Read-onlyoldnaive82vsDirect68diff
+shows153/157samevisibilitytasks,156same spec/base/contract,scorerdetectionpredicate
+unchanged;task151PythonboolinvalidJSONloses10PUTs. See[[bva-batch-comparison]].
+Supersedes ACTIVE evaluation notices below;no newlaunch/rerun authorized by analysis.
+
+2026-11-08 user-authorized full matched batch evaluation resume ACTIVE158735,
+output final/out/bva_batch_matched164_evaluation_20261108_140053.
+314responses already frozen;60evaluation checkpoints reused;0newmodelcalls.
+Task60C-call timeout repaired in new frozen executor/worker copy;original scorer,
+inputs/seeds/reference preserved.49regressiontests+157cacheddecode+nativepass/fail
+smokesPASS. Prefectflow5319cd2e-fdd0-4296-ad51-7a6b93579fc1Running,reportVietnamese.
+No full results yet;supersedes PID28517ACTIVE notices below. Do not duplicate or
+edit frozen snapshots. See [[bva-batch-comparison]].
+
+2026-11-08 user-operated Prefect run console COMPLETE/live at127.0.0.1:4200.
+server36897/presets83876/history42656,18readonly history records. Four presets,
+settings forms,SQLite persistence,private endpoint snapshots,resume deployment.
+preview-only path in UI;never agent-autostart inference.0managed flows/new LLM calls.
+444checks passed before final UI-text changes,17targeted offline tests passed,
+independent reviewPASS;actualworker smoke only dummy/empty native fixtures.
+See [[run-console]] and final/src/orchestration/README.md. Batch PID28517 is
+separate and was not taken over by the console.
+
+2026-11-08 latestbatchcontinuationACTIVE PID28517 at
+final/out/bva_batch_matched164_resume_20261108_104541,actualgeneration116/direct,
+228received(114perarm),2newresponsesconfirmed,86logicalslotsleft.
+User-providedendpointverifiedQwen27/8192/tokenizer13aftercorrectingprivateconfig.
+226responses reused unchanged/88logicalslotsleft atlaunch;original314requestplan/
+runtime/visibility/settings/attempt1history retained,no regeneration.428tests+
+independentrecoveryreviewPASS,realcachedbatchdecodePASS. Original sourceuntouched;
+see[[bva-batch-comparison]],do not reset/relaunch/frozenedit. OlderSTOPnoticesbelow
+historical;automaticnewreport/replayafterremaininggeneration+nativeevaluation.
+
+2026-11-08 lateststatus supersedes scheduled/active below:packagingauditCOMPLETE
+naive44→82PUTs/all30BVA-onlyrecovered,BVA61subset,naive-only21. Wrong-value53vs46;
+same1454/full2repeat/replayPASS/0newLLMcalls. Matched batchSTOPPEDafter226/314
+received(113eacharm),88missing,tokenizeHTTP404.1historicalunknowncompletion at
+115/soft preserved;no globalfreeze/scoring,no activeworkers. Current/models404;
+user endpoint revival requested. See[[bva-batch-comparison]],preserve all226calls
+and original requests/runtime for continuation;do not reset/relaunch one-shot.
+
+2026-11-08 userauthorizes packagingaudit+matchedbatchcomparison,LLMafter40min.
+RepairCPUACTIVE410483/reporter415461:1250packagingchanges/64tasks,0newmodelcalls,
+no newefficacyresultyet. Fresh Direct/SoftBVAeach1batchcall/taskSCHEDULED415105
+at2026-11-07T19:17:40Z(08Nov02:17:40Vietnam),max314logicalcalls,0sofar.
+Sharedschema/parser/packet/budget,onlyguidance differs;frozenruntime,reviewPASS,
+422tests+31targetedchecks,nativephasesflockserialized. See[[bva-batch-comparison]]
+for outputpaths/gates/reporters. Do not duplicate/reset jobs or edit their snapshots.
+
+2026-11-08 cached-naive versus full-BVA COMPLETE:61vs44PUTs,shared31,BVA-only30,
+naive-only13,netBVA+17. Same1454targets/frozen scorer;common1437same counts.
+0newmodelcalls,immutable replay/hashPASS,no active workers. ALL30BVA-onlyare
+tasks with0naive novel valid inputs(17parserloss,13oracle/domainbindingloss).
+On82tasks withvalidinputs inboth:BVA31vsnaive44;secondary uniform-budget
+expectation31.00vs32.39. Raw gain is coverage/interface dependent,not demonstrated
+better boundary selection. Costs1454vs156received writers;no input repairs.
+Report final/review/naive_vs_soft_bva_full164_2026-11-08.{md,json};see
+[[bva-full-humaneval]] for provenance and distinctions from historical naive72.
+
+2026-11-07 fullHumanEval soft BVA TERMINAL COMPLETE:164requested/157eligible,
+1454base-pass PUTs,1449novel valid inputs,61confirmed PUT detections on22tasks;
+46value-mismatch PUTs,15non-value-only. Original full2repeat scorer retained.
+Globalfreeze/1454response hashes/immutable replayPASS.1454generation responses,
+1,423,485known tokens;0newLLM evaluation calls. Generation cross-PUTdup1550/3034.
+Finaloutput boundary_soft_humaneval164_evaluation_20261107_224720;full report in
+final/review/boundary_soft_humaneval164_results_2026-11-07.{md,json}. No active
+worker/automatic continuation needed;no matched efficacy claim. See
+[[bva-full-humaneval]]. Older ACTIVE notices below are historical.
+
+2026-11-07 fullBVAgenerationCOMPLETE1454responses/164frozen batches. Parent103140
+stopped at33evaluation tasks onbwrapspawn FileNotFoundError. Evaluation-only
+continuationACTIVE PID192257/output
+final/out/boundary_soft_humaneval164_evaluation_20261107_224720;originalruntime/
+full2repeat scorer,33checkpoint tasks reused,sanitizedPATH+coldsandboxPASS.
+Latest44/164evaluated,0newLLMcalls,no retry consumed.4recoverytestsPASS. No source
+input changes or old output overwrite;see [[bva-full-humaneval]] for currentpaths.
+
 2026-11-07 latest fullBVAcontinuationACTIVE:NEWoutput
 final/out/boundary_soft_humaneval164_resume_20261107_195417,PID103140.493responses/
 52batches reused unchanged in isolated original frozen runtime;961newcallcap.
@@ -36,6 +127,35 @@ Implemented:342tests PASS, exact10saved soft request/decode parity,
 no new live model/cohort run. Current full10diagnostic soft7/direct6/worksheet7;
 only soft-only task72, outcome-selected sample. Historical defaultv5statements
 below describe earlier decisions. See [[bva-soft-default]].
+
+2026-11-07 latest scheduledpromptstyle3auditCOMPLETE:runfinished19:57Nov6.
+Direct2tasks/60valid,soft2/58,worksheet1/54;9responses/0unknown/14,768tokens.
+Worksheetmiss2,allmiss11;stable157winsallarms. Fullreplay/hash92+1205PASS.
+Noactiveprocess/autorun/defaultpromotion. See [[bva-prompt-style-diagnostic]].
+
+2026-11-06 latest userrequested promptstyle3diagnostic SCHEDULED for19:51:15Vietnam
+(12:51:15UTC),schedulerPID68463. SameQwen/context/sampling/schema3armsdirect/soft/
+worksheet,9logicalrequestsmax. Readiness/sourceguardsbeforeinference;noresultsat
+schedule. See [[bva-prompt-style-diagnostic]],inspectstatusandneverduplicate.
+
+2026-11-06 latest userrequested Luna direct3 COMPLETE:one exactrequested
+gpt-5.6-luna/low nativeCLIcall,0observedtoolattempts;3valid/3bugtasks23/72/157,
+stable repeats/replay/hashPASS. Feedback/directschema differs fromQwen,notmatched
+efficacy. Noactivejob/defaultpromotion. See [[bva-checked-grounding]] and direct3report.
+
+2026-11-06 latest checked6COMPLETE after endpointreply:8calls/23valid/bugtask16;
+72semanticconditionbetterbutcontextnotrealized,23/157schema/domainerrors. Full
+replay/hashPASS,278tests. Stablev5commit13d92ee9pushed;trialopt-in/uncommitted,
+noactivecontroller/autoexpansion. See [[bva-checked-grounding]] and livereport.
+
+2026-11-06 userrequested v5restore committed/pushed13d92ee9. Opt-in checked
+grounding trial implemented/reviewed,278tests/offlineauditPASS; kept uncommitted.
+Live6diagnostic not launched:oldendpointmodels404,replacement requested;0newmodel
+taskcalls. See [[bva-checked-grounding]] before continuing, no duplicate launch.
+
+2026-11-06 user discards V11boundary trial. Detached worktree, uncommitted code
+and all trial outputs deleted; parent main/BVA/baseline preserved. Historical
+known-bug10 result13valid/1bug(task76); no resume. See [[v11-boundary-arm-plan]].
 
 2026-11-06 compact selection3 paired diagnostic COMPLETE:3fresh long responses
 matchv5; short23recognizes character/byte difference but yields no novel input;
