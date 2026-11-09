@@ -1,0 +1,1398 @@
+{
+  "flow_run_id": "43c7061b-38c6-4bbb-8c5a-6da366d337f9",
+  "source_directory": "/home/phong/dev/ConceptTester/final/out/console_resume_43c7061b-38c6-4bbb-8c5a-6da366d337f9",
+  "config": {
+    "cohort": "humaneval164",
+    "mode": "batch",
+    "arms": [
+      "direct",
+      "soft_bva"
+    ],
+    "task_numbers": [],
+    "inputs_per_task": 20,
+    "completion_tokens": 2048,
+    "context_tokens": 8192,
+    "temperature": 0.7,
+    "input_seed": 314159,
+    "reference_seed": 271828,
+    "timeout_seconds": 8.0,
+    "per_put_base_examples": 12,
+    "scorer": "confirm_first_failures",
+    "model_name": "qwen3.5-27b-awq",
+    "catalogue": true
+  },
+  "arms": {
+    "direct": {
+      "valid_inputs": 2913,
+      "detected": 77,
+      "tasks_detected": 28
+    },
+    "soft_bva": {
+      "valid_inputs": 2842,
+      "detected": 85,
+      "tasks_detected": 33
+    }
+  },
+  "detection_kinds": {
+    "direct": {
+      "wrong_value": 61,
+      "crash": 1,
+      "resource": 15,
+      "total": 77,
+      "non_resource": 62
+    },
+    "soft_bva": {
+      "wrong_value": 58,
+      "crash": 5,
+      "resource": 22,
+      "total": 85,
+      "non_resource": 63
+    }
+  },
+  "raw_comparison": {
+    "detections": {
+      "direct": 77,
+      "soft_bva": 85,
+      "shared": 64,
+      "direct_only": 13,
+      "soft_bva_only": 21,
+      "union": 98,
+      "net_soft_minus_direct": 8
+    },
+    "stable_wrong_values": {
+      "direct": 61,
+      "soft_bva": 58,
+      "shared": 53,
+      "direct_only": 8,
+      "soft_bva_only": 5,
+      "union": 66,
+      "net_soft_minus_direct": -3
+    },
+    "task_wins_by_detected_put_count": {
+      "direct": 5,
+      "soft_bva": 11,
+      "tie": 141
+    }
+  },
+  "matched_valid_input_budget": {
+    "left": "direct",
+    "right": "soft_bva",
+    "task_count": 157,
+    "left_macro_fraction": 0.048071479122434535,
+    "right_macro_fraction": 0.05721868365180468,
+    "paired_permutation_pvalue": 0.18618138186181382,
+    "tasks_left_more": 4,
+    "tasks_right_more": 12,
+    "directional_sign_pvalue": 0.076812744140625,
+    "rows": [
+      {
+        "task_id": "HumanEval/0",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/1",
+        "inputs_each": 18,
+        "left": 1,
+        "right": 1,
+        "mean_left_100": 1.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/2",
+        "inputs_each": 17,
+        "left": 1,
+        "right": 2,
+        "mean_left_100": 0.9,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/3",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/4",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/5",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/6",
+        "inputs_each": 13,
+        "left": 1,
+        "right": 1,
+        "mean_left_100": 0.9,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/7",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/8",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/9",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/10",
+        "inputs_each": 19,
+        "left": 2,
+        "right": 2,
+        "mean_left_100": 2.0,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/11",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 2,
+        "mean_left_100": 0.0,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/12",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/13",
+        "inputs_each": 18,
+        "left": 3,
+        "right": 1,
+        "mean_left_100": 3.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/14",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/15",
+        "inputs_each": 15,
+        "left": 2,
+        "right": 2,
+        "mean_left_100": 2.0,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/16",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 1,
+        "mean_left_100": 0.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/17",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/18",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/19",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/20",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 1,
+        "mean_left_100": 0.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/21",
+        "inputs_each": 14,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/22",
+        "inputs_each": 0,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/23",
+        "inputs_each": 19,
+        "left": 1,
+        "right": 1,
+        "mean_left_100": 1.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/24",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 2,
+        "mean_left_100": 0.0,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/25",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/26",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/27",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 1,
+        "mean_left_100": 0.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/28",
+        "inputs_each": 16,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/29",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/30",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/31",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/33",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/34",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 2,
+        "mean_left_100": 0.0,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/35",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/36",
+        "inputs_each": 14,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/37",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/38",
+        "inputs_each": 11,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/39",
+        "inputs_each": 2,
+        "left": 1,
+        "right": 1,
+        "mean_left_100": 1.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/40",
+        "inputs_each": 18,
+        "left": 1,
+        "right": 1,
+        "mean_left_100": 1.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/41",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/42",
+        "inputs_each": 17,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/43",
+        "inputs_each": 20,
+        "left": 2,
+        "right": 2,
+        "mean_left_100": 2.0,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/44",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/45",
+        "inputs_each": 12,
+        "left": 1,
+        "right": 1,
+        "mean_left_100": 1.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/46",
+        "inputs_each": 16,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/47",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/48",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/49",
+        "inputs_each": 20,
+        "left": 4,
+        "right": 4,
+        "mean_left_100": 4.0,
+        "mean_right_100": 4.0
+      },
+      {
+        "task_id": "HumanEval/50",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/51",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/52",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/53",
+        "inputs_each": 19,
+        "left": 1,
+        "right": 1,
+        "mean_left_100": 1.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/54",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/55",
+        "inputs_each": 17,
+        "left": 3,
+        "right": 0,
+        "mean_left_100": 3.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/56",
+        "inputs_each": 15,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/57",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/58",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/59",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/60",
+        "inputs_each": 13,
+        "left": 0,
+        "right": 8,
+        "mean_left_100": 0.0,
+        "mean_right_100": 8.0
+      },
+      {
+        "task_id": "HumanEval/61",
+        "inputs_each": 15,
+        "left": 2,
+        "right": 2,
+        "mean_left_100": 1.84,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/62",
+        "inputs_each": 16,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/63",
+        "inputs_each": 15,
+        "left": 2,
+        "right": 2,
+        "mean_left_100": 2.0,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/64",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/66",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/67",
+        "inputs_each": 4,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/68",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/69",
+        "inputs_each": 0,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/70",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/71",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/72",
+        "inputs_each": 20,
+        "left": 3,
+        "right": 3,
+        "mean_left_100": 3.0,
+        "mean_right_100": 3.0
+      },
+      {
+        "task_id": "HumanEval/73",
+        "inputs_each": 14,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/74",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/75",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/76",
+        "inputs_each": 20,
+        "left": 9,
+        "right": 9,
+        "mean_left_100": 9.0,
+        "mean_right_100": 9.0
+      },
+      {
+        "task_id": "HumanEval/77",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/78",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/79",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/80",
+        "inputs_each": 10,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/81",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/82",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/83",
+        "inputs_each": 15,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/84",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/85",
+        "inputs_each": 17,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/86",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/87",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/88",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/89",
+        "inputs_each": 10,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/90",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/91",
+        "inputs_each": 19,
+        "left": 9,
+        "right": 9,
+        "mean_left_100": 9.0,
+        "mean_right_100": 9.0
+      },
+      {
+        "task_id": "HumanEval/92",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/93",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/94",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/95",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/96",
+        "inputs_each": 16,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/97",
+        "inputs_each": 19,
+        "left": 1,
+        "right": 2,
+        "mean_left_100": 1.0,
+        "mean_right_100": 1.96
+      },
+      {
+        "task_id": "HumanEval/98",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/99",
+        "inputs_each": 0,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/100",
+        "inputs_each": 7,
+        "left": 0,
+        "right": 1,
+        "mean_left_100": 0.38,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/101",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/102",
+        "inputs_each": 20,
+        "left": 2,
+        "right": 0,
+        "mean_left_100": 2.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/103",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/104",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/105",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/106",
+        "inputs_each": 14,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/107",
+        "inputs_each": 15,
+        "left": 1,
+        "right": 1,
+        "mean_left_100": 0.97,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/108",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/109",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/110",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/111",
+        "inputs_each": 14,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/112",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/113",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/114",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/115",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/116",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/117",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/118",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/119",
+        "inputs_each": 17,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/120",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/121",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/122",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/123",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/124",
+        "inputs_each": 20,
+        "left": 4,
+        "right": 5,
+        "mean_left_100": 4.0,
+        "mean_right_100": 5.0
+      },
+      {
+        "task_id": "HumanEval/125",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/126",
+        "inputs_each": 19,
+        "left": 2,
+        "right": 1,
+        "mean_left_100": 2.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/128",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/129",
+        "inputs_each": 17,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/130",
+        "inputs_each": 11,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/131",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/133",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/134",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/135",
+        "inputs_each": 16,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/137",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/138",
+        "inputs_each": 16,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/139",
+        "inputs_each": 9,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/140",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 1,
+        "mean_left_100": 0.0,
+        "mean_right_100": 1.0
+      },
+      {
+        "task_id": "HumanEval/141",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/142",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/143",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/144",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/146",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/147",
+        "inputs_each": 17,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/148",
+        "inputs_each": 18,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/149",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/150",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/151",
+        "inputs_each": 18,
+        "left": 10,
+        "right": 10,
+        "mean_left_100": 10.0,
+        "mean_right_100": 10.0
+      },
+      {
+        "task_id": "HumanEval/152",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/153",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/154",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/155",
+        "inputs_each": 17,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/156",
+        "inputs_each": 15,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/157",
+        "inputs_each": 19,
+        "left": 2,
+        "right": 2,
+        "mean_left_100": 2.0,
+        "mean_right_100": 2.0
+      },
+      {
+        "task_id": "HumanEval/158",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/159",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/160",
+        "inputs_each": 17,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/161",
+        "inputs_each": 19,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      },
+      {
+        "task_id": "HumanEval/162",
+        "inputs_each": 20,
+        "left": 0,
+        "right": 0,
+        "mean_left_100": 0.0,
+        "mean_right_100": 0.0
+      }
+    ],
+    "zero_valid_budget_tasks": 3
+  },
+  "writer_usage": {
+    "invocations": 315,
+    "received": 314,
+    "unknown": 1,
+    "known_usage": {
+      "prompt_tokens": 600585,
+      "completion_tokens": 215246,
+      "total_tokens": 815831
+    }
+  },
+  "keepalive_usage": {
+    "attempts": 10,
+    "received": 10,
+    "unknown": 0,
+    "known_total_tokens": 140,
+    "not_sent": 0,
+    "unknown_completions": 0
+  },
+  "skips": [
+    {
+      "task_id": "HumanEval/32",
+      "reason": "generation_shortfall"
+    },
+    {
+      "task_id": "HumanEval/65",
+      "reason": "no_base_pass"
+    },
+    {
+      "task_id": "HumanEval/127",
+      "reason": "no_base_pass"
+    },
+    {
+      "task_id": "HumanEval/132",
+      "reason": "no_base_pass"
+    },
+    {
+      "task_id": "HumanEval/136",
+      "reason": "generation_shortfall"
+    },
+    {
+      "task_id": "HumanEval/145",
+      "reason": "no_base_pass"
+    },
+    {
+      "task_id": "HumanEval/163",
+      "reason": "no_base_pass"
+    }
+  ],
+  "source_hashes_verified": true,
+  "read_only_replay_matches": true,
+  "additional_model_or_native_calls_for_report": 0
+}
