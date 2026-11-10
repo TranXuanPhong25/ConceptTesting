@@ -1,8 +1,0 @@
-**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
-- param `date`: str (type from docstring examples)
-- edges `date`: '', well-formed mm-dd-yyyy with every field at its minimum, maximum and just outside (0, 1, max, max+1), wrong separator, wrong field widths, missing/extra field, surrounding spaces
-- strategy `date`: st.one_of(st.from_regex(r'\\d{2}-\\d{2}-\\d{4}', fullmatch=True), st.text(max_size=20))
-- docstring constraint: format mm-dd-yyyy
-- witness: @example(date='00-00-0000')
-- witness: @example(date='01-01-0001')
-- witness: @example(date='99-99-9999')

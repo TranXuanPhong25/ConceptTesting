@@ -1,7 +1,0 @@
-**Concept hints** (tool-computed from the signature and docstring only). Use them to choose Hypothesis strategy bounds and to add `@example(...)` witnesses next to `@given`; keep every assertion a property stated by the docstring:
-- param `dict`: str (type from docstring examples)
-- edges `dict`: '', well-formed mm-dd-yyyy with every field at its minimum, maximum and just outside (0, 1, max, max+1), wrong separator, wrong field widths, missing/extra field, surrounding spaces
-- strategy `dict`: st.one_of(st.from_regex(r'\\d{2}-\\d{2}-\\d{4}', fullmatch=True), st.text(max_size=20))
-- witness: @example(dict='00-00-0000')
-- witness: @example(dict='01-01-0001')
-- witness: @example(dict='99-99-9999')
