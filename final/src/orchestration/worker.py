@@ -57,6 +57,7 @@ def prepare(values, directory):
     paths=[path for path in (ROOT/'final/src').rglob('*.py') if 'tests' not in path.parts and '__pycache__' not in path.parts]
     paths += [ROOT/'final/__init__.py',ROOT/'final/data/humaneval.jsonl',ROOT/'final/data/contracts.json',
               ROOT/'final/data/humanevalplus_v0.1.10_references.json']
+    paths += list((ROOT/'final/src/modular/fault_oriented_testing').glob('*.json'))
     for source in paths:
         target=runtime/source.relative_to(ROOT);target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(source,target);target.chmod(0o444);hashes[str(target)]=checksum(target)
@@ -78,7 +79,24 @@ def prepare(values, directory):
     return description
 
 
-def prepare_resume(source,directory):
+def validate_timeout_amendment(source, original_config, timeout_seconds):
+    """Only amend native timeout before any saved oracle/PUT evaluation exists."""
+    if timeout_seconds is None:
+        return original_config, None
+    amended_config = normalize({**original_config, 'timeout_seconds': timeout_seconds})
+    if amended_config['timeout_seconds'] == original_config['timeout_seconds']:
+        return amended_config, None
+    native_patterns = ('tasks/*/oracle_*.json', 'tasks/*/evaluation/*.json',
+                       'tasks/*/result.json', 'tasks/*/reference_program.json',
+                       'tasks/*/catalogue_measurements.json')
+    if any(next(source.glob(pattern), None) is not None for pattern in native_patterns):
+        raise ValueError('Timeout amendment requires generation-only source; native checkpoints already exist')
+    return amended_config, {'field': 'timeout_seconds', 'previous': original_config['timeout_seconds'],
+                            'current': amended_config['timeout_seconds'],
+                            'scope': 'native evaluation only; received generation requests/responses preserved'}
+
+
+def prepare_resume(source,directory, *, timeout_seconds=None):
     """Clone immutable config/code/checkpoints; retain per-request attempt budgets."""
     from final.src.audits.resume_bva_batch import inventory
     from final.src.audits.run_bva_full import SourceGuard
@@ -93,7 +111,8 @@ def prepare_resume(source,directory):
         if previous_state not in ('interrupted','cancelled') and not inferred_stop:
             raise ValueError('Only a stopped interrupted/cancelled run can resume')
         SourceGuard(source).verify()
-        original=inventory(source);config=normalize(read(source/'config_snapshot.json'));old_plan=read(source/'launch_plan.json')
+        original=inventory(source);original_config=normalize(read(source/'config_snapshot.json'));old_plan=read(source/'launch_plan.json')
+        config, timeout_amendment = validate_timeout_amendment(source, original_config, timeout_seconds)
         for attempt_path in source.glob('tasks/*/calls/*/attempt.json'):
             request=read(attempt_path.parent/'request.json');attempt=read(attempt_path)
             if attempt.get('request_id')!=digest(request):raise ValueError('Imported call request checksum differs')
@@ -109,6 +128,12 @@ def prepare_resume(source,directory):
                 rebased.append(str(path.relative_to(directory)));path.unlink()
         for name in ('config_snapshot.json','preview.json','generation_frozen.json'):
             if (source/name).exists():shutil.copyfile(source/name,directory/name)
+        if timeout_amendment is not None:
+            # New output records the amendment; the stopped source stays immutable.
+            save(directory/'config_snapshot.json', config)
+            description = read(source/'preview.json')
+            description['config'] = config
+            save(directory/'preview.json', description)
         endpoint=private_endpoint(directory,config['model_name'])
         plan={**old_plan,'runtime':str(runtime),'cohort':str(runtime/Path(old_plan['cohort']).relative_to(Path(old_plan['runtime']))),
               'endpoint_env_file':str(endpoint),'resume_from':str(source)}
@@ -117,6 +142,8 @@ def prepare_resume(source,directory):
                   'stop_inferred_from_free_worker_lock':inferred_stop,
                   'metadata_rebuilt_for_new_runtime_paths':rebased,
                   'original_writer_usage':call_usage(source)}
+        if timeout_amendment is not None:
+            receipts['config_amendment'] = timeout_amendment
         save(directory/'import_receipts.json',receipts)
         hashes=dict(original)
         for path in directory.rglob('*'):
@@ -134,6 +161,9 @@ def prepare_resume(source,directory):
 def run(directory):
     from final.src.modular.arms.batch import DirectBatchArm,SoftBvaBatchArm
     from final.src.modular.arms.boundary import BoundaryArm
+    from final.src.modular.arms.plain import PlainArm
+    from final.src.modular.arms.classical import CATALOGUE_ARMS, CatalogueSettings
+    from final.src.modular.arms.fault_oriented import V2_ARMS
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.calls import RecordedModelCalls
     from final.src.modular.cohort import call_usage
@@ -164,7 +194,10 @@ def run(directory):
             time.sleep(30)
     save(directory/'endpoint_readiness.json',{'checked_utc':time.time(),**endpoint})
     factories={'direct':DirectBatchArm,'soft_bva':SoftBvaBatchArm,
+               'plain':PlainArm,
                'boundary':lambda:BoundaryArm(base_example_limit=config['per_put_base_examples'])}
+    for arm in (*CATALOGUE_ARMS, *V2_ARMS):
+        factories[arm.name] = lambda arm=arm: arm(CatalogueSettings(catalogue=config.get('catalogue', True)))
     methods=tuple(factories[name]() for name in config['arms'])
     settings=PipelineSettings(input_budget=config['inputs_per_task'],input_tokens=config['completion_tokens'],
         input_temperature=config['temperature'],input_seed=config['input_seed'],reference_seed=config['reference_seed'],
@@ -223,6 +256,9 @@ def run(directory):
         result={'arms':summary['arms'],'evaluated_base_pass':summary['evaluated_base_pass'],
             'writer_usage':call_usage(directory),'keepalive_usage':summary['keepalive_calls'],
             'read_only_replay_matches':True,'source_hashes_verified':True,'settings':config}
+        if 'catalogues' in summary:
+            result.update(catalogues=summary['catalogues'], comparisons=summary['comparisons'],
+                          detection_kinds=summary['detection_kinds'])
         if set(config['arms'])=={'direct','soft_bva'}:
             from final.src.audits.run_bva_batch import paired_verdicts
             result['comparison']=paired_verdicts(directory)
@@ -246,6 +282,8 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config',type=Path);parser.add_argument('--artifacts',type=Path,required=True)
     parser.add_argument('--resume-from',type=Path)
+    parser.add_argument('--timeout-seconds',type=float,
+                        help='Amend native timeout for a generation-only stopped run; preserve saved generation')
     parser.add_argument('--prepare-only',action='store_true');parser.add_argument('--worker',action='store_true')
     args=parser.parse_args();directory=args.artifacts.resolve()
     if args.worker:
@@ -259,7 +297,8 @@ def main():
                 raise
     else:
         if args.resume_from:
-            print(json.dumps(prepare_resume(args.resume_from.resolve(),directory)),flush=True)
+            print(json.dumps(prepare_resume(args.resume_from.resolve(),directory,
+                                           timeout_seconds=args.timeout_seconds)),flush=True)
             return
         if args.config is None:parser.error('--config required')
         print(json.dumps(prepare(read(args.config),directory)),flush=True)

@@ -23,6 +23,9 @@ class InputGenerator(ABC):
     def preparation_stages(self):
         return ()
 
+    def post_reference_stages(self):
+        return ()
+
     @abstractmethod
     def generate(self, context: TaskContext) -> JsonObject:
         """Return {task_id, arms: {method_name: {inputs: [...]}}} or task skip."""

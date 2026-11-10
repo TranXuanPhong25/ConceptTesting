@@ -186,3 +186,20 @@ Authorized live smoke subsequently completed6/6tasks:plain80validinputs/BVA19,
 reused all432records,0native/modelcalls,exact equality to original artifacts in
 .1202seconds. Fullread-only replay reproduces the complete summary;68source and
 6input-freeze hashes verified. See review/boundary_smoke_run_2026-11-05.md.
+
+
+## 2026-11-10 — v2 commit verification
+
+The staged tree was exported separately from the dirty worktree. Mixed runtime
+files use the exact completed full-v2 snapshot, excluding later tool-sampling
+and structured-transport edits. Restored tracked prompt fixtures and copied
+local frozen cohort fixtures into the export; no experiment was launched.
+
+- `final/.venv/bin/python -m pytest -q final/src/modular/tests final/tests/test_timeout_resume.py`: **462 passed**.
+- Isolated Prefect environment, `python -m unittest final.tests.test_dispatch final.tests.test_followup final.tests.test_rerun_sequence final.tests.test_schedule_worker -q`: **22 passed**.
+- Independent staged-index review GO; Python/JSON parse checks, credential/endpoint-pattern scan and `git diff --cached --check` passed.
+
+Includes catalogue validation/retention, v1/v2 prompt separation, optional fault
+annotations, JSON example snapshotting, freeze/replay parity, CLI/Prefect budget
+and deadline/predecessor gates. No live endpoint smoke or new benchmark/evaluation
+run was performed for this commit. Reports retain existing completed outcomes.

@@ -1,6 +1,8 @@
 """Supported input-generation methods for the current pipeline."""
 from .plain import PlainArm
 from .boundary import BoundaryArm
+from .classical import CATALOGUE_ARMS
+from .fault_oriented import V2_ARMS
 
 
 def default_arms():
@@ -8,7 +10,7 @@ def default_arms():
 
 
 def available_arms():
-    return (PlainArm(), BoundaryArm())
+    return (PlainArm(), BoundaryArm(), *(arm() for arm in (*CATALOGUE_ARMS, *V2_ARMS)))
 
 
 def selected_arms(names):

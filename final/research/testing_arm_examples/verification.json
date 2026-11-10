@@ -1,0 +1,102 @@
+{
+  "verification": "10engineering checks against unmodified pinned production source;0modelcalls",
+  "cases": [
+    {
+      "domain": "packaging",
+      "candidates": [
+        "2.1a1"
+      ],
+      "prereleases": null,
+      "actual": [
+        "2.1a1"
+      ]
+    },
+    {
+      "domain": "packaging",
+      "candidates": [
+        "1.9",
+        "2.1a1"
+      ],
+      "prereleases": null,
+      "actual": [
+        "2.1a1"
+      ]
+    },
+    {
+      "domain": "packaging",
+      "candidates": [
+        "2.1a1",
+        "2.1"
+      ],
+      "prereleases": null,
+      "actual": [
+        "2.1"
+      ]
+    },
+    {
+      "domain": "packaging",
+      "candidates": [
+        "2.1",
+        "2.1a1"
+      ],
+      "prereleases": null,
+      "actual": [
+        "2.1"
+      ]
+    },
+    {
+      "domain": "packaging",
+      "candidates": [
+        "2.1a1",
+        "2.1"
+      ],
+      "prereleases": true,
+      "actual": [
+        "2.1a1",
+        "2.1"
+      ]
+    },
+    {
+      "domain": "packaging",
+      "candidates": [
+        "2.1a1"
+      ],
+      "prereleases": false,
+      "actual": []
+    },
+    {
+      "domain": "werkzeug",
+      "method": "GET",
+      "headers": {
+        "If-Match": "\"current\"",
+        "If-Unmodified-Since": "Wed, 01 Jan 2025 00:00:00 GMT"
+      },
+      "actual_status": 200
+    },
+    {
+      "domain": "werkzeug",
+      "method": "GET",
+      "headers": {
+        "If-None-Match": "W/\"current\""
+      },
+      "actual_status": 304
+    },
+    {
+      "domain": "werkzeug",
+      "method": "PUT",
+      "headers": {
+        "If-None-Match": "W/\"current\""
+      },
+      "actual_status": 412
+    },
+    {
+      "domain": "werkzeug",
+      "method": "GET",
+      "headers": {
+        "If-None-Match": "\"other\"",
+        "If-Modified-Since": "Fri, 03 Jan 2025 00:00:00 GMT"
+      },
+      "actual_status": 200
+    }
+  ]
+}

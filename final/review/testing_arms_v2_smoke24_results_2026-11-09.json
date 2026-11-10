@@ -1,0 +1,526 @@
+{
+  "flow_run_id": "4fb900d7-321a-476e-8c1e-0ec8870ce909",
+  "source_directory": "final/out/console_resume_4fb900d7-321a-476e-8c1e-0ec8870ce909",
+  "arms": {
+    "ep_bva": {
+      "valid_inputs": 112,
+      "detected": 1,
+      "tasks_detected": 1
+    },
+    "ep_bva_v2": {
+      "valid_inputs": 62,
+      "detected": 1,
+      "tasks_detected": 1
+    },
+    "decision_table": {
+      "valid_inputs": 80,
+      "detected": 0,
+      "tasks_detected": 0
+    },
+    "decision_table_v2": {
+      "valid_inputs": 72,
+      "detected": 1,
+      "tasks_detected": 1
+    }
+  },
+  "detection_kinds": {
+    "ep_bva": {
+      "wrong_value": 1,
+      "crash": 0,
+      "resource": 0,
+      "total": 1,
+      "non_resource": 1
+    },
+    "ep_bva_v2": {
+      "wrong_value": 1,
+      "crash": 0,
+      "resource": 0,
+      "total": 1,
+      "non_resource": 1
+    },
+    "decision_table": {
+      "wrong_value": 0,
+      "crash": 0,
+      "resource": 0,
+      "total": 0,
+      "non_resource": 0
+    },
+    "decision_table_v2": {
+      "wrong_value": 1,
+      "crash": 0,
+      "resource": 0,
+      "total": 1,
+      "non_resource": 1
+    }
+  },
+  "generation_statuses": {
+    "ep_bva": {
+      "applicable": 2,
+      "catalogue_invalid": 4
+    },
+    "ep_bva_v2": {
+      "catalogue_invalid": 5,
+      "applicable": 1
+    },
+    "decision_table": {
+      "catalogue_invalid": 3,
+      "applicable": 3
+    },
+    "decision_table_v2": {
+      "applicable": 4,
+      "catalogue_invalid": 2
+    }
+  },
+  "comparisons": [
+    {
+      "left": "ep_bva",
+      "right": "ep_bva_v2",
+      "task_count": 6,
+      "left_macro_fraction": 0.16666666666666666,
+      "right_macro_fraction": 0.16666666666666666,
+      "paired_permutation_pvalue": 1.0,
+      "tasks_left_more": 0,
+      "tasks_right_more": 0,
+      "directional_sign_pvalue": 1.0,
+      "rows": [
+        {
+          "task_id": "HumanEval/0",
+          "inputs_each": 15,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/5",
+          "inputs_each": 18,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/18",
+          "inputs_each": 17,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/81",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/99",
+          "inputs_each": 12,
+          "left": 1,
+          "right": 1,
+          "mean_left_100": 1.0,
+          "mean_right_100": 1.0
+        },
+        {
+          "task_id": "HumanEval/120",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        }
+      ],
+      "zero_valid_budget_tasks": 2
+    },
+    {
+      "left": "ep_bva",
+      "right": "decision_table",
+      "task_count": 6,
+      "left_macro_fraction": 0.0,
+      "right_macro_fraction": 0.0,
+      "paired_permutation_pvalue": 1.0,
+      "tasks_left_more": 0,
+      "tasks_right_more": 0,
+      "directional_sign_pvalue": 1.0,
+      "rows": [
+        {
+          "task_id": "HumanEval/0",
+          "inputs_each": 20,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/5",
+          "inputs_each": 18,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/18",
+          "inputs_each": 20,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/81",
+          "inputs_each": 19,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/99",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/120",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        }
+      ],
+      "zero_valid_budget_tasks": 2
+    },
+    {
+      "left": "ep_bva",
+      "right": "decision_table_v2",
+      "task_count": 6,
+      "left_macro_fraction": 0.16666666666666666,
+      "right_macro_fraction": 0.16666666666666666,
+      "paired_permutation_pvalue": 1.0,
+      "tasks_left_more": 0,
+      "tasks_right_more": 0,
+      "directional_sign_pvalue": 1.0,
+      "rows": [
+        {
+          "task_id": "HumanEval/0",
+          "inputs_each": 18,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/5",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/18",
+          "inputs_each": 19,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/81",
+          "inputs_each": 17,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/99",
+          "inputs_each": 15,
+          "left": 1,
+          "right": 1,
+          "mean_left_100": 1.0,
+          "mean_right_100": 0.99
+        },
+        {
+          "task_id": "HumanEval/120",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        }
+      ],
+      "zero_valid_budget_tasks": 2
+    },
+    {
+      "left": "ep_bva_v2",
+      "right": "decision_table",
+      "task_count": 6,
+      "left_macro_fraction": 0.0,
+      "right_macro_fraction": 0.0,
+      "paired_permutation_pvalue": 1.0,
+      "tasks_left_more": 0,
+      "tasks_right_more": 0,
+      "directional_sign_pvalue": 1.0,
+      "rows": [
+        {
+          "task_id": "HumanEval/0",
+          "inputs_each": 15,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/5",
+          "inputs_each": 18,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/18",
+          "inputs_each": 17,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/81",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/99",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/120",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        }
+      ],
+      "zero_valid_budget_tasks": 3
+    },
+    {
+      "left": "ep_bva_v2",
+      "right": "decision_table_v2",
+      "task_count": 6,
+      "left_macro_fraction": 0.16666666666666666,
+      "right_macro_fraction": 0.16666666666666666,
+      "paired_permutation_pvalue": 1.0,
+      "tasks_left_more": 0,
+      "tasks_right_more": 0,
+      "directional_sign_pvalue": 1.0,
+      "rows": [
+        {
+          "task_id": "HumanEval/0",
+          "inputs_each": 15,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/5",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/18",
+          "inputs_each": 17,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/81",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/99",
+          "inputs_each": 12,
+          "left": 1,
+          "right": 1,
+          "mean_left_100": 1.0,
+          "mean_right_100": 0.97
+        },
+        {
+          "task_id": "HumanEval/120",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        }
+      ],
+      "zero_valid_budget_tasks": 3
+    },
+    {
+      "left": "decision_table",
+      "right": "decision_table_v2",
+      "task_count": 6,
+      "left_macro_fraction": 0.0,
+      "right_macro_fraction": 0.0,
+      "paired_permutation_pvalue": 1.0,
+      "tasks_left_more": 0,
+      "tasks_right_more": 0,
+      "directional_sign_pvalue": 1.0,
+      "rows": [
+        {
+          "task_id": "HumanEval/0",
+          "inputs_each": 18,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/5",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/18",
+          "inputs_each": 19,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/81",
+          "inputs_each": 17,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/99",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        },
+        {
+          "task_id": "HumanEval/120",
+          "inputs_each": 0,
+          "left": 0,
+          "right": 0,
+          "mean_left_100": 0.0,
+          "mean_right_100": 0.0
+        }
+      ],
+      "zero_valid_budget_tasks": 3
+    }
+  ],
+  "tester_calls_by_arm": {
+    "ep_bva": {
+      "invocations": 6,
+      "received": 6,
+      "unknown": 0,
+      "known_usage": {
+        "prompt_tokens": 7187,
+        "completion_tokens": 10939,
+        "total_tokens": 18126
+      },
+      "responses_with_incomplete_usage": 0
+    },
+    "ep_bva_v2": {
+      "invocations": 6,
+      "received": 6,
+      "unknown": 0,
+      "known_usage": {
+        "prompt_tokens": 8759,
+        "completion_tokens": 11941,
+        "total_tokens": 20700
+      },
+      "responses_with_incomplete_usage": 0
+    },
+    "decision_table": {
+      "invocations": 6,
+      "received": 6,
+      "unknown": 0,
+      "known_usage": {
+        "prompt_tokens": 7211,
+        "completion_tokens": 12945,
+        "total_tokens": 20156
+      },
+      "responses_with_incomplete_usage": 0
+    },
+    "decision_table_v2": {
+      "invocations": 7,
+      "received": 6,
+      "unknown": 1,
+      "known_usage": {
+        "prompt_tokens": 8639,
+        "completion_tokens": 14264,
+        "total_tokens": 22903
+      },
+      "responses_with_incomplete_usage": 0
+    }
+  },
+  "fault_hypothesis_annotations": {
+    "ep_bva_v2": {
+      "classes": 10,
+      "rules": 0,
+      "annotated_classes": 10,
+      "annotated_rules": 0,
+      "status": "self_reported",
+      "semantic_validation": "pending"
+    },
+    "decision_table_v2": {
+      "classes": 0,
+      "rules": 27,
+      "annotated_classes": 0,
+      "annotated_rules": 27,
+      "status": "self_reported",
+      "semantic_validation": "pending"
+    }
+  },
+  "writer_usage": {
+    "invocations": 25,
+    "received": 24,
+    "unknown": 1,
+    "known_usage": {
+      "prompt_tokens": 31796,
+      "completion_tokens": 50089,
+      "total_tokens": 81885
+    }
+  },
+  "source_hashes_verified": true,
+  "read_only_replay_matches": true,
+  "additional_model_or_native_calls_for_report": 0,
+  "interpretation": "DTv2rawgain is valid-yield/interface dependent: DTv1task99 has0validinputs;matchedcomparison0vs0,not demonstratedsemanticselectiongain"
+}

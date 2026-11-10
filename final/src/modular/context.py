@@ -29,7 +29,7 @@ class PipelineSettings:
     reference_seed: int = 271828
     writer_seed: int = 20261030
     context_tokens: int = 8192
-    timeout_seconds: float = 3
+    timeout_seconds: float = 8
     target_programs: int = 10
     writer_rounds: int = 10
 

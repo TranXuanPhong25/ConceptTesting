@@ -89,4 +89,13 @@ class ReferenceOracleStage(PipelineStage):
                         unique_indices.append(valid_index)
             arm_indices[arm_name] = unique_indices
         context.oracle = {"tests": valid_tests, "rejected": rejected_inputs, "arm_indices": arm_indices}
+        # Arm-local survivor indices preserve catalogue labels through reference
+        # rejection and global deduplication, including differently encoded calls.
+        catalogue_survivors = {}
+        for arm_name, raw_indices in original_arm_indices.items():
+            if "catalogue_status" in context.inputs["arms"][arm_name]:
+                catalogue_survivors[arm_name] = [index for index, raw_index in enumerate(raw_indices)
+                                                if raw_index in raw_to_valid_index]
+        if catalogue_survivors:
+            context.oracle["catalogue_valid_input_indices"] = catalogue_survivors
         context.artifacts.write(context.task_directory + "/oracle_valid.json", context.oracle)

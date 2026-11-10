@@ -77,8 +77,9 @@ class BoundaryFixtureModel:
 
 
 
-def test_arm_registration_only_exposes_plain_and_boundary():
-    assert [arm.name for arm in available_arms()] == ["plain", "boundary"]
+def test_arm_registration_preserves_plain_boundary_and_exposes_testing_variants():
+    from final.src.modular.arms.classical import CATALOGUE_ARM_NAMES
+    assert [arm.name for arm in available_arms()] == ["plain", "boundary", *CATALOGUE_ARM_NAMES]
     assert [arm.name for arm in default_arms()] == ["plain"]
     assert selected_arms(["boundary"])[0].configuration()["pipeline_contract"] == "soft-bva-v1"
     with pytest.raises(ValueError, match="Unknown input-generation method"):

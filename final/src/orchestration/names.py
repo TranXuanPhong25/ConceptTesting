@@ -34,8 +34,13 @@ def historical_run_name(directory, metrics=None):
 def benchmark_run_name(config, preview_only=False):
     selected = config.get('task_numbers', [])
     scope = (f'{len(selected)} task' if selected else
-             'Full164' if config['cohort'] == 'humaneval164' else 'Known10')
+             {'humaneval164':'Full164', 'known_bug10':'Known10', 'boundary_smoke':'Boundary smoke6',
+              'equivalence_smoke':'EP smoke6'}[config['cohort']])
     labels = {'direct': 'Direct', 'soft_bva': 'Soft BVA', 'boundary': 'Soft BVA'}
+    labels.update(plain='Plain', equivalence='Weak EP', bva_normal='Normal BVA', ep_bva='EP + BVA',
+                  decision_table='DT', ep_strong='Strong EP', bva_robust='Robust BVA',
+                  bva_worst_case='Worst-case BVA', ep_dt_bva='EP + DT + BVA')
+    labels.update(ep_bva_v2='EP + BVA v2', decision_table_v2='DT v2')
     arms = ' vs '.join(labels[name] for name in config['arms'])
     mode = 'batch' if config['mode'] == 'batch' else 'per-PUT, shared budget'
     return ('Preview · ' if preview_only else '') + f'{scope} · {arms} · {mode} · {config["inputs_per_task"]} inputs mỗi task mỗi arm'

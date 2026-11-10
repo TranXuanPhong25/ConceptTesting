@@ -18,6 +18,7 @@ from prefect.client.orchestration import get_client
 from .config import ROOT,normalize,preview
 from .names import benchmark_run_name,historical_run_name
 from .task_log import task_error_rows
+from .routing import endpoint_identity_for_run
 
 BENCHMARK_PYTHON=ROOT/'final/.venv/bin/python'
 OUT=ROOT/'final/out'
@@ -25,13 +26,19 @@ OUT=ROOT/'final/out'
 
 def active_external_writers(exclude=None):
     found=[]
-    for path in OUT.glob('*/status.json'):
+    selected_endpoint = endpoint_identity_for_run(exclude) if exclude is not None else None
+    status_paths = set(OUT.glob('*/status.json')) | set(OUT.glob('console_*/run/status.json'))
+    for path in sorted(status_paths):
         if exclude and path.parent==exclude:continue
         try:
             state=json.loads(path.read_text());pid=state.get('pid')
             if state.get('state') not in ('running','preflight') or state.get('phase')=='evaluation' or not pid:continue
             command=Path(f'/proc/{pid}/cmdline').read_bytes().replace(b'\0',b' ').decode()
             if str(path.parent).encode() not in command.encode():continue
+            writer_endpoint = endpoint_identity_for_run(path.parent)
+            # Independent endpoints can generate concurrently; unknown routing stays serialized.
+            if selected_endpoint and writer_endpoint and selected_endpoint != writer_endpoint:
+                continue
             found.append({'directory':str(path.parent),'pid':pid,'phase':state.get('phase','running')})
         except (OSError,ValueError,TypeError):continue
     return found
@@ -112,20 +119,21 @@ async def attach_outputs(directory):
 
 @flow(name='HumanEval inputs',retries=0,log_prints=False,persist_result=False)
 async def benchmark(
-    cohort:Annotated[Literal['humaneval164','known_bug10'],Field(title='Frozen PUT cohort',description='Full HumanEval or the outcome-selected known-bug diagnostic cohort.')]='humaneval164',
+    cohort:Annotated[Literal['humaneval164','known_bug10','boundary_smoke','equivalence_smoke'],Field(title='Frozen PUT cohort',description='Full HumanEval or the outcome-selected known-bug diagnostic cohort.')]='humaneval164',
     mode:Annotated[Literal['batch','per_put'],Field(title='Generation mode',description='batch: one call/task/arm. per_put: one call per allocated PUT; the budget remains per task/arm.')]='batch',
-    arms:Annotated[list[Literal['direct','soft_bva','boundary']],Field(title='Arms',description='batch accepts direct/soft_bva. per_put accepts boundary.')]=['direct','soft_bva'],
+    arms:Annotated[list[Literal['plain','direct','soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table','ep_strong','bva_robust','bva_worst_case','ep_dt_bva','ep_bva_v2','decision_table_v2']],Field(title='Arms',description='batch: plain/direct/soft_bva và EP/BVA/DT arms. per_put: boundary.')]=['direct','soft_bva'],
     task_numbers:Annotated[list[int],Field(title='Task subset (empty means all)',description='HumanEval task numbers, such as 2, 11, 72.')]=[],
     inputs_per_task:Annotated[int,Field(title='Input budget per task per arm',ge=1,le=200,description='In per_put mode, divided across visible PUTs.')]=20,
-    completion_tokens:Annotated[int,Field(title='Maximum completion tokens per call',ge=128,le=32768)]=2048,
+    completion_tokens:Annotated[int,Field(title='Maximum completion tokens per call',ge=128,le=32768)]=4096,
     context_tokens:Annotated[int,Field(title='Model context tokens',ge=512,le=131072)]=8192,
     temperature:Annotated[float,Field(title='Generation temperature',ge=0,le=2)]=.7,
     input_seed:Annotated[int,Field(title='Input generation seed',ge=0,le=2147483483)]=314159,
     reference_seed:Annotated[int,Field(title='Reference and PUT seed',ge=0,le=2147483483)]=271828,
-    timeout_seconds:Annotated[float,Field(title='Native timeout per input (seconds)',ge=.1,le=60)]=3,
+    timeout_seconds:Annotated[float,Field(title='Native timeout per input (seconds)',ge=.1,le=60)]=8,
     per_put_base_examples:Annotated[int,Field(title='Base examples per PUT (per_put mode only)',ge=1,le=300,description='Ignored in batch mode; batch includes all original base tests.')]=12,
     scorer:Annotated[Literal['confirm_first_failures','full_two_repeats'],Field(title='Scorer repeat policy')]='confirm_first_failures',
     model_name:Annotated[str,Field(title='Served model name',min_length=1,max_length=120)]='qwen3.5-27b-awq',
+    catalogue:Annotated[bool,Field(title='Emit catalogue',description='EP/BVA/DT only. Uncheck for instruction-only ablation; completion cap stays shared.')]=True,
     preview_only:Annotated[bool,Field(title='Preview only · no model calls',description='Checked: save config and budget preview without model, tokenizer or native calls.')]=False,
 ):
     """Choose a preset, edit parameters, Run. Each run freezes its own config/code.
@@ -133,7 +141,7 @@ async def benchmark(
     Args:
         cohort: Frozen HumanEval PUT set: all164 tasks or the known-bug diagnostic10-task subset.
         mode: batch makes one call per arm for each task. per_put makes one call for each allocated PUT.
-        arms: Batch accepts direct or soft_bva (or both). per_put accepts boundary only.
+        arms: Batch accepts plain/direct/soft_bva and catalogue EP/BVA/DT arms. per_put accepts boundary only.
         task_numbers: HumanEval task IDs as numbers, e.g. 2, 11, 72. An empty list selects all tasks in the cohort.
         inputs_per_task: Total new-input budget per task per arm. In per_put mode, divide this shared task budget among visible PUTs; it is not a per-PUT budget.
         completion_tokens: Maximum completion tokens in each individual writer call.
@@ -145,6 +153,7 @@ async def benchmark(
         per_put_base_examples: Maximum original base examples shown to each PUT in boundary mode. Batch mode includes original task base tests and ignores this field.
         scorer: confirm_first_failures runs a second PUT check only after a first failure. full_two_repeats runs the historical full repeat policy; both arms in a run use the same scorer.
         model_name: Served OpenAI-compatible model ID, which must match the locally configured endpoint.
+        catalogue: Include compact catalogue for EP/BVA/DT; false is an instruction-only ablation.
         preview_only: Save resolved settings and input/call budget without model, tokenizer, or native calls.
     """
     parameters=locals().copy();parameters.pop('preview_only')
@@ -179,23 +188,37 @@ async def benchmark(
 
 
 @flow(name='Resume saved run',retries=0,log_prints=False,persist_result=False)
-async def resume_saved_batch(source_directory:str):
+async def resume_saved_batch(source_directory:str, timeout_seconds:float | None=None):
     """Resume a stopped matched-batch run, preserving responses and attempt caps.
 
     source_directory: Path below final/out, relative to repository or absolute.
+    timeout_seconds: Optional native timeout amendment; only before any native evaluation.
     """
     source=(ROOT/source_directory).resolve()
     if not source.is_relative_to(OUT) or not ((source/'request_plan.json').exists() or (source/'config_snapshot.json').exists()):
         raise ValueError('Select a saved console/matched-batch run directory under final/out')
-    if active_external_writers():raise ValueError('An existing model writer is still active; wait before resuming')
     async with get_client() as client:
-        await client.update_flow_run(get_run_context().flow_run.id,name='Resume · '+historical_run_name(source))
+        title = 'Resume · ' + historical_run_name(source)
+        if (source/'config_snapshot.json').exists():
+            source_config = json.loads((source/'config_snapshot.json').read_text())
+            effective_timeout = timeout_seconds if timeout_seconds is not None else source_config['timeout_seconds']
+            title = f'Resume {effective_timeout:g}s · ' + benchmark_run_name(source_config)
+        await client.update_flow_run(get_run_context().flow_run.id,name=title)
     directory=OUT/('console_resume_'+str(get_run_context().flow_run.id))
     managed=(source/'config_snapshot.json').exists() and not (source/'request_plan.json').exists()
     module='final.src.orchestration.worker' if managed else 'final.src.audits.resume_bva_batch'
     option='--resume-from' if managed else '--source'
-    await command([BENCHMARK_PYTHON,'-m',module,option,source,'--artifacts',directory,'--prepare-only'])
+    arguments=[BENCHMARK_PYTHON,'-m',module,option,source,'--artifacts',directory,'--prepare-only']
+    if timeout_seconds is not None:
+        if not managed:
+            raise ValueError('Timeout amendment requires a console source run')
+        arguments.extend(['--timeout-seconds',str(timeout_seconds)])
+    await command(arguments)
     plan=json.loads((directory/'launch_plan.json').read_text())
+    await attach_outputs(directory)
+    while active_external_writers(exclude=directory):
+        get_run_logger().info('Waiting for model writer on the same endpoint before resuming.')
+        await asyncio.sleep(15)
     await create_markdown_artifact(markdown=f"Imported responses: {plan.get('imported_received_calls','see import_receipts.json')}\n\nMaximum logical slots: {plan['logical_call_cap']}\n\nArtifacts: `{directory}`",key='resume-budget')
     env={key:value for key,value in os.environ.items() if key in ('HOME','LANG','LC_ALL','TZ','TMPDIR')}
     env.update(PATH=os.defpath,PYTHONPATH=plan['runtime'],PYTHONDONTWRITEBYTECODE='1')

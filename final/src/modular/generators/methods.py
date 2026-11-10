@@ -24,6 +24,12 @@ class MethodInputGenerator(InputGenerator):
     def preparation_stages(self):
         return self.stages
 
+    def post_reference_stages(self):
+        if any(getattr(method, "measures_catalogue", False) for method in self.methods):
+            from ..stages.catalogue_measurement import CatalogueMeasurementStage
+            return (CatalogueMeasurementStage(self.methods),)
+        return ()
+
     def generate(self, context):
         if context.packet and context.packet.get("skip"):
             return {"task_id": context.task["task_id"], "skip": context.packet["skip"]}

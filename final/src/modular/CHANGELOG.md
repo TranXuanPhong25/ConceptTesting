@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 2026-11-10 — EP/BVA/Decision Table v2
+
+- Integrate classical catalogue arms and v2 behavioral/fault refinement with one sourced soft example per technique.
+- Preserve the shared decoder, input budget, global freeze and corrected-reference oracle; catalogue errors do not discard otherwise valid inputs.
+- Register catalogue arms in CLI/Prefect with 4096 completion tokens and 8-second native timeout; snapshot example assets and gate followups by deadline plus verified predecessor completion.
+- Keep fault hypotheses self-reported; semantic validation remains pending.
+- Full v2 completed: EP+BVA81 PUTs/32tasks,DT96/34; union113/41 on1454PUTs/157tasks,40vs20input budget. See final/review/ep_bva_dt_v2_union_results_2026-11-10.md.
+
 ## 2026-11-08 — common batch prompt: dùng câu kích thước của naive
 
 - `input_prompts.structured_input_prompt` (Direct và Soft batch): bỏ câu "Keep values finite and inputs small

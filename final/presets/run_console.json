@@ -1,6 +1,162 @@
 [
-  {"name":"Full164 · Direct vs Soft BVA · batch","description":"Full HumanEval · Direct vs Soft BVA. 20 inputs/task/arm; 1 call/task/arm; tối đa314 logical calls. Chỉ guidance khác nhau.","parameters":{"cohort":"humaneval164","mode":"batch","arms":["direct","soft_bva"]}},
-  {"name":"Known10 · Direct vs Soft BVA · 1 PUT mỗi task","description":"10 known-bug PUTs · cùng batch prompt/schema của run mới. 20 inputs/PUT/arm; tổng20 calls. Không phải exact replay prompt-style lịch sử.","parameters":{"cohort":"known_bug10","mode":"batch","arms":["direct","soft_bva"]}},
-  {"name":"Smoke3 · Direct vs Soft BVA · tasks 2, 11, 72","description":"3 task2/11/72 · Direct vs Soft, tổng6 calls. Dùng preview_only để chỉ xem budget, không gọi LLM.","parameters":{"cohort":"humaneval164","task_numbers":[2,11,72],"mode":"batch","arms":["direct","soft_bva"]}},
-  {"name":"Full164 · Soft BVA · per-PUT, shared 20","description":"Per-PUT mode lịch sử:20 inputs cho CẢ task, chia cho cácPUT; thường2–3inputs/call. Tối đa1454 calls. Không phải20inputs/PUT.","parameters":{"cohort":"humaneval164","mode":"per_put","arms":["boundary"]}}
+  {
+    "name": "Full164 · Direct vs Soft BVA · batch",
+    "description": "Full HumanEval · Direct vs Soft BVA. 20 inputs/task/arm; 1 call/task/arm; tối đa314 logical calls. Chỉ guidance khác nhau.",
+    "parameters": {
+      "cohort": "humaneval164",
+      "mode": "batch",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "completion_tokens": 2048,
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Known10 · Direct vs Soft BVA · 1 PUT mỗi task",
+    "description": "10 known-bug PUTs · cùng batch prompt/schema của run mới. 20 inputs/PUT/arm; tổng20 calls. Không phải exact replay prompt-style lịch sử.",
+    "parameters": {
+      "cohort": "known_bug10",
+      "mode": "batch",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "completion_tokens": 2048,
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Smoke3 · Direct vs Soft BVA · tasks 2, 11, 72",
+    "description": "3 task2/11/72 · Direct vs Soft, tổng6 calls. Dùng preview_only để chỉ xem budget, không gọi LLM.",
+    "parameters": {
+      "cohort": "humaneval164",
+      "task_numbers": [
+        2,
+        11,
+        72
+      ],
+      "mode": "batch",
+      "arms": [
+        "direct",
+        "soft_bva"
+      ],
+      "completion_tokens": 2048,
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Full164 · Soft BVA · per-PUT, shared 20",
+    "description": "Per-PUT mode lịch sử:20 inputs cho CẢ task, chia cho cácPUT; thường2–3inputs/call. Tối đa1454 calls. Không phải20inputs/PUT.",
+    "parameters": {
+      "cohort": "humaneval164",
+      "mode": "per_put",
+      "arms": [
+        "boundary"
+      ],
+      "completion_tokens": 2048,
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Smoke6 · Plain vs EP + BVA · chính",
+    "description": "Chưa chạy. 1 representative PUT/task; 20 inputs/task/arm; completion cap chung 4096 tokens/call. Tối đa12 calls/240 input records. Không tự nối dev/check.",
+    "parameters": {
+      "cohort": "boundary_smoke",
+      "mode": "batch",
+      "arms": [
+        "plain",
+        "ep_bva"
+      ],
+      "completion_tokens": 4096,
+      "catalogue": true,
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Smoke6 · Plain vs Weak EP · ablation",
+    "description": "Chưa chạy. 1 representative PUT/task; 20 inputs/task/arm; completion cap chung 4096 tokens/call. Tối đa12 calls/240 input records. Không tự nối dev/check.",
+    "parameters": {
+      "cohort": "equivalence_smoke",
+      "mode": "batch",
+      "arms": [
+        "plain",
+        "equivalence"
+      ],
+      "completion_tokens": 4096,
+      "catalogue": true,
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Smoke6 · Plain vs Normal BVA · ablation",
+    "description": "Chưa chạy. 1 representative PUT/task; 20 inputs/task/arm; completion cap chung 4096 tokens/call. Tối đa12 calls/240 input records. Không tự nối dev/check.",
+    "parameters": {
+      "cohort": "boundary_smoke",
+      "mode": "batch",
+      "arms": [
+        "plain",
+        "bva_normal"
+      ],
+      "completion_tokens": 4096,
+      "catalogue": true,
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Smoke2 · Plain vs Decision Table",
+    "description": "Chưa chạy. 1 representative PUT/task; 20 inputs/task/arm; completion cap chung 4096 tokens/call. 4 calls; eligibility theo spec: XOR hai bit và chẵn/lẻ × vị trí.",
+    "parameters": {
+      "cohort": "equivalence_smoke",
+      "mode": "batch",
+      "arms": [
+        "plain",
+        "decision_table"
+      ],
+      "completion_tokens": 4096,
+      "catalogue": true,
+      "task_numbers": [
+        11,
+        85
+      ],
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Full164 · Plain vs EP+BVA vs Decision Table · batch",
+    "description": "User-authorized full HumanEval:164task records/157eligible tasks/1454base-pass PUTs;3arms cùng visibility và Plain baseline;20inputs/task/arm,471logicalcallcap,4096completion tokens/call. Catalogue errors/applicability báo riêng;không tự nối run khác.",
+    "parameters": {
+      "cohort": "humaneval164",
+      "mode": "batch",
+      "arms": [
+        "plain",
+        "ep_bva",
+        "decision_table"
+      ],
+      "task_numbers": [],
+      "inputs_per_task": 20,
+      "completion_tokens": 4096,
+      "context_tokens": 8192,
+      "catalogue": true,
+      "timeout_seconds": 8
+    }
+  },
+  {
+    "name": "Full164 · EP + Decision Table + BVA · single combined arm",
+    "description": "Một arm ep_dt_bva:EP classes→DT rules→normalBVA edges trong1completion/task,mộtcatalogue và20inputs/task.Khôngunion.Max157logicalcalls/1454PUTs,4096completion/8192context/timeout8s.",
+    "parameters": {
+      "cohort": "humaneval164",
+      "mode": "batch",
+      "arms": [
+        "ep_dt_bva"
+      ],
+      "task_numbers": [],
+      "inputs_per_task": 20,
+      "completion_tokens": 4096,
+      "context_tokens": 8192,
+      "catalogue": true,
+      "timeout_seconds": 8
+    }
+  }
 ]

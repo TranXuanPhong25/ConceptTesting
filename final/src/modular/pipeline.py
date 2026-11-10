@@ -58,6 +58,7 @@ class BenchmarkPipeline:
             reference_programs = HumanEvalPlusReferencePrograms()
         self.reference_programs = reference_programs
         self.evaluation_stages = [ReferenceOracleStage(self.execution_cache, reference_programs),
+                                  *input_generator.post_reference_stages(),
                                   PutEvaluationStage(self.execution_cache), self.reporting_stage]
         self.stage_events = []
 
@@ -207,6 +208,10 @@ class BenchmarkPipeline:
         selected_metadata = {}
         for task_id in task_ids:
             selected_metadata[task_id] = metadata[task_id]
+        package_names = ["coverage", "numpy", "scipy", "evalplus", "langchain-openai",
+                         "langchain-core", "openai", "httpx"]
+        if any(getattr(arm, "measures_catalogue", False) for arm in self.arms):
+            package_names.append("pydantic")
         self.artifacts.write("modular_manifest.json", {
             "protocol": "input-generation-benchmark-v2", "tasks": task_ids,
             "cohort_sha256": self.cohort_stage.cohort["cohort_sha256"],
@@ -217,9 +222,7 @@ class BenchmarkPipeline:
             "model": self.calls.model_id if self.calls is not None else None,
             "calls_backend": type(self.calls).__module__ + "." + type(self.calls).__qualname__,
             "python": platform.python_version(), "python_executable": str(Path(sys.executable).resolve()),
-            "packages": {name: importlib.metadata.version(name) for name in
-                         ("coverage", "numpy", "scipy", "evalplus", "langchain-openai",
-                          "langchain-core", "openai", "httpx")},
+            "packages": {name: importlib.metadata.version(name) for name in package_names},
         })
 
     def source_hashes(self):

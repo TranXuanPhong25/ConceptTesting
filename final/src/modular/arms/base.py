@@ -53,11 +53,19 @@ class InputGenerationMethod(ABC):
             temperature=settings.input_temperature, max_tokens=settings.input_tokens,
             seed=settings.input_seed + context.task_number,
         )
+        return self.decode_response(response, context)
+
+    def decorate_input(self, accepted, input_record, record_index):
+        return accepted
+
+    def decode_response(self, response, context):
+        settings = context.settings
         rejected_records = []
         response_repairs = []
         try:
             decoded_response, response_repairs = load_response_json(response.text)
             input_records = decoded_response["inputs"]
+            # Validate the response envelope before iterating individual calls.
             if not isinstance(input_records, list):
                 raise ValueError("inputs must be a list")
         except (KeyError, TypeError, ValueError):
@@ -73,7 +81,7 @@ class InputGenerationMethod(ABC):
                 else:
                     accepted = self.parse_input(input_record)
                 # VALIDATION END: shared named-argument encoder, or validated Python literals.
-                accepted_records.append(accepted)
+                accepted_records.append(self.decorate_input(accepted, input_record, record_index))
             except (ValueError, SyntaxError, TypeError, RecursionError) as error:
                 reason = "invalid_literal"
                 if isinstance(input_record, dict) and "arguments" in input_record and type(error) is ValueError:
@@ -85,19 +93,29 @@ class InputGenerationMethod(ABC):
         return result
 
     @staticmethod
-    def parse_input(input_record: JsonObject) -> JsonObject:
+    def validate_input_literal_fields(input_record: JsonObject) -> None:
+        """Only bounded args/kwargs strings may reach the Python literal parser."""
         if not isinstance(input_record, dict):
             raise ValueError("Input record must be an object")
         for field_name in ("args", "kwargs"):
             literal = input_record.get(field_name)
             if not isinstance(literal, str) or len(literal) > 16000:
                 raise ValueError("Invalid or oversized literal")
-        positional_arguments = ast.literal_eval(input_record["args"])
-        keyword_arguments = ast.literal_eval(input_record["kwargs"])
+
+    @staticmethod
+    def validate_parsed_call_arguments(positional_arguments, keyword_arguments) -> None:
+        """A call needs a positional sequence and keyword mapping with string keys."""
         if not isinstance(positional_arguments, (list, tuple)) or not isinstance(keyword_arguments, dict):
             raise ValueError("Invalid args/kwargs")
         for keyword_name in keyword_arguments:
             if not isinstance(keyword_name, str):
                 raise ValueError("Keyword names must be strings")
+
+    @staticmethod
+    def parse_input(input_record: JsonObject) -> JsonObject:
+        InputGenerationMethod.validate_input_literal_fields(input_record)
+        positional_arguments = ast.literal_eval(input_record["args"])
+        keyword_arguments = ast.literal_eval(input_record["kwargs"])
+        InputGenerationMethod.validate_parsed_call_arguments(positional_arguments, keyword_arguments)
         return {"args": input_record["args"], "kwargs": input_record["kwargs"],
                 "guidance_id": input_record.get("guidance_id")}

@@ -29,7 +29,11 @@ def main(arguments=None):
     parser.add_argument("--cohort", type=Path, default=Path("final/out/cohorts/qwen35_27b_humaneval164/cohort.json"))
     parser.add_argument("--artifacts", type=Path, default=Path("final/out/modular_pipeline"))
     parser.add_argument("--arms", nargs="+", choices=[arm.name for arm in available_arms()],
-                        help="Input methods: plain (default), boundary")
+                        help="Input methods: plain (default), boundary (soft BVA), or catalogue testing arms")
+    parser.add_argument("--input-tokens", type=positive_integer,
+                        help="Completion tokens/call; default 4096 with catalogue arms, otherwise 2048")
+    parser.add_argument("--context-tokens", type=positive_integer, default=8192)
+    parser.add_argument("--catalogue-off", action="store_true", help="Instruction-only ablation for catalogue arms")
     parser.add_argument("--task-ids", nargs="+", help="Explicit subset, e.g. HumanEval/0 HumanEval/18")
     parser.add_argument("--target-programs", type=positive_integer, default=10,
                         help="Expected frozen programs per task; use 1 for representative smoke cohorts")
@@ -42,6 +46,10 @@ def main(arguments=None):
     read_only = options.mode == "replay"
     artifacts = ArtifactStore(options.artifacts, read_only=read_only)
     arms = selected_arms(options.arms) if options.arms else default_arms()
+    if options.catalogue_off:
+        from .arms.classical import CatalogueSettings
+        arms = tuple(type(arm)(CatalogueSettings(catalogue=False)) if getattr(arm, "measures_catalogue", False)
+                     else arm for arm in arms)
     tasks = load_tasks()
     if options.task_ids:
         requested_ids = set(options.task_ids)
@@ -49,7 +57,11 @@ def main(arguments=None):
         if requested_ids - known_ids or len(requested_ids) != len(options.task_ids):
             parser.error("--task-ids must contain unique known task IDs")
         tasks = [task for task in tasks if task["task_id"] in requested_ids]
-    settings = PipelineSettings(target_programs=options.target_programs, input_budget=options.input_budget)
+    input_tokens = options.input_tokens or (4096 if any(getattr(arm, "measures_catalogue", False) for arm in arms) else 2048)
+    if input_tokens + 128 >= options.context_tokens:
+        parser.error("Completion reserve must leave prompt context")
+    settings = PipelineSettings(target_programs=options.target_programs, input_budget=options.input_budget,
+                                input_tokens=input_tokens, context_tokens=options.context_tokens)
     calls = None
     if not read_only:
         # New experiments must have their own directory. Never modify a frozen v1 run.
