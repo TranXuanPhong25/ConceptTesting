@@ -224,6 +224,45 @@ def evaluate(job):
     return dict(tests=results)
 
 
+def control_flow(job):
+    """Trace original source; output values never become generation feedback."""
+    import coverage
+    results = []
+    for input_index, record in enumerate(job['tests']):
+        observation = {'domain': 'unknown'}
+        cov = None
+        try:
+            with deadline(job['timeout']):
+                random.seed(job.get('seed', 0))
+                args, kwargs = validate_input(record)
+                domain = domain_function(job)
+                try:
+                    domain(*copy.deepcopy(args), **copy.deepcopy(kwargs))
+                except Exception as error:
+                    observation.update(domain='invalid', status='domain_rejected', exception=type(error).__name__)
+                    continue
+                observation['domain'] = 'valid'
+                cov = coverage.Coverage(branch=True, data_file=None, include=['/work/program.py'])
+                cov.start()
+                namespace = load(job['source'], job['entry'], job.get('context', ''))
+                execution_progress(job['mode'], input_index)
+                namespace[job['entry']](*copy.deepcopy(args), **copy.deepcopy(kwargs))
+                observation['status'] = 'executed'
+        except Deadline:
+            observation['status'] = 'timeout'
+        except BaseException as error:
+            observation.update(status='error', exception=type(error).__name__)
+        finally:
+            if cov:
+                cov.stop()
+                data = cov.get_data()
+                observation['coverage'] = {'lines': sorted(data.lines('/work/program.py') or []),
+                    'arcs': [list(arc) for arc in sorted(data.arcs('/work/program.py') or [])]}
+            execution_progress()
+            results.append(observation)
+    return {'tests': results}
+
+
 def cases(job):
     results = []
     for raw in job["tests"]:
@@ -267,6 +306,8 @@ def main():
             result=oracle(job)
         elif job['mode']=='evaluate':
             result=evaluate(job)
+        elif job['mode']=='control_flow':
+            result=control_flow(job)
         else:
             result=cases(job)
     json.dump(result, output)

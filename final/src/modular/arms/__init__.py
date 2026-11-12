@@ -3,6 +3,7 @@ from .plain import PlainArm
 from .boundary import BoundaryArm
 from .classical import CATALOGUE_ARMS
 from .fault_oriented import V2_ARMS
+from .control_flow import ControlFlowArm
 
 
 def default_arms():
@@ -10,7 +11,7 @@ def default_arms():
 
 
 def available_arms():
-    return (PlainArm(), BoundaryArm(), *(arm() for arm in (*CATALOGUE_ARMS, *V2_ARMS)))
+    return (PlainArm(), BoundaryArm(), *(arm() for arm in (*CATALOGUE_ARMS, *V2_ARMS)), ControlFlowArm())
 
 
 def selected_arms(names):

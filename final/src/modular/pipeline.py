@@ -212,6 +212,7 @@ class BenchmarkPipeline:
                          "langchain-core", "openai", "httpx"]
         if any(getattr(arm, "measures_catalogue", False) for arm in self.arms):
             package_names.append("pydantic")
+        package_names.extend(self.input_generator.runtime_dependencies())
         self.artifacts.write("modular_manifest.json", {
             "protocol": "input-generation-benchmark-v2", "tasks": task_ids,
             "cohort_sha256": self.cohort_stage.cohort["cohort_sha256"],

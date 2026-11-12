@@ -1,3 +1,4 @@
+- [Control-flow Git publication](control-flow-commit.md) — user requests module commit/push to main, excluding plan; staged-tree checks
 - [Test slides arm/module plan](test-slides-arm-module-plan.md) — chỉ EP/BVA/DT;weakEP+normalBVA single-fault,ep_bva chính;catalogue tối giản,prompt ≤8 dòng kiểu soft BVA,ràng buộc chuyển sang checker;0newruns
 - [Repair I/O contracts autonomously](repair-io-contract-autonomously.md) — user requires fix+rerun; never present routine interface failure as terminal research result
 - [Prefect publication and Vietnamese reports](run-console.md) — rules7–8;7run names dễ đọc/IDgiữ nguyên,5presets migrated;names.py quản lý nhãn,0newworkload

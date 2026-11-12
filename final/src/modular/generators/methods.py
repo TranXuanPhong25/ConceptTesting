@@ -41,6 +41,10 @@ class MethodInputGenerator(InputGenerator):
     def dependency_objects(self):
         return self.methods
 
+    def runtime_dependencies(self):
+        return tuple(dict.fromkeys(package for method in self.methods
+                     for package in getattr(method, 'runtime_dependencies', lambda: ())()))
+
     def source_dependencies(self):
         paths = []
         for method in self.methods:

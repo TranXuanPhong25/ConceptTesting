@@ -66,10 +66,13 @@ def execute(job: dict) -> dict:
                     active = json.loads((progress / "active.json").read_text())
                 except (OSError, ValueError):
                     active = None
-                if (job.get("mode") in ("oracle", "evaluate")
+                if (job.get("mode") in ("oracle", "evaluate", "control_flow")
                         and len(job.get("tests", [])) == 1
                         and active == {"mode": job["mode"], "input_index": 0}):
-                    return {"tests": [{"status": "timeout", "timeout_source": "sandbox_wall_guard"}]}
+                    observation = {"status": "timeout", "timeout_source": "sandbox_wall_guard"}
+                    if job['mode'] in ('control_flow',):
+                        observation['domain'] = 'unknown'
+                    return {"tests": [observation]}
                 raise ExecutionError("Sandbox exceeded overall wall timeout") from None
         if proc.returncode != 0:
             raise ExecutionError(f"Sandbox infrastructure exited {proc.returncode}")

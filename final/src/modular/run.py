@@ -57,7 +57,9 @@ def main(arguments=None):
         if requested_ids - known_ids or len(requested_ids) != len(options.task_ids):
             parser.error("--task-ids must contain unique known task IDs")
         tasks = [task for task in tasks if task["task_id"] in requested_ids]
-    input_tokens = options.input_tokens or (4096 if any(getattr(arm, "measures_catalogue", False) for arm in arms) else 2048)
+    input_tokens = options.input_tokens or max(
+        4096 if any(getattr(arm, "measures_catalogue", False) for arm in arms) else 2048,
+        *(getattr(arm, 'default_input_tokens', 2048) for arm in arms))
     if input_tokens + 128 >= options.context_tokens:
         parser.error("Completion reserve must leave prompt context")
     settings = PipelineSettings(target_programs=options.target_programs, input_budget=options.input_budget,
