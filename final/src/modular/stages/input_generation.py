@@ -32,4 +32,5 @@ class InputGenerationStage(PipelineStage):
         validate_generated_inputs(result, task_id=context.task["task_id"], input_budget=context.settings.input_budget)
         # VALIDATION END: every producer uses the same reference-input contract.
         context.artifacts.write(path, result)
-        context.inputs = result
+        # Freeze exactly the serialized artifact, including normalized JSON metadata keys.
+        context.inputs = context.artifacts.read(path)

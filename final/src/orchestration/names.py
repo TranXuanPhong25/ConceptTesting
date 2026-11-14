@@ -41,6 +41,8 @@ def benchmark_run_name(config, preview_only=False):
                   decision_table='DT', ep_strong='Strong EP', bva_robust='Robust BVA',
                   bva_worst_case='Worst-case BVA', ep_dt_bva='EP + DT + BVA')
     labels.update(ep_bva_v2='EP + BVA v2', decision_table_v2='DT v2')
+    labels.update(control_flow='Control-flow', spec_obligation='Spec obligations',
+                  control_flow_obligation='Control-flow + spec obligations')
     arms = ' vs '.join(labels[name] for name in config['arms'])
     mode = 'batch' if config['mode'] == 'batch' else 'per-PUT, shared budget'
     return ('Preview · ' if preview_only else '') + f'{scope} · {arms} · {mode} · {config["inputs_per_task"]} inputs mỗi task mỗi arm'

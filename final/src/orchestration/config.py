@@ -6,7 +6,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
-from final.src.modular.arm_names import CATALOGUE_ARM_NAMES
+from final.src.modular.arm_names import CATALOGUE_ARM_NAMES, ANALYSIS_CALL_CAPS
 
 ROOT = Path(__file__).resolve().parents[3]
 COHORTS = {
@@ -58,7 +58,7 @@ def validate_cohort_and_generation_mode(config):
 def validate_arm_selection(config):
     """Require distinct arms supported by the selected generation mode."""
     if config['mode'] == 'batch':
-        allowed_arms = ('plain', 'direct', 'soft_bva', *CATALOGUE_ARM_NAMES)
+        allowed_arms = ('plain', 'direct', 'soft_bva', *CATALOGUE_ARM_NAMES, *ANALYSIS_CALL_CAPS)
     else:
         allowed_arms = ('boundary',)
 
@@ -143,7 +143,7 @@ def preview(values):
             continue
         eligible.append({'task_id':row['task_id'],'base_pass_put_count':passing})
         for arm in logical:
-            logical[arm] += 1 if config['mode']=='batch' else min(passing, config['inputs_per_task'])
+            logical[arm] += ANALYSIS_CALL_CAPS.get(arm, 1) if config['mode']=='batch' else min(passing, config['inputs_per_task'])
         if config['mode']=='per_put':
             allocated=min(passing,config['inputs_per_task']); quotient,remainder=divmod(config['inputs_per_task'],allocated)
             quotas[quotient]+=allocated-remainder

@@ -85,7 +85,9 @@ def usage_by_arm(directory, names):
         attempts, received, missing_usage = 0, 0, 0
         totals = {key:0 for key in ('prompt_tokens','completion_tokens','total_tokens')}
         for call in directory.glob('tasks/*/calls/*'):
-            if call.name != name and not call.name.startswith(name + '_unknown_attempt_'):
+            owned_names = (name, name + '_initial', name + '_feedback', name + '_propose',
+                           name + '_construct', *(name + f'_round_{i}' for i in range(3)))
+            if call.name not in owned_names and not any(call.name.startswith(owner + '_unknown_attempt_') for owner in owned_names):
                 continue
             attempts += (call/'attempt.json').exists()
             if (call/'response.json').exists():

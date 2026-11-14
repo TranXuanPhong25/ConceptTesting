@@ -164,6 +164,8 @@ def run(directory):
     from final.src.modular.arms.plain import PlainArm
     from final.src.modular.arms.classical import CATALOGUE_ARMS, CatalogueSettings
     from final.src.modular.arms.fault_oriented import V2_ARMS
+    from final.src.modular.arms.control_flow import ControlFlowArm
+    from final.src.modular.arms.spec_obligation import SpecObligationArm, ControlFlowObligationArm
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.calls import RecordedModelCalls
     from final.src.modular.cohort import call_usage
@@ -196,6 +198,7 @@ def run(directory):
     factories={'direct':DirectBatchArm,'soft_bva':SoftBvaBatchArm,
                'plain':PlainArm,
                'boundary':lambda:BoundaryArm(base_example_limit=config['per_put_base_examples'])}
+    factories.update({arm.name: arm for arm in (ControlFlowArm, SpecObligationArm, ControlFlowObligationArm)})
     for arm in (*CATALOGUE_ARMS, *V2_ARMS):
         factories[arm.name] = lambda arm=arm: arm(CatalogueSettings(catalogue=config.get('catalogue', True)))
     methods=tuple(factories[name]() for name in config['arms'])

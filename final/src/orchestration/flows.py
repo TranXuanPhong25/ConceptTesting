@@ -121,7 +121,7 @@ async def attach_outputs(directory):
 async def benchmark(
     cohort:Annotated[Literal['humaneval164','known_bug10','boundary_smoke','equivalence_smoke'],Field(title='Frozen PUT cohort',description='Full HumanEval or the outcome-selected known-bug diagnostic cohort.')]='humaneval164',
     mode:Annotated[Literal['batch','per_put'],Field(title='Generation mode',description='batch: one call/task/arm. per_put: one call per allocated PUT; the budget remains per task/arm.')]='batch',
-    arms:Annotated[list[Literal['plain','direct','soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table','ep_strong','bva_robust','bva_worst_case','ep_dt_bva','ep_bva_v2','decision_table_v2']],Field(title='Arms',description='batch: plain/direct/soft_bva và EP/BVA/DT arms. per_put: boundary.')]=['direct','soft_bva'],
+    arms:Annotated[list[Literal['plain','direct','soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table','ep_strong','bva_robust','bva_worst_case','ep_dt_bva','ep_bva_v2','decision_table_v2','control_flow','spec_obligation','control_flow_obligation']],Field(title='Arms',description='batch: plain/direct/soft_bva và EP/BVA/DT arms. per_put: boundary.')]=['direct','soft_bva'],
     task_numbers:Annotated[list[int],Field(title='Task subset (empty means all)',description='HumanEval task numbers, such as 2, 11, 72.')]=[],
     inputs_per_task:Annotated[int,Field(title='Input budget per task per arm',ge=1,le=200,description='In per_put mode, divided across visible PUTs.')]=20,
     completion_tokens:Annotated[int,Field(title='Maximum completion tokens per call',ge=128,le=32768)]=4096,

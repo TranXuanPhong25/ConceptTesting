@@ -600,3 +600,10 @@ response received. Current state running; no terminal detection result claimed.
   This is descriptive full-cohort behavior under20inputs/task,not a matched plain
   or held-out efficacy comparison. Full report:boundary_soft_humaneval164_results_
   2026-11-07.{md,json};no active benchmark worker or automatic rerun remains.
+
+## 2026-11-14 — Retain source obligation v1
+
+- Add spec_obligation and control_flow_obligation: spec scenarios + original-source C1/C2 gaps, safe predicate/reach receipts and bounded Hypothesis construction.
+- Preserve valid direct inputs, full recorded-base dedup, missing/partial evidence unknown, shared freeze/reference/PUT oracle and replay.
+- Register CLI/Prefect arms with2call caps and separate usage; freeze persisted JSON metadata.
+- Retire validated scenario v2 after Gemini comparison:61→35detectedPUT; EP/BVA/DT union84→81. Frozen run evidence retained; no new workload.
