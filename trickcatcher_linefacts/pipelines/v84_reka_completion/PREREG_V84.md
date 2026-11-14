@@ -1,9 +1,0 @@
-# v84 Reka completion addendum — 2026-10-27
-
-This addendum follows the user's instruction to continue after V83 stopped at 26/28. V83 remains terminal and immutable; this run does not resume or alter its ledger. It is explicitly exploratory and cannot restore V83's confirmatory status.
-
-Cohort: only the two unfinished fixed-quarter task IDs, 154 and 158. Task 154 is rerun from scratch in both arms because its existing unknown-accounting generation completed at OpenRouter ($0.0051955, ReKa, finish_reason=stop) but stored completion content is unavailable (content endpoint returned 404). Task 158 had no prior generation attempt. Both arms (`concept-hybrid`, `concept-hybrid-ft`) run at K=1, using the frozen V83 prepared inputs, source implementation, prompts, seeds, provider, and generation settings. Do not splice the old task-154 arm output into this addendum.
-
-Accounting: preserve the V83 unknown reserve of $0.0642930 despite metadata lookup. This addendum's independent hard cap is $0.50. Prior exposure estimate was $1.49336991 (v81/v82 known+reserved $0.74708916; V83 known $0.68198775; V83 unresolved reserve $0.0642930), leaving $2.70663009 under the cumulative $4.20 cap before this addendum. The $0.50 cap leaves additional headroom. No fallback provider. Stop immediately on any new unknown charge, 401/402/403, or cap gate; no retries of incomplete/unknown generations. Explicit provider 429 retries follow the original V83 rule only.
-
-If these two tasks finish, a separate 28-task descriptive report may combine the 26 saved V83 pairs and these two addendum pairs. It must be labeled mixed-run exploratory, use partial scoring (`rule_met=null`), and must not be treated as the preregistered V83 efficacy result. If the addendum is partial, report its own completed pairs only. No new model calls for scoring.
