@@ -7,7 +7,7 @@ dependencies = [
     "coverage>=7.16.1",
     # LLM teacher qua langchain (magma/loop.py, llm_client.py)
     "langchain-core>=1.6",
-    "langchain-google-vertexai>=3.2.4",
+    "langchain-google-vertexai>=3.2.4,<4",
     "langchain-groq>=1.1",      # LLM_PROVIDER=groq  (gpt-oss-120b)
     "langchain-openai>=1.6",    # LLM_PROVIDER=router (9router / OpenAI-compatible -> Gemini)
     "piexif>=1.1.3",
@@ -17,15 +17,16 @@ dependencies = [
     "pytest-cov>=7.1.0",
     "sortedcontainers>=2.4.0",
     "tqdm>=4.70.1",
+    "python-graphs>=1.2.3",
 ]
 
 [project.optional-dependencies]
 # LLM_PROVIDER=vertex: goi Vertex AI native. Cai bang:  uv sync --extra vertex
-vertex = ["langchain-google-vertexai>=2"]
+vertex = ["langchain-google-vertexai>=3.2.4,<4"]
 testcase = ["datasets>=4"]
 eval = ["pytest>=9", "pytest-cov>=7", "sortedcontainers>=2"]
-
-control-flow = ["python-graphs==1.2.3", "hypothesis==6.170.14"]
+testing-tools = ["hypothesis==6.170.14", "z3-solver==4.15.4.0", "allpairspy==2.5.1"]
+control-flow = ["python-graphs==1.2.3", "hypothesis==6.170.14", "crosshair-tool==0.0.112", "z3-solver==4.15.4.0"]
 
 [tool.uv]
 # oracle.py / loop_symcc.py / export_hints.py chi dung stdlib -> khong can dep nao
