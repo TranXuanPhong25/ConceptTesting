@@ -14,7 +14,7 @@ from final.src.runtime.artifacts import digest
 def stopped_generation(tmp_path, monkeypatch):
     monkeypatch.setattr(worker, 'private_endpoint', lambda directory, name: tmp_path/'private-fixture.env')
     source=tmp_path/'source'
-    worker.prepare({'cohort':'known_bug10','task_numbers':[72],'timeout_seconds':3},source)
+    worker.prepare({'cohort':'humaneval164','task_numbers':[72],'timeout_seconds':3},source)
     request={'messages':[{'role':'user','content':'fixture input generation'}],
              'temperature':.7,'max_tokens':2048,'seed':314231}
     call=source/'tasks/72/calls/direct'

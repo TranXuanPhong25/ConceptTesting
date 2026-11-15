@@ -31,11 +31,11 @@ from final.src.modular.pipeline import BenchmarkPipeline
 
 generator = MethodInputGenerator([BoundaryArm()])
 pipeline = BenchmarkPipeline(
-    Path("final/out/development_groups/boundary/smoke/cohort.json"),
-    ArtifactStore(Path("final/out/boundary_smoke_injected")),
+    Path("final/out/cohorts/qwen35_27b_humaneval164/cohort.json"),
+    ArtifactStore(Path("final/out/boundary_injected")),
     input_generator=generator,
     calls=calls,  # ModelCalls backend đã cấu hình
-    settings=PipelineSettings(target_programs=1, input_budget=20),
+    settings=PipelineSettings(target_programs=10, input_budget=20),
 )
 summary = pipeline.run(selected_tasks, metadata)
 ```

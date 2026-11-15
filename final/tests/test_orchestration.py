@@ -9,11 +9,9 @@ from final.src.audits.run_bva_full import SourceGuard
 
 def test_budget_units_do_not_change_between_batch_and_per_put():
     batch=config.preview({})
-    single=config.preview({'cohort':'known_bug10'})
     legacy=config.preview({'mode':'per_put','arms':['boundary']})
     assert batch['logical_call_cap']==314 and batch['eligible_task_count']==157
     assert batch['evaluated_base_pass_put_count']==1454
-    assert single['logical_call_cap']==20 and single['target_program_count']==1
     assert legacy['logical_call_cap']==1454
     assert legacy['per_put_generation_quota_histogram'][2]==1280
     assert sum(int(quota)*count for quota,count in legacy['per_put_generation_quota_histogram'].items())==3140
@@ -48,7 +46,7 @@ def test_private_endpoint_profiles_are_unique_even_when_artifact_leaf_is_run(tmp
 def prepared(tmp_path,monkeypatch):
     monkeypatch.setattr(worker,'private_endpoint',lambda directory,name:tmp_path/'private.env')
     path=tmp_path/'original'
-    worker.prepare({'cohort':'known_bug10','task_numbers':[72]},path)
+    worker.prepare({'cohort':'humaneval164','task_numbers':[72]},path)
     return path
 
 
@@ -56,7 +54,7 @@ def test_prepare_freezes_resolved_config_cohort_and_code(prepared):
     snapshot=worker.read(prepared/'config_snapshot.json')
     assert snapshot['inputs_per_task']==20
     plan=worker.read(prepared/'launch_plan.json')
-    assert plan['target_program_count']==1 and plan['logical_call_cap']==2
+    assert plan['target_program_count']==10 and plan['logical_call_cap']==2
     assert Path(plan['cohort']).is_relative_to(prepared/'runtime')
     SourceGuard(prepared).verify()
     worker.save(prepared/'config_snapshot.json',{**snapshot,'inputs_per_task':99})

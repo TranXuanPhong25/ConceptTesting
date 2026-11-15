@@ -203,7 +203,7 @@ def test_console_new_arm_worker_uses_shared_completion_cap_and_replays_empty_fix
     monkeypatch.setattr("final.src.modular.stages.reference_oracle.execute", unexpected_native)
     monkeypatch.setattr("final.src.modular.stages.put_evaluation.execute", unexpected_native)
     output = tmp_path / "console"
-    preview = worker.prepare({"cohort": "boundary_smoke", "task_numbers": [0],
+    preview = worker.prepare({"cohort": "humaneval164", "task_numbers": [0],
                               "arms": ["plain", "ep_bva"]}, output)
     assert preview["config"]["completion_tokens"] == 4096
     plan = worker.read(output / "launch_plan.json")

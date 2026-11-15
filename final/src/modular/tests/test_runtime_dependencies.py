@@ -19,7 +19,6 @@ class RejectHistoricalImports(importlib.abc.MetaPathFinder):
         if any(fullname == name or fullname.startswith(name + ".") for name in forbidden):
             raise ImportError("Historical dependency: " + fullname)
 sys.meta_path.insert(0, RejectHistoricalImports())
-importlib.import_module("final.src.development_groups")
 for directory in (pathlib.Path("final/src/modular"), pathlib.Path("final/src/runtime")):
     for path in sorted(directory.rglob("*.py")):
         if "tests" in path.parts or path.name in ("__init__.py", "worker.py"):

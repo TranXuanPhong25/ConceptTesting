@@ -49,9 +49,9 @@ giữ policy gốc, không được xem là cùng protocol với confirmation su
 
 ```bash
 final/.venv/bin/python -m final.src.modular.run --mode run \
-  --cohort final/out/development_groups/boundary/all/cohort.json \
+  --cohort final/out/cohorts/qwen35_27b_humaneval164/cohort.json \
   --artifacts final/out/plain_bva_refactored \
-  --arms plain boundary --target-programs 1 --input-budget 20
+  --arms plain boundary --target-programs 10 --input-budget 20
 ```
 
 Transport đọc configuration từ environment hoặc private env file hiện có.

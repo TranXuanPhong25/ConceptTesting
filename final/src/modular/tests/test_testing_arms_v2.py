@@ -46,10 +46,10 @@ def test_optional_hypotheses_survive_decoder_without_certifying_faults(tmp_path)
 
 
 def test_four_arm_smoke_budget_and_json_asset_freeze(tmp_path,monkeypatch):
-    values={'cohort':'boundary_smoke','arms':['ep_bva','ep_bva_v2','decision_table','decision_table_v2'],
+    values={'cohort':'humaneval164','task_numbers':[0,5,18,81,99,120],'arms':['ep_bva','ep_bva_v2','decision_table','decision_table_v2'],
             'completion_tokens':4096,'timeout_seconds':8}
     preview=config.preview(values)
-    assert preview['logical_call_cap']==24 and preview['target_program_count']==1
+    assert preview['logical_call_cap']==24 and preview['target_program_count']==10
     assert preview['max_input_slots_per_arm']==120
     monkeypatch.setattr(worker,'private_endpoint',lambda *args:tmp_path/'private.env')
     prepared=tmp_path/'prepared';worker.prepare(values,prepared)

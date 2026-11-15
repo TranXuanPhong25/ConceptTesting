@@ -14,20 +14,6 @@
     }
   },
   {
-    "name": "Known10 · Direct vs Soft BVA · 1 PUT mỗi task",
-    "description": "10 known-bug PUTs · cùng batch prompt/schema của run mới. 20 inputs/PUT/arm; tổng20 calls. Không phải exact replay prompt-style lịch sử.",
-    "parameters": {
-      "cohort": "known_bug10",
-      "mode": "batch",
-      "arms": [
-        "direct",
-        "soft_bva"
-      ],
-      "completion_tokens": 2048,
-      "timeout_seconds": 8
-    }
-  },
-  {
     "name": "Smoke3 · Direct vs Soft BVA · tasks 2, 11, 72",
     "description": "3 task2/11/72 · Direct vs Soft, tổng6 calls. Dùng preview_only để chỉ xem budget, không gọi LLM.",
     "parameters": {
@@ -56,70 +42,6 @@
         "boundary"
       ],
       "completion_tokens": 2048,
-      "timeout_seconds": 8
-    }
-  },
-  {
-    "name": "Smoke6 · Plain vs EP + BVA · chính",
-    "description": "Chưa chạy. 1 representative PUT/task; 20 inputs/task/arm; completion cap chung 4096 tokens/call. Tối đa12 calls/240 input records. Không tự nối dev/check.",
-    "parameters": {
-      "cohort": "boundary_smoke",
-      "mode": "batch",
-      "arms": [
-        "plain",
-        "ep_bva"
-      ],
-      "completion_tokens": 4096,
-      "catalogue": true,
-      "timeout_seconds": 8
-    }
-  },
-  {
-    "name": "Smoke6 · Plain vs Weak EP · ablation",
-    "description": "Chưa chạy. 1 representative PUT/task; 20 inputs/task/arm; completion cap chung 4096 tokens/call. Tối đa12 calls/240 input records. Không tự nối dev/check.",
-    "parameters": {
-      "cohort": "equivalence_smoke",
-      "mode": "batch",
-      "arms": [
-        "plain",
-        "equivalence"
-      ],
-      "completion_tokens": 4096,
-      "catalogue": true,
-      "timeout_seconds": 8
-    }
-  },
-  {
-    "name": "Smoke6 · Plain vs Normal BVA · ablation",
-    "description": "Chưa chạy. 1 representative PUT/task; 20 inputs/task/arm; completion cap chung 4096 tokens/call. Tối đa12 calls/240 input records. Không tự nối dev/check.",
-    "parameters": {
-      "cohort": "boundary_smoke",
-      "mode": "batch",
-      "arms": [
-        "plain",
-        "bva_normal"
-      ],
-      "completion_tokens": 4096,
-      "catalogue": true,
-      "timeout_seconds": 8
-    }
-  },
-  {
-    "name": "Smoke2 · Plain vs Decision Table",
-    "description": "Chưa chạy. 1 representative PUT/task; 20 inputs/task/arm; completion cap chung 4096 tokens/call. 4 calls; eligibility theo spec: XOR hai bit và chẵn/lẻ × vị trí.",
-    "parameters": {
-      "cohort": "equivalence_smoke",
-      "mode": "batch",
-      "arms": [
-        "plain",
-        "decision_table"
-      ],
-      "completion_tokens": 4096,
-      "catalogue": true,
-      "task_numbers": [
-        11,
-        85
-      ],
       "timeout_seconds": 8
     }
   },

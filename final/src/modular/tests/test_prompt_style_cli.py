@@ -78,7 +78,7 @@ def test_wrong_model_is_a_configuration_error(private_config):
 
 def test_missing_config_fails_before_creating_any_run(private_config, monkeypatch, capsys):
     output = private_config / "must-not-exist"
-    monkeypatch.setattr(sys, "argv", ["run_prompt_style", "--artifacts", str(output)])
+    monkeypatch.setattr(sys, "argv", ["run_prompt_style", "--cohort", str(private_config / "cohort.json"), "--artifacts", str(output)])
     with pytest.raises(SystemExit) as failure:
         runner.main()
     assert failure.value.code == 2

@@ -11,9 +11,6 @@ from final.src.modular.arm_names import CATALOGUE_ARM_NAMES, ANALYSIS_CALL_CAPS
 ROOT = Path(__file__).resolve().parents[3]
 COHORTS = {
     'humaneval164': 'final/out/cohorts/qwen35_27b_humaneval164/cohort.json',
-    'known_bug10': 'final/out/development_groups/boundary/known_bug_10/cohort.json',
-    'boundary_smoke': 'final/out/development_groups/boundary/smoke/cohort.json',
-    'equivalence_smoke': 'final/out/development_groups/equivalence/smoke/cohort.json',
 }
 DEFAULTS = {'cohort': 'humaneval164', 'mode': 'batch', 'arms': ['direct', 'soft_bva'],
     'task_numbers': [], 'inputs_per_task': 20, 'completion_tokens': 4096, 'context_tokens': 8192,

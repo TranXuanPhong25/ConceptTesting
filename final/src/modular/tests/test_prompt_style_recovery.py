@@ -131,7 +131,12 @@ def test_offline_continuation_imports_received_and_inherited_slots(tmp_path, mon
     cohort = tmp_path / "cohort.json"
     runner.save(cohort, {})
     source = tmp_path / "interrupted"
-    options = Namespace(artifacts=source, cohort=cohort, styles=Path("final/review/prompts/prompt_style_v1.json"),
+    styles = tmp_path / "styles.json"
+    runner.save(styles, {"settings": {"temperature": 0.7, "max_tokens": 2048,
+        "context_tokens": 8192, "input_budget": 20, "model": runner.MODEL},
+        "system": "fixture system", "common": "fixture common",
+        "styles": {arm: "fixture guidance" for arm in runner.ARMS}})
+    options = Namespace(artifacts=source, cohort=cohort, styles=styles,
                         reuse=None, no_reuse=False, continue_from=None)
     runner.prepare(options)
     (source / ".worker.lock").touch()

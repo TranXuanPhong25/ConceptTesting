@@ -221,7 +221,7 @@ def prepare_run(options, reuse_sources):
     directory.mkdir(parents=True)
     source_paths = execution_sources() + [Path(__file__), options.cohort, options.styles,
         Path("final/data/contracts.json"), Path("final/data/humaneval.jsonl"),
-        Path("final/data/humanevalplus_v0.1.10_references.json"), Path("final/run_prompt_style10.sh")]
+        Path("final/data/humanevalplus_v0.1.10_references.json")]
     order, reused, reused_usage, prior_outputs = [], [], [], []
     for index, task in enumerate(tasks):
         number = int(task["task_id"].split("/")[-1])
@@ -356,7 +356,7 @@ def worker(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cohort", type=Path, default=Path("final/out/development_groups/boundary/known_bug_10/cohort.json"))
+    parser.add_argument("--cohort", type=Path, required=True)
     parser.add_argument("--styles", type=Path, default=Path("final/review/prompts/prompt_style_v1.json"))
     parser.add_argument("--reuse", type=Path)
     parser.add_argument("--continue-from", type=Path, help="Continue a stopped run in a fresh directory, importing received and inherited responses")

@@ -256,13 +256,9 @@ cấp quyền chạy hoặc tự chuyển sang dev/check/full.
 
 ## 10. Protocol khi user chọn chạy
 
-- Candidate pool từ [development groups](review/development_groups/README.md):
-  EP/BVA dùng nhóm boundary/equivalence. DT chưa có nhóm: eligibility là spec có
-  ≥2 conditions tương tác dẫn tới actions khác nhau, chọn theo spec, không theo
-  hidden outcomes.
-- Smoke ≤6 task, một representative PUT/task, arm `plain` + một arm mới, 20
-  inputs/task/arm, 1 call/task/arm (≤12 calls, ≤240 input records). Dev ≤12, check
-  ≤4 task-disjoint. Không tự nối smoke → dev → check/full.
+- Chọn task từ frozen full HumanEval cohort bằng `task_numbers`; chỉ chạy scope
+  được user chỉ định. Eligibility của DT dựa trên spec có ≥2 conditions tương
+  tác dẫn tới actions khác nhau, không chọn theo hidden outcomes.
 - Cùng visibility/order, model/sampling/seed, completion/context cap, parser/oracle/
   timeout/scorer.
 - Raw và matched-valid-input-budget là hai báo cáo; subset ngẫu nhiên có seed.

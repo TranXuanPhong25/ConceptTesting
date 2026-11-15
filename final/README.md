@@ -15,10 +15,9 @@ final/
 │   ├── modular/            # Pipeline hiện tại: plain và BVA
 │   ├── runtime/            # Sandbox, worker, model transport và checkpoint
 │   ├── audits/             # Audit offline trên artifacts đã lưu
-│   ├── development_groups.py
 │   └── core_model.py       # Model interface
-├── data/                   # HumanEval, corrected references, contracts, inventory
-├── tests/                  # Tests cho baseline và development selection
+├── data/                   # HumanEval, corrected references, contracts
+├── tests/                  # Tests cho pipeline
 ├── out/                    # Run outputs, execution cache và checkpoints
 └── review/                 # Reports và phân tích kết quả
 ```
@@ -29,9 +28,9 @@ Pipeline hiện tại: frozen PUTs → sinh input → freeze → reference/domai
 ```bash
 final/.venv/bin/python -m final.src.modular.run --help
 final/.venv/bin/python -m final.src.modular.run --mode run \
-  --cohort final/out/development_groups/boundary/all/cohort.json \
+  --cohort final/out/cohorts/qwen35_27b_humaneval164/cohort.json \
   --artifacts final/out/plain_bva_new --arms plain boundary \
-  --target-programs 1 --input-budget 20
+  --target-programs 10 --input-budget 20
 
 final/.venv/bin/python -m pytest final/src/modular/tests final/tests -q
 ```

@@ -19,7 +19,6 @@ from final.src.modular.execution_cache import InputExecutionCache
 from final.src.runtime.artifacts import digest
 
 ROOT = Path(__file__).resolve().parents[3]
-COHORT = ROOT / "final/out/development_groups/boundary/all/cohort.json"
 REFERENCES = ROOT / "final/data/humanevalplus_v0.1.10_references.json"
 FROZEN_RUN = ROOT / "final/out/boundary_all_plain_bva_compiled_20261105"
 
@@ -264,11 +263,12 @@ def audit_task(task, ref, records, output):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--cohort", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     options = parser.parse_args()
     out = options.output.resolve()
     out.mkdir(parents=True, exist_ok=True)
-    cohort = json.loads(COHORT.read_text())
+    cohort = json.loads(options.cohort.read_text())
     refs = json.loads(REFERENCES.read_text())["tasks"]
     corpora = {t["task_id"]: candidates(int(t["task_id"].split("/")[1])) for t in cohort["tasks"]}
     plan = {"schema": "posthoc-boundary-feasibility-1", "cohort_sha256": cohort["cohort_sha256"],

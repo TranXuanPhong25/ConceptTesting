@@ -5,7 +5,6 @@
 - `humanevalplus_v0.1.10_references.json`: pinned corrected reference-only export,
   with no hidden input arrays. Provenance: [reference notes](references_README.md).
 - `contracts.json`, `evalplus_LICENSE`: unchanged domain/tolerance metadata.
-- `development_groups/`: manual task labels, structural inventory and subset plans.
   Pre-layout snapshots are recoverable from Git history. Offline rebuild changed
   only the builder source hash and its dependent inventory hash; task records and
   selected task/PUT identities remain unchanged.

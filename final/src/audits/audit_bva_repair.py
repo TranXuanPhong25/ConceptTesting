@@ -62,7 +62,7 @@ def audit(source_run, cohort_path):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-run", type=Path, default=Path("final/out/boundary_all_plain_bva_20261105"))
-    parser.add_argument("--cohort", type=Path, default=Path("final/out/development_groups/boundary/all/cohort.json"))
+    parser.add_argument("--cohort", type=Path, required=True)
     parser.add_argument("--output", type=Path, default=Path("final/review/boundary_repair_offline_2026-11-05.json"))
     options = parser.parse_args()
     result = audit(options.source_run, options.cohort)

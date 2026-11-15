@@ -258,7 +258,7 @@ def run_evaluation(directory):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-run", type=Path, default=Path("final/out/boundary_prompt_style10_20261107_120909"))
-    parser.add_argument("--cohort", type=Path, default=Path("final/out/development_groups/boundary/known_bug_10/cohort.json"))
+    parser.add_argument("--cohort", type=Path, required=True)
     parser.add_argument("--artifacts", type=Path)
     parser.add_argument("--evaluate", action="store_true", help="Evaluate only after all fixed/pool inputs freeze; no model calls")
     options = parser.parse_args()

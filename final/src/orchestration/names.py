@@ -33,9 +33,7 @@ def historical_run_name(directory, metrics=None):
 
 def benchmark_run_name(config, preview_only=False):
     selected = config.get('task_numbers', [])
-    scope = (f'{len(selected)} task' if selected else
-             {'humaneval164':'Full164', 'known_bug10':'Known10', 'boundary_smoke':'Boundary smoke6',
-              'equivalence_smoke':'EP smoke6'}[config['cohort']])
+    scope = f'{len(selected)} task' if selected else 'Full164'
     labels = {'direct': 'Direct', 'soft_bva': 'Soft BVA', 'boundary': 'Soft BVA'}
     labels.update(plain='Plain', equivalence='Weak EP', bva_normal='Normal BVA', ep_bva='EP + BVA',
                   decision_table='DT', ep_strong='Strong EP', bva_robust='Robust BVA',
