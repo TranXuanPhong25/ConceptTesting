@@ -35,10 +35,8 @@ class ArtifactStore:
         save(self.path(relative_path), value)
 
     def load_or_compute(self, relative_path: str, compute: Callable[[], Any]) -> Any:
-        if self.exists(relative_path):
+        if self.read_only or self.exists(relative_path):
             return self.read(relative_path)
-        if self.read_only:
-            raise FileNotFoundError(f"Read-only replay requires {relative_path}")
         result = compute()
         self.write(relative_path, result)
         return result

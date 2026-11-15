@@ -1,3 +1,10 @@
+## 2026-11-15 — Simplify runner và artifact loading
+
+- Tách load options/settings, prepare dữ liệu và construct pipeline thành các bước rõ nghĩa.
+- Gỡ background KeepAlive khỏi modular runner; giữ helper cho legacy callers.
+- Gỡ nhánh native Tool Agent local chưa được track; CLI không expose `--agent-tools`.
+- Replay/cache đọc artifact trực tiếp; giữ read-only và checkpoint guards.
+
 # CHANGELOG
 
 ## 2026-11-10 — EP/BVA/Decision Table v2

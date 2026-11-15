@@ -64,6 +64,13 @@ def test_read_only_store_never_computes_missing_artifacts(tmp_path):
         artifacts.load_or_compute("missing.json", lambda: pytest.fail("Computed during replay"))
 
 
+@pytest.mark.parametrize("read_only", [False, True])
+def test_saved_artifact_loads_without_computing(tmp_path, read_only):
+    ArtifactStore(tmp_path).write("saved.json", {"inputs": [1, 2]})
+    artifacts = ArtifactStore(tmp_path, read_only=read_only)
+    assert artifacts.load_or_compute("saved.json", lambda: pytest.fail("Recomputed saved artifact")) == {"inputs": [1, 2]}
+
+
 def test_metadata_and_settings_drift_rejected_before_generation(tmp_path):
     pipeline = pipeline_at(tmp_path)
     pipeline.run([TASK], {TASK["task_id"]: META})
