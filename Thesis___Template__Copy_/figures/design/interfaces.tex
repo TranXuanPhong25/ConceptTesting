@@ -1,0 +1,15 @@
+\begin{tikzpicture}[font=\small,>=stealth,
+ box/.style={draw,align=left,text width=5.5cm,minimum height=1.5cm},edge/.style={->}]
+\node[box] (pipe) at (0,0) {\textbf{BenchmarkPipeline}\\run, freeze\_inputs\\validate\_stage\_order};
+\node[box] (gen) at (8.4,0) {\textbf{InputGenerator}\\generate(context)\\configuration, stage hooks};
+\node[box] (ctx) at (0,-3.1) {\textbf{TaskContext}\\task, metadata, settings\\packet, inputs, oracle, result};
+\node[box] (method) at (8.4,-3.1) {\textbf{InputMethod}\\run(context)\\name, configuration};
+\node[box] (artifact) at (0,-6.2) {\textbf{ArtifactStore}\\read, write, load\_or\_compute\\read\_only, task paths};
+\node[box] (calls) at (8.4,-6.2) {\textbf{ModelCalls}\\token\_count, complete\\model ID, request/response};
+\draw[edge] (pipe)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{gọi}(gen);
+\draw[edge] (pipe)--node[left]{tạo và truyền}(ctx);
+\draw[edge] (gen)--node[right]{adapter gọi methods}(method);
+\draw[edge] (ctx)--node[left]{lưu evidence}(artifact);
+\draw[edge] (method)--node[right]{gọi qua context}(calls);
+\draw[edge,dashed] (ctx)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{được dùng bởi}(method);
+\end{tikzpicture}

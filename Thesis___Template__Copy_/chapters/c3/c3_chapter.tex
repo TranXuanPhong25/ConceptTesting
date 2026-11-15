@@ -1,0 +1,135 @@
+\chapter{Phân tích và thiết kế hệ thống}
+\label{chap:method}
+
+ConceptTester tổ chức việc sinh input, kiểm tra miền và đánh giá PUT thành các bước có artifact riêng. Thiết kế tách dữ liệu model được xem khi sinh test khỏi kết quả reference dùng để chấm. Chương này mô tả các interface và cơ chế của snapshot tạo ra run Gemini ngày 12/11/2026. Nhánh Control-flow của snapshot dùng Hypothesis; những thay đổi symbolic trong working tree sau đó không thuộc phương pháp được đánh giá ở Chương~\ref{chap:experiment}.
+
+\section{Yêu cầu và các ca sử dụng}
+
+Người thực hiện thí nghiệm chọn task, arm, model và budget. Hệ thống phải lưu các giá trị thực sự áp dụng, giữ response đã nhận và cho phép tìm từ một detection về input cùng hai observations xác nhận. Các chức năng chính gồm chuẩn bị run, sinh và đánh giá dữ liệu, xem kết quả, tiếp tục run gián đoạn và replay chỉ đọc.
+
+Khi chuẩn bị run, người dùng chọn cohort và các giới hạn. Hệ thống kiểm tra task IDs, arm hợp lệ, context/completion budget và thư mục output. Khi thực thi, hệ thống ghi cấu hình và source snapshot trước khi gọi model. Khi xem kết quả, người dùng đọc số input hợp lệ, số PUT/task có detection và usage; các phần thiếu dữ liệu phải giữ trạng thái pending. Khi resume, lịch sử attempts và response cũ được bảo toàn. Replay phải từ chối dữ liệu thiếu thay vì tự gọi model hoặc chạy PUT để bù.
+
+Dữ liệu do model sinh phải qua kiểm tra cấu trúc và chữ ký hàm. Input bị loại cần lý do cụ thể. Lỗi catalogue được ghi riêng để một input hợp lệ vẫn có thể được đánh giá. Đối với thực thi, runtime giới hạn tài nguyên, không truyền credentials và phân biệt lỗi hạ tầng với failure của PUT. Những yêu cầu này chi phối các ranh giới module trong Hình~\ref{fig:architecture}.
+
+\section{Kiến trúc tổng thể}
+
+\begin{figure}[htbp]
+\centering
+\input{figures/design/architecture}
+\caption{Các thành phần của prototype và dữ liệu trao đổi giữa chúng. Sơ đồ do đề tài xây dựng từ implementation.}
+\label{fig:architecture}
+\end{figure}
+
+Lớp điều khiển nhận cấu hình và quản lý vòng đời run. CLI cho phép chọn backend và arm; Prefect cung cấp giao diện preset và lịch sử. Console hiện dùng backend Qwen, còn run Gemini được thực hiện bằng runner riêng qua Vertex AI rồi ghi hồ sơ vào Prefect. Do đó, việc có record Gemini trong Prefect không có nghĩa form console đã có selector Vertex.
+
+Lớp sinh input gồm các arm và logic chuẩn bị ngữ cảnh. Lớp đánh giá dùng chung reference, domain checks, dedup và scorer. Runtime phụ trách các lời gọi chương trình trong sandbox. ArtifactStore lưu JSON bất biến trong từng output directory; execution cache dùng SQLite để tái sử dụng kết quả khi identity khớp. Các lớp đọc cùng cấu hình nhưng không chia sẻ trực tiếp credentials với sandbox.
+
+\subsection{Interface giữa pipeline và phương pháp sinh}
+
+Hình~\ref{fig:interfaces} thể hiện các quan hệ ở mức interface. \texttt{BenchmarkPipeline} phụ thuộc vào \texttt{InputGenerator}; generator trả các batch mang tên arm thay vì buộc core xử lý từng thuật toán riêng. \texttt{MethodInputGenerator} là adapter gọi các methods và gắn những measurement stages cần thiết.
+
+\begin{figure}[htbp]
+\centering
+\input{figures/design/interfaces}
+\caption{Các interface chính và quan hệ gọi ở mức module. Đây là sơ đồ lớp rút gọn, không liệt kê toàn bộ trường và phương thức.}
+\label{fig:interfaces}
+\end{figure}
+
+\texttt{TaskContext} mang dữ liệu của một task qua các stage: đặc tả, metadata, settings, cohort record, packet, inputs, oracle và result. Cờ \texttt{inputs\_frozen} chỉ cho phép reference chạy sau khi ghi freeze. Tập \texttt{completed\_stages} hỗ trợ kiểm tra dependency; trường \texttt{extensions} chứa measurement hoặc cache receipts mà không thay schema kết quả chung.
+
+\texttt{ModelCalls} cung cấp đếm token và completion. Lớp ghi nhận model calls lưu request, response và attempts. \texttt{ArtifactStore} cung cấp read/write và chế độ read-only. Khi nội dung artifact đã tồn tại khác nội dung định ghi, hệ thống báo lỗi thay vì thay kết quả cũ. Thiết kế này khiến việc đổi source hoặc config cần output directory mới.
+
+\section{Chuẩn bị cohort và ngữ cảnh}
+
+Cohort chứa các cài đặt đã sinh trước đó cùng kết quả base tests. Pipeline hiện tại đọc cohort đã cố định; so sánh các arm không sinh lại PUT. Một task được nhận nếu có đủ số cài đặt theo cấu hình và ít nhất một cài đặt vượt base tests. Thiếu số cài đặt được ghi \texttt{generation\_shortfall}; không có base-pass PUT được ghi \texttt{no\_base\_pass}. Các trạng thái này khác với lỗi generation trong lần sinh input đang đánh giá.
+
+Với task đủ điều kiện, bước chuẩn bị tạo packet từ spec, contract, base tests và các PUT được phép xuất hiện trong prompt. Thứ tự visible PUTs được xác định bằng hash của task/PUT ID. Khi prompt quá dài, hệ thống bớt PUTs ở cuối thứ tự đó cho tới khi đủ chỗ cho prompt, completion cap và 128 tokens dự phòng. Các arm dùng shared prompt được kiểm cùng lúc để không có một arm được xem thêm PUT chỉ vì guidance ngắn hơn.
+
+Packet giữ \texttt{visible\_put\_ids} và số token của prompt từng arm. Reference code và expected outputs của input mới không nằm trong packet. Số PUT nhìn thấy có thể nhỏ hơn số base-pass PUT được evaluation; giới hạn visibility vì thế phải được lưu như một phần của cấu hình và evidence.
+
+\section{Các phương pháp sinh dữ liệu}
+
+\subsection{Plain và hợp đồng output chung}
+
+Plain yêu cầu LLM tạo tối đa số input trong budget từ spec, contract và visible PUTs. Phản hồi dùng JSON gồm danh sách \texttt{inputs}; mỗi record cung cấp \texttt{arguments} theo đúng tên tham số. Model không tạo assertion hoặc expected output. Với hàm \path{has_close_elements}, một record đã lưu có \path{numbers=[1.0,1.0]} và \path{threshold=0.1}.
+
+\texttt{CallBuilder} đọc chữ ký từ AST, gắn giá trị theo tên tham số rồi tạo literal cho args/kwargs. Việc đọc chữ ký không thực thi source hoặc annotations. Builder kiểm tham số thừa, tham số thiếu, kiểu giá trị được hỗ trợ, số phần tử, độ lồng và số thực hữu hạn. Với ví dụ trên, kết quả nội bộ là \texttt{args="([1.0, 1.0], 0.1)"} và \texttt{kwargs="\{\}"}. Phép parse này tạo lời gọi; domain của bài toán vẫn được kiểm sau đó bằng reference stage.
+
+\subsection{EP+BVA v2 và Decision Table v2}
+
+Hai arm v2 dùng phần ngữ cảnh chung nhưng bổ sung guidance và một soft example từ miền khác. EP+BVA v2 yêu cầu các lớp hành vi và biên; DT v2 yêu cầu điều kiện, quy tắc và hành động. Một completion chứa cả catalogue lẫn inputs. Trường \texttt{covers} có thể liên kết input với obligation ID; Fault Hypotheses là annotation tùy chọn do model đề xuất, chưa phải fault đã xác minh.
+
+Decoder kiểm catalogue bằng Pydantic và các mechanical checks, như ID trùng, lớp interval chồng lấn hoặc quan hệ giữa original rules và merged rules. Record có arguments hợp lệ vẫn được giữ nếu catalogue lỗi. Vì thế, \texttt{catalogue\_invalid} có thể đi cùng valid inputs và detections. Sau domain/reference checks, measurement chỉ xét các input còn sống; nó phân biệt model tự khai báo coverage với coverage có metadata đủ để kiểm bằng máy.
+
+V2 thay đổi cả guidance và example. Kết quả của v2 đo cả cấu hình đó; chưa có cơ sở quy phần tăng hoặc giảm riêng cho Fault Hypotheses. Nếu thiếu metadata để kiểm ngữ nghĩa lớp, biên hoặc rule, trạng thái đo giữ pending.
+
+\subsection{Control-flow có feedback giới hạn}
+
+Hình~\ref{fig:cf-mechanism} mô tả Control-flow của snapshot thí nghiệm. Từ visible base-pass PUTs, bộ phân tích kết hợp CFG/coverage để tìm C1/C2 targets chưa được base evidence quan sát, kèm static def-use hints khi công cụ hỗ trợ. Nếu thiếu coverage lưu sẵn, arm có thể trace các base calls đã ghi; thiếu evidence không được chuyển thành coverage bằng 0.
+
+\begin{figure}[htbp]
+\centering
+\input{figures/design/control-flow}
+\caption{Vòng sinh và kiểm tra candidates của Control-flow trong snapshot Hypothesis. Feedback chỉ chứa domain và coverage observations.}
+\label{fig:cf-mechanism}
+\end{figure}
+
+Arm chọn tối đa sáu targets theo lượt giữa các PUT để tránh một source chiếm hết budget. LLM nhận targets, source và base evidence rồi đề xuất concept, quan hệ đầu vào, instructions, input cụ thể và có thể kèm predicate/strategy. Predicate là giả thuyết để kiểm tra, không tự xác nhận ý nghĩa concept.
+
+Candidates đến từ input trực tiếp của LLM hoặc Hypothesis lấy mẫu theo strategy đã khai báo. Ledger giữ nguồn của từng candidate. Sau chuẩn hóa và dedup, arm trace candidate trên original PUT trong sandbox với timeout tối đa một giây. Một observation ghi domain, status, lines/arcs và target hits. Candidate làm PUT exception vẫn có thể chứng kiến một nhánh đã đi qua; quan sát coverage đó chưa phải kết quả phát hiện lỗi chức năng.
+
+Snapshot giới hạn hai vòng model/task, 64 candidate--PUT checks và tối đa 20 selected inputs/task. Nếu còn target hoặc lỗi hợp đồng, vòng sau nhận các observation hữu hạn của vòng trước. Feedback không chứa reference output, actual return value hay kết luận wrong-value. Khi kết thúc, arm ưu tiên candidates hợp lệ phủ thêm target, rồi bổ sung các candidates còn lại tới budget. Expected outputs chỉ được tạo sau freeze.
+
+\section{Freeze, oracle và evaluation}
+
+\subsection{Luồng xử lý một task}
+
+Hình~\ref{fig:task-flow} thể hiện thứ tự của một task. Generic pipeline có thể sinh xong toàn cohort rồi freeze; runner Gemini dùng pipeline một task và chuyển task đã freeze sang consumer evaluation. Khi consumer chấm task trước, producer có thể sinh task tiếp theo. Runner lưu receipt cùng hash trước khi submit và không gửi kết quả reference/PUT trở lại producer.
+
+\begin{figure}[p]
+\centering
+\input{figures/design/task-flow}
+\caption{Luồng một task trong run Gemini có producer/consumer. Mọi arm của task phải freeze trước reference.}
+\label{fig:task-flow}
+\end{figure}
+
+Freeze ghi hash của inputs theo task và cohort. Consumer kiểm lại hash và manifest, tải packet/inputs đã lưu rồi mới bật \texttt{inputs\_frozen}. Việc evaluation chạy song song với generation ở task khác không thay barrier của task đang chấm. Native lock giới hạn các phần thực thi dùng chung tài nguyên; overlap không có nghĩa mọi bước CPU đều chạy đồng thời.
+
+\subsection{Reference và domain admission}
+
+Reference stage chọn đúng code, entry point, contract và tolerance của task từ bản HumanEval+ đã ghim. Các input từ các arm được chạy qua reference hai observations với repeat slots riêng. Input được nhận khi cả hai lần có status \texttt{ok}, expected và input key ổn định, đồng thời không trùng base input. Sai miền, reference error và instability đều có lý do loại.
+
+Bước này hợp các input trùng giữa arms thành một danh sách tests để tránh thực thi lặp. Mapping \texttt{arm\_indices} vẫn giữ arm nào sở hữu input. Nếu một input xuất hiện ở hai arm và làm PUT sai, cả hai arm có thể được ghi detection, còn union chỉ đếm PUT một lần. Metadata survivor theo arm giúp catalogue measurement giữ đúng liên kết sau khi lọc và dedup.
+
+\subsection{Scorer và quy tắc xác nhận}
+
+Mọi base-pass PUT của task được chạy trên union valid inputs, kể cả PUT không xuất hiện trong prompt. Evaluator so sánh actual với expected theo quy tắc của task. Lượt đầu chạy toàn bộ tests; lượt xác nhận chỉ chạy những input có status \texttt{fail}, \texttt{error} hoặc \texttt{timeout}. Input pass không có observation thứ hai trong policy này.
+
+Một input được ghi failing khi cả hai observations thuộc nhóm failure statuses. Hai status không bắt buộc giống nhau: fail/error vẫn đáp ứng quy tắc xác nhận nhưng được ghi unstable vì status khác nhau. Unstable chỉ phản ánh những input được retest; đây không phải kết luận về mọi input pass. Kết quả của arm là giao giữa failing indices với \texttt{arm\_indices} của arm đó.
+
+\section{Thiết kế lưu trữ và khả năng tái lập}
+
+\subsection{Mô hình dữ liệu logic}
+
+Hình~\ref{fig:data-model} thể hiện quan hệ logic, không khẳng định prototype có các bảng SQL tương ứng. Run và dữ liệu task chủ yếu nằm trong JSON artifacts; SQLite được dùng cho execution cache và hạ tầng quản lý của Prefect. Một task có nhiều PUT và arm batches. Accepted input được xác định trong task bằng input key; quan hệ nhiều--nhiều giữa arm batch và input được hiện thực bằng \texttt{arm\_indices}.
+
+\begin{figure}[htbp]
+\centering
+\input{figures/design/data-model}
+\caption[Quan hệ dữ liệu logic của run, task và input]{Quan hệ dữ liệu logic của run, task, input và execution observations. Nguồn thuộc arm được giữ ngay cả khi input bị gộp.}
+\label{fig:data-model}
+\end{figure}
+
+Các artifact chính gồm manifest cho source/config identity, packet cho visibility, inputs cho batch đã sinh, freeze record cho input hashes, raw request/response cho model calls và các oracle/evaluation checkpoints. Result giữ failing indices và detection IDs; summary tổng hợp số lượng. Từ result có thể tìm input trong oracle tests và hai execution observations tương ứng.
+
+\subsection{Cache, replay và resume}
+
+Execution cache có bảng \texttt{results(key,payload,checksum)}. Cache key bao gồm program/context, contract, input có giữ type, expected/tolerance, seed, timeout, repeat index và identity của runtime/executor. Hai repeat slots không dùng chung một observation. Timeout không được reuse như một kết quả ổn định.
+
+Checkpoint của run được ưu tiên khi replay. Nếu artifact thiếu, read-only mode báo lỗi; không tra cache rồi thực thi bù. Resume là tiếp tục phần thiếu với budget và attempt history đã lưu, còn rescore dùng input đã freeze để evaluation theo cấu hình mới trong output mới. Rescore có thể chạy reference/PUT khi cache miss, nên phải được coi là workload cần quyền chạy.
+
+\section{Lựa chọn thiết kế và giới hạn}
+
+Tách input generation khỏi oracle giúp tránh để model tối ưu input theo expected outcomes trong quá trình sinh. Phần Control-flow được phép xem coverage/domain feedback trước freeze, nên đây vẫn là phương pháp có thực thi hướng dẫn; barrier chỉ ngăn feedback của reference và kết quả chấm lỗi chức năng.
+
+Dùng chung CallBuilder, domain checks và scorer giảm khác biệt về xử lý giữa arms. Tuy nhiên, prompt, số vòng, sampler và valid yield vẫn khác nhau. Catalogue có thể đúng schema nhưng sai nghĩa; static targets có thể không khả thi; reference có thể không thể hiện hết nhiều đáp án hợp lệ. Những giới hạn này được kiểm tra qua kịch bản và thảo luận kết quả ở Chương~\ref{chap:experiment}.

@@ -1,0 +1,16 @@
+\begin{tikzpicture}[font=\small,>=stealth,
+ box/.style={draw,align=left,text width=5.5cm,minimum height=1.55cm},edge/.style={->}]
+\node[box] (run) at (0,0) {\textbf{Run}\\run ID, config, source hashes\\state, usage, output directory};
+\node[box] (task) at (8.4,0) {\textbf{Task result}\\task ID, eligible/skip\\base-pass PUTs, valid union};
+\node[box] (batch) at (0,-3) {\textbf{Arm batch}\\task ID, arm, input records\\catalogue, response reference};
+\node[box] (input) at (8.4,-3) {\textbf{Accepted input}\\task ID, input key\\args, kwargs, expected};
+\node[box] (put) at (0,-6) {\textbf{PUT}\\task ID, PUT ID, source hash\\base status, source};
+\node[box] (obs) at (8.4,-6) {\textbf{Execution observation}\\PUT/input identity, repeat\\status, actual, cache receipt};
+\draw[edge] (run)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{1 : nhiều}(task);
+\draw[edge] (run)--node[left]{1 : nhiều}(batch);
+\draw[edge] (task)--node[right]{1 : nhiều}(input);
+\draw[edge] (batch)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{nhiều : nhiều}(input);
+\draw[edge] (batch)--node[left]{cùng task}(put);
+\draw[edge] (input)--node[right]{1 : nhiều}(obs);
+\draw[edge] (put)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{1 : nhiều}(obs);
+\end{tikzpicture}

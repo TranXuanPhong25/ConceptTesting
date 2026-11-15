@@ -1,0 +1,39 @@
+\chapter{Tái lập và đối chiếu bằng chứng}
+\label{app:reproduction}
+
+\section{Mốc source và phạm vi kết quả}
+
+Các số liệu Gemini sử dụng run \path{4e3a4d78-1a06-4b07-93cf-7054a0ec1a6c}; coverage sử dụng run \path{0b1828c7-a222-4a07-a431-2d712a3149c5}. Cả hai có record Completed trên Prefect local. Bản luận văn giữ snapshot Hypothesis của run đầu làm mốc phương pháp, không thay source snapshot bằng working tree mới.
+
+Dữ liệu detection được đối chiếu bằng cách cộng valid inputs, detections và tasks có detection từ 164 result files theo task. Các PUT được định danh bằng cặp task ID và PUT ID. Với mỗi tổ hợp arm, phép hợp tập các IDs được đối chiếu với cả 15 combinations trong union JSON. Kết quả khớp với bốn hàng arm và các pool đã trình bày.
+
+Coverage được cộng lại từ 1.454 JSON records theo PUT: số đạt C1, số có branch đạt C2, số không branch, số đạt cả hai và số traces. Tổng là 11.379 traces, 10 PUT có timeout và không có trace errors. Kiểm tra số liệu này đọc dữ liệu đã có; nó không thực thi reference hoặc PUT thêm lần nữa.
+
+\section{Các tệp dùng để kiểm chứng}
+
+Trong thư mục run generation, cấu hình nằm ở \path{config_snapshot.json}. Tệp \path{source_snapshot.json} giữ hash sources. Packet, inputs, oracle tests và result nằm trong thư mục riêng từng task bên dưới \path{generation/}. Các observations nằm trong \path{evaluation/}; request/response và attempt state nằm trong \path{calls/}. Tổng hợp nằm ở \path{result_digest.json} và \path{union_result.json}.
+
+Trong thư mục run coverage, \path{puts/} chứa records riêng từng PUT và \path{result_digest.json} giữ số tổng. Các source/runtime files chỉ phục vụ đối chiếu implementation của đề tài; chúng không được đưa vào danh mục tài liệu tham khảo học thuật.
+
+Đối với demo HumanEval/124, kiểm tra input index 26 của \path{oracle_valid.json}, outcome PUT 7 trong \path{result.json} và hai checkpoints \path{7_0.json}, \path{7_retry_1.json}. Args là \texttt{('02-29-2001',)}, expected là \texttt{True}, actual của cả hai observations là \texttt{False}. Tra quy tắc tháng 2 trong spec trước khi suy diễn bằng lịch thực tế.
+
+\section{Lệnh chạy engineering tests}
+
+Lần kiểm tra phục vụ bản thảo dùng Python của môi trường \path{final/.venv/}. Từ repo root, lệnh được chia dòng như sau:
+
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize,numbers=none]
+final/.venv/bin/python -m pytest \
+  final/src/modular/tests/test_testing_arms.py \
+  final/src/modular/tests/test_testing_arms_integration.py \
+  final/src/modular/tests/test_modular_pipeline.py \
+  final/src/modular/tests/test_put_evaluation.py \
+  final/tests/test_runtime_safety.py -q
+\end{lstlisting}
+
+Output cuối là \texttt{69 passed in 15.87s}. Đây là kiểm tra fixtures và hợp đồng runtime tại working tree khi biên tập. Các tests không thực hiện model inference; kết quả không dùng thay cho benchmark efficacy hoặc chứng nhận toàn bộ codebase. Log nguyên bản được giữ cùng hồ sơ kiểm tra tài liệu.
+
+\section{Cách sử dụng demo và tiếp tục thí nghiệm}
+
+Có thể trình diễn kết quả bằng cách mở record run đã hoàn tất và lần theo task artifacts mà không bấm Run. Muốn sinh dữ liệu mới, người dùng chọn preset hoặc CLI, kiểm budget và tự cấp lệnh chạy. Thay model, source, timeout hay scorer cần config và output riêng; không sửa artifact cũ để ép resume. Credentials được nạp từ môi trường, không đưa vào config công khai hoặc ảnh chụp.
+
+Biên dịch luận văn chỉ tạo tài liệu. Bản HTML sơ đồ đi kèm mô tả cùng snapshot với các hình ở Chương~\ref{chap:method}. Các trường cá nhân trên bìa được tập trung ở \path{metadata.tex}; phần cam đoan và phân công cá nhân cần sinh viên xác nhận trước khi nộp.

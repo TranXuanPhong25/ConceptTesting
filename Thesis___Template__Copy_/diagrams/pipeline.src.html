@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="vi" data-register="blueprint">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Luồng ConceptTester trong snapshot Gemini</title>
+<link rel="stylesheet" href="kit.css" data-ve-kit>
+<style>
+main{max-width:1300px;margin:auto;padding:var(--s-6)}figure{margin-block:var(--s-6)}h1{max-width:28ch}details{margin-block:var(--s-4)}.sources a{overflow-wrap:anywhere}.note{max-width:70ch}.ve-flow{min-width:900px}
+</style>
+</head>
+<body><main>
+<figure>
+<ve-flow label="Input chỉ đi tới reference sau khi task đã freeze; model không nhận expected outputs.">
+<ve-node id="config" at="1 1" sub="Task/budget">Cấu hình run</ve-node>
+<ve-node id="packet" at="2 1" sub="Spec + base">Packet chung</ve-node>
+<ve-node id="generation" at="3 1" sub="Bốn arm">Sinh input</ve-node>
+<ve-node id="freeze" at="3 2" sub="Input hash" key>Freeze task</ve-node>
+<ve-node id="oracle" at="2 2" sub="Hai observations">Oracle</ve-node>
+<ve-node id="evaluation" at="1 2" sub="Retest lỗi">Evaluation</ve-node>
+<ve-edge from="config" to="packet" label="chọn cohort"/>
+<ve-edge from="packet" to="generation" label="giao context"/>
+<ve-edge from="generation" to="freeze" label="lưu inputs"/>
+<ve-edge from="freeze" to="oracle" label="kiểm hash" hot/>
+<ve-edge from="oracle" to="evaluation" label="giao tests"/>
+</ve-flow>
+<figcaption>Fig. 1. Mọi arm của task được freeze trước reference; producer có thể sinh task tiếp theo khi consumer đang chấm. Packet chứa spec, contract, base tests và visible PUTs; model không được xem corrected reference code hoặc expected outputs của input mới. Oracle loại input sai miền, reference không ổn định và input trùng base; evaluator giữ nguồn arm sau khi dedup.</figcaption>
+</figure>
+<p class="note">Sơ đồ mô tả snapshot run Gemini ngày 12/11/2026. Nhánh Control-flow dùng Hypothesis; các thay đổi symbolic về sau không thuộc run này.</p>
+<figure class="ve-steps">
+<ve-flow label="Control-flow tìm target còn thiếu, model đề xuất concept và input, Hypothesis bổ sung candidates rồi sandbox đo target hits.">
+<ve-node id="gaps" at="1 1" sub="C1/C2 gaps" data-s="1">Chọn target</ve-node>
+<ve-node id="llm" at="2 1" sub="Concept và input" data-s="2">LLM đề xuất</ve-node>
+<ve-node id="sample" at="3 1" sub="LLM + Hypothesis" data-s="3">Tạo candidates</ve-node>
+<ve-node id="trace" at="3 2" sub="Target hits" data-s="4">Trace PUT</ve-node>
+<ve-node id="feedback" at="2 2" sub="Chỉ domain/hits" data-s="5">Phản hồi gaps</ve-node>
+<ve-node id="select" at="1 2" sub="Gaps mới" data-s="6">Chọn input</ve-node>
+<ve-edge from="gaps" to="llm" label="giao targets" data-s="2"/>
+<ve-edge from="llm" to="sample" label="parse JSON" data-s="3"/>
+<ve-edge from="sample" to="trace" label="gọi sandbox" data-s="4"/>
+<ve-edge from="trace" to="feedback" label="gửi hits" data-s="5"/>
+<ve-edge from="feedback" to="llm" label="còn vòng" data-s="5" async/>
+<ve-edge from="feedback" to="select" label="hết budget" data-s="6"/>
+</ve-flow>
+<div class="ve-player"><ol class="ve-cap">
+<li data-n="1/6">Đọc base coverage và chọn target kèm owner PUT.</li>
+<li data-n="2/6">LLM trả mô tả tình huống cùng dữ liệu theo tên tham số.</li>
+<li data-n="3/6">Decoder giữ input hợp lệ; sampler tạo thêm candidates theo strategies.</li>
+<li data-n="4/6">Sandbox trace original PUT, ghi domain, lines/arcs và target hits.</li>
+<li data-n="5/6">Nếu còn vòng, model nhận các target chưa đạt và observation giới hạn.</li>
+<li data-n="6/6">Chọn input trong budget; reference và chấm lỗi chỉ chạy sau freeze.</li>
+</ol><button type="button" data-go="-1" aria-label="Bước trước">←</button><button type="button" data-play>Phát</button><input type="range" aria-label="Bước xử lý"><button type="button" data-go="1" aria-label="Bước sau">→</button></div>
+<figcaption>Fig. 2. Feedback coverage hướng dẫn vòng sau; target hit chưa phải detection lỗi chức năng.</figcaption>
+</figure>
+<figure>
+<ve-flow label="Arm memberships giữ nguồn input khi dedup; observation liên kết input và PUT.">
+<ve-node id="run" at="1 1" sub="ID / hash" shape="db">Run</ve-node>
+<ve-node id="task" at="2 1" sub="ID, skip, PUTs" shape="db">Task</ve-node>
+<ve-node id="batch" at="3 1" sub="Inputs / IDs" shape="db">Arm batch</ve-node>
+<ve-node id="input" at="3 2" sub="Input, expected" shape="db">Accepted input</ve-node>
+<ve-node id="observation" at="2 2" sub="Status" shape="db">Observation</ve-node>
+<ve-node id="put" at="1 2" sub="PUT / hash" shape="db">PUT</ve-node>
+<ve-edge from="run" to="task" label="1 : nhiều"/>
+<ve-edge from="task" to="batch" label="1 : nhiều"/>
+<ve-edge from="batch" to="input" label="membership"/>
+<ve-edge from="input" to="observation" label="được thực thi"/>
+<ve-edge from="put" to="observation" label="được chấm"/>
+</ve-flow>
+<figcaption>Fig. 3. Đây là quan hệ dữ liệu logic; JSON lưu artifacts, còn SQLite phục vụ execution cache và hạ tầng Prefect.</figcaption>
+</figure>
+<section class="sources" aria-label="Nguồn đối chiếu"><p class="ve-label">Source được đọc để dựng sơ đồ</p>
+<p><a href="../../final/out/gemini_full4_20261112_074012/run_full.py">Runner snapshot</a> · <a href="../../final/out/gemini_full4_20261112_074012/runtime/final/src/modular/arms/control_flow.py">Control-flow Hypothesis</a> · <a href="../../final/out/gemini_full4_20261112_074012/runtime/final/src/modular/stages/reference_oracle.py">Reference stage</a> · <a href="../../final/out/gemini_full4_20261112_074012/runtime/final/src/modular/stages/put_evaluation.py">Scorer</a></p></section>
+</main></body></html>
