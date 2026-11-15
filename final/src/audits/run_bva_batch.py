@@ -22,8 +22,8 @@ from final.src.modular.dataset import load_tasks, load_metadata
 from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.frozen import FrozenInputsGenerator
 from final.src.modular.stages.input_preparation import InputPreparationStage
-from final.src.runtime.keepalive import KeepAlive
-from final.src.runtime.model import QwenModel, TransportError
+from final.src.models.keepalive import KeepAlive
+from final.src.models.model import QwenModel, TransportError
 from .continue_bva_evaluation import read, save, digest, checksum
 from .run_bva_full import SourceGuard, ProgressPipeline
 from .run_prompt_style import configure_endpoint

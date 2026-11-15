@@ -14,7 +14,8 @@ def source_revision():
         if 'tests' not in path.parts and '__pycache__' not in path.parts]
     paths += [path for path in (ROOT/'final/src/runtime').glob('*.py')]
     paths += list((ROOT/'final/src/modular/fault_oriented_testing').glob('*.json'))
-    paths += [ROOT/'final/src/core_model.py', ROOT/'final/presets/run_console.json',
+    paths += list((ROOT/'final/src/models').glob('*.py'))
+    paths += [ROOT/'final/presets/run_console.json',
               ROOT/'final/data/contracts.json',ROOT/'final/data/humaneval.jsonl',
               ROOT/'final/data/humanevalplus_v0.1.10_references.json']
     paths += [path for path in (ROOT/'final/src/orchestration').glob('*.py')]

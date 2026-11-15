@@ -4,7 +4,7 @@ import sys
 import pytest
 
 from final.src.audits import run_prompt_style as runner
-from final.src.runtime.model import QwenModel, TransportError
+from final.src.models.model import QwenModel, TransportError
 
 
 @pytest.fixture

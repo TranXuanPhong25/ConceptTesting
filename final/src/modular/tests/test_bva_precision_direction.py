@@ -2,7 +2,7 @@
 import json
 import pytest
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.audits.run_bva_precision_direction import decode_writer, direction_messages
 from final.src.audits.run_bva_precision_direction import verify
 from final.src.audits.audit_bva_precision_interface import unwrap_json_fence

@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pytest
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.boundary_value_analysis.legacy import BoundarySettings, BoundaryValueAnalysis
 

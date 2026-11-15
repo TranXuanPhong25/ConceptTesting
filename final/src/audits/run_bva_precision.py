@@ -8,7 +8,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.boundary_value_analysis.inputs import decode_inputs
 from final.src.modular.boundary_value_analysis.precision import expand_seeds, fixed_twenty, call_identity

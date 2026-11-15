@@ -114,7 +114,7 @@ def test_recovery_allows_test_drift_but_keeps_runtime_frozen(checkpoint):
 
 def test_production_snapshot_excludes_tests_and_guards_runtime():
     paths = runner.execution_sources()
-    assert Path("final/src/runtime/model.py") in paths
+    assert Path("final/src/models/model.py") in paths
     assert Path("final/src/modular/pipeline.py") in paths
     assert paths and all("tests" not in path.parts for path in paths)
 

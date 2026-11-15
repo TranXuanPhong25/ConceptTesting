@@ -106,8 +106,8 @@ def test_stale_running_status_can_resume_only_after_worker_lock_is_free(prepared
 
 
 def test_keepalive_uses_injected_model_factory(tmp_path):
-    from final.src.runtime.keepalive import KeepAlive
-    from final.src.core_model import ModelResponse
+    from final.src.models.keepalive import KeepAlive
+    from final.src.models.core_model import ModelResponse
     counts={'factory':0}
     class Event:
         def __init__(self):self.calls=0
@@ -125,8 +125,8 @@ def test_keepalive_uses_injected_model_factory(tmp_path):
 
 def test_managed_adapter_freezes_and_replays_with_offline_empty_writer(prepared,tmp_path,monkeypatch,capsys):
     """Exercise actual orchestration wiring; fixture transport makes0real calls."""
-    from final.src.core_model import ModelResponse
-    import final.src.runtime.model as transport
+    from final.src.models.core_model import ModelResponse
+    import final.src.models.model as transport
     import final.src.modular.stages.reference_oracle as reference
     import final.src.modular.stages.put_evaluation as evaluation
     calls=[]

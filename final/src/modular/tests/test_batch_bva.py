@@ -12,7 +12,7 @@ from final.src.modular.stages.input_preparation import InputPreparationStage
 
 
 def test_batch_arms_only_differ_in_guidance_and_share_argument_encoder():
-    from final.src.core_model import ModelResponse
+    from final.src.models.core_model import ModelResponse
     from final.src.modular.boundary_value_analysis.prompts import GUIDANCE
     packet = {'common': 'same task data'}
     direct, soft = DirectBatchArm(), SoftBvaBatchArm()
@@ -88,7 +88,7 @@ def test_response_json_falls_back_to_python_literal_only_after_strict_json_fails
 
 
 def test_batch_arm_keeps_inputs_when_model_writes_python_booleans():
-    from final.src.core_model import ModelResponse
+    from final.src.models.core_model import ModelResponse
     task = {'task_id': 'HumanEval/151', 'prompt': 'def double_the_difference(lst):\n    pass\n',
             'entry_point': 'double_the_difference', 'test': ''}
     class Calls:

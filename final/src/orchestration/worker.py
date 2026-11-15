@@ -175,8 +175,8 @@ def run(directory):
     from final.src.modular.generators.methods import MethodInputGenerator
     from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.modular.stages.input_preparation import InputPreparationStage
-    from final.src.runtime.model import QwenModel,TransportError
-    from final.src.runtime.keepalive import KeepAlive
+    from final.src.models.model import QwenModel,TransportError
+    from final.src.models.keepalive import KeepAlive
     from final.src.audits.run_bva_full import SourceGuard
     config=read(directory/'config_snapshot.json');plan=read(directory/'launch_plan.json')
     guard=SourceGuard(directory);guard.verify()

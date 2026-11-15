@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import http.client
+import math
 import os
 import shlex
 import time
@@ -16,7 +17,7 @@ import openai
 from langchain_openai import ChatOpenAI
 from langsmith import tracing_context
 
-from final.src.core_model import CoreModel, ModelError, ModelResponse
+from final.src.models.core_model import CoreModel, ModelError, ModelResponse
 
 
 class TransportError(ModelError):
@@ -97,16 +98,20 @@ class PreparedGeneration:
     messages: list[dict[str, str]]
     prompt_tokens: int
     output_tokens: int
+    prompt_token_source: str = "remote"
 
 
 class QwenModel(CoreModel):
     """Streaming Qwen transport with explicit context and request budgets."""
+
+    backend_name = "qwen"
 
     def __init__(self, *, context=8192, timeout=180, expected_model=None):
         self.context = context
         self.timeout = timeout
         self.endpoint_file = Path(os.environ.get("FINAL_ENDPOINT_ENV_FILE", "/tmp/concepttester-final-qwen.env"))
         self.expected_model = expected_model or "qwen3.5-27b-awq"
+        self.last_tokenizer_source = "remote"
         self.refresh_configuration()
 
     def refresh_configuration(self):
@@ -192,6 +197,7 @@ class QwenModel(CoreModel):
                     token_count = len(payload.get("tokens", []))
                 if type(token_count) is not int or token_count <= 0:
                     raise TransportError("tokenize", "InvalidTokenCount")
+                self.last_tokenizer_source = "remote"
                 return token_count
             except (OSError, ValueError, http.client.HTTPException) as error:
                 transport_error = TransportError("tokenize", type(error).__name__, retryable=True)
@@ -199,16 +205,25 @@ class QwenModel(CoreModel):
                     raise transport_error from None
                 time.sleep((5, 20)[attempt_number])
             except TransportError as error:
+                if error.http_status == 404:
+                    self.last_tokenizer_source = "local_conservative_estimate"
+                    return self._estimate_tokens(messages)
                 if not error.retryable or attempt_number == 2:
                     raise
                 time.sleep((5, 20)[attempt_number])
+
+    @staticmethod
+    def _estimate_tokens(messages):
+        """Bound context conservatively when an OpenAI-compatible server lacks /tokenize."""
+        serialized = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
+        return max(1, math.ceil(len(serialized.encode("utf-8")) / 3) + 8)
 
     def prepare_generation(self, messages, max_tokens):
         prompt_tokens = self.tokens(messages)
         output_tokens = min(max_tokens, self.context - prompt_tokens - 64)
         if output_tokens < min(256, max_tokens):
             raise TransportError("tokenize", "PromptExceedsContext")
-        return PreparedGeneration(messages, prompt_tokens, output_tokens)
+        return PreparedGeneration(messages, prompt_tokens, output_tokens, self.last_tokenizer_source)
 
     def _completion_http_client(self, started_at):
         def bound_response(response):
@@ -216,7 +231,7 @@ class QwenModel(CoreModel):
 
         return httpx.Client(timeout=self.timeout, event_hooks={"response": [bound_response]})
 
-    def generate_prepared(self, prepared, *, temperature, seed):
+    def generate_prepared(self, prepared, *, temperature, seed, response_format=None):
         self.refresh_configuration()
         text_fragments = []
         usage = {}
@@ -225,6 +240,7 @@ class QwenModel(CoreModel):
         generation_started_at = time.monotonic()
         try:
             with self._completion_http_client(generation_started_at) as http_client:
+                structured = {} if response_format is None else {'response_format': response_format}
                 model = _QwenChatOpenAI(
                     model=self.expected_model, base_url=self.base_url,
                     api_key=self.api_key or "EMPTY", http_client=http_client,
@@ -232,7 +248,7 @@ class QwenModel(CoreModel):
                     seed=seed, stream_usage=True, use_responses_api=False,
                     default_headers={"ngrok-skip-browser-warning": "1"},
                     extra_body={"max_tokens": prepared.output_tokens,
-                                "chat_template_kwargs": {"enable_thinking": False}},
+                                "chat_template_kwargs": {"enable_thinking": False}, **structured},
                 )
                 # This runtime records locally; never export prompts or private endpoints.
                 with tracing_context(enabled=False):
@@ -265,6 +281,7 @@ class QwenModel(CoreModel):
             raise TransportError("completion", "IncompleteStream", retryable=True,
                 completion_started=True, partial_text=complete_text)
         usage = dict(usage, tokenizer_prompt_tokens=prepared.prompt_tokens,
+                     tokenizer_prompt_tokens_source=prepared.prompt_token_source,
                      requested_output_budget=prepared.output_tokens,
                      usage_footer_complete=usage_footer_complete)
         return ModelResponse(complete_text, usage, finish_reason)

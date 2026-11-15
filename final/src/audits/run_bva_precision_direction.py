@@ -8,7 +8,7 @@ import hashlib
 import json
 from pathlib import Path
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.boundary_value_analysis.inputs import decode_inputs
 from final.src.modular.boundary_value_analysis.precision import expand_seeds, matched_twenty, call_identity
@@ -17,7 +17,7 @@ from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.cohort import load_cohort, call_usage
 from final.src.modular.dataset import load_tasks, load_metadata
 from final.src.runtime.artifacts import digest, save
-from final.src.runtime.model import QwenModel
+from final.src.models.model import QwenModel
 from .run_prompt_style import configure_endpoint, read
 from .run_bva_precision import evaluate, outcomes_by_input, detected_tasks
 

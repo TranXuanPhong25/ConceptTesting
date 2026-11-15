@@ -1,4 +1,4 @@
-"""Replace the backend by implementing CoreModel.generate; pipeline code stays unchanged."""
+"""Model response/interface shared by transports, including models.vertex.VertexAIModel."""
 from __future__ import annotations
 
 import json

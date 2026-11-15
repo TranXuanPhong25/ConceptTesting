@@ -8,11 +8,11 @@ from types import SimpleNamespace
 import pytest
 import httpx
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.runtime.artifacts import digest, save
 from final.src.modular.cohort import call_usage
-from final.src.runtime.checkpoint import CheckpointedModelClient, CompletionRetryLimit
-from final.src.runtime.model import QwenModel, PreparedGeneration, TransportError
+from final.src.models.checkpoint import CheckpointedModelClient, CompletionRetryLimit
+from final.src.models.model import QwenModel, PreparedGeneration, TransportError
 
 
 def streaming_event(payload):
@@ -29,7 +29,7 @@ def transport_model(monkeypatch, tmp_path):
 
 @pytest.fixture
 def completion_fixture(transport_model, monkeypatch):
-    from final.src.runtime.model import _CompletionStream
+    from final.src.models.model import _CompletionStream
 
     def install(pieces, *, failure=None, status=200):
         requests = []
@@ -128,7 +128,7 @@ def test_stream_failure_before_and_after_finish(transport_model, completion_fixt
 
 @pytest.mark.parametrize("finished", [False, True])
 def test_generation_deadline_including_comment_footer(transport_model, completion_fixture, monkeypatch, finished):
-    import final.src.runtime.model as model_module
+    import final.src.models.model as model_module
     elapsed_seconds = [0]
 
     def pieces():
@@ -188,9 +188,9 @@ def test_multiline_sse_and_crlf(transport_model, completion_fixture):
 
 
 def test_wire_size_guard_counts_comments(monkeypatch):
-    from final.src.runtime.model import _CompletionStream
+    from final.src.models.model import _CompletionStream
     stream = _CompletionStream(iter([b":" * (16 * 1024 * 1024), b"x"]), 0)
-    monkeypatch.setattr("final.src.runtime.model.time.monotonic", lambda: 1)
+    monkeypatch.setattr("final.src.models.model.time.monotonic", lambda: 1)
     iterator = iter(stream)
     assert len(next(iterator)) == 16 * 1024 * 1024
     with pytest.raises(TransportError) as failure:
@@ -211,9 +211,22 @@ def test_tokenizer_read_failure_retries_without_completion(transport_model, monk
         return next(responses)
 
     monkeypatch.setattr(transport_model, "request", open_fixture)
-    monkeypatch.setattr("final.src.runtime.model.time.sleep", lambda seconds: None)
+    monkeypatch.setattr("final.src.models.model.time.sleep", lambda seconds: None)
     assert transport_model.tokens([]) == 27
     assert operations == ["tokenize", "tokenize"]
+
+
+def test_missing_remote_tokenizer_uses_conservative_local_estimate(transport_model, monkeypatch):
+    operations = []
+
+    def missing_tokenizer(operation, *arguments, **keywords):
+        operations.append(operation)
+        raise TransportError("tokenize", "HTTPError", http_status=404, retryable=True)
+
+    monkeypatch.setattr(transport_model, "request", missing_tokenizer)
+    assert transport_model.tokens([{"role": "user", "content": "Việt 🧪"}]) >= 1
+    assert operations == ["tokenize"]
+    assert transport_model.last_tokenizer_source == "local_conservative_estimate"
 
 
 def test_metadata_read_failure_is_sanitized_transport_error(transport_model, monkeypatch):
@@ -252,7 +265,7 @@ QUERY_ARGUMENTS = {"messages": [{"role": "user", "content": "fixture"}],
 
 
 def test_prior_attempt_retry_preserves_unknown_and_reuses_saved_response(tmp_path, monkeypatch):
-    monkeypatch.setattr("final.src.runtime.checkpoint.time.sleep", lambda seconds: None)
+    monkeypatch.setattr("final.src.models.checkpoint.time.sleep", lambda seconds: None)
     task_directory = tmp_path / "tasks" / "16"
     call_directory = task_directory / "calls" / "plain"
     save(call_directory / "request.json", QUERY_ARGUMENTS)
@@ -272,7 +285,7 @@ def test_prior_attempt_retry_preserves_unknown_and_reuses_saved_response(tmp_pat
 
 
 def test_completion_retry_limit_persists_across_controller_restarts(tmp_path, monkeypatch):
-    monkeypatch.setattr("final.src.runtime.checkpoint.time.sleep", lambda seconds: None)
+    monkeypatch.setattr("final.src.models.checkpoint.time.sleep", lambda seconds: None)
     model = FixtureTransportModel(failures=10)
     pipeline = CheckpointedModelClient(model)
     task_directory = tmp_path / "tasks" / "16"
@@ -285,8 +298,71 @@ def test_completion_retry_limit_persists_across_controller_restarts(tmp_path, mo
     assert call_usage(tmp_path)["unknown"] == 3
 
 
+def test_explicit_request_retry_extension_keeps_original_attempt_numbers(tmp_path, monkeypatch):
+    monkeypatch.setattr('final.src.models.checkpoint.time.sleep', lambda seconds: None)
+    task = tmp_path / 'tasks/16'
+    client = CheckpointedModelClient(FixtureTransportModel(failures=10))
+    with pytest.raises(CompletionRetryLimit):
+        client.query(task, 'plain', **QUERY_ARGUMENTS)
+    save(task / 'calls/plain.retry_extension.json', {'request_id': digest(QUERY_ARGUMENTS),
+         'max_attempts': 6, 'authorization': 'authored explicit continuation'})
+    model = FixtureTransportModel(failures=1)
+    response = CheckpointedModelClient(model).query(task, 'plain', **QUERY_ARGUMENTS)
+    assert response.finish_reason == 'stop' and model.completion_calls == 2
+    assert json.loads((task / 'calls/plain/attempt.json').read_text())['attempt_number'] == 5
+    assert call_usage(tmp_path)['invocations'] == 5 and call_usage(tmp_path)['unknown'] == 4
+    assert CheckpointedModelClient(model).query(task, 'plain', **QUERY_ARGUMENTS) == response
+    assert model.completion_calls == 2
+
+
+@pytest.mark.parametrize('limit,request_payload', [(7, QUERY_ARGUMENTS), (6, {'messages': []})])
+def test_retry_extension_cannot_change_request_or_exceed_bound(tmp_path, limit, request_payload):
+    task = tmp_path / 'tasks/16'
+    save(task / 'calls/plain.retry_extension.json', {'request_id': digest(request_payload),
+         'max_attempts': limit, 'authorization': 'fixture'})
+    model = FixtureTransportModel()
+    with pytest.raises(ValueError, match='retry extension'):
+        CheckpointedModelClient(model).query(task, 'plain', **QUERY_ARGUMENTS)
+    assert model.completion_calls == 0
+
+
+@pytest.mark.parametrize('previous_count', [1, 2])
+def test_explicit_restored_endpoint_grant_retries_old404_without_erasing_history(tmp_path, previous_count):
+    task = tmp_path / 'tasks/16'
+    original = {'request_id': digest(QUERY_ARGUMENTS), 'state': 'unknown',
+                'recovery_policy': 'streaming-recovery-v1', 'attempt_number': previous_count,
+                'error': {'http_status': 404, 'retryable': False}}
+    save(task / 'calls/plain/request.json', QUERY_ARGUMENTS)
+    save(task / 'calls/plain/attempt.json', original)
+    if previous_count == 2:
+        save(task / 'calls/plain_unknown_attempt_0000/attempt.json', {**original, 'attempt_number': 1,
+             'error': {'http_status': None, 'retryable': True}})
+    save(task / 'calls/plain.retry_extension.json', {'request_id': digest(QUERY_ARGUMENTS),
+         'max_attempts': 3, 'retry_stored_http_statuses': [404], 'authorization': 'User restored endpoint'})
+    model = FixtureTransportModel()
+    CheckpointedModelClient(model).query(task, 'plain', **QUERY_ARGUMENTS)
+    assert model.completion_calls == 1
+    archive = task / 'calls' / f'plain_unknown_attempt_{previous_count-1:04d}' / 'attempt.json'
+    assert json.loads(archive.read_text()) == original
+    assert json.loads((task / 'calls/plain/attempt.json').read_text())['attempt_number'] == previous_count + 1
+
+
+def test_restored_endpoint_grant_cannot_override_authentication_failures(tmp_path):
+    task = tmp_path / 'tasks/16'
+    save(task / 'calls/plain/request.json', QUERY_ARGUMENTS)
+    save(task / 'calls/plain/attempt.json', {'request_id': digest(QUERY_ARGUMENTS),
+         'state': 'unknown', 'recovery_policy': 'streaming-recovery-v1',
+         'error': {'http_status': 401, 'retryable': False}})
+    save(task / 'calls/plain.retry_extension.json', {'request_id': digest(QUERY_ARGUMENTS),
+         'max_attempts': 3, 'retry_stored_http_statuses': [404], 'authorization': 'User restored endpoint'})
+    model = FixtureTransportModel()
+    with pytest.raises(RuntimeError, match='permanent'):
+        CheckpointedModelClient(model).query(task, 'plain', **QUERY_ARGUMENTS)
+    assert model.completion_calls == 0
+
+
 def test_legacy_unknown_counts_toward_three_total_attempts(tmp_path, monkeypatch):
-    monkeypatch.setattr("final.src.runtime.checkpoint.time.sleep", lambda seconds: None)
+    monkeypatch.setattr("final.src.models.checkpoint.time.sleep", lambda seconds: None)
     task_directory = tmp_path / "tasks" / "16"
     call_directory = task_directory / "calls" / "plain"
     save(call_directory / "request.json", QUERY_ARGUMENTS)
@@ -342,3 +418,35 @@ def test_startup_environment_cannot_silently_change_expected_model(monkeypatch, 
     with pytest.raises(TransportError) as failure:
         QwenModel()
     assert failure.value.error_type == "ModelChanged"
+
+
+def test_structured_completion_sends_schema_in_real_http_body(transport_model, completion_fixture):
+    pieces = [streaming_event({'choices': [{'delta': {'content': '{}'}, 'finish_reason': 'stop'}]}),
+              b'data: [DONE]\n\n']
+    requests, _ = completion_fixture(pieces)
+    schema = {'type': 'object', 'properties': {'answer': {'type': 'integer'}}, 'required': ['answer'],
+              'additionalProperties': False}
+    response_format = {'type': 'json_schema', 'json_schema': {'name': 'tool_preparation', 'strict': True, 'schema': schema}}
+    transport_model.generate_prepared(PreparedGeneration([], 1, 100), temperature=0, seed=1,
+                                     response_format=response_format)
+    assert json.loads(requests[0].content)['response_format'] == response_format
+
+
+def test_structured_call_schema_is_checkpointed_and_replay_rejects_changed_schema(tmp_path):
+    from final.src.modular.artifacts import ArtifactStore
+    from final.src.modular.calls import RecordedModelCalls, CachedModelCalls
+    class StructuredFixture(FixtureTransportModel):
+        model_id = 'fixture-structured'
+        def generate_prepared(self, prepared, *, temperature, seed, response_format=None):
+            assert response_format['json_schema']['schema']['type'] == 'object'
+            return ModelResponse('{}', {'total_tokens': 2}, 'stop')
+    calls = RecordedModelCalls(StructuredFixture(), ArtifactStore(tmp_path))
+    arguments = dict(temperature=0, max_tokens=100, seed=1)
+    schema = {'type': 'object', 'properties': {}, 'additionalProperties': False}
+    expected = calls.complete_structured(7, 'tool_preparation', [], schema=schema, **arguments)
+    request = json.loads((tmp_path / 'tasks/7/calls/tool_preparation/request.json').read_text())
+    assert request['response_format']['json_schema']['schema'] == schema
+    cached = CachedModelCalls(ArtifactStore(tmp_path, read_only=True))
+    assert cached.complete_structured(7, 'tool_preparation', [], schema=schema, **arguments) == expected
+    with pytest.raises(ValueError, match='mismatch'):
+        cached.complete_structured(7, 'tool_preparation', [], schema={'type': 'array'}, **arguments)

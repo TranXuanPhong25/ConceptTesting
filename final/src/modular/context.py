@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from .artifacts import ArtifactStore
 
 JsonObject = dict[str, Any]

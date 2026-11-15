@@ -105,7 +105,7 @@ def test_rescore_reuses_exact_inputs_without_instantiating_a_model(original_run,
     def forbidden(*arguments, **keywords):
         pytest.fail("Rescore must not create or call a model")
 
-    monkeypatch.setattr("final.src.runtime.model.QwenModel.__init__", forbidden)
+    monkeypatch.setattr("final.src.models.model.QwenModel.__init__", forbidden)
     pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / "corrected",
                                                       cache_directory=tmp_path / "execution_cache")
     summary = pipeline.run(tasks, metadata)

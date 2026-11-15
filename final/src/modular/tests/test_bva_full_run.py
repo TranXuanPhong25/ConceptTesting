@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import pytest
 
 from final.src.audits import run_bva_full as runner
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.artifacts import ArtifactStore
 from final.src.runtime.artifacts import digest, save
 
@@ -17,13 +17,15 @@ def test_preparation_covers_all_tasks_skips_and_exact_allocated_requests(tmp_pat
     script = tmp_path / "final/src/audits/run_bva_full.py"
     monkeypatch.setattr(runner, "__file__", str(script))
     for name in ["final/__init__.py", "final/src/__init__.py", "final/src/audits/__init__.py",
-                 "final/src/audits/run_bva_full.py", "final/src/audits/run_prompt_style.py", "final/src/core_model.py",
+                 "final/src/audits/run_bva_full.py", "final/src/audits/run_prompt_style.py", "final/src/models/core_model.py",
                  "final/src/modular/PREREG.md", "final/data/humaneval.jsonl", "final/data/contracts.json",
                  "final/data/humanevalplus_v0.1.10_references.json"]:
         path = tmp_path / name
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("fixture")
     (tmp_path / "final/src/runtime").mkdir()
+    for name in ["model.py", "vertex.py", "checkpoint.py", "keepalive.py"]:
+        (tmp_path / "final/src/models" / name).write_text("fixture")
     tasks = [{"task_id": f"HumanEval/{i}", "prompt": 'def f(x: float):\n    """Return x."""\n', "entry_point": "f"}
              for i in range(164)]
     rows = []

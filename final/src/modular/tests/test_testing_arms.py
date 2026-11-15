@@ -6,7 +6,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.arms import available_arms, default_arms
 from final.src.modular.arms.classical import CATALOGUE_ARMS, CatalogueSettings, EpBvaArm, NormalBvaArm, RobustBvaArm
 from final.src.modular.artifacts import ArtifactStore

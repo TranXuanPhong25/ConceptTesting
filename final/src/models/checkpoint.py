@@ -1,12 +1,11 @@
-"""Keep every transport attempt; retry transient completion failures at most twice."""
 from __future__ import annotations
 
 import json
 import time
 from dataclasses import asdict
 
-from final.src.core_model import ModelResponse
-from .artifacts import digest, save
+from final.src.models.core_model import ModelResponse
+from ..runtime.artifacts import digest, save
 from .model import TransportError
 
 RECOVERY_POLICY = "streaming-recovery-v1"
@@ -21,7 +20,7 @@ class CheckpointedModelClient:
     def __init__(self, model):
         self.model = model
 
-    def query(self, directory, name, messages, *, temperature, max_tokens, seed):
+    def query(self, directory, name, messages, *, temperature, max_tokens, seed, response_format=None):
         call_directory = directory / "calls" / name
         request_record = {
             "messages": messages,
@@ -29,7 +28,21 @@ class CheckpointedModelClient:
             "max_tokens": max_tokens,
             "seed": seed,
         }
+        if response_format is not None:
+            request_record['response_format'] = response_format
         request_identifier = digest(request_record)
+        maximum_attempts = MAX_COMPLETION_ATTEMPTS
+        retry_stored_statuses = []
+        grant_path = call_directory.parent / (name + '.retry_extension.json')
+        if grant_path.exists():
+            grant = json.loads(grant_path.read_text())
+            limit = grant.get('max_attempts')
+            retry_stored_statuses = grant.get('retry_stored_http_statuses', [])
+            if (grant.get('request_id') != request_identifier or type(limit) is not int
+                    or not MAX_COMPLETION_ATTEMPTS <= limit <= 6 or not grant.get('authorization')
+                    or retry_stored_statuses not in ([], [404])):
+                raise ValueError('Invalid explicit retry extension')
+            maximum_attempts = limit
         attempt_path = call_directory / "attempt.json"
         response_path = call_directory / "response.json"
         if attempt_path.exists():
@@ -40,7 +53,8 @@ class CheckpointedModelClient:
                 return ModelResponse(**json.loads(response_path.read_text()))
             if previous_attempt.get("recovery_policy") == RECOVERY_POLICY:
                 previous_error = previous_attempt.get("error", {})
-                if previous_error.get("retryable") is False:
+                if (previous_error.get("retryable") is False
+                        and previous_error.get('http_status') not in retry_stored_statuses):
                     raise RuntimeError("Stored permanent transport failure; automatic replay disabled")
             self.archive_failed_attempt(call_directory)
 
@@ -49,7 +63,7 @@ class CheckpointedModelClient:
             if (archived_directory / "attempt.json").exists():
                 previous_completion_attempts += 1
 
-        for attempt_number in range(previous_completion_attempts, MAX_COMPLETION_ATTEMPTS):
+        for attempt_number in range(previous_completion_attempts, maximum_attempts):
             # Tokenizer/read-only errors happen before a completion attempt is recorded.
             prepared = self.model.prepare_generation(messages, max_tokens)
             save(call_directory / "request.json", request_record)
@@ -60,7 +74,8 @@ class CheckpointedModelClient:
                 "attempt_number": attempt_number + 1,
             })
             try:
-                response = self.model.generate_prepared(prepared, temperature=temperature, seed=seed)
+                structured = {} if response_format is None else {'response_format': response_format}
+                response = self.model.generate_prepared(prepared, temperature=temperature, seed=seed, **structured)
             except TransportError as error:
                 save(attempt_path, {
                     "request_id": request_identifier,
@@ -73,10 +88,10 @@ class CheckpointedModelClient:
                     save(call_directory / "partial_response.json", {"text": error.partial_text})
                 if not error.retryable:
                     raise
-                if attempt_number + 1 >= MAX_COMPLETION_ATTEMPTS:
-                    raise CompletionRetryLimit("Three completion attempts failed; history preserved") from None
+                if attempt_number + 1 >= maximum_attempts:
+                    raise CompletionRetryLimit("Completion attempts exhausted; history preserved") from None
                 self.archive_failed_attempt(call_directory)
-                time.sleep((5, 20)[attempt_number])
+                time.sleep(60 if maximum_attempts > MAX_COMPLETION_ATTEMPTS else (5, 20)[attempt_number])
                 continue
             save(response_path, asdict(response))
             save(attempt_path, {

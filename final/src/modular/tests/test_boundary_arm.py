@@ -4,7 +4,7 @@ from dataclasses import replace
 
 import pytest
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.runtime.artifacts import digest, save
 from final.src.modular.dataset import DATA_SHA256
 from final.src.modular.arms import available_arms, default_arms, selected_arms

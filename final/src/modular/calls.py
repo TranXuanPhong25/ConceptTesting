@@ -1,8 +1,12 @@
 """Cached calls and a transport adapter shared by every experiment arm."""
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.runtime.artifacts import digest
-from final.src.runtime.checkpoint import CheckpointedModelClient
+from final.src.models.checkpoint import CheckpointedModelClient
 from .artifacts import ArtifactStore
+
+
+def structured_format(schema):
+    return {'type': 'json_schema', 'json_schema': {'name': 'tool_preparation', 'strict': True, 'schema': schema}}
 
 
 class CachedModelCalls:
@@ -20,9 +24,15 @@ class CachedModelCalls:
     def token_count(self, messages):
         raise RuntimeError("Tokenization is unavailable during read-only replay")
 
-    def complete(self, task_number, call_name, messages, *, temperature, max_tokens, seed):
+    def complete_structured(self, task_number, call_name, messages, *, schema, temperature, max_tokens, seed):
+        return self.complete(task_number, call_name, messages, temperature=temperature,
+                             max_tokens=max_tokens, seed=seed, response_format=structured_format(schema))
+
+    def complete(self, task_number, call_name, messages, *, temperature, max_tokens, seed, response_format=None):
         directory = f"tasks/{task_number}/calls/{call_name}"
         request = dict(messages=messages, temperature=temperature, max_tokens=max_tokens, seed=seed)
+        if response_format is not None:
+            request['response_format'] = response_format
         if self.artifacts.read(directory + "/request.json") != request:
             raise ValueError(f"Cached request mismatch: {directory}")
         attempt = self.artifacts.read(directory + "/attempt.json")
@@ -49,8 +59,13 @@ class RecordedModelCalls:
     def token_count(self, messages):
         return self.model.tokens(messages)
 
-    def complete(self, task_number, call_name, messages, *, temperature, max_tokens, seed):
+    def complete_structured(self, task_number, call_name, messages, *, schema, temperature, max_tokens, seed):
+        return self.complete(task_number, call_name, messages, temperature=temperature,
+                             max_tokens=max_tokens, seed=seed, response_format=structured_format(schema))
+
+    def complete(self, task_number, call_name, messages, *, temperature, max_tokens, seed, response_format=None):
+        structured = {} if response_format is None else {'response_format': response_format}
         return self.client.query(
             self.artifacts.path(f"tasks/{task_number}"), call_name, messages,
-            temperature=temperature, max_tokens=max_tokens, seed=seed,
+            temperature=temperature, max_tokens=max_tokens, seed=seed, **structured,
         )

@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.arms.classical import EpBvaArm
 from final.src.modular.arms.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
@@ -164,7 +164,7 @@ def test_catalogue_manifest_tracks_schema_and_read_only_classifier_sources(tmp_p
 def test_console_new_arm_worker_uses_shared_completion_cap_and_replays_empty_fixture(tmp_path, monkeypatch, capsys):
     """Exercise console factories/immutable snapshots with no model or native work."""
     from final.src.orchestration import worker
-    import final.src.runtime.model as transport
+    import final.src.models.model as transport
 
     requests = []
 

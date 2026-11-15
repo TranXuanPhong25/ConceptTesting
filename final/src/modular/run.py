@@ -69,7 +69,7 @@ def construct_pipeline(parser, options, artifacts, settings, arms):
         if artifacts.exists("manifest.json") or (artifacts.exists("status.json") and not artifacts.exists("modular_manifest.json")):
             parser.error("Use a new --artifacts directory for a modular run")
         if any(arm.uses_model for arm in arms):
-            from final.src.runtime.model import QwenModel
+            from final.src.models.model import QwenModel
             calls = RecordedModelCalls(QwenModel(), artifacts)
     cache = False if options.no_execution_cache else InputExecutionCache(
         options.execution_cache, read_only=read_only)

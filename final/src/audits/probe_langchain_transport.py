@@ -15,7 +15,7 @@ import httpx
 from langchain_openai import ChatOpenAI
 from langsmith import tracing_context
 
-from final.src.runtime.model import PreparedGeneration, QwenModel, TransportError, _CompletionStream
+from final.src.models.model import PreparedGeneration, QwenModel, TransportError, _CompletionStream
 
 
 MESSAGES = [{"role": "system", "content": "Return JSON."},

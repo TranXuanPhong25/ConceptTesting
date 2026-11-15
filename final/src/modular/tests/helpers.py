@@ -1,7 +1,7 @@
 """Recorded test calls using synthetic model responses, without network access."""
 from dataclasses import asdict
 from final.src.runtime.artifacts import digest, save
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 
 
 class FixtureCalls:

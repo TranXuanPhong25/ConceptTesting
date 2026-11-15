@@ -7,7 +7,7 @@ import pytest
 from final.src.audits import resume_bva_batch as resume
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.calls import RecordedModelCalls
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 
 
 @pytest.fixture

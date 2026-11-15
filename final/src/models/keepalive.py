@@ -1,7 +1,7 @@
 """One recorded notebook keepalive per20minutes, following private endpoint updates."""
 import threading
 
-from .artifacts import save
+from ..runtime.artifacts import save
 from .model import QwenModel, TransportError
 
 

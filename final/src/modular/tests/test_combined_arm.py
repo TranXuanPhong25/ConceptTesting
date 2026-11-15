@@ -1,7 +1,7 @@
 """The combined technique is one model completion, not an input-set union."""
 import json
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.arms.classical import EpDtBvaArm
 from final.src.modular.input_prompts import structured_input_prompt
 from final.src.modular.generators.methods import MethodInputGenerator

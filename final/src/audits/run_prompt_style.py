@@ -12,7 +12,7 @@ import subprocess
 import sys
 import time
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.calls import RecordedModelCalls
@@ -23,8 +23,8 @@ from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.base import InputGenerator
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.runtime.artifacts import digest, save
-from final.src.runtime.keepalive import KeepAlive
-from final.src.runtime.model import QwenModel, TransportError
+from final.src.models.keepalive import KeepAlive
+from final.src.models.model import QwenModel, TransportError
 
 
 ARMS = ("direct", "soft_bva", "worksheet")

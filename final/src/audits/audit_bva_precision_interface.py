@@ -4,7 +4,7 @@ import datetime as dt
 import hashlib
 from pathlib import Path
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.boundary_value_analysis.precision import expand_seeds, matched_twenty, fixed_twenty
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.cohort import load_cohort

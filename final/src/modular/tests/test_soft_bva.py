@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from final.src.core_model import ModelResponse
+from final.src.models.core_model import ModelResponse
 from final.src.modular.arms import selected_arms
 from final.src.modular.arms.boundary import BoundaryArm
 from final.src.modular.arms.plain import PlainArm

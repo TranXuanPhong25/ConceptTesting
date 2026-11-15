@@ -1,1 +1,1 @@
-"""Shared sandbox execution and recorded model transport for benchmark pipelines."""
+"""Shared sandbox execution utilities for benchmark pipelines."""

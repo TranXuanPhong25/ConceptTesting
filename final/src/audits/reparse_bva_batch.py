@@ -39,7 +39,7 @@ class ReplayCalls:
         replayed = {'messages': messages, 'temperature': temperature, 'max_tokens': max_tokens, 'seed': seed}
         if digest(replayed) != digest(self.request):
             raise ValueError(f'Request differs from saved request: {task_number}/{call_name}')
-        from final.src.core_model import ModelResponse
+        from final.src.models.core_model import ModelResponse
         return ModelResponse(self.response['text'], usage=self.response.get('usage', {}),
                              finish_reason=self.response.get('finish_reason'))
 

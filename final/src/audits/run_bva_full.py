@@ -25,8 +25,8 @@ from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.stages.input_preparation import InputPreparationStage
 from final.src.runtime.artifacts import digest, save
-from final.src.runtime.keepalive import KeepAlive
-from final.src.runtime.model import QwenModel
+from final.src.models.keepalive import KeepAlive
+from final.src.models.model import QwenModel
 from .run_prompt_style import configure_endpoint, read
 
 
@@ -78,7 +78,8 @@ def prepare(cohort_path, directory, input_budget=20):
     })
     sources = [path.resolve() for path in Path("final/src/modular").rglob("*.py") if "tests" not in path.parts]
     sources += [path.resolve() for path in Path("final/src/runtime").glob("*.py")]
-    sources += [Path("final/src/core_model.py").resolve(), Path(__file__).resolve(),
+    sources += [path.resolve() for path in Path("final/src/models").glob("*.py")]
+    sources += [Path(__file__).resolve(),
                 Path("final/src/audits/run_prompt_style.py").resolve(), Path("final/__init__.py").resolve(),
                 Path("final/src/__init__.py").resolve(), Path("final/src/audits/__init__.py").resolve()]
     sources += [cohort_path.resolve(), Path("final/data/humaneval.jsonl").resolve(),
