@@ -8,7 +8,6 @@ from final.src.models.core_model import ModelResponse
 from ..runtime.artifacts import digest, save
 from .model import TransportError
 
-RECOVERY_POLICY = "streaming-recovery-v1"
 MAX_COMPLETION_ATTEMPTS = 3
 
 
@@ -51,18 +50,16 @@ class CheckpointedModelClient:
                 raise RuntimeError("Cached request mismatch")
             if response_path.exists():
                 return ModelResponse(**json.loads(response_path.read_text()))
-            if previous_attempt.get("recovery_policy") == RECOVERY_POLICY:
-                previous_error = previous_attempt.get("error", {})
-                if (previous_error.get("retryable") is False
-                        and previous_error.get('http_status') not in retry_stored_statuses):
-                    raise RuntimeError("Stored permanent transport failure; automatic replay disabled")
+            previous_error = previous_attempt.get("error", {})
+            if (previous_error.get("retryable") is False
+                    and previous_error.get('http_status') not in retry_stored_statuses):
+                raise RuntimeError("Stored permanent transport failure; automatic replay disabled")
             self.archive_failed_attempt(call_directory)
 
         previous_completion_attempts = 0
         for archived_directory in call_directory.parent.glob(name + "_unknown_attempt_*"):
             if (archived_directory / "attempt.json").exists():
                 previous_completion_attempts += 1
-
         for attempt_number in range(previous_completion_attempts, maximum_attempts):
             # Tokenizer/read-only errors happen before a completion attempt is recorded.
             prepared = self.model.prepare_generation(messages, max_tokens)
@@ -70,7 +67,6 @@ class CheckpointedModelClient:
             save(attempt_path, {
                 "request_id": request_identifier,
                 "state": "started",
-                "recovery_policy": RECOVERY_POLICY,
                 "attempt_number": attempt_number + 1,
             })
             try:
@@ -80,7 +76,6 @@ class CheckpointedModelClient:
                 save(attempt_path, {
                     "request_id": request_identifier,
                     "state": "unknown",
-                    "recovery_policy": RECOVERY_POLICY,
                     "attempt_number": attempt_number + 1,
                     "error": error.details(),
                 })
@@ -97,7 +92,6 @@ class CheckpointedModelClient:
             save(attempt_path, {
                 "request_id": request_identifier,
                 "state": "received",
-                "recovery_policy": RECOVERY_POLICY,
                 "attempt_number": attempt_number + 1,
             })
             return response

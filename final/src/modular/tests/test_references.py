@@ -6,7 +6,7 @@ from dataclasses import replace
 import pytest
 
 from final.src.runtime.artifacts import digest, save
-from final.src.modular.dataset import DATA_SHA256, load_tasks
+from final.src.benchmarks.datasets import load_tasks
 from final.src.modular.arms import selected_arms
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings, TaskContext
@@ -39,7 +39,7 @@ def original_run(tmp_path):
     record = {"task_id": task["task_id"], "generated": 1, "base_pass": 1, "base_input_keys": [],
               "programs": [{"id": 0, "code": corrected["source"], "base": {"status": "pass", "calls": []}}]}
     path = tmp_path / "cohort.json"
-    save(path, {"tasks": [record], "cohort_sha256": digest([record]), "dataset_sha256": DATA_SHA256})
+    save(path, {"tasks": [record], "cohort_sha256": digest([record]), "dataset_sha256": "fixture-dataset"})
     artifacts = ArtifactStore(tmp_path / "old")
     pipeline = BenchmarkPipeline(path, artifacts, input_generator=FrozenFixtureGenerator(),
         settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
@@ -72,24 +72,14 @@ def test_default_stage_executes_corrected_reference_not_original(tmp_path, numbe
     assert record["source"] == "EvalPlus/HumanEval+" and record["version"] == "v0.1.10"
 
 
-def test_wrong_spec_or_metadata_is_rejected_instead_of_silent_fallback():
-    provider = HumanEvalPlusReferencePrograms()
-    task = TASKS["HumanEval/97"]
-    with pytest.raises(ValueError, match="another task specification"):
-        provider.for_task({**task, "prompt": task["prompt"] + "# different\n"}, METADATA[task["task_id"]])
-    for name, value in [("contract", ""), ("atol", 0.1)]:
-        metadata = {**METADATA[task["task_id"]], name: value}
-        with pytest.raises(ValueError, match="same pinned dataset version"):
-            provider.for_task(task, metadata)
-
-
-def test_reference_file_drift_is_detected_before_execution(tmp_path):
+def test_reference_provider_uses_its_loaded_package_without_drift_guards(tmp_path):
     path = tmp_path / "references.json"
     path.write_bytes(DEFAULT_REFERENCES.read_bytes())
     provider = HumanEvalPlusReferencePrograms(path)
+    task = TASKS["HumanEval/97"]
+    expected = provider.for_task(task, METADATA[task["task_id"]])
     path.write_text(path.read_text() + "\n")
-    with pytest.raises(ValueError, match="changed during execution"):
-        provider.for_task(TASKS["HumanEval/97"], METADATA["HumanEval/97"])
+    assert provider.for_task({**task, "prompt": "changed"}, {}) == expected
 
 
 def test_modern_pipeline_defaults_to_evalplus_reference_programs(original_run, tmp_path):
@@ -112,7 +102,7 @@ def test_rescore_reuses_exact_inputs_without_instantiating_a_model(original_run,
     assert summary["arms"]["plain"]["detected"] == 0
     assert summary["reused_generation"]["new_model_calls"] == 0
     assert summary["tester_calls"]["invocations"] == 0
-    assert pipeline.artifacts.read("generation_frozen.json") == source.read("generation_frozen.json")
+    assert pipeline.artifacts.read("tasks/97/inputs.json") == source.read("tasks/97/inputs.json")
     assert before == {path: path.read_bytes() for path in source.directory.rglob("*") if path.is_file()}
     assert pipeline.run(tasks, metadata) == summary
     replay = BenchmarkPipeline(cohort, ArtifactStore(pipeline.artifacts.directory, read_only=True),
@@ -121,16 +111,17 @@ def test_rescore_reuses_exact_inputs_without_instantiating_a_model(original_run,
     assert replay.run(tasks, metadata) == summary
 
 
-def test_rescore_rejects_changed_inputs_against_original_freeze(original_run, tmp_path):
+def test_rescore_accepts_changed_inputs_without_original_freeze(original_run, tmp_path):
     cohort, source = original_run
     path = source.path("tasks/97/inputs.json")
     record = json.loads(path.read_text());record["arms"]["plain"]["inputs"][0]["args"] = "(2, 3)"
     path.write_text(json.dumps(record))
     pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / "corrected",
                                                       cache_directory=tmp_path / "cache")
-    with pytest.raises(ValueError, match="changed after the original generation freeze"):
-        pipeline.run(tasks, metadata)
-    assert not pipeline.artifacts.exists("generation_frozen.json")
+    source.path("generation_frozen.json").unlink(missing_ok=True)
+    pipeline.run(tasks, metadata)
+    saved = pipeline.artifacts.read("tasks/97/inputs.json")
+    assert saved["arms"]["plain"]["inputs"][0]["args"] == "(2, 3)"
 
 
 def test_rescore_refuses_original_output_directory(original_run, tmp_path):

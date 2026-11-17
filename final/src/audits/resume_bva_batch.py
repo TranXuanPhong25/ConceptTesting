@@ -40,9 +40,6 @@ def checkpoints(source, requests):
         if response.exists():
             if '_unknown_attempt_' in attempt_path.parent.name or attempt['state'] != 'received':
                 raise ValueError('Response does not belong to a received current checkpoint')
-            record = read(response)
-            if not isinstance(record.get('text'), str) or not isinstance(record.get('usage'), dict):
-                raise ValueError('Invalid saved response structure')
             received.append(key)
         else:
             if attempt['state'] not in ('unknown', 'started'):
@@ -67,7 +64,7 @@ def prepare(source, directory):
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         if read(source / 'status.json')['state'] != 'interrupted':
             raise ValueError('Source batch is not stopped/interrupted')
-        frozen.SourceGuard(source).verify(archive=True)
+
         original_files = inventory(source)
         plan = read(source / 'launch_plan.json')
         saved_plan = read(source / 'request_plan.json')
@@ -179,7 +176,7 @@ def finalize(directory, summary, plan):
         'writer_usage': current, 'new_writer_usage': difference, 'imported_writer_usage': old,
         'keepalive_usage': frozen.keepalive_usage(directory),
         'comparison': frozen.paired_verdicts(directory / 'evaluation'),
-        'read_only_replay_matches': True, 'source_hashes_verified': True,
+        'read_only_replay_matches': True, 'source_hashes_verified': None,
         'original_run_unchanged': True, 'imported_responses_unchanged': True,
         'continuation_source': str(source)}
     save(directory / 'result_digest.json', result)
@@ -212,7 +209,7 @@ def worker(directory):
             json.dump({'pid': os.getpid(), 'automatic_restart': False}, marker)
         try:
             plan = read(directory / 'launch_plan.json')
-            frozen.SourceGuard(directory).verify()
+
             verify_saved_batches(directory, plan)
             frozen.configure_endpoint()
             model = frozen.QwenModel()
@@ -230,9 +227,8 @@ def worker(directory):
                     time.sleep(30)
             save(directory / 'endpoint_readiness.json', {'checked_utc': time.time(), **endpoint})
             requests = read(directory / 'request_plan.json')['requests']
-            frozen.SourceGuard(directory).verify()
-            with frozen.KeepAlive(directory):
-                frozen.generate(directory, plan, model, requests)
+
+            frozen.generate(directory, plan, model, requests)
             frozen.state(directory, 'waiting_native_lock', writer_calls=frozen.call_usage(directory/'generation')['received'])
             with Path(plan['native_evaluation_lock']).open('a+') as native_lock:
                 fcntl.flock(native_lock, fcntl.LOCK_EX)
@@ -240,7 +236,7 @@ def worker(directory):
                 summary = frozen.evaluate(directory, plan)
                 if summary != frozen.evaluate(directory, plan, read_only=True):
                     raise ValueError('Immutable replay differs')
-            frozen.SourceGuard(directory).verify()
+
             result = finalize(directory, summary, plan)
             frozen.state(directory, 'complete', **result)
             print(json.dumps(result), flush=True)

@@ -1,0 +1,201 @@
+"""Type admission rejects invalid calls even when the reference would accept them."""
+import ast
+from types import SimpleNamespace
+
+import pytest
+
+from final.src.benchmarks.datasets import load_metadata, load_tasks
+from final.src.modular.artifacts import ArtifactStore
+from final.src.modular.call_builder import CallBuilder
+from final.src.modular.context import PipelineSettings, TaskContext
+from final.src.modular.stages.reference_oracle import ReferenceOracleStage
+
+
+@pytest.mark.parametrize('annotation,value', [
+    ('List[str]', {'a': 'a'}), ('List[str]', ['a', 1]),
+    ('str', set()), ('list[int]', ['', -816.25]),
+    ('list[int]', [1, True]), ('int', True), ('float', False),
+    ('list[list[int]]', [[1], [2.5]]), ('dict[str, int]', {'x': False}),
+    ('tuple[int, str]', (1, 2)), ('list[int]', (1, 2)),
+])
+def test_builder_rejects_wrong_argument_and_nested_types(annotation, value):
+    builder = CallBuilder.for_source(f'def f(x: {annotation}): pass', 'f')
+    with pytest.raises(ValueError, match='argument_type_mismatch:x'):
+        builder.build_values({'x': value})
+    with pytest.raises(ValueError, match='argument_type_mismatch:x'):
+        builder.validate_call({'args': repr((value,)), 'kwargs': '{}'})
+
+
+@pytest.mark.parametrize('annotation,value', [
+    ('List[float]', [1, 2.5]), ('list[Any]', [True, None, {}, 'a']),
+    ('dict[Any, Any]', {1: 'a', 'b': 2}), ('bool', True),
+    ('Optional[int]', None), ('int | str', 'a'),
+    ('typing.List[typing.List[int]]', [[1], []]),
+    ('tuple[int, ...]', (1, 2, 3)), ('tuple[int, str]', (1, 'a')),
+    ("'list[int]'", [1]),
+])
+def test_builder_preserves_valid_values_without_coercion(annotation, value):
+    record = CallBuilder.for_source(f'def f(x: {annotation}): pass', 'f').build_values({'x': value})
+    assert record['args'] == repr((value,))
+
+
+@pytest.mark.parametrize('annotation', ['Dangerous()', 'list[Dangerous()]', 'list[Unknown]', 'int[str]'])
+def test_unsupported_annotations_fail_closed_without_execution(annotation):
+    with pytest.raises(ValueError, match='unsupported_type_annotation'):
+        CallBuilder.for_source(f'def f(x: {annotation}): pass', 'f')
+
+
+def test_defaults_positional_only_and_keyword_only_are_type_checked():
+    builder = CallBuilder.for_source('def f(x: int, /, *, y: list[str] = []): pass', 'f')
+    assert builder.build({'x': 1})['kwargs'] == "{'y': []}"
+    with pytest.raises(ValueError, match='argument_type_mismatch:y'):
+        builder.validate_call({'args': '(1,)', 'kwargs': "{'y': [2]}"})
+    with pytest.raises(TypeError):
+        builder.validate_call({'args': '()', 'kwargs': "{'x': 1}"})
+
+
+def test_all_public_specs_have_parameter_types_and_original_contracts_are_unchanged():
+    import json
+    from final.src.benchmarks.datasets import METADATA_PATH
+    original = json.loads(METADATA_PATH.read_text())
+    metadata = load_metadata()
+    tasks = load_tasks()
+    assert len(tasks) == 164
+    for task in tasks:
+        meta = metadata[task['task_id']]
+        assert {k: v for k, v in meta.items() if k != 'input_types'} == original[task['task_id']]
+        builder = CallBuilder.for_source(task['prompt'], task['entry_point'], input_types=meta.get('input_types'))
+        assert all(parameter.annotation is not parameter.empty for parameter in builder.signature.parameters.values())
+    # Explicitly heterogeneous tasks stay heterogeneous; numeric predicates can receive floats.
+    for number, arguments in [(22, {'values': ['a', {}, 1, True]}),
+                              (92, {'x': 1.5, 'y': 2, 'z': 3.5}),
+                              (95, {'dict': {1: 'a', 'B': False}}),
+                              (137, {'a': '2,5', 'b': 3}),
+                              (151, {'lst': [1, -2, 3.5]})]:
+        task = next(t for t in tasks if t['task_id'] == f'HumanEval/{number}')
+        builder = CallBuilder.for_source(task['prompt'], task['entry_point'],
+                                         input_types=metadata[task['task_id']].get('input_types'))
+        builder.build_values(arguments)
+
+
+@pytest.mark.parametrize('number,args', [(29, "({'a': 'a'}, 'a')"), (40, "(['', -816.25],)"),
+                                        (78, '(set(),)'), (88, '((605, 987.85),)'),
+                                        (94, '([3, False, -3282],)')])
+def test_wrong_spec_types_never_reach_reference_oracle(tmp_path, monkeypatch, number, args):
+    task = next(t for t in load_tasks() if t['task_id'] == f'HumanEval/{number}')
+    context = TaskContext(task, load_metadata()[task['task_id']], ArtifactStore(tmp_path), PipelineSettings())
+    context.inputs_frozen = True
+    context.cohort_task = {'base_input_keys': []}
+    context.inputs = {'arms': {'pynguin': {'inputs': [{'args': args, 'kwargs': '{}'}]}}}
+    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute',
+                        lambda job: pytest.fail('Invalid input reached the reference'))
+    ReferenceOracleStage().run(context)
+    assert context.oracle['tests'] == []
+    assert context.oracle['arm_indices'] == {'pynguin': []}
+    assert context.oracle['rejected'][0]['reason'] == 'input_type_rejects'
+
+
+def test_reference_rejection_keeps_raw_indices_and_catalogue_survivors(tmp_path, monkeypatch):
+    task = {'task_id': 'Toy/1', 'entry_point': 'f', 'prompt': 'def f(x: int): pass'}
+    context = TaskContext(task, {'contract': ''}, ArtifactStore(tmp_path), PipelineSettings())
+    context.inputs_frozen = True
+    context.cohort_task = {'base_input_keys': []}
+    valid = {'args': '(3,)', 'kwargs': '{}'}
+    invalid = {'args': '(True,)', 'kwargs': '{}'}
+    context.inputs = {'arms': {'a': {'inputs': [invalid, valid], 'catalogue_status': 'valid'},
+                               'b': {'inputs': [valid, invalid]}}}
+    reference = SimpleNamespace(record_provenance=False, for_task=lambda *args: {
+        'context': task['prompt'], 'source': '', 'entry': 'f', 'contract': ''})
+    calls = []
+    def execute(job):
+        calls.append(job)
+        assert job['tests'] == [valid, valid]
+        return {'tests': [{'status': 'ok', 'expected': '3', 'input_key': 'three'}] * 2}
+    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute', execute)
+    ReferenceOracleStage(reference_programs=reference).run(context)
+    assert len(calls) == 2
+    assert len(context.oracle['tests']) == 1
+    assert context.oracle['arm_indices'] == {'a': [0], 'b': [0]}
+    assert [row['index'] for row in context.oracle['rejected']] == [0, 3]
+    assert context.oracle['catalogue_valid_input_indices'] == {'a': [1]}
+    assert context.inputs['arms']['a']['inputs'] == [invalid, valid]
+
+
+def test_public_spec_types_apply_without_augmented_metadata():
+    task = next(t for t in load_tasks() if t['task_id'] == 'HumanEval/78')
+    with pytest.raises(ValueError, match='argument_type_mismatch:num'):
+        CallBuilder.for_source(task['prompt'], task['entry_point']).build_values({'num': set()})
+    # An unrelated function with the same name gets its own declared interface.
+    CallBuilder.for_source('def hex_key(num: int): pass', 'hex_key').build({'num': 3})
+
+
+def test_model_any_cannot_override_a_declared_integer():
+    from final.src.modular.tool_sampling.ledger import CandidateLedger
+    from final.src.modular.tests.test_tool_sampling import builder, model
+    raw = model()
+    raw['types']['a'] = 'any'
+    raw['domain'] = 'True'
+    row = CandidateLedger('Toy/1', 'fixture', builder(), raw).add(
+        {'arguments': {'a': '2,3', 'b': 0}}, {'tool': 'direct'})
+    assert row['canonical_args'] is None
+    assert row['primary_error']['code'] == 'type_mismatch'
+
+
+def test_pynguin_cannot_admit_wrong_type_when_trusted_contract_accepts_it(tmp_path, monkeypatch):
+    from final.src.modular.pynguin import adapter
+    from final.src.modular.pynguin import PynguinInputGenerator, PynguinSettings
+    from final.src.modular.tests.test_pynguin_adapter import context, PYTHON
+    ctx = context(tmp_path)
+    ctx.metadata['contract'] = 'assert True'
+    generator = PynguinInputGenerator(PynguinSettings(python=PYTHON))
+    candidates = [{'args': repr((value,)), 'kwargs': '{}', 'test': f'test_{index}'}
+                  for index, value in enumerate([True, {}, 2])]
+    monkeypatch.setattr(generator, 'search_owner', lambda *args: {
+        'owner': 'p1', 'status': 'complete', 'calls': candidates, 'rejected': []})
+    monkeypatch.setattr(adapter, 'execute', lambda job: {'tests': [{'status': 'valid'}] * len(job['tests'])})
+    batch = generator.construct(ctx, 'unused/', {})
+    assert [row['args'] for row in batch['inputs']] == ['(2,)']
+    assert [row['reason'] for row in batch['rejected']] == ['argument_type_mismatch:x'] * 2
+
+
+def test_type_schema_changes_invalidate_pynguin_batch_provenance(tmp_path):
+    from final.src.modular.pynguin import PynguinInputGenerator, PynguinSettings
+    from final.src.modular.tests.test_pynguin_adapter import context
+    ctx = context(tmp_path)
+    generator = PynguinInputGenerator(PynguinSettings(python='/missing/python'))
+    generator.run_task(ctx)
+    ctx.metadata['input_types'] = {'x': 'str'}
+    with pytest.raises(ValueError, match='provenance'):
+        generator.run_task(ctx)
+
+
+def test_public_literal_base_inputs_and_spec_type_conflicts():
+    checked = 0
+    rejected = []
+    for task in load_tasks():
+        builder = CallBuilder.for_source(task['prompt'], task['entry_point'])
+        for call in ast.walk(ast.parse(task['test'])):
+            if not isinstance(call, ast.Call) or not isinstance(call.func, ast.Name) or call.func.id != 'candidate':
+                continue
+            try:
+                args = tuple(ast.literal_eval(arg) for arg in call.args)
+                kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in call.keywords}
+            except (ValueError, TypeError):
+                continue
+            try:
+                builder.validate_call({'args': repr(args), 'kwargs': repr(kwargs)})
+            except ValueError as error:
+                rejected.append((task['task_id'], args, str(error)))
+            checked += 1
+    assert checked == 1151
+    # The public base suite itself passes [] where the specification requires a string.
+    assert rejected == [('HumanEval/78', ([],), 'argument_type_mismatch:num')]
+
+
+def test_metadata_can_refine_but_never_weaken_declared_types():
+    builder = CallBuilder.for_source('def f(x: list[int]): pass', 'f', input_types={'x': 'Any'})
+    with pytest.raises(ValueError, match='argument_type_mismatch:x'):
+        builder.build_values({'x': [True]})
+    task = next(t for t in load_tasks() if t['task_id'] == 'HumanEval/78')
+    with pytest.raises(ValueError, match='conflicting_spec_input_type:num'):
+        CallBuilder.for_source(task['prompt'], task['entry_point'], input_types={'num': 'Any'})

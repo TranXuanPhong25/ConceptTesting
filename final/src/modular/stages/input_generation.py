@@ -1,6 +1,5 @@
 from .base import PipelineStage
 from ..input_contract import validate_generated_inputs
-from ..generators.base import InputGenerator
 
 
 class InputGenerationStage(PipelineStage):
@@ -8,8 +7,6 @@ class InputGenerationStage(PipelineStage):
     requires = ("frozen_cohort",)
 
     def __init__(self, input_generator):
-        if not isinstance(input_generator, InputGenerator):
-            raise TypeError("InputGenerationStage requires an InputGenerator")
         self.input_generator = input_generator
         self.requires = ("frozen_cohort", *(stage.name for stage in input_generator.preparation_stages()))
 
@@ -32,5 +29,5 @@ class InputGenerationStage(PipelineStage):
         validate_generated_inputs(result, task_id=context.task["task_id"], input_budget=context.settings.input_budget)
         # VALIDATION END: every producer uses the same reference-input contract.
         context.artifacts.write(path, result)
-        # Freeze exactly the serialized artifact, including normalized JSON metadata keys.
+        # Keep the JSON representation consumed by reference execution.
         context.inputs = context.artifacts.read(path)

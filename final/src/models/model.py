@@ -106,7 +106,7 @@ class QwenModel(CoreModel):
 
     backend_name = "qwen"
 
-    def __init__(self, *, context=8192, timeout=180, expected_model=None):
+    def __init__(self, *, context=8192, timeout=300, expected_model=None):
         self.context = context
         self.timeout = timeout
         self.endpoint_file = Path(os.environ.get("FINAL_ENDPOINT_ENV_FILE", "/tmp/concepttester-final-qwen.env"))
@@ -162,7 +162,7 @@ class QwenModel(CoreModel):
 
     def check_endpoint(self):
         try:
-            with self.request("models", timeout=25) as response:
+            with self.request("models") as response:
                 payload = json.load(response)
         except (OSError, ValueError, http.client.HTTPException) as error:
             raise TransportError("models", type(error).__name__, retryable=True) from None
@@ -188,7 +188,7 @@ class QwenModel(CoreModel):
         }
         for attempt_number in range(3):
             try:
-                with self.request("tokenize", request_body, timeout=60) as response:
+                with self.request("tokenize", request_body) as response:
                     payload = json.load(response)
                 if not isinstance(payload, dict):
                     raise TransportError("tokenize", "InvalidPayload", retryable=True)

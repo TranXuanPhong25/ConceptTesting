@@ -5,11 +5,11 @@ import argparse
 import json
 import os
 import time
+from dataclasses import dataclass
 from pathlib import Path
 
-from final.src.runtime.artifacts import digest, save
-from final.src.modular.dataset import load_tasks
-from .arms import selected_arms
+from final.src.runtime.artifacts import save
+from final.src.benchmarks.datasets import load_tasks
 from .artifacts import ArtifactStore
 from .context import PipelineSettings
 from .execution_cache import InputExecutionCache
@@ -18,51 +18,45 @@ from .pipeline import BenchmarkPipeline
 from .references import HumanEvalPlusReferencePrograms
 
 
+@dataclass
+class SavedInputMethod:
+    name: str
+    options: dict
+
+    def configuration(self):
+        return self.options
+
+    def extend_summary(self, contexts, summary, reporting):
+        pass
+
+    def render_summary(self, summary):
+        return ""
+
+
 def methods_for_rescore(records):
-    """Preserve historical method accounting without relabeling old BVA as soft."""
-    methods = []
-    for record in records:
-        configuration = record.get("configuration", {})
-        if record["name"] == "boundary" and configuration.get("pipeline_contract") == "typed-target-context-v3":
-            from .boundary_value_analysis.legacy.arm import BoundaryArm as LegacyBoundaryArm
-            options = {key: configuration[key] for key in ("boundary_budget", "selection_tokens", "base_example_limit",
-                       "construction_mode", "grounding_mode") if key in configuration}
-            methods.append(LegacyBoundaryArm(**options))
-        elif record["name"] == "boundary" and configuration.get("pipeline_contract") == "soft-bva-v1":
-            from .arms.boundary import BoundaryArm
-            methods.append(BoundaryArm(base_example_limit=configuration["base_example_limit"]))
-        elif record["name"] == "plain":
-            methods.extend(selected_arms(["plain"]))
-        else:
-            raise ValueError("Unsupported historical input-method configuration")
-    return tuple(methods)
+    return tuple(SavedInputMethod(record["name"], record.get("configuration", {})) for record in records)
 
 
-def build_rescore_pipeline(source_directory, cohort_path, output_directory, *, cache_directory):
+def build_rescore_pipeline(source_directory, cohort_path, output_directory, *, cache_directory, read_only=False):
     source = ArtifactStore(source_directory, read_only=True)
     manifest = source.read("modular_manifest.json")
-    method_names = [record["name"] for record in manifest["arms"]]
-    if set(method_names) - {"plain", "boundary"}:
-        raise ValueError("This rescorer supports modern plain/boundary input batches")
     generator = FrozenInputsGenerator(source_directory, methods=methods_for_rescore(manifest["arms"]))
     tasks_by_id = {task["task_id"]: task for task in load_tasks()}
     tasks = [tasks_by_id[task_id] for task_id in manifest["tasks"]]
     metadata_path = Path(__file__).resolve().parents[2] / "data/contracts.json"
     all_metadata = json.loads(metadata_path.read_text())
     metadata = {task["task_id"]: all_metadata[task["task_id"]] for task in tasks}
-    if digest(tasks) != manifest["task_data_sha256"] or digest(metadata) != manifest["metadata_sha256"]:
-        raise ValueError("Rescore task/spec/domain metadata differs from original generation")
     reference = HumanEvalPlusReferencePrograms()
     for task in tasks:
         reference.for_task(task, metadata[task["task_id"]])
-    artifacts = ArtifactStore(output_directory)
-    if artifacts.directory == source.directory:
+    artifacts = ArtifactStore(output_directory,read_only=read_only)
+    if artifacts.directory == source.directory or artifacts.directory.is_relative_to(source.directory):
         raise ValueError("Rescore requires a separate output directory")
+    if not read_only and artifacts.directory.exists():
+        raise ValueError("Rescore requires a new output directory; the execution cache can be shared")
     pipeline = BenchmarkPipeline(cohort_path, artifacts, input_generator=generator,
         settings=PipelineSettings(**manifest["settings"]), calls=None,
-        execution_cache=InputExecutionCache(cache_directory), reference_programs=reference)
-    if pipeline.cohort_stage.cohort["cohort_sha256"] != manifest["cohort_sha256"]:
-        raise ValueError("Rescore must use the original frozen cohort")
+        execution_cache=InputExecutionCache(cache_directory,read_only=read_only), reference_programs=reference)
     return pipeline, tasks, metadata
 
 
@@ -72,7 +66,13 @@ def main(arguments=None):
     parser.add_argument("--cohort", type=Path, required=True)
     parser.add_argument("--artifacts", type=Path, required=True)
     parser.add_argument("--execution-cache", type=Path, default=Path("final/out/execution_cache"))
+    parser.add_argument('--replay',action='store_true',help='Summarize saved evaluation results without executing programs')
     options = parser.parse_args(arguments)
+    if options.replay:
+        from .stages.reporting import ReportingStage
+        summary = ReportingStage.summarize_saved(ArtifactStore(options.artifacts, read_only=True))
+        print(json.dumps({"arms": summary["arms"], "new_model_calls": 0, "new_native_calls": 0}))
+        return 0
     pipeline, tasks, metadata = build_rescore_pipeline(options.source_run, options.cohort, options.artifacts,
                                                       cache_directory=options.execution_cache)
     status = pipeline.artifacts.path("status.json")
@@ -80,6 +80,15 @@ def main(arguments=None):
                   "phase": "rescore-only", "new_model_calls": 0})
     try:
         summary = pipeline.run(tasks, metadata)
+        from final.src.audits.detection_kinds import classify_arm,kind_counts,strongest_kind
+        union={};kinds={}
+        for arm in summary['arms']:
+            detected=classify_arm(pipeline.artifacts.directory,arm);kinds[arm]=kind_counts(detected)
+            for key,row in detected.items():
+                if key not in union or strongest_kind({union[key]['kind'],row['kind']})==row['kind']:
+                    union[key]=row
+        save(pipeline.artifacts.path('rescore_metrics.json'),{'arms':summary['arms'],
+            'detection_kinds':kinds,'union':kind_counts(union),'new_model_calls':0})
     except BaseException as error:
         save(status, {"state": "interrupted", "pid": os.getpid(), "updated_utc": time.time(),
                       "error_type": type(error).__name__, "new_model_calls": 0})

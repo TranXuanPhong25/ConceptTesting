@@ -263,6 +263,86 @@ def control_flow(job):
     return {'tests': results}
 
 
+def data_flow(job):
+    """Only sandboxed coverage and DU events; candidate outputs stay private."""
+    import coverage
+    from data_flow import HOOK, Trace
+
+    def observe(record=None, input_index=0):
+        observation = {'domain': 'unknown'}
+        cov, tracer = None, None
+        count = 0
+        is_base = record is None
+        try:
+            with deadline(job['timeout']):
+                random.seed(job.get('seed', 0))
+                domain = domain_function(job)
+
+                def validate(args, kwargs):
+                    nonlocal count
+                    count += 1
+                    try:
+                        domain(*copy.deepcopy(args), **copy.deepcopy(kwargs))
+                    except Exception:
+                        observation.update(domain='invalid', status='domain_rejected')
+                        raise
+                    observation['domain'] = 'valid'
+
+                if not is_base:
+                    args, kwargs = validate_input(record)
+                    validate(args, kwargs)
+                tracer = Trace(job['source'], job['entry'])
+                namespace = {'__name__': '__candidate__', HOOK: tracer}
+                if job.get('context'):
+                    exec(compile(job['context'], '<specification>', 'exec'), namespace)
+                code = tracer.code(job['source'])
+                cov = coverage.Coverage(branch=True, data_file=None, include=['/work/program.py'])
+                cov.start()
+                exec(code, namespace)
+                fn = namespace[job['entry']]
+                execution_progress(job['mode'], 0 if is_base else input_index)
+                if is_base:
+                    test_namespace = {}
+                    if job.get('context'):
+                        exec(compile(job['context'], '<specification>', 'exec'), test_namespace)
+
+                    def candidate(*args, **kwargs):
+                        validate(args, kwargs)
+                        return fn(*args, **kwargs)
+
+                    test_namespace[job['entry']] = candidate
+                    exec(compile(job['base'], '<base-tests>', 'exec'), test_namespace)
+                    random.seed(job.get('seed', 0))
+                    test_namespace['check'](candidate)
+                else:
+                    fn(*copy.deepcopy(args), **copy.deepcopy(kwargs))
+                observation['status'] = 'executed'
+        except Deadline:
+            observation['status'] = 'timeout'
+        except AssertionError:
+            observation.setdefault('status', 'fail' if is_base else 'error')
+            observation['exception'] = 'AssertionError'
+        except BaseException as error:
+            observation.setdefault('status', 'error')
+            observation['exception'] = type(error).__name__
+        finally:
+            if cov:
+                cov.stop()
+                data = cov.get_data()
+                observation['coverage'] = {'lines': sorted(data.lines('/work/program.py') or []),
+                    'arcs': [list(arc) for arc in sorted(data.arcs('/work/program.py') or [])]}
+            if tracer:
+                observation['data_flow'] = tracer.result()
+            if is_base:
+                observation.update(test_count=count, baseline_scope='full_base_suite')
+            execution_progress()
+        return observation
+
+    if job.get('base') is not None:
+        return {'baseline': observe()}
+    return {'tests': [observe(record, input_index) for input_index, record in enumerate(job['tests'])]}
+
+
 def cases(job):
     results = []
     for raw in job["tests"]:
@@ -308,6 +388,8 @@ def main():
             result=evaluate(job)
         elif job['mode']=='control_flow':
             result=control_flow(job)
+        elif job['mode']=='data_flow':
+            result=data_flow(job)
         else:
             result=cases(job)
     json.dump(result, output)

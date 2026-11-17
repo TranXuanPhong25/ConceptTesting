@@ -26,7 +26,7 @@ def execute(job: dict) -> dict:
         directory = Path(temp)
         progress = directory / "progress"
         progress.mkdir()
-        for name in ("worker.py", "contracts.py"):
+        for name in ("worker.py", "contracts.py", "data_flow.py"):
             shutil.copyfile(HERE / name, directory / name)
         (directory / "job.json").write_text(json.dumps(job))
         (directory / "program.py").write_text(job.get('source', ''))
@@ -66,16 +66,18 @@ def execute(job: dict) -> dict:
                     active = json.loads((progress / "active.json").read_text())
                 except (OSError, ValueError):
                     active = None
-                if (job.get("mode") in ("oracle", "evaluate", "control_flow")
+                if (job.get("mode") in ("oracle", "evaluate", "control_flow", "data_flow")
                         and len(job.get("tests", [])) == 1
                         and active == {"mode": job["mode"], "input_index": 0}):
                     observation = {"status": "timeout", "timeout_source": "sandbox_wall_guard"}
-                    if job['mode'] in ('control_flow',):
+                    if job['mode'] in ('control_flow', 'data_flow'):
                         observation['domain'] = 'unknown'
                     return {"tests": [observation]}
                 raise ExecutionError("Sandbox exceeded overall wall timeout") from None
         if proc.returncode != 0:
-            raise ExecutionError(f"Sandbox infrastructure exited {proc.returncode}")
+            details=(directory/'stderr').read_text(errors='replace').strip().splitlines()
+            reason=details[-1][:400] if details else 'no sandbox stderr'
+            raise ExecutionError(f"Sandbox infrastructure exited {proc.returncode}: {reason}")
         try:
             result = json.loads((directory / "stdout").read_bytes())
             if not isinstance(result, dict):

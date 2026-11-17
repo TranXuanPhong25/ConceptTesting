@@ -2,6 +2,8 @@ from final.src.runtime.execution import execute
 from .base import PipelineStage
 from ..execution_cache import cached_execution
 from ..references import HumanEvalPlusReferencePrograms
+from ..call_builder import CallBuilder
+from ..input_contract import validate_input_literal
 
 
 class ReferenceOracleStage(PipelineStage):
@@ -22,40 +24,55 @@ class ReferenceOracleStage(PipelineStage):
         return self.reference_programs.source_dependencies()
 
     def run(self, context):
-        # VALIDATION START: generation must finish and freeze before oracle execution.
-        if not context.inputs_frozen:
-            raise RuntimeError("All task inputs must be frozen before reference execution")
-        # VALIDATION END: generation must finish and freeze before oracle execution.
+        if context.inputs is None:
+            raise RuntimeError("Reference execution requires generated or saved inputs")
         if context.inputs.get("skip"):
             return
         reference = self.reference_programs.for_task(context.task, context.metadata)
         if self.reference_programs.record_provenance:
             context.artifacts.write(context.task_directory + "/reference_program.json", reference["provenance"])
         raw_inputs = []
+        builder = CallBuilder.for_source(context.task['prompt'], context.task['entry_point'],
+                                         input_types=context.metadata.get('input_types'))
+        type_rejections = {}
         original_arm_indices = {}
         for arm_name, arm_record in context.inputs["arms"].items():
             original_arm_indices[arm_name] = []
             for input_record in arm_record["inputs"]:
                 original_arm_indices[arm_name].append(len(raw_inputs))
+                try:
+                    validate_input_literal(input_record)
+                    builder.validate_call(input_record)
+                except (ValueError, TypeError, KeyError, SyntaxError, RecursionError) as error:
+                    type_rejections[len(raw_inputs)] = str(error)
                 raw_inputs.append(input_record)
+        admitted_indices = [index for index in range(len(raw_inputs)) if index not in type_rejections]
         job = {
             "mode": "oracle", "context": reference["context"],
             "source": reference["source"],
             "entry": reference["entry"], "contract": reference["contract"],
-            "tests": raw_inputs, "timeout": context.settings.timeout_seconds,
+            "tests": [raw_inputs[index] for index in admitted_indices], "timeout": context.settings.timeout_seconds,
             "seed": context.settings.reference_seed + context.task_number,
         }
         reference_runs = []
         for repeat_index in range(2):
             relative_path = context.task_directory + f"/oracle_{repeat_index}.json"
-            outcome = cached_execution(context, relative_path, job, repeat_index, execute, self.execution_cache)
-            reference_runs.append(outcome["tests"])
+            outcome = {"tests": []}
+            if admitted_indices:
+                outcome = cached_execution(context, relative_path, job, repeat_index, execute, self.execution_cache)
+            if len(outcome["tests"]) != len(admitted_indices):
+                raise ValueError("Reference result count does not match admitted inputs")
+            reference_runs.append(dict(zip(admitted_indices, outcome["tests"])))
         valid_tests = []
         rejected_inputs = []
         raw_to_valid_index = {}
         valid_index_by_input_key = {}
         base_input_keys = set(context.cohort_task["base_input_keys"])
         for raw_index, input_record in enumerate(raw_inputs):
+            if raw_index in type_rejections:
+                rejected_inputs.append({"index": raw_index, "reason": "input_type_rejects",
+                                        "detail": type_rejections[raw_index]})
+                continue
             first_reference_result = reference_runs[0][raw_index]
             second_reference_result = reference_runs[1][raw_index]
             # VALIDATION START: domain/reference acceptance, repeat stability and base duplicates.

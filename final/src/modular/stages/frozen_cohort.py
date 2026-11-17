@@ -18,4 +18,4 @@ class FrozenCohortStage(PipelineStage):
         context.cohort_task = self.task_records[context.task["task_id"]]
 
     def configuration(self):
-        return {"cohort_sha256": self.cohort["cohort_sha256"]}
+        return {}

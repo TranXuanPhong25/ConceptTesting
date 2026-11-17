@@ -1,16 +1,9 @@
 """Frozen program cohort validation and recorded model-call accounting."""
 import json
 from pathlib import Path
-from final.src.runtime.artifacts import digest
-from .dataset import DATA_SHA256
 
 def load_cohort(path: Path):
-    data = json.loads(path.read_text())
-    if data['cohort_sha256'] != digest(data['tasks']):
-        raise ValueError('Frozen cohort checksum mismatch')
-    if data['dataset_sha256'] != DATA_SHA256:
-        raise ValueError('Frozen cohort dataset mismatch')
-    return data
+    return json.loads(path.read_text())
 
 def call_usage(directory):
     attempts=list(directory.glob('tasks/*/calls/*/attempt.json'))

@@ -1,11 +1,7 @@
 """Vertex transport contracts; no credentials or remote API calls."""
-
-
 from types import SimpleNamespace
 
-
 import pytest
-
 
 from final.src.models.model import PreparedGeneration, TransportError
 
@@ -177,3 +173,25 @@ def test_vertex_installed_sdk_builds_native_requests_without_network(monkeypatch
     config = call['request'].generation_config
     assert config.max_output_tokens == 256 and config.seed == 12
     assert call['request'].system_instruction.parts[0].text == 'Return JSON'
+
+
+@pytest.mark.parametrize('backend', ['vertex', 'qwen'])
+def test_cli_selects_backend_without_keepalive(tmp_path, monkeypatch, backend):
+    import final.src.modular.run as cli
+    import final.src.models as models
+    model = SimpleNamespace(model_id=f'{backend}/fixture', backend_name=backend)
+    selected = []
+    def factory(**kwargs):
+        selected.append(kwargs)
+        return model
+    class Pipeline:
+        stage_events = []
+        def __init__(self, *args, **kwargs):
+            assert kwargs['calls'].model is model
+        def run(self, *args):
+            return {'scored_tasks': 1, 'arms': {}}
+    monkeypatch.setattr(models, 'create_model', factory)
+    monkeypatch.setattr(cli, 'BenchmarkPipeline', Pipeline)
+    assert cli.main(['--mode', 'run', '--model-backend', backend, '--model-name', 'fixture',
+                     '--artifacts', str(tmp_path), '--no-execution-cache']) == 0
+    assert selected == [{'backend': backend, 'model_name': 'fixture', 'context': 8192}]

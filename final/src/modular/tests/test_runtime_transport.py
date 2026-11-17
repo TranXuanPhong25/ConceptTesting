@@ -273,6 +273,8 @@ def test_prior_attempt_retry_preserves_unknown_and_reuses_saved_response(tmp_pat
     model = FixtureTransportModel(failures=1)
     pipeline = CheckpointedModelClient(model)
     result = pipeline.query(task_directory, "plain", **QUERY_ARGUMENTS)
+    for attempt_path in (task_directory / "calls").glob("*/attempt.json"):
+        assert "recovery_policy" not in json.loads(attempt_path.read_text())
     assert model.completion_calls == 2
     assert model.received_parameters[0] == model.received_parameters[1]
     accounting = call_usage(tmp_path)
@@ -378,12 +380,18 @@ def test_legacy_unknown_counts_toward_three_total_attempts(tmp_path, monkeypatch
     assert model.completion_calls == 2
 
 
-def test_permanent_failure_is_not_replayed_on_restart(tmp_path):
+@pytest.mark.parametrize("policy", [None, "streaming-recovery-v1", "older-policy"])
+def test_permanent_failure_is_not_replayed_on_restart(tmp_path, policy):
     model = FixtureTransportModel(failures=10, permanent=True)
     pipeline = CheckpointedModelClient(model)
     task_directory = tmp_path / "tasks" / "16"
     with pytest.raises(TransportError):
         pipeline.query(task_directory, "plain", **QUERY_ARGUMENTS)
+    attempt_path = task_directory / "calls/plain/attempt.json"
+    attempt = json.loads(attempt_path.read_text())
+    assert "recovery_policy" not in attempt
+    if policy is not None:
+        save(attempt_path, dict(attempt, recovery_policy=policy))
     with pytest.raises(RuntimeError, match="permanent"):
         pipeline.query(task_directory, "plain", **QUERY_ARGUMENTS)
     assert model.completion_calls == 1
@@ -430,6 +438,13 @@ def test_structured_completion_sends_schema_in_real_http_body(transport_model, c
     transport_model.generate_prepared(PreparedGeneration([], 1, 100), temperature=0, seed=1,
                                      response_format=response_format)
     assert json.loads(requests[0].content)['response_format'] == response_format
+
+
+def test_cached_calls_do_not_read_legacy_model_metadata(tmp_path):
+    from final.src.modular.artifacts import ArtifactStore
+    from final.src.modular.calls import CachedModelCalls
+    save(tmp_path / "manifest.json", {"model": "legacy-model"})
+    assert CachedModelCalls(ArtifactStore(tmp_path, read_only=True)).model_id == "cache-only"
 
 
 def test_structured_call_schema_is_checkpointed_and_replay_rejects_changed_schema(tmp_path):

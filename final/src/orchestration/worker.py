@@ -176,7 +176,6 @@ def run(directory):
     from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.modular.stages.input_preparation import InputPreparationStage
     from final.src.models.model import QwenModel,TransportError
-    from final.src.models.keepalive import KeepAlive
     from final.src.audits.run_bva_full import SourceGuard
     config=read(directory/'config_snapshot.json');plan=read(directory/'launch_plan.json')
     guard=SourceGuard(directory);guard.verify()
@@ -222,16 +221,12 @@ def run(directory):
             records={method.name:method.run(context) for method in order}
             return {'task_id':context.task['task_id'],'arms':{method.name:records[method.name] for method in self.methods}}
     generator=Generator(methods,preparation_stages=(Preparation(methods),))
-    native_handle=None;observer=None;generated_count=0;evaluated_count=0
+    native_handle=None;generated_count=0;evaluated_count=0
     class Pipeline(BenchmarkPipeline):
         def execute_stages(self,stages,context):
-            nonlocal native_handle,observer
+            nonlocal native_handle
             guard.verify()
             if stages[0].name=='reference_oracle' and not self.artifacts.read_only and native_handle is None:
-                if observer is not None:
-                    observer.__exit__(None,None,None)
-                    observer.thread.join()
-                    observer=None
                 state('waiting_native_lock')
                 native_handle=Path(plan['native_lock']).open('a+');fcntl.flock(native_handle,fcntl.LOCK_EX)
                 state('running',phase='evaluation')
@@ -247,8 +242,6 @@ def run(directory):
             save(directory/'progress.json',{'task_id':context.task['task_id'],'stage':stage.name,'event':status,
                 'generated_tasks':generated_count,'evaluated_tasks':evaluated_count,'total_tasks':len(tasks),'updated_utc':time.time()})
     try:
-        observer=KeepAlive(directory,model_factory=lambda:QwenModel(context=config['context_tokens'],timeout=60,expected_model=config['model_name']))
-        observer.__enter__()
         pipeline=Pipeline(Path(plan['cohort']),ArtifactStore(directory),input_generator=generator,settings=settings,
             calls=RecordedModelCalls(model,ArtifactStore(directory)),execution_cache=InputExecutionCache(Path(plan['execution_cache'])))
         summary=pipeline.run(tasks,load_metadata())
@@ -275,9 +268,6 @@ def run(directory):
         save(directory/'result_digest.json',result);state('complete',**result)
         print(json.dumps(result),flush=True)
     finally:
-        if observer is not None:
-            observer.__exit__(None,None,None)
-            observer.thread.join()
         if native_handle is not None:native_handle.close()
 
 

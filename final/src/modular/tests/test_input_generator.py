@@ -80,28 +80,28 @@ def test_any_input_producing_stage_can_use_method_adapter(tmp_path, monkeypatch)
 
 
 @pytest.mark.parametrize("arguments", ["(__import__('os').getcwd(),)", "1", "{}"])
-def test_bad_generator_output_rejected_before_freeze_or_reference(tmp_path, monkeypatch, arguments):
+def test_invalid_calls_are_saved_and_rejected_without_execution(tmp_path, monkeypatch, arguments):
     path = write_cohort(tmp_path / "cohort.json")
     artifacts = ArtifactStore(tmp_path / "run")
     monkeypatch.setattr("final.src.modular.stages.reference_oracle.execute", lambda job: pytest.fail("Reference ran"))
     generator = SavedInputsGenerator(arguments)
     pipeline = BenchmarkPipeline(path, artifacts, input_generator=generator,
                                  settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
-    with pytest.raises((ValueError, SyntaxError)):
-        pipeline.run([TASK], {TASK["task_id"]: META})
+    summary = pipeline.run([TASK], {TASK["task_id"]: META})
+    assert summary["arms"]["new_method"]["valid_inputs"] == 0
+    assert summary["diagnostics"]["oracle_rejections"]["input_type_rejects"] == 1
     assert not artifacts.exists("generation_frozen.json")
-    assert not artifacts.exists("tasks/7/inputs.json")
+    assert artifacts.read("tasks/7/inputs.json")["arms"]["new_method"]["inputs"][0]["args"] == arguments
 
 
-def test_injected_configuration_drift_rejected_before_producer_runs(tmp_path):
+def test_saved_inputs_are_loaded_despite_generator_configuration_changes(tmp_path):
     path = write_cohort(tmp_path / "cohort.json")
     artifacts = ArtifactStore(tmp_path / "run")
     BenchmarkPipeline(path, artifacts, input_generator=SavedInputsGenerator(),
                       settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})
     changed = SavedInputsGenerator("([10, 11],)")
-    with pytest.raises(ValueError, match="modular_manifest"):
-        BenchmarkPipeline(path, artifacts, input_generator=changed,
-                          settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})
+    BenchmarkPipeline(path, artifacts, input_generator=changed,
+                      settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})
     assert changed.invocations == 0
 
 

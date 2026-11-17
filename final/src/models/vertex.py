@@ -26,7 +26,7 @@ def transport_error(operation, error, *, completion_started=False):
 class VertexAIModel(CoreModel):
     backend_name = 'vertex'
 
-    def __init__(self, model=None, *, project=None, location=None, context=8192, timeout=180):
+    def __init__(self, model=None, *, project=None, location=None, context=8192, timeout=300):
         self.name = model or os.environ.get('VERTEX_MODEL') or os.environ.get('LLM_MODEL')
         self.project = project or os.environ.get('VERTEX_PROJECT') or os.environ.get('GOOGLE_CLOUD_PROJECT')
         self.location = location or os.environ.get('VERTEX_LOCATION') or os.environ.get('GOOGLE_CLOUD_LOCATION', 'global')

@@ -17,7 +17,10 @@ class ModelCalls(Protocol):
     def token_count(self, messages: list[dict[str, str]]) -> int: ...
 
     def complete(self, task_number: int, call_name: str, messages: list[dict[str, str]],
-                 *, temperature: float, max_tokens: int, seed: int) -> ModelResponse: ...
+                 *, temperature: float, max_tokens: int, seed: int, response_format: dict | None = None) -> ModelResponse: ...
+
+    def complete_structured(self, task_number: int, call_name: str, messages: list[dict[str, str]],
+                            *, schema: dict, temperature: float, max_tokens: int, seed: int) -> ModelResponse: ...
 
 
 @dataclass(frozen=True)
@@ -48,7 +51,6 @@ class TaskContext:
     inputs: JsonObject | None = None
     oracle: JsonObject | None = None
     result: JsonObject | None = None
-    inputs_frozen: bool = False
     completed_stages: set[str] = field(default_factory=set)
     extensions: JsonObject = field(default_factory=dict)
 

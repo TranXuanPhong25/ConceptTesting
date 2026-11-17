@@ -26,8 +26,14 @@ class InputGenerator(ABC):
     def post_reference_stages(self):
         return ()
 
+    def post_evaluation_stages(self, execution_cache, reference_programs):
+        return ()
+
     def runtime_dependencies(self):
         return ()
+
+    def validate_generation(self, contexts):
+        """Optional producer-specific admission check before oracle/PUT execution."""
 
     @abstractmethod
     def generate(self, context: TaskContext) -> JsonObject:

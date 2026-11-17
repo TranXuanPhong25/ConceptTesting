@@ -3,7 +3,7 @@ import pytest
 
 from final.src.runtime.contracts import fingerprint, validate_test
 from final.src.runtime.execution import execute
-from final.src.modular.dataset import load_tasks
+from final.src.benchmarks.datasets import load_tasks
 
 
 def test_dataset_is_full_original_set():

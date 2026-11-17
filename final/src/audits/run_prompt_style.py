@@ -18,12 +18,11 @@ from final.src.modular.call_builder import CallBuilder
 from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.cohort import call_usage, load_cohort
 from final.src.modular.context import PipelineSettings
-from final.src.modular.dataset import load_tasks
+from final.src.benchmarks.datasets import load_tasks
 from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.base import InputGenerator
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.runtime.artifacts import digest, save
-from final.src.models.keepalive import KeepAlive
 from final.src.models.model import QwenModel, TransportError
 
 
@@ -313,24 +312,23 @@ def worker(directory):
             calls = RecordedModelCalls(model, ArtifactStore(directory))
             tasks = {task["task_id"]: task for task in load_tasks()}
             batches = {}
-            with KeepAlive(directory):
-                for slot, (number, arm) in enumerate(plan["order"]):
-                    verify(directory)
-                    status(directory, "running", phase="generation", slot=slot + 1, task=number, arm=arm)
-                    request = read(directory / "requests" / str(number) / (arm + ".json"))
-                    cached = directory / "reused_calls" / str(number) / arm / "response.json"
-                    if cached.exists():
-                        response = ModelResponse(**read(cached))
-                    else:
-                        response = calls.complete(number, "style_" + arm, request["messages"],
-                            temperature=request["temperature"], max_tokens=request["max_tokens"], seed=request["seed"])
-                    task_id = "HumanEval/" + str(number)
-                    task = tasks[task_id]
-                    batch = decode(response, CallBuilder.for_source(task["prompt"], task["entry_point"]), 20)
-                    save(directory / "decoded" / str(number) / (arm + ".json"), batch)
-                    batches.setdefault(task_id, {"task_id": task_id, "arms": {}})["arms"][arm] = batch
-                    print(json.dumps({"task": number, "arm": arm, "reused": cached.exists(),
-                                      "status": batch["status"], "admitted_inputs": len(batch["inputs"])}), flush=True)
+            for slot, (number, arm) in enumerate(plan["order"]):
+                verify(directory)
+                status(directory, "running", phase="generation", slot=slot + 1, task=number, arm=arm)
+                request = read(directory / "requests" / str(number) / (arm + ".json"))
+                cached = directory / "reused_calls" / str(number) / arm / "response.json"
+                if cached.exists():
+                    response = ModelResponse(**read(cached))
+                else:
+                    response = calls.complete(number, "style_" + arm, request["messages"],
+                        temperature=request["temperature"], max_tokens=request["max_tokens"], seed=request["seed"])
+                task_id = "HumanEval/" + str(number)
+                task = tasks[task_id]
+                batch = decode(response, CallBuilder.for_source(task["prompt"], task["entry_point"]), 20)
+                save(directory / "decoded" / str(number) / (arm + ".json"), batch)
+                batches.setdefault(task_id, {"task_id": task_id, "arms": {}})["arms"][arm] = batch
+                print(json.dumps({"task": number, "arm": arm, "reused": cached.exists(),
+                                  "status": batch["status"], "admitted_inputs": len(batch["inputs"])}), flush=True)
             for batch in batches.values():
                 batch["arms"] = {arm: batch["arms"][arm] for arm in ARMS}
             save(directory / "encoded_inputs.json", batches)

@@ -19,6 +19,36 @@ class ReportingStage(PipelineStage):
         if context.result is None:
             raise RuntimeError("Reporting requires an evaluated task result")
 
+    @staticmethod
+    def summarize_saved(artifacts, task_ids=None):
+        """Aggregate recorded verdicts without constructing generation or execution jobs."""
+        summary = artifacts.read("modular_summary.json") if artifacts.exists("modular_summary.json") else {}
+        rows = [artifacts.read(str(path.relative_to(artifacts.directory)))
+                for path in sorted(artifacts.directory.glob("tasks/*/result.json"))]
+        if task_ids is not None:
+            requested = set(task_ids)
+            selected = [row for row in rows if row["task_id"] in requested]
+            missing = requested - {row["task_id"] for row in selected}
+            if missing:
+                raise FileNotFoundError("Missing saved task results: " + ", ".join(sorted(missing)))
+            if len(selected) != len(rows):
+                summary = {}
+            rows = selected
+        if not rows:
+            raise FileNotFoundError("No saved task evaluation results")
+        totals = {}
+        for row in rows:
+            if row.get("skip"):
+                continue
+            for name, arm in row["arms"].items():
+                total = totals.setdefault(name, {"valid_inputs": 0, "detected": 0, "tasks_detected": 0})
+                total["valid_inputs"] += arm["valid_inputs"]
+                total["detected"] += len(arm["detected_put_ids"])
+                total["tasks_detected"] += bool(arm["detected_put_ids"])
+        summary.update(scored_tasks=len(rows), arms=totals,
+                       evaluated_base_pass=sum(row["base_pass"] for row in rows if not row.get("skip")))
+        return summary
+
     def build_summary(self, contexts, cohort):
         rows = []
         totals = {}
@@ -45,7 +75,7 @@ class ReportingStage(PipelineStage):
             if not result.get("skip"):
                 evaluated_count += result["base_pass"]
         summary = {
-            "cohort_sha256": cohort["cohort_sha256"], "expected_tasks": len(contexts),
+            "expected_tasks": len(contexts),
             "scored_tasks": len(rows), "generated": generated_count, "base_pass": base_pass_count,
             "evaluated_base_pass": evaluated_count, "arms": totals, "comparisons": comparisons,
             "skips": skipped_tasks,
@@ -127,7 +157,7 @@ class ReportingStage(PipelineStage):
         if "input_execution_cache" in summary:
             lines.extend(["", f"Per-input execution cache: {summary['input_execution_cache']}.",
                           "Cached executions retain separate stability-repeat slots; stored durations are historical."])
-        lines.extend(["", "Expected outputs come exclusively from the reference program after all arm inputs freeze.",
+        lines.extend(["", "Expected outputs come exclusively from the reference program after input generation.",
                       "EvalPlus input contracts filter the domain; EvalPlus floating tolerances and polynomial-root property",
                       "handle accepted non-unique roots. Reference oracle limitations remain; this is detection on this",
                       "fixed LLM-generated cohort, not generalization to every real-world bug. Structural code diversity",

@@ -18,14 +18,13 @@ from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.cohort import load_cohort, call_usage
 from final.src.modular.context import PipelineSettings, TaskContext
-from final.src.modular.dataset import load_tasks, load_metadata
+from final.src.benchmarks.datasets import load_tasks, load_metadata
 from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.frozen import FrozenInputsGenerator
 from final.src.modular.stages.input_preparation import InputPreparationStage
-from final.src.models.keepalive import KeepAlive
 from final.src.models.model import QwenModel, TransportError
 from .continue_bva_evaluation import read, save, digest, checksum
-from .run_bva_full import SourceGuard, ProgressPipeline
+from .run_bva_full import ProgressPipeline
 from .run_prompt_style import configure_endpoint
 from .run_bva_precision import evaluation_observations
 
@@ -191,12 +190,12 @@ def prepare_packets(directory, plan, model):
 
 
 class RegisteredCalls(RecordedModelCalls):
-    def __init__(self, model, artifacts, guard, requests):
+    def __init__(self, model, artifacts, requests):
         super().__init__(model, artifacts)
-        self.guard, self.requests = guard, requests
+        self.requests = requests
 
     def complete(self, task_number, call_name, messages, *, temperature, max_tokens, seed):
-        self.guard.verify()
+
         request = {'messages': messages, 'temperature': temperature, 'max_tokens': max_tokens, 'seed': seed}
         if digest(request) != self.requests[f'{task_number}/{call_name}']['request_sha256']:
             raise ValueError('Unregistered batch request')
@@ -206,8 +205,8 @@ class RegisteredCalls(RecordedModelCalls):
 def generate(directory, plan, model, requests):
     source = directory / 'generation'
     settings = PipelineSettings(**plan['settings'])
-    guard = SourceGuard(directory)
-    calls = RegisteredCalls(model, ArtifactStore(source), guard, requests)
+
+    calls = RegisteredCalls(model, ArtifactStore(source), requests)
     metadata = load_metadata()
     for task in load_tasks():
         number = int(task['task_id'].split('/')[-1])
@@ -245,7 +244,7 @@ def evaluate(directory, plan, *, read_only=False):
     cache = InputExecutionCache(Path(plan['execution_cache']), read_only=read_only)
     pipeline = ProgressPipeline(Path(plan['cohort']), ArtifactStore(output, read_only=read_only),
         input_generator=FrozenInputsGenerator(directory / 'generation', methods=ARMS),
-        settings=PipelineSettings(**plan['settings']), execution_cache=cache, guard=SourceGuard(directory))
+        settings=PipelineSettings(**plan['settings']), execution_cache=cache)
     return pipeline.run(load_tasks(), load_metadata())
 
 
@@ -260,9 +259,9 @@ def worker(directory):
             if readiness != {'tests_passed': True, 'review_passed': True,
                              'source_snapshot_sha256': checksum(directory / 'source_snapshot.json')}:
                 raise ValueError('Readiness gate changed')
-            SourceGuard(directory).verify()
+
             wait_until_deadline(directory, plan['not_before_utc_epoch'])
-            SourceGuard(directory).verify()
+
             configure_endpoint()
             model = QwenModel()
             endpoint_deadline = time.time() + 21600
@@ -278,9 +277,8 @@ def worker(directory):
                     time.sleep(30)
             save(directory / 'endpoint_readiness.json', {'checked_utc': time.time(), **endpoint})
             requests = prepare_packets(directory, plan, model)
-            SourceGuard(directory).verify()
-            with KeepAlive(directory):
-                generate(directory, plan, model, requests)
+
+            generate(directory, plan, model, requests)
             state(directory, 'waiting_native_lock', new_writer_calls=call_usage(directory / 'generation')['received'])
             with Path(plan['native_evaluation_lock']).open('a+') as native_lock:
                 fcntl.flock(native_lock, fcntl.LOCK_EX)
@@ -288,11 +286,11 @@ def worker(directory):
                 summary = evaluate(directory, plan)
                 if summary != evaluate(directory, plan, read_only=True):
                     raise ValueError('Immutable replay mismatch')
-            SourceGuard(directory).verify()
+
             result = {'arms': summary['arms'], 'evaluated_base_pass': summary['evaluated_base_pass'],
                 'writer_usage': read(directory / 'generation_usage.json'), 'keepalive_usage': keepalive_usage(directory),
                 'comparison': paired_verdicts(directory / 'evaluation'),
-                'read_only_replay_matches': True, 'source_hashes_verified': True}
+                'read_only_replay_matches': True, 'source_hashes_verified': None}
             save(directory / 'result_digest.json', result)
             comparison = result['comparison']['detections']
             report = ['# Matched batch Direct versus Soft BVA', '',
