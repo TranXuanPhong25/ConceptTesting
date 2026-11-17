@@ -6,7 +6,6 @@
 #include <string>
 #include <cmath>
 #include <stdexcept>
-#include <boost/any.hpp>
 // JSON result channel is independent of target stdout.
 std::string ct_json(const std::string& value) {
     std::ostringstream out; out << '"';
@@ -18,14 +17,6 @@ std::string ct_json(const std::string& value) {
     out << '"'; return out.str();
 }
 std::string ct_json(const bool& value) { return value ? "true" : "false"; }
-std::string ct_json(const boost::any& value) {
-    if (value.type() == typeid(bool)) return ct_json(boost::any_cast<bool>(value));
-    if (value.type() == typeid(int)) return ct_json(boost::any_cast<int>(value));
-    if (value.type() == typeid(float)) return ct_json(boost::any_cast<float>(value));
-    if (value.type() == typeid(double)) return ct_json(boost::any_cast<double>(value));
-    if (value.type() == typeid(std::string)) return ct_json(boost::any_cast<std::string>(value));
-    throw std::runtime_error("unsupported boost::any output");
-}
 std::string ct_json(const char& value) { return ct_json(std::string(1,value)); }
 template <typename T> std::string ct_json(const T& value) {
     if (!std::isfinite(double(value))) throw std::runtime_error("nonfinite output");

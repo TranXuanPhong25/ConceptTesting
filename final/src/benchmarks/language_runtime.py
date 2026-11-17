@@ -91,21 +91,6 @@ def value_literal(kind, value, language):
             encoded = ''.join('\\%03o' % byte for byte in value.encode('utf-8'))
             return f'std::string{{"{encoded}", {len(value.encode("utf-8"))}}}'
         return json.dumps(value, ensure_ascii=True)
-    if language == 'cpp' and kind == 'boost::any':
-        if type(value) is bool:
-            return f'boost::any({"true" if value else "false"})'
-        if type(value) is int:
-            return f'boost::any({value})'
-        if type(value) is float and math.isfinite(value):
-            return f'boost::any({value!r})'
-        if isinstance(value, str):
-            return 'boost::any(' + value_literal('string', value, language) + ')'
-        raise UnsupportedSignature('unsupported boost::any value')
-    if language == 'cpp' and kind == 'list_any':
-        if not isinstance(value, list) or len(value) > 1000:
-            raise UnsupportedSignature('expected bounded list_any')
-        items = ', '.join(value_literal('boost::any', item, language) for item in value)
-        return f'list_any{{{items}}}'
     generic = re.fullmatch(r'(vector|List|ArrayList|Map|map)<(.+)>', kind)
     if generic:
         container, types = generic.groups()
@@ -198,23 +183,15 @@ def execute_program(task, source, calls, *, timeout=8, base=False):
             if not shutil.which(compiler) or (language == 'java' and not shutil.which('java')):
                 return {'status':'unsupported_environment', 'tests':[]}
             harness = Path(__file__).with_name('harness.cpp' if language == 'cpp' else 'Harness.java').read_text()
-            if base:
-                code = source + '\n' + task['example_test']
+            if language == 'java':
+                (directory / 'Solution.java').write_text(source)
+                imports = '\n'.join(re.findall(r'(?m)^[ \t]*import\s+(?:static\s+)?[\w.*]+\s*;', source))
+                code = imports + '\n' + (task['example_test'] if base else harness)
             else:
-                code = source + '\n' + harness
+                code = source + '\n' + (task['example_test'] if base else harness)
             filename = 'main.cpp' if language == 'cpp' else 'Main.java'
             (directory / filename).write_text(code)
-            if language == 'cpp':
-                # HumanEval-X uses boost::any in two tasks; std::any is enough for
-                # their public source and keeps the harness independent of Boost.
-                boost_directory = directory / 'boost'
-                boost_directory.mkdir()
-                (boost_directory / 'any.hpp').write_text(
-                    '#pragma once\n#include <any>\nnamespace boost {\n'
-                    'using any = std::any;\nusing std::any_cast;\n}\n')
-                compile_command = ['g++', '-std=c++17', '-O0', '-I.', 'main.cpp', '-o', 'main', '-lcrypto']
-            else:
-                compile_command = ['javac', '-J-Xmx256m', '-J-XX:CompressedClassSpaceSize=64m', '-J-XX:ReservedCodeCacheSize=64m', 'Main.java']
+            compile_command = ['g++', '-std=c++17', '-O0', 'main.cpp', '-o', 'main', '-lcrypto'] if language == 'cpp' else ['javac', '-J-Xmx256m', '-J-XX:CompressedClassSpaceSize=64m', '-J-XX:ReservedCodeCacheSize=64m', 'Solution.java', 'Main.java']
             # Call expressions are data rendered by the typed serializer, never model code.
             if not base:
                 call_text = [serialize_call(task['declaration'], a, language) for a in calls]

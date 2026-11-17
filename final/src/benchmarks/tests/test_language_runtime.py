@@ -43,20 +43,27 @@ string target(string s) {
     assert serialize_call(declaration, {'s':'x'}, 'cpp').startswith('target(')
 
 
-@pytest.mark.parametrize('language,number,calls', [
-    ('cpp', 22, [{'values': ['a', 3.14, 5]}]),
-    ('cpp', 137, [{'a': 1, 'b': 2.5}, {'a': 1, 'b': '2,3'}]),
-    ('java', 95, [{'dict': {'p': 'pineapple', 'b': 'banana'}}]),
-    ('java', 151, [{'lst': [1, 3, 2, 0]}]),
+def test_public_solution_compiles_separately_from_java_harness():
+    source = 'import java.util.*;\npublic class Solution { public int f(int x) { return x + 1; } }'
+    task = {'language': 'java', 'declaration': 'class Solution { public int f(int x) {',
+        'example_test': 'public class Main { public static void main(String[] args) { List<Integer> xs = Arrays.asList(1); assert new Solution().f(xs.get(0)) == 2; } }'}
+    assert execute_program(task, source, [], base=True)['tests'] == [{'status': 'ok'}]
+    assert execute_program(task, source, [{'x': 2}])['tests'] == [{'status': 'ok', 'value': 3}]
+
+
+@pytest.mark.parametrize('number,calls,expected', [
+    (95, [{'dict': {'p': 'pineapple', 'b': 'banana'}}], [True]),
+    (137, [{'a': 1, 'b': 2.5}, {'a': 1, 'b': '2,3'}], [2.5, '2,3']),
+    (151, [{'lst': [1, 3, 2, 0]}], [10]),
 ])
-def test_humaneval_x_dynamic_values_compile_and_run(language, number, calls):
+def test_humaneval_x_dynamic_values_compile_and_run(number, calls, expected):
     from final.src.benchmarks.datasets import load_humaneval_x
     from final.src.benchmarks.pipeline import adapter_task
 
-    task = adapter_task(load_humaneval_x(language)[number])
+    task = adapter_task(load_humaneval_x('java')[number])
     result = execute_program(task, task['reference_source'], calls, timeout=8)
     assert result['status'] == 'ok', result
-    assert all(row['status'] == 'ok' for row in result['tests']), result
+    assert result['tests'] == [{'status': 'ok', 'value': value} for value in expected], result
 
 
 def test_result_symlink_is_not_followed_by_parent(tmp_path):
