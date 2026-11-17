@@ -17,8 +17,6 @@ class CachedModelCalls:
 
     @property
     def model_id(self):
-        if self.artifacts.exists("manifest.json"):
-            return self.artifacts.read("manifest.json")["model"]
         return "cache-only"
 
     def token_count(self, messages):

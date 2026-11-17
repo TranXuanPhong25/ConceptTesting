@@ -62,7 +62,7 @@ def inspect_run(directory):
         'cohort_sha256':manifest.get('cohort_sha256',plan.get('cohort_sha256')),
         'model':manifest.get('model') or result.get('reused_generation',{}).get('source_model') or 'see generation provenance',
         'input_budget_unit':'per task per arm','generation_state':status.get('state'),
-        'continuation_source':plan.get('continuation_source'),'protocol':manifest.get('protocol')})
+        'continuation_source':plan.get('continuation_source')})
     metrics=result.get('arms') or read_if(directory/'modular_summary.json').get('arms') or read_if(directory/'evaluation/modular_summary.json').get('arms',{})
     state=status.get('state','unknown')
     progress=read_if(directory/'progress.json') or read_if(directory/'evaluation/progress.json')
