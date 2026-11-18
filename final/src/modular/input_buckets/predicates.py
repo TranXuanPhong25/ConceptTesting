@@ -151,7 +151,7 @@ FUNCTIONS = {"len": len, "sum": sum, "min": min, "max": max, "abs": abs,
 NODES = (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp, ast.Not, ast.USub,
          ast.UAdd, ast.BinOp, ast.Add, ast.Sub, ast.Compare, ast.Eq, ast.NotEq,
          ast.Lt, ast.LtE, ast.Gt, ast.GtE, ast.In, ast.NotIn, ast.Name, ast.Load,
-         ast.Constant, ast.Call, ast.List, ast.Tuple, ast.Set, ast.Subscript)
+         ast.Constant, ast.Call, ast.List, ast.Tuple, ast.Set, ast.Subscript, ast.Slice)
 FUNCTION_ARITY = {'split': 2, 'chars_in': 2, 'all_in_range': 3, 'is_instance': 2,
                   'all_instance': 2, 'all_type': 2}
 FUNCTION_ARITY.update({'any_type':2,'any_in':2,'all_in':2,'any_not_in':2,
@@ -279,18 +279,6 @@ def bind_record(record, builder, types):
         raise ValueError("unsupported_argument")
     typed(arguments, types)
     return arguments
-
-
-def validate_bucket(bucket, names):
-    if not isinstance(bucket, dict) or not isinstance(bucket.get("id"), str):
-        raise ValueError("invalid_bucket")
-    if not bucket["id"] or len(bucket["id"]) > 100 or not bucket["id"].replace("_", "").isalnum():
-        raise ValueError("invalid_bucket_id")
-    for key in ("predicate", "domain", "context"):
-        expression(bucket.get(key, "True"), names)
-    if "predicate" not in bucket:
-        raise ValueError("missing_predicate")
-    return bucket
 
 
 def membership(bucket, arguments):

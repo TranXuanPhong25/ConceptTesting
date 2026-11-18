@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def build_messages(task, count):
-    language = {"python": "Python", "cpp": "C++", "java": "Java"}[task.get("language", "python")]
+    language = {"python": "Python", "cpp": "C++"}[task.get("language", "python")]
     prompt = f"""
         Implement this specification in {language}. Return up to {count}
         solutions as one JSON object: {{"programs":[{{"approach":"algorithm description",
@@ -137,7 +137,7 @@ def save_cohort(tasks, output_path):
 def main(arguments=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset-type", type=str.lower,
-                        choices=("he-py", "mbpp-py", "he-cpp", "he-java"), default="he-py")
+                        choices=("he-py", "mbpp-py"), default="he-py")
     parser.add_argument("--model-backend", choices=("qwen", "vertex"), default="vertex")
     parser.add_argument("--model-name")
     selection = parser.add_mutually_exclusive_group()

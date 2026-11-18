@@ -25,10 +25,6 @@ class InputGenerationMethod(ABC):
     def extend_summary(self, contexts, summary, reporting):
         """Optional arm-specific accounting after shared evaluation/reporting."""
 
-    def render_summary(self, summary):
-        """Optional report text; additional input-method accounting."""
-        return ""
-
     def configuration(self) -> dict:
         if vars(self):
             raise NotImplementedError("Configured arms must expose their configuration for cache invalidation")

@@ -27,7 +27,7 @@ def normalize(values):
     if set(values) - DEFAULTS.keys():
         raise ValueError('Unknown adapter config field')
     config = {**DEFAULTS, **values}
-    if config['dataset'] not in ('mbpp','humaneval_x_cpp','humaneval_x_java'):
+    if config['dataset'] != 'mbpp':
         raise ValueError('Unknown adapter dataset')
     if config['backend'] not in ('qwen','vertex'):
         raise ValueError('Unknown adapter model backend')
@@ -68,8 +68,7 @@ def adapter_task(row):
 
 
 def tasks_for(config):
-    dataset_code = {'mbpp': 'MBPP-py', 'humaneval_x_cpp': 'HE-cpp', 'humaneval_x_java': 'HE-java'}[config['dataset']]
-    rows = DatasetLoader(dataset_code).load_tasks()
+    rows = DatasetLoader('MBPP-py').load_tasks()
     available = {int(row['task_id'].split('/')[1]): row for row in rows}
     selected = config['task_numbers'] or sorted(available)
     if set(selected) - available.keys():
@@ -111,12 +110,13 @@ def preview(values):
     config = normalize(values)
     tasks = tasks_for(config)
     cohort = load_candidates(config['candidate_path'], tasks) if config['candidate_path'] else None
+    call_cap = len(tasks) * len(config['arms'])
     return {'config':config, 'requested_task_count':len(tasks), 'task_ids':[task['task_id'] for task in tasks],
         'cohort_status':'supplied' if cohort is not None else 'pending',
         'candidate_count':sum(map(len, cohort.values())) if cohort is not None else None,
-        'base_pass_put_count':None, 'logical_call_cap':len(tasks)*len(config['arms']),
-        'transport_attempt_cap':3*len(tasks)*len(config['arms']),
-        'completion_token_cap':len(tasks)*len(config['arms'])*config['completion_tokens'],
+        'base_pass_put_count':None, 'logical_call_cap':call_cap,
+        'transport_attempt_cap':3*call_cap,
+        'completion_token_cap':call_cap*config['completion_tokens'],
         'input_budget_unit':'per task per arm', 'coverage':'pending', 'verified_bugs':'pending',
         'workload_calls':0}
 
@@ -166,6 +166,19 @@ def decode(task, response, budget):
             'catalogue_semantics':'pending', 'membership':'pending'}
 
 
+def input_union(batches):
+    union, indices, keys = [], {}, []
+    for arm, batch in batches.items():
+        indices[arm] = []
+        for record in batch['inputs']:
+            key = digest(record['arguments'])
+            if key not in keys:
+                union.append(record['arguments'])
+                keys.append(key)
+            indices[arm].append(keys.index(key))
+    return union, indices
+
+
 def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
     from final.src.modular.calls import CachedModelCalls
     config = normalize(values)
@@ -174,7 +187,7 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
         raise ValueError('Replay cannot accept live calls')
     calls = calls or CachedModelCalls(store)
     manifest = {'protocol':'dataset-adapters-v1', 'tasks_sha256':digest(tasks), 'cohort_sha256':digest(cohort),
-                'config':config, 'oracle':'reference-executable-only; spec validity pending', 'coverage':'pending'}
+                'config':config, 'oracle':'stable reference disagreement; specification admission pending', 'coverage':'pending'}
     store.write('adapter_manifest.json', manifest)
     prepared = []
     for task in tasks:
@@ -197,7 +210,7 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
             if store.read_only:
                 raise FileNotFoundError(prefix+'/inputs.json')
             packets = {arm:messages_for(task, passing, arm, config['inputs_per_task']) for arm in config['arms']}
-            if max(calls.token_count(messages) for messages in packets.values()) + config['completion_tokens'] + 128 >= config['context_tokens']:
+            if max((calls.token_count(messages) for messages in packets.values()), default=0) + config['completion_tokens'] + 128 >= config['context_tokens']:
                 batches = {'skip':'prompt_too_large'}
             else:
                 batches = {}
@@ -217,20 +230,14 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
         number = int(task['task_id'].split('/')[1]); prefix = f'tasks/{number}'
         if not programs or batches.get('skip'):
             result = {'task_id':task['task_id'], 'skip':'no_base_pass' if not programs else batches['skip']}
-        elif task['task_id'] in ('CPP/32','Java/32'):
+        elif task['task_id'] == 'CPP/32':
             result = {'task_id':task['task_id'], 'skip':'non_unique_root_oracle_not_supported'}
         else:
-            union, indices, union_keys = [], {}, []
-            for arm, batch in batches.items():
-                indices[arm] = []
-                for record in batch['inputs']:
-                    key = digest(record['arguments'])
-                    if key not in union_keys:
-                        union.append(record['arguments'])
-                        union_keys.append(key)
-                    indices[arm].append(union_keys.index(key))
+            union, indices = input_union(batches)
+            def reference_execution():
+                return executor(task, task['reference_source'], union, timeout=config['timeout_seconds']) if union else {'status': 'ok', 'tests': []}
             reference = [store.load_or_compute(f'{prefix}/reference_{repeat}.json',
-                lambda: executor(task, task['reference_source'], union, timeout=config['timeout_seconds'])) for repeat in range(2)]
+                reference_execution) for repeat in range(2)]
             if any(r['status'] != 'ok' for r in reference):
                 raise RuntimeError('Reference compilation failed for ' + task['task_id'])
             valid = [i for i in range(len(union)) if all(r['tests'][i]['status']=='ok' for r in reference)
@@ -239,7 +246,8 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
             retained = [union[i] for i in valid]
             for program in programs:
                 repeats = [store.load_or_compute(f'{prefix}/evaluation/{program["id"]}_{repeat}.json',
-                    lambda: executor(task, program['code'], retained, timeout=config['timeout_seconds'])) for repeat in range(2)]
+                    lambda: executor(task, program['code'], retained, timeout=config['timeout_seconds'])
+                        if retained else {'status': 'ok', 'tests': []}) for repeat in range(2)]
                 if any(r['status'] != 'ok' for r in repeats):
                     raise RuntimeError('PUT compilation/infrastructure changed after base pass')
                 failures = []
@@ -265,7 +273,7 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
     summary = {'dataset':config['dataset'], 'arms':totals, 'tasks':len(tasks), 'config':config,
         'evaluated_base_pass':sum(r.get('base_pass',0) for r in results), 'skips':[r for r in results if 'skip' in r],
         'tester_calls':call_usage(store.directory), 'coverage':'pending', 'verified_bugs':'pending',
-        'metric_scope':'detected means confirmed reference disagreement, not validated specification bug'}
+        'metric_scope':'confirmed reference disagreement; specification validity unverified'}
     store.write('result_digest.json', summary)
     store.write('execution_frozen.json', artifact_hashes(store, ('tasks/*/base/*.json','tasks/*/reference_*.json',
         'tasks/*/evaluation/*.json','tasks/*/result.json')))
@@ -281,8 +289,9 @@ def artifact_hashes(store, patterns):
 
 
 def render(summary):
-    return ('# MBPP / HumanEval-X\n\nKết quả là số PUT có sai khác với reference qua hai lần execution; '
-        'chưa xác minh thành bug theo spec. Coverage, semantic grounding và lọc base duplicates còn pending.\n\n'
+    return ('# MBPP\n\nKết quả là số PUT có sai khác với reference qua hai lần execution; '
+        ''
+        'Full natural-language spec completeness, coverage, semantic grounding và lọc base duplicates còn pending.\n\n'
         f"Dataset: {summary['dataset']}; {summary['tasks']} task; {summary['evaluated_base_pass']} base-pass PUT.\n\n"
         'Mỗi arm có input budget theo task; valid_inputs đếm input memberships, detected đếm PUT. '
         'Không suy gain từ tổng input khác nhau.\n\n```json\n' + json.dumps(summary, ensure_ascii=False, indent=2) + '\n```\n')

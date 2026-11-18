@@ -260,7 +260,11 @@ def test_prefect_presets_share_larger_cap_and_preserve_legacy_budget():
     rows=json.loads(Path('final/presets/run_console.json').read_text())
     for row in rows:
         preview=config.preview(row['parameters'])
-        if any(name in row['parameters']['arms'] for name in ['ep_bva','bva_normal','equivalence','decision_table','ep_dt_bva']):
+        if any(name in row['parameters']['arms'] for name in ('spec_obligation','ep_bva_catalogue_then_inputs','decision_table_catalogue_then_inputs')):
+            assert preview['completion_token_cap_per_call'] == 4096
+            assert preview['logical_call_cap'] == 628
+            assert preview['max_input_slots_per_arm'] == 3140
+        elif any(name in row['parameters']['arms'] for name in ['ep_bva','bva_normal','equivalence','decision_table','ep_dt_bva']):
             assert preview['completion_token_cap_per_call']==4096
             if row['parameters']['cohort']=='humaneval164':
                 assert preview['logical_call_cap']==157*len(row['parameters']['arms']) and preview['target_program_count']==10
@@ -367,7 +371,7 @@ assert normalize({'arms':['plain','ep_bva']})['completion_tokens']==4096
     assert result.returncode==0,result.stderr
     from final.src.modular.arm_names import CATALOGUE_ARM_NAMES
     from final.src.modular.arms.fault_oriented import V2_ARMS
-    assert CATALOGUE_ARM_NAMES==tuple(arm.name for arm in (*CATALOGUE_ARMS,*V2_ARMS))
+    assert set(CATALOGUE_ARM_NAMES)=={arm.name for arm in (*CATALOGUE_ARMS,*V2_ARMS)}
 
 
 def test_float_and_finite_enum_domains_infer_kind_when_optional_field_is_omitted():

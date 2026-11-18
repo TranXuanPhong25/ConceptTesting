@@ -161,11 +161,3 @@ class BoundaryArm(InputGenerationMethod):
                 for phase, used in program["logical_calls"].items():
                     accounting["logical_calls"][phase] += int(used)
         summary["boundary_analysis"] = accounting
-
-    def render_summary(self, summary):
-        return ("\nBoundaryValueAnalysis uses a fixed task input budget split across eligible visible PUTs. "
-                "Each allocated PUT may use a selection call and a construction call; unused shares "
-                "are not redistributed. Comparisons with one-call plain are descriptive, not call-matched. "
-                "Prose constraints remain LLM proposals; the shared contract/reference oracle filters "
-                "inputs before evaluation. No-boundary cases have no plain fallback.\n\n"
-                f"Boundary accounting: {summary['boundary_analysis']}.\n")

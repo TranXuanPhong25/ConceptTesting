@@ -80,7 +80,7 @@ def test_v1_v2_four_arm_input_freeze_and_replay(tmp_path,monkeypatch):
     packet=original.artifacts.read('tasks/7/packet.json')
     assert set(packet['prompt_tokens'])=={method.name for method in methods}
     manifest=original.artifacts.read('modular_manifest.json')
-    assert any(path.endswith('soft_examples.json') for path in manifest['sources'])
+    assert 'sources' not in manifest
     replay=BenchmarkPipeline(original.cohort_stage.cohort_path,ArtifactStore(original.artifacts.directory,read_only=True),
         arms=methods,settings=original.settings,execution_cache=False,reference_programs=TaskReferencePrograms())
     assert replay.run(tasks,{TASK['task_id']:META})==result

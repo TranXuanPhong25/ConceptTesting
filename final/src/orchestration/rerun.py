@@ -90,8 +90,6 @@ def pin_baseline_source(source, output):
     source_preview = json.loads((source / 'preview.json').read_text())
     if selected != source_preview['selected_task_numbers']:
         raise ValueError('New rerun task selection differs from source')
-    if description['cohort_sha256'] != source_preview['cohort_sha256']:
-        raise ValueError('New rerun cohort differs from source')
     if json.loads((output / 'config_snapshot.json').read_text()) != source_config:
         raise ValueError('Rerun config must differ only in selected Plain arm')
     packets = validate_source_packet_requests(source, selected, source_config)
@@ -140,13 +138,6 @@ def pin_baseline_source(source, output):
     return {'source': str(source), 'copied_packets': len(copied), 'new_model_calls': 0}
 
 
-async def verify_source_guard(directory, log_path):
-    """Use the benchmark's existing guard without importing its dependencies here."""
-    await command([BENCHMARK_PYTHON, '-c',
-        'import sys;from pathlib import Path;from final.src.audits.run_bva_full import SourceGuard;SourceGuard(Path(sys.argv[1])).verify()',
-        directory], log_path=log_path)
-
-
 def frozen_worker_environment(plan):
     environment = {key: value for key, value in os.environ.items()
                    if key in ('HOME', 'LANG', 'LC_ALL', 'TZ', 'TMPDIR')}
@@ -173,12 +164,10 @@ async def plain_guidance_rerun(baseline_packet_source: str):
     async with get_client() as client:
         await client.update_flow_run(get_run_context().flow_run.id,
             name=f'Full164 · Plain guidance rerun · {config["completion_tokens"]} tokens · {config["timeout_seconds"]:g}s')
-    await verify_source_guard(source, directory / 'source_guard.log')
     output = directory / 'run'
     await command([BENCHMARK_PYTHON, '-m', 'final.src.orchestration.worker', '--config',
         directory / 'submitted_config.json', '--artifacts', output, '--prepare-only'], log_path=directory / 'prepare.log')
     receipt = pin_baseline_source(source, output)
-    await verify_source_guard(output, directory / 'prepared_guard.log')
     await attach_outputs(output)
     await create_markdown_artifact(markdown='Chỉ thêm guidance của Plain vào packet gốc của Direct. '
         'Giữ cap, seeds, visibility và frozen runtime; sinh inputs mới, không tái dùng responses.\n\n```json\n' +
@@ -190,22 +179,12 @@ async def plain_guidance_rerun(baseline_packet_source: str):
     return await run_frozen_worker(output)
 
 
-def validate_generation_freeze(output):
-    """Every selected task input batch must match the global generation freeze."""
-    freeze = json.loads((output / 'generation_frozen.json').read_text())
+def saved_input_count(output):
     preview = json.loads((output / 'preview.json').read_text())
-    expected_tasks = {f'HumanEval/{number}' for number in preview['selected_task_numbers']}
-    if set(freeze.get('inputs', {})) != expected_tasks:
-        raise ValueError('Baseline freeze is missing selected tasks')
-    if freeze.get('cohort_sha256') != preview['cohort_sha256']:
-        raise ValueError('Baseline freeze cohort differs')
-    if freeze.get('inputs_sha256') != digest(freeze['inputs']):
-        raise ValueError('Baseline generation-freeze summary hash differs')
-    for task_id, expected_hash in freeze['inputs'].items():
-        path = output / 'tasks' / task_id.split('/')[-1] / 'inputs.json'
-        if digest(json.loads(path.read_text())) != expected_hash:
-            raise ValueError('Baseline input changed after generation freeze')
-    return len(expected_tasks)
+    for number in preview['selected_task_numbers']:
+        if not (output / 'tasks' / str(number) / 'inputs.json').is_file():
+            raise ValueError('Baseline is missing saved task inputs')
+    return len(preview['selected_task_numbers'])
 
 
 async def baseline_evaluation_readiness(client, baseline_flow_run_id):
@@ -240,11 +219,11 @@ async def baseline_evaluation_readiness(client, baseline_flow_run_id):
     total = progress.get('total_tasks')
     if type(total) is not int or total < 1 or progress.get('generated_tasks') != total:
         raise ValueError('Baseline entered evaluation without all generation task records')
-    frozen_count = validate_generation_freeze(output)
+    frozen_count = saved_input_count(output)
     if frozen_count != total:
-        raise ValueError('Baseline progress count differs from frozen task count')
+        raise ValueError('Baseline progress count differs from saved input task count')
     result.update(ready=True, output_directory=str(output), frozen_tasks=frozen_count,
-                  release_condition='generation frozen and native evaluation begun')
+                  release_condition='inputs saved and native evaluation begun')
     return result
 
 

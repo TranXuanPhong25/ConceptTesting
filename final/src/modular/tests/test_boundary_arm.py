@@ -6,7 +6,6 @@ import pytest
 
 from final.src.models.core_model import ModelResponse
 from final.src.runtime.artifacts import digest, save
-from final.src.modular.dataset import DATA_SHA256
 from final.src.modular.arms import available_arms, default_arms, selected_arms
 from final.src.modular.boundary_value_analysis.legacy.arm import BoundaryArm
 from final.src.modular.arms.plain import PlainArm
@@ -49,7 +48,7 @@ def write_cohort(path, tasks=None, *, boolean=False):
             item["base"]["calls"] = [{"args": "(True,)", "kwargs": "{}"}]
         records.append({"task_id": task["task_id"], "generated": 1, "base_pass": 1,
                         "programs": [item], "base_input_keys": []})
-    save(path, {"tasks": records, "cohort_sha256": digest(records), "dataset_sha256": DATA_SHA256})
+    save(path, {"tasks": records, "cohort_sha256": digest(records), "dataset_sha256": "fixture-dataset"})
     return path
 
 
@@ -79,11 +78,13 @@ class BoundaryFixtureModel:
 
 def test_arm_registration_preserves_plain_boundary_and_exposes_testing_variants():
     from final.src.modular.arms.classical import CATALOGUE_ARM_NAMES
-    assert [arm.name for arm in available_arms()] == ["plain", "boundary", *CATALOGUE_ARM_NAMES, "control_flow", "spec_obligation", "control_flow_obligation"]
+    assert [arm.name for arm in available_arms()] == ["plain", "boundary", *CATALOGUE_ARM_NAMES, "control_flow"]
     assert [arm.name for arm in default_arms()] == ["plain"]
     assert selected_arms(["boundary"])[0].configuration()["pipeline_contract"] == "soft-bva-v1"
     with pytest.raises(ValueError, match="Unknown input-generation method"):
         selected_arms(["v11_concept"])
+    with pytest.raises(ValueError, match="Unknown input-generation method"):
+        selected_arms(["simple_discovery"])
 
 
 def test_fixed_task_budget_is_split_and_duplicate_inputs_are_merged(tmp_path):
@@ -143,8 +144,8 @@ def test_full_pipeline_freezes_boundary_inputs_then_runs_reference_and_puts(tmp_
     assert result["arms"]["boundary"]["generation_status"] == "generated"
     names = [(event["stage"], event["state"]) for event in pipeline.stage_events]
     assert names.index(("input_generation", "complete")) < names.index(("reference_oracle", "started"))
-    assert artifacts.exists("generation_frozen.json")
-    assert "Boundary accounting" in artifacts.path("REPORT.md").read_text()
+    assert artifacts.exists("tasks/7/inputs.json")
+    assert "| boundary | 1 | 1 | 1 |" in artifacts.path("REPORT.md").read_text()
     # A second run reconstructs the same summary entirely from checkpoints.
     assert pipeline.run([TASK], {TASK["task_id"]: META}) == summary
     assert len(model.requests) == 2
@@ -189,26 +190,16 @@ def test_plain_and_boundary_share_existing_reference_evaluation(tmp_path):
     assert summary["comparisons"] == []  # No claim that 2-call BVA is call-matched to plain.
 
 
-def test_cli_forwards_explicit_smoke_subset_and_budget(tmp_path, monkeypatch):
+def test_replay_cli_summarizes_requested_tasks_without_constructing_pipeline(tmp_path, monkeypatch, capsys):
     from final.src.modular import run as runner
-
-    captured = {}
-
-    class PipelineFixture:
-        def __init__(self, cohort, artifacts, **options):
-            captured.update(options)
-            self.stage_events = []
-
-        def run(self, tasks, metadata):
-            captured["tasks"] = tasks
-            return {"scored_tasks": len(tasks), "arms": {}}
-
-    monkeypatch.setattr(runner, "BenchmarkPipeline", PipelineFixture)
-    monkeypatch.setattr(runner, "load_tasks", lambda: [TASK, {**TASK, "task_id": "HumanEval/8"}])
-    assert runner.main(["--arms", "boundary", "--task-ids", "HumanEval/7", "--target-programs", "1",
-                        "--input-budget", "4", "--artifacts", str(tmp_path)]) == 0
-    assert captured["tasks"] == [TASK]
-    assert captured["settings"].target_programs == 1
-    assert captured["settings"].input_budget == 4
-    assert captured["arms"][0].name == "boundary"
-    assert captured["calls"] is None
+    from final.src.runtime.artifacts import save
+    for number in (7, 8):
+        save(tmp_path / f"tasks/{number}/result.json", {"task_id": f"HumanEval/{number}", "base_pass": 1,
+             "arms": {"boundary": {"valid_inputs": 1, "detected_put_ids": ["0"], "detected": 1}}})
+    def forbidden(*args, **kwargs):
+        pytest.fail("Replay constructed a generation/evaluation pipeline")
+    monkeypatch.setattr(runner, "BenchmarkPipeline", forbidden)
+    monkeypatch.setattr(runner.DatasetLoader, "load_tasks", forbidden)
+    assert runner.main(["--task-ids", "HumanEval/7", "--artifacts", str(tmp_path)]) == 0
+    result = json.loads(capsys.readouterr().out)
+    assert result["scored_tasks"] == 1 and result["arms"]["boundary"]["detected"] == 1

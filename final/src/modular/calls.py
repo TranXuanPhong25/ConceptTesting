@@ -58,12 +58,24 @@ class RecordedModelCalls:
         return self.model.tokens(messages)
 
     def complete_structured(self, task_number, call_name, messages, *, schema, temperature, max_tokens, seed):
-        return self.complete(task_number, call_name, messages, temperature=temperature,
-                             max_tokens=max_tokens, seed=seed, response_format=structured_format(schema))
+        return self.complete(
+            task_number,
+            call_name,
+            messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            seed=seed,
+            response_format=structured_format(schema),
+        )
 
     def complete(self, task_number, call_name, messages, *, temperature, max_tokens, seed, response_format=None):
         structured = {} if response_format is None else {'response_format': response_format}
         return self.client.query(
-            self.artifacts.path(f"tasks/{task_number}"), call_name, messages,
-            temperature=temperature, max_tokens=max_tokens, seed=seed, **structured,
+            self.artifacts.path(f"tasks/{task_number}"),
+            call_name,
+            messages,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            seed=seed,
+            **structured,
         )

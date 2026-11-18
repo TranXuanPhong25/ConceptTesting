@@ -1,0 +1,24 @@
+[
+  {
+    "name": "Full164 · Pynguin baseline · preview chuẩn bị",
+    "description": "Chỉ preview config/budget; chưa chạy model, upstream Pynguin hay evaluation. Cần quyết định của người dùng trước workload thật.",
+    "parameters": {
+      "mode": "pynguin",
+      "arms": [
+        "pynguin"
+      ],
+      "inputs_per_task": 20,
+      "context_tokens": 8192,
+      "pynguin": {
+        "python": "final/.venv_pynguin/bin/python",
+        "search_seconds": 10,
+        "wall_seconds": 30,
+        "maximum_test_executions": 200,
+        "seed": 17,
+        "max_extract_calls": 64,
+        "owner_limit": 10
+      }
+    },
+    "preview_only": true
+  }
+]

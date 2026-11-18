@@ -38,9 +38,12 @@ def benchmark_run_name(config, preview_only=False):
     labels.update(plain='Plain', equivalence='Weak EP', bva_normal='Normal BVA', ep_bva='EP + BVA',
                   decision_table='DT', ep_strong='Strong EP', bva_robust='Robust BVA',
                   bva_worst_case='Worst-case BVA', ep_dt_bva='EP + DT + BVA')
+    labels.update(pynguin='Pynguin')
     labels.update(ep_bva_v2='EP + BVA v2', decision_table_v2='DT v2')
-    labels.update(control_flow='Control-flow', spec_obligation='Spec obligations',
-                  control_flow_obligation='Control-flow + spec obligations')
+    labels.update(control_flow='Control-flow')
+    labels.update(tool_direct='Direct seeds', tool_hypothesis='Hypothesis',
+                  tool_hypothesis_z3='Hypothesis + Z3', tool_hypothesis_extra='Extra Hypothesis',
+                  tool_planner='Combination planner')
     arms = ' vs '.join(labels[name] for name in config['arms'])
-    mode = 'batch' if config['mode'] == 'batch' else 'per-PUT, shared budget'
+    mode = {'batch': 'batch', 'per_put': 'per-PUT, shared budget', 'tools': 'tool sampling', 'pynguin': 'Pynguin baseline'}[config['mode']]
     return ('Preview · ' if preview_only else '') + f'{scope} · {arms} · {mode} · {config["inputs_per_task"]} inputs mỗi task mỗi arm'

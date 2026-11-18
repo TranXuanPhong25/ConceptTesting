@@ -282,6 +282,3 @@ class ControlFlowArm(InputGenerationMethod):
             'observed_targets': sum(batch['target_coverage']['covered'] or 0 for batch in batches),
             'selected_targets': sum(batch['target_coverage']['total'] or 0 for batch in batches),
             'coverage_pending_tasks': sum(batch['target_coverage']['total'] is None for batch in batches)}
-
-    def render_summary(self, summary):
-        return '\nConcept control-flow và target hits (tổng theo task, không phải số bug):\n\n' + str(summary[self.name]) + '\n'

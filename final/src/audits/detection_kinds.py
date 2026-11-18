@@ -19,8 +19,39 @@ import argparse
 import json
 from pathlib import Path
 
-from .continue_bva_evaluation import read
-from .run_bva_precision import evaluation_observations
+
+
+def read(path):
+    return json.loads(Path(path).read_text())
+
+
+def evaluation_observations(task_directory, program_id, outcome):
+    """Read full historical repeats or indexed failure confirmations without inventing passes."""
+    evaluation = task_directory / "evaluation"
+    first = read(evaluation / f"{program_id}_0.json")["tests"]
+    observations = [[item] for item in first]
+    if "retested" in outcome:
+        indices = outcome["retested"]
+        second = read(evaluation / f"{program_id}_retry_1.json")["tests"] if indices else []
+        if len(second) != len(indices) or len(set(indices)) != len(indices):
+            raise ValueError("Confirmation checkpoint/index count mismatch")
+        for index, item in zip(indices, second):
+            if type(index) is not int or not 0 <= index < len(first):
+                raise ValueError("Invalid confirmation input index")
+            if first[index]["status"] not in ("fail", "error", "timeout"):
+                raise ValueError("Confirmation index does not identify a first failure")
+            observations[index].append(item)
+        if any(item["status"] in ("fail", "error", "timeout") and index not in indices
+               for index, item in enumerate(first)):
+            raise ValueError("Missing first-failure confirmation")
+    else:
+        second = read(evaluation / f"{program_id}_1.json")["tests"]
+        if len(second) != len(first):
+            raise ValueError("Historical repeat result count mismatch")
+        for index, item in enumerate(second):
+            observations[index].append(item)
+    return observations
+
 
 
 RESOURCE_EXCEPTIONS = ("RecursionError", "MemoryError")

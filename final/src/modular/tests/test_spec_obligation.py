@@ -52,65 +52,12 @@ def test_truncated_response_salvages_only_complete_input_records():
     assert 'complete_input_records_salvaged' in repairs
 
 
-def test_full_coverage_still_generates_semantic_witness_and_replays(tmp_path):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm
-    calls = Calls()
-    ctx = context(tmp_path, calls)
-    result = SpecObligationArm().run(ctx)
-    assert len(calls.requests) == 2
-    assert result['obligations'][0]['base_membership']['status'] == 'miss'
-    assert result['obligations'][0]['new_membership']['status'] == 'hit'
-    assert result['obligations'][0]['source_sha256']
-    assert result['obligations'][0]['line'] == 2
-    assert any(row['reason'] == 'duplicate_base' for row in result['rejected'])
-    assert all(row['args'] != '([2, 3],)' for row in result['inputs'])
-    assert any(row['status'] == 'complete' and row['draws'] > 0 for row in result['sampling'])
-    assert result['functional_bug_detection'] == 'pending_shared_reference_evaluation'
-    for messages in calls.requests:
-        payload = json.loads(messages[-1]['content'])
-        assert list(payload)[-1] == 'base_inputs_do_not_repeat'
-        assert '4: ' not in payload['programs'][0]['numbered_source']
-        assert '2:     unique = set(xs)' in payload['programs'][0]['numbered_source']
-    ctx.calls = None
-    ctx.artifacts = ArtifactStore(tmp_path, read_only=True)
-    assert SpecObligationArm().run(ctx) == result
 
 
-def test_bad_metadata_and_hypothesis_do_not_discard_direct_inputs(tmp_path):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm
-    bad = obligation()
-    bad['strategies'] = {'xs': {'kind': 'executable', 'code': 'bad'}}
-    first = {'obligations': [bad], 'inputs': [{'arguments': {'xs': [6, 6]}}]}
-    result = SpecObligationArm().run(context(tmp_path, Calls(first=first)))
-    assert result['inputs']
-    assert result['sampling'][0]['status'] == 'unsupported'
-    bad['line'] = 900
-    result = SpecObligationArm().run(context(tmp_path / 'bad_site', Calls(first=first)))
-    assert not result['obligations'] and result['inputs']
-    assert result['errors']
 
 
-def test_missing_base_inventory_is_unknown(tmp_path):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm
-    ctx = context(tmp_path, Calls())
-    ctx.cohort_task['programs'][0]['base'].pop('calls')
-    result = SpecObligationArm().run(ctx)
-    assert result['obligations'][0]['base_membership']['status'] == 'unknown'
 
 
-def test_hybrid_keeps_coverage_targets_alongside_semantic_obligations(tmp_path):
-    from final.src.modular.arms.spec_obligation import ControlFlowObligationArm
-    ctx = context(tmp_path, Calls())
-    ctx.cohort_task['programs'][0]['code'] = 'def f(xs):\n    if not xs:\n        return 0\n    unique = set(xs)\n    return sum(unique)\n'
-    ctx.cohort_task['programs'][0]['base']['coverage'] = {
-        'lines': [2, 4, 5], 'arcs': [[-1, 2], [2, 4], [4, 5], [5, -1]]}
-    ctx.calls.first['obligations'][0]['line'] = 4
-    ctx.calls.second['inputs'].append({'arguments': {'xs': []}})
-    result = ControlFlowObligationArm().run(ctx)
-    assert result['selected_targets'] and result['obligations']
-    assert result['target_coverage']['covered'] > 0
-    assert all(t['source_sha256'] and t['line'] for t in result['selected_targets'])
-    assert len(ctx.calls.requests) == 2
 
 
 def test_strategy_aliases_are_normalized_without_executing_code():
@@ -119,16 +66,6 @@ def test_strategy_aliases_are_normalized_without_executing_code():
         'x': {'kind': 'int', 'min': 1, 'max': 5}}
 
 
-def test_integer_cohort_program_ids_bind_without_string_conversion(tmp_path):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm
-    calls = Calls()
-    calls.first['obligations'][0]['program_id'] = 0
-    ctx = context(tmp_path, calls)
-    ctx.cohort_task['programs'][0]['id'] = 0
-    ctx.packet['visible_put_ids'] = [0]
-    result = SpecObligationArm().run(ctx)
-    assert result['obligations'][0]['program_id'] == 0
-    assert result['obligations'][0]['new_membership']['status'] == 'hit'
 
 
 def test_duplicate_entry_is_omitted_without_aborting_other_programs(tmp_path):
@@ -174,14 +111,6 @@ def test_requirement_paraphrase_keeps_grounding_as_hypothesis(tmp_path):
     assert accepted[0]['requirement_grounding'] == 'overlap_hypothesis'
 
 
-def test_prefect_and_cli_register_both_arms_with_correct_call_cap():
-    from final.src.modular.arms import selected_arms
-    from final.src.orchestration.config import normalize, preview
-    names = ['spec_obligation', 'control_flow_obligation']
-    assert [a.name for a in selected_arms(names)] == names
-    config = normalize({'arms': names, 'task_numbers': [0]})
-    result = preview(config)
-    assert result['logical_calls_by_arm'] == dict.fromkeys(names, 2)
 
 
 def test_validated_v2_is_retired_and_cannot_be_selected():
@@ -192,6 +121,10 @@ def test_validated_v2_is_retired_and_cannot_be_selected():
         selected_arms(['control_flow_obligation_validated'])
     with pytest.raises(ValueError, match='Unknown'):
         normalize({'arms': ['control_flow_obligation_validated']})
+
+
+
+
 
 
 def test_partial_trace_can_witness_site_but_cannot_prove_site_missed(tmp_path):
@@ -216,46 +149,12 @@ def test_repeated_membership_reuses_predicate_receipt(tmp_path):
     assert evidence.scenario(row, call, observed)[0] is True
 
 
-def test_summary_handles_shared_prompt_overflow_without_inventing_coverage(tmp_path):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm
-    ctx = context(tmp_path, Calls())
-    ctx.inputs = {'arms': {'spec_obligation': {'inputs': [], 'rejected': [], 'status': 'prompt_too_large'}}}
-    summary = {}
-    SpecObligationArm().extend_summary([ctx], summary, None)
-    assert summary['spec_obligation']['coverage_pending_tasks'] == 1
 
 
-def test_base_dedup_checks_invisible_program_inventory(tmp_path):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm
-    ctx = context(tmp_path, Calls())
-    other = copy.deepcopy(ctx.cohort_task['programs'][0])
-    other['id'] = 'not_visible'
-    other['base']['calls'] = [{'args': '([4, 4],)', 'kwargs': '{}'}]
-    ctx.cohort_task['programs'].append(other)
-    result = SpecObligationArm().run(ctx)
-    assert all(row['args'] != '([4, 4],)' for row in result['inputs'])
 
 
-def test_unsupported_predicate_and_wrong_spec_quote_preserve_direct_inputs(tmp_path):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm
-    row = obligation()
-    row['predicate'] = 'local_unique_count > 0'
-    first = {'obligations': [row], 'inputs': [{'arguments': {'xs': [8, 8]}}]}
-    result = SpecObligationArm().run(context(tmp_path, Calls(first=first)))
-    assert result['obligations'][0]['base_membership']['status'] == 'unknown'
-    assert result['obligations'][0]['new_membership']['status'] == 'unknown'
-    assert result['inputs']
-    row['requirement'] = 'never mentioned in spec'
-    result = SpecObligationArm().run(context(tmp_path / 'wrong_quote', Calls(first=first)))
-    assert not result['obligations'] and result['inputs']
 
 
-def test_truncated_response_records_are_usable_in_generation(tmp_path):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm
-    calls = Calls(second='{"inputs":[{"arguments":{"xs":[9,9]}},{"arguments":')
-    result = SpecObligationArm().run(context(tmp_path, calls))
-    assert any(row['args'] == '([9, 9],)' for row in result['inputs'])
-    assert result['rounds'][1]['response_repairs'] == ['complete_input_records_salvaged']
 
 
 def test_usage_accounting_separates_hybrid_from_control_flow(tmp_path):
@@ -272,49 +171,3 @@ def test_usage_accounting_separates_hybrid_from_control_flow(tmp_path):
     assert result['spec_obligation']['known_usage']['total_tokens'] == 30
     assert result['control_flow']['received'] == 1
     assert result['control_flow_obligation']['received'] == 1
-
-
-def test_two_arms_share_freeze_oracle_and_read_only_pipeline_replay(tmp_path, monkeypatch):
-    from final.src.modular.arms.spec_obligation import SpecObligationArm, ControlFlowObligationArm
-    from final.src.modular.dataset import DATA_SHA256
-    from final.src.modular.pipeline import BenchmarkPipeline
-    from final.src.modular.references import TaskReferencePrograms
-    from final.src.modular.tests.helpers import FixtureCalls
-    from final.src.runtime.artifacts import digest, save
-    from final.src.runtime.execution import execute
-
-    ctx = context(tmp_path / 'unused', None)
-    task = {**ctx.task, 'canonical_solution': '    return sum(xs)\n'}
-    row = {**ctx.cohort_task, 'task_id': task['task_id'], 'base_pass': 1, 'base_input_keys': []}
-    cohort = tmp_path / 'cohort.json'
-    save(cohort, {'tasks': [row], 'cohort_sha256': digest([row]), 'dataset_sha256': DATA_SHA256})
-    directory = tmp_path / 'run'
-
-    class Model:
-        model_id = 'authored-offline-obligation-fixture'
-        def tokens(self, messages): return 100
-        def generate(self, messages, **kwargs):
-            phase = json.loads(messages[-1]['content'])['phase']
-            raw = Calls().first if phase == 'propose' else Calls().second
-            return ModelResponse(json.dumps(raw), {'prompt_tokens': 10, 'completion_tokens': 5, 'total_tokens': 15}, 'stop')
-
-    def oracle(job):
-        assert (directory / 'generation_frozen.json').is_file()
-        frozen = json.loads((directory / 'tasks/0/inputs.json').read_text())
-        assert set(frozen['arms']) == {'spec_obligation', 'control_flow_obligation'}
-        return execute(job)
-
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute', oracle)
-    pipeline = BenchmarkPipeline(cohort, ArtifactStore(directory),
-        arms=(SpecObligationArm(), ControlFlowObligationArm()),
-        settings=PipelineSettings(target_programs=1, input_budget=4),
-        calls=FixtureCalls(Model(), directory), execution_cache=False, reference_programs=TaskReferencePrograms())
-    metadata = {task['task_id']: {**ctx.metadata, 'atol': 0}}
-    result = pipeline.run([task], metadata)
-    assert result['arms']['spec_obligation']['detected'] == 1
-    assert result['arms']['control_flow_obligation']['detected'] == 1
-    assert result['spec_obligation']['call_usage']['received'] == 2
-    replay = BenchmarkPipeline(cohort, ArtifactStore(directory, read_only=True),
-        arms=(SpecObligationArm(), ControlFlowObligationArm()), settings=pipeline.settings,
-        execution_cache=False, reference_programs=TaskReferencePrograms())
-    assert replay.run([task], metadata) == result

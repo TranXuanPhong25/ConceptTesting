@@ -57,6 +57,3 @@ class InputGenerator(ABC):
 
     def extend_summary(self, contexts, summary, reporting):
         pass
-
-    def render_summary(self, summary):
-        return ""

@@ -22,7 +22,7 @@ from final.src.modular.context import PipelineSettings
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.tests.test_boundary_value_analysis import ScriptedCalls
 from final.src.runtime.artifacts import digest, save
-from final.src.modular.dataset import DATA_SHA256, load_tasks
+from final.src.benchmarks.datasets import load_tasks
 
 
 def inspect_spec(specification, entry="f", source=None, base_inputs=None):
@@ -192,7 +192,7 @@ def test_string_boundaries_flow_through_injected_generator_freeze_and_corrected_
     cohort = json.loads(fixture_path.read_text())
     records = [copy.deepcopy(row) for row in cohort["tasks"] if row["task_id"] in {task["task_id"] for task in tasks}]
     path = tmp_path / "cohort.json"
-    save(path, {"tasks": records, "cohort_sha256": digest(records), "dataset_sha256": DATA_SHA256})
+    save(path, {"tasks": records, "cohort_sha256": digest(records), "dataset_sha256": "fixture-dataset"})
     metadata = json.loads(Path("final/data/contracts.json").read_text())
     inspections = [inspect_spec(task["prompt"], task["entry_point"], record["programs"][0]["code"],
                                record["programs"][0]["base"]["calls"]) for task, record in zip(tasks, records)]
@@ -209,8 +209,7 @@ def test_string_boundaries_flow_through_injected_generator_freeze_and_corrected_
         settings=PipelineSettings(target_programs=1, input_budget=6))
     original_run = pipeline.evaluation_stages[0].run
     def verify_freeze(context):
-        freeze = artifacts.read("generation_frozen.json")
-        assert len(freeze["inputs"]) == 2 and context.inputs_frozen
+        assert all(artifacts.exists(f"tasks/{task['task_id'].split('/')[-1]}/inputs.json") for task in tasks)
         return original_run(context)
     monkeypatch.setattr(pipeline.evaluation_stages[0], "run", verify_freeze)
     summary = pipeline.run(tasks, metadata)

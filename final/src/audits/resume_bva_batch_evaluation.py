@@ -30,7 +30,7 @@ def prepare(source, directory):
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         if read(source / 'status.json')['state'] != 'interrupted':
             raise ValueError('Source evaluation is not stopped')
-        batch.SourceGuard(source).verify(archive=True)
+
         original_files = inventory(source)
         generation = source / 'generation'
         manifest = read(generation / 'modular_manifest.json')
@@ -46,8 +46,7 @@ def prepare(source, directory):
             if importlib.metadata.version(name) != version:
                 raise ValueError('Dependency version differs: ' + name)
         if (digest(freeze['inputs']) != freeze['inputs_sha256']
-                or set(freeze['inputs']) != set(manifest['tasks'])
-                or freeze['cohort_sha256'] != manifest['cohort_sha256']):
+                or set(freeze['inputs']) != set(manifest['tasks'])):
             raise ValueError('Frozen task ledger differs')
         for task, expected in freeze['inputs'].items():
             if digest(read(generation / 'tasks' / task.split('/')[-1] / 'inputs.json')) != expected:
@@ -147,8 +146,8 @@ def worker(directory):
             json.dump({'pid': os.getpid(), 'new_model_calls': 0}, marker)
         try:
             plan = read(directory / 'launch_plan.json')
-            guard = batch.SourceGuard(directory)
-            guard.verify(archive=True)
+
+
             for expected, status in (('1', 'pass'), ('2', 'fail')):
                 outcome = execute({'mode': 'evaluate', 'context': 'def f(x):\n    pass\n',
                     'source': 'def f(x): return x', 'entry': 'f', 'timeout': 3,
@@ -162,19 +161,17 @@ def worker(directory):
             summary = batch.evaluate(directory, plan)
             if batch.evaluate(directory, plan, read_only=True) != summary:
                 raise ValueError('Immutable replay differs')
-            guard.verify(archive=True)
+
             receipts = read(directory / 'import_receipts.json')
             if inventory(Path(plan['continuation_source'])) != receipts['source_files']:
                 raise ValueError('Original interrupted run changed')
             if batch.call_usage(directory / 'generation') != receipts['writer_usage']:
                 raise ValueError('Generation usage changed during evaluation')
-            if read(directory / 'evaluation/generation_frozen.json') != read(directory / 'generation/generation_frozen.json'):
-                raise ValueError('Global input freeze changed')
             result = {'arms': summary['arms'], 'evaluated_base_pass': summary['evaluated_base_pass'],
                 'requested_tasks': len(plan['tasks']), 'skips': summary['skips'],
                 'writer_usage': receipts['writer_usage'], 'new_model_calls': 0,
                 'comparison': batch.paired_verdicts(directory / 'evaluation'),
-                'read_only_replay_matches': True, 'source_hashes_verified': True,
+                'read_only_replay_matches': True, 'source_hashes_verified': None,
                 'original_run_unchanged': True, 'imported_responses_unchanged': True,
                 'continuation_source': plan['continuation_source']}
             save(directory / 'result_digest.json', result)

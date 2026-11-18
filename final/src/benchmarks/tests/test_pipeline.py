@@ -32,7 +32,7 @@ def test_candidate_import_rejects_unknown_and_duplicate_ids(tmp_path):
 
 
 def test_preview_missing_cohort_does_no_execution():
-    description = preview({'dataset':'humaneval_x_java', 'task_numbers':[0]})
+    description = preview({'dataset':'mbpp', 'task_numbers':[11]})
     assert description['requested_task_count'] == 1
     assert description['cohort_status'] == 'pending'
     assert description['base_pass_put_count'] is None

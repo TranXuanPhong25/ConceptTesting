@@ -93,6 +93,7 @@ async def watch_worker(arguments,directory,env):
         except BaseException:pass
         # Keep the per-task error log visible for stopped or failed runs too.
         try:
+            await attach_tool_generation_gate(directory)
             error_rows=task_error_rows(directory)
             if error_rows:await create_table_artifact(table=error_rows,key='task-error-log',
                 description='Log lỗi theo task của run bị dừng/lỗi, từ record đã lưu')
@@ -100,7 +101,19 @@ async def watch_worker(arguments,directory,env):
         raise
 
 
+async def attach_tool_generation_gate(directory):
+    path = directory / 'tool_generation_gate.json'
+    if path.is_file():
+        gate = json.loads(path.read_text())
+        await create_markdown_artifact(key='tool-generation-gate',
+            markdown='Tool treatment gate trước freeze/reference. Ready: ' + str(gate['ready']) +
+                     '. Detection/coverage khi gate fail: pending, không phải kết quả comparison.\n\n```json\n' +
+                     json.dumps(gate, ensure_ascii=False, indent=2) + '\n```',
+            description='Evidence tools được exercise; invalid preparation chặn oracle/PUT workload.')
+
+
 async def attach_outputs(directory):
+    await attach_tool_generation_gate(directory)
     snapshot=json.loads((directory/'config_snapshot.json').read_text()) if (directory/'config_snapshot.json').exists() else {}
     await create_markdown_artifact(markdown='### Config snapshot\n\n```json\n'+json.dumps(snapshot,ensure_ascii=False,indent=2)+'\n```\n\nArtifacts: `'+str(directory)+'`',key='config-snapshot')
     error_rows=task_error_rows(directory)
@@ -119,9 +132,9 @@ async def attach_outputs(directory):
 
 @flow(name='HumanEval inputs',retries=0,log_prints=False,persist_result=False)
 async def benchmark(
-    cohort:Annotated[Literal['humaneval164','known_bug10','boundary_smoke','equivalence_smoke'],Field(title='Frozen PUT cohort',description='Full HumanEval or the outcome-selected known-bug diagnostic cohort.')]='humaneval164',
-    mode:Annotated[Literal['batch','per_put'],Field(title='Generation mode',description='batch: one call/task/arm. per_put: one call per allocated PUT; the budget remains per task/arm.')]='batch',
-    arms:Annotated[list[Literal['plain','direct','soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table','ep_strong','bva_robust','bva_worst_case','ep_dt_bva','ep_bva_v2','decision_table_v2','control_flow','spec_obligation','control_flow_obligation']],Field(title='Arms',description='batch: plain/direct/soft_bva và EP/BVA/DT arms. per_put: boundary.')]=['direct','soft_bva'],
+    cohort:Annotated[Literal['humaneval164'],Field(title='Frozen PUT cohort',description='Full HumanEval; task_numbers selects a subset.')]='humaneval164',
+    mode:Annotated[Literal['batch','per_put','tools','pynguin'],Field(title='Generation mode',description='batch: one call/task/arm. per_put: one call per allocated PUT; the budget remains per task/arm.')]='batch',
+    arms:Annotated[list[Literal['plain','direct','soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table','ep_strong','bva_robust','bva_worst_case','ep_dt_bva','ep_bva_v2','decision_table_v2','pynguin','control_flow','tool_direct','tool_hypothesis','tool_hypothesis_z3','tool_hypothesis_extra','tool_planner']],Field(title='Arms',description='batch: Plain/CF/EP/BVA/DT arms. per_put: boundary.')]=['direct','soft_bva'],
     task_numbers:Annotated[list[int],Field(title='Task subset (empty means all)',description='HumanEval task numbers, such as 2, 11, 72.')]=[],
     inputs_per_task:Annotated[int,Field(title='Input budget per task per arm',ge=1,le=200,description='In per_put mode, divided across visible PUTs.')]=20,
     completion_tokens:Annotated[int,Field(title='Maximum completion tokens per call',ge=128,le=32768)]=4096,
@@ -134,6 +147,8 @@ async def benchmark(
     scorer:Annotated[Literal['confirm_first_failures','full_two_repeats'],Field(title='Scorer repeat policy')]='confirm_first_failures',
     model_name:Annotated[str,Field(title='Served model name',min_length=1,max_length=120)]='qwen3.5-27b-awq',
     catalogue:Annotated[bool,Field(title='Emit catalogue',description='EP/BVA/DT only. Uncheck for instruction-only ablation; completion cap stays shared.')]=True,
+    tool_sampling:Annotated[dict | None,Field(title='Tool sampling budgets',description='Required for tools mode; explicit draws/query/time/audit/random budgets, including matching arms.')]=None,
+    pynguin:Annotated[dict | None,Field(title='Pynguin settings',description='Pinned external Python environment, bounded per-owner upstream search; no credentials.')]=None,
     preview_only:Annotated[bool,Field(title='Preview only · no model calls',description='Checked: save config and budget preview without model, tokenizer or native calls.')]=False,
 ):
     """Choose a preset, edit parameters, Run. Each run freezes its own config/code.
@@ -141,7 +156,7 @@ async def benchmark(
     Args:
         cohort: Frozen HumanEval PUT set: all164 tasks or the known-bug diagnostic10-task subset.
         mode: batch makes one call per arm for each task. per_put makes one call for each allocated PUT.
-        arms: Batch accepts plain/direct/soft_bva and catalogue EP/BVA/DT arms. per_put accepts boundary only.
+        arms: Batch accepts Plain/CF/spec obligations and catalogue EP/BVA/DT arms. per_put accepts boundary only.
         task_numbers: HumanEval task IDs as numbers, e.g. 2, 11, 72. An empty list selects all tasks in the cohort.
         inputs_per_task: Total new-input budget per task per arm. In per_put mode, divide this shared task budget among visible PUTs; it is not a per-PUT budget.
         completion_tokens: Maximum completion tokens in each individual writer call.
@@ -157,6 +172,8 @@ async def benchmark(
         preview_only: Save resolved settings and input/call budget without model, tokenizer, or native calls.
     """
     parameters=locals().copy();parameters.pop('preview_only')
+    if parameters.get('tool_sampling') is None:parameters.pop('tool_sampling')
+    if parameters.get('pynguin') is None:parameters.pop('pynguin')
     config=normalize(parameters);description=preview(config)
     run_id=str(get_run_context().flow_run.id)
     async with get_client() as client:

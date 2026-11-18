@@ -19,13 +19,13 @@ async def evaluate_saved_union(union_source_directory:str):
     directory=ROOT/'final/out'/('union_'+run_id)
     directory.mkdir(parents=True,exist_ok=False)
     async with get_client() as client:
-        await client.update_flow_run(get_run_context().flow_run.id,name='Full164 · Union Plain + EP+BVA + DT · saved evaluation replay')
+        await client.update_flow_run(get_run_context().flow_run.id,name='Union · các arms đã evaluate · saved outcomes')
     config={'source_directory':str(source),'output_directory':str(directory/'run'),
-            'arms_to_merge':['plain','ep_bva','decision_table'],'new_model_calls':0,'new_native_calls':0,
-            'input_budget_unit':'union of source valid inputs; at most60/task','timeout_seconds':8,
-            'mode':'exact existing pool/checkpoint replay'}
+            'arms_to_merge':'all evaluated arms in source','new_model_calls':0,'new_native_calls':0,
+            'input_budget_unit':'union of source evaluated inputs',
+            'mode':'summarize saved outcomes'}
     (directory/'config_snapshot.json').write_text(json.dumps(config,ensure_ascii=False,indent=2)+'\n')
-    await create_markdown_artifact(markdown='Gộp input từ cùng full run, kiểm lại reference/native checkpoints. '
+    await create_markdown_artifact(markdown='Tổng hợp union từ outcomes đã lưu; không kiểm source hash hoặc input freeze. '
         'Chưa có final metrics; source không sửa, không gọi model hoặc chạy lại native pool.\n\n```json\n'+
         json.dumps(config,ensure_ascii=False,indent=2)+'\n```',key='union-config',
         description='Config union evaluation và nguồn/output; metrics trước replay là pending.')
@@ -33,7 +33,7 @@ async def evaluate_saved_union(union_source_directory:str):
         '--artifacts',directory/'run'],log_path=directory/'worker.log')
     output=directory/'run';result=json.loads((output/'result_digest.json').read_text())
     await create_table_artifact(table=[{'arm':name,**metrics} for name,metrics in result['arms'].items()],
-        key='union-results',description='Số unique confirmed PUTs/1454 và novel valid inputs; union dùng budget lớn hơn.')
+        key='union-results',description='Số unique detected PUT và valid input records theo mẫu số trong report; union dùng budget lớn hơn.')
     await create_markdown_artifact(markdown=(output/'REPORT.md').read_text(),key='union-report',
-        description='Report cuối tiếng Việt:raw/matched,union input budget,kind,upstreamcost,checkpointreplayverification.')
+        description='Report tiếng Việt: union detections, input count, phân bố kind và giới hạn kết luận.')
     return result

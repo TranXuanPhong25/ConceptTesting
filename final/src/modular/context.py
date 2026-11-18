@@ -45,8 +45,6 @@ class TaskContext:
     settings: PipelineSettings
     calls: ModelCalls | None = None
     cohort_task: JsonObject | None = None
-    generated_programs: list[JsonObject] = field(default_factory=list)
-    generation_rejections: list[JsonObject] = field(default_factory=list)
     packet: JsonObject | None = None
     inputs: JsonObject | None = None
     oracle: JsonObject | None = None

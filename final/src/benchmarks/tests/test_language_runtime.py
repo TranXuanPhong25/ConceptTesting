@@ -4,7 +4,7 @@ import pytest
 from final.src.benchmarks.language_runtime import execute_program
 
 
-@pytest.mark.parametrize('language', ['cpp', 'java', 'python'])
+@pytest.mark.parametrize('language', ['cpp', 'python'])
 def test_program_cannot_read_host_file(tmp_path, language):
     from final.src.benchmarks.language_runtime import execute_program
     secret = tmp_path / 'host-only.txt'
@@ -43,27 +43,8 @@ string target(string s) {
     assert serialize_call(declaration, {'s':'x'}, 'cpp').startswith('target(')
 
 
-def test_public_solution_compiles_separately_from_java_harness():
-    source = 'import java.util.*;\npublic class Solution { public int f(int x) { return x + 1; } }'
-    task = {'language': 'java', 'declaration': 'class Solution { public int f(int x) {',
-        'example_test': 'public class Main { public static void main(String[] args) { List<Integer> xs = Arrays.asList(1); assert new Solution().f(xs.get(0)) == 2; } }'}
-    assert execute_program(task, source, [], base=True)['tests'] == [{'status': 'ok'}]
-    assert execute_program(task, source, [{'x': 2}])['tests'] == [{'status': 'ok', 'value': 3}]
 
 
-@pytest.mark.parametrize('number,calls,expected', [
-    (95, [{'dict': {'p': 'pineapple', 'b': 'banana'}}], [True]),
-    (137, [{'a': 1, 'b': 2.5}, {'a': 1, 'b': '2,3'}], [2.5, '2,3']),
-    (151, [{'lst': [1, 3, 2, 0]}], [10]),
-])
-def test_humaneval_x_dynamic_values_compile_and_run(number, calls, expected):
-    from final.src.benchmarks.datasets import load_humaneval_x
-    from final.src.benchmarks.pipeline import adapter_task
-
-    task = adapter_task(load_humaneval_x('java')[number])
-    result = execute_program(task, task['reference_source'], calls, timeout=8)
-    assert result['status'] == 'ok', result
-    assert result['tests'] == [{'status': 'ok', 'value': value} for value in expected], result
 
 
 def test_result_symlink_is_not_followed_by_parent(tmp_path):

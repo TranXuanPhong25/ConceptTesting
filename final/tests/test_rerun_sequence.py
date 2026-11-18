@@ -116,13 +116,13 @@ class RerunSequenceTests(unittest.TestCase):
                 save(output/'status.json',{'state':'running','phase':'evaluation'})
                 self.assertTrue(asyncio.run(rerun.baseline_evaluation_readiness(client,uuid4()))['ready'])
 
-    def test_changed_input_after_freeze_blocks_release(self):
+    def test_changed_saved_input_does_not_block_release(self):
         with TemporaryDirectory() as folder:
             output=self.generation_output(Path(folder));save(output/'status.json',{'state':'running','phase':'evaluation'})
             save(output/'tasks/0/inputs.json',{'changed':True})
             client=SimpleNamespace(read_flow_run=AsyncMock(return_value=SimpleNamespace(state=Running())))
-            with patch.object(rerun,'predecessor_output_directory',return_value=output),self.assertRaisesRegex(ValueError,'changed after'):
-                asyncio.run(rerun.baseline_evaluation_readiness(client,uuid4()))
+            with patch.object(rerun,'predecessor_output_directory',return_value=output):
+                self.assertTrue(asyncio.run(rerun.baseline_evaluation_readiness(client,uuid4()))['ready'])
 
     def test_new_running_baseline_without_prepared_output_keeps_waiting(self):
         with TemporaryDirectory() as folder,patch.object(rerun,'OUT',Path(folder)):

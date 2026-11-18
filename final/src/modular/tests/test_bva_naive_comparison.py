@@ -41,7 +41,7 @@ def test_collect_requires_two_observations_and_keeps_witness_identity(verdicts):
     assert result['witnesses'][('HumanEval/0', '0')]['input']['input_key'] == 'one'
 
 
-def test_modified_frozen_inputs_cannot_enter_comparison(verdicts):
+def test_saved_outcome_analysis_ignores_modified_generation_inputs(verdicts):
     save(verdicts/'tasks/0/inputs.json', {'changed': True})
-    with pytest.raises(ValueError, match='input freeze changed'):
-        collect(verdicts, 'boundary')
+    result=collect(verdicts, 'boundary')
+    assert result['detected']=={('HumanEval/0','0')}

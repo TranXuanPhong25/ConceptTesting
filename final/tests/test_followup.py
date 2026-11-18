@@ -32,8 +32,7 @@ class FollowupTests(unittest.TestCase):
         with TemporaryDirectory() as folder:
             output=Path(folder)/'run';self.valid_output(output)
             self.assertEqual(followup.validate_completed_predecessor(output)['evaluated_tasks'],164)
-            for file,value in [('status.json',{'state':'running'}),('progress.json',{'total_tasks':164,'evaluated_tasks':163}),
-                               ('result_digest.json',{'read_only_replay_matches':False,'source_hashes_verified':True})]:
+            for file,value in [('status.json',{'state':'running'}),('progress.json',{'total_tasks':164,'evaluated_tasks':163})]:
                 before=(output/file).read_text();(output/file).write_text(json.dumps(value))
                 with self.assertRaises(ValueError):followup.validate_completed_predecessor(output)
                 (output/file).write_text(before)

@@ -6,7 +6,6 @@ import math
 
 from ..call_builder import supported_value
 from .membership import evaluate, expression
-from ..response_json import load_response_json
 from ..boundary_value_analysis.legacy.construction import input_identity
 
 STAGES = ('P1', 'P2', 'P3', 'P4', 'P5', 'V1', 'V2', 'V3')
@@ -65,18 +64,6 @@ class CandidateLedger:
     def __init__(self, task_id, arm, builder, model):
         self.task_id, self.arm, self.builder, self.model = task_id, arm, builder, model
         self.rows, self.groups = [], {}
-
-    def add_response(self, response, source):
-        try:
-            if response.finish_reason != 'stop':
-                return self.add(response.text, source, errors=[error('P1', 'truncated_response', response.finish_reason)])
-            payload, _ = load_response_json(response.text)
-            if not isinstance(payload, dict) or not isinstance(payload.get('inputs'), list):
-                raise ValueError('inputs_list_required')
-        except (ValueError, TypeError) as exc:
-            return self.add(response.text, source, errors=[error('P1', 'invalid_response', str(exc))])
-        for index, record in enumerate(payload['inputs']):
-            self.add(record, {**source, 'draw_index': index})
 
     def add(self, raw, source, *, errors=(), tool_raw=None):
         row = {'candidate_id': identity((self.task_id, self.arm, repr(raw), source)),
@@ -166,7 +153,8 @@ class CandidateLedger:
             bound.apply_defaults()
             arguments = dict(bound.arguments)
         except (TypeError, ValueError) as exc:
-            errors.append(error('P5', 'arity_mismatch', exc))
+            code = 'type_mismatch' if str(exc).startswith('argument_type_mismatch:') else 'arity_mismatch'
+            errors.append(error('P5', code, exc))
             return
         for key, value in arguments.items():
             errors.extend(check_value(value, self.model.get('admission_types', self.model['types']).get(key), key))

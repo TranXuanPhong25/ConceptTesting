@@ -145,9 +145,7 @@ class ReportingStage(PipelineStage):
                  "|---|---:|---:|---:|"]
         for arm_name, totals in summary["arms"].items():
             lines.append(f"| {arm_name} | {totals['valid_inputs']} | {totals['detected']} | {totals['tasks_detected']} |")
-        lines.extend(["", "Counts use each input method's valid yield; generation call counts can differ.", ""])
-        if summary["comparisons"]:
-            lines.append("Comparisons match valid input counts per task using prespecified random subsets.")
+        lines.append("")
         for comparison in summary["comparisons"]:
             lines.append(
                 f"- {comparison['left']} vs {comparison['right']}: macro detected fraction {comparison['left_macro_fraction']} vs {comparison['right_macro_fraction']}; paired p={comparison['paired_permutation_pvalue']:.5g}; tasks with more detections {comparison['tasks_left_more']}–{comparison['tasks_right_more']}.")
@@ -155,14 +153,8 @@ class ReportingStage(PipelineStage):
                       f"Tester accounting: {summary['tester_calls']}.", f"Diagnostics: {summary['diagnostics']}.",
                       f"Explicit skips: {summary['skips']}."])
         if "input_execution_cache" in summary:
-            lines.extend(["", f"Per-input execution cache: {summary['input_execution_cache']}.",
-                          "Cached executions retain separate stability-repeat slots; stored durations are historical."])
-        lines.extend(["", "Expected outputs come exclusively from the reference program after input generation.",
-                      "EvalPlus input contracts filter the domain; EvalPlus floating tolerances and polynomial-root property",
-                      "handle accepted non-unique roots. Reference oracle limitations remain; this is detection on this",
-                      "fixed LLM-generated cohort, not generalization to every real-world bug. Structural code diversity",
-                      "does not prove algorithmic independence. See per-task evidence and PREREG for shortfalls",
-                      "and visibility limits.", ""])
+            lines.extend(["", f"Per-input execution cache: {summary['input_execution_cache']}."])
+        lines.append("")
         return "\n".join(lines)
 
     @staticmethod

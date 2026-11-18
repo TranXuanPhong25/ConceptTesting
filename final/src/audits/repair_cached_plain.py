@@ -13,7 +13,7 @@ import textwrap
 import time
 
 from final.src.modular.call_builder import CallBuilder, entry_function
-from final.src.modular.dataset import load_tasks, load_metadata
+from final.src.benchmarks.datasets import load_tasks, load_metadata
 from final.src.runtime.contracts import parse_json
 from .continue_bva_evaluation import read, save, digest, checksum, prepare, launch
 from .export_cached_plain import export
@@ -241,7 +241,7 @@ def finalize(directory):
     repaired = collect(evaluation, 'plain')
     if bva['targets'] != old['targets'] or old['targets'] != repaired['targets']:
         raise ValueError('Packaging diagnostic evaluated target sets differ')
-    for key in ('settings', 'cohort_sha256', 'task_data_sha256', 'metadata_sha256', 'python', 'packages'):
+    for key in ('settings', 'task_data_sha256', 'metadata_sha256', 'python', 'packages'):
         if bva['manifest'][key] != repaired['manifest'][key]:
             raise ValueError('Packaging scoring identity differs: ' + key)
     for name in ('reference_oracle', 'put_evaluation'):

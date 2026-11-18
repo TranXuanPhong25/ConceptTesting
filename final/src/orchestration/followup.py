@@ -50,7 +50,7 @@ def predecessor_output_directory(flow_run_id):
 
 
 def validate_completed_predecessor(output):
-    """Completed means native evaluation, source checks and immutable replay all finished."""
+    """Completed means the requested native task evaluation has finished."""
     try:
         status = json.loads((output / 'status.json').read_text())
         result = json.loads((output / 'result_digest.json').read_text())
@@ -59,13 +59,11 @@ def validate_completed_predecessor(output):
         raise ValueError('Completed predecessor has missing/invalid final artifacts') from error
     if status.get('state') != 'complete':
         raise ValueError('Completed predecessor output is not complete')
-    if result.get('read_only_replay_matches') is not True or result.get('source_hashes_verified') is not True:
-        raise ValueError('Completed predecessor lacks verified source hashes or immutable replay')
     total_tasks = progress.get('total_tasks')
     if type(total_tasks) is not int or total_tasks < 1 or progress.get('evaluated_tasks') != total_tasks:
         raise ValueError('Completed predecessor has unfinished native task evaluation')
     return {'output_directory': str(output), 'evaluated_tasks': total_tasks,
-            'read_only_replay_matches': True, 'source_hashes_verified': True}
+            'read_only_replay_matches': result.get('read_only_replay_matches'), 'source_hashes_verified': result.get('source_hashes_verified')}
 
 
 async def predecessor_status(client, flow_run_id):

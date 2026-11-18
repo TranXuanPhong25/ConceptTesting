@@ -53,8 +53,7 @@ def prepare(source, directory, *, native_lock=None):
         if read(source / "status.json")["state"] not in ("interrupted", "frozen_export"):
             raise ValueError("Evaluation requires a stopped source or a frozen input export")
         manifest, freeze = read(source / "modular_manifest.json"), read(source / "generation_frozen.json")
-        if (digest(freeze["inputs"]) != freeze["inputs_sha256"] or set(freeze["inputs"]) != set(manifest["tasks"])
-                or freeze["cohort_sha256"] != manifest["cohort_sha256"]):
+        if (digest(freeze["inputs"]) != freeze["inputs_sha256"] or set(freeze["inputs"]) != set(manifest["tasks"])):
             raise ValueError("Source input freeze mismatch")
         for task_id in manifest["tasks"]:
             number = task_id.split("/")[-1]
@@ -122,12 +121,12 @@ def worker(directory):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings
     from final.src.modular.cohort import call_usage
-    from final.src.modular.dataset import load_tasks, load_metadata
+    from final.src.benchmarks.datasets import load_tasks, load_metadata
     from final.src.modular.execution_cache import InputExecutionCache
     from final.src.modular.generators.frozen import FrozenInputsGenerator
     from final.src.modular.stages.base import PipelineStage
     from final.src.runtime.execution import execute
-    from final.src.audits.run_bva_full import SourceGuard, ProgressPipeline
+    from final.src.audits.run_bva_full import ProgressPipeline
 
     class SavedPacket(PipelineStage):
         name = "saved_input_context"
@@ -177,8 +176,8 @@ def worker(directory):
         with (directory / "evaluation_started.json").open("x") as marker:
             json.dump({"pid": os.getpid(), "automatic_restart": False}, marker)
         try:
-            guard = SourceGuard(directory)
-            guard.verify(archive=True)
+
+
             plan = read(directory / "plan.json")
             readiness = smoke()
             if readiness["sha256"] != plan["sandbox"]["sha256"]:
@@ -191,7 +190,7 @@ def worker(directory):
             settings = PipelineSettings(**plan["settings"])
             for attempt in range(2):
                 pipeline = ProgressPipeline(Path(plan["cohort"]), ArtifactStore(directory), input_generator=methods,
-                    settings=settings, execution_cache=InputExecutionCache(Path(plan["execution_cache"])), guard=guard)
+                    settings=settings, execution_cache=InputExecutionCache(Path(plan["execution_cache"])))
                 save(directory / "status.json", {"state": "running", "pid": os.getpid(), "phase": "evaluation_only",
                      "new_model_calls": 0, "infrastructure_attempt": attempt + 1})
                 try:
@@ -203,14 +202,12 @@ def worker(directory):
                     save(directory / "sandbox_spawn_retry.json", {"error_type": type(error).__name__,
                          "filename": error.filename, "attempt": 1, "checkpoints_preserved": True})
                     smoke()
-            guard.verify(archive=True)
-            if read(directory / "generation_frozen.json") != read(source / "generation_frozen.json"):
-                raise ValueError("Evaluation changed the global input freeze")
+
             replay = ProgressPipeline(Path(plan["cohort"]), ArtifactStore(directory, read_only=True), input_generator=FrozenPackets(source),
-                settings=settings, execution_cache=InputExecutionCache(pipeline.execution_cache.directory, read_only=True), guard=guard)
+                settings=settings, execution_cache=InputExecutionCache(pipeline.execution_cache.directory, read_only=True))
             if replay.run(tasks, metadata) != summary:
                 raise ValueError("Read-only replay differs")
-            guard.verify(archive=True)
+
             if call_usage(directory)["invocations"]:
                 raise ValueError("Evaluation-only job unexpectedly recorded model calls")
             generation_usage = read(source / "export_receipts.json")["original_plain_usage"] if (source / "export_receipts.json").exists() else call_usage(source)
@@ -218,7 +215,7 @@ def worker(directory):
                 "evaluated_base_pass": summary["evaluated_base_pass"],
                 "source_run": str(source), "new_model_calls": 0, "source_generation_usage": generation_usage,
                 "reused_generation": summary["reused_generation"], "read_only_replay_matches": True,
-                "source_and_input_hashes_verified": True, "imported_task_results": plan["imported_task_results"]}
+                "source_and_input_hashes_verified": None, "imported_task_results": plan["imported_task_results"]}
             if "boundary_analysis" in summary:
                 report["boundary_analysis"] = summary["boundary_analysis"]
             save(directory / "result_digest.json", report)

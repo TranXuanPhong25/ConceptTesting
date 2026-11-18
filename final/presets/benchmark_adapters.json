@@ -1,0 +1,52 @@
+[
+  {
+    "name": "mbpp · qwen3.5-27b-awq · chuẩn bị",
+    "description": "Preview mặc định, chưa launch workload. Ba arms dùng chung PUT cohort/public examples; tối đa3logicalcalls/task,20input/task/arm. Cần nhập candidate_path (PUT source có sẵn) trước Run; coverage/bug theo spec pending. Không tự sinh PUT.",
+    "parameters": {
+      "dataset": "mbpp",
+      "candidate_path": "",
+      "task_numbers": [
+        11
+      ],
+      "arms": [
+        "plain",
+        "ep_bva_v2",
+        "decision_table_v2"
+      ],
+      "backend": "qwen",
+      "model_name": "qwen3.5-27b-awq",
+      "inputs_per_task": 20,
+      "completion_tokens": 4096,
+      "context_tokens": 8192,
+      "temperature": 0.7,
+      "seed": 314159,
+      "timeout_seconds": 8,
+      "preview_only": true
+    }
+  },
+  {
+    "name": "mbpp · gemini-3.1-flash-lite · chuẩn bị",
+    "description": "Preview mặc định, chưa launch workload. Ba arms dùng chung PUT cohort/public examples; tối đa3logicalcalls/task,20input/task/arm. Cần nhập candidate_path (PUT source có sẵn) trước Run; coverage/bug theo spec pending. Không tự sinh PUT.",
+    "parameters": {
+      "dataset": "mbpp",
+      "candidate_path": "",
+      "task_numbers": [
+        11
+      ],
+      "arms": [
+        "plain",
+        "ep_bva_v2",
+        "decision_table_v2"
+      ],
+      "backend": "vertex",
+      "model_name": "gemini-3.1-flash-lite",
+      "inputs_per_task": 20,
+      "completion_tokens": 4096,
+      "context_tokens": 8192,
+      "temperature": 0.7,
+      "seed": 314159,
+      "timeout_seconds": 8,
+      "preview_only": true
+    }
+  }
+]

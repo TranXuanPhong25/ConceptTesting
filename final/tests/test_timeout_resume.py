@@ -6,7 +6,6 @@ import pytest
 
 from final.src.orchestration import worker
 from final.src.audits.resume_bva_batch import inventory
-from final.src.audits.run_bva_full import SourceGuard
 from final.src.runtime.artifacts import digest
 
 
@@ -45,7 +44,7 @@ def test_resume_timeout_eight_keeps_source_and_received_generation_bytes(stopped
     assert receipts['config_amendment']['current']==8
     assert receipts['original_writer_usage']['received']==1
     assert worker.read(target/'launch_plan.json')['resume_from']==str(source)
-    SourceGuard(target).verify()
+
 
 
 @pytest.mark.parametrize('native_path',[

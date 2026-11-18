@@ -29,7 +29,7 @@ from pathlib import Path
 import shutil
 
 from final.src.modular.call_builder import CallBuilder
-from final.src.modular.dataset import load_tasks, load_metadata
+from final.src.benchmarks.datasets import load_tasks, load_metadata
 from final.src.modular.response_json import load_response_json
 from final.src.runtime.contracts import parse_json
 from .continue_bva_evaluation import read, save, digest, checksum, prepare, launch

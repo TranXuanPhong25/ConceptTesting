@@ -1,5 +1,6 @@
 """Adapt independent input-producing methods/stages to one generator interface."""
 from __future__ import annotations
+from collections import Counter
 
 from .base import InputGenerator
 from ..stages.input_preparation import InputPreparationStage
@@ -70,11 +71,9 @@ class MethodInputGenerator(InputGenerator):
             extension = getattr(method, "extend_summary", None)
             if extension is not None:
                 extension(contexts, summary, reporting)
-
-    def render_summary(self, summary):
-        text = ""
-        for method in self.methods:
-            renderer = getattr(method, "render_summary", None)
-            if renderer is not None:
-                text += renderer(summary)
-        return text
+            batches=[c.inputs['arms'][method.name] for c in contexts if not c.inputs.get('skip')]
+            if getattr(method,'requires_treatment',False) or any('treatment' in b for b in batches):
+                states=Counter(b.get('treatment',{}).get('status','pending') for b in batches)
+                summary.setdefault('method_treatments',{})[method.name]={
+                    'tasks':len(batches),'states':dict(states),
+                    'ready_for_efficacy':states['applied']>0 and not any(states[s] for s in ('failed','unknown','pending'))}

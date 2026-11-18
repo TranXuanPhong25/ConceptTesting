@@ -45,6 +45,10 @@ class InputPreparationStage(PipelineStage):
             # VALIDATION START: all shared prompts fit the configured context budget.
             if max(packet["prompt_tokens"].values(), default=0) <= limit:
                 return packet
+            if any(getattr(method, 'preserve_prompt_context', False) for method in prompt_methods):
+                return {**packet, 'skip':'prompt_too_large', 'reason':'full_prompt_exceeds_context',
+                        'required_prompt_tokens':max(packet['prompt_tokens'].values()),
+                        'available_prompt_tokens':limit}
             # VALIDATION END: all shared prompts fit the configured context budget.
             programs.pop()
         return {"task_id": context.task["task_id"], "skip": "prompt_too_large"}

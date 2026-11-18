@@ -29,9 +29,6 @@ class SavedInputMethod:
     def extend_summary(self, contexts, summary, reporting):
         pass
 
-    def render_summary(self, summary):
-        return ""
-
 
 def methods_for_rescore(records):
     return tuple(SavedInputMethod(record["name"], record.get("configuration", {})) for record in records)

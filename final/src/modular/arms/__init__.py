@@ -4,7 +4,6 @@ from .boundary import BoundaryArm
 from .classical import CATALOGUE_ARMS
 from .fault_oriented import V2_ARMS
 from .control_flow import ControlFlowArm
-from .spec_obligation import SpecObligationArm, ControlFlowObligationArm
 
 
 def default_arms():
@@ -12,7 +11,7 @@ def default_arms():
 
 
 def available_arms():
-    return (PlainArm(), BoundaryArm(), *(arm() for arm in (*CATALOGUE_ARMS, *V2_ARMS)), ControlFlowArm(), SpecObligationArm(), ControlFlowObligationArm())
+    return (PlainArm(), BoundaryArm(), *(arm() for arm in (*CATALOGUE_ARMS, *V2_ARMS)), ControlFlowArm())
 
 
 def selected_arms(names):

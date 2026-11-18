@@ -8,8 +8,14 @@
   Pre-layout snapshots are recoverable from Git history. Offline rebuild changed
   only the builder source hash and its dependent inventory hash; task records and
   selected task/PUT identities remain unchanged.
+  `load_metadata()` supplements these records in memory with public-spec input
+  types from `src/benchmarks/humaneval_types.py`; original data files stay unchanged.
 - `fixtures/`: synthetic/saved inputs used by engineering tests.
 - `humaneval_bugs.json`: reference-bug notes, when present.
 
 Code loads this directory via `final.src.modular.dataset` and `references`.
 Generated executions/cache/checkpoints remain under `final/out`, not here.
+
+18/11/2026: HumanEval-X C++/Java loader, adapter selection và CLI đã gỡ theo yêu cầu.
+Pinned datasets và historical outputs chỉ giữ làm nguồn lịch sử.
+DatasetLoader chỉ còn HumanEval Python và MBPP+.

@@ -11,7 +11,6 @@ from final.src.modular.arms.classical import EpBvaArm
 from final.src.modular.arms.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings
-from final.src.modular.dataset import DATA_SHA256
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.references import TaskReferencePrograms
 from final.src.modular.tests.helpers import FixtureCalls
@@ -59,7 +58,7 @@ def write_fixture_cohort(path, tasks):
             "programs": [{"id": 0, "code": "def fixture_function(x):\n    return x\n",
                           "base": {"status": "pass", "calls": [{"args": "(0,)", "kwargs": "{}"}]}}],
             "base_input_keys": []})
-    save(path, {"tasks": rows, "cohort_sha256": digest(rows), "dataset_sha256": DATA_SHA256})
+    save(path, {"tasks": rows, "cohort_sha256": digest(rows), "dataset_sha256": "fixture-dataset"})
     return path
 
 
@@ -72,8 +71,7 @@ def make_pipeline(tmp_path, monkeypatch, *, malformed=False, tasks=None, fail=Fa
 
     def fixture_oracle(job):
         # All task batches must exist before even the first synthetic oracle call.
-        freeze = json.loads((directory / "generation_frozen.json").read_text())
-        assert set(freeze["inputs"]) == {task["task_id"] for task in tasks}
+        assert all((directory / "tasks" / task["task_id"].split("/")[-1] / "inputs.json").exists() for task in tasks)
         native_events.append("reference")
         return {"tests": [{"status": "ok", "expected": "fixture_value",
                            "input_key": "fixture:" + record["args"]} for record in job["tests"]]}
@@ -109,6 +107,13 @@ def test_catalogue_pipeline_freezes_all_tasks_before_measurement_and_put(tmp_pat
         assert catalogue["valid_input_records"] == 1
         assert catalogue["declared"]["covered_ids"] == ["B1", "E1"]
         assert catalogue["semantic_audit"] == "pending"
+        observed = catalogue['observed']
+        assert observed['classes'][0]['status'] == 'hit'
+        assert observed['classes'][0]['source_input_indices'] == [0]
+        assert observed['boundaries'][0]['status'] == 'miss'
+        assert observed['label_checks'][0]['false_cover_ids'] == ['B1']
+        saved = pipeline.artifacts.read('tasks/' + task['task_id'].split('/')[-1] + '/catalogue_measurements.json')
+        assert saved['ep_bva']['observed'] == observed
     assert result["arms"]["ep_bva"]["detected"] == 2
     assert result["detection_kinds"]["ep_bva"]["wrong_value"] == 2
     assert result["tester_calls_by_arm"]["ep_bva"]["known_usage"]["total_tokens"] == 36
@@ -154,8 +159,8 @@ def test_catalogue_manifest_tracks_schema_and_read_only_classifier_sources(tmp_p
     pipeline.run(tasks, {TASK["task_id"]: META})
     manifest = pipeline.artifacts.read("modular_manifest.json")
     assert "pydantic" in manifest["packages"]
-    assert any(path.endswith("/audits/detection_kinds.py") for path in manifest["sources"])
-    assert any(path.endswith("/audits/run_bva_precision.py") for path in manifest["sources"])
+    assert "sources" not in manifest
+    assert "settings" in manifest
     assert manifest["settings"]["input_tokens"] == 4096
     assert [stage["name"] for stage in manifest["stages"]].index("catalogue_measurement") < [
         stage["name"] for stage in manifest["stages"]].index("put_evaluation")
@@ -218,7 +223,7 @@ def test_console_new_arm_worker_uses_shared_completion_cap_and_replays_empty_fix
         request = worker.read(output / "tasks" / "0" / "calls" / name / "request.json")
         assert request["max_tokens"] == 4096
     result = worker.read(output / "result_digest.json")
-    assert result["read_only_replay_matches"] is True
+    assert result["read_only_replay_matches"] is None
     assert result["arms"]["ep_bva"]["valid_inputs"] == 0
     assert result["catalogues"]["HumanEval/0"]["ep_bva"]["status"] == "not_applicable"
 

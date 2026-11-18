@@ -15,12 +15,13 @@ from final.src.modular.boundary_value_analysis.precision import expand_seeds, fi
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.cohort import load_cohort
 from final.src.modular.context import PipelineSettings
-from final.src.modular.dataset import load_tasks, load_metadata
+from final.src.benchmarks.datasets import load_tasks, load_metadata
 from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.base import InputGenerator
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.runtime.artifacts import digest, save
 from final.src.audits.run_prompt_style import read, reusable_response
+from .detection_kinds import evaluation_observations
 
 
 def verify(directory):
@@ -122,34 +123,6 @@ def evaluate(directory, policy, *, read_only=False):
         input_generator=FrozenPrecisionInputs(directory, policy), settings=PipelineSettings(target_programs=1, input_budget=budget),
         execution_cache=InputExecutionCache(Path("final/out/execution_cache"), read_only=read_only),
     ).run(tasks, load_metadata())
-
-
-def evaluation_observations(task_directory, program_id, outcome):
-    """Read full historical repeats or indexed failure confirmations without inventing passes."""
-    evaluation = task_directory / "evaluation"
-    first = read(evaluation / f"{program_id}_0.json")["tests"]
-    observations = [[item] for item in first]
-    if "retested" in outcome:
-        indices = outcome["retested"]
-        second = read(evaluation / f"{program_id}_retry_1.json")["tests"] if indices else []
-        if len(second) != len(indices) or len(set(indices)) != len(indices):
-            raise ValueError("Confirmation checkpoint/index count mismatch")
-        for index, item in zip(indices, second):
-            if type(index) is not int or not 0 <= index < len(first):
-                raise ValueError("Invalid confirmation input index")
-            if first[index]["status"] not in ("fail", "error", "timeout"):
-                raise ValueError("Confirmation index does not identify a first failure")
-            observations[index].append(item)
-        if any(item["status"] in ("fail", "error", "timeout") and index not in indices
-               for index, item in enumerate(first)):
-            raise ValueError("Missing first-failure confirmation")
-    else:
-        second = read(evaluation / f"{program_id}_1.json")["tests"]
-        if len(second) != len(first):
-            raise ValueError("Historical repeat result count mismatch")
-        for index, item in enumerate(second):
-            observations[index].append(item)
-    return observations
 
 
 def outcomes_by_input(directory, policy, task_number, arm):

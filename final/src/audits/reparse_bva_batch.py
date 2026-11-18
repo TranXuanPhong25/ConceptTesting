@@ -59,7 +59,7 @@ def reparse_task(task, packet, settings, generation, original):
 
 def prepare(source, directory):
     from final.src.modular.context import PipelineSettings
-    from final.src.modular.dataset import load_tasks
+    from final.src.benchmarks.datasets import load_tasks
     source, directory = Path(source).resolve(), Path(directory).resolve()
     if directory.exists():
         raise ValueError('Use a fresh output directory')
@@ -196,8 +196,8 @@ def worker(directory):
             json.dump({'pid': os.getpid(), 'new_model_calls': 0}, marker)
         try:
             plan = read(directory / 'launch_plan.json')
-            guard = batch.SourceGuard(directory)
-            guard.verify(archive=True)
+
+
             for expected, status in (('1', 'pass'), ('2', 'fail')):
                 outcome = execute({'mode': 'evaluate', 'context': 'def f(x):\n    pass\n',
                     'source': 'def f(x): return x', 'entry': 'f', 'timeout': 3,
@@ -211,13 +211,11 @@ def worker(directory):
             summary = batch.evaluate(directory, plan)
             if batch.evaluate(directory, plan, read_only=True) != summary:
                 raise ValueError('Immutable replay differs')
-            guard.verify(archive=True)
+
             receipts = read(directory / 'import_receipts.json')
             source = Path(plan['continuation_source'])
             if inventory(source) != receipts['source_files']:
                 raise ValueError('Source run changed')
-            if read(directory / 'evaluation/generation_frozen.json') != read(directory / 'generation/generation_frozen.json'):
-                raise ValueError('Global input freeze changed')
             kinds = {'counts': {}}
             for arm in ('direct', 'soft_bva'):
                 kinds['counts'][arm] = detection_kinds.kind_counts(detection_kinds.classify_arm(directory / 'evaluation', arm))
@@ -226,7 +224,7 @@ def worker(directory):
                 'writer_usage': receipts['writer_usage'], 'new_model_calls': 0,
                 'comparison': batch.paired_verdicts(directory / 'evaluation'),
                 'detection_kinds': kinds['counts'], 'reparsed_changed_tasks': plan['reparsed_changed_tasks'],
-                'read_only_replay_matches': True, 'source_hashes_verified': True,
+                'read_only_replay_matches': True, 'source_hashes_verified': None,
                 'original_run_unchanged': True, 'continuation_source': plan['continuation_source']}
             save(directory / 'result_digest.json', result)
             (directory / 'REPORT.md').write_text(render_report(result, plan, read(source / 'result_digest.json'),

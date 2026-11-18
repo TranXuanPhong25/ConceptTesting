@@ -15,7 +15,7 @@ from final.src.modular.boundary_value_analysis.precision import expand_seeds, ma
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.cohort import load_cohort, call_usage
-from final.src.modular.dataset import load_tasks, load_metadata
+from final.src.benchmarks.datasets import load_tasks, load_metadata
 from final.src.runtime.artifacts import digest, save
 from final.src.models.model import QwenModel
 from .run_prompt_style import configure_endpoint, read

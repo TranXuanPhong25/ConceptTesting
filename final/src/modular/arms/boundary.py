@@ -96,10 +96,3 @@ class BoundaryArm(InputGenerationMethod):
                 accounting["retained_inputs"] += program["retained_inputs"]
                 accounting["logical_calls"]["generation"] += int(program["logical_calls"]["generation"])
         summary["boundary_analysis"] = accounting
-
-    def render_summary(self, summary):
-        return ("\nSoft BVA generates concrete inputs in one call per allocated PUT. "
-                "The task input budget is split equally over visible PUTs; unused shares are not redistributed. "
-                "Inputs are checked by the shared domain/reference stage after generation freezes. "
-                "The multi-PUT call budget can differ from plain.\n\n"
-                f"Boundary accounting: {summary['boundary_analysis']}.\n")

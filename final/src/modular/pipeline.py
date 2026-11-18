@@ -119,10 +119,8 @@ class BenchmarkPipeline:
             summary = self.reporting_stage.build_summary(contexts, self.cohort_stage.cohort)
             self.input_generator.extend_summary(contexts, summary, self.reporting_stage)
             self.artifacts.write_metadata("modular_summary.json", summary)
-            if not self.artifacts.read_only:
-                report_text = self.reporting_stage.render(summary)
-                report_text += self.input_generator.render_summary(summary)
-                self.artifacts.path("REPORT.md").write_text(report_text)
+            report_text = self.reporting_stage.render(summary)
+            self.artifacts.path("REPORT.md").write_text(report_text)
             return summary
 
     def execute_stages(self, stages, context):

@@ -111,7 +111,7 @@ spec của task. Key `arms` được giữ để tương thích reference/evalua
 hiện có; nó chứa các named method batches và không bắt buộc subclass arm.
 
 Các hooks tùy chọn: `preparation_stages`, `configuration`, `source_dependencies`,
-`dependency_objects`, `reporting_stage`, `extend_summary`, `render_summary`.
+`dependency_objects`, `reporting_stage`, `extend_summary`.
 Full generator nhận frozen cohort và tự quyết định eligibility/skip cho task;
 core không buộc mọi phương pháp phải dùng cùng concept/visibility machinery.
 

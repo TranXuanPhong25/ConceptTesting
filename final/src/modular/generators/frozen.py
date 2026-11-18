@@ -35,9 +35,3 @@ class FrozenInputsGenerator(InputGenerator):
             "source_run": str(self.source.directory), "new_model_calls": 0,
             "source_model": self.manifest.get("model"),
         }
-
-    def render_summary(self, summary):
-        text = "\nInputs loaded from the source run as currently saved; no new model calls.\n"
-        for method in self.methods:
-            text += method.render_summary(summary)
-        return text

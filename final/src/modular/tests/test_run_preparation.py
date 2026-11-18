@@ -6,7 +6,7 @@ from final.src.modular import run
 
 def test_prepare_pipeline_deduplicates_and_keeps_dataset_order(monkeypatch):
     tasks = [{'task_id': 'HumanEval/0'}, {'task_id': 'HumanEval/18'}]
-    monkeypatch.setattr(run, 'load_tasks', lambda: tasks)
+    monkeypatch.setattr(run.DatasetLoader, 'load_tasks', lambda self: tasks)
     parser, options = run.load_options([
         '--task-ids', 'HumanEval/18', 'HumanEval/0', 'HumanEval/18',
     ])
@@ -16,7 +16,7 @@ def test_prepare_pipeline_deduplicates_and_keeps_dataset_order(monkeypatch):
 
 
 def test_prepare_pipeline_reports_unsupported_ids(monkeypatch, capsys):
-    monkeypatch.setattr(run, 'load_tasks', lambda: [{'task_id': 'HumanEval/0'}])
+    monkeypatch.setattr(run.DatasetLoader, 'load_tasks', lambda self: [{'task_id': 'HumanEval/0'}])
     parser, options = run.load_options(['--task-ids', 'HumanEval/999'])
     with pytest.raises(SystemExit) as error:
         run.prepare_pipeline(parser, options)

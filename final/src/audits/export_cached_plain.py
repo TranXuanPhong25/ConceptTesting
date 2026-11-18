@@ -19,7 +19,7 @@ def export(naive, bva_generation, bva_evaluation, directory):
     scoring = read(bva_evaluation / "modular_manifest.json")
     if read(naive / "status.json")["state"] != "complete" or read(bva_evaluation / "status.json")["state"] != "complete":
         raise ValueError("Both source runs must be complete")
-    for key in ("cohort_sha256", "task_data_sha256", "metadata_sha256", "settings"):
+    for key in ("task_data_sha256", "metadata_sha256", "settings"):
         if original[key] != scoring[key]:
             raise ValueError("Source identity mismatch: " + key)
     if digest(original_freeze["inputs"]) != original_freeze["inputs_sha256"] or set(original_freeze["inputs"]) != set(original["tasks"]):
@@ -28,8 +28,6 @@ def export(naive, bva_generation, bva_evaluation, directory):
     target_cohort = read(Path(bva_plan["cohort"]))
     programs = {(row["task_id"], program["id"]): program for row in target_cohort["tasks"] for program in row["programs"]}
     exclusions = read(naive / "resource_exclusions.json")
-    if exclusions["cohort_sha256"] != original["cohort_sha256"]:
-        raise ValueError("Exclusion source cohort mismatch")
     for record in exclusions["records"]:
         program = programs[(record["task_id"], record["put_id"])]
         if hashlib.sha256(program["code"].encode()).hexdigest() != record["raw_source_sha256"]:

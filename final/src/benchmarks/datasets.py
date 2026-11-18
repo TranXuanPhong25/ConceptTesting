@@ -12,7 +12,6 @@ ROOT = Path(__file__).resolve().parents[2]
 METADATA_PATH = ROOT / 'data/contracts.json'
 DATA = ROOT / 'data' / 'benchmarks'
 MBPP_PATH = DATA / "mbppplus_v0.2.0.jsonl.gz"
-LANGUAGES = ("cpp", "java")
 
 
 class DatasetLoader:
@@ -20,15 +19,13 @@ class DatasetLoader:
 
     def __init__(self, config: str):
         self.config = config.lower()
-        if self.config not in ('he-py', 'he-cpp', 'he-java', 'mbpp-py'):
+        if self.config not in ('he-py', 'mbpp-py'):
             raise ValueError(f'Unsupported dataset: {config}')
 
     def load_tasks(self) -> list[dict]:
         if self.config == 'he-py':
             return load_tasks()
-        if self.config == 'mbpp-py':
-            return load_mbpp()
-        return load_humaneval_x(self.config.split('-')[1])
+        return load_mbpp()
 
     def load_metadata(self):
         if self.config != 'he-py':
@@ -110,16 +107,6 @@ def load_mbpp(path: Path | None = None) -> list[dict]:
             "tests": tests,
         })
     return sorted(normalized, key=lambda task: int(task['task_id'].split('/')[1]))
-
-
-def load_humaneval_x(language: str, path: Path | None = None) -> list[dict]:
-    """Load one bundled HumanEval-X language file."""
-    language = language.lower()
-    if language not in LANGUAGES:
-        raise ValueError(f"unsupported HumanEval-X language: {language}")
-    source = Path(path) if path is not None else DATA / f"humaneval_x_{language}.jsonl.gz"
-    rows = _read_json_lines(source, compressed=source.suffix == ".gz")
-    return [{**row, "language": language} for row in rows]
 
 
 def dataset_sha256(path: Path) -> str:

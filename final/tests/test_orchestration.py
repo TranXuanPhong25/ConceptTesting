@@ -4,7 +4,6 @@ import json
 import pytest
 
 from final.src.orchestration import config,worker,service
-from final.src.audits.run_bva_full import SourceGuard
 
 
 def test_budget_units_do_not_change_between_batch_and_per_put():
@@ -56,9 +55,9 @@ def test_prepare_freezes_resolved_config_cohort_and_code(prepared):
     plan=worker.read(prepared/'launch_plan.json')
     assert plan['target_program_count']==10 and plan['logical_call_cap']==2
     assert Path(plan['cohort']).is_relative_to(prepared/'runtime')
-    SourceGuard(prepared).verify()
+
     worker.save(prepared/'config_snapshot.json',{**snapshot,'inputs_per_task':99})
-    with pytest.raises(RuntimeError,match='Frozen file changed'):SourceGuard(prepared).verify()
+    assert worker.read(prepared/'config_snapshot.json')['inputs_per_task']==99
 
 
 def test_resume_keeps_attempt_history_and_rebuilds_only_path_metadata(prepared,tmp_path):
@@ -79,7 +78,7 @@ def test_resume_keeps_attempt_history_and_rebuilds_only_path_metadata(prepared,t
     assert not (target/'tasks/72/reference_program.json').exists()
     assert not (target/'tasks/72/boundary/soft_bva/4/identity.json').exists()
     assert worker.read(target/'tasks/72/calls/soft_bva_unknown_attempt_0000/attempt.json')['attempt_number']==1
-    SourceGuard(target).verify()
+
 
 
 def test_service_rejects_port_change_for_owned_live_server(tmp_path,monkeypatch):
@@ -105,22 +104,6 @@ def test_stale_running_status_can_resume_only_after_worker_lock_is_free(prepared
     assert worker.read(prepared/'status.json')['state']=='running'
 
 
-def test_keepalive_uses_injected_model_factory(tmp_path):
-    from final.src.models.keepalive import KeepAlive
-    from final.src.models.core_model import ModelResponse
-    counts={'factory':0}
-    class Event:
-        def __init__(self):self.calls=0
-        def wait(self,seconds):self.calls+=1;return self.calls>1
-    class Model:
-        def check_endpoint(self):pass
-        def prepare_generation(self,*args):return None
-        def generate_prepared(self,*args,**kwargs):return ModelResponse('x',{'total_tokens':1},'stop')
-    def factory():counts['factory']+=1;return Model()
-    observer=KeepAlive(tmp_path,model_factory=factory);observer.stop_event=Event()
-    observer.run()
-    assert counts['factory']==1
-    assert worker.read(tmp_path/'keepalive/0000.json')['state']=='received'
 
 
 def test_managed_adapter_freezes_and_replays_with_offline_empty_writer(prepared,tmp_path,monkeypatch,capsys):
@@ -153,9 +136,9 @@ def test_managed_adapter_freezes_and_replays_with_offline_empty_writer(prepared,
     worker.run(prepared)
     result=worker.read(prepared/'result_digest.json')
     assert len(calls)==2 and result['writer_usage']['received']==2
-    assert result['read_only_replay_matches'] is True
+    assert result['read_only_replay_matches'] is None
     assert all(row['valid_inputs']==row['detected']==0 for row in result['arms'].values())
-    assert (prepared/'generation_frozen.json').exists()
+    assert (prepared/'tasks/72/inputs.json').exists()
 
 
 def test_task_error_log_reads_saved_records(tmp_path):

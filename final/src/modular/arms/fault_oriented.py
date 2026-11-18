@@ -41,12 +41,6 @@ class FaultOrientedArm(CatalogueArm):
                     accounting['annotated_' + section] += bool(obligation.get('fault_hypothesis'))
         summary.setdefault('fault_hypothesis_annotations', {})[self.name] = accounting
 
-    def render_summary(self, summary):
-        accounting = summary.get('fault_hypothesis_annotations', {}).get(self.name, {})
-        return (f"\nV2 {self.name}: khai báo Fault Hypotheses {accounting}. "
-                "Đây là annotation của model, chưa chứng minh fault tồn tại hoặc input phân biệt được fault. "
-                "V2 thay instruction và soft example cùng lúc; comparison đo cả gói thay đổi.\n")
-
 
 class EpBvaV2Arm(FaultOrientedArm):
     name = "ep_bva_v2"

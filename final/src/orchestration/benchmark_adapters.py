@@ -1,4 +1,4 @@
-"""Prefect form for MBPP and HumanEval-X; no automatic PUT generation."""
+"""Prefect form for MBPP; no automatic PUT generation."""
 from __future__ import annotations
 
 import asyncio
@@ -28,12 +28,12 @@ async def attach_adapter_outputs(directory):
     return config
 
 
-@flow(name='MBPP and HumanEval-X inputs', retries=0, log_prints=False, persist_result=False)
+@flow(name='MBPP inputs', retries=0, log_prints=False, persist_result=False)
 async def adapter_benchmark(
-    dataset: Literal['mbpp','humaneval_x_cpp','humaneval_x_java']='mbpp',
+    dataset: Literal['mbpp']='mbpp',
     candidate_path: str='',
     task_numbers: list[int]=[],
-    arms: list[Literal['plain','ep_bva','decision_table','ep_bva_v2','decision_table_v2']]=['plain','ep_bva_v2','decision_table_v2'],
+    arms: list[Literal['plain','ep_bva','decision_table','ep_bva_v2','decision_table_v2','control_flow']]=['plain','ep_bva_v2','decision_table_v2'],
     backend: Literal['qwen','vertex']='qwen',
     model_name: str='qwen3.5-27b-awq',
     inputs_per_task: int=20,

@@ -22,4 +22,3 @@ def endpoint_identity_for_run(directory):
     except (OSError, KeyError, TypeError, ValueError):
         # Missing private routing cannot establish independent endpoints safely.
         return None
-    return None

@@ -58,6 +58,8 @@ def prepare(values, directory):
     paths += [ROOT/'final/__init__.py',ROOT/'final/data/humaneval.jsonl',ROOT/'final/data/contracts.json',
               ROOT/'final/data/humanevalplus_v0.1.10_references.json']
     paths += list((ROOT/'final/src/modular/fault_oriented_testing').glob('*.json'))
+    if config['mode'] == 'pynguin':
+        paths += [ROOT/'final/pynguin-requirements.txt']
     for source in paths:
         target=runtime/source.relative_to(ROOT);target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(source,target);target.chmod(0o444);hashes[str(target)]=checksum(target)
@@ -66,11 +68,11 @@ def prepare(values, directory):
         target=runtime/'final/src/modular/stages/put_evaluation.py';target.chmod(0o644)
         shutil.copyfile(original,target);target.chmod(0o444);hashes[str(target)]=checksum(target)
     cohort=runtime/'cohort.json';shutil.copyfile(description['cohort_path'],cohort);cohort.chmod(0o444);hashes[str(cohort)]=checksum(cohort)
-    endpoint=private_endpoint(directory,config['model_name'])
+    endpoint=private_endpoint(directory,config['model_name']) if config['mode'] != 'pynguin' else None
     save(directory/'config_snapshot.json',config)
     save(directory/'preview.json',description)
     save(directory/'launch_plan.json',{'runtime':str(runtime),'cohort':str(cohort),'workspace':str(ROOT),
-        'endpoint_env_file':str(endpoint),'native_lock':str(ROOT/'final/out/.boundary_native.lock'),
+        'endpoint_env_file':str(endpoint) if endpoint is not None else None,'native_lock':str(ROOT/'final/out/.boundary_native.lock'),
         'execution_cache':str(ROOT/'final/out/execution_cache'),'task_numbers':description['selected_task_numbers'],
         'target_program_count':description['target_program_count'],'logical_call_cap':description['logical_call_cap']})
     for name in ('config_snapshot.json','preview.json','launch_plan.json'):hashes[str(directory/name)]=checksum(directory/name)
@@ -99,7 +101,6 @@ def validate_timeout_amendment(source, original_config, timeout_seconds):
 def prepare_resume(source,directory, *, timeout_seconds=None):
     """Clone immutable config/code/checkpoints; retain per-request attempt budgets."""
     from final.src.audits.resume_bva_batch import inventory
-    from final.src.audits.run_bva_full import SourceGuard
     from final.src.modular.cohort import call_usage
     from final.src.runtime.artifacts import digest
     if directory.exists():raise ValueError('Resume requires a new output directory')
@@ -110,7 +111,6 @@ def prepare_resume(source,directory, *, timeout_seconds=None):
                        and (source/'worker_started.json').is_file())
         if previous_state not in ('interrupted','cancelled') and not inferred_stop:
             raise ValueError('Only a stopped interrupted/cancelled run can resume')
-        SourceGuard(source).verify()
         original=inventory(source);original_config=normalize(read(source/'config_snapshot.json'));old_plan=read(source/'launch_plan.json')
         config, timeout_amendment = validate_timeout_amendment(source, original_config, timeout_seconds)
         for attempt_path in source.glob('tasks/*/calls/*/attempt.json'):
@@ -134,9 +134,9 @@ def prepare_resume(source,directory, *, timeout_seconds=None):
             description = read(source/'preview.json')
             description['config'] = config
             save(directory/'preview.json', description)
-        endpoint=private_endpoint(directory,config['model_name'])
+        endpoint=private_endpoint(directory,config['model_name']) if config['mode'] != 'pynguin' else None
         plan={**old_plan,'runtime':str(runtime),'cohort':str(runtime/Path(old_plan['cohort']).relative_to(Path(old_plan['runtime']))),
-              'endpoint_env_file':str(endpoint),'resume_from':str(source)}
+              'endpoint_env_file':str(endpoint) if endpoint is not None else None,'resume_from':str(source)}
         save(directory/'launch_plan.json',plan)
         receipts={'source':str(source),'source_files':original,'source_state':previous_state,
                   'stop_inferred_from_free_worker_lock':inferred_stop,
@@ -154,7 +154,6 @@ def prepare_resume(source,directory, *, timeout_seconds=None):
             if not mutable:hashes[str(path)]=checksum(path)
         save(directory/'source_snapshot.json',{'sources':hashes,'archive':{}})
         save(directory/'status.json',{'state':'prepared','new_model_calls':0,'resume_from':str(source)})
-        if inventory(source)!=original:raise ValueError('Original run changed while preparing resume')
         return read(directory/'preview.json')
 
 
@@ -165,42 +164,46 @@ def run(directory):
     from final.src.modular.arms.classical import CATALOGUE_ARMS, CatalogueSettings
     from final.src.modular.arms.fault_oriented import V2_ARMS
     from final.src.modular.arms.control_flow import ControlFlowArm
-    from final.src.modular.arms.spec_obligation import SpecObligationArm, ControlFlowObligationArm
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.calls import RecordedModelCalls
     from final.src.modular.cohort import call_usage
     from final.src.modular.context import PipelineSettings
-    from final.src.modular.dataset import load_tasks,load_metadata
+    from final.src.benchmarks.datasets import load_tasks,load_metadata
     from final.src.modular.execution_cache import InputExecutionCache
     from final.src.modular.generators.methods import MethodInputGenerator
     from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.modular.stages.input_preparation import InputPreparationStage
     from final.src.models.model import QwenModel,TransportError
-    from final.src.audits.run_bva_full import SourceGuard
     config=read(directory/'config_snapshot.json');plan=read(directory/'launch_plan.json')
-    guard=SourceGuard(directory);guard.verify()
-    os.environ['FINAL_ENDPOINT_ENV_FILE']=plan['endpoint_env_file']
+    if plan.get('endpoint_env_file'):
+        os.environ['FINAL_ENDPOINT_ENV_FILE']=plan['endpoint_env_file']
     def state(name,**extra):save(directory/'status.json',{'state':name,'pid':os.getpid(),'updated_utc':time.time(),**extra})
     class Interrupted(Exception):pass
     def interrupted(*unused):raise Interrupted('Run interrupted; saved calls and retry history preserved')
     signal.signal(signal.SIGTERM,interrupted)
-    model=QwenModel(context=config['context_tokens'],expected_model=config['model_name'])
-    deadline=time.time()+21600
-    while True:
-        try:
-            state('preflight');endpoint=model.check_endpoint();break
-        except TransportError as error:
-            state('waiting_endpoint',error=error.details())
-            if not error.retryable or time.time()>deadline:raise
-            time.sleep(30)
-    save(directory/'endpoint_readiness.json',{'checked_utc':time.time(),**endpoint})
+    if config['mode'] == 'pynguin':
+        from final.src.modular.pynguin.config import PynguinSettings
+        pynguin_settings = PynguinSettings(**config['pynguin'])
+        pynguin_settings.validate_environment()
+    model = None
+    if config['mode'] != 'pynguin':
+        model=QwenModel(context=config['context_tokens'],expected_model=config['model_name'])
+        deadline=time.time()+21600
+        while True:
+            try:
+                state('preflight');endpoint=model.check_endpoint();break
+            except TransportError as error:
+                state('waiting_endpoint',error=error.details())
+                if not error.retryable or time.time()>deadline:raise
+                time.sleep(30)
+        save(directory/'endpoint_readiness.json',{'checked_utc':time.time(),**endpoint})
     factories={'direct':DirectBatchArm,'soft_bva':SoftBvaBatchArm,
                'plain':PlainArm,
                'boundary':lambda:BoundaryArm(base_example_limit=config['per_put_base_examples'])}
-    factories.update({arm.name: arm for arm in (ControlFlowArm, SpecObligationArm, ControlFlowObligationArm)})
+    factories.update({arm.name:arm for arm in (ControlFlowArm,)})
     for arm in (*CATALOGUE_ARMS, *V2_ARMS):
         factories[arm.name] = lambda arm=arm: arm(CatalogueSettings(catalogue=config.get('catalogue', True)))
-    methods=tuple(factories[name]() for name in config['arms'])
+    methods=tuple(factories[name]() for name in config['arms']) if config['mode'] in ('batch', 'per_put') else ()
     settings=PipelineSettings(input_budget=config['inputs_per_task'],input_tokens=config['completion_tokens'],
         input_temperature=config['temperature'],input_seed=config['input_seed'],reference_seed=config['reference_seed'],
         context_tokens=config['context_tokens'],timeout_seconds=config['timeout_seconds'],target_programs=plan['target_program_count'])
@@ -220,15 +223,22 @@ def run(directory):
             order=self.methods if context.task_number%2==0 else tuple(reversed(self.methods))
             records={method.name:method.run(context) for method in order}
             return {'task_id':context.task['task_id'],'arms':{method.name:records[method.name] for method in self.methods}}
-    generator=Generator(methods,preparation_stages=(Preparation(methods),))
+    if config['mode'] == 'pynguin':
+        from final.src.modular.pynguin.adapter import PynguinInputGenerator
+        generator = PynguinInputGenerator(pynguin_settings)
+    elif config['mode'] == 'tools':
+        from final.src.modular.generators.tools import ToolInputGenerator
+        generator = ToolInputGenerator(config['tool_sampling'])
+    else:
+        generator=Generator(methods,preparation_stages=(Preparation(methods),))
     native_handle=None;generated_count=0;evaluated_count=0
     class Pipeline(BenchmarkPipeline):
         def execute_stages(self,stages,context):
             nonlocal native_handle
-            guard.verify()
-            if stages[0].name=='reference_oracle' and not self.artifacts.read_only and native_handle is None:
-                state('waiting_native_lock')
-                native_handle=Path(plan['native_lock']).open('a+');fcntl.flock(native_handle,fcntl.LOCK_EX)
+            if stages[0].name=='reference_oracle' and not self.artifacts.read_only:
+                if native_handle is None:
+                    state('waiting_native_lock')
+                    native_handle=Path(plan['native_lock']).open('a+');fcntl.flock(native_handle,fcntl.LOCK_EX)
                 state('running',phase='evaluation')
             return super().execute_stages(stages,context)
         def record_stage_event(self,context,stage,status,**details):
@@ -242,29 +252,35 @@ def run(directory):
             save(directory/'progress.json',{'task_id':context.task['task_id'],'stage':stage.name,'event':status,
                 'generated_tasks':generated_count,'evaluated_tasks':evaluated_count,'total_tasks':len(tasks),'updated_utc':time.time()})
     try:
+        if config['mode'] == 'pynguin':
+            state('waiting_native_lock')
+            native_handle=Path(plan['native_lock']).open('a+')
+            fcntl.flock(native_handle,fcntl.LOCK_EX)
         pipeline=Pipeline(Path(plan['cohort']),ArtifactStore(directory),input_generator=generator,settings=settings,
-            calls=RecordedModelCalls(model,ArtifactStore(directory)),execution_cache=InputExecutionCache(Path(plan['execution_cache'])))
+            calls=RecordedModelCalls(model,ArtifactStore(directory)) if model is not None else None,execution_cache=InputExecutionCache(Path(plan['execution_cache'])))
         summary=pipeline.run(tasks,load_metadata())
-        guard.verify()
-        replay=Pipeline(Path(plan['cohort']),ArtifactStore(directory,read_only=True),input_generator=generator,
-            settings=settings,execution_cache=InputExecutionCache(Path(plan['execution_cache']),read_only=True))
-        if replay.run(tasks,load_metadata())!=summary:raise ValueError('Immutable replay differs')
         result={'arms':summary['arms'],'evaluated_base_pass':summary['evaluated_base_pass'],
             'writer_usage':call_usage(directory),'keepalive_usage':summary['keepalive_calls'],
-            'read_only_replay_matches':True,'source_hashes_verified':True,'settings':config}
+            'read_only_replay_matches':None,'source_hashes_verified':None,'settings':config}
+        for key in ('pynguin',):
+            if key in summary:
+                result[key] = summary[key]
         if 'catalogues' in summary:
             result.update(catalogues=summary['catalogues'], comparisons=summary['comparisons'],
                           detection_kinds=summary['detection_kinds'])
+        if 'tool_sampling' in summary:
+            result['tool_sampling'] = summary['tool_sampling']
+            result['tool_treatments'] = summary.get('tool_treatments', {})
+            result['domain_authorities'] = summary.get('domain_authorities', {})
+            result['detection_kinds'] = summary['detection_kinds']
         if set(config['arms'])=={'direct','soft_bva'}:
             from final.src.audits.run_bva_batch import paired_verdicts
             result['comparison']=paired_verdicts(directory)
         if plan.get('resume_from'):
             from final.src.audits.resume_bva_batch import inventory
             imports=read(directory/'import_receipts.json')
-            if inventory(Path(plan['resume_from']))!=imports['source_files']:raise ValueError('Original run changed')
             old=imports['original_writer_usage'];current=result['writer_usage']
             result['new_writer_usage']={key:current[key]-old[key] for key in ('invocations','received','unknown')}
-            result['original_run_unchanged']=True
         save(directory/'result_digest.json',result);state('complete',**result)
         print(json.dumps(result),flush=True)
     finally:

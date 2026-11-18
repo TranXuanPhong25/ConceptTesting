@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from final.src.modular.dataset import load_tasks
+from final.src.benchmarks.datasets import load_tasks
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.boundary_value_analysis.legacy import BoundarySettings, BoundaryValueAnalysis
 from final.src.modular.boundary_value_analysis.legacy.pipeline import BoundaryContext
