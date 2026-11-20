@@ -43,4 +43,4 @@ def test_humaneval_x_adapter_is_rejected_before_preparation(tmp_path, language):
         prepare({'dataset':'humaneval_x_' + language}, tmp_path/'retired')
     assert not (tmp_path/'retired').exists()
     with pytest.raises(UnsupportedSignature):
-        execute_program({'language':'java'}, '', [])
+        execute_program({'language':language}, '', [])

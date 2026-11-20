@@ -1,21 +1,14 @@
 import json
-import pytest
 
 from final.src.benchmarks.language_runtime import execute_program
 
 
-@pytest.mark.parametrize('language', ['cpp', 'python'])
-def test_program_cannot_read_host_file(tmp_path, language):
-    from final.src.benchmarks.language_runtime import execute_program
-    secret = tmp_path / 'host-only.txt'
+def test_sandbox_cannot_read_host_files(tmp_path):
+    secret = tmp_path / 'secret'
     secret.write_text('private fixture')
-    sources = {
-        'python': f'def f():\n    return open({str(secret)!r}).read()\n',
-        'cpp': '#include <fstream>\n#include <string>\nstd::string f(){ std::ifstream in(' + json.dumps(str(secret)) + '); std::string s; std::getline(in,s); return s; }',
-        'java': 'class Solution { public String f() throws Exception { return java.nio.file.Files.readString(java.nio.file.Path.of(' + json.dumps(str(secret)) + ')); }}',
-    }
-    task = {'language': language, 'declaration': {'python':'def f(): pass', 'cpp':'std::string f(){', 'java':'public String f() {'}[language], 'entry_point': 'f'}
-    result = execute_program(task, sources[language], [{}], timeout=2)
+    source = f'def f(): return open({str(secret)!r}).read()'
+    task = {'language':'python', 'declaration':'def f(): pass', 'entry_point':'f'}
+    result = execute_program(task, source, [{}], timeout=2)
     assert result['tests'][0].get('value') != 'private fixture'
     assert secret.read_text() == 'private fixture'
 
@@ -32,19 +25,6 @@ def test_python_invocations_cannot_mutate_the_next_input():
     source = 'from pathlib import Path\ndef f():\n    p=Path("/work/marker")\n    seen=p.exists()\n    try:\n        p.write_text("x")\n    except OSError:\n        pass\n    return seen\n'
     result = execute_program(task, source, [{},{}])
     assert result['tests'] == [{'status':'ok','value':False}, {'status':'ok','value':False}]
-
-
-def test_cpp_declaration_with_helper_and_partial_target_body():
-    declaration = '''string helper(string s) { for(int i=0;i<3;i++) { } return s; }
-string target(string s) {
-    for (int i=0;i<3;i++) {
-'''
-    from final.src.benchmarks.language_runtime import serialize_call
-    assert serialize_call(declaration, {'s':'x'}, 'cpp').startswith('target(')
-
-
-
-
 
 
 def test_result_symlink_is_not_followed_by_parent(tmp_path):

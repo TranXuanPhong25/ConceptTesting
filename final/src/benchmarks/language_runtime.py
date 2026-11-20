@@ -1,12 +1,10 @@
 """Typed calls and bounded bwrap execution; generated source never runs on the host."""
 from __future__ import annotations
 
-import ast
 import json
 import math
 import os
 from pathlib import Path
-import re
 import shutil
 import signal
 import subprocess
@@ -19,102 +17,6 @@ from final.src.runtime.artifacts import read_sandbox_file
 
 class UnsupportedSignature(ValueError):
     pass
-
-
-def split_parameters(text):
-    parts, start, depth = [], 0, 0
-    for index, char in enumerate(text):
-        if char == '<':
-            depth += 1
-        elif char == '>':
-            depth -= 1
-        elif char == ',' and depth == 0:
-            parts.append(text[start:index].strip())
-            start = index + 1
-    if text[start:].strip():
-        parts.append(text[start:].strip())
-    return parts
-
-
-def signature(declaration, language):
-    if language != 'cpp':
-        raise UnsupportedSignature('unsupported adapter language: ' + language)
-    # HumanEval-X declarations can include helper functions before the target.
-    without_comments = re.sub(r'/\*.*?\*/|//[^\n]*', '', declaration, flags=re.S)
-    without_literals = re.sub(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'', lambda m: ' '*len(m.group()), without_comments)
-    depths, depth = [], 0
-    for char in without_literals:
-        depths.append(depth)
-        depth += (char == '{') - (char == '}')
-    function_depth = 0
-    matches = [m for m in re.finditer(r'([\w:<> ,]+)\s+(\w+)\s*\(([^()]*)\)\s*(?:throws\s+[\w., ]+)?\s*\{', without_literals)
-               if depths[m.start()] == function_depth and m.group(2) not in ('for','if','while','switch','catch')]
-    if not matches:
-        raise UnsupportedSignature('unsupported function declaration')
-    match = matches[-1]
-    if re.search(r'[*&\[\]=]', match.group(3)):
-        raise UnsupportedSignature('unsupported pointer/reference/array/default parameter')
-    parameters = []
-    for parameter in split_parameters(match.group(3)):
-        parsed = re.fullmatch(r'(.+[\s>])([A-Za-z_]\w*)\s*', parameter)
-        if parsed is None:
-            raise UnsupportedSignature('unsupported parameter: ' + parameter)
-        type_name, name = parsed.groups()
-        type_name = re.sub(r'\b(?:const|final)\s+', '', type_name).strip()
-        parameters.append((type_name, name))
-    return match.group(2), parameters, 'static' in match.group(1).split()
-
-
-def value_literal(kind, value, language):
-    if language != 'cpp':
-        raise UnsupportedSignature('unsupported adapter language: ' + language)
-    kind = kind.replace('std::', '').strip()
-    if len(json.dumps(value, ensure_ascii=True, allow_nan=False)) > 16000:
-        raise UnsupportedSignature('argument literal exceeds limit')
-    if kind in ('bool',):
-        if type(value) is not bool:
-            raise UnsupportedSignature('expected boolean')
-        return 'true' if value else 'false'
-    if kind in ('int', 'long', 'long long', 'short'):
-        bits = 64 if kind in ('long', 'long long') else 32
-        if type(value) is not int or not -(2 ** (bits - 1)) <= value < 2 ** (bits - 1):
-            raise UnsupportedSignature('integer type/range mismatch')
-        suffix = 'LL' if kind in ('long', 'long long') else ''
-        return str(value) + suffix
-    if kind in ('float', 'double'):
-        if type(value) not in (int, float) or not math.isfinite(value):
-            raise UnsupportedSignature('expected finite number')
-        if kind.lower() == 'float' and abs(value) > 3.402823466e38:
-            raise UnsupportedSignature('float range mismatch')
-        return repr(float(value)) + ('f' if kind.lower() == 'float' else '')
-    if kind in ('string',):
-        if not isinstance(value, str) or any(0xD800 <= ord(c) <= 0xDFFF for c in value):
-            raise UnsupportedSignature('expected valid Unicode string')
-        # Fixed-width octal bytes avoid C++ hex escapes consuming the next digit.
-        encoded = ''.join('\\%03o' % byte for byte in value.encode('utf-8'))
-        return f'std::string{{"{encoded}", {len(value.encode("utf-8"))}}}'
-    generic = re.fullmatch(r'(vector|map)<(.+)>', kind)
-    if generic:
-        container, types = generic.groups()
-        arguments = split_parameters(types)
-        if container in ('vector',):
-            if not isinstance(value, list) or len(value) > 1000 or len(arguments) != 1:
-                raise UnsupportedSignature('expected bounded list')
-            items = ', '.join(value_literal(arguments[0], item, language) for item in value)
-            return f'std::vector<{types}>{{{items}}}'
-        if not isinstance(value, dict) or len(arguments) != 2 or len(value) > 1000:
-            raise UnsupportedSignature('expected bounded map')
-        pairs = [(value_literal(arguments[0], key, language), value_literal(arguments[1], item, language)) for key, item in value.items()]
-        return f'std::map<{types}>{{' + ', '.join('{' + k + ', ' + v + '}' for k, v in pairs) + '}'
-    raise UnsupportedSignature('unsupported parameter type: ' + kind)
-
-
-def serialize_call(declaration, arguments, language):
-    name, parameters, is_static = signature(declaration, language)
-    if not isinstance(arguments, dict) or set(arguments) != {name for _, name in parameters}:
-        raise UnsupportedSignature('arguments do not match declaration')
-    values = [value_literal(kind, arguments[name], language) for kind, name in parameters]
-    return name + '(' + ', '.join(values) + ')'
 
 
 def sandbox(command, directory, timeout, *, result_directory=None):
@@ -159,39 +61,22 @@ def sandbox(command, directory, timeout, *, result_directory=None):
 def execute_program(task, source, calls, *, timeout=8, base=False):
     """Return independent input receipts; generated source stays inside the sandbox."""
     language = task['language']
-    if language not in ('python', 'cpp'):
+    if language != 'python':
         raise UnsupportedSignature('unsupported adapter language: ' + language)
+    if not base:
+        builder = CallBuilder.for_source(task['declaration'], task['entry_point'])
     with tempfile.TemporaryDirectory(prefix='concepttester-language-') as temporary:
         directory = Path(temporary)
-        if language == 'python':
-            shutil.copyfile(Path(__file__).with_name('python_worker.py'), directory / 'worker.py')
-            (directory / 'program.py').write_text(source)
-            command = [str(Path(sys.executable).resolve()), '-I', '-S', '/work/worker.py']
-        else:
-            if not shutil.which('g++'):
-                return {'status':'unsupported_environment', 'tests':[]}
-            harness = Path(__file__).with_name('harness.cpp').read_text()
-            code = source + '\n' + (task['example_test'] if base else harness)
-            if not base:
-                call_text = [serialize_call(task['declaration'], a, language) for a in calls]
-                body = '\n'.join(f'case {i}: ct_write({call}); break;' for i, call in enumerate(call_text))
-                code = code.replace('/* CALLS */', body)
-            (directory / 'main.cpp').write_text(code)
-            compiled = sandbox(['g++', '-std=c++17', '-O0', 'main.cpp', '-o', 'main', '-lcrypto'], directory, 30)
-            if compiled['status'] != 'ok':
-                return {'status':'compile_timeout' if compiled['status']=='timeout' else 'compile_error',
-                        'tests':[], 'compiler':'g++', 'detail':compiled.get('detail')}
-            command = ['./main']
+        shutil.copyfile(Path(__file__).with_name('python_worker.py'), directory / 'worker.py')
+        (directory / 'program.py').write_text(source)
+        command = [str(Path(sys.executable).resolve()), '-I', '-S', '/work/worker.py']
         results = []
-        for index, arguments in enumerate([{}] if base else calls):
-            if language == 'python':
-                builder = CallBuilder.for_source(task['declaration'], task['entry_point'])
-                record = builder.build(arguments) if not base else {}
-                (directory / 'job.json').write_text(json.dumps({'entry':task['entry_point'], 'input':record,
-                    'base':task['test'] if base else None}))
+        for arguments in [{}] if base else calls:
+            record = builder.build(arguments) if not base else {}
+            (directory / 'job.json').write_text(json.dumps({'entry':task['entry_point'], 'input':record,
+                'base':task['test'] if base else None}))
             with tempfile.TemporaryDirectory(prefix='concepttester-result-') as output:
-                observation = sandbox(command + ([] if language == 'python' else [str(index)]), directory,
-                                      timeout, result_directory=Path(output))
+                observation = sandbox(command, directory, timeout, result_directory=Path(output))
                 if observation['status'] != 'ok':
                     results.append(observation)
                     continue

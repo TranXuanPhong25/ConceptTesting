@@ -13,7 +13,7 @@ from final.src.modular.call_builder import CallBuilder
 from final.src.modular.response_json import load_response_json
 from final.src.runtime.artifacts import digest, save
 from .datasets import DatasetLoader
-from .language_runtime import execute_program, serialize_call, equivalent
+from .language_runtime import execute_program, equivalent
 
 
 DEFAULTS = {'dataset':'mbpp', 'candidate_path':'', 'task_numbers':[],
@@ -54,16 +54,13 @@ def normalize(values):
 
 def adapter_task(row):
     task = dict(row)
-    if task['language'] == 'python':
-        tree = ast.parse(task['canonical_solution'])
-        function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == task['entry_point'])
-        # Only interface metadata, never the reference implementation, is visible.
-        stub = ast.FunctionDef(name=function.name, args=function.args, body=[ast.Pass()], decorator_list=[], returns=None)
-        declaration = ast.unparse(ast.fix_missing_locations(stub))
-        CallBuilder.for_source(declaration, task['entry_point'])
-        task.update(declaration=declaration, reference_source=task['canonical_solution'], example_test=task['test'])
-    else:
-        task['reference_source'] = task['prompt'] + task['canonical_solution']
+    tree = ast.parse(task['canonical_solution'])
+    function = next(node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == task['entry_point'])
+    # Only interface metadata, never the reference implementation, is visible.
+    stub = ast.FunctionDef(name=function.name, args=function.args, body=[ast.Pass()], decorator_list=[], returns=None)
+    declaration = ast.unparse(ast.fix_missing_locations(stub))
+    CallBuilder.for_source(declaration, task['entry_point'])
+    task.update(declaration=declaration, reference_source=task['canonical_solution'], example_test=task['test'])
     return task
 
 
@@ -151,10 +148,7 @@ def decode(task, response, budget):
     for index, row in enumerate(records[:budget]):
         try:
             arguments = row['arguments']
-            if task['language']=='python':
-                CallBuilder.for_source(task['declaration'], task['entry_point']).build(arguments)
-            else:
-                serialize_call(task['declaration'], arguments, task['language'])
+            CallBuilder.for_source(task['declaration'], task['entry_point']).build(arguments)
             key = digest(arguments)
             if key in seen:
                 raise ValueError('duplicate input')
@@ -230,8 +224,6 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
         number = int(task['task_id'].split('/')[1]); prefix = f'tasks/{number}'
         if not programs or batches.get('skip'):
             result = {'task_id':task['task_id'], 'skip':'no_base_pass' if not programs else batches['skip']}
-        elif task['task_id'] == 'CPP/32':
-            result = {'task_id':task['task_id'], 'skip':'non_unique_root_oracle_not_supported'}
         else:
             union, indices = input_union(batches)
             def reference_execution():

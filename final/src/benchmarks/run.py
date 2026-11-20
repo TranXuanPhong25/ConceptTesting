@@ -32,7 +32,7 @@ def prepare(values, directory):
     directory.mkdir(parents=True)
     runtime = directory / 'runtime'
     sources = [p for p in (ROOT/'final/src').rglob('*')
-        if p.is_file() and 'tests' not in p.parts and '__pycache__' not in p.parts and p.suffix in ('.py','.json','.cpp','.java')]
+        if p.is_file() and 'tests' not in p.parts and '__pycache__' not in p.parts and p.suffix in ('.py','.json')]
     sources += [ROOT/'final/__init__.py', ROOT/'final/data/humaneval.jsonl', ROOT/'final/data/contracts.json', *DATA.glob('*')]
     hashes = {}
     for source in sources:

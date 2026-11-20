@@ -18,13 +18,12 @@ from final.src.runtime.contracts import parse_json
 from final.src.runtime.execution import ExecutionError, execute
 from ..models import create_model
 from .datasets import DatasetLoader
-from .language_runtime import execute_program
 from .pipeline import adapter_task
 logger = logging.getLogger(__name__)
 
 
 def build_messages(task, count):
-    language = {"python": "Python", "cpp": "C++"}[task.get("language", "python")]
+    language = "Python"
     prompt = f"""
         Implement this specification in {language}. Return up to {count}
         solutions as one JSON object: {{"programs":[{{"approach":"algorithm description",
@@ -85,11 +84,10 @@ def generate_puts(model, task, *, count=10, seed=20261030):
                 raise ValueError("Invalid source or approach")
             if not candidate["code"].strip():
                 raise ValueError("Empty source")
-            if task.get("language", "python") == "python":
-                tree = ast.parse(candidate["code"])
-                if not any(isinstance(node, ast.FunctionDef) and node.name == task["entry_point"]
-                           for node in tree.body):
-                    raise ValueError("Missing entry point")
+            tree = ast.parse(candidate["code"])
+            if not any(isinstance(node, ast.FunctionDef) and node.name == task["entry_point"]
+                       for node in tree.body):
+                raise ValueError("Missing entry point")
         except (ValueError, SyntaxError, RecursionError, TypeError, KeyError) as error:
             logger.warning("Skipping invalid PUT: %s", type(error).__name__)
             continue
@@ -100,15 +98,6 @@ def generate_puts(model, task, *, count=10, seed=20261030):
 
 def run_base_tests(task, program, *, timeout=8, seed=20261030):
     """Run one PUT's base tests in the existing sandbox and return its outcome."""
-    if task.get("language", "python") != "python":
-        outcome = execute_program(task, program["code"], [], timeout=timeout, base=True)
-        if outcome["status"] == "ok":
-            if len(outcome["tests"]) != 1:
-                raise ExecutionError("Base test sandbox returned an invalid observation count")
-            status = outcome["tests"][0]["status"]
-            outcome["status"] = "pass" if status == "ok" else status
-        logger.info("Base tests: %s", outcome["status"])
-        return outcome
     context, base = task["prompt"], task["test"]
     if "tests" in task:
         context = task["declaration"]
