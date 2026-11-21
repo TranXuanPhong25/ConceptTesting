@@ -94,11 +94,19 @@ def test_invalid_calls_are_saved_and_rejected_without_execution(tmp_path, monkey
     assert artifacts.read("tasks/7/inputs.json")["arms"]["new_method"]["inputs"][0]["args"] == arguments
 
 
-def test_saved_inputs_are_loaded_despite_generator_configuration_changes(tmp_path):
+def test_saved_inputs_are_loaded_despite_generator_configuration_changes(tmp_path, monkeypatch):
     path = write_cohort(tmp_path / "cohort.json")
     artifacts = ArtifactStore(tmp_path / "run")
     BenchmarkPipeline(path, artifacts, input_generator=SavedInputsGenerator(),
                       settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})
+    write = artifacts.write
+
+    def reject_input_rewrite(relative_path, data):
+        if relative_path == "tasks/7/inputs.json":
+            pytest.fail("Rewrote the saved inputs checkpoint")
+        return write(relative_path, data)
+
+    monkeypatch.setattr(artifacts, "write", reject_input_rewrite)
     changed = SavedInputsGenerator("([10, 11],)")
     BenchmarkPipeline(path, artifacts, input_generator=changed,
                       settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})

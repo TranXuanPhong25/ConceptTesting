@@ -19,15 +19,16 @@ class InputGenerationStage(PipelineStage):
 
     def run(self, context):
         path = context.task_directory + "/inputs.json"
-        if context.artifacts.exists(path):
+        use_saved_inputs = context.artifacts.read_only or context.artifacts.exists(path)
+        if use_saved_inputs:
             result = context.artifacts.read(path)
         else:
-            if context.artifacts.read_only:
-                raise FileNotFoundError(f"Read-only replay requires {path}")
             result = self.input_generator.generate(context)
         # VALIDATION START: every producer uses the same reference-input contract.
         validate_generated_inputs(result, task_id=context.task["task_id"], input_budget=context.settings.input_budget)
         # VALIDATION END: every producer uses the same reference-input contract.
-        context.artifacts.write(path, result)
-        # Keep the JSON representation consumed by reference execution.
-        context.inputs = context.artifacts.read(path)
+        if not use_saved_inputs:
+            context.artifacts.write(path, result)
+            # Keep the JSON representation consumed by reference execution.
+            result = context.artifacts.read(path)
+        context.inputs = result
