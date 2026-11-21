@@ -1,0 +1,42 @@
+@startuml
+!include thesis-style.iuml
+!pragma layout smetana
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  BackgroundColor white
+  BorderColor #899C9E
+  FontColor #172D31
+}
+skinparam nodesep 30
+skinparam ranksep 23
+
+rectangle "CFG" as CFG {
+  rectangle "Vào hàm" as C0 #F1F6F6
+  rectangle "1   kq = 0" as C1 #F1F6F6
+  rectangle "2   x > 0?" as C2 #FFF5DD
+  rectangle "3   kq = x + 1" as C3 #F1F6F6
+  rectangle "4   return kq" as C4 #F1F6F6
+  rectangle "Ra khỏi hàm" as C5 #F1F6F6
+  C0 -down-> C1
+  C1 -down-> C2
+  C2 -down-> C3 : đúng
+  C2 -right-> C4 : sai
+  C3 -down-> C4
+  C4 -down-> C5
+}
+rectangle "DFG" as DFG {
+  rectangle "Vào hàm\ndef(x)" as D0 #F1F6F6
+  rectangle "1   def(kq)" as D1 #F1F6F6
+  rectangle "2   x > 0?" as D2 #FFF5DD
+  rectangle "3   def(kq)\nc-use(x)" as D3 #F1F6F6
+  rectangle "4   c-use(kq)" as D4 #F1F6F6
+  rectangle "Ra khỏi hàm" as D5 #F1F6F6
+  D0 -down-> D1
+  D1 -down-> D2
+  D2 -down-> D3 : đúng\np-use(x)
+  D2 -right-> D4 : sai\np-use(x)
+  D3 -down-> D4
+  D4 -down-> D5
+}
+C0 -[hidden]right-> D0
+@enduml

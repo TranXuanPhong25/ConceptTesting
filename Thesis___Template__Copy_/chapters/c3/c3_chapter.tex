@@ -1,135 +1,147 @@
-\chapter{Phân tích và thiết kế hệ thống}
+\chapter{Phương pháp sinh và đánh giá dữ liệu kiểm thử}
 \label{chap:method}
 
-ConceptTester tổ chức việc sinh input, kiểm tra miền và đánh giá PUT thành các bước có artifact riêng. Thiết kế tách dữ liệu model được xem khi sinh test khỏi kết quả reference dùng để chấm. Chương này mô tả các interface và cơ chế của snapshot tạo ra run Gemini ngày 12/11/2026. Nhánh Control-flow của snapshot dùng Hypothesis; những thay đổi symbolic trong working tree sau đó không thuộc phương pháp được đánh giá ở Chương~\ref{chap:experiment}.
+Một đầu vào mới có thể đến từ quy tắc trong đặc tả hoặc từ một vị trí mà test cơ sở chưa đi qua. EP/BVA trả về danh mục lớp, biên (\textit{catalogue}) và các bộ đối số tương ứng. DT sinh bộ đối số riêng cho các tổ hợp điều kiện. Với ControlFlow, mã PUT cho biết vị trí cần thử và trace cho biết đầu vào đã đi tới đó hay chưa. Chương~\ref{chap:experiment} hợp phát hiện theo định danh PUT rồi đối chiếu với baseline Naive LLM.
 
-\section{Yêu cầu và các ca sử dụng}
+\section{Sinh và cố định bộ PUT}
+\label{sec:put-generation}
 
-Người thực hiện thí nghiệm chọn task, arm, model và budget. Hệ thống phải lưu các giá trị thực sự áp dụng, giữ response đã nhận và cho phép tìm từ một detection về input cùng hai observations xác nhận. Các chức năng chính gồm chuẩn bị run, sinh và đánh giá dữ liệu, xem kết quả, tiếp tục run gián đoạn và replay chỉ đọc.
+Bộ PUT bắt đầu từ 164 đề HumanEval. Với từng đề, hệ thống dùng Qwen3.5-27B-AWQ để tạo tối đa 10 cài đặt Python sau lọc. Prompt đưa nguyên chữ ký và mô tả công khai của hàm, kể cả ví dụ đi kèm. Qwen được yêu cầu viết mã hoàn chỉnh, giữ chữ ký và xử lý các trường hợp biên. Phản hồi JSON ghép mã của mỗi lời giải với mô tả ngắn về cách làm. Mô tả này giúp các lượt sau nhận ra thuật toán hoặc cách duyệt đã có trong bộ.
 
-Khi chuẩn bị run, người dùng chọn cohort và các giới hạn. Hệ thống kiểm tra task IDs, arm hợp lệ, context/completion budget và thư mục output. Khi thực thi, hệ thống ghi cấu hình và source snapshot trước khi gọi model. Khi xem kết quả, người dùng đọc số input hợp lệ, số PUT/task có detection và usage; các phần thiếu dữ liệu phải giữ trạng thái pending. Khi resume, lịch sử attempts và response cũ được bảo toàn. Replay phải từ chối dữ liệu thiếu thay vì tự gọi model hoặc chạy PUT để bù.
+Nếu một bài mới giữ được bảy PUT, lượt kế tiếp sẽ xin ba lời giải. Giới hạn mỗi lượt là năm, còn toàn bài có tối đa mười lượt để đạt mốc mười cài đặt. Để tránh sinh lại cùng một cách làm, prompt mới chứa mã và mô tả của tối đa ba lời giải vừa giữ. Với các lời giải cũ hơn, mô hình chỉ nhận phần mô tả. Mỗi lượt dùng temperature \(0{,}9\) và giới hạn đầu ra 3.072 token.
 
-Dữ liệu do model sinh phải qua kiểm tra cấu trúc và chữ ký hàm. Input bị loại cần lý do cụ thể. Lỗi catalogue được ghi riêng để một input hợp lệ vẫn có thể được đánh giá. Đối với thực thi, runtime giới hạn tài nguyên, không truyền credentials và phân biệt lỗi hạ tầng với failure của PUT. Những yêu cầu này chi phối các ranh giới module trong Hình~\ref{fig:architecture}.
+Trên HumanEval/0, Qwen trả năm lời giải ở mỗi lượt và hệ thống giữ cả mười. PUT 0 sắp xếp danh sách rồi so hai phần tử kề nhau. PUT 1 dùng hai vòng lặp để so mọi cặp. Cả hai vượt test cơ sở. Nếu một lời giải khác chỉ đổi tên biến của PUT 1 thì cần loại nó trước bước chấm. Bộ lọc đọc JSON, kiểm phần mô tả, phân tích cú pháp và tìm hàm chính ở cấp mô-đun. Sau đó, nó chuẩn hóa tên biến, tên hàm phụ và bỏ phần không ảnh hưởng đến dấu vân tay cấu trúc, chẳng hạn chú thích kiểu, chuỗi mô tả và một số import không dùng. Hệ thống băm cây đã chuẩn hóa rồi bỏ lời giải có cùng mã băm với lời giải đã giữ của bài. Hai cây khác nhau vẫn có thể biểu diễn cùng một thuật toán.
 
-\section{Kiến trúc tổng thể}
+Mỗi PUT còn lại chạy bộ test HumanEval gốc trong sandbox, giới hạn ba giây cho cả bộ test của một cài đặt. Bản ghi chứa mã nguồn, các lời gọi thực tế, dòng và cạnh đã phủ, cùng trạng thái đạt, trượt phép kiểm, phát sinh ngoại lệ hoặc hết giờ. Các PUT trượt vẫn cần cho điểm base. Chỉ khi bộ PUT đã chốt, Qwen và Gemini mới sinh test bổ sung. Vì vậy, các cấu hình có thể đối chiếu trên cùng bộ mã. Bảng~\ref{tab:base-screen} ghi số PUT ở từng bước.
 
-\begin{figure}[htbp]
+\section{Từ một task đến ngữ cảnh sinh input}
+\label{sec:preparation}
+
+\begin{figure}[!htbp]
 \centering
-\input{figures/design/architecture}
-\caption{Các thành phần của prototype và dữ liệu trao đổi giữa chúng. Sơ đồ do đề tài xây dựng từ implementation.}
+\includegraphics[width=\linewidth,height=.68\textheight,keepaspectratio]{diagrams/pipeline.pdf}
+\caption{Pipeline đầy đủ từ sinh bộ PUT đến chấm test bổ sung của EP/BVA, DT và ControlFlow.}
 \label{fig:architecture}
 \end{figure}
 
-Lớp điều khiển nhận cấu hình và quản lý vòng đời run. CLI cho phép chọn backend và arm; Prefect cung cấp giao diện preset và lịch sử. Console hiện dùng backend Qwen, còn run Gemini được thực hiện bằng runner riêng qua Vertex AI rồi ghi hồ sơ vào Prefect. Do đó, việc có record Gemini trong Prefect không có nghĩa form console đã có selector Vertex.
+Bước chuẩn bị đọc bộ PUT và kết quả base test đã lưu (Hình~\ref{fig:architecture}). Một bài đi tiếp nếu ban đầu có đủ mười cài đặt và ít nhất một cài đặt vượt test cơ sở. Trong bài đó, chỉ các PUT đã vượt test cơ sở được chấm trên input mới.
 
-Lớp sinh input gồm các arm và logic chuẩn bị ngữ cảnh. Lớp đánh giá dùng chung reference, domain checks, dedup và scorer. Runtime phụ trách các lời gọi chương trình trong sandbox. ArtifactStore lưu JSON bất biến trong từng output directory; execution cache dùng SQLite để tái sử dụng kết quả khi identity khớp. Các lớp đọc cùng cấu hình nhưng không chia sẻ trực tiếp credentials với sandbox.
+Khi mã của cả bài vượt giới hạn ngữ cảnh, cần có cách chọn lại đúng tập PUT được đưa vào prompt. Mô-đun sắp xếp các PUT đã đạt bằng giá trị băm của cặp mã task và mã PUT. Nó ghép đặc tả, hợp đồng đầu vào, test công khai và mã đã rút gọn. Bản rút gọn bỏ chú thích cùng chuỗi mô tả nhưng giữ số dòng gốc để đối chiếu với trace. Sau khi gắn hướng dẫn của từng nhánh dùng prompt chung, mô-đun đếm token. Nó bỏ lần lượt PUT cuối danh sách cho đến khi prompt dài nhất, phần trả lời dự trù và 128 token dự phòng cùng vừa cửa sổ ngữ cảnh. Nếu danh sách rỗng, hệ thống lưu lý do bỏ qua bài. Danh sách xuất hiện trong prompt chỉ quyết định mô hình được xem mã nào. Bộ chấm xét mọi PUT đã vượt test cơ sở của bài được nhận.
 
-\subsection{Interface giữa pipeline và phương pháp sinh}
+\subsection{Phần chung của prompt và baseline Naive LLM}
 
-Hình~\ref{fig:interfaces} thể hiện các quan hệ ở mức interface. \texttt{BenchmarkPipeline} phụ thuộc vào \texttt{InputGenerator}; generator trả các batch mang tên arm thay vì buộc core xử lý từng thuật toán riêng. \texttt{MethodInputGenerator} là adapter gọi các methods và gắn những measurement stages cần thiết.
+Naive LLM là baseline sinh trực tiếp từ đặc tả, ràng buộc miền, test cơ sở và mã PUT. Đặc tả cho biết đầu vào nào có nghĩa. Test cơ sở giúp tránh thử lại một lời gọi đã có, còn mã PUT giúp nhận ra chỗ các cài đặt có thể hiểu khác đặc tả. Nếu nhiều PUT cùng trả về một kết quả, kết quả đó vẫn phải được kiểm bằng tham chiếu. EP/BVA và DT dùng phần ngữ cảnh này rồi thêm hướng dẫn chọn ca theo kỹ thuật tương ứng.
 
-\begin{figure}[htbp]
+Một tham số danh sách được biểu diễn bằng một mảng JSON dưới đúng tên tham số. Cách ghi này giúp bộ giải mã phân biệt một giá trị danh sách với nhiều đối số. Với tuple và set, phản hồi dùng thêm thẻ kiểu để khôi phục đúng đối tượng Python. Mô hình có thể gửi ít input hơn giới hạn để tránh điền cho đủ bằng lời gọi trùng. Sau khi chốt đối số, hệ thống lấy đáp án từ bản tham chiếu để việc chấm độc lập với cách mô hình chọn ca.
+
+\section{EP và BVA trong cùng một lần sinh}
+\label{sec:ep-bva}
+
+\begin{figure}[!htbp]
 \centering
-\input{figures/design/interfaces}
-\caption{Các interface chính và quan hệ gọi ở mức module. Đây là sơ đồ lớp rút gọn, không liệt kê toàn bộ trường và phương thức.}
-\label{fig:interfaces}
+\includegraphics[width=.90\linewidth,height=.52\textheight,keepaspectratio]{diagrams/ep-bva.pdf}
+\caption{Từ lớp tương đương đến giá trị biên. Các bước trong khung là yêu cầu gửi trong cùng một prompt.}
+\label{fig:ep-bva}
 \end{figure}
 
-\texttt{TaskContext} mang dữ liệu của một task qua các stage: đặc tả, metadata, settings, cohort record, packet, inputs, oracle và result. Cờ \texttt{inputs\_frozen} chỉ cho phép reference chạy sau khi ghi freeze. Tập \texttt{completed\_stages} hỗ trợ kiểm tra dependency; trường \texttt{extensions} chứa measurement hoặc cache receipts mà không thay schema kết quả chung.
+\subsection{EP chọn lớp theo hành vi}
 
-\texttt{ModelCalls} cung cấp đếm token và completion. Lớp ghi nhận model calls lưu request, response và attempts. \texttt{ArtifactStore} cung cấp read/write và chế độ read-only. Khi nội dung artifact đã tồn tại khác nội dung định ghi, hệ thống báo lỗi thay vì thay kết quả cũ. Thiết kế này khiến việc đổi source hoặc config cần output directory mới.
+Cả ngày 31 tháng 4 lẫn ngày 31 tháng 5 đều truyền được dưới dạng chuỗi. Hàm kiểm tra ngày phải từ chối ngày thứ nhất và chấp nhận ngày thứ hai. Hai ca cần thuộc hai lớp dù từng trường ngày và tháng cùng nằm trong các khoảng số quen thuộc. Vì vậy, phần EP của prompt yêu cầu đọc quan hệ giữa các tham số, gom đầu vào theo quy tắc xử lý rồi chọn đại diện cho mỗi lớp (Hình~\ref{fig:ep-bva}).
 
-\section{Chuẩn bị cohort và ngữ cảnh}
+Ví dụ về bộ lọc phiên bản đi kèm prompt cho thấy khi nào nên tách một lớp để kiểm một giả thuyết lỗi. Với ngưỡng từ 2.0, thêm bản chính thức 1.9 vào danh sách chỉ có bản thử 2.1a1 vẫn phải giữ 2.1a1. Bản 1.9 không qua ngưỡng, nên sau khi lọc vẫn chưa có bản chính thức phù hợp. Một cài đặt loại bản thử ngay khi thấy 1.9 sẽ cho kết quả khác giữa hai danh sách. Ví dụ lấy từ miền khác để mô hình áp dụng cách suy luận vào bài đang xét. Mô hình có thể lưu giả thuyết về thứ tự lọc cùng mô tả lớp~\cite{packagingVersions}.
 
-Cohort chứa các cài đặt đã sinh trước đó cùng kết quả base tests. Pipeline hiện tại đọc cohort đã cố định; so sánh các arm không sinh lại PUT. Một task được nhận nếu có đủ số cài đặt theo cấu hình và ít nhất một cài đặt vượt base tests. Thiếu số cài đặt được ghi \texttt{generation\_shortfall}; không có base-pass PUT được ghi \texttt{no\_base\_pass}. Các trạng thái này khác với lỗi generation trong lần sinh input đang đánh giá.
+\subsection{BVA chọn đại lượng và giữ bối cảnh}
 
-Với task đủ điều kiện, bước chuẩn bị tạo packet từ spec, contract, base tests và các PUT được phép xuất hiện trong prompt. Thứ tự visible PUTs được xác định bằng hash của task/PUT ID. Khi prompt quá dài, hệ thống bớt PUTs ở cuối thứ tự đó cho tới khi đủ chỗ cho prompt, completion cap và 128 tokens dự phòng. Các arm dùng shared prompt được kiểm cùng lúc để không có một arm được xem thêm PUT chỉ vì guidance ngắn hơn.
+Để thử cận ngày của tháng 4, thay ngày 29 bằng ngày 30 và giữ nguyên tháng, năm. Nếu đổi cả tháng, hai lời gọi có thể kiểm hai quy tắc khác nhau. Phần BVA của prompt yêu cầu mô hình làm tương tự với các lớp đã xác định. Trước hết, mô hình chọn đại lượng cần thử, cận theo đặc tả và một bộ đối số điển hình. Đại lượng có thể là giá trị số, độ dài chuỗi, số lần xuất hiện của một phần tử hoặc số chuyển từ chuỗi. Với cận nguyên hữu hạn nằm trong miền, chọn giá trị tại cận và giá trị kề phía trong. Miền một phía chỉ có biên ở đầu được đặc tả. Giới hạn kích thước trong lần sinh phục vụ ngân sách tính toán.
 
-Packet giữ \texttt{visible\_put\_ids} và số token của prompt từng arm. Reference code và expected outputs của input mới không nằm trong packet. Số PUT nhìn thấy có thể nhỏ hơn số base-pass PUT được evaluation; giới hạn visibility vì thế phải được lưu như một phần của cấu hình và evidence.
+Trường \texttt{covers} lưu liên kết do mô hình khai báo giữa một bộ đối số với lớp hoặc biên được nhắm tới. Khi gộp các input trùng, hệ thống giữ nguồn của liên kết. EP và BVA dùng chung một tập input trong cấu hình này, nên số PUT phát hiện được tính cho cả nhánh. Phép ablation ở Chương~\ref{chap:experiment} dành các cấu hình riêng để đo từng kỹ thuật.
 
-\section{Các phương pháp sinh dữ liệu}
+\subsection{Kiểm tra lớp và biên trên input được nhận}
 
-\subsection{Plain và hợp đồng output chung}
+Một input được gắn nhãn lớp vẫn cần thỏa điều kiện của lớp đó. Mô-đun catalogue kiểm các trường bắt buộc, mã trùng và thứ tự cận. Nếu lớp khai báo một tập giá trị hoặc một khoảng trên đại lượng xác định được, bộ đo trích đại lượng từ đối số rồi kiểm tư cách thành viên. Nếu lớp có biểu thức điều kiện, bộ đo tính biểu thức trên đối số đã gắn tên. Với lớp chỉ có mô tả bằng lời, nhãn giữ nguyên như thông tin do mô hình khai báo và kết quả đo để ở trạng thái chưa xác định.
 
-Plain yêu cầu LLM tạo tối đa số input trong budget từ spec, contract và visible PUTs. Phản hồi dùng JSON gồm danh sách \texttt{inputs}; mỗi record cung cấp \texttt{arguments} theo đúng tên tham số. Model không tạo assertion hoặc expected output. Với hàm \path{has_close_elements}, một record đã lưu có \path{numbers=[1.0,1.0]} và \path{threshold=0.1}.
+Một phần tử thay đổi trong danh sách có thể giữ nguyên độ dài nhưng làm đổi số lần xuất hiện của giá trị đang xét. Vì vậy, khi kiểm BVA, bộ đo so cả các đại lượng rút ra từ cùng một tham số với bộ đối số danh định. Nó tính mốc tại các cận hữu hạn, tìm giá trị kề và kiểm mốc trong bối cảnh đã khai báo. Với số thực, bước nhảy lấy từ đặc tả nếu có. Trường hợp còn lại dùng giá trị biểu diễn được liền kề. Nếu catalogue thiếu đại lượng hoặc bộ danh định, bộ đo ghi phần chưa kiểm được.
 
-\texttt{CallBuilder} đọc chữ ký từ AST, gắn giá trị theo tên tham số rồi tạo literal cho args/kwargs. Việc đọc chữ ký không thực thi source hoặc annotations. Builder kiểm tham số thừa, tham số thiếu, kiểu giá trị được hỗ trợ, số phần tử, độ lồng và số thực hữu hạn. Với ví dụ trên, kết quả nội bộ là \texttt{args="([1.0, 1.0], 0.1)"} và \texttt{kwargs="\{\}"}. Phép parse này tạo lời gọi; domain của bài toán vẫn được kiểm sau đó bằng reference stage.
+\section{DT chọn đầu vào theo bảng quyết định}
+\label{sec:dt}
 
-\subsection{EP+BVA v2 và Decision Table v2}
-
-Hai arm v2 dùng phần ngữ cảnh chung nhưng bổ sung guidance và một soft example từ miền khác. EP+BVA v2 yêu cầu các lớp hành vi và biên; DT v2 yêu cầu điều kiện, quy tắc và hành động. Một completion chứa cả catalogue lẫn inputs. Trường \texttt{covers} có thể liên kết input với obligation ID; Fault Hypotheses là annotation tùy chọn do model đề xuất, chưa phải fault đã xác minh.
-
-Decoder kiểm catalogue bằng Pydantic và các mechanical checks, như ID trùng, lớp interval chồng lấn hoặc quan hệ giữa original rules và merged rules. Record có arguments hợp lệ vẫn được giữ nếu catalogue lỗi. Vì thế, \texttt{catalogue\_invalid} có thể đi cùng valid inputs và detections. Sau domain/reference checks, measurement chỉ xét các input còn sống; nó phân biệt model tự khai báo coverage với coverage có metadata đủ để kiểm bằng máy.
-
-V2 thay đổi cả guidance và example. Kết quả của v2 đo cả cấu hình đó; chưa có cơ sở quy phần tăng hoặc giảm riêng cho Fault Hypotheses. Nếu thiếu metadata để kiểm ngữ nghĩa lớp, biên hoặc rule, trạng thái đo giữ pending.
-
-\subsection{Control-flow có feedback giới hạn}
-
-Hình~\ref{fig:cf-mechanism} mô tả Control-flow của snapshot thí nghiệm. Từ visible base-pass PUTs, bộ phân tích kết hợp CFG/coverage để tìm C1/C2 targets chưa được base evidence quan sát, kèm static def-use hints khi công cụ hỗ trợ. Nếu thiếu coverage lưu sẵn, arm có thể trace các base calls đã ghi; thiếu evidence không được chuyển thành coverage bằng 0.
-
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\input{figures/design/control-flow}
-\caption{Vòng sinh và kiểm tra candidates của Control-flow trong snapshot Hypothesis. Feedback chỉ chứa domain và coverage observations.}
+\includegraphics[width=.90\linewidth,height=.51\textheight,keepaspectratio]{diagrams/dt.pdf}
+\caption{Từ điều kiện trong đặc tả đến đối số đại diện cho quy tắc quyết định.}
+\label{fig:dt}
+\end{figure}
+
+Một ca chỉ có khoảng trắng và một ca chỉ có dấu phẩy đều có thể đạt dù cài đặt ưu tiên sai khi gặp cả hai. Prompt DT yêu cầu nêu điều kiện, thứ tự hành động và các tổ hợp cần xét để đưa trường hợp giao nhau vào bảng (Hình~\ref{fig:dt}).
+
+Với mỗi tổ hợp, mô hình ghi nhận nó khả thi, mâu thuẫn với đặc tả hay còn thiếu thông tin. Các tổ hợp mâu thuẫn được nêu rõ để tránh dành ngân sách cho lời gọi không dùng được. Gộp hai quy tắc chỉ phù hợp khi hành động và thứ tự giữ nguyên dưới cả hai giá trị của điều kiện định bỏ. Nếu nghi cài đặt ưu tiên sai, giữ hai input chỉ khác điều kiện quyết định để phân biệt hai hành vi.
+
+Trong ví dụ HTTP của prompt, thẻ phiên bản trong \texttt{If-None-Match} khớp tài nguyên ở cả hai lời gọi. GET nhận mã 304, PUT nhận mã 412~\cite{fielding2022http}. Vì đổi phương thức làm đổi hành động, hai trường hợp cần được giữ riêng. Ví dụ cũng có trường hợp sự xuất hiện của một điều kiện khiến điều kiện về thời gian mất tác dụng. Khi áp dụng vào một task khác, mô hình phải lấy điều kiện và hành động từ đặc tả của task đó.
+
+Phản hồi DT chứa các quy tắc cùng đối số đại diện. Với quy tắc gộp, mô-đun catalogue đối chiếu mã gốc, điều kiện loại trừ và thứ tự hành động. Khi đủ thông tin về miền điều kiện, nó có thể tìm tổ hợp bị bỏ sót hoặc chồng lấn. Bộ đo chỉ xác nhận input thuộc một quy tắc khi biểu thức trên đối số cho thấy tất cả điều kiện bắt buộc đều đúng. Một điều kiện sai đủ để bác liên kết. Khi thiếu biểu thức, \texttt{covers} vẫn là nhãn do mô hình khai báo. Các quy tắc gốc cũng cần được giữ để xác định mẫu số độ phủ.
+
+\section{ControlFlow chọn đích trong mã nguồn}
+\label{sec:control-flow}
+
+\subsection{Tìm dòng và cạnh còn thiếu}
+
+Để gọi một dòng là chưa phủ, ControlFlow cần biết các lời gọi cơ sở đã đi qua đâu. Mô-đun lấy trace lưu sẵn cho mỗi PUT được chọn. Nếu thiếu trace, nó chạy lại các lời gọi cơ sở đã ghi, tối đa 300 lời gọi trên một PUT. Khi vượt giới hạn hoặc kết quả chạy lại thiếu quan sát hợp lệ, độ phủ cơ sở được ghi là chưa xác định.
+
+\textit{coverage.py} đọc mã nguồn để lấy các dòng có thể thực thi, cạnh chuyển dòng và số lối ra. Mô-đun nhóm cạnh theo dòng xuất phát, rồi duyệt theo chiều rộng từ lệnh đầu tiên trong thân hàm sau chuỗi mô tả. Với mỗi dòng mới trong phạm vi hàm, nó giữ đường đầu tiên tìm được. Dòng thực thi có đường tới nhưng vắng trong trace cơ sở trở thành đích C1. Từ một dòng có nhiều lối ra, cạnh nào chưa có trong trace là đích C2. Mỗi đích đi kèm mã PUT, vị trí, đoạn mã và đường gợi ý. Đường tìm trên đồ thị vẫn có thể chứa hai điều kiện mâu thuẫn khi chuyển thành giá trị cụ thể.
+
+\subsection{Cách trích quan hệ def--use bằng python-graphs}
+\label{sec:def-use}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.96\linewidth,height=.59\textheight,keepaspectratio]{diagrams/def-use.pdf}
+\caption{Từ trạng thái lần ghi trên đồ thị tới bộ ba biến, dòng ghi và dòng đọc.}
+\label{fig:def-use}
+\end{figure}
+
+Trong các lần chạy được báo cáo ở Chương~\ref{chap:experiment}, \textit{python-graphs} dựng đồ thị luồng điều khiển từ cây cú pháp (Hình~\ref{fig:def-use}). Mỗi nút nhận tập lần ghi gần nhất có thể tới từ các nút tiền nhiệm. Khi hai nhánh nhập lại, thư viện hợp các tập. Một phép gán thay tập cũ của biến trên đường đi qua phép gán đó. Chừng nào thông tin ở đầu ra của một nút còn đổi, các nút kế tiếp còn được đưa vào hàng đợi. Nhờ vậy, giá trị ghi trong một lượt lặp có thể xuất hiện ở chỗ đọc của lượt kế tiếp~\cite{pythonGraphs,rapps1985}.
+
+Cạnh \texttt{LAST\_WRITE} trong đồ thị chương trình trỏ từ một lần truy cập về lần ghi có thể đứng trước nó. ControlFlow duyệt các cạnh này, giữ cạnh bắt đầu ở một lần đọc tên biến và kết thúc ở lần ghi có số dòng. Sau khi bỏ trùng và sắp xếp, nó xuất bộ ba \emph{tên biến, dòng ghi, dòng đọc}. Thứ tự hai dòng trong bộ ba đi theo luồng giá trị, ngược chiều mũi tên của thư viện.
+
+Ở PUT 0 của HumanEval/0, phép gán ở dòng 6 tạo \texttt{sorted\_nums}. Dòng 7 dùng danh sách để lập số vòng lặp, dòng 8 dùng hai phần tử kề nhau để so khoảng cách với ngưỡng. Vì cùng đọc giá trị từ dòng 6, phân tích ghi \(6\rightarrow7\) và \(6\rightarrow8\). Nếu muốn đi tới dòng 8, cần một danh sách có ít nhất hai phần tử. Khi thư viện gặp PUT mà nó chưa dựng được đồ thị, ControlFlow vẫn có thể dùng bằng chứng dòng và cạnh để chọn đích C1/C2.
+
+\subsection{Prompt khám phá, chạy thử và sửa đề xuất}
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=\linewidth,height=.70\textheight,keepaspectratio]{diagrams/control-flow.pdf}
+\caption{Vòng phản hồi ControlFlow. Thông tin về miền, kết quả kiểm concept và đường chạy giúp mô hình sửa đề xuất.}
 \label{fig:cf-mechanism}
 \end{figure}
 
-Arm chọn tối đa sáu targets theo lượt giữa các PUT để tránh một source chiếm hết budget. LLM nhận targets, source và base evidence rồi đề xuất concept, quan hệ đầu vào, instructions, input cụ thể và có thể kèm predicate/strategy. Predicate là giả thuyết để kiểm tra, không tự xác nhận ý nghĩa concept.
+Một PUT có nhiều nhánh chưa phủ có thể chiếm hết cửa sổ prompt nếu hệ thống lấy mọi đích theo từng PUT. ControlFlow lấy luân phiên giữa các PUT và giới hạn sáu đích trên một task (Hình~\ref{fig:cf-mechanism}). Mỗi PUT được chọn có mã nguồn, tối đa mười hai lời gọi cơ sở và cặp DU nếu phân tích được. Hệ thống bỏ dần đích cuối khi số token vượt cửa sổ. Nếu không còn đích, bản ghi cho biết lý do là các đích đo được đã phủ hết, trace còn thiếu hay prompt thiếu chỗ.
 
-Candidates đến từ input trực tiếp của LLM hoặc Hypothesis lấy mẫu theo strategy đã khai báo. Ledger giữ nguồn của từng candidate. Sau chuẩn hóa và dedup, arm trace candidate trên original PUT trong sandbox với timeout tối đa một giây. Một observation ghi domain, status, lines/arcs và target hits. Candidate làm PUT exception vẫn có thể chứng kiến một nhánh đã đi qua; quan sát coverage đó chưa phải kết quả phát hiện lỗi chức năng.
+Một bộ đối số có thể thỏa phép so sánh cuối mà vẫn bị chặn bởi điều kiện trước đó. Ở lượt đầu, mô hình dùng mã đích và số dòng để tìm đúng vị trí rồi mô tả quan hệ giữa các đối số trên đường tới đó. Phản hồi có thể thêm biểu thức trên tham số và miền lấy mẫu. Khi quan hệ chỉ diễn đạt được bằng lời, trường biểu thức có thể để trống. Một biểu thức hằng đúng không giới hạn được input.
 
-Snapshot giới hạn hai vòng model/task, 64 candidate--PUT checks và tối đa 20 selected inputs/task. Nếu còn target hoặc lỗi hợp đồng, vòng sau nhận các observation hữu hạn của vòng trước. Feedback không chứa reference output, actual return value hay kết luận wrong-value. Khi kết thúc, arm ưu tiên candidates hợp lệ phủ thêm target, rồi bổ sung các candidates còn lại tới budget. Expected outputs chỉ được tạo sau freeze.
+Bộ giải mã đối chiếu mã đích, dòng và chữ ký trước khi nhận các trường của concept. Biểu thức phải dùng cú pháp được phép và phụ thuộc vào tham số. Miền lấy mẫu phải gắn đúng tên tham số của hàm. Hypothesis có thể lấy thêm mẫu từ mô tả đó, chẳng hạn danh sách có giới hạn độ dài và kiểu phần tử. Một input trực tiếp vẫn được xét dù mô tả concept đi kèm có lỗi. Nếu cả hai nguồn đưa cùng bộ đối số, hệ thống thử một lần và lưu cả hai nguồn. Sau khi bỏ lời gọi trùng với test cơ sở, lượt chạy ưu tiên input trực tiếp trong phần ngân sách còn lại.
 
-\section{Freeze, oracle và evaluation}
+Một quan sát là một lần chạy cặp đầu vào và PUT trong sandbox. Với đầu vào hợp lệ, mô-đun dùng dòng thực thi để kiểm đích C1 và cạnh đã đi qua để kiểm đích C2. Cạnh đã được trace có thể xác nhận đích dù ngoại lệ xảy ra sau đó. Phản hồi cho lượt hai nêu đích còn thiếu, lỗi giải mã, kết quả kiểm concept và một số quan sát của lượt trước. Mô hình dựa vào thông tin này để sửa đầu vào. Giá trị trả về và đáp án tham chiếu được giữ riêng cho bước chấm.
 
-\subsection{Luồng xử lý một task}
+ControlFlow dừng khi mọi đích đã được chạm và phản hồi hết lỗi, hoặc khi hết lượt hay ngân sách quan sát. Nó xếp các input hợp lệ theo số đích đã chạm, ưu tiên những input còn thêm đích mới cho tập được giữ. Khi còn chỗ, nhánh bổ sung những input hợp lệ khác. Một đích còn thiếu sau hai lượt phản ánh phạm vi tìm kiếm của lần chạy đó.
 
-Hình~\ref{fig:task-flow} thể hiện thứ tự của một task. Generic pipeline có thể sinh xong toàn cohort rồi freeze; runner Gemini dùng pipeline một task và chuyển task đã freeze sang consumer evaluation. Khi consumer chấm task trước, producer có thể sinh task tiếp theo. Runner lưu receipt cùng hash trước khi submit và không gửi kết quả reference/PUT trở lại producer.
+\section{Chốt dữ liệu, tạo oracle và xác nhận sai khác}
+\label{sec:evaluation-pipeline}
 
-\begin{figure}[p]
+\begin{figure}[!htbp]
 \centering
-\input{figures/design/task-flow}
-\caption{Luồng một task trong run Gemini có producer/consumer. Mọi arm của task phải freeze trước reference.}
+\includegraphics[width=.95\linewidth,height=.63\textheight,keepaspectratio]{diagrams/evaluation.pdf}
+\caption{Hai lượt tham chiếu xác định đáp án, còn lượt chạy lại PUT xác nhận kết quả bất thường.}
 \label{fig:task-flow}
 \end{figure}
 
-Freeze ghi hash của inputs theo task và cohort. Consumer kiểm lại hash và manifest, tải packet/inputs đã lưu rồi mới bật \texttt{inputs\_frozen}. Việc evaluation chạy song song với generation ở task khác không thay barrier của task đang chấm. Native lock giới hạn các phần thực thi dùng chung tài nguyên; overlap không có nghĩa mọi bước CPU đều chạy đồng thời.
+Bộ giải mã thử đọc JSON trước rồi dùng bộ đọc literal Python khi cấu trúc phản hồi cho phép. Literal được đọc như dữ liệu. Từ cây cú pháp, mô-đun lấy chữ ký, gắn đối số theo tên và điền giá trị mặc định đã khai báo. Nó kiểm tham số thừa hoặc thiếu, độ lồng của dữ liệu và số thực hữu hạn. Catalogue có bước kiểm riêng, nên một bộ đối số vẫn có thể được đem chấm dù trường mô tả quy tắc bị lỗi. Bảng~\ref{tab:prompt-fields} chỉ ra trường nào dùng để nối hai phần.
 
-\subsection{Reference và domain admission}
+Chốt input là điểm chuyển sang oracle ở Hình~\ref{fig:task-flow}. Hệ thống kiểm ràng buộc của task rồi chạy bản tham chiếu HumanEval+ hai lần. Một input được giữ nếu cả hai lượt cho cùng khóa đối số, cùng đầu ra và lời gọi chưa xuất hiện trong test cơ sở. Các bản trùng được gộp theo khóa, kèm danh sách nhánh đã sinh input.
 
-Reference stage chọn đúng code, entry point, contract và tolerance của task từ bản HumanEval+ đã ghim. Các input từ các arm được chạy qua reference hai observations với repeat slots riêng. Input được nhận khi cả hai lần có status \texttt{ok}, expected và input key ổn định, đồng thời không trùng base input. Sai miền, reference error và instability đều có lý do loại.
+Mọi PUT vượt test cơ sở đều chạy trên tập input hợp lệ của task. Bộ chấm dùng quy tắc so sánh của task, gồm sai số cho phép với số thực. Nếu lượt đầu sai giá trị, sinh ngoại lệ hoặc hết giờ, nó chạy lại chính input đó với cùng seed. Hai lượt bất thường xác nhận phát hiện. Hai trạng thái khác nhau còn được ghi là thiếu ổn định. Một nhánh phát hiện PUT khi có ít nhất một input của nhánh đạt điều kiện xác nhận.
 
-Bước này hợp các input trùng giữa arms thành một danh sách tests để tránh thực thi lặp. Mapping \texttt{arm\_indices} vẫn giữ arm nào sở hữu input. Nếu một input xuất hiện ở hai arm và làm PUT sai, cả hai arm có thể được ghi detection, còn union chỉ đếm PUT một lần. Metadata survivor theo arm giúp catalogue measurement giữ đúng liên kết sau khi lọc và dedup.
+\subsection{Truy nguyên một phát hiện}
 
-\subsection{Scorer và quy tắc xác nhận}
+Prefect lưu cấu hình của lần chạy. Để kiểm lại một PUT bị tính vào kết quả, tìm task và PUT rồi lấy chỉ số input gây sai khác. Chỉ số này đưa về bộ đối số, kết quả tham chiếu và các nhánh sinh input, đồng thời trỏ tới kết quả lượt chấm đầu. Bản ghi lượt hai chỉ chứa những input đã được chạy lại, nên cần tra vị trí trong danh sách xác nhận. Hai ví dụ ở Mục~\ref{sec:demo} lần theo cách đối chiếu này.
 
-Mọi base-pass PUT của task được chạy trên union valid inputs, kể cả PUT không xuất hiện trong prompt. Evaluator so sánh actual với expected theo quy tắc của task. Lượt đầu chạy toàn bộ tests; lượt xác nhận chỉ chạy những input có status \texttt{fail}, \texttt{error} hoặc \texttt{timeout}. Input pass không có observation thứ hai trong policy này.
-
-Một input được ghi failing khi cả hai observations thuộc nhóm failure statuses. Hai status không bắt buộc giống nhau: fail/error vẫn đáp ứng quy tắc xác nhận nhưng được ghi unstable vì status khác nhau. Unstable chỉ phản ánh những input được retest; đây không phải kết luận về mọi input pass. Kết quả của arm là giao giữa failing indices với \texttt{arm\_indices} của arm đó.
-
-\section{Thiết kế lưu trữ và khả năng tái lập}
-
-\subsection{Mô hình dữ liệu logic}
-
-Hình~\ref{fig:data-model} thể hiện quan hệ logic, không khẳng định prototype có các bảng SQL tương ứng. Run và dữ liệu task chủ yếu nằm trong JSON artifacts; SQLite được dùng cho execution cache và hạ tầng quản lý của Prefect. Một task có nhiều PUT và arm batches. Accepted input được xác định trong task bằng input key; quan hệ nhiều--nhiều giữa arm batch và input được hiện thực bằng \texttt{arm\_indices}.
-
-\begin{figure}[htbp]
-\centering
-\input{figures/design/data-model}
-\caption[Quan hệ dữ liệu logic của run, task và input]{Quan hệ dữ liệu logic của run, task, input và execution observations. Nguồn thuộc arm được giữ ngay cả khi input bị gộp.}
-\label{fig:data-model}
-\end{figure}
-
-Các artifact chính gồm manifest cho source/config identity, packet cho visibility, inputs cho batch đã sinh, freeze record cho input hashes, raw request/response cho model calls và các oracle/evaluation checkpoints. Result giữ failing indices và detection IDs; summary tổng hợp số lượng. Từ result có thể tìm input trong oracle tests và hai execution observations tương ứng.
-
-\subsection{Cache, replay và resume}
-
-Execution cache có bảng \texttt{results(key,payload,checksum)}. Cache key bao gồm program/context, contract, input có giữ type, expected/tolerance, seed, timeout, repeat index và identity của runtime/executor. Hai repeat slots không dùng chung một observation. Timeout không được reuse như một kết quả ổn định.
-
-Checkpoint của run được ưu tiên khi replay. Nếu artifact thiếu, read-only mode báo lỗi; không tra cache rồi thực thi bù. Resume là tiếp tục phần thiếu với budget và attempt history đã lưu, còn rescore dùng input đã freeze để evaluation theo cấu hình mới trong output mới. Rescore có thể chạy reference/PUT khi cache miss, nên phải được coi là workload cần quyền chạy.
-
-\section{Lựa chọn thiết kế và giới hạn}
-
-Tách input generation khỏi oracle giúp tránh để model tối ưu input theo expected outcomes trong quá trình sinh. Phần Control-flow được phép xem coverage/domain feedback trước freeze, nên đây vẫn là phương pháp có thực thi hướng dẫn; barrier chỉ ngăn feedback của reference và kết quả chấm lỗi chức năng.
-
-Dùng chung CallBuilder, domain checks và scorer giảm khác biệt về xử lý giữa arms. Tuy nhiên, prompt, số vòng, sampler và valid yield vẫn khác nhau. Catalogue có thể đúng schema nhưng sai nghĩa; static targets có thể không khả thi; reference có thể không thể hiện hết nhiều đáp án hợp lệ. Những giới hạn này được kiểm tra qua kịch bản và thảo luận kết quả ở Chương~\ref{chap:experiment}.
+Khóa bộ nhớ đệm chứa mã chương trình, kiểu và giá trị đối số, seed, thời hạn và số lượt quan sát. Hai lượt chấm có khóa khác nhau, nhờ đó lượt xác nhận sử dụng kết quả thực sự của lượt hai. Kết quả hết giờ không được tái sử dụng. Khi phục dựng một lần chạy đã xong, hệ thống đọc bản ghi và báo nếu thiếu quan sát cần cho phép kiểm.

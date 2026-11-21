@@ -1,0 +1,17 @@
+@startuml
+!include thesis-style.iuml
+start
+partition "Oracle · sau khi chốt input" {
+  :Kiểm miền và chạy tham chiếu hai lượt;
+  :Loại input lỗi, kết quả không ổn định\nvà input trùng test cơ sở;
+  :Gộp các input còn lại theo khóa,\nghi các nhánh đã sinh từng input;
+}
+partition "Bộ chấm · từng PUT đạt test cơ sở" {
+  :Chạy toàn bộ input còn lại;
+  :Chọn những input sai giá trị, gây ngoại lệ\nhoặc vượt thời hạn;
+  :Chạy lại các input đã chọn với cùng seed;
+  :Giữ các input bất thường ở cả hai lượt,\nđánh dấu riêng trường hợp đổi trạng thái;
+}
+:Gắn PUT với từng nhánh sở hữu input gây sai khác;
+stop
+@enduml

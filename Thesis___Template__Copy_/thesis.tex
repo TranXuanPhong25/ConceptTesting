@@ -10,6 +10,7 @@
     ItalicFont=texgyretermes-italic.otf,
     BoldItalicFont=texgyretermes-bolditalic.otf]
   \renewcommand{\chaptername}{Chương}
+  \renewcommand{\appendixname}{Phụ lục}
   \renewcommand{\contentsname}{Mục lục}
   \renewcommand{\listfigurename}{Danh mục hình}
   \renewcommand{\listtablename}{Danh mục bảng}
@@ -73,6 +74,7 @@
 \titlespacing*{\chapter}{0cm}{-\topskip}{0pt}[0pt]
 
 \renewcommand{\baselinestretch}{1.3}
+\renewcommand{\floatpagefraction}{.84}
 %\renewcommand{\cftsecpresnum}{Chương\space}
 \renewcommand{\cftchappresnum}{Chương }
 \AtBeginDocument{\addtolength\cftchapnumwidth{\widthof{\bfseries Chương }}}
@@ -180,6 +182,7 @@
 \input{chapters/c4/c4_chapter}\newpage\cleardoublepage
 \input{chapters/conclusion}\newpage\cleardoublepage
 \appendix
+\addtocontents{toc}{\protect\renewcommand{\protect\cftchappresnum}{Phụ lục\space}}
 \input{chapters/appendix}\newpage\cleardoublepage
 
 %\nocite{*}

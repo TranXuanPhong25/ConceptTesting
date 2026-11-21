@@ -1,15 +1,14 @@
 \begin{center}
-\textbf{\large{Abstract}	}
+\textbf{\large Abstract}
 \end{center}
-
 \addcontentsline{toc}{chapter}{Abstract}
 \begin{small}
 
-This thesis studies concept-guided test input generation for Python functions using large language models. Test scenarios draw on functional and structural testing criteria. The prototype supports comparison methods, input validation, and records of configurations, model responses, and execution outcomes.
+Python implementations can agree on every base test and still disagree on a new input. This thesis uses large language models to find such inputs. Equivalence partitioning and boundary value analysis share a prompt that asks for class representatives and values near their boundaries. A second approach derives inputs from the rules of a decision table. ControlFlow targets a line or branch the base tests missed and uses execution traces to revise its proposals. The HumanEval+ reference implementation supplies expected results once the input set is fixed.
 
-The selected Gemini run covers 157 eligible tasks with 1,454 programs that pass the base tests. Plain input generation produces 66 detections according to the evaluator. The union of Plain, EP+BVA v2, DT v2, and Control-flow produces 92 detections across 36 tasks. Adding union inputs to the base tests increases the number of programs with full executable-line coverage from 1,050 to 1,193. Full C2 coverage increases from 697 to 865 among the 1,151 programs with branches. These observations describe complementary inputs in this run; they do not establish superiority under an equal budget or confirm that every detection is a specification violation.
+Of 1,454 eligible programs across 157 tasks, the three-branch pipeline found discrepancies in 121 with Qwen-generated tests and in 132 with Gemini-generated tests. On one word-splitting task, a tab helped ControlFlow find eight implementations missed by the other two Qwen branches. Across both generators, the pipeline found 149 distinct programs and the direct-prompting baseline found 120. On the 162 tasks with ten Qwen implementations each, adding the pipeline tests lowered pass@1 from 89.75\% to 80.56\%. The contribution of each branch under a common budget remains open.
 
+\vspace*{.6cm}
+\textbf{Keywords}\quad test input generation, large language models, boundary value analysis, decision tables, branch coverage.
 
-\vspace*{1cm}
-\textbf{Keywords}: software testing; large language models; test input generation; concepts; coverage.
 \end{small}

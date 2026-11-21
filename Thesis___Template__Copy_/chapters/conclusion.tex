@@ -1,22 +1,10 @@
 \chapter*{Kết luận}
 \addcontentsline{toc}{chapter}{Kết luận}
 
-\section*{Kết quả đạt được}
+ConceptTester chọn đầu vào từ đặc tả và mã của những PUT đã vượt test cơ sở. EP/BVA thử đại diện của lớp và các giá trị sát biên. DT chọn các tổ hợp điều kiện có thể làm thay đổi hành động. ControlFlow tìm dòng hoặc cạnh còn thiếu, dùng quan hệ def--use khi có để giải thích giá trị cần đưa tới đích. Một PUT chỉ được tính khi cùng input cho sai khác ở cả hai lượt chấm.
 
-Đề tài xây dựng prototype để thử các cách sinh input bằng LLM có concept hướng dẫn trên cùng một cohort hàm Python. Mỗi run lưu cấu hình, response và kết quả thực thi để kiểm tra lại detections và coverage.
+Một chuỗi có tab cho thấy tác dụng của việc chọn đích trong mã. Trên cùng một bài, nó làm lộ tám PUT mà chỉ ControlFlow Qwen phát hiện. Trên 1.454 PUT đủ điều kiện, hợp ba nhánh cho 121 phát hiện với Qwen và 132 với Gemini. Gộp qua cả hai mô hình, pipeline tìm thêm 44 PUT ngoài Naive LLM. Baseline vẫn có 15 PUT mà pipeline bỏ sót.
 
-Trên run Gemini đã lưu, Plain có 66 detections theo evaluator trên 1.454 PUT, còn union bốn arm có 92 detections thuộc 36 task. Union bổ sung 26 PUT ngoài Plain nhưng không có detection thêm khi đưa Control-flow vào pool Plain, EP+BVA v2 và DT v2. Coverage base cộng union tăng số PUT đạt toàn bộ executable lines từ 1.050 lên 1.193, và số PUT có branch đạt toàn bộ C2 từ 697 lên 865/1.151.
+Base test loại 169 trong 1.634 PUT ban đầu. Khi chấm thêm trên 162 bài đủ mười cài đặt, test có hướng dẫn từ hai mô hình phát hiện thêm 149 PUT từng đạt. Trên cùng bộ mã Qwen, pass@1 giảm từ 89,75\% xuống 80,56\%. Nếu bỏ mười phát hiện phụ thuộc vào cách hiểu Boolean trong một bài, mức giảm còn 8,58 điểm phần trăm. Những sai khác này cho thấy bộ test cơ sở còn chấp nhận các cài đặt cần kiểm tra thêm.
 
-Union tìm thêm detections so với Plain trong cấu hình đã thử. Do pool dùng nhiều arm và có chi phí lớn hơn, kết quả chưa xác định được lợi ích khi cùng budget. Các detection còn cần kiểm tra theo spec trước khi gọi là bug đã xác minh.
-
-\section*{Hạn chế}
-
-Thực nghiệm chỉ xét các hàm Python thuộc cohort HumanEval với model và budget đã công bố. Chưa có đánh giá trên phần mềm nhiều module, có trạng thái hoặc phụ thuộc môi trường. Phép đo coverage hiện xét executable lines và branch arcs trên source trong cohort.
-
-Oracle cần xử lý các bài toán có nhiều đáp án hợp lệ. Số input hợp lệ, số lượt gọi model và sự tham gia của sampler khác nhau giữa các arm; chưa có ablation tách tác động của concept khỏi những yếu tố này. Latency và throughput cũng chưa được đo trong một thiết lập chuẩn hóa.
-
-\section*{Hướng phát triển}
-
-Một hướng tiếp theo là chọn mục tiêu từ những khoảng thiếu còn lại sau khi chạy cả pool đầu vào đã có. Trước khi gửi mục tiêu cho LLM, cần loại các mâu thuẫn có thể xác định từ source và contract. Đầu vào sinh ra cần có witness cho đúng tình huống được mô tả.
-
-Về đánh giá, cần rà oracle ở trường hợp nhiều đáp án, tách failure ngữ nghĩa khỏi lỗi tài nguyên và so sánh các cấu hình có thể cô lập tác động của concept. Các thí nghiệm mở rộng phải xác định cohort, protocol và budget trước khi chạy.
+Mục~\ref{sec:ablation} nêu cách đo riêng từng nhánh hoặc từng kỹ thuật trong EP/BVA với cùng ngân sách. Độ phủ catalogue còn cần bằng chứng rằng input thuộc đúng lớp, biên hoặc quy tắc đã khai báo. Ở các bài có nhiều đáp án hợp lệ, đặc tả vẫn là căn cứ để xác định một sai khác có phải lỗi của PUT hay không.

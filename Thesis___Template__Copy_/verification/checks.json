@@ -1,45 +1,148 @@
 {
-  "date": "2026-11-12",
-  "document_pages": 51,
-  "references": 25,
-  "figures": 6,
-  "tables": 5,
-  "source_snapshot_checked_files": 221,
-  "snapshot_mismatches": [],
-  "per_task_arm_totals_match": true,
-  "union_combinations_match": 15,
-  "per_put_coverage_matches": true,
-  "traces": 11379,
-  "put_timeouts": 10,
-  "case_124_put_7_confirmed": true,
-  "engineering_tests": {
-    "passed": 69,
-    "failed": 0,
-    "seconds": 15.87,
-    "scope": "five contract/runtime test modules; no model calls"
+  "date": "2026-11-21",
+  "document_pages": 46,
+  "references": 21,
+  "figures": 7,
+  "tables": 6,
+  "scope": "HumanEval+. Pipeline đầy đủ gồm EP/BVA, DT và ControlFlow. Naive LLM là baseline riêng.",
+  "scope_of_table": "Chương 2 có bảng quyết định minh họa. Chương 4 có ba bảng kết quả đã đo và một bảng ablation để trống. Phụ lục có một bảng định dạng phản hồi.",
+  "verified_saved_result_rows": {
+    "Qwen": 9,
+    "Gemini": 7
   },
-  "prefect": {
-    "4e3a4d78-1a06-4b07-93cf-7054a0ec1a6c": {
-      "state": "COMPLETED"
-    },
-    "0b1828c7-a222-4a07-a431-2d712a3149c5": {
-      "state": "COMPLETED"
-    }
+  "verified_cases": {
+    "HumanEval/0": "Hai cặp def–use từ dòng 6 đến dòng 7 và 8 trên PUT 0.",
+    "HumanEval/124": "Naive LLM, EP/BVA và DT dùng Gemini cùng sinh 02-29-2001. PUT 7 sai giá trị ở cả hai lượt.",
+    "HumanEval/125": "Chuỗi có tab tạo wrong-value ở cả hai lượt trên đúng tám PUT ngoài EP/BVA và DT của Qwen. Cạnh 8→12 thuộc PUT 4, DU unsupported."
   },
+  "verified_usage_records": 5,
   "model_or_benchmark_runs_launched": 0,
   "document_checks": {
     "undefined_citations": 0,
     "undefined_references": 0,
     "missing_glyphs": 0,
     "overfull_boxes": 0,
-    "html_visual_renderer": "PASS;3figures/3flows;no visual problems"
+    "all_bibliography_entries_external": true,
+    "external_links": 21,
+    "resolved_cross_references": 31,
+    "figure_renderer": "PlantUML 1.2025.2, PDF vector",
+    "tex_engine": "Tectonic 0.17.0"
   },
-  "editorial_skill": "no-ai-slop;eval.md reviewed;technical Robust BVA retained",
-  "personal_fields": "blank per user instruction",
-  "pdf_sha256": "2acf7cfb14063de79f889b202ec6d6db3586b82901387781870e980f91466d7c",
+  "editorial_skill": "Humanizer",
+  "personal_fields": "Dành cho sinh viên hoàn thiện.",
+  "pdf_sha256": "fb8e646a8d9b3f5b39db191546a1065ba41aec1beff1ac9a9faff326134eb8be",
   "artifact_hashes": {
-    "final/out/gemini_full4_20261112_074012/result_digest.json": "9c17baa1be7c9d12115c862daaa20a9b409f7b41348965fb0981413e40bec3bc",
-    "final/out/gemini_full4_20261112_074012/union_result.json": "9aed4eb4a7e3f3d24d9a3711cb229ca0be0afdf50cf8f98415b31a137744e883",
-    "final/out/gemini_full4_coverage_20261112/result_digest.json": "87b8cc4d01a34eb3ddd7d3ab75422f881f54e2edc96fa1d3dee21e1f4a9b3861"
+    "final/review/results_tables_20261118/REPORT.md": "059cb9f5d0a65c340f78a477fa0d46cf541dbbc5a84633a898479e28de418dfc",
+    "final/review/results_tables_20261118/tables.json": "74243489d6ac432d07bf006d719579811b4f653dcf183666e7a1c50f618f0e96",
+    "final/review/results_tables_20261118/pass_at_k.json": "392a25fd1e7c454c8326b5699c6c720d7a7a409aa359f2be75a77c9c4eca5a44"
+  },
+  "human_eval_scores": {
+    "evidence": "final/review/results_tables_20261118/pass_at_k.json",
+    "source_cohort": "2a32bae531c339f2e403d748984ce5775734bdd8fd0fc9a02620392fbc23c7ed",
+    "full_cohort_base": {
+      "tasks": 164,
+      "generated": 1634,
+      "passed": 1465,
+      "rejected": 169,
+      "shortfall_untested_passes": 11
+    },
+    "score_tasks": 162,
+    "score_samples": 1620,
+    "generated_by": "Qwen",
+    "reference_estimator": "EvalPlus; checked against the exact binomial estimator for each task",
+    "verified_data_rows": [
+      4,
+      6,
+      9
+    ],
+    "pdf_pages_by_table": {
+      "4.1": 34,
+      "4.2": 35,
+      "4.3": 36
+    }
+  },
+  "put_cohort_verification": {
+    "pdf_page": 21,
+    "archived_source_hashes_matched": 8,
+    "saved_generation_requests_checked": 435,
+    "ast_fingerprints_matched": 1634,
+    "base_receipts_matched": 1634,
+    "target_per_task": 10,
+    "maximum_per_prompt": 5,
+    "tasks_with_ten_programs": 162
+  },
+  "references_verified": {
+    "textbook_printed_pages": [
+      7,
+      8,
+      12,
+      13,
+      14,
+      122,
+      123,
+      124,
+      125,
+      126,
+      131,
+      132,
+      133,
+      141,
+      142,
+      143,
+      144,
+      156,
+      157,
+      158,
+      159,
+      160,
+      189,
+      190,
+      191,
+      192,
+      193,
+      194,
+      195,
+      197,
+      198,
+      199,
+      200,
+      201
+    ],
+    "textbook_public_copy_sha256": "1994ccc2db9d189572017f494d5cb2d48dc438ea84d26758ef81bb5215bcc514",
+    "doi_count_added": 4,
+    "bibliography_pdf_start": 44,
+    "related_work_pdf_page": 20,
+    "theory_pdf_pages": [
+      16,
+      17,
+      18,
+      19,
+      20
+    ]
+  },
+  "ablation": {
+    "status": "pending",
+    "pdf_page": 38,
+    "configurations": 7,
+    "empty_result_cells": 42,
+    "peer_reviewed": true
+  },
+  "annotated_report_review": {
+    "source_pdf": "full_concepttesting-kltn-20261a1fc99b2c5Jh0l.pdf",
+    "source_pdf_sha256": "bcb3df815a21aa7d478432fd483a6dbb9d98a9da190b3695de6fe72e3f0b40ee",
+    "highlights_reviewed": 62,
+    "source_matches_attached": false,
+    "similarity_score_recomputed": false
+  },
+  "theory_graph_pdf_page": 18,
+  "editorial_review": {
+    "scope": "Lời cảm ơn, tóm tắt Việt/Anh, Chương 1–4, kết luận và phụ lục",
+    "detector_rescored": false,
+    "table_and_formula_check": "Exact comparison against the prior LaTeX source.",
+    "historical_artifact_paths_unavailable": [
+      "final/review/results_tables_20261118/REPORT.md",
+      "final/review/results_tables_20261118/tables.json",
+      "final/review/results_tables_20261118/pass_at_k.json"
+    ]
   }
 }

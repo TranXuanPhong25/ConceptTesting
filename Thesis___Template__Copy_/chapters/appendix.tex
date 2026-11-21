@@ -1,39 +1,58 @@
-\chapter{Tái lập và đối chiếu bằng chứng}
+\chapter{Định dạng phản hồi và cấu hình thực nghiệm}
 \label{app:reproduction}
 
-\section{Mốc source và phạm vi kết quả}
+\section{Đọc phản hồi của mô hình}
 
-Các số liệu Gemini sử dụng run \path{4e3a4d78-1a06-4b07-93cf-7054a0ec1a6c}; coverage sử dụng run \path{0b1828c7-a222-4a07-a431-2d712a3149c5}. Cả hai có record Completed trên Prefect local. Bản luận văn giữ snapshot Hypothesis của run đầu làm mốc phương pháp, không thay source snapshot bằng working tree mới.
+Với EP/BVA và DT, mã lớp, biên hoặc quy tắc do mô hình đặt rồi tham chiếu lại trong từng bộ đối số. ControlFlow dựng mã đích từ PUT trước khi gọi mô hình. Vì đã biết mã đích ban đầu, bộ giải mã có thể kiểm ngay mã và số dòng trong phản hồi.
 
-Dữ liệu detection được đối chiếu bằng cách cộng valid inputs, detections và tasks có detection từ 164 result files theo task. Các PUT được định danh bằng cặp task ID và PUT ID. Với mỗi tổ hợp arm, phép hợp tập các IDs được đối chiếu với cả 15 combinations trong union JSON. Kết quả khớp với bốn hàng arm và các pool đã trình bày.
+\begin{table}[htbp]
+\centering
+\caption{Các trường giúp truy nguyên một đầu vào từ prompt tới phép đo}
+\label{tab:prompt-fields}
+\small
+\begin{tabular}{@{}p{.28\linewidth}p{.18\linewidth}p{.46\linewidth}@{}}
+\toprule
+Trường & Nhánh & Cách sử dụng \\
+\midrule
+\texttt{arguments} & Cả ba & Ghép giá trị vào đúng tham số trước khi kiểm miền. \\
+\texttt{classes}, \texttt{boundaries} & EP/BVA & Gắn lớp với một đại diện, gắn biên với đại lượng và bối cảnh mà mô hình muốn thay đổi. \\
+\texttt{rules} & DT & Ghi tổ hợp điều kiện và thứ tự hành động. Nếu gộp quy tắc, cần giữ mối liên hệ với quy tắc gốc. \\
+\texttt{covers} & EP/BVA và DT & Đọc ý định của mô hình khi chọn input. Cần chứng cứ riêng để xác nhận input thỏa điều kiện tương ứng. \\
+\texttt{target\_id}, \texttt{evidence\_lines} & ControlFlow & Đối chiếu đích và số dòng với đúng PUT đã cấp cho mô hình. \\
+\texttt{input\_relation}, \texttt{instruction} & ControlFlow & Nêu quan hệ đối số và cách dựng một ví dụ vượt qua các điều kiện dẫn tới đích. \\
+\texttt{predicate}, \texttt{strategies} & ControlFlow & Diễn đạt phần có thể kiểm trên đối số và cách lấy mẫu. Khi thiếu mô tả máy đọc được, input trực tiếp vẫn có thể đem chạy thử. \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-Coverage được cộng lại từ 1.454 JSON records theo PUT: số đạt C1, số có branch đạt C2, số không branch, số đạt cả hai và số traces. Tổng là 11.379 traces, 10 PUT có timeout và không có trace errors. Kiểm tra số liệu này đọc dữ liệu đã có; nó không thực thi reference hoặc PUT thêm lần nữa.
+\subsection{Ba yêu cầu trong prompt}
 
-\section{Các tệp dùng để kiểm chứng}
+Hai câu trong prompt EP/BVA đi cùng nhau. \emph{“keeping unrelated values ordinary”} chọn một giá trị điển hình cho mỗi đại lượng ngoài mục tiêu. Khi đã có bộ danh định, \emph{“varying one quantity at a time”} giữ các giá trị đó cố định. Nếu kết quả thay đổi ở cận, người đọc có thể biết đại lượng nào đã đổi.
 
-Trong thư mục run generation, cấu hình nằm ở \path{config_snapshot.json}. Tệp \path{source_snapshot.json} giữ hash sources. Packet, inputs, oracle tests và result nằm trong thư mục riêng từng task bên dưới \path{generation/}. Các observations nằm trong \path{evaluation/}; request/response và attempt state nằm trong \path{calls/}. Tổng hợp nằm ở \path{result_digest.json} và \path{union_result.json}.
+DT dùng câu \emph{“Merge only when ordered actions agree and omitted conditions do not change behavior”}. Hai điều kiện phải đồng thời đúng để gộp. Nếu hai quy tắc có cùng hành động nhưng thứ tự ưu tiên khác nhau, cần một đầu vào đại diện cho mỗi quy tắc để thử khác biệt.
 
-Trong thư mục run coverage, \path{puts/} chứa records riêng từng PUT và \path{result_digest.json} giữ số tổng. Các source/runtime files chỉ phục vụ đối chiếu implementation của đề tài; chúng không được đưa vào danh mục tài liệu tham khảo học thuật.
+Câu \emph{“a structural path is only an approximation, never proof”} nhắc rằng đồ thị có thể nối hai điều kiện không thể cùng đúng với một input. Mô hình cần tìm quan hệ giữa các tham số cho đường được chọn. Bộ đo đợi trace của một input hợp lệ mới ghi đích đã được quan sát.
 
-Đối với demo HumanEval/124, kiểm tra input index 26 của \path{oracle_valid.json}, outcome PUT 7 trong \path{result.json} và hai checkpoints \path{7_0.json}, \path{7_retry_1.json}. Args là \texttt{('02-29-2001',)}, expected là \texttt{True}, actual của cả hai observations là \texttt{False}. Tra quy tắc tháng 2 trong spec trước khi suy diễn bằng lịch thực tế.
+\section{Số input và lượng sử dụng mô hình}
 
-\section{Lệnh chạy engineering tests}
+Số input của một nhánh là số bộ đối số còn lại sau lọc. Một bộ xuất hiện ở hai nhánh đóng góp vào cả hai số đếm. Tổng token gồm phần prompt và phần trả lời. ControlFlow cho mỗi lần trace tối đa một giây. Khi phản hồi có miền lấy mẫu, Hypothesis có thể thử tối đa 32 mẫu trong hai giây cho mỗi concept ở mỗi lượt.
 
-Lần kiểm tra phục vụ bản thảo dùng Python của môi trường \path{final/.venv/}. Từ repo root, lệnh được chia dòng như sau:
+\subsection{Qwen}
 
-\begin{lstlisting}[basicstyle=\ttfamily\scriptsize,numbers=none]
-final/.venv/bin/python -m pytest \
-  final/src/modular/tests/test_testing_arms.py \
-  final/src/modular/tests/test_testing_arms_integration.py \
-  final/src/modular/tests/test_modular_pipeline.py \
-  final/src/modular/tests/test_put_evaluation.py \
-  final/tests/test_runtime_safety.py -q
-\end{lstlisting}
+Bước sinh mã ghi nhận 434 phản hồi Qwen từ 435 yêu cầu. Những phản hồi có số đo dùng 375.591 token prompt và 416.741 token đầu ra, tổng cộng 792.332 token. Khoản này phát sinh trước khi các nhánh sinh test bổ sung.
 
-Output cuối là \texttt{69 passed in 15.87s}. Đây là kiểm tra fixtures và hợp đồng runtime tại working tree khi biên tập. Các tests không thực hiện model inference; kết quả không dùng thay cho benchmark efficacy hoặc chứng nhận toàn bộ codebase. Log nguyên bản được giữ cùng hồ sơ kiểm tra tài liệu.
+Trong 157 task, EP/BVA giữ 2.402 input hợp lệ, còn DT giữ 2.378. Hai nhánh Qwen dùng cửa sổ 8.192 token. Có 314 phản hồi từ 316 lần gọi, tương ứng 766.010 token prompt và 562.114 token trả lời đã biết, tổng cộng 1.328.124 token. Hai lần gọi còn lại chưa rõ lượng sử dụng. Prompt khuyến khích input nhỏ và bước chấm dành tám giây.
 
-\section{Cách sử dụng demo và tiếp tục thí nghiệm}
+Số liệu ControlFlow Qwen ở bảng kết quả đến từ lần chấm đủ 1.454 PUT. Với 140 phản hồi và 861.504 token, nhánh giữ 708 input hợp lệ. Naive LLM giữ 2.876 input, nhận 156 phản hồi từ 157 lần gọi với 385.522 token đã biết. Bước chấm lại lấy đầu vào từ các phản hồi của baseline đã lưu.
 
-Có thể trình diễn kết quả bằng cách mở record run đã hoàn tất và lần theo task artifacts mà không bấm Run. Muốn sinh dữ liệu mới, người dùng chọn preset hoặc CLI, kiểm budget và tự cấp lệnh chạy. Thay model, source, timeout hay scorer cần config và output riêng; không sửa artifact cũ để ép resume. Credentials được nạp từ môi trường, không đưa vào config công khai hoặc ảnh chụp.
+\subsection{Gemini}
 
-Biên dịch luận văn chỉ tạo tài liệu. Bản HTML sơ đồ đi kèm mô tả cùng snapshot với các hình ở Chương~\ref{chap:method}. Các trường cá nhân trên bìa được tập trung ở \path{metadata.tex}; phần cam đoan và phân công cá nhân cần sinh viên xác nhận trước khi nộp.
+Trong cửa sổ 18.192 token, Gemini giữ 2.613 input cho Naive LLM, 1.959 cho EP/BVA và 1.979 cho DT. Gộp riêng EP/BVA với DT còn 3.388 bộ đối số phân biệt. Ba cấu hình dùng 471 phản hồi, với 1.203.197 token prompt và 328.753 token trả lời, tổng cộng 1.531.950 token. Giới hạn sinh cho phép thử số nguyên có độ lớn tới \(2^{32}\). Khi đặc tả đặt cận thấp hơn, cận trong đề bài quyết định dữ liệu có hợp lệ hay không.
+
+ControlFlow Gemini có lần sinh và chấm riêng. Với 158 phản hồi và 817.492 token, nhánh giữ 736 input hợp lệ trên 157 task. Số lượt gọi thay đổi theo số bài có đích và số trường hợp cần lượt sửa.
+
+\section{Môi trường và các phép kiểm của prototype}
+
+Các phép chạy EP/BVA và DT dùng Python 3.11.14, EvalPlus 0.3.1 và Pydantic 2.14.2 cho cả Qwen và Gemini. Lần chạy ControlFlow Gemini còn dùng coverage.py 7.17.0, python-graphs 1.2.3 và Hypothesis 6.170.14. Gemini được gọi qua Vertex AI. PUT và tham chiếu chạy trong tiến trình cô lập trên Linux.
+
+Ba phép kiểm của prototype bảo vệ số đếm PUT. Thứ nhất, bộ giải mã phải giữ đối số hợp lệ khi catalogue lỗi. Thứ hai, oracle phải dừng nếu input chưa chốt. Thứ ba, số quan sát phải bằng số input cần chấm để một kết quả thiếu không bị tính là đã vượt test. Đây là các kiểm tra giao tiếp giữa mô-đun. Chương~\ref{chap:experiment} đo khả năng phát hiện sai khác trên HumanEval+.

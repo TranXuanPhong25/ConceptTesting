@@ -3,36 +3,30 @@
 
 \section{Bối cảnh và lý do chọn đề tài}
 
-Để phát hiện lỗi bằng kiểm thử, cần chọn đầu vào kích hoạt hành vi sai và xác định kết quả mà chương trình phải trả về. Số giá trị có thể thử thường rất lớn, nhất là khi hàm nhận chuỗi, danh sách hoặc nhiều tham số phụ thuộc nhau. Một bộ test hữu hạn vì thế có thể bỏ sót những trường hợp gây lỗi~\cite{uetTestingIntro,istqb2024}.
+Thay dấu cách giữa hai từ bằng một ký tự tab. Theo bài toán tách từ của HumanEval, hàm vẫn phải trả cùng danh sách từ. Một cài đặt đã vượt test cơ sở lại trả số nguyên. Sai khác xuất hiện ngay khi bộ test thay đổi một ký tự mà đặc tả coi là khoảng trắng.
 
-Phân hoạch tương đương, phân tích giá trị biên, bảng quyết định, kiểm thử dòng điều khiển và dòng dữ liệu giúp lựa chọn các trường hợp cần thử. Để tạo được đầu vào cho từng trường hợp, người kiểm thử vẫn phải xét đặc tả, miền hợp lệ và cấu trúc chương trình~\cite{uetFunctionalTesting,uetControlFlow,uetDataFlow}. Chẳng hạn, đi tới một nhánh có thể đòi hỏi đồng thời thỏa mãn nhiều điều kiện và giữ một giá trị qua các lần lặp.
+Từ đặc tả, phân hoạch tương đương (EP) giúp chọn đầu vào đại diện cho từng lớp, phân tích giá trị biên (BVA) hướng việc thử sát cận và bảng quyết định (DT) làm rõ cách xử lý một tổ hợp điều kiện. Ở bài tách từ, EP gợi ý xét các loại dấu phân cách. Khi có mã, độ phủ còn cho biết bộ test cơ sở đã đi qua những lối rẽ nào trong phép kiểm dấu phân cách~\cite[ch.~5--6]{pham2014kiemthu}.
 
-LLM có thể tạo dữ liệu từ đặc tả bằng ngôn ngữ tự nhiên và mã nguồn. SymPrompt hướng dẫn mô hình theo đường thực thi; CoverUp dùng coverage và phản hồi thực thi để tạo regression tests~\cite{ryan2024symprompt,pizzorno2025coverup}. Tuy nhiên, mô hình có thể sinh đầu vào sai miền hoặc kết quả mong đợi sai. Mathews và Nagappan chỉ ra rằng cách xây dựng oracle còn có thể khiến test xác nhận lại hành vi của mã có lỗi~\cite{mathews2024design}.
-
-Khóa luận nghiên cứu cách dùng concept để hướng dẫn LLM sinh dữ liệu kiểm thử. Concept mô tả một tình huống bằng các đặc tính như lớp dữ liệu, biên hoặc quan hệ thực thi. Đề tài xem xét liệu những mô tả này có giúp tạo đầu vào phát hiện thêm failure so với cách sinh trực tiếp hay không.
+Mô hình ngôn ngữ lớn (LLM) có thể dùng cả đặc tả lẫn mã để đề xuất đầu vào. SymPrompt đưa thông tin đường thực thi vào yêu cầu sinh test. CoverUp dùng độ phủ đo được để sửa prompt~\cite{ryan2024symprompt,pizzorno2025coverup}. Việc chọn đầu vào và xác định đáp án cần căn cứ riêng. Nếu lấy hành vi của cài đặt đang kiểm làm đáp án, ca mới có thể lặp lại đúng lỗi cần phát hiện~\cite{mathews2024design}.
 
 \section{Phát biểu bài toán}
 
-Đối tượng được xét là các bài toán kiểm thử hàm Python. Đầu vào của bài toán nghiên cứu gồm đặc tả hàm, chữ ký tham số, các ràng buộc miền đã có, bộ test cơ sở và tập cài đặt cần kiểm tra. Mỗi bài toán được gọi là một task; mỗi cài đặt là một PUT. Những PUT đã vượt qua test cơ sở vẫn có thể sai trên dữ liệu khác, vì số test hiện có chưa đại diện cho mọi hành vi~\cite{chen2021evaluating,liu2023evalplus}.
+Mỗi đề hàm Python là một \textit{task}. Mỗi lời giải cần kiểm là một chương trình được kiểm thử (\textit{program under test}, PUT). Hệ thống nhận đặc tả, chữ ký, ràng buộc miền, test cơ sở và các PUT đã vượt bộ test đó. Những lời giải của cùng một task vẫn có thể mắc chung một lỗi.
 
-Đầu ra cần có là tập dữ liệu kiểm thử bổ sung, thông tin tính hợp lệ của chúng và bằng chứng đánh giá trên các PUT. Nếu một đầu vào tạo failure, báo cáo cần chỉ ra cài đặt liên quan và căn cứ đánh giá; nếu chưa có kết quả hoặc chưa hỗ trợ phép đo thì phải ghi nhận trạng thái đó. Số input, số PUT và số task có failure là những đơn vị khác nhau.
+Từ các dữ liệu trên, hệ thống sinh bộ đối số mới và lọc theo miền của task. Với input hợp lệ, nó chạy tham chiếu để lấy đáp án, rồi chạy các PUT để xác nhận sai khác. Vì một bộ đối số có thể làm lộ lỗi trên nhiều PUT, số input đã thử và số PUT có sai khác là hai số đếm riêng.
 
-Đánh giá tập trung vào failure bổ sung và thay đổi coverage. Với bài toán có nhiều đáp án hợp lệ hoặc nhạy với tài nguyên, cần kiểm tra lại sai khác mà evaluator ghi nhận trước khi kết luận đó là lỗi theo đặc tả.
+\section{Mục tiêu và câu hỏi nghiên cứu}
 
-\section{Mục tiêu nghiên cứu}
+Trong khóa luận, \textit{concept} diễn đạt một tình huống cần thử. Chẳng hạn, cần hai giá trị sát ngưỡng hoặc một chuỗi có tab mà thiếu dấu cách. LLM dùng concept trong prompt để chọn bộ đối số cụ thể. Việc thực thi cho biết lựa chọn đó có làm lộ sai khác hay không.
 
-Đề tài vận dụng các kỹ thuật kiểm thử để mô tả tình huống hướng dẫn LLM, xây dựng prototype so sánh các cách sinh dữ liệu trên cùng tập chương trình và đánh giá kết quả. Mỗi thí nghiệm cần lưu cấu hình, đầu vào và kết quả thực thi để kiểm tra lại số failure, coverage và chi phí mô hình.
+\begin{description}
+\item[RQ1.] Test của pipeline làm lộ sai khác trên bao nhiêu PUT đã vượt test gốc HumanEval? Khi chấm lại cùng bộ mã, \textit{pass@1}, \textit{pass@5} và \textit{pass@10} thay đổi ra sao?
+\item[RQ2.] Pipeline tìm được bao nhiêu PUT mà Naive LLM bỏ sót? Baseline tìm riêng bao nhiêu PUT? Các phát hiện riêng thuộc loại sai khác nào?
+\item[RQ3.] Mỗi nhánh của pipeline tìm được bao nhiêu PUT mà hai nhánh còn lại bỏ sót? Mức đóng góp thay đổi ra sao nếu bỏ một nhánh hoặc tách EP và BVA dưới cùng ngân sách?
+\end{description}
 
-Các câu hỏi nghiên cứu gồm: dữ liệu có hướng dẫn phát hiện thêm những PUT nào ngoài cách sinh trực tiếp; coverage thay đổi ra sao; và những trường hợp không đạt mục tiêu bắt nguồn từ bước chọn tình huống, sinh dữ liệu hay oracle.
+\section{Phạm vi và cấu trúc khóa luận}
 
-\section{Phạm vi và phương pháp nghiên cứu}
+Khóa luận đánh giá trên đặc tả HumanEval và cài đặt tham chiếu HumanEval+~\cite{chen2021evaluating,liu2023evalplus}. Các cấu hình cùng dùng một tập PUT Python từng vượt test cơ sở. Pipeline gồm EP/BVA, DT và ControlFlow. EP và BVA dùng chung một lần sinh. Qwen và Gemini lần lượt tạo test cho từng cấu hình. Naive LLM sinh trực tiếp và được chấm riêng trên cùng tập PUT.
 
-Khóa luận kiểm thử ở mức hàm, sử dụng đặc tả HumanEval và các cài đặt tham chiếu từ HumanEval+~\cite{chen2021evaluating,liu2023evalplus}. Tập PUT được cố định trước thí nghiệm. Kết quả trên tập này chỉ phản ánh khả năng phát hiện failure của các cấu hình đã thử.
-
-Đề tài dùng LLM có sẵn ở giai đoạn inference. Phạm vi đánh giá giới hạn ở các hàm Python trong cohort; các tiêu chí chưa hỗ trợ đầy đủ, như all-DU-paths hoặc phân tích alias liên hàm, được ghi riêng.
-
-Nghiên cứu gồm đọc tài liệu gốc, cài đặt prototype, kiểm tra hợp đồng dữ liệu và thực nghiệm. Mỗi kết quả đi kèm model, budget, oracle và đơn vị đo. Khi hợp đầu vào từ nhiều arm, số failure tăng còn chịu ảnh hưởng của tổng lượng dữ liệu và chi phí; đánh giá trong cùng ngân sách cần một phép đối sánh riêng.
-
-\section{Cấu trúc khóa luận}
-
-Chương~\ref{chap:background} trình bày kiến thức nền tảng, công nghệ và nghiên cứu liên quan. Chương~\ref{chap:method} mô tả yêu cầu và thiết kế hệ thống. Chương~\ref{chap:experiment} trình bày thiết lập, kiểm thử và kết quả đánh giá. Phần kết luận nêu kết quả đạt được, hạn chế và hướng phát triển.
+Các căn cứ để chọn ca kiểm thử nằm ở Chương~\ref{chap:background}. Chương~\ref{chap:method} lần theo một bộ đối số từ prompt đến bước xác nhận. Chương~\ref{chap:experiment} trả lời ba câu hỏi nghiên cứu bằng số liệu HumanEval+ và hai ví dụ có kết quả chạy được lưu.

@@ -1,206 +1,104 @@
 \chapter{Cơ sở lý thuyết}
 \label{chap:background}
 
-Để sinh test cho một hàm Python, cần xác định miền đầu vào, chọn tình huống cần kiểm tra và có oracle để đánh giá kết quả. Chương này trình bày các khái niệm đó, các kỹ thuật kiểm thử được dùng làm căn cứ hướng dẫn LLM, cùng công cụ và nghiên cứu liên quan.
-
-\section{Các khái niệm cơ bản}
+\section{Ca kiểm thử, miền đầu vào và oracle}
 \label{sec:testing-concepts}
 
-\subsection{Kiểm thử và khả năng phát hiện lỗi}
+Với một hàm, ca kiểm thử ghi bộ đối số và đầu ra mong đợi~\cite[tr.~7--8]{pham2014kiemthu}. Cặp ngày 31, tháng 4 cho thấy vì sao kiểm riêng từng đối số chưa đủ. Hai giá trị đều là số nguyên, nhưng kết hợp lại thì nằm ngoài miền ngày hợp lệ. \textit{Test oracle} đối chiếu kết quả thực tế với yêu cầu của bài~\cite{istqb2024}.
 
-Kiểm thử đánh giá phần mềm thông qua các hoạt động như xem xét đặc tả, thiết kế test và kiểm tra kết quả. Trong kiểm thử động, chương trình chạy với đầu vào đã chọn; hành vi thực tế được đối chiếu với hành vi mong đợi. Một bộ test hữu hạn chỉ kiểm tra được một phần không gian hành vi, nên chương trình vượt qua bộ test vẫn có thể sai trên đầu vào khác~\cite{uetTestingIntro,istqb2024}.
+HumanEval đưa ra đặc tả và bộ test cơ sở cho mỗi bài Python. HumanEval+ của EvalPlus thêm test để phân biệt những cài đặt cùng vượt bộ ban đầu. Trong khóa luận, cài đặt tham chiếu HumanEval+ cho biết kết quả mong đợi của các bộ đối số mới~\cite{chen2021evaluating,liu2023evalplus}.
 
-Ba khái niệm \textit{fault}, \textit{error} và \textit{failure} mô tả các giai đoạn khác nhau của lỗi. Fault là khiếm khuyết trong chương trình; error là trạng thái sai khi thực thi; failure là hành vi sai quan sát được so với yêu cầu. Chẳng hạn, một vòng lặp bắt đầu nhầm từ chỉ số 1 chứa fault, nhưng chỉ trả kết quả đếm sai nếu phần tử bị bỏ qua ảnh hưởng tới kết quả~\cite[tr.~24--30]{uetTestingIntro}.
-
-Mô hình Reachability--Infection--Propagation (RIP) nêu ba điều kiện để fault bộc lộ thành failure: vị trí lỗi được thực thi, việc thực thi gây trạng thái sai và trạng thái sai lan truyền tới đầu ra quan sát được~\cite[tr.~37]{uetTestingIntro}. Do đó, tăng độ phủ là bằng chứng đã tiếp cận thêm cấu trúc chương trình; khả năng phát hiện lỗi vẫn phụ thuộc vào giá trị đầu vào và cách đánh giá đầu ra.
-
-Verification kiểm tra sự phù hợp với yêu cầu đã xác định; validation kiểm tra sự phù hợp với nhu cầu sử dụng. Sau khi kiểm thử ghi nhận failure, debugging tìm nguyên nhân và sửa khiếm khuyết~\cite[tr.~39, 44--45]{uetTestingIntro}.
-
-\subsection{Ca kiểm thử, miền dữ liệu và test oracle}
-
-Ở mức hàm, một ca kiểm thử có thể biểu diễn bởi cặp $t=(x,e)$, trong đó $x$ là đầu vào và $e$ là kết quả mong đợi~\cite[tr.~49]{uetTestingIntro}. Với chương trình có trạng thái, còn cần điều kiện ban đầu và trạng thái mong đợi sau thực thi. Trong khóa luận, cần phân biệt \textit{test input}, tức dữ liệu được đưa vào hàm, với \textit{test case}, vốn bao gồm căn cứ đánh giá kết quả.
-
-Miền đầu vào được xác định bởi kiểu dữ liệu, cấu trúc, giới hạn giá trị và quan hệ giữa các tham số. Một giá trị đúng kiểu chưa chắc hợp lệ theo đặc tả. Ví dụ, một ngày trong tháng phụ thuộc đồng thời vào ngày, tháng và năm; chọn mỗi biến trong một khoảng riêng chưa bảo đảm tổ hợp là ngày hợp lệ~\cite[tr.~6, 12, 28]{uetFunctionalTesting}.
-
-Test oracle xác định hành vi quan sát có đáp ứng yêu cầu hay không~\cite{istqb2024}. Oracle có thể dựa vào kết quả đã biết, cài đặt tham chiếu hoặc một tính chất cần thỏa mãn. Nếu bài toán cho phép nhiều đáp án, oracle phải chấp nhận các kết quả hợp lệ. Ví dụ, khi nhiều cặp phần tử có cùng khoảng cách nhỏ nhất mà đặc tả không yêu cầu cách chọn, so sánh với đúng một cặp tham chiếu có thể báo lỗi sai. Mathews và Nagappan phân tích rủi ro tương tự khi test generators lựa chọn oracle dựa trên hành vi của mã có lỗi~\cite{mathews2024design}.
-
-\subsection{Kiểm thử hộp đen và hộp trắng}
-
-Kiểm thử hộp đen chọn test từ yêu cầu và miền đầu vào--đầu ra, chẳng hạn bằng phân hoạch tương đương, giá trị biên hoặc bảng quyết định. Kiểm thử hộp trắng chọn test từ cấu trúc chương trình, như câu lệnh, nhánh và quan hệ định nghĩa--sử dụng biến~\cite[tr.~54--55]{uetTestingIntro}. Đặc tả cho biết hành vi cần có; cấu trúc mã cho biết phần nào của cài đặt đã được thực thi.
-
-\section{Các kỹ thuật kiểm thử chức năng}
+\section{Kiểm thử chức năng}
 \label{sec:functional-techniques}
+
+Kiểm thử chức năng lấy hành vi trong đặc tả làm căn cứ chọn ca. Theo cách tiếp cận hộp đen, người kiểm thử xác định giá trị cần đưa vào và kết quả cần quan sát từ các quy tắc của bài. Do đó, một bộ ca có thể dùng cho nhiều cài đặt cùng đặc tả~\cite[tr.~12--14]{pham2014kiemthu}.
 
 \subsection{Phân hoạch tương đương}
 
-Phân hoạch tương đương (Equivalence Partitioning, EP) chia miền dữ liệu thành các lớp mà những phần tử trong cùng lớp được kỳ vọng có cách xử lý tương tự đối với đặc tính đang xét. Từ mỗi lớp, người kiểm thử chọn đại diện thay vì duyệt toàn bộ giá trị~\cite[tr.~18--23]{uetFunctionalTesting}.
+Phân hoạch tương đương (EP) chia miền thành các lớp rời nhau. Các giá trị trong cùng một lớp tuân theo cùng quy tắc xử lý, nên có thể chọn một giá trị đại diện để thử. Cần tách lớp khi tìm thấy điều kiện làm thay đổi quy tắc cần kiểm~\cite[tr.~131--133]{pham2014kiemthu}.
 
-Cho miền $D$, một phân hoạch $D_1,\ldots,D_k$ phải thỏa mãn:
-\begin{equation}
- D_i\neq\varnothing,\qquad
- \bigcup_{i=1}^{k}D_i=D,\qquad
- D_i\cap D_j=\varnothing\quad(i\neq j).
-\end{equation}
-Nghĩa là mỗi lớp không rỗng, các lớp phủ toàn bộ miền và không chồng lấn~\cite[tr.~19]{uetFunctionalTesting}. Việc các phần tử có hành vi tương tự là giả định thiết kế kiểm thử; một cài đặt có lỗi vẫn có thể xử lý khác nhau giữa những phần tử trong cùng lớp.
-
-Ví dụ, một tham số tuổi chỉ chấp nhận số nguyên từ 18 đến 60 có thể được chia thành ba lớp: nhỏ hơn 18, từ 18 đến 60 và lớn hơn 60. Việc kiểm thử hai lớp ngoài miền cần yêu cầu xác định cách xử lý dữ liệu không hợp lệ. EP cũng áp dụng cho miền đầu ra, chẳng hạn lựa chọn dữ liệu tạo được cả kết quả đạt và không đạt trong một chức năng xét điều kiện~\cite[tr.~19--23]{uetFunctionalTesting}.
-
-EP yếu yêu cầu mỗi lớp của từng tham số xuất hiện trong ít nhất một test. EP mạnh xét các tổ hợp lớp giữa các tham số. Nếu tham số thứ $i$ có $k_i$ lớp và các chiều độc lập, số tổ hợp của EP mạnh là $\prod_{i=1}^{n}k_i$. Với EP yếu, khi các tổ hợp cần thiết đều hợp lệ, có thể kết hợp đại diện để dùng $\max_i k_i$ test. Ràng buộc liên tham số có thể làm một số tổ hợp không khả thi, nên các công thức không thay thế bước kiểm tra miền hợp lệ~\cite[tr.~24--28]{uetFunctionalTesting}.
+Hai chuỗi \texttt{"a b"} và \texttt{"a,b"} dài bằng nhau. Chuỗi đầu đại diện cho lớp tách theo khoảng trắng, còn chuỗi thứ hai đại diện cho lớp có dấu phẩy và thiếu khoảng trắng. \texttt{"abc"} thuộc lớp thứ ba vì thiếu cả hai dấu phân cách.
 
 \subsection{Phân tích giá trị biên}
 
-Phân tích giá trị biên (Boundary Value Analysis, BVA) tập trung vào ranh giới và vùng lân cận của các miền có thứ tự. Sai sót trong phép so sánh, giới hạn chỉ số hoặc số lần lặp có thể bộc lộ ở những vị trí này. Theo cách trình bày trong slides, normal BVA xét năm vị trí: giá trị nhỏ nhất, ngay phía trong biên dưới, giá trị thông thường, ngay phía trong biên trên và giá trị lớn nhất~\cite[tr.~4--8]{uetFunctionalTesting}.
+BVA thông thường lấy một bộ đối số danh định làm mốc, tức các giá trị điển hình trong miền. Giữ những đối số khác như cũ, rồi lần lượt đưa đại lượng đang xét về hai cận và hai giá trị kề phía trong. Một lỗi so sánh lệch một đơn vị có thể chỉ xuất hiện ở các mốc này~\cite[tr.~122--126]{pham2014kiemthu}.
 
-Với tháng là số nguyên từ 1 đến 12, một tập minh họa là $\{1,2,6,11,12\}$. Giá trị 6 là giá trị thông thường; 1 và 12 nằm trên biên, còn 2 và 11 nằm sát bên trong miền.
+Với tháng \(m\) trong khoảng từ 1 đến 12, giữ ngày 15 và cùng một năm. Lấy tháng 6 làm mốc, sau đó thử 1, 2, 11 và 12. Nếu trong mã dùng \(m < 12\) thay cho \(m \le 12\), ca tháng 12 sẽ làm lộ lỗi. Khi các đối số phụ thuộc nhau, phải kiểm lại cả bộ sau mỗi thay đổi. Giữ ngày 31 rồi đổi tháng sang 4 sẽ ra ngoài miền. Biến thể kiểm thử giá trị biên mạnh (\textit{robust BVA}) còn dùng 0 và 13 để kiểm cách xử lý tháng ngoài miền theo đặc tả~\cite[tr.~123--126]{pham2014kiemthu}.
 
-Normal BVA theo giả thiết khiếm khuyết đơn thay đổi một chiều mỗi lần trong khi giữ các chiều khác tại giá trị thông thường. Robust BVA bổ sung hai giá trị ngay ngoài miền. Worst-case BVA xét các tổ hợp giá trị của nhiều chiều~\cite[tr.~9--14]{uetFunctionalTesting}. Bảng~\ref{tab:bva-variants} tổng hợp số ca theo mô hình các chiều độc lập và đủ các giá trị phân biệt.
+\subsection{Kiểm thử bằng bảng quyết định}
 
-\begin{table}[htbp]
+Một cột trong bảng quyết định (DT) ghi một tổ hợp điều kiện và hành động phải thực hiện khi tổ hợp đó xảy ra. Muốn biến cột thành ca kiểm thử, cần tìm một đầu vào thỏa các điều kiện rồi quan sát xem hàm có thực hiện đúng hành động ghi trong cột hay không~\cite[tr.~141--144]{pham2014kiemthu}.
+
+Ở Bảng~\ref{tab:word-split-rules}, cả hai tổ hợp có khoảng trắng đều tách theo khoảng trắng, bất kể có dấu phẩy hay không. Hai tổ hợp vì thế được ghi chung trong cột \(R_1\). Dấu gạch biểu thị điều kiện có thể nhận cả hai giá trị~\cite{istqb2024}. Với \(R_3\), hàm đếm chữ cái thường có chỉ số lẻ, bắt đầu đánh số từ \texttt{a} ở vị trí 0.
+
+\begin{table}[!htbp]
 \centering
-\caption{Các biến thể BVA theo mô hình trong slides môn học~\cite{uetFunctionalTesting}}
-\label{tab:bva-variants}
-\begin{tabular}{p{0.29\textwidth}p{0.44\textwidth}p{0.13\textwidth}}
+\caption{Bảng quyết định cho bài toán tách từ của HumanEval}
+\label{tab:word-split-rules}
+\small
+\begin{tabular}{@{}lccc@{}}
 \toprule
-Biến thể & Nguyên tắc & Số ca \\
+ & \(R_1\) & \(R_2\) & \(R_3\) \\
 \midrule
-Normal BVA & Một chiều thay đổi, các chiều khác ở nominal & $4n+1$ \\
-Robust BVA & Normal và hai giá trị ngoài biên mỗi chiều & $6n+1$ \\
-Worst-case BVA & Tổ hợp năm giá trị của các chiều & $5^n$ \\
-Robust worst-case BVA & Tổ hợp bảy giá trị của các chiều & $7^n$ \\
+Có khoảng trắng & Có & Không & Không \\
+Có dấu phẩy & \textemdash & Có & Không \\
+Hành động & \makecell{Tách theo\\khoảng trắng} & \makecell{Tách theo\\dấu phẩy} & \makecell{Đếm chữ thường\\có chỉ số lẻ} \\
+Đầu vào đại diện & \texttt{"a b"} & \texttt{"a,b"} & \texttt{"abc"} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Các công thức trong Bảng~\ref{tab:bva-variants} mô tả thiết kế lý tưởng. Miền nhỏ có thể làm các vị trí trùng nhau; ràng buộc giữa tham số có thể loại một số tổ hợp. Robust BVA chỉ có căn cứ đánh giá khi đặc tả quy định hành vi ngoài miền. Khái niệm giá trị lân cận cũng phụ thuộc miền dữ liệu: bước một đơn vị phù hợp với số nguyên liên tiếp nhưng không thể áp dụng mặc định cho số thực hoặc dữ liệu có bước nghiệp vụ riêng.
+\section{Kiểm thử luồng điều khiển}
+\label{sec:control-flow-theory}
 
-Biên có thể gắn với độ dài chuỗi, số phần tử hoặc giới hạn lặp. Với những dữ liệu này, ngoài đặc trưng được chọn làm biên còn phải kiểm tra các ràng buộc khác của đầu vào. Chẳng hạn, một danh sách đúng độ dài vẫn có thể vi phạm yêu cầu được sắp xếp.
+\subsection{Đồ thị luồng điều khiển (CFG)}
 
-\subsection{Bảng quyết định}
+Trong đồ thị luồng điều khiển (\textit{control-flow graph}, CFG), mỗi đỉnh là một câu lệnh hoặc một nhóm lệnh chạy liền nhau. Cạnh hướng tới vị trí chương trình có thể chạy tiếp. Một điểm quyết định có một cạnh cho mỗi kết quả của điều kiện. Đường từ đỉnh vào đến đỉnh ra mô tả một thứ tự thực thi có thể có. Để đi đúng đường đó, đầu vào phải thỏa các điều kiện ở những điểm rẽ dọc đường~\cite[tr.~156--158]{pham2014kiemthu}.
 
-Bảng quyết định (Decision Table, DT) biểu diễn quan hệ giữa các tổ hợp điều kiện và hành động. Mỗi cột là một quy tắc, gồm các giá trị điều kiện và hành động tương ứng. Kỹ thuật phù hợp khi chức năng phụ thuộc vào tương tác giữa nhiều điều kiện~\cite[tr.~31--36]{uetFunctionalTesting}.
+Hình~\ref{fig:cfg-dfg} dùng một hàm nhận \(x\) và trả \texttt{kq}. Nửa trái cho thấy biến được khởi tạo bằng 0 và chỉ đổi khi \(x > 0\). Truyền \(x = 1\) thì phần thân chạy qua \(1\to2\to3\to4\). Với \(x = 0\), chương trình đi thẳng theo cạnh \(2\to4\), bỏ qua phép gán thứ hai.
 
-Ví dụ, một chính sách giảm phí nếu khách hàng là thành viên hoặc đơn hàng từ 500.000 đồng có bốn tổ hợp Boolean trước khi rút gọn. Ca khách hàng không là thành viên, đơn hàng đúng 500.000 đồng kiểm tra cả một quy tắc DT và biên của điều kiện về tiền.
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=.89\linewidth,height=.45\textheight,keepaspectratio]{diagrams/cfg-dfg.pdf}
+\caption{CFG và DFG của một hàm có một nhánh. Các số 1 đến 4 chỉ cùng vị trí trong mã.}
+\label{fig:cfg-dfg}
+\end{figure}
 
-Quá trình xây dựng cần xác định điều kiện, hành động, các tổ hợp, tính khả thi và dữ liệu đại diện. Các cột chỉ được gộp khi vẫn giữ đúng hành động theo yêu cầu~\cite[tr.~36--48]{uetFunctionalTesting}. Tổ hợp chưa tạo được test phải được phân biệt với tổ hợp đã chứng minh không khả thi. Độ phủ quy tắc có thể biểu diễn bởi:
-\begin{equation}
- C_{DT}=\frac{\text{số quy tắc khả thi đã được kiểm thử}}
- {\text{tổng số quy tắc khả thi cần xét}}\times100\%.
-\end{equation}
-Khi dùng bảng rút gọn, cần nói rõ mẫu số gồm quy tắc gốc hay quy tắc sau rút gọn. Một test ứng với cột có điều kiện không quan trọng chỉ thực thi một tổ hợp cụ thể, không tự chứng minh mọi tổ hợp gốc đã được chạy.
+\subsection{Độ phủ câu lệnh và độ phủ nhánh}
 
-\section{Kiểm thử cấu trúc và phân tích chương trình}
-\label{sec:structural-testing}
+Ca \(x = 1\) chạy cả bốn dòng, nên ví dụ đã đủ C1. Để đạt C2, cần quan sát cả hai kết quả của quyết định ở dòng 2. Thêm ca \(x = 0\) sẽ đi qua cạnh sai. Nếu điều kiện được ghép từ nhiều điều kiện con, có đủ hai lối ra vẫn chưa cho biết từng điều kiện con đã được đánh giá với những giá trị nào~\cite[tr.~158--160]{pham2014kiemthu}.
 
-\subsection{Đồ thị dòng điều khiển và các tiêu chí bao phủ}
+ConceptTester dùng dòng thực thi để xấp xỉ C1 và dùng cạnh chuyển dòng để đo C2~\cite{coverageBranchDocs}. Từ mã nguồn, công cụ tìm các cạnh có thể đi. Nếu trace của test cơ sở thiếu một cạnh trong số đó, ControlFlow có thể chọn cạnh ấy làm đích sinh đầu vào ở Chương~\ref{chap:method}.
 
-Đồ thị dòng điều khiển (Control Flow Graph, CFG) là đồ thị có hướng $G=(N,E)$; nút biểu diễn câu lệnh hoặc khối lệnh, cạnh biểu diễn khả năng chuyển điều khiển. Một đường đi là dãy nút hoặc cạnh liên tiếp của đồ thị. Đường đi tồn tại về cấu trúc có thể không khả thi nếu các điều kiện trên đường đi mâu thuẫn~\cite[tr.~6--21]{uetControlFlow}.
+\section{Kiểm thử luồng dữ liệu}
+\label{sec:data-flow-theory}
 
-Bao phủ câu lệnh, ký hiệu C1 theo slides, đo tỷ lệ câu lệnh cần xét đã được thực thi. Bao phủ nhánh C2 đo tỷ lệ nhánh cần xét đã được đi qua~\cite[tr.~22--36]{uetControlFlow}. Với tập yêu cầu $R$ và tập yêu cầu đã được bộ test $T$ bao phủ là $H(T)$, dạng tổng quát là:
-\begin{equation}
- C(T,R)=\frac{|H(T)\cap R|}{|R|}\times100\%,\qquad |R|>0.
-\end{equation}
-Một bộ test có thể đạt toàn bộ câu lệnh nhưng bỏ qua nhánh sai của một lệnh if không có else. Vì vậy, tỷ lệ C1 không thay thế tỷ lệ C2. Trường hợp không có nhánh cần được báo riêng theo quy ước đo.
+\subsection{Đồ thị luồng dữ liệu (DFG)}
 
-Theo slides, C3 yêu cầu từng điều kiện con tại điểm quyết định được đánh giá với cả True và False~\cite[tr.~37--40]{uetControlFlow}. Short-circuit cần được xem xét: trong $A\lor B$, nếu $A$ đúng thì $B$ có thể không được đánh giá. Trạng thái không đánh giá không được tính như một kết quả False. C3 theo định nghĩa này không đồng nhất với mọi tổ hợp điều kiện hoặc với MC/DC, vốn yêu cầu kiểm tra ảnh hưởng độc lập của từng điều kiện tới quyết định.
+Đồ thị luồng dữ liệu (\textit{data-flow graph}, DFG) gắn thông tin về biến lên đường thực thi. Theo cách biểu diễn trong giáo trình, đỉnh ghi nơi biến nhận giá trị (\textit{def}) hoặc được đọc để tính toán hay trả kết quả (\textit{c-use}). Nếu điều kiện rẽ nhánh đọc một biến, \textit{p-use} của biến được ghi trên cạnh tương ứng. Tham số nhận giá trị ở đỉnh vào hàm~\cite[tr.~189--195]{pham2014kiemthu}.
 
-Với vòng lặp, các trường hợp thường quan tâm là không lặp, lặp một lần, hai lần và các số lần quanh giới hạn khi giới hạn được xác định. Vòng lặp có thể tạo số đường đi không hữu hạn, nên kiểm tra mọi execution path thường không khả thi~\cite[tr.~19--21, 41--42]{uetControlFlow}.
+Ở nửa phải Hình~\ref{fig:cfg-dfg}, cả hai cạnh ra từ dòng 2 mang nhãn \texttt{p-use(x)} vì hàm phải biết \(x\) mới chọn được lối đi. Dòng 3 đọc \(x\) khi tính \(x+1\), rồi ghi kết quả vào \texttt{kq}. Dòng 4 đọc \texttt{kq} để trả về. Các nhãn này cho phép lần ngược giá trị được đọc về phép gán đã tạo ra nó.
 
-Statement coverage và executable-line coverage có thể khác nhau vì một dòng chứa nhiều câu lệnh hoặc một câu lệnh trải trên nhiều dòng. Coverage.py ghi nhận branch arcs bằng các chuyển tiếp dòng nguồn--dòng đích. Phép đo này không ghi riêng giá trị của từng điều kiện con~\cite{coverageBranchDocs}.
+\subsection{Cặp định nghĩa và sử dụng (def--use)}
 
-\subsection{Định nghĩa, sử dụng biến và quan hệ def-use}
+Một lần gán và một lần đọc tạo thành cặp def--use nếu giá trị của phép gán tới được chỗ đọc. Điều này đòi hỏi biến chưa bị gán lại ở đoạn giữa. Giáo trình gọi đường đi như vậy là \textit{def-clear}~\cite[tr.~193--195]{pham2014kiemthu}.
 
-Kiểm thử dòng dữ liệu xét cách giá trị được định nghĩa và truyền tới nơi sử dụng. Một \textit{definition} là vị trí gán giá trị; \textit{computation-use} (c-use) sử dụng giá trị trong tính toán; \textit{predicate-use} (p-use) sử dụng giá trị trong điều kiện điều khiển~\cite[tr.~5--11]{uetDataFlow}.
+Với \(x = 1\), dòng 3 thay giá trị của \texttt{kq}, nên dòng 4 nhận giá trị từ dòng 3. Với \(x = 0\), đường chạy bỏ qua dòng 3 và giữ giá trị ở dòng 1. Ca đầu tiên đủ phủ câu lệnh. Ca thứ hai cần để thấy cặp \(1\to4\) của \texttt{kq}.
 
-Một đường đi từ định nghĩa $d$ tới use $u$ của biến $v$ là \textit{def-clear} nếu không có định nghĩa trung gian ghi đè giá trị đang xét. Quan hệ def-use cần có đường đi def-clear tương ứng~\cite[tr.~14--19]{uetDataFlow}. Nếu chương trình gán $x=1$, có thể gán lại $x=2$ rồi đọc $x$, một lần chạy đi qua cả hai phép gán không kiểm tra quan hệ truyền giá trị từ phép gán đầu tới use cuối. Cần đầu vào bỏ qua phép gán lại để kiểm tra quan hệ đó.
+Theo \textit{all-defs}, mỗi lần gán có thể tới một chỗ sử dụng cần ít nhất một ca đưa giá trị đến một chỗ như vậy. \textit{all-uses} yêu cầu phủ từng cặp gán và sử dụng khả thi~\cite[tr.~197--201]{pham2014kiemthu}. Trong thực nghiệm, ControlFlow dùng cặp def--use tĩnh để gợi ý phép gán nào có thể đưa giá trị tới dòng cần thử. Trace kiểm tra xem input đi qua dòng hay cạnh nào. Oracle đối chiếu đầu ra.
 
-Rapps và Weyuker xây dựng một họ tiêu chí lựa chọn test theo thông tin dòng dữ liệu~\cite{rapps1985}. Trong các tiêu chí trình bày ở môn học, All-defs yêu cầu mỗi định nghĩa truyền giá trị tới ít nhất một use. All-c-uses và All-p-uses lần lượt yêu cầu các quan hệ tới c-use và p-use cần xét. All-c-uses/some-p-uses ưu tiên toàn bộ c-use, chuyển sang ít nhất một p-use khi không có c-use khả đạt; All-p-uses/some-c-uses áp dụng theo chiều ngược lại. All-uses xét cả hai loại use~\cite[tr.~20--33]{uetDataFlow}.
-
-All-DU-paths phân biệt các đường def-clear nối một định nghĩa với use, thay vì chỉ ghi nhận rằng cặp đã xuất hiện~\cite[tr.~20, 34--36]{uetDataFlow}. Vì vậy, hit một DU-pair không xác nhận mọi DU-path của cặp đó đã được kiểm tra. Khi áp dụng, phải xác định cách mô hình hóa p-use, quy tắc giới hạn đường đi qua vòng lặp và xử lý các định nghĩa không có use khả đạt.
-
-\subsection{Phân tích tĩnh, phân tích động và tính khả thi}
-
-Phân tích tĩnh khai thác chương trình mà không thực thi; những biểu diễn thường dùng là AST, CFG và các quan hệ phụ thuộc. Phân tích động thu thập dữ liệu từ những lần chạy cụ thể~\cite[tr.~5--18]{uetProgramAnalysis}. Nhiều phân tích tĩnh dùng xấp xỉ trên nên có thể chứa hành vi không khả thi; quan sát động cung cấp xấp xỉ dưới và có thể thiếu hành vi chưa được kích hoạt. Đây là đặc điểm phụ thuộc mô hình, không phải bảo đảm rằng mọi công cụ tĩnh đều sound.
-
-Đối với sinh test, thông tin tĩnh có thể tạo danh sách mục tiêu, còn thực thi cung cấp witness cho mục tiêu đạt được. Không quan sát được một mục tiêu chưa đủ để kết luận mục tiêu bất khả thi. Tương tự, danh sách candidate def-use không được mặc định là toàn bộ quan hệ khả thi. Phân biệt candidate, witness và yêu cầu đã xác nhận là cần thiết để không diễn giải quá mức tỷ lệ coverage.
-
-\subsection{Sinh dữ liệu ngẫu nhiên, symbolic và concolic}
-
-Random testing lấy mẫu đầu vào từ miền và phân phối đã chọn. Cách này có thể tạo nhiều test nhưng khó chạm tới điều kiện hẹp nếu xác suất lấy mẫu thấp. Symbolic execution biểu diễn đầu vào bằng ký hiệu và dùng ràng buộc đường đi để tìm giá trị cụ thể. Concolic execution kết hợp một lần chạy cụ thể với thông tin ký hiệu để định hướng các lần chạy khác~\cite{godefroid2005dart,sen2005cute,cadar2008klee}.
-
-DART kết hợp phân tích giao diện, tạo test driver và phân tích động để sinh đầu vào đi theo các đường khác~\cite{godefroid2005dart}. CUTE kết hợp thực thi cụ thể--ký hiệu cho kiểm thử đơn vị C, bao gồm đầu vào dạng memory graph~\cite{sen2005cute}. KLEE sử dụng symbolic execution để sinh test cho chương trình hệ thống~\cite{cadar2008klee}. Các phương pháp này phụ thuộc vào cách tìm kiếm trạng thái, giải ràng buộc và mô hình hóa môi trường thực thi.
-
-\section{Mô hình ngôn ngữ lớn và concept trong sinh test}
-\label{sec:llm-foundations}
-
-\subsection{LLM, prompt và giới hạn ngữ cảnh}
-
-Mô hình ngôn ngữ lớn (Large Language Model, LLM) tạo văn bản hoặc mã từ ngữ cảnh đầu vào. Transformer dùng cơ chế attention để biểu diễn quan hệ giữa các phần tử trong chuỗi~\cite{vaswani2017attention}. Với bài toán sinh mã, Chen và cộng sự đánh giá chương trình bằng kiểm thử chức năng trên HumanEval~\cite{chen2021evaluating}. Đề tài sử dụng mô hình có sẵn ở giai đoạn inference.
-
-Prompt là nội dung cung cấp cho mô hình để mô tả yêu cầu và ngữ cảnh. Văn bản được biểu diễn bằng token; token không đồng nhất với một từ tự nhiên. Giới hạn ngữ cảnh ràng buộc lượng thông tin có thể đưa vào một yêu cầu cùng phần trả lời. Các model interfaces cho phép cấu hình giới hạn đầu ra và, với model phù hợp, yêu cầu phản hồi có cấu trúc~\cite{langchainModelsDocs}.
-
-Phản hồi dùng làm test input phải đúng cấu trúc, gắn được với tham số hàm và thỏa mãn miền dữ liệu. Sau đó mới có thể kiểm tra input có thực hiện tình huống được yêu cầu hay không. Đối với kết quả mong đợi, Mathews và Nagappan cho thấy một test generator có thể xác nhận lại hành vi sai nếu cách xây dựng oracle phụ thuộc vào mã đang kiểm tra~\cite{mathews2024design}.
-
-\subsection{Concept và nghĩa vụ kiểm thử}
-
-Trong khóa luận này, \textit{concept} là mô tả bằng ngôn ngữ con người về một đặc tính hoặc tình huống kiểm thử. Mô tả có thể dùng lớp tương đương, biên, quy tắc quyết định, kết quả nhánh hoặc quan hệ def-use. Đây là cách dùng thuật ngữ của đề tài.
-
-Ví dụ, ``nhánh xử lý chuỗi chỉ chứa tab chưa được bộ test hiện có thực thi'' mô tả một tình huống nếu phép đo xác nhận nhánh đó còn thiếu. Concept này định hướng việc chọn dữ liệu; chuỗi cụ thể đưa vào hàm là đầu vào dùng để thử tình huống ấy.
-
-Khi đánh giá concept, đề tài xét cả tình huống được mô tả và witness thực thi. Chẳng hạn, yêu cầu ``xem xét các biên'' chỉ là hướng dẫn; muốn ghi nhận normal BVA phải kiểm tra các giá trị biên và cách thay đổi từng chiều theo Mục~\ref{sec:functional-techniques}.
-
-\section{Dữ liệu và nền tảng đánh giá}
-\label{sec:benchmark-foundations}
-
-HumanEval được giới thiệu để đánh giá khả năng tổng hợp chương trình từ đặc tả hàm; đánh giá chức năng dựa trên các ca kiểm thử~\cite{chen2021evaluating}. Trong phạm vi đề tài, một \textit{task} là một bài toán, còn một \textit{program under test} (PUT) là một cài đặt được kiểm tra cho task đó. Một task có thể có nhiều PUT, nên số task và số PUT là các đơn vị khác nhau.
-
-EvalPlus tăng cường test cho các benchmark, trong đó có HumanEval+. Liu và cộng sự chỉ ra rằng bộ test hạn chế có thể bỏ sót chương trình sai và làm thay đổi thứ hạng mô hình khi bổ sung test~\cite{liu2023evalplus}. Kết quả này đặt ra yêu cầu kiểm tra các PUT bằng dữ liệu ngoài test cơ sở.
-
-Nhóm tác giả công bố mã nguồn và dữ liệu HumanEval+ trong repository EvalPlus~\cite{evalplusRepository}. Phiên bản dữ liệu và phần thông tin sử dụng trong thí nghiệm của đề tài được nêu ở Chương~\ref{chap:experiment}.
-
-\section{Công cụ và công nghệ liên quan}
+\section{Công cụ sử dụng}
 \label{sec:related-technologies}
 
-\subsection{Python và giao tiếp với mô hình}
+Trong các lần chạy được báo cáo, \textit{coverage.py} ghi dòng và cạnh để ControlFlow tìm vị trí còn thiếu, còn \textit{python-graphs} cung cấp quan hệ truy cập biến từ đồ thị của mã Python. Nếu mô hình mô tả miền lấy mẫu, Hypothesis lấy thêm giá trị từ miền đó~\cite{coverageBranchDocs,pythonGraphs,hypothesisIntroDocs}.
 
-Python có các thư viện chuẩn để đọc dữ liệu, phân tích cú pháp và quản lý tiến trình~\cite{python311Docs}. Các chức năng này phù hợp với việc xử lý đặc tả hàm, biểu diễn lời gọi và chạy chương trình cần kiểm tra.
+Trước lúc chạy PUT, Pydantic kiểm cấu trúc dữ liệu trả về và Bubblewrap cô lập tiến trình Python. Prefect ghi cấu hình và trạng thái của lần chạy để có thể tra lại kết quả~\cite{pydanticModelsDocs,bubblewrapDocs,prefectFlowsDocs}.
 
-LangChain cung cấp interface cho chat models, gồm cấu hình yêu cầu, nhận phản hồi và sử dụng structured output khi model hỗ trợ~\cite{langchainModelsDocs}. Interface này giúp mã ứng dụng giao tiếp với model thông qua adapter tương ứng.
-
-\subsection{Biểu diễn dữ liệu và kiểm tra schema}
-
-Pydantic biểu diễn cấu trúc dữ liệu bằng models, kiểm tra dữ liệu theo kiểu và tạo JSON Schema~\cite{pydanticModelsDocs}. Với phản hồi sinh test, schema có thể yêu cầu đủ trường và đúng kiểu. Những thuộc tính như tính đầy đủ của một phân hoạch hoặc tính khả thi của một rule cần các phép kiểm tra theo ngữ nghĩa bài toán.
-
-\subsection{Đo coverage và sinh dữ liệu bằng công cụ}
-
-Coverage.py đo các dòng thực thi và branch arcs~\cite{coverageBranchDocs}. Khi báo cáo kết quả, phải xác định phạm vi source được đo, gồm hay không gồm các hàm hỗ trợ, để biết mẫu số ứng với những câu lệnh và nhánh nào.
-
-Hypothesis là thư viện property-based testing của Python. Người dùng mô tả miền bằng strategies và tính chất cần kiểm tra; thư viện tạo nhiều ví dụ để thử tính chất đó~\cite{hypothesisIntroDocs}. Trong một cấu hình kết hợp với LLM, cần ghi nhận dữ liệu do sampler tạo để xác định sự tham gia của từng thành phần.
-
-\subsection{Sandbox, kiểm thử prototype và quản lý thực nghiệm}
-
-Bubblewrap tạo môi trường sandbox trên Linux bằng các cơ chế cô lập của hệ điều hành. Ứng dụng gọi Bubblewrap phải cấu hình quyền truy cập và tài nguyên được đưa vào sandbox~\cite{bubblewrapDocs}.
-
-Pytest tổ chức automated tests bằng assertions, fixtures và parametrization~\cite{pytestDocs}. Các chức năng này hỗ trợ viết nhiều trường hợp cho cùng một hợp đồng dữ liệu, chẳng hạn input đúng kiểu, thiếu trường hoặc sai chữ ký hàm.
-
-Prefect theo dõi một lần thực thi bằng flow run, với tham số và lịch sử trạng thái~\cite{prefectFlowsDocs}. Trong thực nghiệm, những thông tin này giúp đối chiếu cấu hình đã chọn với lần thực thi tạo ra kết quả.
-
-\section{Các nghiên cứu liên quan}
+\section{Nghiên cứu liên quan}
 \label{sec:related-work}
 
-Các nghiên cứu dưới đây sử dụng thông tin chương trình để hướng dẫn LLM sinh test hoặc phân tích cách đánh giá test được tạo ra.
+SDART của Nguyễn Đức Anh và cộng sự tìm thêm dữ liệu kiểm thử C++ bằng phân tích tĩnh khi chiến lược chọn đường khó phủ thêm nhánh~\cite{nguyen2019sdart}. Hai nghiên cứu sau đưa mô hình ngôn ngữ vào kiểm thử concolic theo các cách khác nhau. ConAgent dùng tác tử LLM để khởi tạo đối tượng Qt và sinh dữ liệu cho đường chứa lệnh chưa phủ~\cite{trong2026conagent}. ConAI chạy concolic rồi dùng mô hình nhỏ đã tinh chỉnh để sinh thêm input cho các đường được chọn~\cite{tran2026conai}.
 
-\subsection{SymPrompt: hướng dẫn bằng thông tin đường đi}
+SymPrompt đưa đường thực thi vào prompt. CoverUp chọn dòng hoặc nhánh chưa phủ rồi đưa phản hồi từ lượt chạy trước vào lần sửa test~\cite{ryan2024symprompt,pizzorno2025coverup}. DeepMOSA dùng thuật toán di truyền trên Python và gọi mô hình ngôn ngữ cho các nhánh còn thiếu khi độ phủ ngừng tăng~\cite{dao2026deepmosa}. ConceptTester cũng lấy độ phủ để tìm vị trí nên thử. Khi phân tích kết quả, khóa luận đếm số PUT cho đầu ra khác tham chiếu.
 
-Ryan và cộng sự đề xuất SymPrompt, một chiến lược prompting chia nhiệm vụ sinh test thành các bước gắn với đường thực thi của phương thức. Prompt bổ sung thông tin kiểu và các thành phần phụ thuộc để model tạo test phù hợp với ngữ cảnh mã~\cite{ryan2024symprompt}. Cách tiếp cận này hướng việc tạo dữ liệu tới các tình huống có thể chỉ ra từ cấu trúc chương trình. Khi áp dụng ý tưởng hướng dẫn vào bài toán phát hiện lỗi, đề tài còn phải kiểm tra đầu vào tạo được có bộc lộ failure ngoài baseline hay không.
-
-\subsection{CoverUp: sinh test với coverage feedback}
-
-Pizzorno và Berger đề xuất CoverUp để sinh regression tests Python. Công cụ kết hợp coverage, ngữ cảnh mã và phản hồi thực thi trong prompt, rồi tiếp tục tạo test cho các phần còn thiếu coverage~\cite{pizzorno2025coverup}. Khóa luận kế thừa cách xem khoảng thiếu coverage là một mục tiêu có thể đo, đồng thời đánh giá thêm số PUT có failure trên dữ liệu bổ sung.
-
-\subsection{Đánh giá chức năng và nguy cơ oracle không phù hợp}
-
-Liu và cộng sự xây dựng EvalPlus để kiểm tra mã do LLM sinh bằng bộ test mở rộng~\cite{liu2023evalplus}. Mathews và Nagappan phân tích trường hợp test generator xác nhận lại hành vi của chương trình có lỗi hoặc loại test bộc lộ lỗi do cách chọn oracle~\cite{mathews2024design}. Hai công trình chỉ ra các nguồn sai lệch khác nhau: test bỏ sót đầu vào gây lỗi và oracle đánh giá sai đầu ra.
-
-\subsection{Vị trí của đề tài}
-
-SymPrompt và CoverUp đã dùng cấu trúc chương trình hoặc coverage để hướng dẫn LLM. Đề tài xét cách mô tả tình huống bằng concept và đo phần dữ liệu sinh ra phát hiện được failure ngoài các đối sánh. Chương~\ref{chap:experiment} sử dụng riêng các độ đo detection, coverage và chi phí để đánh giá câu hỏi này.
+Mathews và Nagappan ghi nhận trường hợp oracle chấp nhận hành vi sai của chương trình~\cite{mathews2024design}. Để bước chấm độc lập với giả định của mô hình sinh test, ConceptTester chốt input trước khi chạy tham chiếu. Số PUT bị phát hiện chỉ tính những sai khác đã được xác nhận.
