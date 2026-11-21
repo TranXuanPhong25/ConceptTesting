@@ -4,8 +4,8 @@ from ..cohort import load_cohort
 from .base import PipelineStage
 
 
-class FrozenCohortStage(PipelineStage):
-    name = "frozen_cohort"
+class CohortLoaderStage(PipelineStage):
+    name = "cohort_loader"
 
     def __init__(self, cohort_path: Path):
         self.cohort_path = cohort_path.resolve()

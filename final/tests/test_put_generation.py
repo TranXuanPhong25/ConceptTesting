@@ -149,7 +149,7 @@ def test_console_accepts_cohort_without_stored_hash(tmp_path, monkeypatch):
 @pytest.mark.parametrize("status", ["pass", "fail", None])
 def test_main_saves_pipeline_task_record(tmp_path, monkeypatch, status):
     from final.src.benchmarks import PUT_generation as module
-    from final.src.modular.stages.frozen_cohort import FrozenCohortStage
+    from final.src.modular.stages.cohort_loader import CohortLoaderStage
 
     task = dict(TASK, task_id="HumanEval/0", test="fixture")
     program = {"id": 0, "code": "def f(x): return x", "approach": "identity"}
@@ -165,7 +165,7 @@ def test_main_saves_pipeline_task_record(tmp_path, monkeypatch, status):
     stored = json.loads(path.read_text())
     assert set(stored) == {"tasks"}
     context = SimpleNamespace(task=task)
-    FrozenCohortStage(path).run(context)
+    CohortLoaderStage(path).run(context)
     record = context.cohort_task
     assert record["generated"] == (1 if status else 0)
     assert record["base_pass"] == (1 if status == "pass" else 0)

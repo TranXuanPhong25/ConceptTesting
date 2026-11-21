@@ -130,7 +130,7 @@ def worker(directory):
 
     class SavedPacket(PipelineStage):
         name = "saved_input_context"
-        requires = ("frozen_cohort",)
+        requires = ("cohort_loader",)
 
         def __init__(self, source):
             self.source = source

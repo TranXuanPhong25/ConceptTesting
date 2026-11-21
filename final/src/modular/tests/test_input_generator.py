@@ -41,7 +41,7 @@ def test_default_shell_has_no_concept_or_witness_stages(tmp_path, monkeypatch):
     model = BoundaryFixtureModel()
     calls = FixtureCalls(model, artifacts.directory)
     pipeline = BenchmarkPipeline(path, artifacts, calls=calls, settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
-    assert [stage.name for stage in pipeline.generation_stages] == ["frozen_cohort", "input_context", "input_generation"]
+    assert [stage.name for stage in pipeline.generation_stages] == ["cohort_loader", "input_context", "input_generation"]
     result = pipeline.run([TASK], {TASK["task_id"]: META})
     assert set(result["arms"]) == {"plain"}
     assert len(model.requests) == 1
@@ -55,7 +55,7 @@ def test_injected_generator_needs_no_arm_packet_model_or_concepts(tmp_path, monk
     generator = SavedInputsGenerator()
     pipeline = BenchmarkPipeline(path, artifacts, input_generator=generator,
                                  settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
-    assert [stage.name for stage in pipeline.generation_stages] == ["frozen_cohort", "input_generation"]
+    assert [stage.name for stage in pipeline.generation_stages] == ["cohort_loader", "input_generation"]
     summary = pipeline.run([TASK], {TASK["task_id"]: META})
     assert summary["arms"]["new_method"]["detected"] == 1
     assert not artifacts.exists("tasks/7/packet.json")
@@ -76,7 +76,7 @@ def test_any_input_producing_stage_can_use_method_adapter(tmp_path, monkeypatch)
     summary = pipeline.run([TASK], {TASK["task_id"]: META})
     assert summary["arms"]["another_method"]["valid_inputs"] == 1
     assert summary["arms"]["another_method"]["detected"] == 1
-    assert [stage.name for stage in pipeline.generation_stages] == ["frozen_cohort", "input_generation"]
+    assert [stage.name for stage in pipeline.generation_stages] == ["cohort_loader", "input_generation"]
 
 
 @pytest.mark.parametrize("arguments", ["(__import__('os').getcwd(),)", "1", "{}"])

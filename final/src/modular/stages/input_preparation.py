@@ -7,7 +7,7 @@ from ..input_prompts import structured_input_prompt
 
 class InputPreparationStage(PipelineStage):
     name = "input_context"
-    requires = ("frozen_cohort",)
+    requires = ("cohort_loader",)
 
     def __init__(self, methods):
         self.methods = tuple(methods)

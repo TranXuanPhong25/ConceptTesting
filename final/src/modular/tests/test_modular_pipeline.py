@@ -75,7 +75,7 @@ def test_old_cohort_hash_stage_config_replays_without_mismatch(tmp_path):
     manifest_path = pipeline.artifacts.path("modular_manifest.json")
     manifest = json.loads(manifest_path.read_text())
     for stage in manifest["stages"]:
-        if stage["name"] == "frozen_cohort":
+        if stage["name"] == "cohort_loader":
             stage["configuration"] = {"cohort_sha256": "legacy"}
     manifest["cohort_sha256"] = "legacy"
     manifest_path.write_text(json.dumps(manifest))

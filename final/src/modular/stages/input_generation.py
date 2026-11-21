@@ -4,11 +4,11 @@ from ..input_contract import validate_generated_inputs
 
 class InputGenerationStage(PipelineStage):
     name = "input_generation"
-    requires = ("frozen_cohort",)
+    requires = ("cohort_loader",)
 
     def __init__(self, input_generator):
         self.input_generator = input_generator
-        self.requires = ("frozen_cohort", *(stage.name for stage in input_generator.preparation_stages()))
+        self.requires = ("cohort_loader", *(stage.name for stage in input_generator.preparation_stages()))
 
     def source_dependencies(self):
         return self.input_generator.source_dependencies()

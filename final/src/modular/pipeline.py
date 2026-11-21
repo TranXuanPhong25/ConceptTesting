@@ -16,7 +16,7 @@ from .calls import CachedModelCalls
 from .execution_cache import InputExecutionCache
 from .references import HumanEvalPlusReferencePrograms
 from .context import PipelineSettings, TaskContext
-from .stages.frozen_cohort import FrozenCohortStage
+from .stages.cohort_loader import CohortLoaderStage
 from .stages.input_generation import InputGenerationStage
 from .stages.reference_oracle import ReferenceOracleStage
 from .stages.put_evaluation import PutEvaluationStage
@@ -57,7 +57,7 @@ class BenchmarkPipeline:
             raise ValueError("Read-only replay only accepts cached model calls")
         if self.artifacts.read_only and calls is None:
             self.calls = CachedModelCalls(artifacts)
-        self.cohort_stage = FrozenCohortStage(cohort_path)
+        self.cohort_stage = CohortLoaderStage(cohort_path)
         self.reporting_stage = input_generator.reporting_stage() or ReportingStage()
         self.generation_stages = [
             self.cohort_stage,

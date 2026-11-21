@@ -4,7 +4,7 @@
 interface này để lấy input; mỗi phương pháp tự quản lý logic, LLM calls và evidence.
 
 ```text
-FrozenCohortStage
+CohortLoaderStage
   → optional preparation stages do generator khai báo
   → InputGenerationStage(input_generator)
   → freeze inputs của tất cả tasks
