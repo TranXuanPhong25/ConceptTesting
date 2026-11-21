@@ -17,8 +17,7 @@ from . import runner
 from .extraction import extract, target_source
 from ..generators.base import InputGenerator
 from ..stages.input_preparation import InputPreparationStage
-from ..call_builder import CallBuilder
-from ..boundary_value_analysis.legacy.construction import input_identity
+from ..call_builder import CallBuilder, input_identity
 from final.src.runtime.artifacts import digest, read_sandbox_file
 from final.src.runtime.execution import execute, ExecutionError
 

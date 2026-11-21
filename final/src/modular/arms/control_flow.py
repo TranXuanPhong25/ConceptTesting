@@ -4,7 +4,7 @@ import copy
 from dataclasses import asdict, dataclass
 
 from .base import InputGenerationMethod
-from ..call_builder import CallBuilder
+from ..call_builder import CallBuilder, input_identity
 from ..control_flow.analysis import analyze, hit
 from ..control_flow.prompts import INSTRUCTION, messages
 from ..control_flow.schema import parse_response
@@ -67,7 +67,6 @@ class ControlFlowArm(InputGenerationMethod):
     def discover(self, context):
         from ..tool_sampling.constructors import sample_hypothesis
         from ..tool_sampling.ledger import CandidateLedger, predicate_status
-        from ..boundary_value_analysis.legacy.construction import input_identity
         if context.calls is None or context.packet is None:
             raise RuntimeError('Control-flow discovery requires prepared context and model calls')
         builder = CallBuilder.for_source(context.task['prompt'], context.task['entry_point'])

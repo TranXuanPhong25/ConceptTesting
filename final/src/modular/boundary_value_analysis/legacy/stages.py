@@ -5,12 +5,13 @@ import json
 import math
 import re
 
+from ...call_builder import bound_input_identity
 from .prompts import selection_messages, generation_messages
 from .characteristics import number, characteristic_values, boundary_target
 from .binding import validate_binding
 from .context_requirements import parse_context_requirements, validate_context_requirements
 from .grounding import checked, context_goals, goal_coverage, audit_boundary
-from .construction import TargetCompiler, base_identities as compiled_base_identities, input_identity as compiled_input_identity
+from .construction import TargetCompiler, base_identities as compiled_base_identities
 from .types import entry_function, input_signature, literal_arguments, literal_value, finite_literal
 
 
@@ -298,18 +299,15 @@ class BoundaryInputGeneration:
                     validated_input = TargetCompiler.build_input(context, obligation, input_record["arguments"],
                                                                  compiled_seen, requirements)
                 else:
-                    validated_input, identity = self.validate_input(input_record, signature, boundaries, seen)
+                    validated_input, identity, arguments = self.validate_input(input_record, signature, boundaries, seen)
                     requirements = parse_context_requirements(input_record.get("context_requirements", []), signature)
-                    arguments, keywords = literal_arguments(validated_input)
-                    bound = signature.bind(*arguments, **keywords)
-                    bound.apply_defaults()
-                    validate_context_requirements(requirements, bound.arguments)
+                    validate_context_requirements(requirements, arguments)
                     validated_input["context_requirements"] = requirements
                     validated_input["validation"]["context_requirements"] = "passed" if requirements else "none_declared"
                     validated_input["validation"]["reach_propagation"] = "unverified"
                     seen.add(identity)
                     if context.settings.construction_mode == "compiled":
-                        shared_identity = compiled_input_identity(signature, validated_input)
+                        shared_identity = bound_input_identity(arguments)
                         if shared_identity in compiled_seen:
                             raise ValueError("duplicate_input")
                         compiled_seen.add(shared_identity)
@@ -346,7 +344,7 @@ class BoundaryInputGeneration:
 
     @staticmethod
     def validate_input(input_record, signature, boundaries, seen):
-        """Return a checked input and identity; prose constraints remain unverified."""
+        """Return a checked input, identity, and bound arguments."""
         arguments, keywords = literal_arguments(input_record)
         if not finite_literal(arguments) or not finite_literal(keywords):
             raise ValueError("unsupported_or_nonfinite_literal")
@@ -371,7 +369,7 @@ class BoundaryInputGeneration:
             "validation": {"signature": "passed", "boundary_target": "passed",
                            "domain_constraints": "unverified", "oracle": "not_run"},
         }
-        return validated_input, identity
+        return validated_input, identity, bound.arguments
 
     @staticmethod
     def base_identities(records, signature):

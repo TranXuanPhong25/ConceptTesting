@@ -4,9 +4,8 @@ import hashlib
 import json
 import math
 
-from ..call_builder import supported_value
+from ..call_builder import input_identity, supported_value
 from .membership import evaluate, expression
-from ..boundary_value_analysis.legacy.construction import input_identity
 
 STAGES = ('P1', 'P2', 'P3', 'P4', 'P5', 'V1', 'V2', 'V3')
 

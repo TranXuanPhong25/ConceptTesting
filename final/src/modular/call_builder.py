@@ -41,6 +41,19 @@ def input_signature(function):
     return inspect.Signature(parameters)
 
 
+def input_identity(signature, record):
+    arguments = ast.literal_eval(record["args"])
+    keywords = ast.literal_eval(record["kwargs"])
+    bound = signature.bind(*arguments, **keywords)
+    bound.apply_defaults()
+    return bound_input_identity(bound.arguments)
+
+
+def bound_input_identity(arguments):
+    # Strict identity preserves literal types and container ordering.
+    return repr([(name, type(value).__name__, repr(value)) for name, value in arguments.items()])
+
+
 def supported_value(value, depth=0):
     if depth > 8:
         return False

@@ -86,8 +86,7 @@ def test_recursion_counts_only_external_entry(tmp_path):
 
 
 def test_extraction_binds_singleton_tuple_and_bool_identity(tmp_path):
-    from final.src.modular.call_builder import CallBuilder
-    from final.src.modular.boundary_value_analysis.legacy.construction import input_identity
+    from final.src.modular.call_builder import CallBuilder, input_identity
     source='def f(x, *, flag=True):\n    return x\n'
     exported={'test_target.py':'import target\ndef test_0():\n    target.f((1,),flag=True)\ndef test_1():\n    target.f((1,),flag=1)\n'}
     result=extract(PYTHON,tmp_path,source,'f',exported,4,5)

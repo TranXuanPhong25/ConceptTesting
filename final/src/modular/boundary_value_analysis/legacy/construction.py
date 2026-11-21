@@ -5,20 +5,11 @@ import ast
 import copy
 import re
 
-from ...call_builder import CallBuilder, MAX_CONTAINER_ITEMS
+from ...call_builder import CallBuilder, MAX_CONTAINER_ITEMS, bound_input_identity, input_identity
 from .characteristics import number, characteristic_values, boundary_target, parsed_float
 from .binding import validate_known_domain
 from .context_requirements import parse_context_requirements, validate_context_requirements
 from .grounding import checked
-
-
-def input_identity(signature, record):
-    arguments = ast.literal_eval(record["args"])
-    keywords = ast.literal_eval(record["kwargs"])
-    bound = signature.bind(*arguments, **keywords)
-    bound.apply_defaults()
-    # Strict identity preserves literal types and container ordering.
-    return repr([(name, type(value).__name__, repr(value)) for name, value in bound.arguments.items()])
 
 
 def base_identities(context, signature):
@@ -256,7 +247,7 @@ class TargetCompiler:
             raise ValueError("constructor_did_not_realize_target")
         validate_known_domain(bound.arguments, context.guidance.get("domain_guards", []))
         validate_context_requirements(requirements, bound.arguments)
-        identity = input_identity(builder.signature, encoded)
+        identity = bound_input_identity(bound.arguments)
         if identity in seen:
             raise ValueError("duplicate_input")
         # VALIDATION END: actual target, recognized domain clauses and exact base duplicates.
