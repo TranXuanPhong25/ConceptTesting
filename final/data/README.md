@@ -8,8 +8,8 @@
   Pre-layout snapshots are recoverable from Git history. Offline rebuild changed
   only the builder source hash and its dependent inventory hash; task records and
   selected task/PUT identities remain unchanged.
-  `load_metadata()` supplements these records in memory with public-spec input
-  types from `src/benchmarks/humaneval_types.py`; original data files stay unchanged.
+  Input annotations come from the original task signatures. Domain validation
+  uses the contracts in this metadata.
 - `fixtures/`: synthetic/saved inputs used by engineering tests.
 - `humaneval_bugs.json`: reference-bug notes, when present.
 

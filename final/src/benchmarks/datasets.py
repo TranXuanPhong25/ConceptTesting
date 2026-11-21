@@ -68,13 +68,7 @@ def load_tasks() -> list[dict]:
 
 
 def load_metadata():
-    from .humaneval_types import input_types_for_source
-    metadata = json.loads(METADATA_PATH.read_text())
-    for task in load_tasks():
-        types = input_types_for_source(task['prompt'], task['entry_point'])
-        if types:
-            metadata[task['task_id']]['input_types'] = types
-    return metadata
+    return json.loads(METADATA_PATH.read_text())
 
 
 def load_humaneval() -> list[dict]:

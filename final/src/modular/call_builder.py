@@ -144,32 +144,26 @@ def matches_annotation(value, annotation):
 
 
 class CallBuilder:
-    def __init__(self, signature, *, input_types=None):
+    def __init__(self, signature):
         for parameter in signature.parameters.values():
             if parameter.annotation is not inspect.Parameter.empty:
                 validate_annotation(parameter.annotation)
-        self.input_types = input_types or {}
-        for annotation in self.input_types.values():
-            validate_annotation(annotation)
         self.signature = signature
 
     @classmethod
     def for_source(cls, source, entry_point, *, input_types=None):
-        from final.src.benchmarks.humaneval_types import input_types_for_source
         signature = input_signature(entry_function(source, entry_point))
-        public_types = input_types_for_source(source, entry_point)
-        for name, annotation in (input_types or {}).items():
-            if name in public_types and annotation != public_types[name]:
-                raise ValueError("conflicting_spec_input_type:" + name)
-        input_types = {**public_types, **(input_types or {})}
         if input_types:
-            if set(input_types) - set(signature.parameters):
+            if input_types.keys() - signature.parameters.keys():
                 raise ValueError("unknown_type_parameters")
-            signature = signature.replace(parameters=[
-                parameter.replace(annotation=input_types.get(name, parameter.annotation)
-                                  if parameter.annotation is inspect.Parameter.empty else parameter.annotation)
-                for name, parameter in signature.parameters.items()])
-        return cls(signature, input_types=input_types)
+            parameters = [
+                parameter.replace(annotation=input_types[name])
+                if parameter.annotation is inspect.Parameter.empty and name in input_types
+                else parameter
+                for name, parameter in signature.parameters.items()
+            ]
+            signature = signature.replace(parameters=parameters)
+        return cls(signature)
 
     def validate_call(self, record):
         bound = self.signature.bind(*ast.literal_eval(record["args"]), **ast.literal_eval(record["kwargs"]))
@@ -199,9 +193,9 @@ class CallBuilder:
                 raise ValueError("missing_parameter")
             if not supported_value(value):
                 raise ValueError("unsupported_or_nonfinite_argument")
-            for annotation in (parameter.annotation, self.input_types.get(name, inspect.Parameter.empty)):
-                if annotation is not inspect.Parameter.empty and not matches_annotation(value, annotation):
-                    raise ValueError("argument_type_mismatch:" + name)
+            annotation = parameter.annotation
+            if annotation is not inspect.Parameter.empty and not matches_annotation(value, annotation):
+                raise ValueError("argument_type_mismatch:" + name)
             if parameter.kind == inspect.Parameter.KEYWORD_ONLY:
                 keywords[name] = value
             else:

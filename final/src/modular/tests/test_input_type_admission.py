@@ -6,7 +6,7 @@ import pytest
 
 from final.src.benchmarks.datasets import load_metadata, load_tasks
 from final.src.modular.artifacts import ArtifactStore
-from final.src.modular.call_builder import CallBuilder
+from final.src.modular.call_builder import CallBuilder, entry_function, input_signature
 from final.src.modular.context import PipelineSettings, TaskContext
 from final.src.modular.stages.reference_oracle import ReferenceOracleStage
 
@@ -54,18 +54,16 @@ def test_defaults_positional_only_and_keyword_only_are_type_checked():
         builder.validate_call({'args': '()', 'kwargs': "{'x': 1}"})
 
 
-def test_all_public_specs_have_parameter_types_and_original_contracts_are_unchanged():
+def test_humaneval_uses_original_signatures_and_contracts():
     import json
     from final.src.benchmarks.datasets import METADATA_PATH
     original = json.loads(METADATA_PATH.read_text())
-    metadata = load_metadata()
+    assert load_metadata() == original
     tasks = load_tasks()
     assert len(tasks) == 164
     for task in tasks:
-        meta = metadata[task['task_id']]
-        assert {k: v for k, v in meta.items() if k != 'input_types'} == original[task['task_id']]
-        builder = CallBuilder.for_source(task['prompt'], task['entry_point'], input_types=meta.get('input_types'))
-        assert all(parameter.annotation is not parameter.empty for parameter in builder.signature.parameters.values())
+        source, entry = task['prompt'], task['entry_point']
+        assert CallBuilder.for_source(source, entry).signature == input_signature(entry_function(source, entry))
     # Explicitly heterogeneous tasks stay heterogeneous; numeric predicates can receive floats.
     for number, arguments in [(22, {'values': ['a', {}, 1, True]}),
                               (92, {'x': 1.5, 'y': 2, 'z': 3.5}),
@@ -73,15 +71,12 @@ def test_all_public_specs_have_parameter_types_and_original_contracts_are_unchan
                               (137, {'a': '2,5', 'b': 3}),
                               (151, {'lst': [1, -2, 3.5]})]:
         task = next(t for t in tasks if t['task_id'] == f'HumanEval/{number}')
-        builder = CallBuilder.for_source(task['prompt'], task['entry_point'],
-                                         input_types=metadata[task['task_id']].get('input_types'))
+        builder = CallBuilder.for_source(task['prompt'], task['entry_point'])
         builder.build_values(arguments)
 
 
-@pytest.mark.parametrize('number,args', [(29, "({'a': 'a'}, 'a')"), (40, "(['', -816.25],)"),
-                                        (78, '(set(),)'), (88, '((605, 987.85),)'),
-                                        (94, '([3, False, -3282],)')])
-def test_wrong_spec_types_never_reach_reference_oracle(tmp_path, monkeypatch, number, args):
+@pytest.mark.parametrize('number,args', [(29, "({'a': 'a'}, 'a')"), (40, '(42,)')])
+def test_wrong_declared_types_never_reach_reference_oracle(tmp_path, monkeypatch, number, args):
     task = next(t for t in load_tasks() if t['task_id'] == f'HumanEval/{number}')
     context = TaskContext(task, load_metadata()[task['task_id']], ArtifactStore(tmp_path), PipelineSettings())
     context.inputs_frozen = True
@@ -121,12 +116,24 @@ def test_reference_rejection_keeps_raw_indices_and_catalogue_survivors(tmp_path,
     assert context.inputs['arms']['a']['inputs'] == [invalid, valid]
 
 
-def test_public_spec_types_apply_without_augmented_metadata():
-    task = next(t for t in load_tasks() if t['task_id'] == 'HumanEval/78')
-    with pytest.raises(ValueError, match='argument_type_mismatch:num'):
-        CallBuilder.for_source(task['prompt'], task['entry_point']).build_values({'num': set()})
-    # An unrelated function with the same name gets its own declared interface.
-    CallBuilder.for_source('def hex_key(num: int): pass', 'hex_key').build({'num': 3})
+def test_unannotated_humaneval_inputs_reach_reference_with_contract(tmp_path, monkeypatch):
+    task = next(t for t in load_tasks() if t['task_id'] == 'HumanEval/31')
+    metadata = load_metadata()[task['task_id']]
+    context = TaskContext(task, metadata, ArtifactStore(tmp_path), PipelineSettings())
+    context.cohort_task = {'base_input_keys': []}
+    record = {'args': "('7',)", 'kwargs': '{}'}
+    context.inputs = {'arms': {'plain': {'inputs': [record]}}}
+
+    def execute(job):
+        assert job['tests'] == [record]
+        assert job['contract'] == metadata['contract']
+        assert 'type(n) == int' in job['contract']
+        return {'tests': [{'status': 'invalid_domain'}]}
+
+    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute', execute)
+    ReferenceOracleStage().run(context)
+    assert context.oracle['tests'] == []
+    assert context.oracle['rejected'][0]['reason'] == 'domain_or_reference_rejects'
 
 
 def test_model_any_cannot_override_a_declared_integer():
@@ -169,9 +176,8 @@ def test_type_schema_changes_invalidate_pynguin_batch_provenance(tmp_path):
         generator.run_task(ctx)
 
 
-def test_public_literal_base_inputs_and_spec_type_conflicts():
+def test_public_literal_base_inputs_against_declared_types():
     checked = 0
-    rejected = []
     for task in load_tasks():
         builder = CallBuilder.for_source(task['prompt'], task['entry_point'])
         for call in ast.walk(ast.parse(task['test'])):
@@ -182,20 +188,26 @@ def test_public_literal_base_inputs_and_spec_type_conflicts():
                 kwargs = {kw.arg: ast.literal_eval(kw.value) for kw in call.keywords}
             except (ValueError, TypeError):
                 continue
-            try:
-                builder.validate_call({'args': repr(args), 'kwargs': repr(kwargs)})
-            except ValueError as error:
-                rejected.append((task['task_id'], args, str(error)))
+            builder.validate_call({'args': repr(args), 'kwargs': repr(kwargs)})
             checked += 1
     assert checked == 1151
-    # The public base suite itself passes [] where the specification requires a string.
-    assert rejected == [('HumanEval/78', ([],), 'argument_type_mismatch:num')]
 
 
-def test_metadata_can_refine_but_never_weaken_declared_types():
+def test_metadata_only_fills_missing_annotations():
     builder = CallBuilder.for_source('def f(x: list[int]): pass', 'f', input_types={'x': 'Any'})
     with pytest.raises(ValueError, match='argument_type_mismatch:x'):
         builder.build_values({'x': [True]})
-    task = next(t for t in load_tasks() if t['task_id'] == 'HumanEval/78')
-    with pytest.raises(ValueError, match='conflicting_spec_input_type:num'):
-        CallBuilder.for_source(task['prompt'], task['entry_point'], input_types={'num': 'Any'})
+
+    builder = CallBuilder.for_source(
+        'def f(xs: list, n): pass', 'f', input_types={'xs': 'list[int]', 'n': 'int'}
+    )
+    assert builder.build({'xs': ['a'], 'n': 1})['args'] == "(['a'], 1)"
+    with pytest.raises(ValueError, match='argument_type_mismatch:n'):
+        builder.build({'xs': ['a'], 'n': '1'})
+
+
+def test_generic_humaneval_annotation_stays_generic():
+    task = next(t for t in load_tasks() if t['task_id'] == 'HumanEval/30')
+    builder = CallBuilder.for_source(task['prompt'], task['entry_point'])
+    assert builder.signature.parameters['l'].annotation == 'list'
+    assert builder.build({'l': ['a']})['args'] == "(['a'],)"
