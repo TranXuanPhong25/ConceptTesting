@@ -5,7 +5,7 @@ CATALOGUE_ARM_NAMES = (
     "ep_bva_v2", "decision_table_v2",
 )
 CATALOGUE_CALL_CAPS = {}
-ANALYSIS_CALL_CAPS = {'control_flow': 2}
+ANALYSIS_CALL_CAPS = {'control_flow': 'pending'}
 
 
 def retained_input_budget(name, initial_budget):

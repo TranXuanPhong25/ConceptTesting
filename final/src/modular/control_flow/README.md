@@ -34,22 +34,29 @@ không chứng minh dynamic def-clear path hoặc intended semantics.
 
 ## Budget và artifacts
 
-Default:2model rounds/task,≤6selected targets/task,32draws/concept/round,
-2sampling seconds/concept,64candidate–PUT observations/task, input suite theo
-shared `input_budget` (default20). Trace1second/input trong singleton bwrap;
-hard timeout ở native C cho unknown/no coverage, lỗi infrastructure thật vẫn
-raise. Không suy infeasible từ timeout/no witness.
+ControlFlow gửi mọi target đã phân tích từ PUT pass base tests, theo thứ tự
+analysis, tối đa 6 target mỗi prompt mặc định. Phần chưa vừa chuyển sang batch
+sau. Target chỉ bị bỏ khi prompt riêng của nó vượt context. Nếu còn lượt sau
+khi gửi các batch, feedback dùng lại target và evidence của batch cuối.
+Mặc định có ngân sách 2 round, hoặc một call cho mỗi batch nếu cần nhiều hơn.
+Preview Prefect ghi tổng call và completion token là `pending`.
+
+Mặc định mỗi concept/round có tối đa 32 draws và 2 giây sampling. Tổng quota
+trace là 64 lượt input–PUT/task. Suite cuối dùng shared `input_budget` (20 mặc
+định). Trace tối đa 1 giây/input trong singleton bwrap. Hard timeout ở native C
+cho unknown/no coverage, lỗi infrastructure thật vẫn raise. Không suy
+infeasible từ timeout/no witness.
 
 Nếu thiếu cached coverage, replay toàn bộ recorded base calls tới300/PUT,
 không cắt32calls. Quá cap hoặc replay thiếu measurement thì coverage unknown.
 Đây là baseline của **available recorded calls**, không claim cover unrecorded
 base-suite execution. Cached baseline và replay provenance/count được lưu.
 
-Target selection round-robin giữa visible PUTs, chỉ từ base evidence; context
-overflow giảm targets trước call và ghi omitted IDs. Không dùng hidden failure
-labels hoặc task-ID bypass. Target coverage denominator là selected targets,
-không phải mọi possible path của chương trình. Candidate native budget dùng
-chung các PUT; số observations và unique inputs là hai đơn vị khác nhau.
+Phân tích lấy target từ base evidence. `analysis.json` lưu target đã xếp batch,
+target quá dài và PUT không có target nào vừa context. Coverage dùng tập
+target đã xếp batch làm mẫu số. Kết quả ghi các PUT có target nhưng thiếu trace,
+ví dụ khi không còn quota native. Observations đếm cặp input–PUT và unique
+inputs đếm input.
 
 Artifacts mỗi task: `control_flow/analysis.json`, `response_<round>.json`,
 `base_<id-hash>.json` nếu cần, `generation.json`. Lưu raw response, errors,

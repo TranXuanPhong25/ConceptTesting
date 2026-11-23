@@ -70,9 +70,8 @@ class ControlFlowArm(InputGenerationMethod):
         if context.calls is None or context.packet is None:
             raise RuntimeError('Control-flow discovery requires prepared context and model calls')
         builder = CallBuilder.for_source(context.task['prompt'], context.task['entry_point'])
-        visible = set(context.packet['visible_put_ids'])
         programs = [copy.deepcopy(program) for program in context.cohort_task['programs']
-                    if program['id'] in visible and program['base']['status'] == 'pass']
+                    if program['base']['status'] == 'pass']
         analyses, analysis_errors = [], []
         for program in programs:
             try:
@@ -97,41 +96,30 @@ class ControlFlowArm(InputGenerationMethod):
                 analyses.append(analysis)
             except (ValueError, SyntaxError) as error:
                 analysis_errors.append({'program_id': program['id'], 'reason': str(error)})
-        # Round-robin prevents one early guard in one PUT from taking every slot.
-        targets = []
-        for index in range(self.settings.target_limit):
-            for analysis in analyses:
-                if index < len(analysis['targets']) and len(targets) < self.settings.target_limit:
-                    targets.append(analysis['targets'][index])
         evidence = [{'program_id': row['program_id'], 'source_sha256': row['source_sha256'],
                      'def_use': row['def_use'], 'data_flow_status': row['data_flow_status'],
                      'coverage_status': row['coverage_status']} for row in analyses]
         source = [{'id': p['id'], 'code': compact_source(p['code']),
                    'base_inputs': [{key: call[key] for key in ('args', 'kwargs') if key in call}
                                    for call in p['base'].get('calls', [])[:12]]} for p in programs]
-        omitted = []
-        selected_source, selected_evidence = source, evidence
-        while targets:
-            used = {target['program_id'] for target in targets}
-            selected_source = [row for row in source if row['id'] in used]
-            selected_evidence = [row for row in evidence if row['program_id'] in used]
-            request = messages(context.task, context.metadata.get('contract', ''), selected_source,
-                               selected_evidence, targets, context.settings.input_budget)
-            if context.calls.token_count(request) + context.settings.input_tokens + 128 <= context.settings.context_tokens:
-                break
-            omitted.append(targets.pop()['id'])
-        source, evidence = selected_source, selected_evidence
+        pending_targets = [target for row in analyses for target in row['targets']]
+        batches, omitted = self._prepare_target_batches(context, pending_targets, source, evidence)
+        selected_targets = [target for targets, _, _ in batches for target in targets]
+        target_owners = {target['program_id'] for target in pending_targets}
+        selected_owners = {target['program_id'] for target in selected_targets}
         context.artifacts.write(context.task_directory + '/control_flow/analysis.json',
-                                {'programs': analyses, 'errors': analysis_errors, 'selected_targets': targets,
-                                 'context_omitted_targets': omitted})
-        if not targets:
+                                {'programs': analyses, 'errors': analysis_errors,
+                                 'selected_targets': selected_targets, 'context_omitted_targets': omitted,
+                                 'context_blocked_put_ids': sorted(target_owners - selected_owners, key=repr)})
+        if not batches:
             unknown = not analyses or any(row['coverage_status'] == 'unknown' for row in analyses)
             return {'inputs': [], 'concepts': [], 'status': ('prompt_too_large' if omitted else
                     'coverage_unknown' if unknown else 'no_measured_gaps'),
                     'analysis_errors': analysis_errors,
                     'target_coverage': {'covered': None if unknown or omitted else 0,
                                         'total': None if unknown or omitted else 0},
-                    'candidate_receipts': [], 'rounds': []}
+                    'candidate_receipts': [], 'rounds': [],
+                    'target_puts_without_trace': sorted(target_owners, key=repr)}
         base_keys = set()
         for program in programs:
             for call in program['base'].get('calls', []):
@@ -141,11 +129,16 @@ class ControlFlowArm(InputGenerationMethod):
                     pass
         concepts, receipts, rounds, errors = [], [], [], []
         candidates, covered = {}, set()
-        target_programs = {target['program_id'] for target in targets}
-        checks_per_round = self.settings.candidate_limit // self.settings.rounds
-        candidates_per_round = max(1, checks_per_round // len(target_programs))
+        round_count = max(self.settings.rounds, len(batches))
+        checks_per_round = self.settings.candidate_limit // round_count
         feedback = None
-        for round_index in range(self.settings.rounds):
+        for round_index in range(round_count):
+            new_batch = round_index < len(batches)
+            if new_batch:
+                feedback = None
+            targets, source, evidence = batches[min(round_index, len(batches) - 1)]
+            target_programs = {target['program_id'] for target in targets}
+            candidates_per_round = max(1, checks_per_round // len(target_programs))
             request = messages(context.task, context.metadata.get('contract', ''), source, evidence, targets,
                                context.settings.input_budget, feedback)
             if context.calls.token_count(request) + context.settings.input_tokens + 128 > context.settings.context_tokens:
@@ -190,6 +183,7 @@ class ControlFlowArm(InputGenerationMethod):
             direct = [row for row in pool if any(s['tool'] == 'llm' for s in row['sources'])]
             sampled = [row for row in pool if row not in direct]
             pending = []
+            retrace_existing = new_batch and round_index > 0
             for row in [*direct, *sampled]:
                 call = row['canonical_args']
                 key = repr(input_identity(builder.signature, call))
@@ -197,17 +191,28 @@ class ControlFlowArm(InputGenerationMethod):
                     for source_item in row['sources']:
                         if source_item not in candidates[key]['sources']:
                             candidates[key]['sources'].append(source_item)
-                    continue
+                    if not retrace_existing:
+                        continue
                 if key in base_keys or len(pending) >= candidates_per_round:
                     continue
-                candidates[key] = {'call': call, 'sources': row['sources'], 'hit_targets': []}
+                candidates.setdefault(key, {'call': call, 'sources': row['sources'], 'hit_targets': []})
                 pending.append((key, call))
+            if retrace_existing and not pending:
+                reuse = next(((key, row['call']) for key, row in candidates.items()
+                              if row.get('domain') == 'valid'), None)
+                if reuse is not None:
+                    pending.append(reuse)
             round_receipts = []
+            trace_limit = self.settings.candidate_limit - len(receipts)
+            future_batches = len(batches) - round_index - 1
+            if future_batches > 0:
+                # Reserve one observation per later batch when the task budget permits.
+                trace_limit = min(trace_limit, max(1, trace_limit - future_batches))
             for program in programs:
                 relevant = [target for target in targets if target['program_id'] == program['id']]
                 if not relevant or not pending:
                     continue
-                remaining_checks = self.settings.candidate_limit - len(receipts) - len(round_receipts)
+                remaining_checks = trace_limit - len(round_receipts)
                 attempted = pending[:max(0, remaining_checks)]
                 if not attempted:
                     break
@@ -240,7 +245,8 @@ class ControlFlowArm(InputGenerationMethod):
                                        'realized_candidate_keys': target_hits, 'predicate_checks': predicate_checks,
                                        'status': 'observed' if target_hits else 'pending',
                                        'semantic_status': 'hypothesis'})
-            rounds.append({'round': round_index, 'errors': parsed['errors'], 'response_repairs': repairs,
+            rounds.append({'round': round_index, 'target_ids': [target['id'] for target in targets],
+                           'errors': parsed['errors'], 'response_repairs': repairs,
                            'sampling': sampling, 'concept_checks': concept_checks,
                            'candidate_count': len(pending), 'candidate_ledger': ledger.rows})
             remaining = [target['id'] for target in targets if target['id'] not in covered]
@@ -249,7 +255,9 @@ class ControlFlowArm(InputGenerationMethod):
                         'candidate_observations_total': len(round_receipts),
                         'candidates': [{key: row[key] for key in ('candidate_key', 'program_id', 'call', 'domain', 'status', 'hit_targets')}
                                        for row in round_receipts[:12]]}
-            if (not remaining and not parsed['errors']) or len(receipts) >= self.settings.candidate_limit:
+            if future_batches <= 0 and (
+                (not remaining and not parsed['errors']) or len(receipts) >= self.settings.candidate_limit
+            ):
                 break
         valid = [row for row in candidates.values() if row.get('domain') == 'valid']
         selected, selected_coverage = [], set()
@@ -267,12 +275,35 @@ class ControlFlowArm(InputGenerationMethod):
         result = {'inputs': [row['call'] for row in selected], 'concepts': concepts,
                   'status': 'generated' if rounds else 'prompt_too_large', 'errors': errors,
                   'candidate_receipts': receipts, 'rounds': rounds,
-                  'target_coverage': {'covered': len(covered), 'total': len(targets),
+                  'target_coverage': {'covered': len(covered), 'total': len(selected_targets),
                                       'selected_covered': len(selected_coverage)},
-                  'selected_targets': targets, 'analysis_errors': analysis_errors,
+                  'selected_targets': selected_targets, 'analysis_errors': analysis_errors,
+                  'target_puts_without_trace': sorted(
+                      target_owners - {row['program_id'] for row in receipts}, key=repr),
                   'model_calls': len(rounds), 'candidate_count': len(candidates),
                   'functional_bug_detection': 'pending_shared_reference_evaluation'}
         return result
+
+    def _prepare_target_batches(self, context, targets, source, evidence):
+        batches, omitted = [], []
+        offset = 0
+        while offset < len(targets):
+            # Fit a prefix and leave the rest for the next prompt.
+            for size in range(min(self.settings.target_limit, len(targets) - offset), 0, -1):
+                group = targets[offset:offset + size]
+                owners = {target['program_id'] for target in group}
+                group_source = [row for row in source if row['id'] in owners]
+                group_evidence = [row for row in evidence if row['program_id'] in owners]
+                request = messages(context.task, context.metadata.get('contract', ''), group_source,
+                                   group_evidence, group, context.settings.input_budget)
+                if context.calls.token_count(request) + context.settings.input_tokens + 128 <= context.settings.context_tokens:
+                    batches.append((group, group_source, group_evidence))
+                    offset += size
+                    break
+            else:
+                omitted.append(targets[offset]['id'])
+                offset += 1
+        return batches, omitted
 
     def extend_summary(self, contexts, summary, reporting):
         batches = [context.inputs['arms'][self.name] for context in contexts if not context.inputs.get('skip')]

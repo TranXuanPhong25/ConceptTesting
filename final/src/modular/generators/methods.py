@@ -32,11 +32,16 @@ class MethodInputGenerator(InputGenerator):
         return ()
 
     def generate(self, context):
-        if context.packet and context.packet.get("skip"):
-            return {"task_id": context.task["task_id"], "skip": context.packet["skip"]}
+        skip = (context.packet or {}).get("skip")
+        shared = {method.name for method in self.methods if getattr(method, "uses_shared_prompt", False)}
+        if skip and (skip != "prompt_too_large" or len(shared) == len(self.methods)):
+            return {"task_id": context.task["task_id"], "skip": skip}
         batches = {}
         for method in self.methods:
-            batches[method.name] = method.run(context)
+            if skip == "prompt_too_large" and method.name in shared:
+                batches[method.name] = {"inputs": [], "rejected": [], "status": skip}
+            else:
+                batches[method.name] = method.run(context)
         return {"task_id": context.task["task_id"], "arms": batches}
 
     def dependency_objects(self):

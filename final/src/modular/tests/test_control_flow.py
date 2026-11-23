@@ -195,6 +195,72 @@ def test_tiny_candidate_budget_counts_native_pairs(tmp_path):
     ctx.packet['visible_put_ids'].append('p1')
     batch=ControlFlowArm(ControlFlowSettings(rounds=2,candidate_limit=1)).run(ctx)
     assert len(batch['candidate_receipts']) <= 1
+    assert len(batch['rounds']) == 2
+    assert batch['target_puts_without_trace'] == ['p1']
+
+
+@pytest.mark.parametrize('prompt_put_cap, blocked_puts, oversized_target, expected_batch_sizes', [
+    (6, [], None, [6, 6, 6, 6, 4]),
+    (1, [], None, [4] * 7),
+    (1, ['p0'], None, [4] * 6),
+    (1, [], 'p0:C1:3', [2, 1] + [4] * 6),
+])
+def test_control_flow_splits_prompt_and_traces_each_base_pass_put(
+    tmp_path, monkeypatch, prompt_put_cap, blocked_puts, oversized_target, expected_batch_sizes,
+):
+    from final.src.modular.arms.control_flow import ControlFlowArm
+    from final.src.modular.arms.plain import PlainArm
+    from final.src.modular.generators.methods import MethodInputGenerator
+
+    class Calls:
+        def __init__(self):
+            self.requests = []
+
+        def token_count(self, messages):
+            payload = json.loads(messages[-1]['content'])
+            put_ids = {row['id'] for row in payload['programs']}
+            if len(put_ids) > prompt_put_cap or put_ids.intersection(blocked_puts):
+                return 10000
+            if any(target['id'] == oversized_target for target in payload['targets']):
+                return 10000
+            return 100
+
+        def complete(self, number, name, messages, **kwargs):
+            payload = json.loads(messages[-1]['content'])
+            self.requests.append(payload)
+            assert payload['feedback'] is None
+            targets = payload['targets']
+            raw = response(targets[0]['id'])
+            raw['concepts'][0].update(evidence_lines=targets[0]['evidence_lines'], predicate='', strategies={})
+            if len(self.requests) > 1:
+                raw['inputs'] = []
+            return ModelResponse(json.dumps(raw), finish_reason='stop')
+
+    ctx = context(tmp_path, Calls())
+    ctx.packet['skip'] = 'prompt_too_large'
+    ctx.cohort_task['programs'] = [{**program(), 'id': f'p{n}'} for n in range(7)]
+    arm = ControlFlowArm()
+    monkeypatch.setattr(arm, 'trace', lambda ctx, pr, calls, **kwargs: [
+        {'domain': 'valid', 'status': 'executed', 'coverage': {'lines': [3, 7]}} for _ in calls
+    ])
+    result = MethodInputGenerator((PlainArm(), arm)).generate(ctx)
+    assert result['arms']['plain']['status'] == 'prompt_too_large'
+    batch = result['arms']['control_flow']
+    prompts = ctx.calls.requests
+    assert [len(row['targets']) for row in prompts] == expected_batch_sizes
+    analysis = ctx.artifacts.read('tasks/0/control_flow/analysis.json')
+    targets = [target for row in analysis['programs'] for target in row['targets']]
+    dropped = [target['id'] for target in targets
+               if target['program_id'] in blocked_puts or target['id'] == oversized_target]
+    assert analysis['context_omitted_targets'] == dropped
+    assert [target['id'] for row in prompts for target in row['targets']] == [
+        target['id'] for target in targets if target['id'] not in dropped
+    ]
+    assert [row['program_id'] for row in batch['candidate_receipts']] == [
+        program['id'] for prompt in prompts for program in prompt['programs']
+    ]
+    assert batch['target_puts_without_trace'] == blocked_puts
+    assert analysis['context_blocked_put_ids'] == blocked_puts
 
 
 def test_no_gaps_makes_no_model_call(tmp_path):

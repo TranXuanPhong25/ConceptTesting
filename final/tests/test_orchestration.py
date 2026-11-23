@@ -17,6 +17,12 @@ def test_budget_units_do_not_change_between_batch_and_per_put():
     assert batch['max_input_slots_per_arm']==legacy['max_input_slots_per_arm']==3140
 
 
+def test_control_flow_preview_leaves_batch_dependent_call_caps_pending():
+    plan = config.preview({'arms': ['plain', 'control_flow'], 'task_numbers': [72]})
+    assert plan['logical_calls_by_arm'] == {'plain': 1, 'control_flow': 'pending'}
+    assert plan['logical_call_cap'] == plan['completion_token_cap_total'] == 'pending'
+
+
 @pytest.mark.parametrize('values',[
     {'temperature':float('nan')},{'inputs_per_task':True},{'task_numbers':[2,2]},
     {'mode':'per_put','arms':['direct']},{'mode':'batch','arms':['soft_bva','soft_bva']},

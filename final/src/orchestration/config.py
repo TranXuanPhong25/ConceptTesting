@@ -156,6 +156,7 @@ def preview(values):
     eligible, skipped, quotas = [], [], Counter()
     pynguin_owners = 0
     logical = {arm: 0 for arm in config['arms']} if config['mode'] != 'tools' else {'tool_preparation_shared': 0}
+    call_caps = {**CATALOGUE_CALL_CAPS, **ANALYSIS_CALL_CAPS}
     for number in selected:
         row = available[number]
         passing = sum(program['base']['status']=='pass' for program in row['programs'])
@@ -170,7 +171,11 @@ def preview(values):
             if config['mode'] == 'pynguin':
                 logical[arm] += 0 if arm == 'pynguin' else 2
                 continue
-            logical[arm] += {**CATALOGUE_CALL_CAPS, **ANALYSIS_CALL_CAPS}.get(arm,1) if config['mode'] in ('batch', 'tools') else min(passing, config['inputs_per_task'])
+            if config['mode'] in ('batch', 'tools'):
+                cap = call_caps.get(arm, 1)
+                logical[arm] = cap if cap == 'pending' else logical[arm] + cap
+            else:
+                logical[arm] += min(passing, config['inputs_per_task'])
         if config['mode']=='per_put':
             allocated=min(passing,config['inputs_per_task']); quotient,remainder=divmod(config['inputs_per_task'],allocated)
             quotas[quotient]+=allocated-remainder
@@ -178,11 +183,12 @@ def preview(values):
     # A preview requires at least one task with the expected PUT count and a base pass.
     if not eligible:
         raise ValueError('No eligible tasks for selected config')
+    total_calls = 'pending' if 'pending' in logical.values() else sum(logical.values())
     result = {'config':config,'cohort_path':str(path),'cohort_sha256':cohort['cohort_sha256'],
         'target_program_count':target_count,'selected_task_numbers':selected,
         'requested_task_count':len(selected),'eligible_task_count':len(eligible),
         'evaluated_base_pass_put_count':sum(row['base_pass_put_count'] for row in eligible),
-        'logical_calls_by_arm':logical,'logical_call_cap':sum(logical.values()),
+        'logical_calls_by_arm':logical,'logical_call_cap':total_calls,
         'max_input_slots_per_arm':len(eligible)*config['inputs_per_task'],
         'max_input_slots_by_arm':{name:len(eligible)*retained_input_budget(name,config['inputs_per_task']) for name in config['arms']},
         'input_budget_unit':'per task per arm','per_put_generation_quota_histogram':dict(sorted(quotas.items())),
@@ -190,9 +196,9 @@ def preview(values):
         'base_context':'spec/contract; no PUT outputs' if config['mode']=='tools' else 'original base tests' if config['mode']=='batch' else f"at most{config['per_put_base_examples']}base calls per PUT",
         'parser':'shared named-arguments parser' if config['mode']=='batch' else 'strict per-PUT soft-BVA parser',
         'completion_token_cap_per_call':config['completion_tokens'],
-        'completion_token_cap_total':sum(logical.values())*config['completion_tokens'],
+        'completion_token_cap_total':total_calls if total_calls == 'pending' else total_calls*config['completion_tokens'],
         'catalogue_note':'Coverage đo sau freeze/domain/reference; prose chưa audit là pending. Robust cần spec eligibility; call cap là upper bound.',
-        'context_note':'Actual visibility is jointly tokenized before each task; completion count may be lower on context overflow.'}
+        'context_note':'Shared prompt visibility and ControlFlow target batches depend on per-task tokenization.'}
     if config['mode'] == 'pynguin':
         result['pynguin_budgets'] = {**config['pynguin'], 'owner_search_count_cap': pynguin_owners,
             'search_seconds_cap_total': pynguin_owners * config['pynguin']['search_seconds'],
