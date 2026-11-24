@@ -1,28 +1,36 @@
 """Serializable, unit-explicit benchmark configurations and offline budget previews."""
 from __future__ import annotations
 
-from collections import Counter
 import hashlib
 import json
 import math
 from pathlib import Path
-from final.src.modular.arm_names import CATALOGUE_ARM_NAMES, CATALOGUE_CALL_CAPS, ANALYSIS_CALL_CAPS, retained_input_budget
+from final.src.models import OPENROUTER_DEFAULT_MODEL
+from final.src.modular.arm_names import (
+    ANALYSIS_FAMILY_COUNTS,
+    CATALOGUE_ARM_NAMES,
+    VF3_MEASURED_ARM_NAMES,
+    generation_call_cap,
+    retained_input_budget,
+)
 
 ROOT = Path(__file__).resolve().parents[3]
 COHORTS = {
     'humaneval164': 'final/out/cohorts/qwen35_27b_humaneval164/cohort.json',
 }
-DEFAULTS = {'cohort': 'humaneval164', 'mode': 'batch', 'arms': ['direct', 'soft_bva'],
+DEFAULTS = {'cohort': 'humaneval164', 'mode': 'batch', 'arms': ['plain', *CATALOGUE_ARM_NAMES],
     'task_numbers': [], 'inputs_per_task': 20, 'completion_tokens': 4096, 'context_tokens': 8192,
     'temperature': .7, 'input_seed': 314159, 'reference_seed': 271828, 'timeout_seconds': 8.0,
     'per_put_base_examples': 12, 'scorer': 'confirm_first_failures', 'model_name': 'qwen3.5-27b-awq',
-    'catalogue': True}
+    'catalogue': True, 'model_backend': 'qwen'}
 
 
 def normalize(values):
     """Resolve defaults, validate each config concern, then normalize task order."""
     validate_config_field_names(values)
     config = {**DEFAULTS, **values}
+    if config['model_backend'] == 'openrouter' and 'model_name' not in values:
+        config['model_name'] = OPENROUTER_DEFAULT_MODEL
     config['arms'] = list(config['arms'])
     config['task_numbers'] = list(config['task_numbers'])
 
@@ -47,8 +55,8 @@ def validate_config_field_names(values):
 
 
 def validate_cohort_and_generation_mode(config):
-    """Only named frozen cohorts and the batch/per-PUT generation modes exist."""
-    if config['cohort'] not in COHORTS or config['mode'] not in ('batch', 'per_put', 'tools', 'pynguin'):
+    """Validate the frozen cohort and generation mode."""
+    if config['cohort'] not in COHORTS or config['mode'] not in ('batch', 'tools', 'pynguin'):
         raise ValueError('Unknown cohort or mode')
 
 
@@ -73,10 +81,8 @@ def validate_arm_selection(config):
             raise ValueError('Tools require suite <=20 and audit_cap >= suite budget')
         if config['scorer'] != 'confirm_first_failures':
             raise ValueError('Tools require confirm_first_failures scorer')
-    elif config['mode'] == 'batch':
-        allowed_arms = ('plain', 'direct', 'soft_bva', *CATALOGUE_ARM_NAMES, *ANALYSIS_CALL_CAPS)
     else:
-        allowed_arms = ('boundary',)
+        allowed_arms = ('plain', 'direct', *CATALOGUE_ARM_NAMES, *VF3_MEASURED_ARM_NAMES, *ANALYSIS_FAMILY_COUNTS)
 
     if config['mode'] != 'tools' and config.get('tool_sampling') is not None:
         raise ValueError('tool_sampling requires tools mode')
@@ -88,7 +94,11 @@ def validate_arm_selection(config):
     has_duplicate_arms = len(set(selected_arms)) != len(selected_arms)
     has_unknown_arms = bool(set(selected_arms) - set(allowed_arms))
     if not selected_arms or has_duplicate_arms or has_unknown_arms:
-        raise ValueError('Unknown or duplicate batch arm; per_put accepts boundary only')
+        raise ValueError('Unknown or duplicate arm for the selected mode')
+    if any(arm in VF3_MEASURED_ARM_NAMES for arm in selected_arms) and not config['catalogue']:
+        raise ValueError('VF3 measured arms require catalogue enabled')
+    if any(arm in VF3_MEASURED_ARM_NAMES for arm in selected_arms) and config['model_backend'] not in ('qwen', 'openrouter'):
+        raise ValueError('VF3 measured arms require qwen or openrouter backend (strict json_schema)')
 
 
 def validate_task_number_selection(task_numbers):
@@ -130,6 +140,8 @@ def validate_scorer_and_served_model(config):
     """Require a supported repeat policy and a nonempty bounded model identifier."""
     if config['scorer'] not in ('confirm_first_failures', 'full_two_repeats'):
         raise ValueError('Unknown scorer')
+    if config['model_backend'] not in ('qwen', 'vertex', 'openrouter'):
+        raise ValueError('Unknown model backend')
     model_name = config['model_name']
     if not isinstance(model_name, str) or not model_name.strip() or len(model_name) > 120:
         raise ValueError('Invalid served model name')
@@ -153,10 +165,8 @@ def preview(values):
     if set(selected)-set(available):
         raise ValueError('Selected tasks are absent from cohort')
     target_count = cohort.get('development_selection', {}).get('target_programs', 10)
-    eligible, skipped, quotas = [], [], Counter()
+    eligible, skipped = [], []
     pynguin_owners = 0
-    logical = {arm: 0 for arm in config['arms']} if config['mode'] != 'tools' else {'tool_preparation_shared': 0}
-    call_caps = {**CATALOGUE_CALL_CAPS, **ANALYSIS_CALL_CAPS}
     for number in selected:
         row = available[number]
         passing = sum(program['base']['status']=='pass' for program in row['programs'])
@@ -167,22 +177,14 @@ def preview(values):
         eligible.append({'task_id':row['task_id'],'base_pass_put_count':passing})
         if config['mode'] == 'pynguin':
             pynguin_owners += min(passing, config['pynguin']['owner_limit'])
-        for arm in logical:
-            if config['mode'] == 'pynguin':
-                logical[arm] += 0 if arm == 'pynguin' else 2
-                continue
-            if config['mode'] in ('batch', 'tools'):
-                cap = call_caps.get(arm, 1)
-                logical[arm] = cap if cap == 'pending' else logical[arm] + cap
-            else:
-                logical[arm] += min(passing, config['inputs_per_task'])
-        if config['mode']=='per_put':
-            allocated=min(passing,config['inputs_per_task']); quotient,remainder=divmod(config['inputs_per_task'],allocated)
-            quotas[quotient]+=allocated-remainder
-            if remainder:quotas[quotient+1]+=remainder
     # A preview requires at least one task with the expected PUT count and a base pass.
     if not eligible:
         raise ValueError('No eligible tasks for selected config')
+    arms = ('tool_preparation_shared',) if config['mode'] == 'tools' else config['arms']
+    logical = {}
+    for arm in arms:
+        cap = generation_call_cap(arm)
+        logical[arm] = cap if cap == 'pending' else cap * len(eligible)
     total_calls = 'pending' if 'pending' in logical.values() else sum(logical.values())
     result = {'config':config,'cohort_path':str(path),'cohort_sha256':cohort['cohort_sha256'],
         'target_program_count':target_count,'selected_task_numbers':selected,
@@ -191,14 +193,14 @@ def preview(values):
         'logical_calls_by_arm':logical,'logical_call_cap':total_calls,
         'max_input_slots_per_arm':len(eligible)*config['inputs_per_task'],
         'max_input_slots_by_arm':{name:len(eligible)*retained_input_budget(name,config['inputs_per_task']) for name in config['arms']},
-        'input_budget_unit':'per task per arm','per_put_generation_quota_histogram':dict(sorted(quotas.items())),
+        'input_budget_unit':'per task per arm','per_put_generation_quota_histogram':{},
         'eligible_tasks':eligible,'skips':skipped,
-        'base_context':'spec/contract; no PUT outputs' if config['mode']=='tools' else 'original base tests' if config['mode']=='batch' else f"at most{config['per_put_base_examples']}base calls per PUT",
-        'parser':'shared named-arguments parser' if config['mode']=='batch' else 'strict per-PUT soft-BVA parser',
+        'base_context':'spec/contract; no PUT outputs' if config['mode']=='tools' else 'original base tests',
+        'parser':'shared named-arguments parser',
         'completion_token_cap_per_call':config['completion_tokens'],
         'completion_token_cap_total':total_calls if total_calls == 'pending' else total_calls*config['completion_tokens'],
-        'catalogue_note':'Coverage đo sau freeze/domain/reference; prose chưa audit là pending. Robust cần spec eligibility; call cap là upper bound.',
-        'context_note':'Shared prompt visibility and ControlFlow target batches depend on per-task tokenization.'}
+        'catalogue_note':'Coverage đo sau freeze/domain/reference. Prose chưa audit là pending. Call cap có số cụ thể là upper bound.',
+        'context_note':'Visibility dựa vào tokenization của từng prompt. Call cap của ControlFlow chờ xếp batch target theo context.'}
     if config['mode'] == 'pynguin':
         result['pynguin_budgets'] = {**config['pynguin'], 'owner_search_count_cap': pynguin_owners,
             'search_seconds_cap_total': pynguin_owners * config['pynguin']['search_seconds'],

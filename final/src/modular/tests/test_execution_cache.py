@@ -11,7 +11,7 @@ from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import TaskContext, PipelineSettings
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.references import TaskReferencePrograms
-from final.src.modular.tests.test_boundary_arm import TASK, META, write_cohort
+from final.src.modular.tests.helpers import TASK, META, write_cohort
 from final.src.modular.tests.test_input_generator import SavedInputsGenerator
 from final.src.runtime.execution import execute
 

@@ -34,15 +34,15 @@ def context(tmp_path, calls=None):
         packet={'visible_put_ids':['p0'], 'common':''})
 
 
-def test_analysis_binds_uncovered_branch_to_guards_and_def_use():
+def test_analysis_binds_uncovered_branch_to_guards():
     from final.src.modular.control_flow.analysis import analyze
     result = analyze(program(), 'f')
     target = next(t for t in result['targets'] if t.get('arc') == [6, 7])
     assert target['criterion'] == 'C2'
     assert [2, 4] in [step['arc'] for step in target['path']]
     assert 'count = len(unique)' in str(target['path'])
-    assert any(e['variable']=='count' and e['definition']==5 and e['use']==6 for e in result['def_use'])
-    assert any(e['variable']=='unique' and e['definition']==4 and e['use']==5 for e in result['def_use'])
+    assert 'def_use' not in result
+    assert 'data_flow_status' not in result
     assert result['source_sha256']
 
 
@@ -64,6 +64,72 @@ def response(target_id):
         'strategies':{'xs':{'kind':'sampled','values':[[1,1,2]]},
                       'k':{'kind':'sampled','values':[2]}}}],
         'inputs':[{'arguments':{'xs':[1,1,2],'k':2}, 'concept_id':'distinct_equal'}]}
+
+
+@pytest.mark.parametrize('first_hits,invalid_concept,expected_calls', [
+    ([3], False, 2), ([3, 7], False, 1), ([3, 7], True, 2),
+])
+def test_retry_keeps_original_targets_and_base_examples(
+    tmp_path, monkeypatch, first_hits, invalid_concept, expected_calls,
+):
+    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+
+    targets = [
+        {'id': f'p0:C1:{line}', 'program_id': 'p0', 'criterion': 'C1',
+         'line': line, 'evidence_lines': [line]}
+        for line in (3, 7)
+    ]
+
+    class Calls:
+        def __init__(self):
+            self.payloads = []
+
+        def token_count(self, messages):
+            return 100
+
+        def complete(self, task_number, name, messages, **options):
+            payload = json.loads(messages[-1]['content'])
+            self.payloads.append(payload)
+            target = payload['targets'][0]
+            raw = response(target['id'])
+            raw['concepts'][0].update(evidence_lines=target['evidence_lines'], predicate='', strategies={})
+            if invalid_concept and len(self.payloads) == 1:
+                raw['concepts'][0]['predicate'] = 'sum([1,2]) == 3'
+            values = [1, 2] if len(self.payloads) == 1 else [1, 3]
+            raw['inputs'][0]['arguments'] = {'xs': values, 'k': 2}
+            return ModelResponse(json.dumps(raw), finish_reason='stop')
+
+    calls = Calls()
+    arm = ControlFlowArm(ControlFlowSettings(target_limit=2))
+    monkeypatch.setattr(arm, '_analyze_programs', lambda *args: ([{
+        'program_id': 'p0', 'source_sha256': 'fixture',
+        'coverage_status': 'measured',
+        'targets': targets,
+    }], []))
+    monkeypatch.setattr(arm, 'trace', lambda context, program, records: [
+        {'domain': 'valid', 'status': 'executed', 'coverage': {
+            'lines': first_hits if call['args'] == '([1, 2], 2)' else [7, 8],
+        }}
+        for call in records
+    ])
+    result = arm.run(context(tmp_path, calls))
+    assert len(calls.payloads) == expected_calls
+    first = calls.payloads[0]
+    assert first['targets'] == targets[:2]
+    if expected_calls == 2:
+        second = calls.payloads[1]
+        assert second['targets'] == first['targets']
+        assert second['programs'] == first['programs']
+        assert second['analysis'] == first['analysis']
+        assert second['feedback']['remaining_target_ids'] == ([] if 7 in first_hits else ['p0:C1:7'])
+        assert second['feedback']['candidates'][0]['hit_targets']
+        assert second['feedback']['candidates'][0]['call'] == {
+            'args': '([1, 2], 2)', 'kwargs': '{}', 'guidance_id': None,
+        }
+        assert bool(second['feedback']['errors']) == invalid_concept
+        assert 'concepts' in second['feedback'] and 'concept_checks' in second['feedback']
+    assert result['target_coverage'] == {'covered': 2, 'total': 2, 'selected_covered': 2}
+    assert len(result['inputs']) == expected_calls
 
 
 def test_schema_checks_bindings_without_losing_direct_input():
@@ -140,16 +206,6 @@ def test_arm_is_explicit_and_default_stays_plain():
     assert [a.name for a in default_arms()]==['plain']
 
 
-def test_unknown_graph_keeps_cfg_obligations(monkeypatch):
-    from python_graphs import program_graph
-    from final.src.modular.control_flow.analysis import analyze
-    def unsupported(_):raise NotImplementedError('authored unsupported syntax')
-    monkeypatch.setattr(program_graph, 'get_program_graph', unsupported)
-    result=analyze(program(),'f')
-    assert result['data_flow_status']=='unsupported'
-    assert result['targets'] and result['coverage_status']=='measured'
-
-
 def test_native_error_still_witnesses_a_reached_branch():
     from final.src.runtime.execution import execute
     from final.src.modular.control_flow.analysis import hit
@@ -194,16 +250,14 @@ def test_tiny_candidate_budget_counts_native_pairs(tmp_path):
     other=program();other['id']='p1';ctx.cohort_task['programs'].append(other)
     ctx.packet['visible_put_ids'].append('p1')
     batch=ControlFlowArm(ControlFlowSettings(rounds=2,candidate_limit=1)).run(ctx)
-    assert len(batch['candidate_receipts']) <= 1
-    assert len(batch['rounds']) == 2
-    assert batch['target_puts_without_trace'] == ['p1']
+    assert [row['program_id'] for row in batch['candidate_receipts']] == ['p0', 'p1', 'p1']
 
 
 @pytest.mark.parametrize('prompt_put_cap, blocked_puts, oversized_target, expected_batch_sizes', [
     (6, [], None, [6, 6, 6, 6, 4]),
     (1, [], None, [4] * 7),
     (1, ['p0'], None, [4] * 6),
-    (1, [], 'p0:C1:3', [2, 1] + [4] * 6),
+    (1, [], 'p0:C1:3', [3] + [4] * 6),
 ])
 def test_control_flow_splits_prompt_and_traces_each_base_pass_put(
     tmp_path, monkeypatch, prompt_put_cap, blocked_puts, oversized_target, expected_batch_sizes,
@@ -252,7 +306,7 @@ def test_control_flow_splits_prompt_and_traces_each_base_pass_put(
     targets = [target for row in analysis['programs'] for target in row['targets']]
     dropped = [target['id'] for target in targets
                if target['program_id'] in blocked_puts or target['id'] == oversized_target]
-    assert analysis['context_omitted_targets'] == dropped
+    assert analysis['context_dropped_target_ids'] == dropped
     assert [target['id'] for row in prompts for target in row['targets']] == [
         target['id'] for target in targets if target['id'] not in dropped
     ]
@@ -261,6 +315,34 @@ def test_control_flow_splits_prompt_and_traces_each_base_pass_put(
     ]
     assert batch['target_puts_without_trace'] == blocked_puts
     assert analysis['context_blocked_put_ids'] == blocked_puts
+
+
+def test_tool_draw_budget_is_separate_from_llm_trace_budget(tmp_path, monkeypatch):
+    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+
+    class Calls:
+        def token_count(self, messages):
+            return 100
+
+        def complete(self, number, name, messages, **kwargs):
+            target = json.loads(messages[-1]['content'])['targets'][0]
+            raw = response(target['id'])
+            raw['concepts'][0]['strategies'] = {
+                'xs': {'kind': 'sampled', 'values': [[1, 2]]},
+                'k': {'kind': 'int', 'min': -10000, 'max': -1},
+            }
+            return ModelResponse(json.dumps(raw), finish_reason='stop')
+
+    arm = ControlFlowArm(ControlFlowSettings(rounds=2, candidate_limit=1))
+    monkeypatch.setattr(arm, 'trace', lambda ctx, program, records, **kwargs: [
+        {'domain': 'valid', 'status': 'executed'} for _ in records
+    ])
+    batch = arm.run(context(tmp_path, Calls()))
+
+    assert [row['llm_candidate_count'] for row in batch['rounds']] == [1, 0]
+    assert [sum(receipt['draws'] for receipt in row['sampling']) for row in batch['rounds']] == [20, 20]
+    assert all(row['sampled_candidate_count'] > 0 for row in batch['rounds'])
+    assert len(batch['candidate_receipts']) == 1 + sum(row['sampled_candidate_count'] for row in batch['rounds'])
 
 
 def test_no_gaps_makes_no_model_call(tmp_path):
@@ -298,14 +380,18 @@ def test_duplicate_input_keeps_new_concept_provenance(tmp_path):
         def token_count(self,messages):return 100
         def complete(self,number,name,messages,**kwargs):
             self.count+=1;payload=json.loads(messages[-1]['content'])
-            target=next(t for t in payload['targets'] if t.get('arc')==[6,7])
+            target = (
+                next(t for t in payload['targets'] if t.get('arc') == [6, 7])
+                if self.count == 1 else payload['targets'][0]
+            )
             raw=response(target['id']);raw['concepts'][0]['strategies']={}
             raw['concepts'][0]['id']='concept'+str(self.count)
             raw['inputs'][0]['concept_id']='concept'+str(self.count)
             return ModelResponse(json.dumps(raw),finish_reason='stop')
     batch=ControlFlowArm().run(context(tmp_path,Calls()))
     check=batch['rounds'][1]['concept_checks'][0]
-    assert check['realized_candidate_keys'] and check['predicate_checks']
+    assert check['predicate_checks']
+    assert not check['realized_candidate_keys']
     assert len(batch['candidate_receipts'])==1
 
 
@@ -344,7 +430,7 @@ def test_constant_example_is_not_an_input_predicate(predicate):
     assert parsed['inputs']
 
 
-def test_contract_feedback_runs_when_target_hits_but_concept_is_invalid(tmp_path):
+def test_retry_repairs_invalid_concept_after_all_targets_hit(tmp_path):
     from final.src.modular.arms.control_flow import ControlFlowArm
     class Calls:
         def __init__(self):self.count=0
@@ -359,3 +445,4 @@ def test_contract_feedback_runs_when_target_hits_but_concept_is_invalid(tmp_path
     assert calls.count==2
     assert batch['rounds'][0]['errors']
     assert not batch['rounds'][1]['errors']
+    assert batch['target_coverage']['covered'] == batch['target_coverage']['total']

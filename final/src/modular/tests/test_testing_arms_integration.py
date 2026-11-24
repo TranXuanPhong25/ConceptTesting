@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 
 from final.src.models.core_model import ModelResponse
-from final.src.modular.arms.classical import EpBvaArm
+from final.src.modular.arms.fault_oriented import EpBvaV2Arm, DecisionTableV2Arm
 from final.src.modular.arms.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings
@@ -83,10 +83,10 @@ def make_pipeline(tmp_path, monkeypatch, *, malformed=False, tasks=None, fail=Fa
         native_events.append("put")
         return {"tests": [{"status": "fail" if fail else "pass"} for record in job["tests"]]}
 
-    monkeypatch.setattr("final.src.modular.stages.reference_oracle.execute", fixture_oracle)
-    monkeypatch.setattr("final.src.modular.stages.put_evaluation.execute", fixture_evaluate)
+    monkeypatch.setattr("final.src.modular.reference_oracle.execute", fixture_oracle)
+    monkeypatch.setattr("final.src.modular.put_evaluation.execute", fixture_evaluate)
     pipeline = BenchmarkPipeline(cohort, ArtifactStore(directory),
-        arms=(PlainArm(), EpBvaArm()), settings=PipelineSettings(target_programs=1, input_tokens=4096),
+        arms=(PlainArm(), EpBvaV2Arm()), settings=PipelineSettings(target_programs=1, input_tokens=4096),
         calls=FixtureCalls(model, directory), execution_cache=False, reference_programs=TaskReferencePrograms())
     return pipeline, model, native_events, tasks
 
@@ -103,7 +103,7 @@ def test_catalogue_pipeline_freezes_all_tasks_before_measurement_and_put(tmp_pat
                  if event["task_id"] == task["task_id"] and event["state"] == "complete"]
         assert names.index("input_generation") < names.index("reference_oracle")
         assert names.index("reference_oracle") < names.index("catalogue_measurement") < names.index("put_evaluation")
-        catalogue = result["catalogues"][task["task_id"]]["ep_bva"]
+        catalogue = result["catalogues"][task["task_id"]]["ep_bva_v2"]
         assert catalogue["valid_input_records"] == 1
         assert catalogue["declared"]["covered_ids"] == ["B1", "E1"]
         assert catalogue["semantic_audit"] == "pending"
@@ -113,10 +113,10 @@ def test_catalogue_pipeline_freezes_all_tasks_before_measurement_and_put(tmp_pat
         assert observed['boundaries'][0]['status'] == 'miss'
         assert observed['label_checks'][0]['false_cover_ids'] == ['B1']
         saved = pipeline.artifacts.read('tasks/' + task['task_id'].split('/')[-1] + '/catalogue_measurements.json')
-        assert saved['ep_bva']['observed'] == observed
-    assert result["arms"]["ep_bva"]["detected"] == 2
-    assert result["detection_kinds"]["ep_bva"]["wrong_value"] == 2
-    assert result["tester_calls_by_arm"]["ep_bva"]["known_usage"]["total_tokens"] == 36
+        assert saved['ep_bva_v2']['observed'] == observed
+    assert result["arms"]["ep_bva_v2"]["detected"] == 2
+    assert result["detection_kinds"]["ep_bva_v2"]["wrong_value"] == 2
+    assert result["tester_calls_by_arm"]["ep_bva_v2"]["known_usage"]["total_tokens"] == 36
     assert len(result["comparisons"]) == 1
     report = (tmp_path / "run" / "REPORT.md").read_text()
     assert "Kết quả testing arms" in report and "4096 tokens/call" in report
@@ -125,11 +125,11 @@ def test_catalogue_pipeline_freezes_all_tasks_before_measurement_and_put(tmp_pat
 def test_malformed_catalogue_preserves_valid_call_through_evaluation(tmp_path, monkeypatch):
     pipeline, model, events, tasks = make_pipeline(tmp_path, monkeypatch, malformed=True)
     result = pipeline.run(tasks, {TASK["task_id"]: META})
-    batch = pipeline.artifacts.read("tasks/7/inputs.json")["arms"]["ep_bva"]
+    batch = pipeline.artifacts.read("tasks/7/inputs.json")["arms"]["ep_bva_v2"]
     assert batch["catalogue_status"] == "catalogue_invalid"
     assert batch["inputs"][0]["args"] == "(2,)"
-    assert result["arms"]["ep_bva"]["valid_inputs"] == 1
-    assert result["catalogues"][TASK["task_id"]]["ep_bva"]["status"] == "catalogue_invalid"
+    assert result["arms"]["ep_bva_v2"]["valid_inputs"] == 1
+    assert result["catalogues"][TASK["task_id"]]["ep_bva_v2"]["status"] == "catalogue_invalid"
     assert events.count("put") == 1
 
 
@@ -144,10 +144,10 @@ def test_catalogue_run_replays_identically_without_fixture_generation_or_executi
 
     monkeypatch.setattr(CatalogueFixtureModel, "generate", forbidden)
     monkeypatch.setattr(CatalogueFixtureModel, "tokens", forbidden)
-    monkeypatch.setattr("final.src.modular.stages.reference_oracle.execute", forbidden)
-    monkeypatch.setattr("final.src.modular.stages.put_evaluation.execute", forbidden)
-    replay = BenchmarkPipeline(pipeline.cohort_stage.cohort_path, ArtifactStore(tmp_path / "run", read_only=True),
-        arms=(PlainArm(), EpBvaArm()), settings=pipeline.settings, execution_cache=False,
+    monkeypatch.setattr("final.src.modular.reference_oracle.execute", forbidden)
+    monkeypatch.setattr("final.src.modular.put_evaluation.execute", forbidden)
+    replay = BenchmarkPipeline(pipeline.cohort_path, ArtifactStore(tmp_path / "run", read_only=True),
+        arms=(PlainArm(), EpBvaV2Arm()), settings=pipeline.settings, execution_cache=False,
         reference_programs=TaskReferencePrograms())
     assert replay.run(tasks, {TASK["task_id"]: META}) == expected
     assert {str(path.relative_to(tmp_path / "run")): path.read_bytes()
@@ -205,11 +205,11 @@ def test_console_new_arm_worker_uses_shared_completion_cap_and_replays_empty_fix
     def unexpected_native(job):
         pytest.fail("Empty console fixture attempted native execution")
 
-    monkeypatch.setattr("final.src.modular.stages.reference_oracle.execute", unexpected_native)
-    monkeypatch.setattr("final.src.modular.stages.put_evaluation.execute", unexpected_native)
+    monkeypatch.setattr("final.src.modular.reference_oracle.execute", unexpected_native)
+    monkeypatch.setattr("final.src.modular.put_evaluation.execute", unexpected_native)
     output = tmp_path / "console"
     preview = worker.prepare({"cohort": "humaneval164", "task_numbers": [0],
-                              "arms": ["plain", "ep_bva"]}, output)
+                              "arms": ["plain", "ep_bva_v2"]}, output)
     assert preview["config"]["completion_tokens"] == 4096
     plan = worker.read(output / "launch_plan.json")
     plan.update(native_lock=str(tmp_path / "native.lock"), execution_cache=str(tmp_path / "cache"))
@@ -219,33 +219,32 @@ def test_console_new_arm_worker_uses_shared_completion_cap_and_replays_empty_fix
     worker.save(output / "source_snapshot.json", source_snapshot)
     worker.run(output)
     assert len(requests) == 2
-    for name in ("plain", "ep_bva"):
+    for name in ("plain", "ep_bva_v2"):
         request = worker.read(output / "tasks" / "0" / "calls" / name / "request.json")
         assert request["max_tokens"] == 4096
     result = worker.read(output / "result_digest.json")
     assert result["read_only_replay_matches"] is None
-    assert result["arms"]["ep_bva"]["valid_inputs"] == 0
-    assert result["catalogues"]["HumanEval/0"]["ep_bva"]["status"] == "not_applicable"
+    assert result["arms"]["ep_bva_v2"]["valid_inputs"] == 0
+    assert result["catalogues"]["HumanEval/0"]["ep_bva_v2"]["status"] == "not_applicable"
 
 
 def test_three_full_run_arms_share_one_plain_baseline_and_replay(tmp_path,monkeypatch):
-    from final.src.modular.arms.classical import DecisionTableArm
     pipeline,model,events,tasks=make_pipeline(tmp_path,monkeypatch)
-    methods=(PlainArm(),EpBvaArm(),DecisionTableArm())
-    pipeline=BenchmarkPipeline(pipeline.cohort_stage.cohort_path,pipeline.artifacts,
+    methods=(PlainArm(),EpBvaV2Arm(),DecisionTableV2Arm())
+    pipeline=BenchmarkPipeline(pipeline.cohort_path,pipeline.artifacts,
         arms=methods,settings=pipeline.settings,calls=pipeline.calls,execution_cache=False,
         reference_programs=TaskReferencePrograms())
     summary=pipeline.run(tasks,{TASK['task_id']:META})
     assert len(model.messages)==3
     packet=pipeline.artifacts.read('tasks/7/packet.json')
-    assert set(packet['prompt_tokens'])=={'plain','ep_bva','decision_table'}
-    assert set(summary['arms'])=={'plain','ep_bva','decision_table'}
+    assert set(packet['prompt_tokens'])=={'plain','ep_bva_v2','decision_table_v2'}
+    assert set(summary['arms'])=={'plain','ep_bva_v2','decision_table_v2'}
     assert {(row['left'],row['right']) for row in summary['comparisons']}=={
-        ('plain','ep_bva'),('plain','decision_table'),('ep_bva','decision_table')}
+        ('plain','ep_bva_v2'),('plain','decision_table_v2'),('ep_bva_v2','decision_table_v2')}
     for name in ['reference_oracle','put_evaluation']:
-        monkeypatch.setattr('final.src.modular.stages.'+name+'.execute',
+        monkeypatch.setattr('final.src.modular.'+name+'.execute',
                             lambda job:pytest.fail('Native execution during three-arm replay'))
-    replay=BenchmarkPipeline(pipeline.cohort_stage.cohort_path,
+    replay=BenchmarkPipeline(pipeline.cohort_path,
         ArtifactStore(pipeline.artifacts.directory,read_only=True),arms=methods,
         settings=pipeline.settings,execution_cache=False,reference_programs=TaskReferencePrograms())
     assert replay.run(tasks,{TASK['task_id']:META})==summary

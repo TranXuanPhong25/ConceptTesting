@@ -1,7 +1,7 @@
 """Audit readers preserve original indices and distinguish one pass from two observations."""
 import pytest
 
-from final.src.audits.run_bva_precision import evaluation_observations, detected_tasks
+from final.src.audits.detection_kinds import evaluation_observations, observation_kind
 from final.src.runtime.artifacts import save
 
 
@@ -33,6 +33,5 @@ def test_missing_failure_confirmation_is_an_error_not_a_stable_failure(tmp_path)
 
 
 def test_single_unconfirmed_failure_is_not_a_stable_value_mismatch():
-    rows = [{"task_id": "HumanEval/0", "outcomes": {"method": [{"outcome": {
-        "stage": "executed", "puts": {"4": [{"status": "fail"}]}}}]}}]
-    assert detected_tasks(rows, "method", value_mismatch_only=True) == set()
+    with pytest.raises(ValueError, match="Not a confirmed failure"):
+        observation_kind([{"status": "fail"}])

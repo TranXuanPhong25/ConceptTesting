@@ -7,7 +7,7 @@ import pytest
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings, TaskContext
 from final.src.modular.execution_cache import InputExecutionCache
-from final.src.modular.stages.put_evaluation import PutEvaluationStage
+from final.src.modular.put_evaluation import evaluate_programs, evaluate_puts
 
 
 def evaluation_context(directory, input_count):
@@ -34,11 +34,10 @@ def test_first_pass_and_empty_batches_never_run_confirmation(tmp_path, monkeypat
         observed_inputs.extend(job["tests"])
         return {"tests": [{"status": "pass"} for record in job["tests"]]}
 
-    monkeypatch.setattr("final.src.modular.stages.put_evaluation.execute", executor)
+    monkeypatch.setattr("final.src.modular.put_evaluation.execute", executor)
     cache = InputExecutionCache(tmp_path / "cache") if use_cache else None
     context = evaluation_context(tmp_path / "run", input_count)
-    stage = PutEvaluationStage(cache)
-    stage.run(context)
+    evaluate_puts(context, execution_cache=cache)
     assert len(observed_inputs) == input_count
     assert context.result["base_pass"] == 1
     assert context.result["outcomes"] == {"4": {"failing": [], "unstable": [], "retested": []}}
@@ -47,12 +46,12 @@ def test_first_pass_and_empty_batches_never_run_confirmation(tmp_path, monkeypat
 
     expected = context.result
     context.artifacts = ArtifactStore(context.artifacts.directory, read_only=True)
-    stage.run(context)
+    evaluate_puts(context, execution_cache=cache)
     assert context.result == expected
     assert len(observed_inputs) == input_count
     if use_cache:
         next_run = evaluation_context(tmp_path / "next_run", input_count)
-        stage.run(next_run)
+        evaluate_puts(next_run, execution_cache=cache)
         assert next_run.result == expected
         assert len(observed_inputs) == input_count
 
@@ -77,15 +76,14 @@ def test_only_failures_are_retested_with_original_indices_and_separate_checkpoin
             results.append({"status": status})
         return {"tests": results}
 
-    monkeypatch.setattr("final.src.modular.stages.put_evaluation.execute", executor)
+    monkeypatch.setattr("final.src.modular.put_evaluation.execute", executor)
     cache = InputExecutionCache(tmp_path / "cache") if use_cache else None
     context = evaluation_context(tmp_path / "run", 6)
     context.inputs["arms"]["flaky_only"] = {}
     context.oracle["arm_indices"]["flaky_only"] = [3, 5]
     old_second_run = {"tests": [{"status": "fail"}] * 6}
     context.artifacts.write("tasks/7/evaluation/4_1.json", old_second_run)
-    stage = PutEvaluationStage(cache)
-    stage.run(context)
+    evaluate_puts(context, execution_cache=cache)
 
     assert attempts == {0: 1, 1: 2, 2: 1, 3: 2, 4: 2, 5: 2}
     assert set(observed_seeds) == {context.settings.reference_seed + context.task_number}
@@ -107,10 +105,10 @@ def test_only_failures_are_retested_with_original_indices_and_separate_checkpoin
     def unexpected_execution(job):
         pytest.fail("Read-only replay executed a program")
 
-    monkeypatch.setattr("final.src.modular.stages.put_evaluation.execute", unexpected_execution)
+    monkeypatch.setattr("final.src.modular.put_evaluation.execute", unexpected_execution)
     expected = context.result
     context.artifacts = ArtifactStore(context.artifacts.directory, read_only=True)
-    stage.run(context)
+    evaluate_puts(context, execution_cache=cache)
     assert context.result == expected
 
 
@@ -125,7 +123,7 @@ def test_real_worker_confirms_mismatches_and_exceptions_but_skips_passes(tmp_pat
     )
     context.oracle["tests"][1]["expected"] = "1"
     cache = InputExecutionCache(tmp_path / "cache") if use_cache else None
-    PutEvaluationStage(cache).run(context)
+    evaluate_puts(context, execution_cache=cache)
     assert context.result["outcomes"] == {
         "4": {"failing": [1, 3], "unstable": [], "retested": [1, 3]},
     }
@@ -142,5 +140,26 @@ def test_incomplete_checkpoint_results_cannot_silently_drop_test_inputs(tmp_path
     if checkpoint == "4_retry_1.json":
         context.artifacts.write("tasks/7/evaluation/" + checkpoint, {"tests": [{"status": "fail"}]})
     with pytest.raises(ValueError, match="result count"):
-        PutEvaluationStage().run(context)
+        evaluate_puts(context)
     assert not context.artifacts.exists("tasks/7/result.json")
+
+
+def test_full_two_repeats_scorer_runs_both_full_passes(tmp_path, monkeypatch):
+    calls = []
+
+    def executor(job):
+        calls.append(len(job["tests"]))
+        if len(calls) == 1:
+            return {"tests": [{"status": "pass"}, {"status": "fail"}, {"status": "timeout"}]}
+        return {"tests": [{"status": "fail"}, {"status": "fail"}, {"status": "pass"}]}
+
+    monkeypatch.setattr("final.src.modular.put_evaluation.execute", executor)
+    context = evaluation_context(tmp_path / "run", 3)
+    context.settings = PipelineSettings(scorer="full_two_repeats")
+    evaluate_puts(context)
+    assert calls == [3, 3]
+    assert context.artifacts.exists("tasks/7/evaluation/4_0.json")
+    assert context.artifacts.exists("tasks/7/evaluation/4_1.json")
+    assert not context.artifacts.exists("tasks/7/evaluation/4_retry_1.json")
+    assert context.result["outcomes"] == {"4": {"failing": [1], "unstable": [0, 2]}}
+    assert context.result["arms"]["plain"]["detected"] == 1

@@ -107,50 +107,22 @@ def test_hypothesis_real_constructor_is_seeded_and_respects_dependent_bounds():
     assert all(receipt['draws'] <= 25 for receipt in receipts)
 
 
-def test_z3_fills_only_uncovered_targets_and_replays_joint_formula():
-    from final.src.modular.tool_sampling.constructors import fill_z3
-    from final.src.modular.tool_sampling.ledger import CandidateLedger
-    ledger = CandidateLedger('HumanEval/7', 'fixture', builder(), model())
-    ledger.add({'arguments': {'a': 1}}, {'tool': 'direct', 'draw_index': 0})
-    receipt = fill_z3(ledger, queries=3, timeout_ms=200, seconds=3)
-    assert receipt['queries'] <= 3
-    assert any(row['membership']['edge']['hit'] for row in ledger.pool())
-    assert any(row['membership']['large']['hit'] for row in ledger.pool())
-    assert 'small' not in {row['target_id'] for row in receipt['results']}
-    assert all(not row['errors'] for row in ledger.pool())
-
-
-def test_z3_never_weakens_unsupported_domain_and_distinguishes_unsat():
-    from final.src.modular.tool_sampling.constructors import fill_z3
-    from final.src.modular.tool_sampling.ledger import CandidateLedger
-    spec = model()
-    spec['domain'] += ' and a ** 2 > 0'
-    ledger = CandidateLedger('HumanEval/7', 'fixture', builder(), spec)
-    receipt = fill_z3(ledger, queries=3, timeout_ms=200, seconds=3)
-    assert not ledger.pool()
-    assert all(row['status'] == 'unsupported' for row in receipt['results'])
-    spec['domain'] = 'a > 5 and a < 0'
-    receipt = fill_z3(CandidateLedger('HumanEval/7', 'fixture', builder(), spec), queries=3, timeout_ms=200, seconds=3)
-    assert all(row['status'] == 'unsat' for row in receipt['results'])
-
-
 def test_planner_preserves_partial_rows_and_records_unrealizable_combination():
     from final.src.modular.tool_sampling.constructors import plan_combinations
     from final.src.modular.tool_sampling.ledger import CandidateLedger
     ledger = CandidateLedger('HumanEval/7', 'fixture', builder(), model())
-    receipt = plan_combinations(ledger, rows=8, draws_per_row=5, seed=19, seconds=5,
-                                solver_queries=8, timeout_ms=200)
+    receipt = plan_combinations(ledger, rows=8, draws_per_row=5, seed=19, seconds=5)
     assert any(row['status'] == 'realized' for row in receipt['results'])
     impossible = [row for row in receipt['results'] if row['levels'] == {'size': 'small', 'capacity': 'full'}]
-    assert impossible and impossible[0]['status'] == 'unsat'
+    assert impossible and impossible[0]['status'] == 'unknown'
+    assert 'witness' not in impossible[0]['sampling']
     assert all(row['membership']['large']['domain'] == 'true' for row in ledger.pool())
 
 
 def budgets():
-    return dict(arms=['tool_direct', 'tool_hypothesis', 'tool_hypothesis_z3', 'tool_hypothesis_extra', 'tool_planner'],
+    return dict(arms=['tool_direct', 'tool_hypothesis', 'tool_hypothesis_extra', 'tool_planner'],
                 draws=12, sample_seconds=3, extra_draws=12, extra_seconds=3,
-                solver_queries=4, solver_timeout_ms=200, solver_seconds=3,
-                planner_rows=4, planner_draws=4, planner_solver_queries=4, planner_seconds=3,
+                planner_rows=4, planner_draws=4, planner_seconds=3,
                 audit_cap=50, random_seeds=[11, 19])
 
 
@@ -165,7 +137,7 @@ def test_tool_generator_shares_pool_preserves_cap_and_replay_artifacts(tmp_path)
     generator = ToolInputGenerator(budgets(), preparations={'HumanEval/7': model()})
     result = generator.generate(context)
     assert all(len(batch['inputs']) <= 2 for batch in result['arms'].values())
-    a0, a1 = (result['arms'][name] for name in ('tool_hypothesis', 'tool_hypothesis_z3'))
+    a0, a1 = (result['arms'][name] for name in ('tool_hypothesis', 'tool_hypothesis_extra'))
     assert a0['initial_pool_sha256'] == a1['initial_pool_sha256']
     snapshot = {p: p.read_bytes() for p in tmp_path.rglob('*') if p.is_file()}
     context.artifacts = ArtifactStore(tmp_path, read_only=True)
@@ -177,7 +149,7 @@ def test_tool_budgets_are_explicit_and_reject_bools_or_empty_controls():
     from final.src.modular.generators.tools import ToolInputGenerator
     with pytest.raises(ValueError):
         ToolInputGenerator({'draws': 10})
-    for field, value in [('draws', True), ('solver_seconds', float('inf')), ('random_seeds', []), ('arms', ['typo'])]:
+    for field, value in [('draws', True), ('sample_seconds', float('inf')), ('random_seeds', []), ('arms', ['typo'])]:
         config = budgets()
         config[field] = value
         with pytest.raises(ValueError):
@@ -217,8 +189,8 @@ def test_pipeline_tool_generator_freezes_before_audit_and_replays_without_work(t
     def evaluate(job):
         assert (directory / 'tasks/7/inputs.json').exists()
         return {'tests': [{'status': 'fail' if ast.literal_eval(call['args'])[0] == 2 else 'pass'} for call in job['tests']]}
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute', oracle)
-    monkeypatch.setattr('final.src.modular.stages.put_evaluation.execute', evaluate)
+    monkeypatch.setattr('final.src.modular.reference_oracle.execute', oracle)
+    monkeypatch.setattr('final.src.modular.put_evaluation.execute', evaluate)
     generator = ToolInputGenerator(budgets(), preparations={'HumanEval/7': model()})
     pipeline = BenchmarkPipeline(cohort, ArtifactStore(directory), input_generator=generator,
         settings=PipelineSettings(input_budget=2, target_programs=1), execution_cache=False,
@@ -229,8 +201,8 @@ def test_pipeline_tool_generator_freezes_before_audit_and_replays_without_work(t
     saved_inputs = (directory / 'tasks/7/inputs.json').read_bytes()
     def forbidden(*args, **kwargs):
         pytest.fail('Replay invoked workload')
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute', forbidden)
-    monkeypatch.setattr('final.src.modular.stages.put_evaluation.execute', forbidden)
+    monkeypatch.setattr('final.src.modular.reference_oracle.execute', forbidden)
+    monkeypatch.setattr('final.src.modular.put_evaluation.execute', forbidden)
     monkeypatch.setattr('final.src.modular.generators.tools.sample_hypothesis', forbidden)
     replay = BenchmarkPipeline(cohort, ArtifactStore(directory, read_only=True), input_generator=generator,
         settings=pipeline.settings, execution_cache=False, reference_programs=TaskReferencePrograms())
@@ -285,33 +257,6 @@ def test_capped_pool_is_not_reported_as_full_ceiling(tmp_path, monkeypatch):
     assert report['p1']['gap'] == 'pending_audit_cap'
 
 
-def test_z3_bool_and_unconstrained_values_are_native_replayed():
-    from final.src.modular.tool_sampling.constructors import solve
-    from final.src.modular.tool_sampling.ledger import CandidateLedger
-    bind = CallBuilder.for_source('def f(flag: bool, a: int):\n    pass\n', 'f')
-    spec = {'types': {'flag': 'bool', 'a': 'int'}, 'domain': 'True', 'targets': []}
-    ledger = CandidateLedger('HumanEval/7', 'fixture', bind, spec)
-    receipt = solve(ledger, 'flag == True', timeout_ms=200, query_id='bool')
-    assert receipt['status'] == 'sat'
-    assert ast.literal_eval(ledger.rows[0]['canonical_args']['args']) == (True, 0)
-    assert ledger.rows[0]['sources'][0]['model_completed_variables'] == ['a']
-
-
-def test_planner_preserves_feasible_dt_rule_beyond_pairwise():
-    from final.src.modular.tool_sampling.constructors import plan_combinations
-    from final.src.modular.tool_sampling.ledger import CandidateLedger
-    spec = model()
-    spec['targets'].append({'id': 'rare_rule', 'kind': 'rule', 'status': 'feasible',
-                            'origin': 'spec', 'source_quote': 'exact joint rule',
-                            'context': 'True', 'predicate': 'a == 5 and b == 1'})
-    ledger = CandidateLedger('HumanEval/7', 'fixture', builder(), spec)
-    receipt = plan_combinations(ledger, rows=1, draws_per_row=1, seed=19, seconds=3,
-                                solver_queries=3, timeout_ms=200)
-    assert any(row['membership']['rare_rule']['hit'] for row in ledger.pool())
-    assert receipt['dt_rules'][1]['target_id'] == 'rare_rule'
-    assert receipt['solver_queries'] <= 3
-
-
 @pytest.mark.parametrize('section,field', [('types', 'a'), ('target', 'origin'), ('target', 'kind'), ('target', 'status')])
 def test_malformed_model_scalar_is_contract_error_not_crash(section, field):
     from final.src.modular.tool_sampling.model import validate_model
@@ -322,19 +267,6 @@ def test_malformed_model_scalar_is_contract_error_not_crash(section, field):
         spec['targets'][0][field] = []
     with pytest.raises(ValueError):
         validate_model(spec, builder())
-
-
-def test_unrelated_unsupported_target_does_not_reject_native_solver_witness():
-    from final.src.modular.tool_sampling.constructors import solve
-    from final.src.modular.tool_sampling.ledger import CandidateLedger
-    spec = model()
-    spec['targets'][0]['predicate'] = 'custom_predicate(a)'
-    ledger = CandidateLedger('HumanEval/7', 'fixture', builder(), spec)
-    result = solve(ledger, '1 <= a <= 5 and 0 <= b <= 4 and a+b<=6 and a==2 and b==2',
-                   timeout_ms=200, query_id='edge')
-    assert result['status'] == 'sat'
-    assert ledger.rows[0]['membership']['edge']['hit'] is True
-    assert ledger.rows[0]['membership']['small']['target'] == 'unknown'
 
 
 def test_value_decode_collects_errors_for_every_argument_in_same_stage():
@@ -348,32 +280,14 @@ def test_value_decode_collects_errors_for_every_argument_in_same_stage():
     assert {item['detail'].split(':', 1)[0] for item in row['errors']} == {'a', 'b'}
 
 
-def test_z3_query_budget_prioritizes_joint_equality_over_broad_class():
-    from final.src.modular.tool_sampling.constructors import fill_z3
-    from final.src.modular.tool_sampling.ledger import CandidateLedger
-    spec = model()
-    ledger = CandidateLedger('HumanEval/7', 'fixture', builder(), spec)
-    result = fill_z3(ledger, queries=1, timeout_ms=200, seconds=3)
-    queried = [row for row in result['results'] if row['status'] != 'budget_exhausted']
-    assert queried[0]['target_id'] == 'edge'
-
-
 def test_detection_attribution_requires_exclusive_source_and_no_shared_witness():
     from final.src.modular.tool_sampling.audit import source_contributions
-    rows = [dict(candidate_id='solver', sources=[{'tool': 'z3'}]),
-            dict(candidate_id='shared', sources=[{'tool': 'direct'}, {'tool': 'z3'}]),
+    rows = [dict(candidate_id='seed', sources=[{'tool': 'direct'}]),
+            dict(candidate_id='shared', sources=[{'tool': 'direct'}, {'tool': 'hypothesis'}]),
             dict(candidate_id='planner', sources=[{'tool': 'hypothesis', 'planner_row_id': 'r0'}])]
-    result = source_contributions(rows, {'p0': {'solver'}, 'p1': {'solver', 'shared'}, 'p2': {'planner'}})
-    assert result['z3']['exclusive_only_detected_puts'] == ['p0']
+    result = source_contributions(rows, {'p0': {'seed'}, 'p1': {'seed', 'shared'}, 'p2': {'planner'}})
+    assert result['direct']['exclusive_only_detected_puts'] == ['p0']
     assert result['planner']['exclusive_only_detected_puts'] == ['p2']
-
-
-def test_extra_hypothesis_control_has_same_wall_budget_cap_as_solver():
-    from final.src.modular.generators.tools import ToolInputGenerator
-    config = budgets()
-    config['extra_seconds'] = 1
-    with pytest.raises(ValueError, match='same wall'):
-        ToolInputGenerator(config)
 
 
 def test_malformed_seed_encoding_is_retained_in_ledger_without_breaking_artifacts(tmp_path):
@@ -426,18 +340,6 @@ def test_runtime_value_error_in_predicate_is_error_not_unsupported():
     assert any(item['code'] == 'membership_error' and 'ValueError' in item['detail'] for item in row['errors'])
 
 
-def test_missing_target_expression_stays_unsupported_without_crashing_solver():
-    from final.src.modular.tool_sampling.model import validate_model
-    from final.src.modular.tool_sampling.constructors import fill_z3
-    from final.src.modular.tool_sampling.ledger import CandidateLedger
-    spec = model()
-    del spec['targets'][0]['predicate']
-    prepared = validate_model(spec, builder())
-    ledger = CandidateLedger('HumanEval/7', 'fixture', builder(), prepared)
-    receipt = fill_z3(ledger, queries=4, timeout_ms=200, seconds=3)
-    assert any(row['target_id'] == 'small' and row['status'] == 'unsupported' for row in receipt['results'])
-
-
 def test_invalid_boundary_side_is_schema_error_before_selection():
     from final.src.modular.tool_sampling.model import validate_model
     spec = model()
@@ -453,7 +355,7 @@ def test_tools_skip_ineligible_task_before_any_preparation_call(tmp_path):
     context = TaskContext({'task_id': 'HumanEval/7'}, {}, ArtifactStore(tmp_path), PipelineSettings())
     context.cohort_task = {'generated': 0, 'programs': []}
     generator = ToolInputGenerator(budgets())
-    generator.preparation_stages()[0].run(context)
+    generator.prepare_context(context)
     assert generator.generate(context) == {'task_id': 'HumanEval/7', 'skip': 'generation_shortfall'}
     assert not (tmp_path / 'tasks/7/tool_generation.json').exists()
 
@@ -570,7 +472,7 @@ def test_generation_gate_blocks_invalid_preparation_before_freeze_or_evaluation(
     generator = ToolInputGenerator(budgets(), preparations={'HumanEval/7': raw})
     def forbidden(*args, **kwargs):
         pytest.fail('Oracle ran despite invalid treatment')
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute', forbidden)
+    monkeypatch.setattr('final.src.modular.reference_oracle.execute', forbidden)
     out = tmp_path/'run'
     pipeline = BenchmarkPipeline(cohort, ArtifactStore(out), input_generator=generator,
         settings=PipelineSettings(target_programs=1), execution_cache=False, reference_programs=TaskReferencePrograms())
@@ -588,14 +490,14 @@ def test_tool_treatment_gate_distinguishes_actual_tools_from_unsupported():
     assert treatment_status('tool_hypothesis', base)['status'] == 'not_exercised'
     base['tool_receipts'] = [{'tool': 'hypothesis', 'status': 'complete', 'draws': 1, 'seed': 17}]
     base['candidate_ledger'] = [{'domain': 'true', 'errors': [], 'sources': [{'tool': 'hypothesis', 'seed': 17}]}]
-    assert treatment_status('tool_hypothesis_z3', {**base, 'preparation': {**model(), 'types': {'a': 'float'}}})['status'] == 'not_applicable'
+    assert treatment_status('tool_hypothesis', base)['status'] == 'exercised'
     base['preparation']['factors'] = {}
     assert treatment_status('tool_planner', base)['status'] == 'not_applicable'
     base['preparation_error'] = {'code': 'invalid_response'}
     assert treatment_status('tool_direct', base)['status'] == 'invalid_preparation'
 
 
-def test_real_tools_gate_requires_hypothesis_draw_z3_native_witness_and_planner_row(tmp_path):
+def test_real_tools_gate_requires_hypothesis_draw_and_planner_row(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
     from final.src.modular.generators.tools import ToolInputGenerator
@@ -610,23 +512,10 @@ def test_real_tools_gate_requires_hypothesis_draw_z3_native_witness_and_planner_
     context.inputs = generator.generate(context)
     status = {name: treatment_status(name, batch) for name, batch in context.inputs['arms'].items()}
     assert status['tool_hypothesis']['status'] == 'exercised'
-    assert status['tool_hypothesis_z3']['status'] == 'exercised'
     assert status['tool_planner']['status'] == 'exercised'
-    assert status['tool_hypothesis_z3']['native_witnesses'] >= 1
     assert status['tool_planner']['realized_rows'] >= 1
     generator.validate_generation([context])
     assert context.artifacts.read('tool_generation_gate.json')['ready'] is True
-
-
-def test_z3_compiles_type_guards_exactly_and_still_replays_values():
-    from final.src.modular.tool_sampling.constructors import solve
-    from final.src.modular.tool_sampling.ledger import CandidateLedger
-    spec = model()
-    spec['domain'] = 'is_int(a) and is_int(b) and 1 <= a <= 5 and 0 <= b <= 4 and a+b <= 6'
-    ledger = CandidateLedger('HumanEval/7', 'fixture', builder(), spec)
-    result = solve(ledger, spec['domain']+' and a==2 and b==2', timeout_ms=200, query_id='edge')
-    assert result['status'] == 'sat'
-    assert ledger.rows[0]['membership']['edge']['hit'] is True
 
 
 def test_saved_response_audit_keeps_raw_bytes_and_collects_shape_and_expression_errors(tmp_path, monkeypatch):
@@ -657,22 +546,22 @@ def test_treatment_status_survives_summary_and_is_not_an_efficacy_claim(tmp_path
     assert (tmp_path/'run/tool_generation_gate.json').exists()
 
 
-def test_z3_only_arm_cannot_hide_failed_shared_hypothesis(tmp_path):
+def test_extra_hypothesis_arm_rejects_unusable_shared_strategies(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
     from final.src.modular.generators.tools import ToolInputGenerator
     from final.src.modular.tool_sampling.gate import treatment_status
     config = budgets()
-    config['arms'] = ['tool_hypothesis_z3']
+    config['arms'] = ['tool_hypothesis_extra']
     spec = model()
     spec['strategies']['a'] = {'kind': 'unsupported', 'reason': 'Constructor deliberately unavailable'}
     context = TaskContext({'task_id': 'HumanEval/7', 'entry_point': 'f',
         'prompt': 'def f(a: int, b: int = 0):\n    pass\n'}, {'contract': ''}, ArtifactStore(tmp_path), PipelineSettings())
     generator = ToolInputGenerator(config, preparations={'HumanEval/7': spec})
     context.inputs = generator.generate(context)
-    batch = context.inputs['arms']['tool_hypothesis_z3']
-    assert any(item['status'] == 'sat' for receipt in batch['tool_receipts'] if receipt['tool'] == 'z3' for item in receipt['results'])
-    assert treatment_status('tool_hypothesis_z3', batch)['status'] == 'not_exercised'
+    batch = context.inputs['arms']['tool_hypothesis_extra']
+    status = treatment_status('tool_hypothesis_extra', batch)
+    assert status['status'] == 'not_exercised' and status['component'] == 'shared_hypothesis'
     with pytest.raises(ValueError, match='tool_generation_gate'):
         generator.validate_generation([context])
 

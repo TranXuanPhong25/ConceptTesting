@@ -59,13 +59,14 @@ def test_summary_reports_pending_executions(tmp_path):
 def test_pipeline_manifest_hashes_assets_without_tool(tmp_path):
     from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.modular.references import HumanEvalPlusReferencePrograms
-    pipeline=object.__new__(BenchmarkPipeline)
-    pipeline.input_generator=PynguinInputGenerator(PynguinSettings(python='/missing/python'))
-    pipeline.calls=None
-    pipeline.arms=pipeline.input_generator.methods
-    pipeline.generation_stages=[];pipeline.evaluation_stages=[]
-    pipeline.reference_programs=HumanEvalPlusReferencePrograms()
-    assert any(str(name).endswith('pynguin-requirements.txt') for name in pipeline.input_generator.source_dependencies())
+    ctx = context(tmp_path)
+    pipeline = object.__new__(BenchmarkPipeline)
+    pipeline.input_generator = PynguinInputGenerator(PynguinSettings(python='/missing/python'))
+    pipeline.calls = None
+    pipeline.arms = pipeline.input_generator.methods
+    pipeline.reference_programs = HumanEvalPlusReferencePrograms()
+    assert pipeline.input_generator.configuration() == pipeline.generator_configuration()['configuration']
+    assert pipeline.input_generator.provenance(ctx)['owners'][0]['id'] == 'p1'
 
 
 def test_export_collection_has_aggregate_byte_budget(tmp_path):

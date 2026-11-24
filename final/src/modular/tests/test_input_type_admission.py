@@ -8,7 +8,7 @@ from final.src.benchmarks.datasets import load_metadata, load_tasks
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.call_builder import CallBuilder, entry_function, input_signature
 from final.src.modular.context import PipelineSettings, TaskContext
-from final.src.modular.stages.reference_oracle import ReferenceOracleStage
+from final.src.modular.reference_oracle import run_reference_oracle
 
 
 @pytest.mark.parametrize('annotation,value', [
@@ -82,9 +82,9 @@ def test_wrong_declared_types_never_reach_reference_oracle(tmp_path, monkeypatch
     context.inputs_frozen = True
     context.cohort_task = {'base_input_keys': []}
     context.inputs = {'arms': {'pynguin': {'inputs': [{'args': args, 'kwargs': '{}'}]}}}
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute',
+    monkeypatch.setattr('final.src.modular.reference_oracle.execute',
                         lambda job: pytest.fail('Invalid input reached the reference'))
-    ReferenceOracleStage().run(context)
+    run_reference_oracle(context)
     assert context.oracle['tests'] == []
     assert context.oracle['arm_indices'] == {'pynguin': []}
     assert context.oracle['rejected'][0]['reason'] == 'input_type_rejects'
@@ -106,8 +106,8 @@ def test_reference_rejection_keeps_raw_indices_and_catalogue_survivors(tmp_path,
         calls.append(job)
         assert job['tests'] == [valid, valid]
         return {'tests': [{'status': 'ok', 'expected': '3', 'input_key': 'three'}] * 2}
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute', execute)
-    ReferenceOracleStage(reference_programs=reference).run(context)
+    monkeypatch.setattr('final.src.modular.reference_oracle.execute', execute)
+    run_reference_oracle(context, reference_programs=reference)
     assert len(calls) == 2
     assert len(context.oracle['tests']) == 1
     assert context.oracle['arm_indices'] == {'a': [0], 'b': [0]}
@@ -130,8 +130,8 @@ def test_unannotated_humaneval_inputs_reach_reference_with_contract(tmp_path, mo
         assert 'type(n) == int' in job['contract']
         return {'tests': [{'status': 'invalid_domain'}]}
 
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute', execute)
-    ReferenceOracleStage().run(context)
+    monkeypatch.setattr('final.src.modular.reference_oracle.execute', execute)
+    run_reference_oracle(context)
     assert context.oracle['tests'] == []
     assert context.oracle['rejected'][0]['reason'] == 'domain_or_reference_rejects'
 

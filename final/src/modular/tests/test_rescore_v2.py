@@ -40,7 +40,7 @@ def test_rescore_cli_evaluation_and_read_only_replay_never_create_model(original
     metrics=json.loads((output/'rescore_metrics.json').read_text())
     assert metrics['new_model_calls']==0 and metrics['union']['total']==0
     before={str(p):p.read_bytes() for p in output.rglob('*') if p.is_file()}
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute',forbidden)
-    monkeypatch.setattr('final.src.modular.stages.put_evaluation.execute',forbidden)
+    monkeypatch.setattr('final.src.modular.reference_oracle.execute',forbidden)
+    monkeypatch.setattr('final.src.modular.put_evaluation.execute',forbidden)
     assert main([*arguments,'--replay'])==0
     assert before=={str(p):p.read_bytes() for p in output.rglob('*') if p.is_file()}

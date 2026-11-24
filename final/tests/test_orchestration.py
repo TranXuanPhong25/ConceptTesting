@@ -6,26 +6,56 @@ import pytest
 from final.src.orchestration import config,worker,service
 
 
-def test_budget_units_do_not_change_between_batch_and_per_put():
+def test_default_batch_keeps_per_task_per_arm_budget():
     batch=config.preview({})
-    legacy=config.preview({'mode':'per_put','arms':['boundary']})
-    assert batch['logical_call_cap']==314 and batch['eligible_task_count']==157
+    assert batch['logical_call_cap']==471 and batch['eligible_task_count']==157
     assert batch['evaluated_base_pass_put_count']==1454
-    assert legacy['logical_call_cap']==1454
-    assert legacy['per_put_generation_quota_histogram'][2]==1280
-    assert sum(int(quota)*count for quota,count in legacy['per_put_generation_quota_histogram'].items())==3140
-    assert batch['max_input_slots_per_arm']==legacy['max_input_slots_per_arm']==3140
+    assert batch['max_input_slots_per_arm']==3140
+
+
+def test_openrouter_preview_resolves_flint_without_credentials(monkeypatch):
+    monkeypatch.delenv('OPENROUTER_API_KEY', raising=False)
+    batch = config.preview({'model_backend': 'openrouter', 'arms': ['plain'], 'task_numbers': [0]})
+    assert batch['config']['model_name'] == 'recursive/flint-v1.0:free'
+    assert batch['logical_call_cap'] == 1
+
+
+def test_worker_sources_only_the_openrouter_key(tmp_path, monkeypatch, capsys):
+    import os
+
+    scripts = tmp_path / 'scripts'
+    scripts.mkdir()
+    (scripts / 'research_env.sh').write_text('export RESEARCH_FIXTURE_SECRET=fixture\n')
+    (scripts / 'openrouter_env.sh').write_text('export OPENROUTER_API_KEY=fixture-key\necho fixture-key\n')
+    monkeypatch.setenv('OPENROUTER_API_KEY', '')
+    monkeypatch.delenv('RESEARCH_FIXTURE_SECRET', raising=False)
+    worker.load_model_environment(tmp_path, 'openrouter')
+    assert os.environ['OPENROUTER_API_KEY'] == 'fixture-key'
+    assert 'RESEARCH_FIXTURE_SECRET' not in os.environ
+    assert capsys.readouterr() == ('', '')
 
 
 def test_control_flow_preview_leaves_batch_dependent_call_caps_pending():
-    plan = config.preview({'arms': ['plain', 'control_flow'], 'task_numbers': [72]})
-    assert plan['logical_calls_by_arm'] == {'plain': 1, 'control_flow': 'pending'}
-    assert plan['logical_call_cap'] == plan['completion_token_cap_total'] == 'pending'
+    limits = config.preview({'arms': ['plain', 'control_flow']})
+    assert limits['logical_calls_by_arm'] == {
+        'plain': limits['eligible_task_count'],
+        'control_flow': 'pending',
+    }
+    assert limits['logical_call_cap'] == limits['completion_token_cap_total'] == 'pending'
+
+
+def test_control_flow_usage_counts_split_rounds_and_archived_attempts(tmp_path):
+    from final.src.modular.catalogue_reporting import usage_by_arm
+
+    for name in ('control_flow_round_5', 'control_flow_round_5_unknown_attempt_0000'):
+        worker.save(tmp_path / 'tasks' / '0' / 'calls' / name / 'attempt.json', {})
+    usage = usage_by_arm(tmp_path, ['control_flow'])
+    assert usage['control_flow']['invocations'] == 2
 
 
 @pytest.mark.parametrize('values',[
     {'temperature':float('nan')},{'inputs_per_task':True},{'task_numbers':[2,2]},
-    {'mode':'per_put','arms':['direct']},{'mode':'batch','arms':['soft_bva','soft_bva']},
+    {'mode':'per_put','arms':['boundary']},{'mode':'batch','arms':['plain','plain']},
     {'context_tokens':512,'completion_tokens':512},{'input_seed':-1},
     {'api_key':'never-a-config-field'},{'task_numbers':[999]},
 ])
@@ -51,7 +81,7 @@ def test_private_endpoint_profiles_are_unique_even_when_artifact_leaf_is_run(tmp
 def prepared(tmp_path,monkeypatch):
     monkeypatch.setattr(worker,'private_endpoint',lambda directory,name:tmp_path/'private.env')
     path=tmp_path/'original'
-    worker.prepare({'cohort':'humaneval164','task_numbers':[72]},path)
+    worker.prepare({'cohort':'humaneval164','task_numbers':[72],'arms':['plain','ep_bva_v2']},path)
     return path
 
 
@@ -68,11 +98,11 @@ def test_prepare_freezes_resolved_config_cohort_and_code(prepared):
 
 def test_resume_keeps_attempt_history_and_rebuilds_only_path_metadata(prepared,tmp_path):
     from final.src.runtime.artifacts import digest
-    from final.src.audits.resume_bva_batch import inventory
+    from final.src.orchestration.worker import inventory
     request={'messages':[],'temperature':.7,'max_tokens':2048,'seed':314231}
     attempt={'state':'unknown','request_id':digest(request),'attempt_number':1,'error':{'retryable':True}}
-    worker.save(prepared/'tasks/72/calls/soft_bva_unknown_attempt_0000/request.json',request)
-    worker.save(prepared/'tasks/72/calls/soft_bva_unknown_attempt_0000/attempt.json',attempt)
+    worker.save(prepared/'tasks/72/calls/ep_bva_v2_unknown_attempt_0000/request.json',request)
+    worker.save(prepared/'tasks/72/calls/ep_bva_v2_unknown_attempt_0000/attempt.json',attempt)
     worker.save(prepared/'tasks/72/reference_program.json',{'old_path':'fixture'})
     worker.save(prepared/'tasks/72/boundary/soft_bva/4/identity.json',{'old_path':'fixture'})
     worker.save(prepared/'status.json',{'state':'interrupted'})
@@ -83,7 +113,7 @@ def test_resume_keeps_attempt_history_and_rebuilds_only_path_metadata(prepared,t
     assert inventory(prepared)==before
     assert not (target/'tasks/72/reference_program.json').exists()
     assert not (target/'tasks/72/boundary/soft_bva/4/identity.json').exists()
-    assert worker.read(target/'tasks/72/calls/soft_bva_unknown_attempt_0000/attempt.json')['attempt_number']==1
+    assert worker.read(target/'tasks/72/calls/ep_bva_v2_unknown_attempt_0000/attempt.json')['attempt_number']==1
 
 
 
@@ -116,8 +146,8 @@ def test_managed_adapter_freezes_and_replays_with_offline_empty_writer(prepared,
     """Exercise actual orchestration wiring; fixture transport makes0real calls."""
     from final.src.models.core_model import ModelResponse
     import final.src.models.model as transport
-    import final.src.modular.stages.reference_oracle as reference
-    import final.src.modular.stages.put_evaluation as evaluation
+    import final.src.modular.reference_oracle as reference
+    import final.src.modular.put_evaluation as evaluation
     calls=[]
     class Model:
         model_id='qwen3.5-27b-awq'

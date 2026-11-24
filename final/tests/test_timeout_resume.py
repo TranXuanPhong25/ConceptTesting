@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from final.src.orchestration import worker
-from final.src.audits.resume_bva_batch import inventory
+from final.src.orchestration.worker import inventory
 from final.src.runtime.artifacts import digest
 
 

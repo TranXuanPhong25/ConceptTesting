@@ -1,38 +1,41 @@
 # Injectable input generation
 
+> Cập nhật18/11/2026: bộ chính giữ `ep_bva_v2`, `decision_table_v2`, `control_flow` gốc và `plain`. Đã gỡ VF3, reflection/catalogue→inputs, spec-obligation, LargeInput, Data-flow arms và HumanEval-X adapters khỏi đường chạy hiện tại. Shared pipeline, Pynguin thuần/tool pipeline, HumanEval Python/MBPP và historical outputs/checkpoints vẫn giữ. Nội dung bên dưới về các hướng đã gỡ chỉ là lịch sử; không dùng để launch mới.
+
+
 `BenchmarkPipeline` nhận `input_generator: InputGenerator`. Core phụ thuộc vào
 interface này để lấy input; mỗi phương pháp tự quản lý logic, LLM calls và evidence.
 
 ```text
-CohortLoaderStage
-  → optional preparation stages do generator khai báo
-  → InputGenerationStage(input_generator)
-  → freeze inputs của tất cả tasks
-  → ReferenceOracleStage
-  → PutEvaluationStage
-  → ReportingStage
+load_cohort
+  → InputGenerator.prepare_context (tùy chọn)
+  → generate_task_inputs(input_generator)
+  → lưu inputs của tất cả tasks
+  → run_reference_oracle
+  → InputGenerator.post_reference (tùy chọn)
+  → evaluate_puts
+  → InputGenerator.post_evaluation (tùy chọn)
+  → Reporter
 ```
 
-Default là `plain`; `boundary` dùng soft BVA qua module BoundaryValueAnalysis,
-một completion trực tiếp cho mỗi PUT được cấp budget. Flow selection/compiler cũ
-nằm trong `boundary_value_analysis/legacy/` và không được chọn bởi CLI `boundary`.
-Context preparation kiểm cohort eligibility, chọn visibility order và chuẩn bị
-prompt cho method cần nó. Execution và model transport nằm ở `final/src/runtime`.
+Default là `plain`. Registry còn `ep_bva_v2`, `decision_table_v2`,
+`ep_bva_vf3_measured`, `decision_table_vf3_measured` và `control_flow`.
+Các hướng EP/BVA/DT v1 và `boundary_value_analysis/` đã được gỡ bỏ.
 
 ## Inject phương pháp đã có
 
 ```python
 from pathlib import Path
-from final.src.modular.arms.boundary import BoundaryArm
+from final.src.modular.arms.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings
 from final.src.modular.generators import MethodInputGenerator
 from final.src.modular.pipeline import BenchmarkPipeline
 
-generator = MethodInputGenerator([BoundaryArm()])
+generator = MethodInputGenerator([PlainArm()])
 pipeline = BenchmarkPipeline(
     Path("final/out/cohorts/qwen35_27b_humaneval164/cohort.json"),
-    ArtifactStore(Path("final/out/boundary_injected")),
+    ArtifactStore(Path("final/out/plain_injected")),
     input_generator=generator,
     calls=calls,  # ModelCalls backend đã cấu hình
     settings=PipelineSettings(target_programs=10, input_budget=20),
@@ -40,22 +43,24 @@ pipeline = BenchmarkPipeline(
 summary = pipeline.run(selected_tasks, metadata)
 ```
 
-Có thể dùng `arms=(BoundaryArm(),)` như API ngắn hiện có; composition adapter sẽ
+Có thể dùng `arms=(PlainArm(),)` như API ngắn hiện có; composition adapter sẽ
 chuyển thành generator. Không truyền đồng thời `arms` và `input_generator`.
 
-## Stage mới có thể trực tiếp sinh input
+## Method mới có thể trực tiếp sinh input
 
 Không cần inherit `InputGenerationMethod`, không cần `build_guidance`, concept packet hoặc
-đăng ký tên vào orchestrator. Stage chỉ cần có `name`, `configuration()` và
+đăng ký tên vào orchestrator. Method chỉ cần có `name`, `configuration()` và
 `run(context)` trả method batch:
 
 ```python
 from final.src.modular.generators import MethodInputGenerator
-from final.src.modular.stages.base import PipelineStage
 
 
-class EquivalenceInputsStage(PipelineStage):
+class EquivalenceInputsMethod:
     name = "equivalence"
+
+    def configuration(self):
+        return {}
 
     def run(self, context):
         # Thay bằng logic riêng của phương pháp: mining, solver hoặc LLM.
@@ -67,23 +72,15 @@ class EquivalenceInputsStage(PipelineStage):
 
 
 generator = MethodInputGenerator(
-    [EquivalenceInputsStage()],
-    preparation_stages=(),  # Method này chỉ cần frozen task/cohort context.
+    [EquivalenceInputsMethod()],
+    prepare_packet=False,  # Method này chỉ cần frozen task/cohort context.
 )
 pipeline = BenchmarkPipeline(cohort_path, artifacts, input_generator=generator)
 ```
 
-Nếu method cần chuẩn bị riêng, truyền các `PipelineStage` vào `preparation_stages`.
-Các stage này chạy qua orchestrator, có dependency checks và stage events. Stage
-chuẩn bị truyền intermediate state qua `context.extensions`; method đọc state đó
-để trả inputs. Method được gọi trong `InputGenerationStage`, không đăng ký lại
-chính method vào preparation stages để tránh gọi hai lần.
-
 Mọi method trong adapter nhận cùng task input budget; nếu method dùng nhiều PUT
 thì tự chia budget, như `BoundaryArm` đã làm. `configuration()` phải chứa tham số
-có ảnh hưởng tới output. `source_dependencies()` có thể khai báo helper files nằm
-ngoài `final/src/modular`; source của generator/method/preparation stage được ghi vào
-manifest. `uses_shared_prompt=True` chỉ dành cho method có `build_messages(packet)`
+có ảnh hưởng tới output. `uses_shared_prompt=True` chỉ dành cho method có `build_messages(packet)`
 và cần prompt chung của PlainArm; method mới mặc định không cần prompt này.
 
 ## Inject toàn bộ generator riêng
@@ -110,8 +107,8 @@ class MyInputGenerator(InputGenerator):
 spec của task. Key `arms` được giữ để tương thích reference/evaluation/artifacts
 hiện có; nó chứa các named method batches và không bắt buộc subclass arm.
 
-Các hooks tùy chọn: `preparation_stages`, `configuration`, `source_dependencies`,
-`dependency_objects`, `reporting_stage`, `extend_summary`.
+Các hooks tùy chọn: `prepare_context`, `validate_generation`, `post_reference`,
+`post_evaluation`, `reporter`, `extend_summary`, `configuration`, `runtime_dependencies`.
 Full generator nhận frozen cohort và tự quyết định eligibility/skip cho task;
 core không buộc mọi phương pháp phải dùng cùng concept/visibility machinery.
 
@@ -127,14 +124,24 @@ batch shape, tổng records per method không vượt task budget và literal sy
 trước khi ghi `inputs.json`. Contract này chỉ kiểm format; input validity và output
 correctness tiếp tục do reference/domain stage xử lý sau generation freeze.
 
-Các validation của soft BVA và shared pipeline:
+Admission kiểm type trước reference execution cho mọi method, kể cả input literal
+từ custom/frozen generators. `CallBuilder` enforce type hints đệ quy cho container,
+phân biệt bool với int/float, chấp nhận int ở vị trí float và không ép kiểu input.
+HumanEval và MBPP+ đọc kiểu từ chữ ký gốc. Tham số thiếu annotation được kiểm tra
+hình dạng lời gọi và giá trị literal như các tham số khác. HumanEval kiểm tra thêm
+contract khi chạy reference. Nếu caller truyền metadata kiểu tường minh,
+`CallBuilder` chỉ dùng nó cho tham số chưa có annotation.
+Unsupported annotation bị reject rõ ràng, không âm thầm bỏ check.
 
-- `boundary_value_analysis.inputs.decode_inputs()` kiểm strict envelope, budget,
-  truncation, encode named arguments và duplicates.
+`run_reference_oracle` ghi `input_type_rejects` và detail cho input sai interface/type;
+input đó không gọi reference hoặc PUT và không tính vào valid inputs/detections.
+Raw input indices và catalogue survivor indices vẫn được giữ đúng sau khi lọc.
+Type admission không thay thế value bounds/joint preconditions trong contract,
+không tự rescore artifact cũ. Frozen runtime cũ giữ admission policy cũ.
+
+Các validation của shared pipeline:
+
 - `validate_generated_inputs()` và `validate_input_literal()` ở shared contract.
-
-Selection, target và context validators của flow cũ nằm trong
-`boundary_value_analysis/legacy/`.
 
 Chỗ gọi validation được đánh dấu `# VALIDATION START: ...` và
 `# VALIDATION END: ...`. API arguments, budgets/cache identity và reference checks
@@ -142,12 +149,16 @@ cũng có block markers để dễ đọc. Đây là refactor cách tổ chức,
 
 ## Checkpoint và replay
 
-`InputGenerationStage` dùng input checkpoint khi resume/replay. Read-only mode
-không gọi generator, model hoặc sandbox nếu thiếu artifact. Manifest dùng protocol
-`input-generation-benchmark-v2`, ghi generator class/config/source, runtime,
-task/spec/domain metadata và settings. Đổi source hoặc configuration cần output
-directory mới; historical artifacts không được migrate hay ghi đè.
+`generate_task_inputs` dùng input checkpoint khi resume/replay. Read-only mode
+không gọi generator, model hoặc sandbox nếu thiếu artifact. Manifest ghi generator
+class/config/source, runtime, task/spec/domain metadata và settings. Replay dùng
+`modular_manifest.json` và `modular_summary.json`, không fallback sang
+`manifest.json`/`summary.json` cũ.
+Đổi source hoặc configuration cần output directory mới; historical artifacts
+không được migrate hay ghi đè.
 
 Optional input annotation là `guidance_id`. Frozen-input rescore giữ nguyên mọi
 record đã lưu, kể cả annotation của schema trước. Source và executor identity mới
 khiến execution cache cũ chỉ được reuse nếu toàn bộ key vẫn khớp.
+
+Rescore dùng `FrozenInputsGenerator` như saved-input reader (tên class giữ cho caller cũ), không verify source/input hash hay budget generation. `methods_for_rescore` chỉ giữ labels và configuration, không khởi tạo implementation của arm cũ. Xem phần saved evaluation trong README modular.

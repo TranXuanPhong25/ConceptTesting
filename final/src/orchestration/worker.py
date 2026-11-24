@@ -10,6 +10,7 @@ from pathlib import Path
 import shlex
 import shutil
 import signal
+import subprocess
 import sys
 import time
 import uuid
@@ -28,6 +29,12 @@ def save(path, value):
 def checksum(path):
     import hashlib
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def inventory(directory):
+    return {str(path): checksum(path) for path in directory.rglob('*')
+            if path.is_file() and '__pycache__' not in path.parts
+            and path.name not in ('.worker.lock', '.run.lock')}
 
 
 def private_endpoint(directory, model_name):
@@ -49,6 +56,24 @@ def private_endpoint(directory, model_name):
     return target
 
 
+def load_model_environment(workspace, backend):
+    if backend == 'vertex':
+        keys = ('VERTEX_PROJECT', 'VERTEX_LOCATION', 'GOOGLE_CLOUD_PROJECT', 'GOOGLE_CLOUD_LOCATION',
+                'LLM_THINKING_BUDGET', 'GOOGLE_APPLICATION_CREDENTIALS', 'CLOUDSDK_CONFIG')
+    elif backend == 'openrouter' and not os.environ.get('OPENROUTER_API_KEY'):
+        keys = ('OPENROUTER_API_KEY',)
+    else:
+        return
+    script = '''source scripts/research_env.sh >/dev/null 2>&1 && source "scripts/${1}_env.sh" >/dev/null 2>&1 || exit 1
+shift
+for key in "$@"; do
+    if [[ -v $key ]]; then printf '%s\\0%s\\0' "$key" "${!key}"; fi
+done'''
+    values = subprocess.check_output(['/bin/bash', '-c', script, 'provider-env', backend, *keys],
+                                     cwd=workspace, stderr=subprocess.DEVNULL).decode().split('\0')
+    os.environ.update(zip(values[:-1:2], values[1::2], strict=True))
+
+
 def prepare(values, directory):
     description=preview(values);config=description['config']
     if directory.exists():raise ValueError('New run requires a new artifact directory')
@@ -63,12 +88,8 @@ def prepare(values, directory):
     for source in paths:
         target=runtime/source.relative_to(ROOT);target.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(source,target);target.chmod(0o444);hashes[str(target)]=checksum(target)
-    if config['scorer']=='full_two_repeats':
-        original=ROOT/'final/out/boundary_soft_humaneval164_resume_20261107_195417/runtime/final/src/modular/stages/put_evaluation.py'
-        target=runtime/'final/src/modular/stages/put_evaluation.py';target.chmod(0o644)
-        shutil.copyfile(original,target);target.chmod(0o444);hashes[str(target)]=checksum(target)
     cohort=runtime/'cohort.json';shutil.copyfile(description['cohort_path'],cohort);cohort.chmod(0o444);hashes[str(cohort)]=checksum(cohort)
-    endpoint=private_endpoint(directory,config['model_name']) if config['mode'] != 'pynguin' else None
+    endpoint=private_endpoint(directory,config['model_name']) if config['mode'] != 'pynguin' and config['model_backend']=='qwen' else None
     save(directory/'config_snapshot.json',config)
     save(directory/'preview.json',description)
     save(directory/'launch_plan.json',{'runtime':str(runtime),'cohort':str(cohort),'workspace':str(ROOT),
@@ -98,9 +119,8 @@ def validate_timeout_amendment(source, original_config, timeout_seconds):
                             'scope': 'native evaluation only; received generation requests/responses preserved'}
 
 
-def prepare_resume(source,directory, *, timeout_seconds=None):
+def prepare_resume(source,directory, *, timeout_seconds=None, retry_404_request_id=None):
     """Clone immutable config/code/checkpoints; retain per-request attempt budgets."""
-    from final.src.audits.resume_bva_batch import inventory
     from final.src.modular.cohort import call_usage
     from final.src.runtime.artifacts import digest
     if directory.exists():raise ValueError('Resume requires a new output directory')
@@ -113,11 +133,24 @@ def prepare_resume(source,directory, *, timeout_seconds=None):
             raise ValueError('Only a stopped interrupted/cancelled run can resume')
         original=inventory(source);original_config=normalize(read(source/'config_snapshot.json'));old_plan=read(source/'launch_plan.json')
         config, timeout_amendment = validate_timeout_amendment(source, original_config, timeout_seconds)
+        retry_grant = None
         for attempt_path in source.glob('tasks/*/calls/*/attempt.json'):
             request=read(attempt_path.parent/'request.json');attempt=read(attempt_path)
             if attempt.get('request_id')!=digest(request):raise ValueError('Imported call request checksum differs')
             if (attempt_path.parent/'response.json').exists() and attempt['state']!='received':raise ValueError('Response is not received')
-            if attempt.get('error',{}).get('retryable') is False:raise ValueError('Permanent historical transport failure')
+            error = attempt.get('error', {})
+            if error.get('retryable') is False:
+                name, archived, _ = attempt_path.parent.name.partition('_unknown_attempt_')
+                if archived and (attempt_path.parent.parent/name/'response.json').is_file():
+                    continue
+                if (retry_404_request_id != attempt['request_id'] or retry_grant is not None or archived
+                        or error.get('http_status') != 404 or error.get('operation') != 'completion'
+                        or attempt.get('state') != 'unknown' or attempt.get('attempt_number') not in (1, 2)
+                        or config['model_backend'] != 'qwen'):
+                    raise ValueError('Permanent historical transport failure')
+                retry_grant = (attempt_path.parent.relative_to(source), attempt['request_id'])
+        if retry_404_request_id is not None and retry_grant is None:
+            raise ValueError('No matching completion 404 with attempts remaining')
         directory.mkdir(parents=True);runtime=directory/'runtime'
         shutil.copytree(source/'runtime',runtime,ignore=shutil.ignore_patterns('__pycache__'))
         if (source/'tasks').exists():shutil.copytree(source/'tasks',directory/'tasks')
@@ -134,7 +167,7 @@ def prepare_resume(source,directory, *, timeout_seconds=None):
             description = read(source/'preview.json')
             description['config'] = config
             save(directory/'preview.json', description)
-        endpoint=private_endpoint(directory,config['model_name']) if config['mode'] != 'pynguin' else None
+        endpoint=private_endpoint(directory,config['model_name']) if config['mode'] != 'pynguin' and config['model_backend']=='qwen' else None
         plan={**old_plan,'runtime':str(runtime),'cohort':str(runtime/Path(old_plan['cohort']).relative_to(Path(old_plan['runtime']))),
               'endpoint_env_file':str(endpoint) if endpoint is not None else None,'resume_from':str(source)}
         save(directory/'launch_plan.json',plan)
@@ -144,6 +177,12 @@ def prepare_resume(source,directory, *, timeout_seconds=None):
                   'original_writer_usage':call_usage(source)}
         if timeout_amendment is not None:
             receipts['config_amendment'] = timeout_amendment
+        if retry_grant is not None:
+            call, request_id = retry_grant
+            grant = {'request_id': request_id, 'max_attempts': 3, 'retry_stored_http_statuses': [404],
+                     'authorization': 'User confirmed endpoint restoration and requested continuation'}
+            save(directory/call.parent/(call.name + '.retry_extension.json'), grant)
+            receipts['retry_grant'] = {'call': str(call), **grant}
         save(directory/'import_receipts.json',receipts)
         hashes=dict(original)
         for path in directory.rglob('*'):
@@ -158,22 +197,22 @@ def prepare_resume(source,directory, *, timeout_seconds=None):
 
 
 def run(directory):
-    from final.src.modular.arms.batch import DirectBatchArm,SoftBvaBatchArm
-    from final.src.modular.arms.boundary import BoundaryArm
+    from final.src.modular.arms.batch import DirectBatchArm
     from final.src.modular.arms.plain import PlainArm
-    from final.src.modular.arms.classical import CATALOGUE_ARMS, CatalogueSettings
+    from final.src.modular.arms.classical import CatalogueSettings
     from final.src.modular.arms.fault_oriented import V2_ARMS
+    from final.src.modular.arms.vf3_measured import VF3_MEASURED_ARMS
     from final.src.modular.arms.control_flow import ControlFlowArm
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.calls import RecordedModelCalls
     from final.src.modular.cohort import call_usage
     from final.src.modular.context import PipelineSettings
-    from final.src.benchmarks.datasets import load_tasks,load_metadata
+    from final.src.benchmarks.datasets import DatasetLoader
     from final.src.modular.execution_cache import InputExecutionCache
     from final.src.modular.generators.methods import MethodInputGenerator
     from final.src.modular.pipeline import BenchmarkPipeline
-    from final.src.modular.stages.input_preparation import InputPreparationStage
-    from final.src.models.model import QwenModel,TransportError
+    from final.src.models import create_model
+    from final.src.models.model import TransportError
     config=read(directory/'config_snapshot.json');plan=read(directory/'launch_plan.json')
     if plan.get('endpoint_env_file'):
         os.environ['FINAL_ENDPOINT_ENV_FILE']=plan['endpoint_env_file']
@@ -187,7 +226,9 @@ def run(directory):
         pynguin_settings.validate_environment()
     model = None
     if config['mode'] != 'pynguin':
-        model=QwenModel(context=config['context_tokens'],expected_model=config['model_name'])
+        backend = config.get('model_backend', 'qwen')
+        load_model_environment(plan['workspace'], backend)
+        model=create_model(backend=backend, context=config['context_tokens'], model_name=config['model_name'])
         deadline=time.time()+21600
         while True:
             try:
@@ -197,32 +238,16 @@ def run(directory):
                 if not error.retryable or time.time()>deadline:raise
                 time.sleep(30)
         save(directory/'endpoint_readiness.json',{'checked_utc':time.time(),**endpoint})
-    factories={'direct':DirectBatchArm,'soft_bva':SoftBvaBatchArm,
-               'plain':PlainArm,
-               'boundary':lambda:BoundaryArm(base_example_limit=config['per_put_base_examples'])}
-    factories.update({arm.name:arm for arm in (ControlFlowArm,)})
-    for arm in (*CATALOGUE_ARMS, *V2_ARMS):
+    factories={'direct':DirectBatchArm,'plain':PlainArm,ControlFlowArm.name:ControlFlowArm}
+    for arm in (*V2_ARMS, *VF3_MEASURED_ARMS):
         factories[arm.name] = lambda arm=arm: arm(CatalogueSettings(catalogue=config.get('catalogue', True)))
-    methods=tuple(factories[name]() for name in config['arms']) if config['mode'] in ('batch', 'per_put') else ()
+    methods=tuple(factories[name]() for name in config['arms']) if config['mode'] == 'batch' else ()
     settings=PipelineSettings(input_budget=config['inputs_per_task'],input_tokens=config['completion_tokens'],
         input_temperature=config['temperature'],input_seed=config['input_seed'],reference_seed=config['reference_seed'],
-        context_tokens=config['context_tokens'],timeout_seconds=config['timeout_seconds'],target_programs=plan['target_program_count'])
-    tasks=[task for task in load_tasks() if int(task['task_id'].split('/')[-1]) in plan['task_numbers']]
-    class Preparation(InputPreparationStage):
-        def prepare(self,context):
-            packet=super().prepare(context)
-            if packet.get('skip')=='prompt_too_large':
-                return {'task_id':packet['task_id'],'visible_put_ids':[],'common':'','prompt_tokens':{},'empty_context':True}
-            return packet
-    class Generator(MethodInputGenerator):
-        def generate(self,context):
-            if context.packet.get('skip'):return {'task_id':context.task['task_id'],'skip':context.packet['skip']}
-            if context.packet.get('empty_context'):
-                return {'task_id':context.task['task_id'],'arms':{method.name:{'inputs':[],'rejected':[],
-                    'status':'prompt_too_large'} for method in self.methods}}
-            order=self.methods if context.task_number%2==0 else tuple(reversed(self.methods))
-            records={method.name:method.run(context) for method in order}
-            return {'task_id':context.task['task_id'],'arms':{method.name:records[method.name] for method in self.methods}}
+        context_tokens=config['context_tokens'],timeout_seconds=config['timeout_seconds'],target_programs=plan['target_program_count'],
+        scorer=config['scorer'])
+    dataset=DatasetLoader('HE-py')
+    tasks=[task for task in dataset.load_tasks() if int(task['task_id'].split('/')[-1]) in plan['task_numbers']]
     if config['mode'] == 'pynguin':
         from final.src.modular.pynguin.adapter import PynguinInputGenerator
         generator = PynguinInputGenerator(pynguin_settings)
@@ -230,39 +255,36 @@ def run(directory):
         from final.src.modular.generators.tools import ToolInputGenerator
         generator = ToolInputGenerator(config['tool_sampling'])
     else:
-        generator=Generator(methods,preparation_stages=(Preparation(methods),))
+        generator=MethodInputGenerator(methods,empty_context_on_overflow=True,alternate_order=True)
     native_handle=None;generated_count=0;evaluated_count=0
-    class Pipeline(BenchmarkPipeline):
-        def execute_stages(self,stages,context):
-            nonlocal native_handle
-            if stages[0].name=='reference_oracle' and not self.artifacts.read_only:
-                if native_handle is None:
-                    state('waiting_native_lock')
-                    native_handle=Path(plan['native_lock']).open('a+');fcntl.flock(native_handle,fcntl.LOCK_EX)
-                state('running',phase='evaluation')
-            return super().execute_stages(stages,context)
-        def record_stage_event(self,context,stage,status,**details):
-            nonlocal generated_count,evaluated_count
-            super().record_stage_event(context,stage,status,**details)
-            if self.artifacts.read_only:return
-            if stage.name=='input_generation':
-                state('running',phase='generation',task_id=context.task['task_id'])
-                if status=='complete':generated_count+=1
-            if stage.name=='put_evaluation' and status=='complete':evaluated_count+=1
-            save(directory/'progress.json',{'task_id':context.task['task_id'],'stage':stage.name,'event':status,
-                'generated_tasks':generated_count,'evaluated_tasks':evaluated_count,'total_tasks':len(tasks),'updated_utc':time.time()})
+    def before_evaluation():
+        nonlocal native_handle
+        if native_handle is None:
+            state('waiting_native_lock')
+            native_handle=Path(plan['native_lock']).open('a+');fcntl.flock(native_handle,fcntl.LOCK_EX)
+        state('running',phase='evaluation')
+    def record_step(context,stage_name,status):
+        nonlocal generated_count,evaluated_count
+        if stage_name=='input_generation':
+            state('running',phase='generation',task_id=context.task['task_id'])
+            if status=='complete':generated_count+=1
+        if stage_name=='put_evaluation' and status=='complete':evaluated_count+=1
+        save(directory/'progress.json',{'task_id':context.task['task_id'],'stage':stage_name,'event':status,
+            'generated_tasks':generated_count,'evaluated_tasks':evaluated_count,'total_tasks':len(tasks),'updated_utc':time.time()})
     try:
         if config['mode'] == 'pynguin':
             state('waiting_native_lock')
             native_handle=Path(plan['native_lock']).open('a+')
             fcntl.flock(native_handle,fcntl.LOCK_EX)
-        pipeline=Pipeline(Path(plan['cohort']),ArtifactStore(directory),input_generator=generator,settings=settings,
-            calls=RecordedModelCalls(model,ArtifactStore(directory)) if model is not None else None,execution_cache=InputExecutionCache(Path(plan['execution_cache'])))
-        summary=pipeline.run(tasks,load_metadata())
+        pipeline=BenchmarkPipeline(Path(plan['cohort']),ArtifactStore(directory),input_generator=generator,settings=settings,
+            calls=RecordedModelCalls(model,ArtifactStore(directory)) if model is not None else None,
+            execution_cache=InputExecutionCache(Path(plan['execution_cache'])),dataset=dataset,
+            on_before_evaluation=before_evaluation,on_step=record_step)
+        summary=pipeline.run(tasks,dataset.load_metadata())
         result={'arms':summary['arms'],'evaluated_base_pass':summary['evaluated_base_pass'],
             'writer_usage':call_usage(directory),'keepalive_usage':summary['keepalive_calls'],
             'read_only_replay_matches':None,'source_hashes_verified':None,'settings':config}
-        for key in ('pynguin',):
+        for key in ('pynguin', 'tester_calls_by_arm', 'control_flow'):
             if key in summary:
                 result[key] = summary[key]
         if 'catalogues' in summary:
@@ -273,11 +295,7 @@ def run(directory):
             result['tool_treatments'] = summary.get('tool_treatments', {})
             result['domain_authorities'] = summary.get('domain_authorities', {})
             result['detection_kinds'] = summary['detection_kinds']
-        if set(config['arms'])=={'direct','soft_bva'}:
-            from final.src.audits.run_bva_batch import paired_verdicts
-            result['comparison']=paired_verdicts(directory)
         if plan.get('resume_from'):
-            from final.src.audits.resume_bva_batch import inventory
             imports=read(directory/'import_receipts.json')
             old=imports['original_writer_usage'];current=result['writer_usage']
             result['new_writer_usage']={key:current[key]-old[key] for key in ('invocations','received','unknown')}
@@ -291,6 +309,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--config',type=Path);parser.add_argument('--artifacts',type=Path,required=True)
     parser.add_argument('--resume-from',type=Path)
+    parser.add_argument('--retry-404-request-id')
     parser.add_argument('--timeout-seconds',type=float,
                         help='Amend native timeout for a generation-only stopped run; preserve saved generation')
     parser.add_argument('--prepare-only',action='store_true');parser.add_argument('--worker',action='store_true')
@@ -307,7 +326,8 @@ def main():
     else:
         if args.resume_from:
             print(json.dumps(prepare_resume(args.resume_from.resolve(),directory,
-                                           timeout_seconds=args.timeout_seconds)),flush=True)
+                                           timeout_seconds=args.timeout_seconds,
+                                           retry_404_request_id=args.retry_404_request_id)),flush=True)
             return
         if args.config is None:parser.error('--config required')
         print(json.dumps(prepare(read(args.config),directory)),flush=True)

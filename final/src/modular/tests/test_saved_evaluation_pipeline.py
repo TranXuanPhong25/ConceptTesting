@@ -6,7 +6,7 @@ import pytest
 from final.src.runtime.artifacts import save
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.rescore import build_rescore_pipeline
-from final.src.modular.stages.reporting import ReportingStage
+from final.src.modular.reporting import Reporter
 from final.src.modular.tests.test_references import original_run
 from final.src.audits.evaluate_input_union import evaluate
 
@@ -44,7 +44,7 @@ def test_rescore_accepts_new_arm_and_inputs_over_old_budget_and_reuses_cache(ori
 
 def test_union_reads_recorded_outcomes_without_manifest_inputs_or_executors(tmp_path, monkeypatch):
     for module in ('reference_oracle', 'put_evaluation'):
-        monkeypatch.setattr(f'final.src.modular.stages.{module}.execute',
+        monkeypatch.setattr(f'final.src.modular.{module}.execute',
                             lambda *args: pytest.fail('Summarization executed a program'))
     source = tmp_path / 'source'
     for number, failure in [(0, {'status': 'fail'}), (1, {'status': 'error', 'exception': 'IndexError'})]:
@@ -69,5 +69,5 @@ def test_union_reads_recorded_outcomes_without_manifest_inputs_or_executors(tmp_
     assert before == {p: p.read_bytes() for p in source.rglob('*') if p.is_file()}
     # Summary counts come from saved verdicts even when the cached summary is stale.
     save(source / 'modular_summary.json', {'arms': {}, 'evaluated_base_pass': 99})
-    summary = ReportingStage.summarize_saved(ArtifactStore(source, read_only=True))
+    summary = Reporter.summarize_saved(ArtifactStore(source, read_only=True))
     assert summary['evaluated_base_pass'] == 2 and summary['arms']['A']['detected'] == 2

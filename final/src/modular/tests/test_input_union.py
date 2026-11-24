@@ -6,7 +6,7 @@ import pytest
 from final.src.audits.evaluate_input_union import validate_union_pool,validate_native_evidence
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import TaskContext,PipelineSettings
-from final.src.modular.stages.put_evaluation import PutEvaluationStage
+from final.src.modular.put_evaluation import evaluate_programs
 from final.src.runtime.artifacts import save
 
 
@@ -37,7 +37,7 @@ def test_saved_failure_count_is_recomputed_from_confirmation_evidence(tmp_path):
 
 
 def test_shared_evaluator_adds_union_attribution_without_execution(tmp_path,monkeypatch):
-    import final.src.modular.stages.put_evaluation as evaluation
+    import final.src.modular.put_evaluation as evaluation
     monkeypatch.setattr(evaluation,'execute',lambda job:pytest.fail('Native execution during saved union replay'))
     task={'task_id':'HumanEval/0','prompt':'def f(x): pass','entry_point':'f'}
     context=TaskContext(task,{'atol':0},ArtifactStore(tmp_path,read_only=True),PipelineSettings(input_budget=60))
@@ -48,8 +48,8 @@ def test_shared_evaluator_adds_union_attribution_without_execution(tmp_path,monk
     context.inputs={'arms':{name:{'inputs':[]} for name in context.oracle['arm_indices']}}
     save(tmp_path/'tasks/0/evaluation/0_0.json',{'tests':[{'status':'fail'},{'status':'pass'}]})
     save(tmp_path/'tasks/0/evaluation/0_retry_1.json',{'tests':[{'status':'fail'}]})
-    result=PutEvaluationStage().evaluate_programs(context)
+    result=evaluate_programs(context)
     assert result['arms']['union']['detected']==1 and result['arms']['union']['valid_inputs']==2
     assert result['arms']['ep_bva']['detected']==0
     (tmp_path/'tasks/0/evaluation/0_retry_1.json').unlink()
-    with pytest.raises(FileNotFoundError):PutEvaluationStage().evaluate_programs(context)
+    with pytest.raises(FileNotFoundError):evaluate_programs(context)

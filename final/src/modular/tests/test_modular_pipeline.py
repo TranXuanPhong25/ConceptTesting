@@ -2,12 +2,12 @@
 from dataclasses import replace
 import pytest
 from final.src.modular.artifacts import ArtifactStore
-from final.src.modular.calls import RecordedModelCalls
+from final.src.modular.calls import CachedModelCalls, RecordedModelCalls
 from final.src.modular.context import PipelineSettings
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.references import TaskReferencePrograms
-from final.src.modular.stages.reference_oracle import ReferenceOracleStage
-from final.src.modular.tests.test_boundary_arm import TASK, META, write_cohort, make_context
+from final.src.modular.reference_oracle import run_reference_oracle
+from final.src.modular.tests.helpers import TASK, META, write_cohort, make_context
 from final.src.modular.tests.test_input_generator import SavedInputsGenerator
 
 
@@ -21,15 +21,25 @@ def pipeline_at(tmp_path):
 def test_reference_requires_inputs(tmp_path):
     context = make_context(tmp_path, None)
     with pytest.raises(RuntimeError, match="requires generated or saved inputs"):
-        ReferenceOracleStage().run(context)
+        run_reference_oracle(context)
 
 
 def test_live_calls_rejected_for_read_only_store(tmp_path):
     with pytest.raises(ValueError, match="read-only"):
         RecordedModelCalls(object(), ArtifactStore(tmp_path, read_only=True))
+
+
+@pytest.mark.parametrize("read_only", [False, True])
+def test_pipeline_selects_calls_for_artifact_mode(tmp_path, read_only):
     cohort = write_cohort(tmp_path / "cohort.json")
-    with pytest.raises(ValueError, match="cached model calls"):
-        BenchmarkPipeline(cohort, ArtifactStore(tmp_path / "replay", read_only=True), calls=object())
+    artifacts = ArtifactStore(tmp_path / "run", read_only=read_only)
+    calls = object()
+    pipeline = BenchmarkPipeline(cohort, artifacts, calls=calls)
+    if read_only:
+        assert isinstance(pipeline.calls, CachedModelCalls)
+        assert pipeline.calls.artifacts is artifacts
+    else:
+        assert pipeline.calls is calls
 
 
 def test_read_only_store_never_computes_missing_artifacts(tmp_path):
@@ -61,8 +71,8 @@ def test_unchanged_run_replays_without_execution(tmp_path, monkeypatch):
     expected = pipeline.run([TASK], {TASK["task_id"]: META})
     pipeline.artifacts.write("summary.json", {"legacy_summary": True})
     for name in ("reference_oracle", "put_evaluation"):
-        monkeypatch.setattr(f"final.src.modular.stages.{name}.execute", lambda job: pytest.fail("Executed during replay"))
-    replay = BenchmarkPipeline(pipeline.cohort_stage.cohort_path, ArtifactStore(tmp_path / "run", read_only=True),
+        monkeypatch.setattr(f"final.src.modular.{name}.execute", lambda job: pytest.fail("Executed during replay"))
+    replay = BenchmarkPipeline(pipeline.cohort_path, ArtifactStore(tmp_path / "run", read_only=True),
         input_generator=SavedInputsGenerator(), settings=pipeline.settings,
         reference_programs=TaskReferencePrograms())
     assert replay.run([TASK], {TASK["task_id"]: META}) == expected
@@ -79,7 +89,7 @@ def test_old_cohort_hash_stage_config_replays_without_mismatch(tmp_path):
             stage["configuration"] = {"cohort_sha256": "legacy"}
     manifest["cohort_sha256"] = "legacy"
     manifest_path.write_text(json.dumps(manifest))
-    replay = BenchmarkPipeline(pipeline.cohort_stage.cohort_path,
+    replay = BenchmarkPipeline(pipeline.cohort_path,
         ArtifactStore(tmp_path / "run", read_only=True), input_generator=SavedInputsGenerator(),
         settings=pipeline.settings, reference_programs=TaskReferencePrograms())
     assert replay.run([TASK], {TASK["task_id"]: META}) == expected
@@ -91,8 +101,8 @@ def test_read_only_summary_does_not_require_manifest(tmp_path, monkeypatch):
     manifest_path = pipeline.artifacts.path("modular_manifest.json")
     manifest_path.unlink()
     for name in ("reference_oracle", "put_evaluation"):
-        monkeypatch.setattr(f"final.src.modular.stages.{name}.execute", lambda job: pytest.fail("Executed during replay"))
-    replay = BenchmarkPipeline(pipeline.cohort_stage.cohort_path,
+        monkeypatch.setattr(f"final.src.modular.{name}.execute", lambda job: pytest.fail("Executed during replay"))
+    replay = BenchmarkPipeline(pipeline.cohort_path,
         ArtifactStore(pipeline.artifacts.directory, read_only=True),
         input_generator=SavedInputsGenerator(), settings=pipeline.settings,
         reference_programs=TaskReferencePrograms())
@@ -105,8 +115,8 @@ def test_read_only_summary_can_be_rebuilt_from_results(tmp_path, monkeypatch):
     pipeline.artifacts.write("summary.json", expected)
     pipeline.artifacts.path("modular_summary.json").unlink()
     for name in ("reference_oracle", "put_evaluation"):
-        monkeypatch.setattr(f"final.src.modular.stages.{name}.execute", lambda job: pytest.fail("Executed during replay"))
-    replay = BenchmarkPipeline(pipeline.cohort_stage.cohort_path,
+        monkeypatch.setattr(f"final.src.modular.{name}.execute", lambda job: pytest.fail("Executed during replay"))
+    replay = BenchmarkPipeline(pipeline.cohort_path,
         ArtifactStore(pipeline.artifacts.directory, read_only=True),
         input_generator=SavedInputsGenerator(), settings=pipeline.settings,
         reference_programs=TaskReferencePrograms())

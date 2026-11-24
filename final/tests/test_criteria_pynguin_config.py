@@ -50,7 +50,6 @@ def test_prepared_presets_are_preview_only_and_normalizable():
 
 
 def test_missing_runtime_blocks_worker_before_endpoint_or_result(tmp_path, monkeypatch):
-    from final.src.audits import run_bva_full
     from importlib import import_module
     model = import_module("final.src.models.model")
     from types import SimpleNamespace

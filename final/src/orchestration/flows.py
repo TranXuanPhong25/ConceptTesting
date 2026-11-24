@@ -24,9 +24,10 @@ BENCHMARK_PYTHON=ROOT/'final/.venv/bin/python'
 OUT=ROOT/'final/out'
 
 
-def active_external_writers(exclude=None):
+def active_external_writers(exclude=None, *, selected_endpoint=None):
     found=[]
-    selected_endpoint = endpoint_identity_for_run(exclude) if exclude is not None else None
+    if selected_endpoint is None and exclude is not None:
+        selected_endpoint = endpoint_identity_for_run(exclude)
     status_paths = set(OUT.glob('*/status.json')) | set(OUT.glob('console_*/run/status.json'))
     for path in sorted(status_paths):
         if exclude and path.parent==exclude:continue
@@ -130,22 +131,24 @@ async def attach_outputs(directory):
     return snapshot
 
 
+
 @flow(name='HumanEval inputs',retries=0,log_prints=False,persist_result=False)
 async def benchmark(
     cohort:Annotated[Literal['humaneval164'],Field(title='Frozen PUT cohort',description='Full HumanEval; task_numbers selects a subset.')]='humaneval164',
-    mode:Annotated[Literal['batch','per_put','tools','pynguin'],Field(title='Generation mode',description='batch: one call/task/arm. per_put: one call per allocated PUT; the budget remains per task/arm.')]='batch',
-    arms:Annotated[list[Literal['plain','direct','soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table','ep_strong','bva_robust','bva_worst_case','ep_dt_bva','ep_bva_v2','decision_table_v2','pynguin','control_flow','tool_direct','tool_hypothesis','tool_hypothesis_z3','tool_hypothesis_extra','tool_planner']],Field(title='Arms',description='batch: Plain/CF/EP/BVA/DT arms. per_put: boundary.')]=['direct','soft_bva'],
+    mode:Annotated[Literal['batch','tools','pynguin'],Field(title='Generation mode',description='Batch, tool sampling or Pynguin.')]='batch',
+    arms:Annotated[list[Literal['plain','direct','ep_bva_v2','decision_table_v2','ep_bva_vf3_measured','decision_table_vf3_measured','pynguin','control_flow','tool_direct','tool_hypothesis','tool_hypothesis_extra','tool_planner']],Field(title='Arms',description='batch: Plain, Control Flow, EP+BVA v2, DT v2, EP+BVA VF3 Measured and DT VF3 Measured.')]=['plain','ep_bva_v2','decision_table_v2'],
     task_numbers:Annotated[list[int],Field(title='Task subset (empty means all)',description='HumanEval task numbers, such as 2, 11, 72.')]=[],
-    inputs_per_task:Annotated[int,Field(title='Input budget per task per arm',ge=1,le=200,description='In per_put mode, divided across visible PUTs.')]=20,
+    inputs_per_task:Annotated[int,Field(title='Input budget per task per arm',ge=1,le=200)]=20,
     completion_tokens:Annotated[int,Field(title='Maximum completion tokens per call',ge=128,le=32768)]=4096,
     context_tokens:Annotated[int,Field(title='Model context tokens',ge=512,le=131072)]=8192,
     temperature:Annotated[float,Field(title='Generation temperature',ge=0,le=2)]=.7,
     input_seed:Annotated[int,Field(title='Input generation seed',ge=0,le=2147483483)]=314159,
     reference_seed:Annotated[int,Field(title='Reference and PUT seed',ge=0,le=2147483483)]=271828,
     timeout_seconds:Annotated[float,Field(title='Native timeout per input (seconds)',ge=.1,le=60)]=8,
-    per_put_base_examples:Annotated[int,Field(title='Base examples per PUT (per_put mode only)',ge=1,le=300,description='Ignored in batch mode; batch includes all original base tests.')]=12,
+    per_put_base_examples:Annotated[int,Field(title='Legacy base examples field',ge=1,le=300,description='Retained for existing configuration snapshots.')]=12,
     scorer:Annotated[Literal['confirm_first_failures','full_two_repeats'],Field(title='Scorer repeat policy')]='confirm_first_failures',
-    model_name:Annotated[str,Field(title='Served model name',min_length=1,max_length=120)]='qwen3.5-27b-awq',
+    model_name:Annotated[str | None,Field(title='Served model name',min_length=1,max_length=120)]=None,
+    model_backend:Annotated[Literal['qwen','vertex','openrouter'],Field(title='Model backend')]='qwen',
     catalogue:Annotated[bool,Field(title='Emit catalogue',description='EP/BVA/DT only. Uncheck for instruction-only ablation; completion cap stays shared.')]=True,
     tool_sampling:Annotated[dict | None,Field(title='Tool sampling budgets',description='Required for tools mode; explicit draws/query/time/audit/random budgets, including matching arms.')]=None,
     pynguin:Annotated[dict | None,Field(title='Pynguin settings',description='Pinned external Python environment, bounded per-owner upstream search; no credentials.')]=None,
@@ -155,23 +158,25 @@ async def benchmark(
 
     Args:
         cohort: Frozen HumanEval PUT set: all164 tasks or the known-bug diagnostic10-task subset.
-        mode: batch makes one call per arm for each task. per_put makes one call for each allocated PUT.
-        arms: Batch accepts Plain/CF/spec obligations and catalogue EP/BVA/DT arms. per_put accepts boundary only.
+        mode: Choose batch, tools or pynguin.
+        arms: Batch supports Plain, Direct, Control Flow, EP+BVA v2, DT v2, EP+BVA VF3 Measured and DT VF3 Measured.
         task_numbers: HumanEval task IDs as numbers, e.g. 2, 11, 72. An empty list selects all tasks in the cohort.
-        inputs_per_task: Total new-input budget per task per arm. In per_put mode, divide this shared task budget among visible PUTs; it is not a per-PUT budget.
+        inputs_per_task: Total new-input budget per task per arm.
         completion_tokens: Maximum completion tokens in each individual writer call.
         context_tokens: Model context ceiling; both batch arm prompts must fit the same visible-PUT set.
         temperature: Generation temperature for the writer calls.
         input_seed: Seed plus task number for generation requests; it is not offset by PUT ID.
         reference_seed: Seed plus task number for domain/reference/PUT execution.
         timeout_seconds: Native execution timeout per input.
-        per_put_base_examples: Maximum original base examples shown to each PUT in boundary mode. Batch mode includes original task base tests and ignores this field.
+        per_put_base_examples: Legacy configuration field.
         scorer: confirm_first_failures runs a second PUT check only after a first failure. full_two_repeats runs the historical full repeat policy; both arms in a run use the same scorer.
-        model_name: Served OpenAI-compatible model ID, which must match the locally configured endpoint.
+        model_name: Model ID served by the selected backend.
+        model_backend: Qwen, Vertex AI hoặc OpenRouter.
         catalogue: Include compact catalogue for EP/BVA/DT; false is an instruction-only ablation.
         preview_only: Save resolved settings and input/call budget without model, tokenizer, or native calls.
     """
     parameters=locals().copy();parameters.pop('preview_only')
+    if parameters['model_name'] is None:parameters.pop('model_name')
     if parameters.get('tool_sampling') is None:parameters.pop('tool_sampling')
     if parameters.get('pynguin') is None:parameters.pop('pynguin')
     config=normalize(parameters);description=preview(config)
@@ -205,34 +210,38 @@ async def benchmark(
 
 
 @flow(name='Resume saved run',retries=0,log_prints=False,persist_result=False)
-async def resume_saved_batch(source_directory:str, timeout_seconds:float | None=None):
+async def resume_saved_batch(source_directory:str, timeout_seconds:float | None=None,
+                             retry_404_request_id:str | None=None):
     """Resume a stopped matched-batch run, preserving responses and attempt caps.
 
     source_directory: Path below final/out, relative to repository or absolute.
     timeout_seconds: Optional native timeout amendment; only before any native evaluation.
+    retry_404_request_id: Explicitly retry one Qwen completion that returned 404, within its original attempt cap.
     """
     source=(ROOT/source_directory).resolve()
-    if not source.is_relative_to(OUT) or not ((source/'request_plan.json').exists() or (source/'config_snapshot.json').exists()):
-        raise ValueError('Select a saved console/matched-batch run directory under final/out')
+    if not source.is_relative_to(OUT) or not (source/'config_snapshot.json').exists():
+        raise ValueError('Select a saved console run directory under final/out')
     async with get_client() as client:
-        title = 'Resume · ' + historical_run_name(source)
-        if (source/'config_snapshot.json').exists():
-            source_config = json.loads((source/'config_snapshot.json').read_text())
-            effective_timeout = timeout_seconds if timeout_seconds is not None else source_config['timeout_seconds']
-            title = f'Resume {effective_timeout:g}s · ' + benchmark_run_name(source_config)
+        source_config = json.loads((source/'config_snapshot.json').read_text())
+        effective_timeout = timeout_seconds if timeout_seconds is not None else source_config['timeout_seconds']
+        title = f'Resume {effective_timeout:g}s · ' + benchmark_run_name(source_config)
         await client.update_flow_run(get_run_context().flow_run.id,name=title)
     directory=OUT/('console_resume_'+str(get_run_context().flow_run.id))
-    managed=(source/'config_snapshot.json').exists() and not (source/'request_plan.json').exists()
-    module='final.src.orchestration.worker' if managed else 'final.src.audits.resume_bva_batch'
-    option='--resume-from' if managed else '--source'
-    arguments=[BENCHMARK_PYTHON,'-m',module,option,source,'--artifacts',directory,'--prepare-only']
+    module='final.src.orchestration.worker'
+    arguments=[BENCHMARK_PYTHON,'-m',module,'--resume-from',source,'--artifacts',directory,'--prepare-only']
     if timeout_seconds is not None:
-        if not managed:
-            raise ValueError('Timeout amendment requires a console source run')
         arguments.extend(['--timeout-seconds',str(timeout_seconds)])
+    if retry_404_request_id is not None:
+        arguments.extend(['--retry-404-request-id', retry_404_request_id])
     await command(arguments)
     plan=json.loads((directory/'launch_plan.json').read_text())
     await attach_outputs(directory)
+    if retry_404_request_id is not None:
+        imports = json.loads((directory/'import_receipts.json').read_text())
+        grant = imports['retry_grant']
+        await create_markdown_artifact(key='resume-retry-grant', markdown=(
+            f"Resume từ `{source_directory}`, giữ {imports['original_writer_usage']['received']} response đã lưu. "
+            f"Cho phép retry HTTP 404 của đúng call `{grant['call']}` trong giới hạn {grant['max_attempts']} attempts."))
     while active_external_writers(exclude=directory):
         get_run_logger().info('Waiting for model writer on the same endpoint before resuming.')
         await asyncio.sleep(15)

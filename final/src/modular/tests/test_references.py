@@ -6,16 +6,16 @@ from dataclasses import replace
 import pytest
 
 from final.src.runtime.artifacts import digest, save
-from final.src.benchmarks.datasets import load_tasks
-from final.src.modular.arms import selected_arms
+from final.src.benchmarks.datasets import DatasetLoader, load_tasks
+from final.src.modular.arms.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings, TaskContext
 from final.src.modular.generators.base import InputGenerator
 from final.src.modular.generators.frozen import FrozenInputsGenerator
 from final.src.modular.pipeline import BenchmarkPipeline
+from final.src.modular.reference_oracle import run_reference_oracle
 from final.src.modular.references import HumanEvalPlusReferencePrograms, TaskReferencePrograms, DEFAULT_REFERENCES
 from final.src.modular.rescore import build_rescore_pipeline
-from final.src.modular.stages.reference_oracle import ReferenceOracleStage
 
 
 TASKS = {task["task_id"]: task for task in load_tasks()}
@@ -23,12 +23,11 @@ METADATA = json.loads((DEFAULT_REFERENCES.parent / "contracts.json").read_text()
 
 
 class FrozenFixtureGenerator(InputGenerator):
-    methods = selected_arms(["plain", "boundary"])
+    methods = (PlainArm(),)
 
     def generate(self, context):
         return {"task_id": context.task["task_id"], "arms": {
             "plain": {"inputs": [{"args": "(-1, 2)", "kwargs": "{}"}], "rejected": []},
-            "boundary": {"inputs": [], "status": "no_boundary", "skip": "no_boundary", "programs": []},
         }}
 
 
@@ -66,7 +65,7 @@ def test_default_stage_executes_corrected_reference_not_original(tmp_path, numbe
     context.inputs = {"arms": {"method": {"inputs": [{"args": args, "kwargs": "{}"}]}}}
     context.cohort_task = {"base_input_keys": []}
     context.inputs_frozen = True
-    ReferenceOracleStage().run(context)
+    run_reference_oracle(context)
     assert context.oracle["tests"][0]["expected"] == expected
     record = context.artifacts.read(context.task_directory + "/reference_program.json")
     assert record["source"] == "EvalPlus/HumanEval+" and record["version"] == "v0.1.10"
@@ -106,7 +105,7 @@ def test_rescore_reuses_exact_inputs_without_instantiating_a_model(original_run,
     assert before == {path: path.read_bytes() for path in source.directory.rglob("*") if path.is_file()}
     assert pipeline.run(tasks, metadata) == summary
     replay = BenchmarkPipeline(cohort, ArtifactStore(pipeline.artifacts.directory, read_only=True),
-        input_generator=FrozenInputsGenerator(source.directory, methods=selected_arms(["plain", "boundary"])),
+        input_generator=FrozenInputsGenerator(source.directory, methods=(PlainArm(),)),
         settings=pipeline.settings, reference_programs=HumanEvalPlusReferencePrograms())
     assert replay.run(tasks, metadata) == summary
 
@@ -128,3 +127,8 @@ def test_rescore_refuses_original_output_directory(original_run, tmp_path):
     cohort, source = original_run
     with pytest.raises(ValueError, match="separate output directory"):
         build_rescore_pipeline(source.directory, cohort, source.directory, cache_directory=tmp_path / "cache")
+
+
+def test_dataset_loader_returns_expected_reference_programs():
+    assert isinstance(DatasetLoader("HE-py").load_reference_programs(), HumanEvalPlusReferencePrograms)
+    assert isinstance(DatasetLoader("MBPP-py").load_reference_programs(), TaskReferencePrograms)

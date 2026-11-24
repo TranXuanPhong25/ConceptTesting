@@ -7,17 +7,15 @@ from types import SimpleNamespace
 import pytest
 
 from final.src.models.core_model import ModelResponse
-from final.src.modular.arms import available_arms, default_arms
-from final.src.modular.arms.classical import CATALOGUE_ARMS, CatalogueSettings, EpBvaArm, NormalBvaArm, RobustBvaArm
+from final.src.modular.arms.classical import CatalogueArm
+from final.src.modular.arms.fault_oriented import EpBvaV2Arm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.catalogue import (Boundary, Catalogue, boundary_targets, decision_table_check,
-    measure_catalogue, validate_catalogue)
+    measure_catalogue, measure_task_catalogues, validate_catalogue)
 from final.src.modular.context import PipelineSettings, TaskContext
 from final.src.modular.input_prompts import structured_input_prompt
-from final.src.modular.stages.catalogue_measurement import CatalogueMeasurementStage
-from final.src.modular.stages.input_preparation import InputPreparationStage
-from final.src.modular.stages.reference_oracle import ReferenceOracleStage
+from final.src.modular.reference_oracle import run_reference_oracle
 from final.src.orchestration import config
 
 
@@ -42,6 +40,13 @@ def measure(raw, records, *, name='bva_normal', source='def f(x): pass', budget=
     inputs = [{**builder.build(record['arguments']), 'covers':record.get('covers')} for record in records]
     batch = {'catalogue':catalogue.model_dump(mode='json'), 'catalogue_status':'applicable','inputs':inputs}
     return measure_catalogue(batch,task(source),list(range(len(inputs))),arm_name=name,input_budget=budget)
+
+
+def boundary_only_arm():
+    arm=CatalogueArm()
+    arm.name='bva_normal'
+    arm.sections=('boundaries',)
+    return arm
 
 
 def bva(identifier='B1', parameter='x', lower=1, upper=12, nominal=None, **extra):
@@ -122,15 +127,14 @@ def test_duplicate_empty_and_malformed_catalogues_preserve_valid_inputs(tmp_path
     examples=[None, {'classes':'wrong'}, {'classes':[]},
               {'classes':[{'id':'E','description':'a'},{'id':'E','description':'b'}]},
               {'classes':[{'id':'E','description':'empty','members':[]}]}]
-    from final.src.modular.arms.classical import EquivalenceArm
     for raw in examples:
-        result=decode(EquivalenceArm(),{'catalogue':raw,'inputs':[{'arguments':{'x':2}}]},tmp_path)
+        result=decode(EpBvaV2Arm(),{'catalogue':raw,'inputs':[{'arguments':{'x':2}}]},tmp_path)
         assert result['catalogue_status']=='catalogue_invalid'
         assert result['inputs'][0]['args']=='(2,)'
 
 
 def test_decoder_keeps_label_alignment_after_rejection_and_records_no_expected(tmp_path):
-    result=decode(NormalBvaArm(),{'catalogue':{'boundaries':[bva()]},'inputs':[
+    result=decode(boundary_only_arm(),{'catalogue':{'boundaries':[bva()]},'inputs':[
         {'arguments':{'unknown':9},'covers':['Bbad']},{'arguments':{'x':12},'covers':['B1']}]},tmp_path)
     assert len(result['inputs'])==1
     assert result['inputs'][0]['source_index']==1 and result['inputs'][0]['covers']==['B1']
@@ -203,21 +207,13 @@ def test_worst_case_cartesian_cap_without_materializing_product():
     assert result['budget_limited'] is True
 
 
-def test_robust_requires_explicit_spec_eligibility_before_any_model_call(tmp_path):
-    ctx=context(tmp_path)
-    class Calls:
-        def complete(self,*args,**kwargs): pytest.fail('Robust must skip before inference')
-    ctx.calls=Calls()
-    assert RobustBvaArm().run(ctx)['status']=='not_applicable'
-
-
 def test_reference_survivors_exclude_base_and_rejected_but_keep_global_duplicates(tmp_path,monkeypatch):
-    import final.src.modular.stages.reference_oracle as reference
+    import final.src.modular.reference_oracle as reference
     ctx=context(tmp_path)
     ctx.inputs_frozen=True
     ctx.cohort_task={'base_input_keys':['base']}
     values=[2,99,1,2]
-    arm=NormalBvaArm()
+    arm=boundary_only_arm()
     batch=decode(arm,{'catalogue':{'boundaries':[bva()]},'inputs':[
         {'arguments':{'x':value},'covers':['B1']} for value in values]},tmp_path)
     ctx.inputs={'task_id':'HumanEval/0','arms':{'bva_normal':batch}}
@@ -229,64 +225,38 @@ def test_reference_survivors_exclude_base_and_rejected_but_keep_global_duplicate
         return {'tests':[{'status':'ok','expected':'2','input_key':'two'}, {'status':'error'},
                          {'status':'ok','expected':'1','input_key':'base'}, {'status':'ok','expected':'2','input_key':'two'}]}
     monkeypatch.setattr(reference,'cached_execution',execute)
-    ReferenceOracleStage(reference_programs=Reference()).run(ctx)
+    run_reference_oracle(ctx, reference_programs=Reference())
     assert ctx.oracle['catalogue_valid_input_indices']['bva_normal']==[0,3]
     assert ctx.oracle['arm_indices']['bva_normal']==[0]
-    CatalogueMeasurementStage([arm]).run(ctx)
+    measure_task_catalogues(ctx, [arm.name])
     measured=ctx.extensions['catalogue_measurements']['bva_normal']
     assert measured['valid_input_records']==2
     assert measured['boundaries'][0]['matched_values']==[2]
 
 
-def test_all_guidance_short_prompt_envelope_and_off_ablation(tmp_path):
-    ctx=context(tmp_path)
-    common=structured_input_prompt(ctx.task,[], '',20)
-    for factory in CATALOGUE_ARMS:
-        arm=factory()
-        assert len(arm.guidance.splitlines())<=8
-        prompt=arm.build_messages({'common':common})[1]['content']
-        assert '"catalogue"' in prompt and '"covers"' in prompt
-        assert 'Return JSON: {"inputs"' not in prompt
-        assert prompt.count('SPECIFICATION:')==1
-        off=factory(CatalogueSettings(catalogue=False))
-        prompt=off.build_messages({'common':common})[1]['content']
-        assert 'catalogue' not in prompt
-    assert [arm.name for arm in default_arms()]==['plain']
-    assert {'boundary','ep_bva','decision_table'} <= {arm.name for arm in available_arms()}
-
-
-def test_prefect_presets_share_larger_cap_and_preserve_legacy_budget():
+def test_console_comparison_preset_has_v2_arms_and_shared_budget():
     from pathlib import Path
-    rows=json.loads(Path('final/presets/run_console.json').read_text())
-    for row in rows:
-        preview=config.preview(row['parameters'])
-        if any(name in row['parameters']['arms'] for name in ('spec_obligation','ep_bva_catalogue_then_inputs','decision_table_catalogue_then_inputs')):
-            assert preview['completion_token_cap_per_call'] == 4096
-            assert preview['logical_call_cap'] == 628
-            assert preview['max_input_slots_per_arm'] == 3140
-        elif any(name in row['parameters']['arms'] for name in ['ep_bva','bva_normal','equivalence','decision_table','ep_dt_bva']):
-            assert preview['completion_token_cap_per_call']==4096
-            if row['parameters']['cohort']=='humaneval164':
-                assert preview['logical_call_cap']==157*len(row['parameters']['arms']) and preview['target_program_count']==10
-            else:
-                assert preview['logical_call_cap']<=12 and preview['target_program_count']==1
-        else:
-            assert preview['completion_token_cap_per_call']==2048
-    assert config.normalize({'arms':['plain','ep_bva']})['completion_tokens']==4096
+    presets = json.loads(Path('final/presets/run_console.json').read_text())
+    preset = next(preset for preset in presets if preset['name'] == 'Full164 · Plain vs EP+BVA v2 vs DT v2 · batch')
+    preview=config.preview(preset['parameters'])
+    assert preview['config']['arms']==['plain','ep_bva_v2','decision_table_v2']
+    assert preview['completion_token_cap_per_call']==4096
+    assert preview['logical_call_cap']==471
+    assert preview['max_input_slots_per_arm']==3140
 
 
 def test_malformed_tagged_context_or_nominal_cannot_abort_generation_or_evaluation(tmp_path):
     for field in ['context','nominal']:
         boundary=bva()
         boundary[field]={'x':{'__python_type__':'tuple','items':'bad'}}
-        result=decode(NormalBvaArm(),{'catalogue':{'boundaries':[boundary]},'inputs':[{'arguments':{'x':2}}]},tmp_path)
+        result=decode(boundary_only_arm(),{'catalogue':{'boundaries':[boundary]},'inputs':[{'arguments':{'x':2}}]},tmp_path)
         assert result['catalogue_status']=='catalogue_invalid'
         assert result['inputs'][0]['args']=='(2,)'
         ctx=context(tmp_path/field)
         ctx.inputs_frozen=True
         ctx.inputs={'arms':{'bva_normal':result}}
         ctx.oracle={'catalogue_valid_input_indices':{'bva_normal':[0]}}
-        CatalogueMeasurementStage([NormalBvaArm()]).run(ctx)
+        measure_task_catalogues(ctx, [boundary_only_arm().name])
         assert ctx.extensions['catalogue_measurements']['bva_normal']['status']=='catalogue_invalid'
 
 
@@ -365,13 +335,13 @@ class BlockBenchmark(importlib.abc.MetaPathFinder):
             raise AssertionError('Benchmark dependency imported by Prefect config: '+fullname)
 sys.meta_path.insert(0, BlockBenchmark())
 from final.src.orchestration.config import normalize
-assert normalize({'arms':['plain','ep_bva']})['completion_tokens']==4096
+assert normalize({'arms':['plain','ep_bva_v2']})['completion_tokens']==4096
 '''
     result=subprocess.run([sys.executable,'-c',script],capture_output=True,text=True)
     assert result.returncode==0,result.stderr
     from final.src.modular.arm_names import CATALOGUE_ARM_NAMES
     from final.src.modular.arms.fault_oriented import V2_ARMS
-    assert set(CATALOGUE_ARM_NAMES)=={arm.name for arm in (*CATALOGUE_ARMS,*V2_ARMS)}
+    assert set(CATALOGUE_ARM_NAMES)=={arm.name for arm in V2_ARMS}
 
 
 def test_float_and_finite_enum_domains_infer_kind_when_optional_field_is_omitted():

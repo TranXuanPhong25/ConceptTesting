@@ -55,7 +55,7 @@ def test_semantic_gate_blocks_before_oracle_with_valid_mechanical_preparation(tm
     cohort=write_fixture_cohort(tmp_path/'cohort.json',[task]);config=budgets();config['arms']=['tool_direct','tool_hypothesis']
     generator=ToolInputGenerator(config,preparations={'HumanEval/7':model()},semantic_controls={'HumanEval/7':{'targets':[]}})
     def forbidden(*args,**kwargs):pytest.fail('Oracle evaluated before independent target checks passed')
-    monkeypatch.setattr('final.src.modular.stages.reference_oracle.execute',forbidden)
+    monkeypatch.setattr('final.src.modular.reference_oracle.execute',forbidden)
     out=tmp_path/'run';pipeline=BenchmarkPipeline(cohort,ArtifactStore(out),input_generator=generator,
       settings=PipelineSettings(target_programs=1),reference_programs=TaskReferencePrograms(),execution_cache=False)
     with pytest.raises(ValueError,match='semantic_controls_gate'):pipeline.run([task],{'HumanEval/7':{'contract':'','atol':0}})
