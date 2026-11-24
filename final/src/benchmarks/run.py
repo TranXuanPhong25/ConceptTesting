@@ -13,7 +13,7 @@ import sys
 from final.src.runtime.artifacts import save
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.calls import RecordedModelCalls
-from final.src.orchestration.worker import checksum, private_endpoint
+from final.src.orchestration.worker import checksum, load_model_environment, private_endpoint
 from .datasets import DATA
 from .pipeline import normalize, preview, tasks_for, load_candidates, run_benchmark
 from .language_runtime import execute_program
@@ -76,6 +76,8 @@ def execute(directory, *, replay=False):
         try:
             if config['backend']=='qwen':
                 os.environ['FINAL_ENDPOINT_ENV_FILE'] = str(private_endpoint(directory, config['model_name']))
+            elif config['backend']=='openrouter':
+                load_model_environment(plan['workspace'], config['backend'])
             from final.src.models import create_model
             model = create_model(backend=config['backend'], model_name=config['model_name'], context=config['context_tokens'])
             class Calls(RecordedModelCalls):

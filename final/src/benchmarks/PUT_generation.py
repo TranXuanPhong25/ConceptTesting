@@ -127,7 +127,7 @@ def main(arguments=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset-type", type=str.lower,
                         choices=("he-py", "mbpp-py"), default="he-py")
-    parser.add_argument("--model-backend", choices=("qwen", "vertex"), default="vertex")
+    parser.add_argument("--model-backend", choices=("qwen", "vertex", "openrouter"), default="vertex")
     parser.add_argument("--model-name")
     selection = parser.add_mutually_exclusive_group()
     selection.add_argument("--num-tasks", type=int, help="First N tasks; defaults to 1")
@@ -178,12 +178,31 @@ def main(arguments=None):
     if model_name is None and options.model_backend == "vertex":
         model_name = "gemini-3.1-flash-lite"
     model = create_model(backend=options.model_backend, model_name=model_name)
+    raw_programs = []
     with logging_redirect_tqdm(), tqdm(
         tasks, desc=f"Generating PUTs ({options.dataset_type})", unit="task", dynamic_ncols=True
     ) as progress:
         for task in progress:
             progress.set_postfix_str(task["task_id"])
             programs = generate_puts(model, task, count=options.puts_per_task)
+            raw_programs.append((task, programs))
+            record = {
+                "task_id": task["task_id"], "programs": programs, "generated": len(programs),
+                "base_pass": 0, "base_input_keys": [],
+                "status": "complete" if programs else "no_programs",
+            }
+            saved_index = next((index for index, saved in enumerate(task_records)
+                                if saved["task_id"] == task["task_id"]), None)
+            if saved_index is None:
+                task_records.append(record)
+            else:
+                task_records[saved_index] = record
+            save_cohort(task_records, output)
+
+    with logging_redirect_tqdm(), tqdm(
+        raw_programs, desc=f"run PUTs under base tests ({options.dataset_type})", unit="task", dynamic_ncols=True
+    ) as test_progress:
+        for task, programs in test_progress:
             base_input_keys = set()
             for program in programs:
                 outcome = run_base_tests(task, program)

@@ -7,6 +7,7 @@ import json
 import math
 from pathlib import Path
 
+from final.src.models import OPENROUTER_DEFAULT_MODEL
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.cohort import call_usage
 from final.src.modular.call_builder import CallBuilder
@@ -20,7 +21,7 @@ DEFAULTS = {'dataset':'mbpp', 'candidate_path':'', 'task_numbers':[],
     'arms':['plain','ep_bva_v2','decision_table_v2'], 'backend':'qwen',
     'model_name':'qwen3.5-27b-awq', 'inputs_per_task':20, 'completion_tokens':4096,
     'context_tokens':8192, 'temperature':.7, 'seed':314159, 'timeout_seconds':8}
-ARM_NAMES = ('plain','ep_bva','decision_table','ep_bva_v2','decision_table_v2')
+ARM_NAMES = ('plain','ep_bva_v2','decision_table_v2')
 
 
 def normalize(values):
@@ -29,8 +30,10 @@ def normalize(values):
     config = {**DEFAULTS, **values}
     if config['dataset'] != 'mbpp':
         raise ValueError('Unknown adapter dataset')
-    if config['backend'] not in ('qwen','vertex'):
+    if config['backend'] not in ('qwen','vertex','openrouter'):
         raise ValueError('Unknown adapter model backend')
+    if config['backend'] == 'openrouter' and 'model_name' not in values:
+        config['model_name'] = OPENROUTER_DEFAULT_MODEL
     if not isinstance(config['model_name'], str) or not config['model_name'].strip() or len(config['model_name']) > 120:
         raise ValueError('Invalid model name')
     if not isinstance(config['candidate_path'], str):
@@ -145,6 +148,7 @@ def decode(task, response, budget):
             raise ValueError('inputs must be a list')
     except (ValueError, TypeError, KeyError):
         return {'inputs':[], 'rejected':[{'reason':'invalid_response'}], 'catalogue':None}
+    # Validate calls against the task signature before deduplicating within the response.
     for index, row in enumerate(records[:budget]):
         try:
             arguments = row['arguments']
@@ -160,17 +164,54 @@ def decode(task, response, budget):
             'catalogue_semantics':'pending', 'membership':'pending'}
 
 
-def input_union(batches):
+def input_union(batches, *, input_field="arguments"):
     union, indices, keys = [], {}, []
     for arm, batch in batches.items():
         indices[arm] = []
         for record in batch['inputs']:
-            key = digest(record['arguments'])
+            key = digest(record[input_field])
             if key not in keys:
-                union.append(record['arguments'])
+                union.append(record[input_field])
                 keys.append(key)
             indices[arm].append(keys.index(key))
     return union, indices
+
+
+def evaluate_task(task, programs, batches, store, *, timeout, executor=execute_program, input_field='arguments'):
+    """Score frozen inputs using the two-repeat MBPP reference and PUT receipts."""
+    number = int(task['task_id'].split('/')[1])
+    prefix = f'tasks/{number}'
+    # Run each distinct input once per repeat and keep its arm memberships for attribution.
+    union, indices = input_union(batches, input_field=input_field)
+    def reference_execution():
+        return executor(task, task['reference_source'], union, timeout=timeout) if union else {'status': 'ok', 'tests': []}
+    reference = [store.load_or_compute(f'{prefix}/reference_{repeat}.json',
+        reference_execution) for repeat in range(2)]
+    if any(r['status'] != 'ok' for r in reference):
+        raise RuntimeError('Reference compilation failed for ' + task['task_id'])
+    # An input needs two successful reference runs with the same value to supply an oracle.
+    valid = [i for i in range(len(union)) if all(r['tests'][i]['status']=='ok' for r in reference)
+        and digest(reference[0]['tests'][i]['value']) == digest(reference[1]['tests'][i]['value'])]
+    outcomes = {}
+    retained = [union[i] for i in valid]
+    # Count a PUT failure only when both repeats fail or disagree with the oracle.
+    for program in programs:
+        repeats = [store.load_or_compute(f'{prefix}/evaluation/{program["id"]}_{repeat}.json',
+            lambda: executor(task, program['code'], retained, timeout=timeout)
+                if retained else {'status': 'ok', 'tests': []}) for repeat in range(2)]
+        if any(r['status'] != 'ok' for r in repeats):
+            raise RuntimeError('PUT compilation/infrastructure changed after base pass')
+        failures = []
+        for local, index in enumerate(valid):
+            expected = reference[0]['tests'][index]['value']
+            if all(r['tests'][local]['status'] != 'ok' or not equivalent(r['tests'][local]['value'], expected) for r in repeats):
+                failures.append(index)
+        outcomes[program['id']] = failures
+    arms = {arm:{'valid_inputs':len(set(selected)&set(valid)),
+        'detected':sum(bool(set(selected)&set(failing)) for failing in outcomes.values())} for arm, selected in indices.items()}
+    return {'task_id':task['task_id'], 'base_pass':len(programs), 'arms':arms,
+        'reference_rejected':len(union)-len(valid), 'outcomes':outcomes, 'arm_indices':indices,
+        'validity':'reference-executable-only; specification admission pending', 'base_duplicate_filter':'pending'}
 
 
 def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
@@ -188,6 +229,7 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
         number = int(task['task_id'].split('/')[1]); prefix = f'tasks/{number}'
         programs = cohort.get(task['task_id'], [])
         passing = []
+        # Limit input generation and evaluation to PUTs that pass the original tests.
         for program in programs:
             baseline = store.load_or_compute(f'{prefix}/base/{program["id"]}.json',
                 lambda program=program: executor(task, program['code'], [], timeout=config['timeout_seconds'], base=True))
@@ -198,12 +240,14 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
         if not passing:
             prepared.append((task, [], None))
             continue
+        # Reuse saved inputs on resume and replay. Generate only when there is no saved batch.
         if store.exists(prefix+'/inputs.json'):
             batches = store.read(prefix+'/inputs.json')
         else:
             if store.read_only:
                 raise FileNotFoundError(prefix+'/inputs.json')
             packets = {arm:messages_for(task, passing, arm, config['inputs_per_task']) for arm in config['arms']}
+            # Reserve completion space for every arm before making any calls for the task.
             if max((calls.token_count(messages) for messages in packets.values()), default=0) + config['completion_tokens'] + 128 >= config['context_tokens']:
                 batches = {'skip':'prompt_too_large'}
             else:
@@ -216,6 +260,7 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
         prepared.append((task, passing, batches))
         if not store.read_only:
             save(store.path('progress.json'), {'phase':'generation', 'task_id':task['task_id'], 'prepared_tasks':len(prepared), 'total_tasks':len(tasks)})
+    # Record the input batches and model artifacts before running the reference.
     store.write('generation_frozen.json', {'cohort_sha256':digest(cohort),
         'inputs':{task['task_id']:digest(batches) for task, _, batches in prepared},
         'model_artifacts':artifact_hashes(store, ('tasks/*/calls/*/*.json',))})
@@ -225,37 +270,11 @@ def run_benchmark(tasks, cohort, store, values, *, calls=None, executor=None):
         if not programs or batches.get('skip'):
             result = {'task_id':task['task_id'], 'skip':'no_base_pass' if not programs else batches['skip']}
         else:
-            union, indices = input_union(batches)
-            def reference_execution():
-                return executor(task, task['reference_source'], union, timeout=config['timeout_seconds']) if union else {'status': 'ok', 'tests': []}
-            reference = [store.load_or_compute(f'{prefix}/reference_{repeat}.json',
-                reference_execution) for repeat in range(2)]
-            if any(r['status'] != 'ok' for r in reference):
-                raise RuntimeError('Reference compilation failed for ' + task['task_id'])
-            valid = [i for i in range(len(union)) if all(r['tests'][i]['status']=='ok' for r in reference)
-                and digest(reference[0]['tests'][i]['value']) == digest(reference[1]['tests'][i]['value'])]
-            outcomes = {}
-            retained = [union[i] for i in valid]
-            for program in programs:
-                repeats = [store.load_or_compute(f'{prefix}/evaluation/{program["id"]}_{repeat}.json',
-                    lambda: executor(task, program['code'], retained, timeout=config['timeout_seconds'])
-                        if retained else {'status': 'ok', 'tests': []}) for repeat in range(2)]
-                if any(r['status'] != 'ok' for r in repeats):
-                    raise RuntimeError('PUT compilation/infrastructure changed after base pass')
-                failures = []
-                for local, index in enumerate(valid):
-                    expected = reference[0]['tests'][index]['value']
-                    if all(r['tests'][local]['status'] != 'ok' or not equivalent(r['tests'][local]['value'], expected) for r in repeats):
-                        failures.append(index)
-                outcomes[program['id']] = failures
-            arms = {arm:{'valid_inputs':len(set(selected)&set(valid)),
-                'detected':sum(bool(set(selected)&set(failing)) for failing in outcomes.values())} for arm, selected in indices.items()}
-            result = {'task_id':task['task_id'], 'base_pass':len(programs), 'arms':arms,
-                'reference_rejected':len(union)-len(valid), 'outcomes':outcomes, 'arm_indices':indices,
-                'validity':'reference-executable-only; specification admission pending', 'base_duplicate_filter':'pending'}
+            result = evaluate_task(task, programs, batches, store, timeout=config['timeout_seconds'], executor=executor)
         store.write(prefix+'/result.json', result); results.append(result)
         if not store.read_only:
             save(store.path('progress.json'), {'phase':'evaluation','evaluated_or_skipped_tasks':len(results),'total_tasks':len(tasks)})
+    # Aggregate input memberships and detected PUTs per arm across tasks.
     totals = {arm:{'valid_inputs':0,'detected':0,'tasks_detected':0} for arm in config['arms']}
     for result in results:
         for arm, metrics in result.get('arms', {}).items():

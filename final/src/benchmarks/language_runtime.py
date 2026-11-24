@@ -11,7 +11,7 @@ import subprocess
 import sys
 import tempfile
 
-from final.src.modular.call_builder import CallBuilder
+from final.src.modular.call_builder import CallBuilder, MAX_LITERAL_CHARACTERS
 from final.src.runtime.artifacts import read_sandbox_file
 
 
@@ -58,11 +58,13 @@ def sandbox(command, directory, timeout, *, result_directory=None):
     return {'status':'ok' if process.returncode == 0 else 'runtime_error', 'returncode':process.returncode, 'detail': detail}
 
 
-def execute_program(task, source, calls, *, timeout=8, base=False):
+def execute_program(task, source, calls, *, timeout=8, base=False, literal_calls=False):
     """Return independent input receipts; generated source stays inside the sandbox."""
     language = task['language']
     if language != 'python':
         raise UnsupportedSignature('unsupported adapter language: ' + language)
+    if literal_calls and base:
+        raise ValueError('Literal calls are only supported for input evaluation')
     if not base:
         builder = CallBuilder.for_source(task['declaration'], task['entry_point'])
     with tempfile.TemporaryDirectory(prefix='concepttester-language-') as temporary:
@@ -72,7 +74,15 @@ def execute_program(task, source, calls, *, timeout=8, base=False):
         command = [str(Path(sys.executable).resolve()), '-I', '-S', '/work/worker.py']
         results = []
         for arguments in [{}] if base else calls:
-            record = builder.build(arguments) if not base else {}
+            if literal_calls:
+                if set(arguments) != {'args', 'kwargs'} or any(
+                    not isinstance(value, str) or len(value) > MAX_LITERAL_CHARACTERS for value in arguments.values()
+                ):
+                    raise ValueError('Invalid Python call literals')
+                builder.validate_call(arguments)
+                record = arguments
+            else:
+                record = builder.build(arguments) if not base else {}
             (directory / 'job.json').write_text(json.dumps({'entry':task['entry_point'], 'input':record,
                 'base':task['test'] if base else None}))
             with tempfile.TemporaryDirectory(prefix='concepttester-result-') as output:

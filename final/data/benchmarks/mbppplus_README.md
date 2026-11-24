@@ -12,18 +12,5 @@ base tests không phải toàn bộ test tăng cường của MBPP+.
 Asset nguồn giữ nguyên, bao gồm field `test` chứa full test harness.
 MBPP gốc vẫn giữ ở `mbpp.jsonl`; chỉ đọc khi truyền path tường minh.
 
-Sinh tiếp (không tự chạy khi sửa code):
-
-```bash
-source scripts/research_env.sh
-export FINAL_BASE_URL='<endpoint>/v1'
-final/.venv_orchestration/bin/python scripts/continue_mbppplus_puts.py
-```
-
-Script mặc định Qwen `qwen3.5-27b-awq`, tối đa 10 PUT/task, lấy đủ 378 task.
-Giữ task đã có PUT; sinh task chưa có và thử lại task có programs rỗng.
-Lưu sau từng task; không refill task đã có ít hơn 10 PUT hoặc chỉ có PUT fail base tests.
-Mỗi lần gọi tạo một Prefect run local và folder output riêng, có source snapshot,
-config, progress, report, worker.log. Không ghi đè source cohort.
-Sau khi ngắt, dùng `--source <output-cohort-của-run-trước>` để giữ kết quả mới nhất.
-Server Prefect local cần đang chạy; không tự launch generation từ preset.
+Sinh thêm PUT đã được dừng khỏi đường code hiện tại. Các cohort và output lịch sử
+vẫn giữ nguyên để đọc lại.
