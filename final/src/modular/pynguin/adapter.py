@@ -16,7 +16,7 @@ from .config import PynguinSettings
 from . import runner
 from .extraction import extract, target_source
 from ..generators.base import InputGenerator
-from ..stages.input_preparation import InputPreparationStage
+from ..input_preparation import load_or_prepare_packet
 from ..call_builder import CallBuilder, input_identity
 from final.src.runtime.artifacts import digest, read_sandbox_file
 from final.src.runtime.execution import execute, ExecutionError
@@ -83,25 +83,23 @@ class PynguinInputGenerator(InputGenerator):
     requires_model=False
     uses_shared_prompt=False
 
-    def __init__(self, settings):
+    def __init__(self, settings, *, allow_missing_contract=False):
         self.settings=settings
+        self.allow_missing_contract = allow_missing_contract
         self.methods=(self,)
 
     def configuration(self):
-        return self.settings.configuration()
+        config = self.settings.configuration()
+        if self.allow_missing_contract:
+            config['missing_contract_policy'] = 'signature_only'
+        return config
 
-    def reporting_stage(self):
-        from ..catalogue_reporting import CatalogueReportingStage
-        return CatalogueReportingStage()
+    def reporter(self):
+        from ..catalogue_reporting import CatalogueReporter
+        return CatalogueReporter()
 
-    def preparation_stages(self):
-        return (InputPreparationStage(()),)
-
-    def source_dependencies(self):
-        return (Path(__file__).parents[3]/'pynguin-requirements.txt',)
-
-    def dependency_objects(self):
-        return ()
+    def prepare_context(self, context):
+        load_or_prepare_packet(context, ())
 
     def owners(self,context):
         programs={program['id']:program for program in (context.cohort_task or {}).get('programs',[])}
@@ -178,8 +176,10 @@ class PynguinInputGenerator(InputGenerator):
         if (context.packet or {}).get('skip'):
             return {**batch,'status':'empty','reason':context.packet['skip']}
         contract=context.metadata.get('contract')
-        if not isinstance(contract,str) or not contract.strip():
+        if not isinstance(contract, str) or (not contract.strip() and not self.allow_missing_contract):
             return {**batch,'status':'unsupported_input','reason':'missing_trusted_contract'}
+        if not contract.strip():
+            batch['pynguin']['domain_admission'] = 'not_measured'
         try:
             builder=CallBuilder.for_source(context.task['prompt'],context.task['entry_point'],
                 input_types=context.metadata.get('input_types'))
@@ -192,12 +192,16 @@ class PynguinInputGenerator(InputGenerator):
             for rejection in receipt.get('rejected',[]): batch['rejected'].append({**rejection,'owner':owner['id']})
             candidates=receipt.get('calls',[])
             try:
-                validation=execute({'mode':'validate','context':context.task['prompt'], 'source':'',
-                    'entry':context.task['entry_point'],
-                    'contract':textwrap.indent(textwrap.dedent(contract), '    '),
-                    'tests':candidates,'timeout':context.settings.timeout_seconds})['tests'] if candidates else []
+                if contract.strip():
+                    validation=execute({'mode':'validate','context':context.task['prompt'], 'source':'',
+                        'entry':context.task['entry_point'],
+                        'contract':textwrap.indent(textwrap.dedent(contract), '    '),
+                        'tests':candidates,'timeout':context.settings.timeout_seconds})['tests'] if candidates else []
+                else:
+                    validation = [{'status': 'not_measured'} for _ in candidates]
                 if (len(validation)!=len(candidates) or any(not isinstance(row,dict) or
-                        row.get('status') not in ('valid','invalid_domain','error','timeout') for row in validation)):
+                        row.get('status') not in (('valid','invalid_domain','error','timeout') if contract.strip()
+                                                  else ('not_measured',)) for row in validation)):
                     raise ExecutionError('invalid_domain_validation_result')
             except (ExecutionError,KeyError,TypeError) as error:
                 receipt['status_before_domain_validation']=receipt['status']
@@ -217,7 +221,8 @@ class PynguinInputGenerator(InputGenerator):
                     bound.apply_defaults()
                     record=builder.build_values(bound.arguments)
                     if domain['status']=='invalid_domain': raise ValueError('outside_trusted_domain')
-                    if domain['status']!='valid': raise ValueError('domain_validation_error:'+domain['status'])
+                    if domain['status'] not in ('valid', 'not_measured'):
+                        raise ValueError('domain_validation_error:'+domain['status'])
                     identity=input_identity(builder.signature,record)
                     if identity in identities:
                         row['selection']='duplicate'

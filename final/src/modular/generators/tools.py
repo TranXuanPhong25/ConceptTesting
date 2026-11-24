@@ -4,27 +4,27 @@ import json
 import time
 
 from .base import InputGenerator
-from ..stages.input_preparation import InputPreparationStage
-from ..tool_sampling.config import TOOL_ARMS, validate_budgets
+from ..input_preparation import load_or_prepare_packet
+from ..tool_sampling.config import validate_budgets
 from ..call_builder import CallBuilder
 from ..input_buckets.predicates import declared_types
 from ..response_json import load_response_json
 from ..tool_sampling.schema import preparation_schema, parse_preparation
 from ..tool_sampling.trusted_domain import compile_domain
 from ..tool_sampling.ledger import CandidateLedger, error
-from ..tool_sampling.constructors import sample_hypothesis, fill_z3, plan_combinations
+from ..tool_sampling.constructors import sample_hypothesis, plan_combinations
 from ..tool_sampling.selection import select_suite, hits
 from final.src.runtime.artifacts import digest
 
 PREPARATION = '''Return one compact JSON object with exactly these keys:
-types: object keyed by every signature parameter, never a list. Use int/bool/float/str/list/list[int]/list[float]/list[str]; any only for an unannotated polymorphic parameter. These types describe sampling/solver support, never replace trusted input admission. Never use type-union strings.
+types: object keyed by every signature parameter, never a list. Use int/bool/float/str/list/list[int]/list[float]/list[str]; any only for an unannotated polymorphic parameter. These types describe sampling support, never replace trusted input admission. Never use type-union strings.
 domain: copy TRUSTED_ADMISSION_DOMAIN verbatim when supplied. This is benchmark input admission, not PUT behavior on invalid inputs. Never remove its constraints, infer that a contract assert makes invalid inputs testable, or turn a domain condition into an optional target. Without a trusted domain, keep semantic status unresolved.
 domain_source_quote: exact spec or trusted-contract evidence. Do not invent bounds.
 strategies: object keyed by every parameter (for f(a,b), {"a":descriptor,"b":descriptor}), never a positional list. Descriptors: {kind:int|float,min:optional number or prior-parameter +/- expression,max:optional bound}, {kind:bool}, {kind:sampled,values:[...]}, {kind:str,min_size:0,max_size:explicit spec bound or len(prior_parameter),alphabet:optional string}, {kind:list,elements:descriptor,min_size:0,max_size:explicit spec bound}. Numeric min/max may use len(prior_parameter), e.g. k:{kind:int,min:0,max:"len(arr)"}. Generate arr/a before their dependent k/b. Use {kind:unsupported,reason:"..."} when no supported constructor is justified; never invent bounds or add a constraint field. Use int min0 and base min2/max9 when these are trusted admission bounds. actions/merged_from are arrays of strings, never objects/null.
 targets: [{id,kind:class|boundary|rule,predicate,context,origin:spec|contract|impl,source_quote,status:feasible|infeasible|unresolved,reason,actions,merged_from,fault_rationale,boundary_side}]. Preserve original DT rule IDs and ordered actions, no merge that loses rules. Unknown is not don't-care. Implementation-derived targets are hypotheses, never oracle definitions. Include EP classes, BVA sides (integers step1; floats spec step or nextafter, not +/-1), and feasible DT rules. Mark ambiguity unresolved. Do not assume full coverage.
 factors: {factor_name:{level_name:boolean expression}}, finite spec-derived levels; use {} when unavailable.
 inputs: [{arguments:{parameter:value}}], direct concrete seed inputs, maximum requested suite budget.
-domain/context/predicate and factor levels must be executable boolean expressions, never prose or placeholders like all?. Use context="True" when nothing is held fixed; put explanations in reason. Expressions permit comparisons, and/or/not, +/-, indexing and bounded helper calls len/sum/min/max/abs/is_int/is_bool/is_str/is_list/all_ints/is_instance. Use all_type(xs,"int") for exact integer elements and all_instance(xs,"int,float") for Python isinstance element semantics; these differ for bool. Use distinct_count(sequence) for number of different elements/symbols; distinguish length from diversity and describe the predicate literally. A mixed/homogeneous class must state which argument and property it constrains; do not call a length-only target mixed. Use chars_in(a,"01") for binary strings, all_in_range(arr,-1000,1000) for element ranges, is_numeric(a) to check int/float/numeric-string admission, and numeric_value(a) for float(str(a).replace(',', '.')) semantics. is_numeric accepts valid floats as well as dot/comma numeric strings and rejects arbitrary text. is_finite_numeric_string(s) checks a finite dot-decimal string (does not accept comma or a non-string). Example: numeric_value(a)==numeric_value(b), not str(a).replace(...). Use is_str(a) and is_str(b) and len(a)==len(b) and chars_in(a,"01") and chars_in(b,"01"), never all?. For equal lengths, b may use min_size/max_size="len(a)". Helper types: overlapping_occurrences(text,fragment)->bool (whether any occurrences overlap), any_type/any_in/all_in/any_not_in/any_multiple->bool, slice_values(values,start,step)->sequence, distinct_count(sequence)->int. For substring membership use needle in text/not in text. Boolean helpers are not numeric counts. Bounds may reference only parameters earlier in signature order. No type()/isinstance(), arbitrary attributes, loops or comprehensions. Do not invent size20 for an unbounded string; use sampled seeds with a stated limitation or unsupported if the constructor cannot express the domain. Z3 only supports integer/bool linear comparisons and logic; keep all constraints. Do not invent behavioral classes just to exercise a tool.
+domain/context/predicate and factor levels must be executable boolean expressions, never prose or placeholders like all?. Use context="True" when nothing is held fixed; put explanations in reason. Expressions permit comparisons, and/or/not, +/-, indexing and bounded helper calls len/sum/min/max/abs/is_int/is_bool/is_str/is_list/all_ints/is_instance. Use all_type(xs,"int") for exact integer elements and all_instance(xs,"int,float") for Python isinstance element semantics; these differ for bool. Use distinct_count(sequence) for number of different elements/symbols; distinguish length from diversity and describe the predicate literally. A mixed/homogeneous class must state which argument and property it constrains; do not call a length-only target mixed. Use chars_in(a,"01") for binary strings, all_in_range(arr,-1000,1000) for element ranges, is_numeric(a) to check int/float/numeric-string admission, and numeric_value(a) for float(str(a).replace(',', '.')) semantics. is_numeric accepts valid floats as well as dot/comma numeric strings and rejects arbitrary text. is_finite_numeric_string(s) checks a finite dot-decimal string (does not accept comma or a non-string). Example: numeric_value(a)==numeric_value(b), not str(a).replace(...). Use is_str(a) and is_str(b) and len(a)==len(b) and chars_in(a,"01") and chars_in(b,"01"), never all?. For equal lengths, b may use min_size/max_size="len(a)". Helper types: overlapping_occurrences(text,fragment)->bool (whether any occurrences overlap), any_type/any_in/all_in/any_not_in/any_multiple->bool, slice_values(values,start,step)->sequence, distinct_count(sequence)->int. For substring membership use needle in text/not in text. Boolean helpers are not numeric counts. Bounds may reference only parameters earlier in signature order. No type()/isinstance(), arbitrary attributes, loops or comprehensions. Do not invent size20 for an unbounded string; use sampled seeds with a stated limitation or unsupported if the constructor cannot express the domain. Keep all constraints. Do not invent behavioral classes just to exercise a tool.
 Only test invalid business input when its handling is specified: testable domain must include that specified invalid class. Discount eligibility is a target, not a validity filter.
 Do not include expected outputs or execute a PUT/reference. Read spec and trusted contract only.'''
 
@@ -42,15 +42,14 @@ class ToolInputGenerator(InputGenerator):
     def configuration(self):
         return {'budgets': self.config, 'preparations': None if self.preparations is None else
                 {task_id: repr(value) for task_id, value in self.preparations.items()},
-                'protocol': 'tools-ep-bva-dt-v5-python-membership-signed' if self.semantic_controls is not None else 'tools-ep-bva-dt-v5-python-membership',
                 'semantic_controls': self.semantic_controls, 'preparation_prompt': PREPARATION}
 
     def runtime_dependencies(self):
-        return ('hypothesis', 'z3-solver', 'allpairspy', 'pydantic')
+        return ('hypothesis', 'allpairspy', 'pydantic')
 
-    def preparation_stages(self):
+    def prepare_context(self, context):
         # Reuse cohort eligibility without a shared PUT-visible model prompt.
-        return (InputPreparationStage(()),)
+        load_or_prepare_packet(context, ())
 
     def generate(self, context):
         if context.packet and context.packet.get('skip'):
@@ -106,7 +105,7 @@ class ToolInputGenerator(InputGenerator):
             if preparation_error:
                 raise ValueError(preparation_error['detail'])
             model = parse_preparation(raw, builder, trusted_domain=authority['expression'])
-            # Inferred types choose sampling/solver support; they cannot narrow
+            # Inferred types choose sampling support; they cannot narrow
             # the independently compiled trusted input-admission checks.
             model['admission_types'] = (authority['admission_types'] if authority['status'] == 'supported' else model['types'])
             annotated = declared_types(context.task['prompt'], context.task['entry_point'])
@@ -145,17 +144,13 @@ class ToolInputGenerator(InputGenerator):
                 row['arm'] = name
             receipts = [common_receipt] if common_receipt and name != 'tool_direct' else []
             if not preparation_error:
-                if name == 'tool_hypothesis_z3':
-                    receipts.append(fill_z3(ledger, queries=self.config['solver_queries'],
-                        timeout_ms=self.config['solver_timeout_ms'], seconds=self.config['solver_seconds']))
-                elif name == 'tool_hypothesis_extra':
+                if name == 'tool_hypothesis_extra':
                     receipts.append(sample_hypothesis(ledger, draws=self.config['extra_draws'],
                         seed=context.settings.input_seed + context.task_number + 1000003, seconds=self.config['extra_seconds']))
                 elif name == 'tool_planner':
                     receipts.append(plan_combinations(ledger, rows=self.config['planner_rows'],
                         draws_per_row=self.config['planner_draws'], seed=context.settings.input_seed + context.task_number,
-                        seconds=self.config['planner_seconds'], solver_queries=self.config['planner_solver_queries'],
-                        timeout_ms=self.config['solver_timeout_ms']))
+                        seconds=self.config['planner_seconds']))
             suite = select_suite(ledger, min(20, context.settings.input_budget))
             covered = set().union(*(hits(row) for row in ledger.selected_rows()))
             snapshot = {**model, 'inputs': [repr(record) for record in model['inputs']]}
@@ -188,10 +183,10 @@ class ToolInputGenerator(InputGenerator):
         from ..tool_sampling.gate import validate_generation
         validate_generation(contexts)
 
-    def post_evaluation_stages(self, execution_cache, reference_programs):
-        from ..tool_sampling.audit import ToolAuditStage
-        return (ToolAuditStage(self.config, execution_cache, reference_programs),)
+    def post_evaluation(self, context, execution_cache, reference_programs):
+        from ..tool_sampling.audit import run_tool_audit
+        run_tool_audit(context, self.config, execution_cache, reference_programs)
 
-    def reporting_stage(self):
-        from ..tool_sampling.reporting import ToolReportingStage
-        return ToolReportingStage()
+    def reporter(self):
+        from ..tool_sampling.reporting import ToolReporter
+        return ToolReporter()

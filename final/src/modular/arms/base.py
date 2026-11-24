@@ -14,11 +14,7 @@ class InputGenerationMethod(ABC):
     uses_model: bool = True
     uses_shared_prompt: bool = True
 
-    def preparation_stages(self):
-        """Optional analysis stages; test-generation mechanics stay shared."""
-        return ()
-
-    def reporting_stage(self):
+    def reporter(self):
         """Optional reporting extension for an arm's extra preparation work."""
         return None
 
@@ -26,8 +22,6 @@ class InputGenerationMethod(ABC):
         """Optional arm-specific accounting after shared evaluation/reporting."""
 
     def configuration(self) -> dict:
-        if vars(self):
-            raise NotImplementedError("Configured arms must expose their configuration for cache invalidation")
         return {}
 
     def build_messages(self, packet: JsonObject) -> list[dict[str, str]]:

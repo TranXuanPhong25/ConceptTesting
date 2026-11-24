@@ -35,6 +35,7 @@ class PipelineSettings:
     timeout_seconds: float = 8
     target_programs: int = 10
     writer_rounds: int = 10
+    scorer: str = "confirm_first_failures"
 
 
 @dataclass
@@ -49,7 +50,6 @@ class TaskContext:
     inputs: JsonObject | None = None
     oracle: JsonObject | None = None
     result: JsonObject | None = None
-    completed_stages: set[str] = field(default_factory=set)
     extensions: JsonObject = field(default_factory=dict)
 
     @property

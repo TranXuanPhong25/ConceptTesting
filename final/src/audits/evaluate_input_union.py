@@ -9,7 +9,7 @@ import shutil
 
 from final.src.runtime.artifacts import save
 from final.src.modular.artifacts import ArtifactStore
-from final.src.modular.stages.reporting import ReportingStage
+from final.src.modular.reporting import Reporter
 from .detection_kinds import evaluation_observations, observation_kind, strongest_kind
 
 UNION_ARM = "union"
@@ -104,7 +104,7 @@ def evaluate(source, output, *, replay=False):
             total["detected"] += arm["detected"]
             total["tasks_detected"] += arm["detected"] > 0
         rows.append(result)
-    comparisons = [ReportingStage().compare(rows, name, UNION_ARM) for name in totals if name != UNION_ARM]
+    comparisons = [Reporter().compare(rows, name, UNION_ARM) for name in totals if name != UNION_ARM]
     summary = {"source_directory": str(source), "task_records": len(rows), "eligible_tasks": eligible_tasks,
                "evaluated_base_pass": evaluated_puts, "arms": totals,
                "union_detection_kinds": dict(kinds), "union_detections": detections,

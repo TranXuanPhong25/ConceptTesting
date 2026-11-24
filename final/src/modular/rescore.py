@@ -9,13 +9,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from final.src.runtime.artifacts import save
-from final.src.benchmarks.datasets import load_tasks
+from final.src.benchmarks.datasets import DatasetLoader
 from .artifacts import ArtifactStore
 from .context import PipelineSettings
 from .execution_cache import InputExecutionCache
 from .generators.frozen import FrozenInputsGenerator
 from .pipeline import BenchmarkPipeline
-from .references import HumanEvalPlusReferencePrograms
 
 
 @dataclass
@@ -38,12 +37,12 @@ def build_rescore_pipeline(source_directory, cohort_path, output_directory, *, c
     source = ArtifactStore(source_directory, read_only=True)
     manifest = source.read("modular_manifest.json")
     generator = FrozenInputsGenerator(source_directory, methods=methods_for_rescore(manifest["arms"]))
-    tasks_by_id = {task["task_id"]: task for task in load_tasks()}
+    dataset = DatasetLoader('HE-py')
+    tasks_by_id = {task["task_id"]: task for task in dataset.load_tasks()}
     tasks = [tasks_by_id[task_id] for task_id in manifest["tasks"]]
-    metadata_path = Path(__file__).resolve().parents[2] / "data/contracts.json"
-    all_metadata = json.loads(metadata_path.read_text())
+    all_metadata = dataset.load_metadata()
     metadata = {task["task_id"]: all_metadata[task["task_id"]] for task in tasks}
-    reference = HumanEvalPlusReferencePrograms()
+    reference = dataset.load_reference_programs()
     for task in tasks:
         reference.for_task(task, metadata[task["task_id"]])
     artifacts = ArtifactStore(output_directory,read_only=read_only)
@@ -53,7 +52,8 @@ def build_rescore_pipeline(source_directory, cohort_path, output_directory, *, c
         raise ValueError("Rescore requires a new output directory; the execution cache can be shared")
     pipeline = BenchmarkPipeline(cohort_path, artifacts, input_generator=generator,
         settings=PipelineSettings(**manifest["settings"]), calls=None,
-        execution_cache=InputExecutionCache(cache_directory,read_only=read_only), reference_programs=reference)
+        execution_cache=InputExecutionCache(cache_directory,read_only=read_only),
+        reference_programs=reference, dataset=dataset)
     return pipeline, tasks, metadata
 
 
@@ -66,8 +66,8 @@ def main(arguments=None):
     parser.add_argument('--replay',action='store_true',help='Summarize saved evaluation results without executing programs')
     options = parser.parse_args(arguments)
     if options.replay:
-        from .stages.reporting import ReportingStage
-        summary = ReportingStage.summarize_saved(ArtifactStore(options.artifacts, read_only=True))
+        from .reporting import Reporter
+        summary = Reporter.summarize_saved(ArtifactStore(options.artifacts, read_only=True))
         print(json.dumps({"arms": summary["arms"], "new_model_calls": 0, "new_native_calls": 0}))
         return 0
     pipeline, tasks, metadata = build_rescore_pipeline(options.source_run, options.cohort, options.artifacts,

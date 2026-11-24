@@ -1,7 +1,8 @@
-"""Compact catalogue validation and conservative measurements; never executes predicates.
+"""Compact catalogue validation and conservative measurements.
 
 Pydantic validates structure. Numeric intervals, named selectors, itertools products
-and math.nextafter cover the mechanical subset. Prose remains pending semantic audit.
+and math.nextafter cover the mechanical subset; observed predicates use the existing
+bounded membership evaluator. Prose remains pending semantic audit.
 No result here filters an input or supplies an expected output.
 """
 from __future__ import annotations
@@ -42,6 +43,7 @@ class EquivalenceClass(Selector):
     lower_inclusive: bool = True
     upper_inclusive: bool = True
     members: list | None = None
+    predicate: str | None = Field(default=None, max_length=2048, exclude_if=lambda value: value is None)
     fault_hypothesis: str | None = Field(default=None, min_length=1, exclude_if=lambda value: value is None)
 
 
@@ -81,6 +83,7 @@ class OriginalRule(Schema):
     actions: list[str] = Field(default_factory=list)
     status: Literal["feasible", "infeasible", "unresolved"] = "feasible"
     reason: str | None = None
+    fault_hypothesis: str | None = Field(default=None, min_length=1, exclude_if=lambda value: value is None)
 
 
 class Catalogue(Schema):
@@ -88,8 +91,9 @@ class Catalogue(Schema):
     boundaries: list[Boundary] = Field(default_factory=list)
     rules: list[Rule] = Field(default_factory=list)
     original_rules: list[OriginalRule] = Field(default_factory=list)
-    # Optional machine-readable domains, never arbitrary Python expressions.
+    # Optional condition domains and bounded boolean input predicates.
     conditions: dict[str, list[ConditionValue]] = Field(default_factory=dict)
+    condition_predicates: dict[str, str] = Field(default_factory=dict, exclude_if=lambda value: not value)
     mutually_exclusive: list[list[str]] = Field(default_factory=list)
     status: Literal["applicable", "not_applicable", "unresolved"] = "applicable"
     reason: str | None = None
@@ -121,6 +125,10 @@ def validate_catalogue_structure(catalogue, required_sections):
         identifiers.extend(item.id for item in section)
     if len(identifiers) != len(set(identifiers)):
         errors.append("duplicate_id")
+    non_rule_ids = {item.id for item in catalogue.classes + catalogue.boundaries}
+    for rule in catalogue.original_rules:
+        if rule.id in non_rule_ids:
+            errors.append(f"original_rule_id_collision:{rule.id}")
     if catalogue.status != "applicable" and not catalogue.reason:
         errors.append("missing_status_reason")
     if catalogue.status == "applicable":
@@ -231,6 +239,13 @@ def bound_arguments(builder, record):
     return bound.arguments
 
 
+def effective_boundary_context(boundary):
+    """Exclude the tested parameter from its own fixed context."""
+    if boundary.parameter is None:
+        return dict(boundary.context)
+    return {name: value for name, value in boundary.context.items() if name != boundary.parameter}
+
+
 def matches_context(arguments, context):
     return all(name in arguments and arguments[name] == decode_value(value) for name, value in context.items())
 
@@ -241,26 +256,27 @@ def mechanical_boundaries(catalogue, arguments, *, robust=False, worst_case=Fals
         targets = boundary_targets(boundary, robust=robust)
         expected = targets or boundary.values
         matched, violations = [], []
+        boundary_context = effective_boundary_context(boundary)
         nominal = None if boundary.nominal is None else {key: decode_value(value) for key, value in boundary.nominal.items()}
         # A nominal must cover every argument and satisfy the boundary's context
         # before single-fault coverage can be checked.
         single_checkable = nominal is not None and boundary.parameter is not None and all(
             set(item) == set(nominal) for item in arguments)
         single_checkable = single_checkable and selected_value(boundary, nominal)[1]
-        single_checkable = single_checkable and matches_context(nominal, boundary.context)
+        single_checkable = single_checkable and matches_context(nominal, boundary_context)
         other_dimensions = []
         # Preserve other declared dimensions even when they share one parameter
         # (for example, length(lst) and count(lst, 0)).
         for other in catalogue.boundaries:
             same_selector = (other.parameter, other.transform, other.count_value) == (boundary.parameter, boundary.transform, boundary.count_value)
-            if not same_selector and nominal is not None and matches_context(nominal, other.context):
+            if not same_selector and nominal is not None and matches_context(nominal, effective_boundary_context(other)):
                 nominal_value, checkable = selected_value(other, nominal)
                 if not checkable:
                     single_checkable = False
                 other_dimensions.append((other, nominal_value))
         for index, item in enumerate(arguments):
             value, checkable = selected_value(boundary, item)
-            if not checkable or not matches_context(item, boundary.context) or value not in expected:
+            if not checkable or not matches_context(item, boundary_context) or value not in expected:
                 continue
             single_fault = single_checkable and all(item[name] == nominal[name] for name in item if name != boundary.parameter)
             single_fault = single_fault and all(selected_value(other, item) == (nominal_value, True)
@@ -294,7 +310,7 @@ def normal_design_size(catalogue, *, robust=False):
         nominal = {key: decode_value(value) for key, value in boundary.nominal.items()}
         nominal_value, checkable = selected_value(boundary, nominal)
         targets = boundary_targets(boundary, robust=robust)
-        if not checkable or not targets or not matches_context(nominal, boundary.context):
+        if not checkable or not targets or not matches_context(nominal, effective_boundary_context(boundary)):
             return None
         group = json.dumps(boundary.nominal, sort_keys=True, ensure_ascii=False)
         for value in targets:
@@ -598,7 +614,10 @@ def measure_worst_case_coverage(catalogue, arguments):
         coordinates_within_choices = all(
             extracted and value in options
             for (value, extracted), options in zip(coordinates, choices))
-        contexts_match = all(matches_context(input_arguments, boundary.context) for boundary in catalogue.boundaries)
+        contexts_match = all(
+            matches_context(input_arguments, effective_boundary_context(boundary))
+            for boundary in catalogue.boundaries
+        )
         if coordinates_within_choices and contexts_match:
             observed_combinations.add(tuple(value for value, extracted in coordinates))
     return {"covered": len(observed_combinations), "total_cartesian": math.prod(map(len, choices)),
@@ -621,9 +640,36 @@ def count_uncovered_boundary_values(boundary_measurements):
 def measure_catalogue(batch, task, valid_indices, *, arm_name, input_budget):
     """Measure only arm-local inputs accepted by the twice-run reference."""
     raw = batch.get("catalogue")
-    if raw is None or batch.get("catalogue_status") in ("off", "catalogue_invalid"):
-        return {"status": batch.get("catalogue_status", batch.get("status", "pending")),
+    catalogue_status = batch.get("catalogue_status", batch.get("status", "pending"))
+    if raw is None or catalogue_status == "off":
+        return {"status": catalogue_status,
                 "errors": batch.get("catalogue_errors", []), "semantic_audit": "pending"}
+    if catalogue_status == "catalogue_invalid":
+        try:
+            catalogue = Catalogue.model_validate(raw)
+        except (ValidationError, ValueError, TypeError, RecursionError, OverflowError):
+            return {"status": "catalogue_invalid",
+                    "errors": batch.get("catalogue_errors", []), "semantic_audit": "pending"}
+        builder = CallBuilder.for_source(task["prompt"], task["entry_point"])
+        valid_index_set = set(valid_indices)
+        records = [record for index, record in enumerate(batch["inputs"]) if index in valid_index_set]
+        arguments = [bound_arguments(builder, record) for record in records]
+        boundary_measurements = mechanical_boundaries(
+            catalogue, arguments,
+            robust=arm_name == "bva_robust", worst_case=arm_name == "bva_worst_case")
+        from .catalogue_membership import measure_membership
+        source_indices = [index for index in range(len(batch["inputs"])) if index in valid_index_set]
+        observed = measure_membership(
+            catalogue, arguments, records, source_indices,
+            boundary_measurements, builder.signature.parameters)
+        return {
+            "status": "catalogue_invalid",
+            "errors": batch.get("catalogue_errors", []),
+            "partial_measurement": True,
+            "valid_input_records": len(records),
+            "observed": observed,
+            "semantic_audit": "pending",
+        }
     catalogue = Catalogue.model_validate(raw)
     builder = CallBuilder.for_source(task["prompt"], task["entry_point"])
     valid_index_set = set(valid_indices)
@@ -650,11 +696,15 @@ def measure_catalogue(batch, task, valid_indices, *, arm_name, input_budget):
     # Coverage gaps alone do not prove the budget caused them.
     required_size = cartesian_total if cartesian_total is not None else normal_size
     budget_limited = required_size > input_budget if required_size is not None else None
+    from .catalogue_membership import measure_membership
+    source_indices = [index for index in range(len(batch['inputs'])) if index in valid_index_set]
+    observed = measure_membership(catalogue, arguments, records, source_indices,
+                                  boundary_measurements, builder.signature.parameters)
     return {"status": catalogue.status, "valid_input_records": len(records), "declared": {
                 "covered_ids": sorted(declared_ids & obligation_ids), "total_obligations": len(obligation_ids),
                 "status": "pending" if unlabelled_inputs else "self_reported", "unlabelled_inputs": unlabelled_inputs,
                 "unknown_cover_ids": sorted(unknown_ids)},
-            "classes": class_measurements, "boundaries": boundary_measurements,
+            "classes": class_measurements, "boundaries": boundary_measurements, "observed": observed,
             "decision_table": decision_table_measurement,
             "original_rule_coverage": table_coverage, "strong_ep": strong_coverage, "worst_case": worst_case_coverage,
             "normal_design": {"required_inputs": normal_size, "status": "declared_coordinates_only" if normal_size is not None else "pending"},
@@ -662,3 +712,33 @@ def measure_catalogue(batch, task, valid_indices, *, arm_name, input_budget):
             "budget_limited": budget_limited,
             "uncovered_boundary_values": uncovered_boundary_values if boundary_measurements else None,
             "partition_disjointness_and_exhaustiveness": "pending", "semantic_audit": "pending"}
+
+
+def measure_task_catalogues(context, arm_names) -> dict | None:
+    """Measure frozen catalogues after domain/reference checks, before PUT execution."""
+    if context.inputs.get("skip"):
+        return None
+    from .arm_names import retained_input_budget
+
+    measurements = {}
+    for name in arm_names:
+        batch = context.inputs["arms"][name]
+        indices = context.oracle.get("catalogue_valid_input_indices", {}).get(name, [])
+        try:
+            measurements[name] = measure_catalogue(
+                batch,
+                context.task,
+                indices,
+                arm_name=name,
+                input_budget=retained_input_budget(name, context.settings.input_budget),
+            )
+        except (ValueError, TypeError, KeyError, RecursionError, OverflowError) as error:
+            # Catalogue metadata may fail validation; valid calls still reach PUT evaluation.
+            measurements[name] = {
+                "status": "catalogue_invalid",
+                "errors": ["measurement:" + type(error).__name__],
+                "semantic_audit": "pending",
+            }
+    context.extensions["catalogue_measurements"] = measurements
+    context.artifacts.write(context.task_directory + "/catalogue_measurements.json", measurements)
+    return measurements

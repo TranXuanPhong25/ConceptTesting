@@ -4,9 +4,8 @@ from dataclasses import asdict
 import json
 import ast
 from itertools import combinations
-from pathlib import Path
 
-from ..stages.reporting import ReportingStage
+from ..reporting import Reporter
 from .selection import hits
 
 
@@ -98,12 +97,7 @@ def coverage(batch):
                              'realized_tuples': [list(item) for item in sorted(tuples)]}}
 
 
-class ToolReportingStage(ReportingStage):
-    requires = ('put_evaluation', 'tool_selection_audit')
-
-    def source_dependencies(self):
-        return tuple((Path(__file__).resolve().parents[2] / 'audits').glob('*.py'))
-
+class ToolReporter(Reporter):
     def build_summary(self, contexts, cohort):
         summary = super().build_summary(contexts, cohort)
         summary['settings'] = asdict(contexts[0].settings)
@@ -124,8 +118,7 @@ class ToolReportingStage(ReportingStage):
                  f"Evaluation {summary['scored_tasks']}/{summary['expected_tasks']} task records; "
                  f"{summary['evaluated_base_pass']} eligible PUTs. Coverage không chứng minh detection; "
                  'semantic audit pending. Pool bị cap chỉ cho lower bound, không kết luận generation gap. '
-                 'not_applicable/not_needed/no_witness không phải evidence tool được exercise; '
-                 'chỉ các task có status exercised mới chứng minh sampler/solver/planner thực sự chạy.', '',
+                 'Status exercised ghi nhận sampler hoặc planner đã được dùng để sinh input.', '',
                  '| Arm | Novel valid inputs | Detected PUTs / eligible PUTs | Wrong-value PUTs | Exception PUTs | Resource PUTs |', '|---|---:|---:|---:|---:|---:|']
         for name, values in summary['arms'].items():
             kinds = summary['detection_kinds'][name]
@@ -140,8 +133,7 @@ class ToolReportingStage(ReportingStage):
                               'skips': summary['skips']}, ensure_ascii=False, indent=2), '```', '',
                   'Funnel theo thứ tự total → parsed → bound → domain_valid → unique → selected; '
                   'mỗi bước dùng bước trước làm mẫu số. Coverage dùng checked_targets và total_targets; '
-                  'Detection dùng eligible_puts. Thời gian tool tính bằng giây, solver timeout bằng ms. '
-                  'Extra-Hypothesis control chỉ là budget cấu hình; xem actual seconds trước khi gọi comparison matched-time.', '',
+                  'Detection dùng eligible_puts. Thời gian tool tính bằng giây.', '',
                   'Diagnostic theo task/arm (ledger trước freeze nằm trong inputs.json; kết quả pool tách riêng):',
                   '```json', json.dumps({'treatment_status': summary['tool_treatments'],
                                         'domain_authorities': summary['domain_authorities'],

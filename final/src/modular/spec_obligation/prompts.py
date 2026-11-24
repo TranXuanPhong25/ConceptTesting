@@ -1,5 +1,6 @@
 """Small fixed soft examples, with no retrieval or benchmark-specific bindings."""
 import json
+from final.src.runtime.artifacts import digest
 
 SOFT_EXAMPLES = (
     {'pattern': 'dedup loses multiplicity', 'spec_role': 'every occurrence contributes',
@@ -16,14 +17,19 @@ SOFT_EXAMPLES = (
      'correct_use': 'spec requests the last matching value'},
 )
 
-INSTRUCTION = '''Use the specification, original numbered source, CFG arcs and static may-def-use to propose
+INSTRUCTION = '''Use the specification, original numbered source and CFG arcs to propose
 testing scenarios. Soft examples illustrate reasoning only; do not copy their applicability or inputs.
 Distinguish a branch/statement not executed by base from a semantic scenario base has not exercised.
 Covered code may still need a semantic test. Missing traces are UNKNOWN, not unexecuted code.
-Structural paths and DFG edges are approximations, not feasibility or bug proofs.
+Structural paths are approximations, not feasibility or bug proofs.
 Every semantic obligation binds an EXACT program_id and executable original line. Quote a requirement
 verbatim from the specification; explain the operation's possible mismatch, activation relation,
 construction instruction and a correct-use counterexample. A hypothesis is not a confirmed bug.
+Construct a control and a contrasting representative when the contract permits: keep earlier
+guards, vary the activation relation, and ensure the changed contribution can survive to return.
+Use the existing scenario/instruction fields for this recipe; do not add metadata fields.
+A predicate hit and site reach do not prove activation or propagation. A base hit is one witness,
+not evidence that all representatives, boundaries or representations have been exercised.
 Return data only; no expected outputs, assertions, executable Python, st.* calls or imports.
 Optional predicate is a boolean input expression using exact parameter names, len/sum/min/max/abs,
 distinct_count, comparisons, Boolean operators and bounded indexing. Use "" when unsupported.
@@ -42,7 +48,39 @@ The final base_inputs_do_not_repeat list is a compact reminder; it can be incomp
 The controller rejects duplicates against the full recorded base inventory.'''
 
 
+def saved_messages(context, evidence, phase, input_budget):
+    call = evidence.arm + '_' + phase
+    relative = context.task_directory + '/calls/'
+    directive = relative + call + '.frozen_request_replay.json'
+    if not context.artifacts.exists(directive):
+        return None
+    approval = context.artifacts.read(directive)
+    record = context.artifacts.read(relative + call + '/request.json')
+    if not approval.get('authorization') or digest(record) != approval.get('request_id'):
+        raise ValueError('frozen_request_identity_mismatch')
+    expected = {'temperature': context.settings.input_temperature, 'max_tokens': context.settings.input_tokens,
+                'seed': context.settings.input_seed + context.task_number + (phase == 'construct')}
+    if any(record.get(k) != value for k, value in expected.items()):
+        raise ValueError('frozen_request_settings_mismatch')
+    request = record['messages']
+    payload = json.loads(request[-1]['content'])
+    if (payload.get('phase') != phase or payload.get('specification') != evidence.specification
+            or payload.get('trusted_contract') != context.metadata.get('contract', '')
+            or payload.get('parameter_names') != list(evidence.builder.signature.parameters)
+            or payload.get('input_budget') != input_budget):
+        raise ValueError('frozen_request_task_mismatch')
+    for row in payload['programs']:
+        program = evidence.by_id.get(row['program_id'])
+        if (program is None or row['source_sha256'] != evidence.analyses[row['program_id']]['source_sha256']
+                or row['numbered_source'] != '\n'.join(f'{i}: {line}' for i, line in enumerate(program['code'].splitlines(), 1))):
+            raise ValueError('frozen_request_source_mismatch')
+    return request
+
+
 def messages(context, evidence, *, hybrid, phase, obligations=(), targets=(), input_budget=20):
+    replay = saved_messages(context, evidence, phase, input_budget)
+    if replay is not None:
+        return replay
     programs = []
     analyses = []
     for program in evidence.programs:

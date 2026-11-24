@@ -176,9 +176,6 @@ class FrozenStyleInputs(InputGenerator):
     def configuration(self):
         return {"directory": str(self.directory), "freeze": self.freeze, "setting": "same-packet-prompt-style"}
 
-    def source_dependencies(self):
-        return (self.directory / "direct_inputs_frozen.json", self.directory / "encoded_inputs.json")
-
     def generate(self, context):
         batch = read(self.directory / "encoded_inputs.json")[context.task["task_id"]]
         if digest(batch) != self.freeze[context.task["task_id"]]:

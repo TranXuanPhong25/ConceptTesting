@@ -2,15 +2,11 @@
 from dataclasses import asdict
 from itertools import combinations
 import json
-from pathlib import Path
 
-from .stages.reporting import ReportingStage
+from .reporting import Reporter
 
 
-class CatalogueReportingStage(ReportingStage):
-    def source_dependencies(self):
-        # Existing read-only classifiers import helpers from the audit package.
-        return tuple((Path(__file__).parents[1] / 'audits').glob('*.py'))
+class CatalogueReporter(Reporter):
 
     def build_summary(self, contexts, cohort):
         summary = super().build_summary(contexts, cohort)
@@ -39,14 +35,19 @@ class CatalogueReportingStage(ReportingStage):
 
     def render(self, summary):
         settings = summary['settings']
+        from .arm_names import generation_call_cap, retained_input_budget
+        caps = {name: generation_call_cap(name) for name in summary['arms']}
+        call_caps = ', '.join(f"{name}={'theo số batch target' if cap == 'pending' else cap}"
+                              for name, cap in caps.items())
         lines = ['# Kết quả testing arms', '',
             f"Đã evaluation {summary['scored_tasks']}/{summary['expected_tasks']} task records; "
             f"{summary['evaluated_base_pass']} eligible base-pass PUTs. "
             'Detection dưới đây áp dụng cho frozen cohort và reference hiện có; catalogue coverage không chứng minh detection. '
             'Semantic audit và phần không kiểm được vẫn là `pending`.', '',
-            f"Budget: {settings['input_budget']} inputs/task/arm, một generation call/task/arm; "
-            f"completion cap {settings['input_tokens']} tokens/call, context cap {settings['context_tokens']} tokens; "
-            f"timeout {settings['timeout_seconds']} giây/input. Robust không đủ eligibility được skip trước model call.", '',
+            f"Budget inputs/task theo arm {dict((name,retained_input_budget(name,settings['input_budget'])) for name in summary['arms'])}. "
+            f"Generation call cap/task {call_caps}. Completion cap {settings['input_tokens']} tokens/call, "
+            f"context cap {settings['context_tokens']} tokens và timeout {settings['timeout_seconds']} giây/input. "
+            'Robust không đủ eligibility được skip trước model call.', '',
             '| Arm | Novel valid inputs | Confirmed detected PUTs / eligible PUTs | Task có detection / eligible task | Wrong-value PUTs | Exception PUTs | Resource PUTs |',
             '|---|---:|---:|---:|---:|---:|---:|']
         eligible_tasks = summary['expected_tasks'] - len(summary['skips'])
@@ -65,9 +66,14 @@ class CatalogueReportingStage(ReportingStage):
                          f"paired permutation p={comparison['paired_permutation_pvalue']:.5g}.")
         lines += ['', 'Catalogue accounting theo task nằm trong `catalogue_measurements.json` và summary. '
                   'Declared coverage dùng covers của inputs đã qua domain/reference, là self-report; '
+                  'observed đo EP predicate/membership, boundary values trong context và DT condition predicates '
+                  'trên từng input thật; hit/miss/unknown tách riêng, có witness indices và đối chiếu covers khai sai. '
+                  'Summary đếm số obligation, không phải số input; BVA hit toàn boundary cần đủ target values, '
+                  'single-fault vẫn là tiêu chí riêng. Original-rule denominator chỉ gồm declared feasible originals '
+                  '(hoặc unmerged rules khi không có original_rules); không chứng minh feasibility theo spec. '
                   'mechanical BVA chỉ kiểm phần selector/context/nominal đọc được. DT denominator là feasible rules gốc; '
                   'merged ID không tự phủ mọi combination. Thiếu metadata để kiểm thì pending. '
-                  'Coverage hiện chỉ đếm novel inputs; base-call coverage chưa đối chiếu là pending. '
+                  'Observed coverage đếm novel inputs. '
                   'Cartesian/design cap vượt input budget ghi budget_limited; feasibility vẫn pending.', '',
                   'Config thực tế:', '```json', json.dumps(settings, ensure_ascii=False, indent=2), '```', '',
                   'Model calls/tokens thực tế theo arm (tester_calls; writer_calls là chi phí cohort đã có):',
@@ -86,8 +92,11 @@ def usage_by_arm(directory, names):
         totals = {key:0 for key in ('prompt_tokens','completion_tokens','total_tokens')}
         for call in directory.glob('tasks/*/calls/*'):
             owned_names = (name, name + '_initial', name + '_feedback', name + '_propose',
-                           name + '_construct', *(name + f'_round_{i}' for i in range(3)))
-            if call.name not in owned_names and not any(call.name.startswith(owner + '_unknown_attempt_') for owner in owned_names):
+                           name + '_construct', name + '_reflection', name + '_catalogue', name + '_inputs')
+            call_name = call.name.split('_unknown_attempt_', 1)[0]
+            round_prefix = name + '_round_'
+            round_call = call_name.startswith(round_prefix) and call_name[len(round_prefix):].isdecimal()
+            if call_name not in owned_names and not round_call:
                 continue
             attempts += (call/'attempt.json').exists()
             if (call/'response.json').exists():

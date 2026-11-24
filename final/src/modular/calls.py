@@ -4,7 +4,6 @@ from final.src.runtime.artifacts import digest
 from final.src.models.checkpoint import CheckpointedModelClient
 from .artifacts import ArtifactStore
 
-
 def structured_format(schema):
     return {'type': 'json_schema', 'json_schema': {'name': 'tool_preparation', 'strict': True, 'schema': schema}}
 
@@ -38,7 +37,6 @@ class CachedModelCalls:
             raise ValueError(f"Request checksum mismatch: {directory}")
         response = self.artifacts.read(directory + "/response.json")
         return ModelResponse(**response)
-
 
 class RecordedModelCalls:
     """Uses the reviewed streaming/retry transport without changing request policy."""

@@ -1,14 +1,12 @@
 """One catalogue/input completion per task/arm, using shared freeze and execution."""
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 import re
 
 from .base import InputGenerationMethod
-from ..arm_names import CATALOGUE_ARM_NAMES
 from ..catalogue import validate_catalogue
+from ..fault_oriented_testing.prompts import FAULT_HYPOTHESIS_OUTPUT_NOTE, soft_example_for
 from ..response_json import load_response_json
-from ..equivalence_partitioning.prompts import GUIDANCE as EQUIVALENCE_GUIDANCE, STRONG_GUIDANCE
-from ..boundary_value_analysis.classical import NORMAL_GUIDANCE, COMBINED_GUIDANCE, ROBUST_GUIDANCE, WORST_CASE_GUIDANCE
-from ..decision_table.prompts import GUIDANCE as DECISION_TABLE_GUIDANCE, COMBINED_GUIDANCE as EP_DT_BVA_GUIDANCE
+from ..catalogue_response import read_catalogue_response
 
 
 def render_catalogue_output_contract(sections):
@@ -22,8 +20,10 @@ def render_catalogue_output_contract(sections):
     schema = ('Return JSON: {"catalogue":{' + fields + '},"inputs":[{"arguments":{},"covers":["obligation ID"]}]}.'
               '\ncovers is optional. Keep descriptions compact. Catalogue contains no expected outputs.'
               '\nOptional machine fields: class partition/kind(input/output/invalid), parameter, transform(identity/length/count/parsed_int/parsed_float), lower/upper, lower_inclusive/upper_inclusive, members; count uses count_value.'
+              '\nFor measured EP membership, add class predicate: a boolean expression over exact input parameter names, e.g. \"x > 0\" or \"len(xs) == 0\". Output-category predicates must describe the input scenario; do not invent or call an oracle.'
               '\nBoundary may add parameter, transform, lower/upper, numeric_kind(integer/float/discrete), step, context and nominal (complete named arguments). Float neighbors use a spec-defined step or adjacent representable values.'
               '\nDT may add catalogue.conditions (condition ID to possible values), mutually_exclusive (lists of condition IDs), and original_rules [{id,conditions,actions,status(feasible/infeasible/unresolved),reason}]. Preserve original IDs in covers after merging.'
+              '\nFor measured DT membership, add catalogue.condition_predicates mapping each condition ID to a boolean input expression. Use boolean or T/F condition values and retain feasible original_rules; covers alone earns no observed coverage. Unsupported or missing definitions remain unknown.'
               '\nIf the technique has no applicable obligations, use empty lists, catalogue.status="not_applicable" and a short reason; unresolved obligations use status="unresolved" and a reason.')
     return schema
 
@@ -60,23 +60,66 @@ class CatalogueArm(InputGenerationMethod):
     measures_catalogue = True
     sections = ()
     guidance = ""
+    example_key = ""
 
     def __init__(self, settings=None):
         self.settings = settings or CatalogueSettings()
 
     def configuration(self):
-        return {"protocol": "testing-catalogue-v1", **asdict(self.settings),
-                "sections": list(self.sections), "calls": "one-per-task-arm", "guidance": self.guidance}
+        configuration = {
+            **asdict(self.settings),
+            "sections": list(self.sections),
+            "calls": "one-per-task-arm",
+            "guidance": self.guidance,
+        }
+        if self.example_key:
+            configuration.update(
+                example_key=self.example_key,
+                soft_example=soft_example_for(self.example_key),
+                output_note=FAULT_HYPOTHESIS_OUTPUT_NOTE,
+                semantic_fault_hypothesis_validation="pending",
+            )
+        return configuration
 
-    def reporting_stage(self):
-        from ..catalogue_reporting import CatalogueReportingStage
-        return CatalogueReportingStage()
+    def reporter(self):
+        from ..catalogue_reporting import CatalogueReporter
+        return CatalogueReporter()
 
     def build_guidance(self, packet):
         guidance = self.guidance
         if not self.settings.catalogue:
             guidance = re.sub(r"List (?:the )?(?:classes|boundaries|rules|classes and boundaries|classes, boundaries and rules) in the catalogue\.", "", guidance)
-        return guidance
+        if not self.example_key:
+            return guidance
+        if self.settings.catalogue:
+            guidance += "\n" + FAULT_HYPOTHESIS_OUTPUT_NOTE
+        return (
+            guidance
+            + "\n\nSOFT EXAMPLE (another domain; adapt only useful ideas):\n"
+            + soft_example_for(self.example_key)
+        )
+
+    def extend_summary(self, contexts, summary, reporting):
+        if not self.example_key:
+            return
+        accounting = {
+            "classes": 0,
+            "rules": 0,
+            "annotated_classes": 0,
+            "annotated_rules": 0,
+            "status": "self_reported",
+            "semantic_validation": "pending",
+        }
+        for context in contexts:
+            batch = (context.inputs or {}).get("arms", {}).get(self.name, {})
+            catalogue = batch.get("catalogue") or {}
+            for section in ("classes", "rules"):
+                for obligation in catalogue.get(section, []):
+                    accounting[section] += 1
+                    accounting["annotated_" + section] += bool(
+                        obligation.get("fault_hypothesis")
+                    )
+        summary.setdefault("fault_hypothesis_annotations", {})[self.name] = accounting
 
     def build_messages(self, packet):
         if not self.settings.catalogue:
@@ -92,8 +135,17 @@ class CatalogueArm(InputGenerationMethod):
         return {**accepted, "covers": covers, "source_index": record_index}
 
     def decode_response(self, response, context):
+        repairs=[]
+        if not self.settings.catalogue:
+            try:
+                raw,repairs=read_catalogue_response(response.text)
+                if repairs:response=replace(response,text=repr(raw))
+            except (ValueError,TypeError,RecursionError):
+                pass
         result = super().decode_response(response, context)
         if not self.settings.catalogue:
+            if repairs:
+                result["response_repairs"] = repairs + result.get("response_repairs", [])
             return {**result, "catalogue_status": "off"}
         try:
             decoded, _ = load_response_json(response.text)
@@ -107,67 +159,3 @@ class CatalogueArm(InputGenerationMethod):
         # Preserve valid inputs even for missing/invalid catalogue.
         result["status"] = result["catalogue_status"]
         return result
-
-
-class EquivalenceArm(CatalogueArm):
-    name = "equivalence"
-    sections = ("classes",)
-    guidance = EQUIVALENCE_GUIDANCE
-
-
-class NormalBvaArm(CatalogueArm):
-    name = "bva_normal"
-    sections = ("boundaries",)
-    guidance = NORMAL_GUIDANCE
-
-
-class EpBvaArm(CatalogueArm):
-    name = "ep_bva"
-    sections = ("classes", "boundaries")
-    guidance = COMBINED_GUIDANCE
-
-
-class DecisionTableArm(CatalogueArm):
-    name = "decision_table"
-    sections = ("rules",)
-    guidance = DECISION_TABLE_GUIDANCE
-
-
-class StrongEpArm(CatalogueArm):
-    name = "ep_strong"
-    sections = ("classes",)
-    guidance = STRONG_GUIDANCE
-
-
-class RobustBvaArm(CatalogueArm):
-    name = "bva_robust"
-    sections = ("boundaries",)
-    guidance = ROBUST_GUIDANCE
-
-    def run(self, context):
-        if not has_specified_out_of_domain_behavior(context.metadata):
-            return {"inputs": [], "rejected": [], "status": "not_applicable", "catalogue_status": "not_applicable",
-                    "reason": "Spec chưa có eligibility xác nhận behavior ngoài domain; không gọi model."}
-        return super().run(context)
-
-
-def has_specified_out_of_domain_behavior(metadata):
-    """Robust BVA needs an explicit eligibility flag and supporting spec evidence."""
-    eligibility = metadata.get("testing_arms", {})
-    return eligibility.get("out_of_domain_behavior_defined") is True and bool(eligibility.get("spec_evidence"))
-
-
-class WorstCaseBvaArm(CatalogueArm):
-    name = "bva_worst_case"
-    sections = ("boundaries",)
-    guidance = WORST_CASE_GUIDANCE
-
-
-class EpDtBvaArm(CatalogueArm):
-    name = "ep_dt_bva"
-    sections = ("classes", "boundaries", "rules")
-    guidance = EP_DT_BVA_GUIDANCE
-
-
-CATALOGUE_ARMS = (EquivalenceArm, NormalBvaArm, EpBvaArm, DecisionTableArm,
-                  StrongEpArm, RobustBvaArm, WorstCaseBvaArm, EpDtBvaArm)

@@ -39,11 +39,11 @@ def load_options(arguments=None):
     parser.add_argument("--cohort", type=Path, default=Path("final/out/cohorts/qwen35_27b_humaneval164/cohort.json"))
     parser.add_argument("--artifacts", type=Path, default=Path("final/out/modular_pipeline"))
     parser.add_argument("--arms", nargs="+", choices=[arm.name for arm in available_arms()],
-                        help="Input methods: plain (default), boundary (soft BVA), or catalogue testing arms")
+                        help="Input methods include plain (default) and control_flow")
     parser.add_argument("--input-tokens", type=positive_integer,
                         help="Completion tokens/call; default 4096 with catalogue arms, otherwise 2048")
     parser.add_argument("--context-tokens", type=positive_integer, default=8192)
-    parser.add_argument("--model-backend", choices=("qwen", "vertex"),
+    parser.add_argument("--model-backend", choices=("qwen", "vertex", "openrouter"),
                         help="Live transport; defaults to FINAL_MODEL_BACKEND or existing Qwen backend")
     parser.add_argument("--model-name", help="Model ID for the selected live backend")
     parser.add_argument("--catalogue-off", action="store_true", help="Instruction-only ablation for catalogue arms")
@@ -54,7 +54,7 @@ def load_options(arguments=None):
     parser.add_argument("--target-programs", type=positive_integer, default=10,
                         help="Expected frozen programs per task; use 1 for representative smoke cohorts")
     parser.add_argument("--input-budget", type=positive_integer, default=20,
-                        help="Total input budget per arm per task, including the boundary arm")
+                        help="Total input budget per arm per task")
     parser.add_argument("--execution-cache", type=Path, default=Path("final/out/execution_cache"),
                         help="Shared per-input reference/PUT execution cache")
     parser.add_argument("--no-execution-cache", action="store_true", help="Use the original batch execution without shared input caching")
@@ -84,6 +84,9 @@ def load_pipeline_settings(parser, options):
                                            semantic_controls=document.get("semantic_controls"))
     arms = selected_arms(options.arms) if options.arms else default_arms()
     if options.catalogue_off:
+        from .arm_names import VF3_MEASURED_ARM_NAMES
+        if any(arm.name in VF3_MEASURED_ARM_NAMES for arm in arms):
+            parser.error("VF3 measured arms require catalogue enabled")
         from .arms.classical import CatalogueSettings
         arms = tuple(type(arm)(CatalogueSettings(catalogue=False)) if getattr(arm, "measures_catalogue", False)
                      else arm for arm in arms)
@@ -102,7 +105,6 @@ def load_pipeline_settings(parser, options):
 def construct_pipeline(parser, options, artifacts, settings, arms, tool_generator):
     calls = None
     model = None
-    # New experiments must have their own directory. Never modify a frozen v1 run.
     if artifacts.exists("manifest.json") or (artifacts.exists("status.json") and not artifacts.exists("modular_manifest.json")):
         parser.error("Use a new --artifacts directory for a modular run")
     if tool_generator is None:
@@ -113,8 +115,11 @@ def construct_pipeline(parser, options, artifacts, settings, arms, tool_generato
         requires_model = getattr(tool_generator, "preparations", None) is None
     if requires_model:
         from final.src.models import create_model
-        model = create_model(backend=options.model_backend, model_name=options.model_name,
-                             context=options.context_tokens)
+        model = create_model(
+            backend=options.model_backend,
+            model_name=options.model_name,
+            context=options.context_tokens,
+        )
         calls = RecordedModelCalls(model, artifacts)
     cache = False if options.no_execution_cache else InputExecutionCache(options.execution_cache)
     pipeline = BenchmarkPipeline(
@@ -125,6 +130,7 @@ def construct_pipeline(parser, options, artifacts, settings, arms, tool_generato
         input_generator=tool_generator,
         settings=settings,
         execution_cache=cache,
+        dataset=DatasetLoader('HE-py'),
     )
     return pipeline, model
 
@@ -146,8 +152,8 @@ def prepare_pipeline(parser, options):
 def main(arguments=None):
     parser, options = load_options(arguments)
     if options.mode == "replay":
-        from .stages.reporting import ReportingStage
-        summary = ReportingStage.summarize_saved(ArtifactStore(options.artifacts, read_only=True), options.task_ids)
+        from .reporting import Reporter
+        summary = Reporter.summarize_saved(ArtifactStore(options.artifacts, read_only=True), options.task_ids)
         results = json.dumps(
             {
                 "mode": "replay",

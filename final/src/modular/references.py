@@ -15,9 +15,6 @@ class TaskReferencePrograms:
     def configuration(self):
         return {"source": "task_canonical_solution", "policy": "original-task-reference"}
 
-    def source_dependencies(self):
-        return ()
-
     def for_task(self, task, metadata):
         return {"context": task["prompt"], "source": task["prompt"] + task["canonical_solution"],
                 "entry": task["entry_point"], "contract": metadata["contract"],
@@ -38,9 +35,6 @@ class HumanEvalPlusReferencePrograms:
         return {"source": "EvalPlus/HumanEval+", "version": self.package["version"],
                 "path": str(self.path),
                 "scope": "evaluation-only-no-hidden-inputs"}
-
-    def source_dependencies(self):
-        return (self.path,)
 
     def for_task(self, task, metadata = None):
         record = self.package["tasks"][task["task_id"]]

@@ -16,17 +16,8 @@ class FrozenInputsGenerator(InputGenerator):
     def configuration(self):
         return {"source_run": str(self.source.directory), "mode": "saved-inputs-no-model"}
 
-    def source_dependencies(self):
-        paths = [self.source.path("modular_manifest.json")]
-        for task_id in self.manifest["tasks"]:
-            paths.append(self.source.path(f"tasks/{task_id.split('/')[-1]}/inputs.json"))
-        return tuple(paths)
-
     def generate(self, context):
         return self.source.read(context.task_directory + "/inputs.json")
-
-    def dependency_objects(self):
-        return self.methods
 
     def extend_summary(self, contexts, summary, reporting):
         for method in self.methods:

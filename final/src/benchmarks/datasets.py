@@ -32,6 +32,13 @@ class DatasetLoader:
             raise ValueError(f'No domain metadata bundled for {self.config}')
         return load_metadata()
 
+    def load_reference_programs(self):
+        if self.config == 'he-py':
+            from final.src.modular.references import HumanEvalPlusReferencePrograms
+            return HumanEvalPlusReferencePrograms()
+        from final.src.modular.references import TaskReferencePrograms
+        return TaskReferencePrograms()
+
 
 def _read_json_lines(path: Path, *, compressed: bool = False) -> list[dict]:
     opener = gzip.open if compressed or path.suffix == ".gz" else open
