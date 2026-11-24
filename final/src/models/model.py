@@ -11,6 +11,7 @@ import urllib.error
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import httpx
 import openai
@@ -95,7 +96,7 @@ class _QwenChatOpenAI(ChatOpenAI):
 
 @dataclass(frozen=True)
 class PreparedGeneration:
-    messages: list[dict[str, str]]
+    messages: list[dict[str, Any]]
     prompt_tokens: int
     output_tokens: int
     prompt_token_source: str = "remote"
@@ -105,6 +106,8 @@ class QwenModel(CoreModel):
     """Streaming Qwen transport with explicit context and request budgets."""
 
     backend_name = "qwen"
+    _model_context_field = "max_model_len"
+    _request_headers = {"ngrok-skip-browser-warning": "1"}
 
     def __init__(self, *, context=8192, timeout=300, expected_model=None):
         self.context = context
@@ -144,7 +147,7 @@ class QwenModel(CoreModel):
             endpoint = endpoint_root + "/tokenize"
         else:
             endpoint = self.base_url + ("/models" if operation == "models" else "/chat/completions")
-        headers = {"Content-Type": "application/json", "ngrok-skip-browser-warning": "1"}
+        headers = {"Content-Type": "application/json", **self._request_headers}
         if self.api_key:
             headers["Authorization"] = "Bearer " + self.api_key
         request_data = json.dumps(body).encode() if body is not None else None
@@ -174,7 +177,7 @@ class QwenModel(CoreModel):
                 matching_models.append(served_model)
         if not matching_models:
             raise TransportError("models", "ExpectedModelMissing")
-        advertised_context = matching_models[0].get("max_model_len", self.context)
+        advertised_context = matching_models[0].get(self._model_context_field, self.context)
         if advertised_context < self.context:
             raise TransportError("models", "ContextTooSmall")
         return {"model": self.expected_model, "context": advertised_context}
@@ -246,7 +249,7 @@ class QwenModel(CoreModel):
                     api_key=self.api_key or "EMPTY", http_client=http_client,
                     timeout=self.timeout, max_retries=0, temperature=temperature,
                     seed=seed, stream_usage=True, use_responses_api=False,
-                    default_headers={"ngrok-skip-browser-warning": "1"},
+                    default_headers=self._request_headers,
                     extra_body={"max_tokens": prepared.output_tokens,
                                 "chat_template_kwargs": {"enable_thinking": False}, **structured},
                 )

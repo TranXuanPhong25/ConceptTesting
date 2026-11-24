@@ -175,7 +175,7 @@ def test_vertex_installed_sdk_builds_native_requests_without_network(monkeypatch
     assert call['request'].system_instruction.parts[0].text == 'Return JSON'
 
 
-@pytest.mark.parametrize('backend', ['vertex', 'qwen'])
+@pytest.mark.parametrize('backend', ['vertex', 'qwen', 'openrouter'])
 def test_cli_selects_backend_without_keepalive(tmp_path, monkeypatch, backend):
     import final.src.modular.run as cli
     import final.src.models as models

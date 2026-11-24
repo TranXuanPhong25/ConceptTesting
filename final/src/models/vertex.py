@@ -43,7 +43,7 @@ class VertexAIModel(CoreModel):
 
     def runtime_dependencies(self):
         return ('langchain-google-vertexai', 'google-cloud-aiplatform', 'google-auth')
-
+        
     @staticmethod
     def _chat_class():
         try:
