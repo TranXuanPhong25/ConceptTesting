@@ -22,7 +22,7 @@ def main():
     resource.setrlimit(resource.RLIMIT_CORE,(0,0))
     SAFE={name:getattr(builtins,name) for name in (
         'all','any','isinstance','type','str','bool','list','tuple','set','dict','sorted',
-        'reversed','enumerate','zip','range','round','pow','divmod')}
+        'reversed','enumerate','zip','range','round','pow','divmod','ord','chr','hex','bin','oct')}
 
 
     signal.signal(signal.SIGALRM,expired)

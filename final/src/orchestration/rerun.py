@@ -41,7 +41,7 @@ def validate_console_source(value):
 def baseline_configuration(source):
     """Keep Direct's generation/evaluation settings and change only arm guidance."""
     validate_completed_predecessor(source)
-    config = normalize(json.loads((source / 'config_snapshot.json').read_text()))
+    config = json.loads((source / 'config_snapshot.json').read_text())
     if config['mode'] != 'batch' or 'direct' not in config['arms']:
         raise ValueError('Controlled guidance rerun requires a completed Direct batch source')
     if config['cohort'] != 'humaneval164' or config['task_numbers']:

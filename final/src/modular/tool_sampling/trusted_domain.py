@@ -36,6 +36,13 @@ class TrustedExpressions(ast.NodeTransformer):
         self.known_types = known_types
 
     def visit_Compare(self, node):
+        if (len(node.ops) > 1 and all(isinstance(op, ast.Eq) for op in node.ops)
+                and isinstance(node.comparators[-1], ast.Name) and node.comparators[-1].id in TYPE_HELPERS):
+            operands = [node.left, *node.comparators[:-1]]
+            if all(isinstance(item, ast.Call) and isinstance(item.func, ast.Name) and item.func.id == 'type'
+                   and len(item.args) == 1 and not item.keywords for item in operands):
+                helper = TYPE_HELPERS[node.comparators[-1].id]
+                return ast.BoolOp(op=ast.And(), values=[call(helper, item.args[0]) for item in operands])
         if (isinstance(node.left, ast.Call) and isinstance(node.left.func, ast.Name)
                 and node.left.func.id == 'type' and len(node.left.args) == 1 and not node.left.keywords
                 and len(node.ops) == 1 and isinstance(node.ops[0], (ast.Eq, ast.NotEq))

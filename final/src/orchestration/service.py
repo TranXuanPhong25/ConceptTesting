@@ -21,7 +21,8 @@ def environment(port):
     env=dict(os.environ)
     env.pop('PREFECT_API_KEY',None)
     env.update(PREFECT_HOME=str(STATE/'prefect_home'),PREFECT_API_URL=f'http://127.0.0.1:{port}/api',
-        PREFECT_SERVER_UI_API_URL=f'http://127.0.0.1:{port}/api',PREFECT_SERVER_ANALYTICS_ENABLED='false',
+        # Resolve browser requests against its current origin, including tunnels.
+        PREFECT_SERVER_UI_API_URL='/api',PREFECT_SERVER_ANALYTICS_ENABLED='false',
         PYTHONPATH=str(ROOT),PYTHONDONTWRITEBYTECODE='1')
     return env
 

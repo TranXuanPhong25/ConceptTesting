@@ -1,60 +1,14 @@
 [
   {
-    "name": "Full164 · Direct vs Soft BVA · batch",
-    "description": "Full HumanEval · Direct vs Soft BVA. 20 inputs/task/arm; 1 call/task/arm; tối đa314 logical calls. Chỉ guidance khác nhau.",
-    "parameters": {
-      "cohort": "humaneval164",
-      "mode": "batch",
-      "arms": [
-        "direct",
-        "soft_bva"
-      ],
-      "completion_tokens": 2048,
-      "timeout_seconds": 8
-    }
-  },
-  {
-    "name": "Smoke3 · Direct vs Soft BVA · tasks 2, 11, 72",
-    "description": "3 task2/11/72 · Direct vs Soft, tổng6 calls. Dùng preview_only để chỉ xem budget, không gọi LLM.",
-    "parameters": {
-      "cohort": "humaneval164",
-      "task_numbers": [
-        2,
-        11,
-        72
-      ],
-      "mode": "batch",
-      "arms": [
-        "direct",
-        "soft_bva"
-      ],
-      "completion_tokens": 2048,
-      "timeout_seconds": 8
-    }
-  },
-  {
-    "name": "Full164 · Soft BVA · per-PUT, shared 20",
-    "description": "Per-PUT mode lịch sử:20 inputs cho CẢ task, chia cho cácPUT; thường2–3inputs/call. Tối đa1454 calls. Không phải20inputs/PUT.",
-    "parameters": {
-      "cohort": "humaneval164",
-      "mode": "per_put",
-      "arms": [
-        "boundary"
-      ],
-      "completion_tokens": 2048,
-      "timeout_seconds": 8
-    }
-  },
-  {
-    "name": "Full164 · Plain vs EP+BVA vs Decision Table · batch",
-    "description": "User-authorized full HumanEval:164task records/157eligible tasks/1454base-pass PUTs;3arms cùng visibility và Plain baseline;20inputs/task/arm,471logicalcallcap,4096completion tokens/call. Catalogue errors/applicability báo riêng;không tự nối run khác.",
+    "name": "Full164 · Plain vs EP+BVA v2 vs DT v2 · batch",
+    "description": "HumanEval · Plain, EP+BVA v2 và DT v2 · 20 input/task/arm, tối đa 471 logical calls, 4096 completion tokens/call.",
     "parameters": {
       "cohort": "humaneval164",
       "mode": "batch",
       "arms": [
         "plain",
-        "ep_bva",
-        "decision_table"
+        "ep_bva_v2",
+        "decision_table_v2"
       ],
       "task_numbers": [],
       "inputs_per_task": 20,
@@ -62,23 +16,38 @@
       "context_tokens": 8192,
       "catalogue": true,
       "timeout_seconds": 8
-    }
+    },
+    "preview_only": true
   },
   {
-    "name": "Full164 · EP + Decision Table + BVA · single combined arm",
-    "description": "Một arm ep_dt_bva:EP classes→DT rules→normalBVA edges trong1completion/task,mộtcatalogue và20inputs/task.Khôngunion.Max157logicalcalls/1454PUTs,4096completion/8192context/timeout8s.",
+    "name": "OpenRouter Flint · Plain · HumanEval 0",
+    "description": "Một task HumanEval với recursive/flint-v1.0:free qua recursive/bf16, bật reasoning. Tối đa 20 input và một logical call.",
+    "parameters": {
+      "mode": "batch",
+      "arms": ["plain"],
+      "task_numbers": [0],
+      "model_backend": "openrouter",
+      "model_name": "recursive/flint-v1.0:free"
+    },
+    "preview_only": true
+  },
+  {
+    "name": "Full164 · EP+BVA VF3 Measured vs DT VF3 Measured · batch",
+    "description": "HumanEval · EP+BVA VF3 Measured và DT VF3 Measured · 20+10 input/task/arm, tối đa 628 logical calls, 4096 completion và 12288 context tokens/call.",
     "parameters": {
       "cohort": "humaneval164",
       "mode": "batch",
       "arms": [
-        "ep_dt_bva"
+        "ep_bva_vf3_measured",
+        "decision_table_vf3_measured"
       ],
       "task_numbers": [],
       "inputs_per_task": 20,
       "completion_tokens": 4096,
-      "context_tokens": 8192,
+      "context_tokens": 12288,
       "catalogue": true,
       "timeout_seconds": 8
-    }
+    },
+    "preview_only": true
   }
 ]

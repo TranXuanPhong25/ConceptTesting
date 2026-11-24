@@ -97,8 +97,8 @@ def waiting_markdown(statuses, budget, *, ready=False, reason=None):
     else:
         opening = 'Đang chờ mọi predecessor hoàn tất; chưa có model/tokenizer/native call của followup.'
     return (opening + '\n\nKết quả detection và coverage của followup: pending.\n\n'
-            + f"Budget tối đa {budget['logical_call_cap']} logical calls; "
-            + f"{budget['config']['inputs_per_task']} inputs/task/arm; "
+            + f"Logical call cap `{budget['logical_call_cap']}`. Budget "
+            + f"{budget['config']['inputs_per_task']} inputs/task/arm và "
             + f"{budget['config']['completion_tokens']} completion tokens/call.\n\n"
             + 'Source/config/cohort được snapshot trước khi chờ; không dùng code worktree mới lúc bắt đầu.\n\n'
             + '```json\n' + json.dumps(statuses, ensure_ascii=False, indent=2) + '\n```')

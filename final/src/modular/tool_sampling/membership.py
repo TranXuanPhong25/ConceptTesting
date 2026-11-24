@@ -17,7 +17,7 @@ import threading
 from ..input_buckets import predicates as legacy
 from ..call_builder import supported_value
 
-BUILTINS={'all','any','isinstance','type','str','bool','list','tuple','set','dict','sorted','reversed','enumerate','zip','range','round','pow','divmod'}
+BUILTINS={'all','any','isinstance','type','str','bool','list','tuple','set','dict','sorted','reversed','enumerate','zip','range','round','pow','divmod','ord','chr','hex','bin','oct'}
 METHODS={'isupper','islower','isalpha','isalnum','isdigit','isdecimal','isnumeric','isspace',
          'isascii','istitle','lower','upper','casefold','capitalize','title','swapcase',
          'startswith','endswith','count','find','rfind','index','rindex','strip','lstrip','rstrip',
@@ -26,6 +26,7 @@ METHODS={'isupper','islower','isalpha','isalnum','isdigit','isdecimal','isnumeri
          'symmetric_difference','keys','values','items','get'}
 BOOLEAN_METHODS={'isupper','islower','isalpha','isalnum','isdigit','isdecimal','isnumeric','isspace','isascii','istitle','startswith','endswith','issubset','issuperset','isdisjoint'}
 NODES=legacy.NODES+(ast.Is,ast.IsNot,ast.Mult,ast.Div,ast.FloorDiv,ast.Mod,ast.Pow,
+    ast.BitAnd,ast.BitOr,ast.BitXor,
     ast.IfExp,ast.Slice,ast.Attribute,ast.keyword,ast.GeneratorExp,ast.ListComp,ast.SetComp,
     ast.DictComp,ast.Dict,ast.comprehension,ast.Store)
 
@@ -34,7 +35,7 @@ def expression(text,names):
     if not isinstance(text,str) or not text or len(text)>2048:
         raise ValueError('invalid_predicate_size')
     tree=ast.parse(text,mode='eval')
-    if sum(1 for _ in ast.walk(tree))>256:raise ValueError('predicate_node_limit')
+    if sum(1 for _ in ast.walk(tree))>512:raise ValueError('predicate_node_limit')
     class Validate(ast.NodeVisitor):
         def __init__(self):self.scope=set(names)
         def generic_visit(self,node):

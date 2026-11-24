@@ -64,10 +64,10 @@ class CandidateLedger:
         self.task_id, self.arm, self.builder, self.model = task_id, arm, builder, model
         self.rows, self.groups = [], {}
 
-    def add(self, raw, source, *, errors=(), tool_raw=None):
+    def add(self, raw, source, *, errors=()):
         row = {'candidate_id': identity((self.task_id, self.arm, repr(raw), source)),
                'task_id': self.task_id, 'arm': self.arm, 'sources': [source],
-               'raw': repr(raw if tool_raw is None else tool_raw), 'canonical_args': None, 'errors': list(errors),
+               'raw': repr(raw), 'canonical_args': None, 'errors': list(errors),
                'primary_error': None, 'membership': None, 'dedup_group': None,
                'selected': False, 'selection_reason': None}
         self.rows.append(row)
@@ -187,7 +187,6 @@ class CandidateLedger:
 
     def pool(self):
         return [row for row in self.groups.values() if row.get('domain') == 'true'
-                and not row.get('solver_rejected')
                 and not any(item['stage'].startswith('P') or item['stage'] == 'V1' for item in row['errors'])]
 
     def selected_rows(self):

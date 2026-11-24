@@ -10,7 +10,9 @@ from prefect import flow
 from prefect.artifacts import create_markdown_artifact, create_table_artifact
 from prefect.context import get_run_context
 from prefect.client.orchestration import get_client
+from final.src.models import OPENROUTER_DEFAULT_MODEL
 from .flows import ROOT, OUT, BENCHMARK_PYTHON, command, watch_worker, active_external_writers
+from .routing import endpoint_identity_for_profile
 
 
 async def attach_adapter_outputs(directory):
@@ -33,9 +35,9 @@ async def adapter_benchmark(
     dataset: Literal['mbpp']='mbpp',
     candidate_path: str='',
     task_numbers: list[int]=[],
-    arms: list[Literal['plain','ep_bva','decision_table','ep_bva_v2','decision_table_v2','control_flow']]=['plain','ep_bva_v2','decision_table_v2'],
-    backend: Literal['qwen','vertex']='qwen',
-    model_name: str='qwen3.5-27b-awq',
+    arms: list[Literal['plain','ep_bva_v2','decision_table_v2','control_flow']]=['plain','ep_bva_v2','decision_table_v2'],
+    backend: Literal['qwen','vertex','openrouter']='qwen',
+    model_name: str | None=None,
     inputs_per_task: int=20,
     completion_tokens: int=4096,
     context_tokens: int=8192,
@@ -51,6 +53,8 @@ async def adapter_benchmark(
     Execution coverage and verified specification bugs are pending; detected means
     a confirmed disagreement with the dataset's canonical reference.
     """
+    if model_name is None:
+        model_name = OPENROUTER_DEFAULT_MODEL if backend == 'openrouter' else 'qwen3.5-27b-awq'
     parameters = locals().copy(); parameters.pop('preview_only')
     if candidate_path:
         source = (ROOT / candidate_path).resolve()
@@ -76,7 +80,9 @@ async def adapter_benchmark(
         return {'preview_only':True, 'artifacts':str(directory), **description}
     if description['cohort_status']=='pending':
         raise ValueError('Chưa có PUT cohort. Nhập candidate_path trước khi Run; không tự gọi writer LLM.')
-    while active_external_writers(exclude=directory):
+    endpoint = endpoint_identity_for_profile(os.environ.get(
+        'FINAL_ENDPOINT_ENV_FILE', '~/.config/concepttester/final-qwen.env')) if backend == 'qwen' else None
+    while active_external_writers(exclude=directory, selected_endpoint=endpoint):
         await asyncio.sleep(15)
     plan = json.loads((directory/'launch_plan.json').read_text())
     env = {key:value for key,value in os.environ.items() if key in (

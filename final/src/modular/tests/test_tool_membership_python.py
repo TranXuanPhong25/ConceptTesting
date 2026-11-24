@@ -35,23 +35,6 @@ def test_non_boolean_result_is_rejected_even_when_python_valid():
         evaluate('s.upper()',{'s':'abc'})
 
 
-def test_z3_keeps_exact_subset_while_membership_accepts_python():
-    from final.src.modular.tool_sampling.membership import evaluate
-    from final.src.modular.tool_sampling.constructors import translate
-    assert evaluate('n % 2 == 0',{'n':2})
-    with pytest.raises(ValueError):translate('n % 2 == 0',{'n':'int'})
-
-
-def test_unsupported_solver_expression_does_not_block_hypothesis_component():
-    from final.src.modular.tool_sampling.gate import treatment_status
-    batch={'preparation_error':None,'domain_authority':{},
-       'preparation':{'types':{'n':'int'},'factors':{}},
-       'candidate_ledger':[{'domain':'true','errors':[],'sources':[{'tool':'hypothesis','seed':1}]}],
-       'tool_receipts':[{'tool':'hypothesis','status':'complete','draws':1,'seed':1},
-          {'tool':'z3','results':[{'status':'unsupported','target_id':'even'}]}]}
-    assert treatment_status('tool_hypothesis_z3',batch)['status']=='not_applicable'
-
-
 def test_one_unsupported_target_retains_good_targets_and_candidate_inputs():
     from final.src.modular.tests.test_tool_sampling import model,builder
     from final.src.modular.tool_sampling.schema import parse_preparation

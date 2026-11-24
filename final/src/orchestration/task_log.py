@@ -56,9 +56,11 @@ def generation_text(inputs_record, calls_directory):
             details.append('status ' + record['status'])
         if record.get('response_repairs'):
             details.append('repair ' + '+'.join(record['response_repairs']))
-        response = read_if(calls_directory / arm / 'response.json') if calls_directory else {}
-        if response.get('finish_reason') == 'length':
-            details.append('truncated (finish_reason=length)')
+        for call_name in (arm, arm + '_initial', arm + '_feedback'):
+            response = read_if(calls_directory / call_name / 'response.json') if calls_directory else {}
+            if response.get('finish_reason') == 'length':
+                suffix = '' if call_name == arm else f' ({call_name})'
+                details.append(f'truncated{suffix} (finish_reason=length)')
         parts.append(arm + ': ' + ', '.join(details))
     return '; '.join(parts)
 

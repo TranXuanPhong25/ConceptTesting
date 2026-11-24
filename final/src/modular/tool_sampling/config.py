@@ -2,10 +2,9 @@
 import copy
 import math
 
-TOOL_ARMS = ('tool_direct', 'tool_hypothesis', 'tool_hypothesis_z3', 'tool_hypothesis_extra', 'tool_planner')
-INTEGER_BUDGETS = ('draws', 'extra_draws', 'solver_queries', 'solver_timeout_ms',
-                   'planner_rows', 'planner_draws', 'planner_solver_queries', 'audit_cap')
-TIME_BUDGETS = ('sample_seconds', 'extra_seconds', 'solver_seconds', 'planner_seconds')
+TOOL_ARMS = ('tool_direct', 'tool_hypothesis', 'tool_hypothesis_extra', 'tool_planner')
+INTEGER_BUDGETS = ('draws', 'extra_draws', 'planner_rows', 'planner_draws', 'audit_cap')
+TIME_BUDGETS = ('sample_seconds', 'extra_seconds', 'planner_seconds')
 
 def validate_budgets(config):
     required = set(INTEGER_BUDGETS + TIME_BUDGETS) | {'arms', 'random_seeds'}
@@ -21,8 +20,6 @@ def validate_budgets(config):
     if (not isinstance(arms, list) or not arms or any(name not in TOOL_ARMS for name in arms)
             or len(arms) != len(set(arms))):
         raise ValueError('Unknown/duplicate tool arms')
-    if {'tool_hypothesis_extra', 'tool_hypothesis_z3'} <= set(arms) and config['extra_seconds'] != config['solver_seconds']:
-        raise ValueError('Extra Hypothesis and solver require the same wall budget cap')
     seeds = config['random_seeds']
     if (not isinstance(seeds, list) or not seeds or len(seeds) > 1000
             or any(type(seed) is not int or not 0 <= seed < 2**32 for seed in seeds)

@@ -5,13 +5,11 @@ from pathlib import Path
 import shlex
 
 
-def endpoint_identity_for_run(directory):
-    """Read the worker's private route and return an opaque endpoint identity."""
+def endpoint_identity_for_profile(profile):
+    """Read a private profile and return an opaque endpoint identity."""
     try:
-        plan = json.loads((Path(directory) / 'launch_plan.json').read_text())
-        profile = Path(plan['endpoint_env_file'])
         endpoint = None
-        for line in profile.read_text().splitlines():
+        for line in Path(profile).expanduser().read_text().splitlines():
             fields = shlex.split(line, comments=True)
             if fields and fields[0] == 'export':
                 fields = fields[1:]
@@ -21,4 +19,13 @@ def endpoint_identity_for_run(directory):
         return hashlib.sha256(endpoint.encode()).hexdigest() if endpoint else None
     except (OSError, KeyError, TypeError, ValueError):
         # Missing private routing cannot establish independent endpoints safely.
+        return None
+
+
+def endpoint_identity_for_run(directory):
+    """Read the worker's private route and return an opaque endpoint identity."""
+    try:
+        plan = json.loads((Path(directory) / 'launch_plan.json').read_text())
+        return endpoint_identity_for_profile(plan['endpoint_env_file'])
+    except (OSError, KeyError, TypeError, ValueError):
         return None

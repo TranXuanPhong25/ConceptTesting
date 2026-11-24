@@ -6,7 +6,7 @@ from .trusted_domain import compile_domain
 def hypothesis_status(batch, index=0):
     receipts = [item for item in batch.get('tool_receipts', []) if item['tool'] == 'hypothesis']
     receipt = receipts[index] if len(receipts) > index else None
-    clean = any(row.get('domain') == 'true' and not row.get('solver_rejected')
+    clean = any(row.get('domain') == 'true'
                 and not any(error['stage'].startswith('P') or error['stage']=='V1' for error in row['errors'])
                 and any(source['tool'] == 'hypothesis' and receipt is not None
                         and source.get('seed') == receipt['seed'] for source in row['sources'])
@@ -27,7 +27,6 @@ def treatment_status(name, batch):
     if name == 'tool_direct':
         return {'status': 'direct_control'}
     receipts = batch.get('tool_receipts', [])
-    rows = batch.get('candidate_ledger', [])
     initial = hypothesis_status(batch)
     if initial['status'] != 'exercised':
         return {**initial, 'component': 'shared_hypothesis'}
@@ -35,25 +34,6 @@ def treatment_status(name, batch):
         return initial
     if name == 'tool_hypothesis_extra':
         return {**hypothesis_status(batch, 1), 'component': 'extra_hypothesis'}
-    if name == 'tool_hypothesis_z3':
-        if any(kind not in {'int', 'bool'} for kind in batch['preparation']['types'].values()):
-            return {'status': 'not_applicable', 'reason': 'Z3 exact subset requires integer/bool parameters'}
-        receipt = next((item for item in receipts if item['tool'] == 'z3'), None)
-        if receipt and not receipt['results']:
-            return {'status': 'not_needed', 'reason': 'No uncovered eligible targets'}
-        verified = [item for item in (receipt or {}).get('results', []) if item['status'] == 'sat']
-        if verified:
-            ids = {item['candidate_id'] for item in verified}
-            native = any(row['candidate_id'] in ids and row.get('domain') == 'true'
-                         and not row.get('solver_rejected') for row in rows)
-            if native:
-                return {'status': 'exercised', 'native_witnesses': len(verified)}
-        statuses = {item['status'] for item in (receipt or {}).get('results', [])}
-        if statuses and statuses <= {'unsupported'}:
-            return {'status': 'not_applicable', 'reason': 'No remaining target can be translated by the exact Z3 subset'}
-        if statuses and statuses <= {'unsat', 'unsupported'}:
-            return {'status': 'no_witness', 'reason': 'Supported queries UNSAT; no native witness'}
-        return {'status': 'not_exercised', 'reason': 'No verified native solver witness'}
     if name == 'tool_planner':
         if not batch['preparation']['factors']:
             return {'status': 'not_applicable', 'reason': 'No finite factors declared'}
@@ -80,10 +60,10 @@ def validate_generation(contexts):
                                 {'status': 'invalid_preparation', 'reason': 'Missing/mismatched trusted admission receipt or types'})
         tasks[context.task['task_id']] = treatments
         for name, status in treatments.items():
-            if status['status'] in {'invalid_preparation', 'not_exercised', 'no_witness'}:
+            if status['status'] in {'invalid_preparation', 'not_exercised'}:
                 failures.append({'task_id': context.task['task_id'], 'arm': name, **status})
     report = {'ready': not failures, 'tasks': tasks, 'failures': failures, 'domain_authorities': authorities,
-              'policy': 'no oracle/PUT on invalid or unexercised applicable tools; not_applicable/not_needed are not efficacy evidence'}
+              'policy': 'no oracle/PUT on invalid or unexercised applicable tools; not_applicable is not efficacy evidence'}
     contexts[0].artifacts.write('tool_generation_gate.json', report)
     for context in contexts:
         context.extensions['tool_generation_gate'] = tasks.get(context.task['task_id'], {})

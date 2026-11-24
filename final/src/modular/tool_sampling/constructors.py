@@ -1,12 +1,9 @@
-"""Real Hypothesis/Z3/allpairspy constructors; no PUT or reference access."""
+"""Hypothesis and allpairspy constructors without PUT or reference access."""
 import ast
-import operator
 import time
 
 from ..input_buckets.predicates import expression
 from .membership import evaluate
-from .ledger import error
-from .selection import hits
 
 
 def bound_value(value, arguments):
@@ -111,166 +108,14 @@ def sample_hypothesis(ledger, *, draws, seed, seconds, predicate=None, source=No
     return receipt
 
 
-def translate(text, types):
-    import z3
-    if any(kind not in {'int', 'bool'} for kind in types.values()):
-        raise ValueError('z3_integer_bool_only')
-    variables = {name: z3.Int(name) if kind == 'int' else z3.Bool(name) for name, kind in types.items()}
-    tree = expression(text, types)
-
-    def visit(node):
-        if isinstance(node, ast.Constant) and type(node.value) in (bool, int):
-            return z3.BoolVal(node.value) if type(node.value) is bool else z3.IntVal(node.value)
-        if isinstance(node, ast.Name) and node.id in variables:
-            return variables[node.id]
-        if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-                and node.func.id in {'is_int', 'is_bool'} and len(node.args) == 1
-                and isinstance(node.args[0], ast.Name) and node.args[0].id in variables):
-            expected = 'int' if node.func.id == 'is_int' else 'bool'
-            return z3.BoolVal(types[node.args[0].id] == expected)
-        if isinstance(node, ast.BoolOp):
-            values = [visit(item) for item in node.values]
-            if not all(z3.is_bool(value) for value in values):
-                raise ValueError('boolean_operands_required')
-            return (z3.And if isinstance(node.op, ast.And) else z3.Or)(*values)
-        if isinstance(node, ast.UnaryOp):
-            value = visit(node.operand)
-            if isinstance(node.op, ast.Not) and z3.is_bool(value):
-                return z3.Not(value)
-            if z3.is_int(value) and isinstance(node.op, (ast.USub, ast.UAdd)):
-                return -value if isinstance(node.op, ast.USub) else value
-            raise ValueError('unsupported_unary_semantics')
-        if isinstance(node, ast.BinOp) and isinstance(node.op, (ast.Add, ast.Sub)):
-            left, right = visit(node.left), visit(node.right)
-            if not (z3.is_int(left) and z3.is_int(right)):
-                raise ValueError('integer_operands_required')
-            return left + right if isinstance(node.op, ast.Add) else left - right
-        if isinstance(node, ast.Compare):
-            parts = []
-            left = visit(node.left)
-            for op, comparator in zip(node.ops, node.comparators):
-                right = visit(comparator)
-                if left.sort() != right.sort():
-                    raise ValueError('comparison_sort_mismatch')
-                operations = {ast.Eq: operator.eq, ast.NotEq: operator.ne,
-                              ast.Lt: operator.lt, ast.LtE: operator.le, ast.Gt: operator.gt, ast.GtE: operator.ge}
-                if type(op) not in operations or (z3.is_bool(left) and not isinstance(op, (ast.Eq, ast.NotEq))):
-                    raise ValueError('unsupported_comparison')
-                parts.append(operations[type(op)](left, right))
-                left = right
-            return z3.And(*parts)
-        raise ValueError('unsupported_z3_node:' + type(node).__name__)
-    formula = visit(tree.body)
-    if not z3.is_bool(formula):
-        raise ValueError('z3_predicate_must_be_boolean')
-    return formula, variables
-
-
-def solve(ledger, predicate, *, timeout_ms, query_id, source=None):
-    import z3
-    start = time.monotonic()
-    try:
-        formula, variables = translate(predicate, ledger.model['types'])
-    except (ValueError, SyntaxError, z3.Z3Exception) as exc:
-        return {'status': 'unsupported', 'detail': str(exc), 'seconds': time.monotonic() - start}
-    solver = z3.Solver()
-    solver.set(timeout=timeout_ms, random_seed=0)
-    solver.add(formula)
-    outcome = solver.check()
-    if outcome != z3.sat:
-        return {'status': 'unsat' if outcome == z3.unsat else 'unknown',
-                'detail': solver.reason_unknown() if outcome == z3.unknown else '',
-                'seconds': time.monotonic() - start}
-    model = solver.model()
-    raw_model = str(model)
-    completed = [name for name, variable in variables.items() if model.get_interp(variable.decl()) is None]
-    values = {}
-    conversion_errors = []
-    for name, variable in variables.items():
-        # Complete unconstrained inputs explicitly; replay checks the complete call.
-        value = model.eval(variable, model_completion=True)
-        if ledger.model['types'][name] == 'int' and z3.is_int_value(value):
-            values[name] = value.as_long()
-        elif ledger.model['types'][name] == 'bool' and (z3.is_true(value) or z3.is_false(value)):
-            values[name] = z3.is_true(value)
-        else:
-            conversion_errors.append(error('P4', 'z3_value_unrepresentable', name + ':' + str(value)))
-    provenance = {'tool': 'z3', 'query_id': query_id, 'model_completed_variables': completed, **(source or {})}
-    row = ledger.add({'arguments': values, 'model': str(model)} if conversion_errors else {'arguments': values},
-                     provenance, errors=conversion_errors, tool_raw=raw_model)
-    if not conversion_errors:
-        try:
-            native_hit = evaluate(predicate, values)
-        except Exception:
-            native_hit = False
-        if row.get('domain') != 'true' or not native_hit:
-            mismatch = error('V2', 'z3_semantics_mismatch', predicate)
-            row['errors'].append(mismatch)
-            row['primary_error'] = row['primary_error'] or mismatch
-            row['solver_rejected'] = True
-    return {'status': 'rejected' if conversion_errors or row.get('solver_rejected') else 'sat', 'candidate_id': row['candidate_id'],
-            'dedup_group': row['dedup_group'], 'seconds': time.monotonic() - start}
-
-
-def fill_z3(ledger, *, queries, timeout_ms, seconds):
-    start = time.monotonic()
-    results = []
-    attempted = 0
-    def priority(target):
-        try:
-            nodes = list(ast.walk(ast.parse(target['predicate'], mode='eval')))
-            equality = any(isinstance(node, ast.Eq) for node in nodes)
-            joint = len({node.id for node in nodes if isinstance(node, ast.Name)} & set(ledger.model['types'])) > 1
-            return (not equality, not joint, target['id'])
-        except (SyntaxError, TypeError):
-            return (True, True, target['id'])
-    for target in sorted(ledger.model['targets'], key=priority):
-        covered = set().union(*(hits(row) for row in ledger.pool()))
-        if target['id'] in covered or target.get('status') == 'infeasible':
-            continue
-        query = f"({ledger.model['domain']}) and ({target.get('context', 'True')}) and ({target['predicate']})"
-        try:
-            translate(query, ledger.model['types'])
-        except (ValueError, SyntaxError) as exc:
-            results.append({'target_id': target['id'], 'status': 'unsupported', 'detail': str(exc)})
-            continue
-        if attempted >= queries or time.monotonic() - start >= seconds:
-            results.append({'target_id': target['id'], 'status': 'budget_exhausted'})
-            continue
-        remaining_ms = max(1, int((seconds - (time.monotonic() - start)) * 1000))
-        result = solve(ledger, query, timeout_ms=min(timeout_ms, remaining_ms), query_id=target['id'])
-        attempted += 1
-        results.append({'target_id': target['id'], **result})
-    return {'tool': 'z3', 'queries': attempted, 'query_budget': queries, 'results': results,
-            'seconds': time.monotonic() - start}
-
-
-def plan_combinations(ledger, *, rows, draws_per_row, seed, seconds, solver_queries, timeout_ms):
+def plan_combinations(ledger, *, rows, draws_per_row, seed, seconds):
     from allpairspy import AllPairs
     start = time.monotonic()
     factors = ledger.model['factors']
     names = list(factors)
-    results, queries, dt_rules = [], 0, []
-    # Pairwise coverage does not imply DT coverage. Route explicit feasible
-    # original rules first, within the same planner solver/time budget.
-    for target in ledger.model['targets']:
-        if target.get('kind') != 'rule' or target.get('status') != 'feasible':
-            continue
-        if any(target['id'] in hits(row) for row in ledger.pool()):
-            dt_rules.append({'target_id': target['id'], 'status': 'already_covered'})
-            continue
-        if queries >= solver_queries or time.monotonic() - start >= seconds:
-            dt_rules.append({'target_id': target['id'], 'status': 'budget_exhausted'})
-            continue
-        query = f"({ledger.model['domain']}) and ({target.get('context', 'True')}) and ({target['predicate']})"
-        remaining_ms = max(1, int((seconds - (time.monotonic() - start)) * 1000))
-        result = solve(ledger, query, timeout_ms=min(timeout_ms, remaining_ms), query_id=target['id'],
-                       source={'planner_dt_rule_id': target['id']})
-        queries += 1
-        dt_rules.append({'target_id': target['id'], **result})
+    results = []
     if not names:
-        return {'tool': 'allpairspy', 'status': 'no_factors', 'results': [], 'dt_rules': dt_rules,
-                'solver_queries': queries, 'seconds': time.monotonic() - start}
+        return {'tool': 'allpairspy', 'status': 'no_factors', 'results': [], 'seconds': time.monotonic() - start}
     # No feasibility filter: partial rows cannot prove numerical impossibility.
     # Native realization below verifies each full row; failures remain visible.
     levels = [list(factors[name]) for name in names]
@@ -287,13 +132,6 @@ def plan_combinations(ledger, *, rows, draws_per_row, seed, seconds, solver_quer
                                     source={'planner_row_id': row_id, 'planner_levels': coordinates})
         result = {'planner_row_id': row_id, 'levels': coordinates, 'sampling': receipt,
                   'status': 'realized' if receipt.get('witness') else 'unknown'}
-        if not receipt.get('witness') and queries < solver_queries and time.monotonic() - start < seconds:
-            remaining_ms = max(1, int((seconds - (time.monotonic() - start)) * 1000))
-            solver_result = solve(ledger, query, timeout_ms=min(timeout_ms, remaining_ms), query_id=row_id,
-                                  source={'planner_row_id': row_id, 'planner_levels': coordinates})
-            queries += 1
-            result['solver'] = solver_result
-            result['status'] = 'realized' if solver_result['status'] == 'sat' else solver_result['status']
         results.append(result)
     return {'tool': 'allpairspy', 'status': 'complete' if len(results) < rows else 'budget_limited',
-            'results': results, 'dt_rules': dt_rules, 'solver_queries': queries, 'seconds': time.monotonic() - start}
+            'results': results, 'seconds': time.monotonic() - start}

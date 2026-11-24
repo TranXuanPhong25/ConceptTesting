@@ -27,7 +27,8 @@ class RerunSequenceTests(unittest.TestCase):
         source=root/'source';runtime=source/'runtime';runtime.mkdir(parents=True)
         (runtime/'original.py').write_text('# original frozen source\n')
         (runtime/'cohort.json').write_text('{"original":"cohort"}')
-        config=rerun.normalize({'arms':['direct','soft_bva'],'completion_tokens':2048,'timeout_seconds':8})
+        # Historical source snapshots contain retired arm IDs.
+        config={**rerun.normalize({'completion_tokens':2048,'timeout_seconds':8}),'arms':['direct','soft_bva']}
         save(source/'config_snapshot.json',config)
         save(source/'status.json',{'state':'complete'})
         save(source/'result_digest.json',{'read_only_replay_matches':True,'source_hashes_verified':True})
