@@ -5,14 +5,20 @@ from pathlib import Path
 def load_cohort(path: Path):
     return json.loads(path.read_text())
 
+
 def call_usage(directory):
-    attempts=list(directory.glob('tasks/*/calls/*/attempt.json'))
-    responses=list(directory.glob('tasks/*/calls/*/response.json'))
-    totals={key:0 for key in ('prompt_tokens','completion_tokens','total_tokens')}
+    attempts = list(directory.glob("tasks/*/calls/*/attempt.json"))
+    responses = list(directory.glob("tasks/*/calls/*/response.json"))
+    totals = {key: 0 for key in ("prompt_tokens", "completion_tokens", "total_tokens")}
     for path in responses:
-        usage=json.loads(path.read_text()).get('usage',{})
+        usage = json.loads(path.read_text()).get("usage", {})
         for key in totals:
-            value=usage.get(key,0)
-            if type(value) in (int,float):
-                totals[key]+=value
-    return dict(invocations=len(attempts),received=len(responses),unknown=len(attempts)-len(responses),known_usage=totals)
+            value = usage.get(key, 0)
+            if type(value) in (int, float):
+                totals[key] += value
+    return dict(
+        invocations=len(attempts),
+        received=len(responses),
+        unknown=len(attempts) - len(responses),
+        known_usage=totals,
+    )

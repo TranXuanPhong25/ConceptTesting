@@ -6,6 +6,12 @@ import io
 import tokenize
 
 
+INPUT_SIZE_GUIDANCE = (
+    "Keep floats finite, integers bounded, strings/lists modest\n"
+    "(normally <=30 elements), and execution under 3 seconds. "
+)
+
+
 def compact_source(source):
     """Remove prompt-only noise while preserving ORIGINAL source line labels."""
     tree=ast.parse(source)
@@ -25,12 +31,19 @@ def compact_source(source):
     return '\n'.join(f'{i+1}: {line.rstrip()}' for i,line in enumerate(lines) if line.strip())
 
 
-def structured_input_prompt(task, programs, contract, budget):
+def structured_input_prompt(task, programs, contract, budget, *, prior_stage_inputs=()):
+    augmented_base = ''
+    if prior_stage_inputs:
+        augmented_base = ('\nADDITIONAL BASE INPUTS FROM EARLIER STAGES (no expected outputs):\n'
+            'Treat these calls as part of the base suite. Use their source stage and supplied '
+            'technique labels to understand what was exercised. Derive which feasible decision-table '
+            'rules are still missing from the actual calls and generate distinct inputs for those rules. '
+            'Technique labels are hypotheses. Do not repeat these calls.\n'
+            + json.dumps(prior_stage_inputs, ensure_ascii=False, separators=(',', ':')) + '\n')
     return f'''Generate up to {budget} small, distinct new calls to expose specification violations
 in these base-passing implementations. INPUTS ONLY: no assertions or expected outputs.
 The reference supplies outputs later. Use the specification/domain, not majority correctness.
-Do not repeat base inputs. Keep floats finite, integers bounded, strings/lists modest
-(normally <=30 elements), and execution under 3 seconds. Fewer valid calls are better than padding.
+Do not repeat base inputs. {INPUT_SIZE_GUIDANCE}Fewer valid calls are better than padding.
 Return JSON: {{"inputs":[{{"arguments":{{"parameter_name":"a value of the correct type"}},"guidance_id":null}}]}}.
 arguments maps the EXACT function parameter names to JSON values. A list parameter needs a
 nested JSON array as its value; a string parameter needs a string value. Do not write Python
@@ -44,7 +57,7 @@ SPECIFICATION:
 INPUT DOMAIN CONTRACT:
 {contract}
 ORIGINAL BASE TESTS:
-{task['test']}
+{task['test']}{augmented_base}
 BASE-PASSING IMPLEMENTATIONS (original line labels):
 {json.dumps([{'id':program['id'],'code':compact_source(program['code'])} for program in programs],separators=(',',':'))}
 '''

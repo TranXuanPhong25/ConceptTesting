@@ -13,31 +13,63 @@ MAX_LITERAL_CHARACTERS = 16000
 def entry_function(source, entry_point):
     if not isinstance(source, str) or len(source) > 100000:
         raise ValueError("invalid_source")
-    functions = [node for node in ast.parse(source).body
-                 if isinstance(node, ast.FunctionDef) and node.name == entry_point]
+    functions = [
+        node
+        for node in ast.parse(source).body
+        if isinstance(node, ast.FunctionDef) and node.name == entry_point
+    ]
     if len(functions) != 1:
         raise ValueError("expected_one_top_level_function")
     return functions[0]
 
 
 def input_signature(function):
-    """Read signature/default data from AST, never execute the function/annotations."""
-    if function.args.vararg or function.args.kwarg:
+    args = function.args
+    if args.vararg or args.kwarg:
         raise ValueError("variadic_signature_unsupported")
+
     parameters = []
-    positional = function.args.posonlyargs + function.args.args
-    default_start = len(positional) - len(function.args.defaults)
+    positional = args.posonlyargs + args.args
+    positional_only_count = len(args.posonlyargs)
+    default_start = len(positional) - len(args.defaults)
+
     for index, argument in enumerate(positional):
-        kind = inspect.Parameter.POSITIONAL_ONLY if index < len(function.args.posonlyargs) else inspect.Parameter.POSITIONAL_OR_KEYWORD
+        # Arguments before "/" can only be passed by position.
+        kind = (
+            inspect.Parameter.POSITIONAL_ONLY
+            if index < positional_only_count
+            else inspect.Parameter.POSITIONAL_OR_KEYWORD
+        )
+        # The AST stores defaults only for the trailing positional arguments.
         default = inspect.Parameter.empty
         if index >= default_start:
-            default = ast.literal_eval(function.args.defaults[index - default_start])
-        annotation = inspect.Parameter.empty if argument.annotation is None else ast.unparse(argument.annotation)
-        parameters.append(inspect.Parameter(argument.arg, kind, default=default, annotation=annotation))
-    for argument, default_node in zip(function.args.kwonlyargs, function.args.kw_defaults):
-        default = inspect.Parameter.empty if default_node is None else ast.literal_eval(default_node)
-        annotation = inspect.Parameter.empty if argument.annotation is None else ast.unparse(argument.annotation)
-        parameters.append(inspect.Parameter(argument.arg, inspect.Parameter.KEYWORD_ONLY, default=default, annotation=annotation))
+            default = ast.literal_eval(args.defaults[index - default_start])
+        # Keep the annotation as source text for later validation.
+        annotation = inspect.Parameter.empty
+        if argument.annotation is not None:
+            annotation = ast.unparse(argument.annotation)
+        parameters.append(
+            inspect.Parameter(argument.arg, kind, default=default, annotation=annotation)
+        )
+
+    # Keyword-only defaults align one-to-one with their arguments in the AST.
+    for argument, default_node in zip(args.kwonlyargs, args.kw_defaults):
+        # A required argument has no default node, whereas "= None" has one.
+        default = inspect.Parameter.empty
+        if default_node is not None:
+            default = ast.literal_eval(default_node)
+        annotation = inspect.Parameter.empty
+        if argument.annotation is not None:
+            annotation = ast.unparse(argument.annotation)
+        parameters.append(
+            inspect.Parameter(
+                argument.arg,
+                inspect.Parameter.KEYWORD_ONLY,
+                default=default,
+                annotation=annotation,
+            )
+        )
+
     return inspect.Signature(parameters)
 
 
@@ -62,10 +94,14 @@ def supported_value(value, depth=0):
     if type(value) in (int, str, bool, type(None)):
         return True
     if type(value) in (list, tuple, set):
-        return len(value) <= MAX_CONTAINER_ITEMS and all(supported_value(item, depth + 1) for item in value)
+        return len(value) <= MAX_CONTAINER_ITEMS and all(
+            supported_value(item, depth + 1) for item in value
+        )
     if type(value) is dict:
-        return len(value) <= MAX_CONTAINER_ITEMS and all(supported_value(key, depth + 1) and supported_value(item, depth + 1)
-                                          for key, item in value.items())
+        return len(value) <= MAX_CONTAINER_ITEMS and all(
+            supported_value(key, depth + 1) and supported_value(item, depth + 1)
+            for key, item in value.items()
+        )
     return False
 
 
@@ -213,7 +249,6 @@ class CallBuilder:
                 keywords[name] = value
             else:
                 positional.append(value)
-        self.signature.bind(*positional, **keywords)
         args_literal = repr(tuple(positional))
         kwargs_literal = repr(keywords)
         if len(args_literal) > MAX_LITERAL_CHARACTERS or len(kwargs_literal) > MAX_LITERAL_CHARACTERS:

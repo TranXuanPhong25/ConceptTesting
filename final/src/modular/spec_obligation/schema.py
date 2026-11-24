@@ -6,6 +6,7 @@ import re
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, ValidationError
 
 from ..response_json import load_response_json
+from ..call_builder import decode_value, supported_value
 from ..tool_sampling.membership import expression
 
 
@@ -54,10 +55,19 @@ def read_response(text):
 
 def normalize_strategies(strategies):
     """Translate documented Hypothesis names only; constructors still validate each field."""
+    try:
+        encoded = json.dumps(strategies, allow_nan=False)
+    except (TypeError, ValueError, RecursionError) as error:
+        raise ValueError('strategy_not_json_data') from error
+    if json.loads(encoded) != strategies:
+        raise ValueError('strategy_requires_json_type_tags')
     def normalize(descriptor):
         if not isinstance(descriptor, dict):
             return descriptor
         result = dict(descriptor)
+        if 'values' in result and (not isinstance(result['values'], list) or
+                not all(supported_value(decode_value(value)) for value in result['values'])):
+            raise ValueError('unsupported_sampled_input_value')
         aliases = {'integers': 'int', 'floats': 'float', 'booleans': 'bool',
                    'text': 'str', 'lists': 'list', 'sampled_from': 'sampled'}
         result['kind'] = aliases.get(result.get('kind'), result.get('kind'))
@@ -72,11 +82,17 @@ def normalize_strategies(strategies):
     return {name: normalize(value) for name, value in strategies.items()}
 
 
-def parse_obligations(raw, evidence):
+def parse_obligations(raw, evidence, *, required=False):
     accepted, errors = [], []
+    if required and 'obligations' not in raw:
+        return [],['obligations_key_required']
     records = raw.get('obligations', [])
     if not isinstance(records, list):
         return [], ['obligations_list_required']
+    if required and not records:
+        if isinstance(raw.get('reason'),str) and raw['reason'].strip():
+            return [],['no_obligations_declared']
+        return [],['no_obligations_declared; reason_required']
     for index, item in enumerate(records[:3]):
         try:
             candidate = dict(item) if isinstance(item, dict) else item
@@ -118,8 +134,9 @@ def parse_obligations(raw, evidence):
                 row.update(predicate_status='unsupported', predicate_error=str(error)[:400])
             try:
                 row['strategies'] = normalize_strategies(row['strategies'])
-            except ValueError as error:
-                row['strategy_error'] = str(error)
+            except (ValueError, TypeError, RecursionError) as error:
+                row.update(strategies={}, strategy_error=str(error)[:400])
+                errors.append({'obligation_index': index, 'reason': str(error)[:400]})
             accepted.append(row)
         except (ValidationError, ValueError, TypeError, SyntaxError, RecursionError) as error:
             errors.append({'obligation_index': index, 'reason': str(error)[:800]})

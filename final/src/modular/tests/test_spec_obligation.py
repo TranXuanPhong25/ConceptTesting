@@ -123,8 +123,46 @@ def test_validated_v2_is_retired_and_cannot_be_selected():
         normalize({'arms': ['control_flow_obligation_validated']})
 
 
+def test_explicit_resume_reuses_exact_prompt_before_retokenizing(tmp_path):
+    from final.src.modular.spec_obligation.evidence import Evidence
+    from final.src.modular.spec_obligation.prompts import messages
+    from final.src.runtime.artifacts import digest, save
+    ctx = context(tmp_path, Calls())
+    evidence = Evidence(ctx, 'spec_obligation')
+    original = messages(ctx, evidence, hybrid=False, phase='propose', input_budget=4)
+    record = {'messages': original, 'temperature': ctx.settings.input_temperature,
+              'max_tokens': ctx.settings.input_tokens, 'seed': ctx.settings.input_seed}
+    call = ctx.artifacts.path('tasks/0/calls/spec_obligation_propose')
+    save(call / 'request.json', record)
+    save(call.with_name(call.name + '.frozen_request_replay.json'),
+         {'request_id': digest(record), 'authorization': 'Authored continuation'})
+    class NoTokenizer:
+        def token_count(self, request):
+            raise AssertionError('Frozen prompt must not be rebuilt from a new token count')
+    ctx.calls = NoTokenizer()
+    assert messages(ctx, evidence, hybrid=False, phase='propose', input_budget=4) == original
 
 
+def test_saved_prompt_replay_rejects_changed_source_or_settings(tmp_path):
+    import pytest
+    from final.src.modular.spec_obligation.evidence import Evidence
+    from final.src.modular.spec_obligation.prompts import messages
+    from final.src.runtime.artifacts import digest, save
+    ctx = context(tmp_path, Calls());evidence = Evidence(ctx, 'spec_obligation')
+    original = messages(ctx, evidence, hybrid=False, phase='propose', input_budget=4)
+    call = ctx.artifacts.path('tasks/0/calls/spec_obligation_propose')
+    record = {'messages': original, 'temperature': .7, 'max_tokens': ctx.settings.input_tokens,
+              'seed': ctx.settings.input_seed + 1}
+    save(call / 'request.json', record)
+    directive = call.with_name(call.name + '.frozen_request_replay.json')
+    save(directive, {'request_id': digest(record), 'authorization': 'fixture'})
+    with pytest.raises(ValueError, match='settings_mismatch'):
+        messages(ctx, evidence, hybrid=False, phase='propose', input_budget=4)
+    record['seed'] -= 1;save(call / 'request.json', record)
+    save(directive, {'request_id': digest(record), 'authorization': 'fixture'})
+    evidence.by_id['p0']['code'] = evidence.by_id['p0']['code'].replace('set(xs)', 'list(xs)')
+    with pytest.raises(ValueError, match='source_mismatch'):
+        messages(ctx, evidence, hybrid=False, phase='propose', input_budget=4)
 
 
 def test_partial_trace_can_witness_site_but_cannot_prove_site_missed(tmp_path):
