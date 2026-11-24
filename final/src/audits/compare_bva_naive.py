@@ -11,7 +11,7 @@ from pathlib import Path
 import time
 
 from .continue_bva_evaluation import read, save, digest
-from .run_bva_precision import evaluation_observations
+from .detection_kinds import evaluation_observations
 
 
 def collect(directory, arm):

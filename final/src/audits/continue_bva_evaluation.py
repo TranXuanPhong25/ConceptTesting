@@ -116,7 +116,6 @@ def prepare(source, directory, *, native_lock=None):
 
 def worker(directory):
     # Imports resolve only through the parent's read-only runtime, set by launch().
-    from final.src.modular.arms.boundary import BoundaryArm
     from final.src.modular.arms.plain import PlainArm
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings
@@ -124,42 +123,19 @@ def worker(directory):
     from final.src.benchmarks.datasets import load_tasks, load_metadata
     from final.src.modular.execution_cache import InputExecutionCache
     from final.src.modular.generators.frozen import FrozenInputsGenerator
-    from final.src.modular.stages.base import PipelineStage
+    from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.runtime.execution import execute
-    from final.src.audits.run_bva_full import ProgressPipeline
-
-    class SavedPacket(PipelineStage):
-        name = "saved_input_context"
-        requires = ("cohort_loader",)
-
-        def __init__(self, source):
-            self.source = source
-
-        def configuration(self):
-            return {"source": str(self.source.directory)}
-
-        def run(self, context):
-            context.packet = self.source.read(context.task_directory + "/packet.json")
-            context.artifacts.write(context.task_directory + "/packet.json", context.packet)
 
     class FrozenPackets(FrozenInputsGenerator):
         def __init__(self, source):
             names = [record["name"] for record in read(Path(source) / "modular_manifest.json")["arms"]]
-            if names == ["boundary"]:
-                methods = (BoundaryArm(),)
-            elif names == ["plain"]:
-                methods = (PlainArm(),)
-            else:
-                raise ValueError("Frozen evaluation supports only a plain or boundary batch")
-            super().__init__(source, methods=methods)
-            self.packet_stage = SavedPacket(self.source)
+            if names != ["plain"]:
+                raise ValueError("Frozen evaluation supports only a plain batch")
+            super().__init__(source, methods=(PlainArm(),))
 
-        def preparation_stages(self):
-            return (self.packet_stage,)
-
-        def source_dependencies(self):
-            return (*super().source_dependencies(), *(self.source.path(f"tasks/{task.split('/')[-1]}/packet.json")
-                for task in self.manifest["tasks"]))
+        def prepare_context(self, context):
+            context.packet = self.source.read(context.task_directory + "/packet.json")
+            context.artifacts.write(context.task_directory + "/packet.json", context.packet)
 
     def smoke():
         descriptor = sandbox_binary()
@@ -189,7 +165,7 @@ def worker(directory):
             metadata = load_metadata()
             settings = PipelineSettings(**plan["settings"])
             for attempt in range(2):
-                pipeline = ProgressPipeline(Path(plan["cohort"]), ArtifactStore(directory), input_generator=methods,
+                pipeline = BenchmarkPipeline(Path(plan["cohort"]), ArtifactStore(directory), input_generator=methods,
                     settings=settings, execution_cache=InputExecutionCache(Path(plan["execution_cache"])))
                 save(directory / "status.json", {"state": "running", "pid": os.getpid(), "phase": "evaluation_only",
                      "new_model_calls": 0, "infrastructure_attempt": attempt + 1})
@@ -203,7 +179,7 @@ def worker(directory):
                          "filename": error.filename, "attempt": 1, "checkpoints_preserved": True})
                     smoke()
 
-            replay = ProgressPipeline(Path(plan["cohort"]), ArtifactStore(directory, read_only=True), input_generator=FrozenPackets(source),
+            replay = BenchmarkPipeline(Path(plan["cohort"]), ArtifactStore(directory, read_only=True), input_generator=FrozenPackets(source),
                 settings=settings, execution_cache=InputExecutionCache(pipeline.execution_cache.directory, read_only=True))
             if replay.run(tasks, metadata) != summary:
                 raise ValueError("Read-only replay differs")

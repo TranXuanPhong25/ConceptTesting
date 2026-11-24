@@ -5,13 +5,25 @@ import time
 
 from coverage.parser import PythonParser
 
-from ..boundary_value_analysis.legacy.stages import frozen_value
 from ..call_builder import CallBuilder, entry_function
 from ..catalogue_membership import membership_row
 from ..control_flow.analysis import analyze
 from ..tool_sampling.ledger import predicate_status
 from final.src.runtime.artifacts import digest
 from final.src.runtime.execution import execute
+
+
+def frozen_value(value):
+    """Type-preserving identity, independent of dict/set iteration order."""
+    if type(value) is dict:
+        items = [(frozen_value(key), frozen_value(item)) for key, item in value.items()]
+        return ("dict", tuple(sorted(items, key=repr)))
+    if type(value) in (list, tuple, set):
+        items = [frozen_value(item) for item in value]
+        if type(value) is set:
+            items.sort(key=repr)
+        return (type(value).__name__, tuple(items))
+    return (type(value).__name__, value)
 
 
 class Evidence:

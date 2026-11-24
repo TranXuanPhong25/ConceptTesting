@@ -8,10 +8,13 @@ from final.src.orchestration.config import normalize
 @pytest.mark.parametrize('name',[
     'ep_bva_vf3_replace','decision_table_vf3_replace','decision_table_vf3_prompt_rollback',
     'ep_bva_vf4','decision_table_vf4','control_flow_obligation_validated','control_flow_obligation',
-    'simple_discovery','tool_agent','ep_bva_vf3','decision_table_vf3',
+    'simple_discovery','ep_bva_vf3','decision_table_vf3',
     'ep_bva_reflection','decision_table_reflection',
     'ep_bva_catalogue_then_inputs','decision_table_catalogue_then_inputs',
     'spec_obligation','large_input','data_flow','data_flow_feedback',
+    'control_flow_c_use',
+    'soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table',
+    'ep_strong','bva_robust','bva_worst_case','ep_dt_bva',
 ])
 def test_retired_arm_is_rejected_by_registry_and_console(name):
     with pytest.raises(ValueError,match='Unknown input-generation method'):
