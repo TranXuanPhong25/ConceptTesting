@@ -1,0 +1,127 @@
+[
+  {
+    "file": "humaneval-qwen3.5-27b-awq.jsonl",
+    "benchmark": "HumanEval",
+    "writer_model": "qwen3.5-27b-awq",
+    "protocol": "Batched generation with structural deduplication and refill.",
+    "source_flow_run_id": null,
+    "source_cohort_sha256": "1026563e3babd9abb3f5f835965a2da5c207f2896a03a1c4ef5137db97474973",
+    "export_sha256": "d5a6dc90b8f7105a28387ea25936621f4bc24e97d2c152eb0de7820d3f3940d9",
+    "task_count": 164,
+    "tasks_with_puts": 164,
+    "missing_task_ids": [],
+    "put_count": 1634,
+    "original_base": {
+      "pass": 1465,
+      "fail": 145,
+      "error": 23,
+      "timeout": 1
+    }
+  },
+  {
+    "file": "humaneval-gpt-6-luna.jsonl",
+    "benchmark": "HumanEval",
+    "writer_model": "openai/gpt-6-luna",
+    "protocol": "Independent samples with 548 syntax/entry-point repair slots. Repeated samples and failed samples retained.",
+    "source_flow_run_id": "19eac2bf-ae3d-4967-a592-4817fc99de09",
+    "source_cohort_sha256": "80962021d0883d140bf3c9266bdbf7f2b2e58ed037f2725e6ae9905bd21a82c1",
+    "export_sha256": "af32d66a69461198b0cb22ef2b9781a90ff2a2cb84db7b3ec70d2cfe35ebdf94",
+    "task_count": 164,
+    "tasks_with_puts": 164,
+    "missing_task_ids": [],
+    "put_count": 1640,
+    "original_base": {
+      "pass": 1601,
+      "error": 4,
+      "fail": 35
+    }
+  },
+  {
+    "file": "humanevalplus-flint-v1.0.jsonl",
+    "benchmark": "HumanEval+ v0.1.10",
+    "writer_model": "recursive/flint-v1.0:free",
+    "protocol": "Merged cohort after retries. Official EvalPlus base and plus verdicts are available.",
+    "source_flow_run_id": "75659702-e832-4b61-b881-d19f0bb21bcb",
+    "source_cohort_sha256": "b430f499b22ff55ad40c1da7d0ea1a6674e604412395316d3c61a2b5b30058b7",
+    "export_sha256": "bb7dfded214ddf9bf9a383bd47327d5f22a576b004217dd0ae10451d0bf07562",
+    "task_count": 164,
+    "tasks_with_puts": 161,
+    "missing_task_ids": [
+      "HumanEval/21",
+      "HumanEval/109",
+      "HumanEval/141"
+    ],
+    "put_count": 270,
+    "original_base": {
+      "pass": 266,
+      "fail": 3,
+      "error": 1
+    },
+    "evalplus_base_plus_pass": 255
+  },
+  {
+    "file": "mbppplus-qwen3.5-27b-awq-continuation.jsonl",
+    "benchmark": "MBPP+ v0.2.0",
+    "writer_model": "qwen3.5-27b-awq",
+    "protocol": "Qwen continuation of a saved MBPP cohort. Inherited entries have no verified writer model.",
+    "source_flow_run_id": "a86bec13-6535-4043-ba66-503a8252f18b",
+    "source_cohort_sha256": "46dc28e19851d1a0a9e5e79504c55f68a6ea5f627abb67a9845b965647964aad",
+    "export_sha256": "4bb7fbc27e073c07bcf837c8c03b7698b903bcb33ba699a1f4a30de299f21bd5",
+    "task_count": 378,
+    "tasks_with_puts": 337,
+    "missing_task_ids": [
+      "MBPP/56",
+      "MBPP/67",
+      "MBPP/84",
+      "MBPP/123",
+      "MBPP/129",
+      "MBPP/141",
+      "MBPP/160",
+      "MBPP/239",
+      "MBPP/245",
+      "MBPP/247",
+      "MBPP/256",
+      "MBPP/264",
+      "MBPP/296",
+      "MBPP/300",
+      "MBPP/306",
+      "MBPP/311",
+      "MBPP/392",
+      "MBPP/419",
+      "MBPP/430",
+      "MBPP/448",
+      "MBPP/9",
+      "MBPP/563",
+      "MBPP/586",
+      "MBPP/592",
+      "MBPP/603",
+      "MBPP/607",
+      "MBPP/608",
+      "MBPP/614",
+      "MBPP/632",
+      "MBPP/635",
+      "MBPP/721",
+      "MBPP/733",
+      "MBPP/735",
+      "MBPP/743",
+      "MBPP/751",
+      "MBPP/753",
+      "MBPP/763",
+      "MBPP/778",
+      "MBPP/780",
+      "MBPP/794",
+      "MBPP/799"
+    ],
+    "put_count": 3041,
+    "original_base": {
+      "pass": 2133,
+      "fail": 775,
+      "error": 131,
+      "timeout": 2
+    },
+    "put_counts_by_generation_source": {
+      "continuation": 1264,
+      "inherited": 1777
+    }
+  }
+]
