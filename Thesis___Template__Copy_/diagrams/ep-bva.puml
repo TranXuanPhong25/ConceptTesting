@@ -1,13 +1,12 @@
 @startuml
-!include thesis-style.iuml
-start
-partition "Một prompt EP/BVA" {
-  :Từ đặc tả, tìm hành vi cần thử\nvà quan hệ giữa các tham số;
-  :EP chia lớp theo hành vi,\nchọn đại diện thỏa từng lớp;
-  :BVA chọn đại lượng và mốc biên,\ngiữ các đại lượng khác ở giá trị điển hình;
-  :Thử ngay tại biên và sát phía trong miền;
-}
-:LLM trả lớp, biên và đối số trong một phản hồi;
-:Bộ giải mã kiểm catalogue và đối số riêng;
-stop
+!include context-blocks.iuml
+' Qwen, HumanEval/125. Edit each label and token count here.
+$block(spec, "Đặc tả và chữ ký hàm", 144)
+$block(contract, "Contract đầu vào", 58)
+$block(base, "Base test", 121)
+$block(puts, "Mã của 10 PUT vượt base test", 1441)
+
+spec -[hidden]-> contract
+contract -[hidden]-> base
+base -[hidden]-> puts
 @enduml

@@ -1,11 +1,11 @@
 \begin{tikzpicture}[font=\small,>=stealth,
  box/.style={draw,align=left,text width=5.5cm,minimum height=1.55cm},edge/.style={->}]
-\node[box] (run) at (0,0) {\textbf{Run}\\run ID, config, source hashes\\state, usage, output directory};
-\node[box] (task) at (8.4,0) {\textbf{Task result}\\task ID, eligible/skip\\base-pass PUTs, valid union};
-\node[box] (batch) at (0,-3) {\textbf{Arm batch}\\task ID, arm, input records\\catalogue, response reference};
-\node[box] (input) at (8.4,-3) {\textbf{Accepted input}\\task ID, input key\\args, kwargs, expected};
-\node[box] (put) at (0,-6) {\textbf{PUT}\\task ID, PUT ID, source hash\\base status, source};
-\node[box] (obs) at (8.4,-6) {\textbf{Execution observation}\\PUT/input identity, repeat\\status, actual, cache receipt};
+\node[box] (run) at (0,0) {\textbf{Cohort}\\Tập task và chương trình đã chuẩn bị};
+\node[box] (task) at (8.4,0) {\textbf{Task}\\Đặc tả, chữ ký và base test};
+\node[box] (batch) at (0,-3) {\textbf{Bộ input theo concept}\\Nhánh sinh, catalogue và đối số};
+\node[box] (input) at (8.4,-3) {\textbf{Input hợp lệ}\\Bộ đối số và đáp án tham chiếu};
+\node[box] (put) at (0,-6) {\textbf{PUT}\\Mã nguồn, cách giải và trạng thái base test};
+\node[box] (obs) at (8.4,-6) {\textbf{Kết quả thực thi}\\Giá trị trả về, trạng thái và độ phủ};
 \draw[edge] (run)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{1 : nhiều}(task);
 \draw[edge] (run)--node[left]{1 : nhiều}(batch);
 \draw[edge] (task)--node[right]{1 : nhiều}(input);

@@ -1,0 +1,21 @@
+!pragma layout smetana
+!include thesis-style.iuml
+skinparam defaultFontSize 18
+hide stereotype
+
+<style>
+rectangle {
+  BackgroundColor #F0F0F0
+  LineColor #B8B8B8
+  FontColor #252525
+  RoundCorner 8
+  MinimumWidth 472
+  HorizontalAlignment center
+}
+</style>
+
+' Nonbreaking spaces above and below the label set the height symmetrically.
+!procedure $block($id, $label, $tokens)
+!local $pad = 18 + %intval($tokens / 32)
+rectangle "<size:$pad> </size>\n$label  ·  <b>$tokens</b> token\n<size:$pad> </size>" as $id
+!endprocedure

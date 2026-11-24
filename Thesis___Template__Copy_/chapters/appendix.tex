@@ -7,7 +7,7 @@ Với EP/BVA và DT, mã lớp, biên hoặc quy tắc do mô hình đặt rồi
 
 \begin{table}[htbp]
 \centering
-\caption{Các trường giúp truy nguyên một đầu vào từ prompt tới phép đo}
+\caption{Các thành phần trong phản hồi sinh input theo concept}
 \label{tab:prompt-fields}
 \small
 \begin{tabular}{@{}p{.28\linewidth}p{.18\linewidth}p{.46\linewidth}@{}}
@@ -20,6 +20,7 @@ Trường & Nhánh & Cách sử dụng \\
 \texttt{covers} & EP/BVA và DT & Đọc ý định của mô hình khi chọn input. Cần chứng cứ riêng để xác nhận input thỏa điều kiện tương ứng. \\
 \texttt{target\_id}, \texttt{evidence\_lines} & ControlFlow & Đối chiếu đích và số dòng với đúng PUT đã cấp cho mô hình. \\
 \texttt{input\_relation}, \texttt{instruction} & ControlFlow & Nêu quan hệ đối số và cách dựng một ví dụ vượt qua các điều kiện dẫn tới đích. \\
+\texttt{concept\_id} & ControlFlow & Liên kết input cụ thể với tình huống mô hình đề xuất. \\
 \texttt{predicate}, \texttt{strategies} & ControlFlow & Diễn đạt phần có thể kiểm trên đối số và cách lấy mẫu. Khi thiếu mô tả máy đọc được, input trực tiếp vẫn có thể đem chạy thử. \\
 \bottomrule
 \end{tabular}
@@ -31,28 +32,36 @@ Hai câu trong prompt EP/BVA đi cùng nhau. \emph{“keeping unrelated values o
 
 DT dùng câu \emph{“Merge only when ordered actions agree and omitted conditions do not change behavior”}. Hai điều kiện phải đồng thời đúng để gộp. Nếu hai quy tắc có cùng hành động nhưng thứ tự ưu tiên khác nhau, cần một đầu vào đại diện cho mỗi quy tắc để thử khác biệt.
 
-Câu \emph{“a structural path is only an approximation, never proof”} nhắc rằng đồ thị có thể nối hai điều kiện không thể cùng đúng với một input. Mô hình cần tìm quan hệ giữa các tham số cho đường được chọn. Bộ đo đợi trace của một input hợp lệ mới ghi đích đã được quan sát.
+Câu \emph{“a structural path is only an approximation, never proof”} nhắc rằng đồ thị có thể nối hai điều kiện không thể cùng đúng với một input. Mô hình cần tìm quan hệ giữa các tham số cho đường được chọn. Một đích chỉ được xác nhận khi input hợp lệ thực sự chạy qua dòng hoặc cạnh đó.
 
 \section{Số input và lượng sử dụng mô hình}
 
-Số input của một nhánh là số bộ đối số còn lại sau lọc. Một bộ xuất hiện ở hai nhánh đóng góp vào cả hai số đếm. Tổng token gồm phần prompt và phần trả lời. ControlFlow cho mỗi lần trace tối đa một giây. Khi phản hồi có miền lấy mẫu, Hypothesis có thể thử tối đa 32 mẫu trong hai giây cho mỗi concept ở mỗi lượt.
+Số input của một nhánh là số bộ đối số còn lại sau lọc. Một bộ xuất hiện ở hai nhánh đóng góp vào cả hai số đếm. Tổng token gồm phần prompt và phần trả lời. ControlFlow cho mỗi lần chạy thử input tối đa một giây. Khi phản hồi có miền lấy mẫu, Hypothesis có thể thử tối đa 32 mẫu trong hai giây cho mỗi concept ở mỗi lượt.
 
-\subsection{Qwen}
+\subsection{Qwen trên HumanEval}
 
 Bước sinh mã ghi nhận 434 phản hồi Qwen từ 435 yêu cầu. Những phản hồi có số đo dùng 375.591 token prompt và 416.741 token đầu ra, tổng cộng 792.332 token. Khoản này phát sinh trước khi các nhánh sinh test bổ sung.
 
 Trong 157 task, EP/BVA giữ 2.402 input hợp lệ, còn DT giữ 2.378. Hai nhánh Qwen dùng cửa sổ 8.192 token. Có 314 phản hồi từ 316 lần gọi, tương ứng 766.010 token prompt và 562.114 token trả lời đã biết, tổng cộng 1.328.124 token. Hai lần gọi còn lại chưa rõ lượng sử dụng. Prompt khuyến khích input nhỏ và bước chấm dành tám giây.
 
-Số liệu ControlFlow Qwen ở bảng kết quả đến từ lần chấm đủ 1.454 PUT. Với 140 phản hồi và 861.504 token, nhánh giữ 708 input hợp lệ. Naive LLM giữ 2.876 input, nhận 156 phản hồi từ 157 lần gọi với 385.522 token đã biết. Bước chấm lại lấy đầu vào từ các phản hồi của baseline đã lưu.
+Số liệu ControlFlow Qwen ở bảng kết quả đến từ lần chấm đủ 1.454 PUT. Với 140 phản hồi và 861.504 token, nhánh giữ 708 input hợp lệ. Naive LLM giữ 2.876 input, nhận 156 phản hồi từ 157 lần gọi với 385.522 token đã biết.
 
-\subsection{Gemini}
+\subsection{Gemini trên HumanEval}
 
 Trong cửa sổ 18.192 token, Gemini giữ 2.613 input cho Naive LLM, 1.959 cho EP/BVA và 1.979 cho DT. Gộp riêng EP/BVA với DT còn 3.388 bộ đối số phân biệt. Ba cấu hình dùng 471 phản hồi, với 1.203.197 token prompt và 328.753 token trả lời, tổng cộng 1.531.950 token. Giới hạn sinh cho phép thử số nguyên có độ lớn tới \(2^{32}\). Khi đặc tả đặt cận thấp hơn, cận trong đề bài quyết định dữ liệu có hợp lệ hay không.
 
 ControlFlow Gemini có lần sinh và chấm riêng. Với 158 phản hồi và 817.492 token, nhánh giữ 736 input hợp lệ trên 157 task. Số lượt gọi thay đổi theo số bài có đích và số trường hợp cần lượt sửa.
 
-\section{Môi trường và các phép kiểm của prototype}
+\subsection{Gemini trên MBPP}
+
+Trên 255 bài được chấm, tham chiếu chấp nhận 4.577 input của Naive LLM, 3.990 của EP/BVA và 4.076 của DT, đếm riêng theo nhánh. Ba cấu hình nhận 765 phản hồi và ghi nhận 1.754.788 token. ControlFlow giữ 1.459 input qua 274 phản hồi, với 1.082.114 token đã ghi. Có 19 lượt thử gửi yêu cầu của ba cấu hình đầu và 12 lượt của ControlFlow thiếu số đo token. Mỗi lượt sinh giới hạn 4.096 token đầu ra.
+
+\subsection{Qwen trên tập 164 bài MBPP+}
+
+Lần chạy Naive LLM ở Mục~\ref{sec:mbpp-qwen-plain} dùng Qwen3.5-27B-AWQ với cửa sổ 12.288 token. Mỗi bài được sinh tối đa 20 input qua một lượt có trần 4.096 token đầu ra. Thời hạn chấm là tám giây mỗi input. Cả 114 yêu cầu đều có phản hồi, với 107.922 token prompt và 65.543 token đầu ra, tổng cộng 173.465 token.
+
+\section{Môi trường thực nghiệm}
 
 Các phép chạy EP/BVA và DT dùng Python 3.11.14, EvalPlus 0.3.1 và Pydantic 2.14.2 cho cả Qwen và Gemini. Lần chạy ControlFlow Gemini còn dùng coverage.py 7.17.0, python-graphs 1.2.3 và Hypothesis 6.170.14. Gemini được gọi qua Vertex AI. PUT và tham chiếu chạy trong tiến trình cô lập trên Linux.
 
-Ba phép kiểm của prototype bảo vệ số đếm PUT. Thứ nhất, bộ giải mã phải giữ đối số hợp lệ khi catalogue lỗi. Thứ hai, oracle phải dừng nếu input chưa chốt. Thứ ba, số quan sát phải bằng số input cần chấm để một kết quả thiếu không bị tính là đã vượt test. Đây là các kiểm tra giao tiếp giữa mô-đun. Chương~\ref{chap:experiment} đo khả năng phát hiện sai khác trên HumanEval+.
+Các input phải được chốt trước khi lấy đáp án tham chiếu. Một PUT chỉ được xem là vượt tập test bổ sung khi mọi input cần chấm đã có kết quả; trường hợp chưa chấm đủ được giữ riêng.

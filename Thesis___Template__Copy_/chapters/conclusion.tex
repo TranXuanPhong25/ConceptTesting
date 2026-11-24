@@ -1,10 +1,31 @@
-\chapter*{Kết luận}
-\addcontentsline{toc}{chapter}{Kết luận}
+\chapter*{Kết luận và hướng phát triển}
+\phantomsection
+\addcontentsline{toc}{chapter}{Kết luận và hướng phát triển}
 
-ConceptTester chọn đầu vào từ đặc tả và mã của những PUT đã vượt test cơ sở. EP/BVA thử đại diện của lớp và các giá trị sát biên. DT chọn các tổ hợp điều kiện có thể làm thay đổi hành động. ControlFlow tìm dòng hoặc cạnh còn thiếu, dùng quan hệ def--use khi có để giải thích giá trị cần đưa tới đích. Một PUT chỉ được tính khi cùng input cho sai khác ở cả hai lượt chấm.
+ConceptTesting đưa hướng dẫn vào bước chọn input. EP/BVA và DT giúp mô hình tìm lớp, biên và tổ hợp điều kiện trong đặc tả. ControlFlow dùng mã PUT và độ phủ cơ sở để tìm tình huống còn bỏ ngỏ. Trong bài tách từ, sự khác nhau giữa hai phép kiểm khoảng trắng dẫn mô hình tới một input có tab. Oracle và hai lượt chấm cho biết input đó làm lộ sai khác nào.
 
-Một chuỗi có tab cho thấy tác dụng của việc chọn đích trong mã. Trên cùng một bài, nó làm lộ tám PUT mà chỉ ControlFlow Qwen phát hiện. Trên 1.454 PUT đủ điều kiện, hợp ba nhánh cho 121 phát hiện với Qwen và 132 với Gemini. Gộp qua cả hai mô hình, pipeline tìm thêm 44 PUT ngoài Naive LLM. Baseline vẫn có 15 PUT mà pipeline bỏ sót.
+Phép đo trên cùng mã cho thấy base test chưa phủ đủ cấu trúc của nhiều PUT đã đạt. Khi hợp test ConceptTesting của hai mô hình, số PUT HumanEval đạt C1 100\% tăng từ 1.050 lên 1.194, còn C2 100\% tăng từ 697 lên 867 trên 1.151 PUT có nhánh. Trên MBPP, test do Gemini sinh làm số PUT đạt C2 100\% tăng từ 353 lên 1.063 trên 1.434 PUT có nhánh. Các input mới đã bổ sung đường thực thi ngoài những gì base test quan sát.
 
-Base test loại 169 trong 1.634 PUT ban đầu. Khi chấm thêm trên 162 bài đủ mười cài đặt, test có hướng dẫn từ hai mô hình phát hiện thêm 149 PUT từng đạt. Trên cùng bộ mã Qwen, pass@1 giảm từ 89,75\% xuống 80,56\%. Nếu bỏ mười phát hiện phụ thuộc vào cách hiểu Boolean trong một bài, mức giảm còn 8,58 điểm phần trăm. Những sai khác này cho thấy bộ test cơ sở còn chấp nhận các cài đặt cần kiểm tra thêm.
+Trên HumanEval, base test loại 169 trong 1.634 PUT. Khi bổ sung test của ConceptTesting, 149 trong 1.454 PUT đã đạt bị phát hiện thêm. Trong số đó có 44 PUT Naive LLM bỏ sót. Baseline tìm riêng 15 PUT. Trên 162 bài đủ mười cài đặt, pass@1 của cùng bộ mã Qwen giảm từ 89,75\% xuống 80,56\%. Khi bỏ mười phát hiện phụ thuộc vào cách hiểu Boolean trong một bài, mức giảm còn 8,58 điểm phần trăm.
 
-Mục~\ref{sec:ablation} nêu cách đo riêng từng nhánh hoặc từng kỹ thuật trong EP/BVA với cùng ngân sách. Độ phủ catalogue còn cần bằng chứng rằng input thuộc đúng lớp, biên hoặc quy tắc đã khai báo. Ở các bài có nhiều đáp án hợp lệ, đặc tả vẫn là căn cứ để xác định một sai khác có phải lỗi của PUT hay không.
+Trên MBPP, 758 trong 2.140 PUT đã vượt base test cho sai khác lặp lại với tham chiếu sau khi thêm test của ConceptTesting. Naive LLM ghi nhận 666 PUT trên cùng mẫu. Ca ở sát lũy thừa của 2 cho thấy một cách bổ sung benchmark. Điều kiện trong đề giúp DT chọn đầu vào làm lộ việc PUT trả một giá trị vượt cận, dù cả ba ca cơ sở đều đạt.
+
+Một phép kiểm chứng bổ trợ dùng các suite của CrossHair, Pynguin, UTBot Python và Hypothesis Ghostwriter. Sau khi gộp input và loại trùng, 890 trên 2.055 PUT MBPP+ đã đạt base test vẫn lệch reference, còn HumanEval có 123 trên 1.299 PUT như vậy. Kết quả này củng cố nhận định rằng base test chưa bao quát hết hành vi của các PUT được chấp nhận. Phép kiểm chứng chưa có kết quả C1/C2 và chưa đối sánh cùng ngân sách với các arm của ConceptTesting.
+
+Hai kết quả bổ trợ cho mục tiêu tăng cường benchmark. Bộ test mở rộng chạy qua nhiều dòng và nhánh hơn, đồng thời loại thêm các lời giải mà base test đã chấp nhận. Khi điểm của các mô hình tiến gần trần, những sai khác mới có thể giúp phân biệt độ đúng của lời giải rõ hơn.
+
+\section*{Hướng phát triển}
+
+Đóng góp riêng của từng kỹ thuật ở cùng ngân sách còn chờ phép ablation ở Mục~\ref{sec:ablation}. Sai khác trên MBPP cần được đối chiếu với miền đầu vào và đặc tả trước khi tính là lỗi chức năng. Mục~\ref{sec:cross-model-evaluation} đề xuất phép thử dùng lại test của một mô hình để chấm mã do mô hình khác sinh trên cùng task. Phép thử đó sẽ kiểm tra khả năng dùng bộ test tăng cường cho mã mới.
+
+\subsection*{Mở rộng sang ngôn ngữ có kiểu tĩnh}
+
+Phạm vi đánh giá hiện tại là Python, một ngôn ngữ có kiểu động. Các giá trị Python có kiểu, nhưng type annotation của tham số không được môi trường chạy tự động kiểm tra~\cite{pythonTypingDocs}. Khi đề thiếu annotation hoặc chỉ mô tả kiểu bằng lời, pipeline phải kết hợp đặc tả, ví dụ và contract để xác định miền đầu vào. Type hint và bộ kiểm kiểu tĩnh có thể hỗ trợ bước này. Khó khăn còn nằm ở quan hệ giữa các kiểu: \texttt{bool} là lớp con của \texttt{int} trong Python~\cite{pythonBuiltinTypesDocs}. Trường hợp Boolean ở HumanEval/151 cho thấy một input chạy được trên tham chiếu vẫn có thể cần đối chiếu lại với cách hiểu miền trong đề bài. Hạn chế đối với sinh test là thông tin kiểu có thể thiếu hoặc chưa đủ để xác định input hợp lệ.
+
+Với ngôn ngữ có kiểu tĩnh như Java, kiểu của biến và biểu thức được xác định khi biên dịch~\cite{javaTypesSpec}. Thông tin đó có thể giúp mô-đun chuẩn bị context thu hẹp miền chọn giá trị trước khi gọi mô hình. EP có thể dựa vào kiểu phần tử, enum hoặc các loại đối tượng được chấp nhận để chọn lớp đầu vào. BVA có thêm căn cứ từ miền biểu diễn của kiểu số. Chẳng hạn, \texttt{int} trong Java có miền hữu hạn, còn số nguyên Python có độ chính xác không giới hạn~\cite{javaTypesSpec,pythonBuiltinTypesDocs}. Biên kiểu và biên do đặc tả đặt ra cần được phân biệt: miền kiểm thử là phần thỏa cả hai ràng buộc.
+
+Kiểu tĩnh cũng chưa xác định hết miền hợp lệ. Một danh sách đúng kiểu phần tử vẫn có thể sai yêu cầu về thứ tự, kích thước hoặc quan hệ với tham số khác. Với kiểu tham chiếu trong Java, \texttt{null} vẫn cần được xét theo contract~\cite{javaTypesSpec}. Ngoài ra, sinh đối số cho một đối tượng đòi hỏi chọn cách khởi tạo và trạng thái hợp lệ của nó. Khi đầu vào gồm nhiều đối tượng, quan hệ dùng chung và thứ tự gọi phương thức có thể trở thành một phần của scenario. Pipeline khi đó cần tạo cả cách dựng dữ liệu, thay vì chỉ chọn các giá trị literal như trong phần lớn task hiện tại.
+
+Với C++, con trỏ và tham chiếu làm phạm vi này phức tạp hơn. Giá trị con trỏ còn gắn với vùng lưu trữ và thời gian sống của đối tượng; chương trình biên dịch được vẫn có thể thực hiện thao tác dẫn tới hành vi không xác định~\cite{cppCompoundTypesSpec}. Mô-đun dựng input phải bảo đảm đối tượng còn tồn tại và quan hệ tham chiếu phù hợp khi gọi PUT. Oracle cũng phải tuân theo ngữ nghĩa của ngôn ngữ đích. Vì vậy, chuyển một task từ Python sang C++ hoặc Java cần xem lại miền số, cách biểu diễn chuỗi và quy tắc so sánh kết quả trước khi dùng chung bộ test.
+
+Một lộ trình mở rộng là bắt đầu với các hàm dùng kiểu nguyên thủy, chuỗi và mảng, sau đó mới xét đối tượng có trạng thái. EP/BVA và DT có thể giữ cách suy luận theo đặc tả, đồng thời bổ sung thông tin kiểu vào context. ControlFlow cần mô-đun phân tích CFG và quan hệ def--use phù hợp với ngôn ngữ đích. Phần dựng input, thực thi và oracle cũng cần được điều chỉnh tương ứng. Hiệu quả sẽ được đánh giá bằng tỷ lệ input hợp lệ, số PUT bị phát hiện thêm sau base test và mức tăng C1/C2 trên cùng mã trong từng ngôn ngữ, kèm ngân sách gọi mô hình. Khả năng giảm input sai kiểu và mở rộng các scenario nhờ kiểu tĩnh hiện là hướng nghiên cứu, chưa có kết quả thực nghiệm trong khóa luận.

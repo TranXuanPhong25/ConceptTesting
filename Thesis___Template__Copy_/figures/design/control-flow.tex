@@ -4,11 +4,11 @@
 \node[box] (b) at (0,-3) {Chọn tối đa 6 targets\\Giữ target ID và owner PUT};
 \node[box] (c) at (0,-6) {LLM đề xuất concepts\\và inputs\\Có thể kèm predicate/strategies};
 \node[box] (d) at (8.4,-6) {CallBuilder và Hypothesis\\Gộp candidates, giữ provenance};
-\node[box] (e) at (8.4,-3) {Trace original PUT trong sandbox\\Domain, lines/arcs và target hits};
+\node[box] (e) at (8.4,-3) {Chạy input trên PUT trong môi trường cô lập\\Kiểm miền, dòng và cạnh đã đi qua};
 \node[box] (f) at (8.4,0) {Chọn tối đa 20 input/task\\Ưu tiên target mới\\rồi bổ sung};
 \draw[edge] (a)--(b);\draw[edge] (b)--(c);
 \draw[edge] (c)--node[above,font=\scriptsize]{decode}(d);
-\draw[edge] (d)--node[right]{trace giới hạn}(e);
+\draw[edge] (d)--node[right]{chạy thử}(e);
 \draw[edge] (e)--node[right]{đủ vòng/budget}(f);
 \draw[edge,dashed] (e.west)--(4.2,-3)--(4.2,-4.5)--(0,-4.5)--(c.north);
 \node[font=\scriptsize,fill=white,align=center] at (1.7,-4.5) {Còn target và budget:\\phản hồi cho vòng 2};

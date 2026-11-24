@@ -1,0 +1,14 @@
+@startuml
+!include context-blocks.iuml
+' Qwen, HumanEval/125, retry request. Edit each label and token count here.
+$block(spec, "Đặc tả, contract và tham số", 228)
+$block(puts, "Mã PUT và lời gọi cơ sở", 223)
+$block(analysis, "Trạng thái độ phủ và def–use", 87)
+$block(targets, "Đích C1/C2 và đường gợi ý", 164)
+$block(feedback, "Feedback của lượt trước", 48)
+
+spec -[hidden]-> puts
+puts -[hidden]-> analysis
+analysis -[hidden]-> targets
+targets -[hidden]-> feedback
+@enduml

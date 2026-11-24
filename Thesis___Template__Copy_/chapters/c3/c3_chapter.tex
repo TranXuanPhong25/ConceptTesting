@@ -1,52 +1,92 @@
-\chapter{Phương pháp sinh và đánh giá dữ liệu kiểm thử}
+\chapter{Phân tích và thiết kế hệ thống}
 \label{chap:method}
 
-Một đầu vào mới có thể đến từ quy tắc trong đặc tả hoặc từ một vị trí mà test cơ sở chưa đi qua. EP/BVA trả về danh mục lớp, biên (\textit{catalogue}) và các bộ đối số tương ứng. DT sinh bộ đối số riêng cho các tổ hợp điều kiện. Với ControlFlow, mã PUT cho biết vị trí cần thử và trace cho biết đầu vào đã đi tới đó hay chưa. Chương~\ref{chap:experiment} hợp phát hiện theo định danh PUT rồi đối chiếu với baseline Naive LLM.
+Một concept giúp mô hình quyết định nên thử hành vi nào và cần dựng input ra sao. ConceptTesting ghép hướng dẫn kiểm thử với dữ liệu của task. Mô hình cụ thể hóa hướng dẫn thành lớp, biên, quy tắc hoặc quan hệ giữa các đối số. Từ đó, nó chọn các lời gọi để chạy thử. Hình~\ref{fig:architecture} mô tả các khối dữ liệu và các nhánh của pipeline.
 
-\section{Sinh và cố định bộ PUT}
+\section{Yêu cầu hệ thống}
+
+Đầu vào của hệ thống là đặc tả hàm, chữ ký, bộ test cơ sở, cài đặt tham chiếu và bộ PUT của mỗi task. Phần chuẩn bị chuẩn hóa các thành phần này thành context chung, sau đó pipeline áp dụng từng concept để chọn input. Đường chạy của test cơ sở cung cấp mốc cho ControlFlow và phép đo coverage. Oracle cung cấp đáp án để bộ chấm xác nhận sai khác.
+
+Mã Python cần chạy trong môi trường cô lập và có giới hạn thời gian. Các nhánh chốt bộ đối số trước khi tham chiếu cung cấp đáp án. Bộ chấm sau đó chỉ nhận những input hợp lệ và có kết quả tham chiếu ổn định.
+
+\section{Chuẩn bị dữ liệu thực nghiệm}
 \label{sec:put-generation}
 
-Bộ PUT bắt đầu từ 164 đề HumanEval. Với từng đề, hệ thống dùng Qwen3.5-27B-AWQ để tạo tối đa 10 cài đặt Python sau lọc. Prompt đưa nguyên chữ ký và mô tả công khai của hàm, kể cả ví dụ đi kèm. Qwen được yêu cầu viết mã hoàn chỉnh, giữ chữ ký và xử lý các trường hợp biên. Phản hồi JSON ghép mã của mỗi lời giải với mô tả ngắn về cách làm. Mô tả này giúp các lượt sau nhận ra thuật toán hoặc cách duyệt đã có trong bộ.
+Trước khi áp dụng ConceptTesting, khóa luận chuẩn bị đặc tả, base test và một bộ chương trình ứng viên cho từng task. Bộ chương trình này được gọi là \textit{cohort PUT}. Việc tạo cohort thuộc thiết lập thực nghiệm. Pipeline ConceptTesting bắt đầu khi context của task và bộ PUT đã được chuẩn bị, rồi sinh input bổ sung bằng EP/BVA, DT và ControlFlow.
 
-Nếu một bài mới giữ được bảy PUT, lượt kế tiếp sẽ xin ba lời giải. Giới hạn mỗi lượt là năm, còn toàn bài có tối đa mười lượt để đạt mốc mười cài đặt. Để tránh sinh lại cùng một cách làm, prompt mới chứa mã và mô tả của tối đa ba lời giải vừa giữ. Với các lời giải cũ hơn, mô hình chỉ nhận phần mô tả. Mỗi lượt dùng temperature \(0{,}9\) và giới hạn đầu ra 3.072 token.
+\subsection{Sinh chương trình và sàng lọc bằng base test}
 
-Trên HumanEval/0, Qwen trả năm lời giải ở mỗi lượt và hệ thống giữ cả mười. PUT 0 sắp xếp danh sách rồi so hai phần tử kề nhau. PUT 1 dùng hai vòng lặp để so mọi cặp. Cả hai vượt test cơ sở. Nếu một lời giải khác chỉ đổi tên biến của PUT 1 thì cần loại nó trước bước chấm. Bộ lọc đọc JSON, kiểm phần mô tả, phân tích cú pháp và tìm hàm chính ở cấp mô-đun. Sau đó, nó chuẩn hóa tên biến, tên hàm phụ và bỏ phần không ảnh hưởng đến dấu vân tay cấu trúc, chẳng hạn chú thích kiểu, chuỗi mô tả và một số import không dùng. Hệ thống băm cây đã chuẩn hóa rồi bỏ lời giải có cùng mã băm với lời giải đã giữ của bài. Hai cây khác nhau vẫn có thể biểu diễn cùng một thuật toán.
+Prompt sinh PUT yêu cầu mô hình viết cài đặt Python hoàn chỉnh từ đặc tả công khai, giữ chữ ký hàm và xử lý cả các trường hợp biên. Mỗi lời giải đi kèm mô tả ngắn về cách làm. Khi có nhiều cách giải tự nhiên, mô hình được hướng dẫn thay đổi thuật toán, cấu trúc dữ liệu hoặc cách chia bài toán. Yêu cầu về tính đúng được giữ cho mọi lời giải.
 
-Mỗi PUT còn lại chạy bộ test HumanEval gốc trong sandbox, giới hạn ba giây cho cả bộ test của một cài đặt. Bản ghi chứa mã nguồn, các lời gọi thực tế, dòng và cạnh đã phủ, cùng trạng thái đạt, trượt phép kiểm, phát sinh ngoại lệ hoặc hết giờ. Các PUT trượt vẫn cần cho điểm base. Chỉ khi bộ PUT đã chốt, Qwen và Gemini mới sinh test bổ sung. Vì vậy, các cấu hình có thể đối chiếu trên cùng bộ mã. Bảng~\ref{tab:base-screen} ghi số PUT ở từng bước.
+Với cohort HumanEval được dùng trong các bảng kết quả, Qwen sinh theo lô và hướng tới tối đa mười PUT khác cấu trúc cho mỗi task. Các chương trình được kiểm tra cú pháp và đối chiếu qua cây cú pháp trừu tượng (AST). Bộ lọc chuẩn hóa những khác biệt hình thức như tên biến và chú thích để tránh giữ nhiều bản chỉ khác cách viết. Hai AST khác nhau vẫn có thể thực hiện cùng một thuật toán, nên bước này chỉ kiểm soát sự lặp về cấu trúc. Cohort MBPP cũng được sinh theo lô với số lượng thực tế tùy task; không áp điều kiện đủ mười PUT như cohort HumanEval.
 
-\section{Từ một task đến ngữ cảnh sinh input}
+Sau đó, các PUT chạy base test trong môi trường cô lập và được chia thành nhóm đạt, trượt phép kiểm, phát sinh ngoại lệ hoặc hết giờ. Nhóm đạt là đối tượng để ConceptTesting tìm thêm input phân biệt hành vi. Các PUT trượt vẫn được tính trong điểm base và số lượng sàng lọc ở Bảng~\ref{tab:base-screen}.
+
+\subsection{Lý do dùng prompt sinh PUT theo lô}
+
+HumanEval chuẩn sinh nhiều completion độc lập từ chữ ký hàm và docstring, rồi chấm từng completion để ước lượng pass@k~\cite{chen2021evaluating,openaiHumanEvalScoring}. Trong thực nghiệm này, cohort được chủ động đa dạng hóa để đánh giá khả năng test phân biệt các cách cài đặt cùng vượt base test. Cho mô hình biết các cách giải đã có giúp hạn chế việc lặp lại cùng một mẫu mã. Gộp nhiều chương trình trong một phản hồi còn giảm phần context phải gửi lặp lại so với việc gửi riêng từng yêu cầu.
+
+Số lượng PUT cần đi cùng chất lượng chương trình. Ép mô hình tạo nhiều cách giải cho một hàm đơn giản có thể dẫn tới cách làm phức tạp hoặc sai sót không cần thiết. Vì vậy, prompt yêu cầu ưu tiên cài đặt đúng và rõ ràng. Các điểm pass@k trước và sau trong khóa luận được tính trên cohort đã chốt để đo tác dụng của test bổ sung. Do cohort có hướng dẫn đa dạng hóa và lọc trùng, các điểm này không đại diện cho phép lấy mẫu độc lập dùng để công bố điểm mô hình trên HumanEval.
+
+\subsection{Lưu cohort dùng chung cho các nhánh}
+
+Cohort được lưu dưới dạng dữ liệu JSON, tổ chức theo mã task. Mỗi task chứa danh sách PUT với mã nhận diện, mã nguồn, mô tả cách giải và kết quả base test. Các nhóm đạt và trượt được giữ cùng nhau để phân biệt tổng số chương trình đã sinh với số chương trình được chấm test bổ sung. Sau khi cohort được chốt, mọi cấu hình dùng lại cùng bộ mã này; phần thay đổi giữa các cấu hình là cách chọn input.
+
+\subsection{Chọn tập MBPP+ cho phép đối chiếu 164 task}
+\label{sec:mbpp-subset}
+
+Ngoài phép đánh giá trên 378 task MBPP+, khóa luận chọn một tập 164 task cho lần chạy Qwen. Mỗi task đòi hỏi context chứa đặc tả và nhiều PUT, rồi có thể cần nhiều lượt gọi mô hình ở các nhánh. Giới hạn còn 164 task giúp kiểm soát chi phí token, thời gian và tài nguyên phục vụ mô hình, đồng thời đưa quy mô đánh giá về cùng số task với HumanEval. Mục tiêu là có một tập đối chiếu với quy mô và thành phần bài gần nhau trong khả năng ngân sách.
+
+Trước hết, 46 task trùng hoặc gần mục tiêu với HumanEval được loại để tập đối chiếu bổ sung bài toán khác. Từ 332 task còn lại, chọn 164 task bằng lấy mẫu phân tầng theo số tham số và cấu trúc AST như nhánh, vòng lặp và comprehension. Tỷ lệ lấy mẫu bám theo các nhóm của MBPP+ sau lọc, độc lập với kết quả chạy PUT. Các task được chọn giữ nguyên đặc tả và test của benchmark.
+
+Cách lấy mẫu này giữ thành phần của MBPP+ sau lọc khi giảm số bài, còn phân bố cấu trúc chưa khớp với HumanEval. Vì vậy, cùng 164 task chỉ bảo đảm quy mô bằng nhau; kết quả hai benchmark vẫn được báo riêng. Mục~\ref{sec:mbpp-qwen-plain} trình bày baseline trên tập đã chọn.
+
+\section{Context đầu vào của pipeline}
 \label{sec:preparation}
 
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\linewidth,height=.68\textheight,keepaspectratio]{diagrams/pipeline.pdf}
-\caption{Pipeline đầy đủ từ sinh bộ PUT đến chấm test bổ sung của EP/BVA, DT và ControlFlow.}
+\caption{Pipeline ConceptTesting nhận context và cohort đã chuẩn bị, rồi sinh input theo từng concept trước khi chấm PUT.}
 \label{fig:architecture}
 \end{figure}
 
-Bước chuẩn bị đọc bộ PUT và kết quả base test đã lưu (Hình~\ref{fig:architecture}). Một bài đi tiếp nếu ban đầu có đủ mười cài đặt và ít nhất một cài đặt vượt test cơ sở. Trong bài đó, chỉ các PUT đã vượt test cơ sở được chấm trên input mới.
+Bước chuẩn bị ghép đặc tả, chữ ký, contract, base test và mã PUT thành context của task. Trên HumanEval, một bài được nhận khi có đủ mười cài đặt và ít nhất một cài đặt vượt test cơ sở. Pipeline ở Hình~\ref{fig:architecture} nhận context này để sinh và chấm input bổ sung.
 
-Khi mã của cả bài vượt giới hạn ngữ cảnh, cần có cách chọn lại đúng tập PUT được đưa vào prompt. Mô-đun sắp xếp các PUT đã đạt bằng giá trị băm của cặp mã task và mã PUT. Nó ghép đặc tả, hợp đồng đầu vào, test công khai và mã đã rút gọn. Bản rút gọn bỏ chú thích cùng chuỗi mô tả nhưng giữ số dòng gốc để đối chiếu với trace. Sau khi gắn hướng dẫn của từng nhánh dùng prompt chung, mô-đun đếm token. Nó bỏ lần lượt PUT cuối danh sách cho đến khi prompt dài nhất, phần trả lời dự trù và 128 token dự phòng cùng vừa cửa sổ ngữ cảnh. Nếu danh sách rỗng, hệ thống lưu lý do bỏ qua bài. Danh sách xuất hiện trong prompt chỉ quyết định mô hình được xem mã nào. Bộ chấm xét mọi PUT đã vượt test cơ sở của bài được nhận.
+Khi mã của cả bài vượt giới hạn context, mô-đun chọn một tập PUT đại diện để đưa vào prompt, ghép với đặc tả, contract và test công khai. Việc rút gọn chỉ nhằm trình bày nhiều mã trong cùng context; bộ chấm vẫn xét các PUT đã vượt test cơ sở của task. Phần hướng dẫn của từng concept được gắn sau khi packet chung đã được chuẩn bị.
 
-\subsection{Phần chung của prompt và baseline Naive LLM}
+\subsection{Khác biệt context giữa HumanEval và MBPP}
 
-Naive LLM là baseline sinh trực tiếp từ đặc tả, ràng buộc miền, test cơ sở và mã PUT. Đặc tả cho biết đầu vào nào có nghĩa. Test cơ sở giúp tránh thử lại một lời gọi đã có, còn mã PUT giúp nhận ra chỗ các cài đặt có thể hiểu khác đặc tả. Nếu nhiều PUT cùng trả về một kết quả, kết quả đó vẫn phải được kiểm bằng tham chiếu. EP/BVA và DT dùng phần ngữ cảnh này rồi thêm hướng dẫn chọn ca theo kỹ thuật tương ứng.
+HumanEval cung cấp prompt theo dạng chữ ký hàm, docstring và entry point rõ ràng. Context giữ phần mô tả hàm cùng chữ ký, rồi bổ sung contract, base test và mã PUT. MBPP cung cấp mô tả bài toán bằng văn bản cùng các test công khai; bước chuẩn bị bổ sung chữ ký để mô hình biết tên hàm và các tham số. Chỉ giao diện của hàm được dùng ở đây; thân lời giải tham chiếu được dành cho oracle.
+
+Do cách cung cấp đề khác nhau, prompt cần trình bày rõ mô tả, chữ ký và ví dụ của MBPP. Các hướng dẫn EP/BVA, DT và ControlFlow vẫn giữ cùng vai trò ở hai benchmark. Ràng buộc miền chỉ được đưa vào khi dữ liệu cho phép xác định; mức kiểm miền trên MBPP được nêu riêng ở phần đánh giá.
+
+\subsection{Context và hướng dẫn theo concept}
+\label{sec:concept-guidance}
+
+Đặc tả và contract xác định hành vi và miền input của bài. Test cơ sở cho mô hình thấy những lời gọi đã có. Mã PUT có thể gợi một cách hiểu sai đặc tả. Chẳng hạn, một phép so sánh chặt ở cận làm cho giá trị ngay tại cận đáng thử. Naive LLM sinh input trực tiếp từ context của bài.
+
+EP/BVA yêu cầu mô hình tìm lớp theo hành vi rồi chọn một đại lượng để thử sát biên. DT yêu cầu liệt kê các tổ hợp điều kiện có thể làm đổi hành động hay thứ tự ưu tiên. Hai nhánh cho phép nêu giả thuyết lỗi để chọn lớp hoặc quy tắc đáng thử. Với ControlFlow, mô-đun phân tích đối chiếu mã PUT với độ phủ cơ sở, rồi đưa đích chưa phủ và đường gợi ý vào context. Prompt yêu cầu mô hình suy quan hệ giữa các đối số và tạo input có thể đưa PUT tới đích. Vì vậy, cùng một đặc tả có thể gợi nhiều tình huống tùy kỹ thuật và tùy cài đặt.
 
 Một tham số danh sách được biểu diễn bằng một mảng JSON dưới đúng tên tham số. Cách ghi này giúp bộ giải mã phân biệt một giá trị danh sách với nhiều đối số. Với tuple và set, phản hồi dùng thêm thẻ kiểu để khôi phục đúng đối tượng Python. Mô hình có thể gửi ít input hơn giới hạn để tránh điền cho đủ bằng lời gọi trùng. Sau khi chốt đối số, hệ thống lấy đáp án từ bản tham chiếu để việc chấm độc lập với cách mô hình chọn ca.
+
+Các sơ đồ context của ba nhánh dùng cùng bài HumanEval/125, bài tách từ được phân tích ở Mục~\ref{sec:demo}. Các khối xếp theo thứ tự gửi cho Qwen và có cùng chiều rộng. Chiều cao tăng theo số token nội dung đếm bằng tokenizer của Qwen, với một khoảng cố định dành cho nhãn. Lượng mã, test cơ sở và feedback thay đổi theo bài và lượt sinh.
 
 \section{EP và BVA trong cùng một lần sinh}
 \label{sec:ep-bva}
 
+Ở bài tách từ, mã của mười PUT chiếm 1.441 trong 1.764 token context của EP/BVA (Hình~\ref{fig:ep-bva}).
+
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.90\linewidth,height=.52\textheight,keepaspectratio]{diagrams/ep-bva.pdf}
-\caption{Từ lớp tương đương đến giá trị biên. Các bước trong khung là yêu cầu gửi trong cùng một prompt.}
+\includegraphics[scale=.70]{diagrams/ep-bva.pdf}
+\caption{Các khối context của EP/BVA trên HumanEval/125.}
 \label{fig:ep-bva}
 \end{figure}
 
 \subsection{EP chọn lớp theo hành vi}
 
-Cả ngày 31 tháng 4 lẫn ngày 31 tháng 5 đều truyền được dưới dạng chuỗi. Hàm kiểm tra ngày phải từ chối ngày thứ nhất và chấp nhận ngày thứ hai. Hai ca cần thuộc hai lớp dù từng trường ngày và tháng cùng nằm trong các khoảng số quen thuộc. Vì vậy, phần EP của prompt yêu cầu đọc quan hệ giữa các tham số, gom đầu vào theo quy tắc xử lý rồi chọn đại diện cho mỗi lớp (Hình~\ref{fig:ep-bva}).
+Cả ngày 31 tháng 4 lẫn ngày 31 tháng 5 đều truyền được dưới dạng chuỗi. Hàm kiểm tra ngày phải từ chối ngày thứ nhất và chấp nhận ngày thứ hai. Hai ca cần thuộc hai lớp dù từng trường ngày và tháng cùng nằm trong các khoảng số quen thuộc. Vì vậy, phần EP của prompt yêu cầu đọc quan hệ giữa các tham số, gom đầu vào theo quy tắc xử lý rồi chọn đại diện cho mỗi lớp.
 
 Ví dụ về bộ lọc phiên bản đi kèm prompt cho thấy khi nào nên tách một lớp để kiểm một giả thuyết lỗi. Với ngưỡng từ 2.0, thêm bản chính thức 1.9 vào danh sách chỉ có bản thử 2.1a1 vẫn phải giữ 2.1a1. Bản 1.9 không qua ngưỡng, nên sau khi lọc vẫn chưa có bản chính thức phù hợp. Một cài đặt loại bản thử ngay khi thấy 1.9 sẽ cho kết quả khác giữa hai danh sách. Ví dụ lấy từ miền khác để mô hình áp dụng cách suy luận vào bài đang xét. Mô hình có thể lưu giả thuyết về thứ tự lọc cùng mô tả lớp~\cite{packagingVersions}.
 
@@ -65,16 +105,18 @@ Một phần tử thay đổi trong danh sách có thể giữ nguyên độ dà
 \section{DT chọn đầu vào theo bảng quyết định}
 \label{sec:dt}
 
+DT dùng cùng context với EP/BVA trong bài tách từ (Hình~\ref{fig:dt}). Hướng dẫn sinh yêu cầu mô hình lập quy tắc từ các điều kiện có thể xuất hiện đồng thời. Một ca chỉ có khoảng trắng và một ca chỉ có dấu phẩy đều có thể đạt dù cài đặt ưu tiên sai khi gặp cả hai. Tổ hợp có cả hai dấu phân cách cần một ca riêng để kiểm thứ tự ưu tiên.
+
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.90\linewidth,height=.51\textheight,keepaspectratio]{diagrams/dt.pdf}
-\caption{Từ điều kiện trong đặc tả đến đối số đại diện cho quy tắc quyết định.}
+\includegraphics[scale=.70]{diagrams/dt.pdf}
+\caption{Các khối context của DT trên HumanEval/125.}
 \label{fig:dt}
 \end{figure}
 
-Một ca chỉ có khoảng trắng và một ca chỉ có dấu phẩy đều có thể đạt dù cài đặt ưu tiên sai khi gặp cả hai. Prompt DT yêu cầu nêu điều kiện, thứ tự hành động và các tổ hợp cần xét để đưa trường hợp giao nhau vào bảng (Hình~\ref{fig:dt}).
+Với mỗi tổ hợp, mô hình ghi nhận nó khả thi, mâu thuẫn với đặc tả hay còn thiếu thông tin. Việc ghi rõ tổ hợp mâu thuẫn giúp tránh sinh lời gọi không dùng được.
 
-Với mỗi tổ hợp, mô hình ghi nhận nó khả thi, mâu thuẫn với đặc tả hay còn thiếu thông tin. Các tổ hợp mâu thuẫn được nêu rõ để tránh dành ngân sách cho lời gọi không dùng được. Gộp hai quy tắc chỉ phù hợp khi hành động và thứ tự giữ nguyên dưới cả hai giá trị của điều kiện định bỏ. Nếu nghi cài đặt ưu tiên sai, giữ hai input chỉ khác điều kiện quyết định để phân biệt hai hành vi.
+Gộp hai quy tắc chỉ phù hợp khi hành động và thứ tự giữ nguyên dưới cả hai giá trị của điều kiện định bỏ. Nếu nghi cài đặt ưu tiên sai, giữ hai input chỉ khác điều kiện quyết định để phân biệt hai hành vi.
 
 Trong ví dụ HTTP của prompt, thẻ phiên bản trong \texttt{If-None-Match} khớp tài nguyên ở cả hai lời gọi. GET nhận mã 304, PUT nhận mã 412~\cite{fielding2022http}. Vì đổi phương thức làm đổi hành động, hai trường hợp cần được giữ riêng. Ví dụ cũng có trường hợp sự xuất hiện của một điều kiện khiến điều kiện về thời gian mất tác dụng. Khi áp dụng vào một task khác, mô hình phải lấy điều kiện và hành động từ đặc tả của task đó.
 
@@ -85,9 +127,9 @@ Phản hồi DT chứa các quy tắc cùng đối số đại diện. Với quy
 
 \subsection{Tìm dòng và cạnh còn thiếu}
 
-Để gọi một dòng là chưa phủ, ControlFlow cần biết các lời gọi cơ sở đã đi qua đâu. Mô-đun lấy trace lưu sẵn cho mỗi PUT được chọn. Nếu thiếu trace, nó chạy lại các lời gọi cơ sở đã ghi, tối đa 300 lời gọi trên một PUT. Khi vượt giới hạn hoặc kết quả chạy lại thiếu quan sát hợp lệ, độ phủ cơ sở được ghi là chưa xác định.
+Để gọi một dòng là chưa phủ, ControlFlow dùng các dòng và cạnh quan sát được khi chạy test cơ sở trên PUT. Những vị trí chưa xuất hiện trong các đường thực thi đó trở thành ứng viên để phân tích tiếp.
 
-\textit{coverage.py} đọc mã nguồn để lấy các dòng có thể thực thi, cạnh chuyển dòng và số lối ra. Mô-đun nhóm cạnh theo dòng xuất phát, rồi duyệt theo chiều rộng từ lệnh đầu tiên trong thân hàm sau chuỗi mô tả. Với mỗi dòng mới trong phạm vi hàm, nó giữ đường đầu tiên tìm được. Dòng thực thi có đường tới nhưng vắng trong trace cơ sở trở thành đích C1. Từ một dòng có nhiều lối ra, cạnh nào chưa có trong trace là đích C2. Mỗi đích đi kèm mã PUT, vị trí, đoạn mã và đường gợi ý. Đường tìm trên đồ thị vẫn có thể chứa hai điều kiện mâu thuẫn khi chuyển thành giá trị cụ thể.
+\textit{coverage.py} đọc mã nguồn để lấy các dòng có thể thực thi, cạnh chuyển dòng và số lối ra. Mô-đun nhóm cạnh theo dòng xuất phát, rồi duyệt theo chiều rộng từ lệnh đầu tiên trong thân hàm sau chuỗi mô tả. Với mỗi dòng mới trong phạm vi hàm, nó giữ đường đầu tiên tìm được. Dòng thực thi có đường tới nhưng chưa được test cơ sở chạy qua trở thành đích C1. Từ một dòng có nhiều lối ra, cạnh nào chưa được đi qua là đích C2. Mỗi đích đi kèm PUT, vị trí, đoạn mã và đường gợi ý. Đường tìm trên đồ thị vẫn có thể chứa hai điều kiện mâu thuẫn khi chuyển thành giá trị cụ thể.
 
 \subsection{Cách trích quan hệ def--use bằng python-graphs}
 \label{sec:def-use}
@@ -107,6 +149,19 @@ Cạnh \texttt{LAST\_WRITE} trong đồ thị chương trình trỏ từ một l
 
 \subsection{Prompt khám phá, chạy thử và sửa đề xuất}
 
+ControlFlow lấy đích luân phiên giữa các PUT để mã của một PUT không chiếm hết context. Mỗi task có tối đa sáu đích. Mỗi PUT đi kèm mã nguồn, tối đa mười hai lời gọi cơ sở và các cặp DU tìm được. Khi prompt vượt cửa sổ token, mô-đun giảm dần số đích để giữ context hợp lệ.
+
+Ở HumanEval/125, context chứa mã PUT 4, các lời gọi cơ sở và đích C2 \(8\rightarrow12\). PUT này chưa có kết quả phân tích def--use. Lượt đầu để \texttt{feedback} là \texttt{null}. Lượt sửa gửi lỗi giải mã và mã đích còn thiếu (Hình~\ref{fig:cf-context}).
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[scale=.70]{diagrams/control-flow-context.pdf}
+\caption{Các khối context của ControlFlow ở lượt sửa trên HumanEval/125.}
+\label{fig:cf-context}
+\end{figure}
+
+Một bộ đối số có thể thỏa phép so sánh cuối mà vẫn bị chặn bởi điều kiện trước đó. Ở lượt đầu, mô hình dùng mã đích và số dòng để tìm vị trí, lần qua các điều kiện trước đó rồi mô tả concept bằng một quan hệ trên input và cách dựng đối số thỏa quan hệ ấy. Phản hồi có thể thêm biểu thức trên tham số và miền lấy mẫu. Khi quan hệ chỉ diễn đạt được bằng lời, trường biểu thức có thể để trống. Một biểu thức hằng đúng không giới hạn được input.
+
 \begin{figure}[!htbp]
 \centering
 \includegraphics[width=\linewidth,height=.70\textheight,keepaspectratio]{diagrams/control-flow.pdf}
@@ -114,13 +169,9 @@ Cạnh \texttt{LAST\_WRITE} trong đồ thị chương trình trỏ từ một l
 \label{fig:cf-mechanism}
 \end{figure}
 
-Một PUT có nhiều nhánh chưa phủ có thể chiếm hết cửa sổ prompt nếu hệ thống lấy mọi đích theo từng PUT. ControlFlow lấy luân phiên giữa các PUT và giới hạn sáu đích trên một task (Hình~\ref{fig:cf-mechanism}). Mỗi PUT được chọn có mã nguồn, tối đa mười hai lời gọi cơ sở và cặp DU nếu phân tích được. Hệ thống bỏ dần đích cuối khi số token vượt cửa sổ. Nếu không còn đích, bản ghi cho biết lý do là các đích đo được đã phủ hết, trace còn thiếu hay prompt thiếu chỗ.
-
-Một bộ đối số có thể thỏa phép so sánh cuối mà vẫn bị chặn bởi điều kiện trước đó. Ở lượt đầu, mô hình dùng mã đích và số dòng để tìm đúng vị trí rồi mô tả quan hệ giữa các đối số trên đường tới đó. Phản hồi có thể thêm biểu thức trên tham số và miền lấy mẫu. Khi quan hệ chỉ diễn đạt được bằng lời, trường biểu thức có thể để trống. Một biểu thức hằng đúng không giới hạn được input.
-
 Bộ giải mã đối chiếu mã đích, dòng và chữ ký trước khi nhận các trường của concept. Biểu thức phải dùng cú pháp được phép và phụ thuộc vào tham số. Miền lấy mẫu phải gắn đúng tên tham số của hàm. Hypothesis có thể lấy thêm mẫu từ mô tả đó, chẳng hạn danh sách có giới hạn độ dài và kiểu phần tử. Một input trực tiếp vẫn được xét dù mô tả concept đi kèm có lỗi. Nếu cả hai nguồn đưa cùng bộ đối số, hệ thống thử một lần và lưu cả hai nguồn. Sau khi bỏ lời gọi trùng với test cơ sở, lượt chạy ưu tiên input trực tiếp trong phần ngân sách còn lại.
 
-Một quan sát là một lần chạy cặp đầu vào và PUT trong sandbox. Với đầu vào hợp lệ, mô-đun dùng dòng thực thi để kiểm đích C1 và cạnh đã đi qua để kiểm đích C2. Cạnh đã được trace có thể xác nhận đích dù ngoại lệ xảy ra sau đó. Phản hồi cho lượt hai nêu đích còn thiếu, lỗi giải mã, kết quả kiểm concept và một số quan sát của lượt trước. Mô hình dựa vào thông tin này để sửa đầu vào. Giá trị trả về và đáp án tham chiếu được giữ riêng cho bước chấm.
+Sau khi chạy thử input hợp lệ trên PUT, mô-đun dùng dòng thực thi để kiểm đích C1 và cạnh đã đi qua để kiểm đích C2. Lượt sửa dùng các đích còn thiếu, lỗi giải mã, kết quả kiểm concept và thông tin đường chạy của lượt trước (Hình~\ref{fig:cf-mechanism}). Bước chấm đối chiếu giá trị trả về với đáp án tham chiếu.
 
 ControlFlow dừng khi mọi đích đã được chạm và phản hồi hết lỗi, hoặc khi hết lượt hay ngân sách quan sát. Nó xếp các input hợp lệ theo số đích đã chạm, ưu tiên những input còn thêm đích mới cho tập được giữ. Khi còn chỗ, nhánh bổ sung những input hợp lệ khác. Một đích còn thiếu sau hai lượt phản ánh phạm vi tìm kiếm của lần chạy đó.
 
@@ -136,12 +187,17 @@ ControlFlow dừng khi mọi đích đã được chạm và phản hồi hết 
 
 Bộ giải mã thử đọc JSON trước rồi dùng bộ đọc literal Python khi cấu trúc phản hồi cho phép. Literal được đọc như dữ liệu. Từ cây cú pháp, mô-đun lấy chữ ký, gắn đối số theo tên và điền giá trị mặc định đã khai báo. Nó kiểm tham số thừa hoặc thiếu, độ lồng của dữ liệu và số thực hữu hạn. Catalogue có bước kiểm riêng, nên một bộ đối số vẫn có thể được đem chấm dù trường mô tả quy tắc bị lỗi. Bảng~\ref{tab:prompt-fields} chỉ ra trường nào dùng để nối hai phần.
 
-Chốt input là điểm chuyển sang oracle ở Hình~\ref{fig:task-flow}. Hệ thống kiểm ràng buộc của task rồi chạy bản tham chiếu HumanEval+ hai lần. Một input được giữ nếu cả hai lượt cho cùng khóa đối số, cùng đầu ra và lời gọi chưa xuất hiện trong test cơ sở. Các bản trùng được gộp theo khóa, kèm danh sách nhánh đã sinh input.
+\subsection{Khóa định danh input}
+\label{sec:input-identity}
+
+Trên HumanEval, mô-đun thực thi dùng cùng cách tạo khóa cho lời gọi base test và input đưa vào oracle. Nó gắn đối số theo chữ ký rồi điền giá trị mặc định. Với chữ ký minh họa \texttt{f(x, step=1)}, lời gọi \texttt{f(2)} và \texttt{f(step=1, x=2)} cùng gán \texttt{x=2} và \texttt{step=1}, nên có cùng khóa.
+
+Mỗi giá trị đi vào khóa cùng tên kiểu dữ liệu. Vì vậy, \texttt{True}, \texttt{1} và \texttt{1.0} có ba biểu diễn riêng. Với dữ liệu lồng nhau, mô-đun áp dụng quy tắc này cho từng phần tử, giữ thứ tự của list và tuple, rồi sắp các mục của dict và set theo biểu diễn đã chuẩn hóa. Chuỗi định danh vì thế ổn định cả khi thứ tự duyệt set hoặc thứ tự chèn vào dict thay đổi. Nếu đặc tả có xét thứ tự chèn vào dict, hai lời gọi chung khóa vẫn có thể cần kiểm riêng.
+
+ControlFlow lọc đề xuất trước khi chạy thử bằng khóa do mô-đun dựng lời gọi tạo từ tên tham số, kiểu và biểu diễn literal của giá trị đã gắn. Ở bước này, hai dict khác thứ tự chèn có thể được giữ để thử riêng. Bước gộp cuối dùng khóa đã chuẩn hóa tại oracle.
+
+Mô-đun nối MBPP kiểm chữ ký rồi ghi bộ đối số có tên thành JSON, với khóa của mỗi đối tượng được sắp xếp. Nó mã hóa chuỗi JSON bằng UTF-8 và băm SHA-256. Đổi thứ tự các trường vẫn cho cùng chuỗi để băm. Việc bỏ trống một đối số mặc định và ghi tường minh giá trị đó tạo hai biểu diễn JSON khác nhau trong phép gộp MBPP.
+
+Chốt input là điểm chuyển sang oracle ở Hình~\ref{fig:task-flow}. Trên HumanEval, hệ thống kiểm ràng buộc của task rồi chạy bản tham chiếu HumanEval+ hai lần. Một input được giữ nếu cả hai lượt cho cùng khóa đối số, cùng đầu ra và lời gọi chưa xuất hiện trong test cơ sở. Các bản trùng được gộp theo khóa, kèm danh sách nhánh đã sinh input. Trên MBPP, mô-đun nối benchmark cũng chốt đối số trước khi chạy tham chiếu hai lần. Phép chấm đối chiếu được báo cùng giới hạn về kiểm miền và lọc input trùng base test ở Mục~\ref{sec:mbpp-results}.
 
 Mọi PUT vượt test cơ sở đều chạy trên tập input hợp lệ của task. Bộ chấm dùng quy tắc so sánh của task, gồm sai số cho phép với số thực. Nếu lượt đầu sai giá trị, sinh ngoại lệ hoặc hết giờ, nó chạy lại chính input đó với cùng seed. Hai lượt bất thường xác nhận phát hiện. Hai trạng thái khác nhau còn được ghi là thiếu ổn định. Một nhánh phát hiện PUT khi có ít nhất một input của nhánh đạt điều kiện xác nhận.
-
-\subsection{Truy nguyên một phát hiện}
-
-Prefect lưu cấu hình của lần chạy. Để kiểm lại một PUT bị tính vào kết quả, tìm task và PUT rồi lấy chỉ số input gây sai khác. Chỉ số này đưa về bộ đối số, kết quả tham chiếu và các nhánh sinh input, đồng thời trỏ tới kết quả lượt chấm đầu. Bản ghi lượt hai chỉ chứa những input đã được chạy lại, nên cần tra vị trí trong danh sách xác nhận. Hai ví dụ ở Mục~\ref{sec:demo} lần theo cách đối chiếu này.
-
-Khóa bộ nhớ đệm chứa mã chương trình, kiểu và giá trị đối số, seed, thời hạn và số lượt quan sát. Hai lượt chấm có khóa khác nhau, nhờ đó lượt xác nhận sử dụng kết quả thực sự của lượt hai. Kết quả hết giờ không được tái sử dụng. Khi phục dựng một lần chạy đã xong, hệ thống đọc bản ghi và báo nếu thiếu quan sát cần cho phép kiểm.

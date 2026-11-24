@@ -1,14 +1,14 @@
 @startuml
 !include thesis-style.iuml
 start
-:Đối chiếu đồ thị với trace của test cơ sở;
+:Đối chiếu đồ thị với độ phủ của test cơ sở;
 :Chọn đích C1/C2 theo lượt giữa các PUT,\nghép đoạn mã, đường dẫn và gợi ý def--use;
 if (Còn đích đưa được vào prompt?) then (có)
   repeat
-    :LLM nêu quan hệ giữa các đối số,\ncách tạo dữ liệu và dòng mã liên quan;
+    :LLM mô tả concept bằng quan hệ đối số,\ncách dựng input và dòng mã liên quan;
     :Gộp input trực tiếp với mẫu từ Hypothesis,\nloại input cơ sở và input trùng;
     :Chạy thử trên PUT sở hữu đích,\nghi miền, dòng và cạnh quan sát được;
-    :Ghi đích đã chạm, đích còn thiếu\nvà lỗi trong phản hồi;
+    :Xác định đích đã chạm, đích còn thiếu\nvà phản hồi cần sửa;
   repeat while (Cần sửa và còn ngân sách?) is (có) not (dừng)
   :Ưu tiên input hợp lệ chạm thêm đích,\nbổ sung input còn lại tới giới hạn;
 else (không)

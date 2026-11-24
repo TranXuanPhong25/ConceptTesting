@@ -1,4 +1,4 @@
-\section{RQ1. Tác động của test bổ sung lên điểm HumanEval}
+\section{RQ1. Phát hiện thêm trên HumanEval}
 \label{sec:human-eval-score}
 
 \subsection{Kết quả sàng lọc bằng base test}
@@ -64,6 +64,8 @@ Giả sử bài \(i\) có \(n_i\) PUT và \(c_i\) trong số đó vượt toàn 
 Nếu bài \(i\) có ít hơn \(k\) PUT trượt, không thể chọn một mẫu gồm toàn PUT trượt nên xác suất đó bằng 0. Khi so trước và sau, \(n_i\) giữ nguyên. Trước khi bổ sung test, \(c_i\) là số PUT vượt base test. Sau khi bổ sung, mỗi PUT bị phát hiện thêm làm \(c_i\) giảm đúng một đơn vị, kể cả khi nhiều input cùng làm PUT đó trượt.
 
 Có 162 bài đủ mười cài đặt, tổng cộng 1.620 PUT. Bảng~\ref{tab:before-after-passk} tính điểm trên tập này. Năm bài không có PUT vượt base test vẫn góp điểm 0 ở cả hai mốc. Với \(k=1\), số mẫu theo bài bằng nhau nên điểm bằng số PUT còn đạt chia cho 1.620. Với \(k=10\), bài được điểm 1 nếu còn bất kỳ PUT nào đạt. Mốc \(k=5\) đo xác suất còn lời giải đạt khi chỉ chọn một nửa số cài đặt của mỗi bài.
+
+Cohort này được sinh theo lô và lọc trùng AST như Mục~\ref{sec:put-generation}. Phép so sánh giữ nguyên chương trình để đo thay đổi khi tăng cường test; các điểm trong bảng không được đối chiếu trực tiếp với điểm công bố từ completion lấy mẫu độc lập của mô hình.
 
 \begin{table}[!htbp]
 \centering

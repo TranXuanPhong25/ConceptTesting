@@ -1,13 +1,11 @@
 \begin{tikzpicture}[font=\small,>=stealth,
  box/.style={draw,align=center,text width=9.8cm,minimum height=.85cm},edge/.style={->,thick}]
-\node[box] (a) at (0,0) {1. Kiểm cohort và tạo packet chung\\Spec, contract, base tests, visible PUTs};
-\node[box] (b) at (0,-1.7) {2. Sinh input cho đủ các arm của task\\Lưu raw response; parse và gắn tham số};
-\node[box,very thick] (c) at (0,-3.4) {3. Freeze input của task\\Ghi hash và generation receipt};
-\node[box] (d) at (0,-5.1) {4. Chạy reference hai observations\\Lọc domain, instability và base duplicates};
-\node[box] (e) at (0,-6.8) {5. Gộp input hợp lệ, giữ arm memberships\\Đo catalogue trên survivor inputs};
-\node[box] (f) at (0,-8.5) {6. Đánh giá mọi base-pass PUT\\Chỉ xác nhận lại input fail/error/timeout};
-\node[box] (g) at (0,-10.2) {7. Lưu kết quả, replay và tổng hợp\\Detected PUT/task, coverage, usage};
+\node[box] (a) at (0,0) {1. Nhận context và cohort đã chuẩn bị\\Đặc tả, contract, base test và mã PUT};
+\node[box] (b) at (0,-1.7) {2. Sinh input theo concept\\EP/BVA, DT và ControlFlow};
+\node[box,very thick] (c) at (0,-3.4) {3. Gắn đối số theo chữ ký\\Chốt tập input trước oracle};
+\node[box] (d) at (0,-5.1) {4. Chạy tham chiếu hai lượt\\Kiểm miền và độ ổn định của đáp án};
+\node[box] (e) at (0,-6.8) {5. Gộp input hợp lệ\\Kiểm điều kiện của concept khi đủ thông tin};
+\node[box] (f) at (0,-8.5) {6. Đánh giá mọi PUT vượt base test\\Xác nhận lại kết quả bất thường};
+\node[box] (g) at (0,-10.2) {7. Tổng hợp kết quả\\PUT phát hiện thêm và mức tăng coverage};
 \foreach \x/\y in {a/b,b/c,c/d,d/e,e/f,f/g}{\draw[edge] (\x)--(\y);}
-\node[align=left,text width=2.2cm,font=\footnotesize] at (6.7,-3.6) {Task kế tiếp có thể sinh khi task này đã chuyển sang evaluation.};
-\draw[->,dashed] (c.east)--++(1,0);
 \end{tikzpicture}

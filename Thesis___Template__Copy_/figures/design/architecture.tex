@@ -1,19 +1,19 @@
 \begin{tikzpicture}[font=\small,>=stealth,
  box/.style={draw,align=center,text width=5.6cm,minimum height=1.25cm},
  edge/.style={->,thick}]
-\node[box] (control) at (0,0) {Điều khiển run\\CLI / Prefect / runner đã ghim};
-\node[box] (data) at (8.4,0) {Dữ liệu cố định\\Spec, contract, cohort PUT};
-\node[box] (gen) at (0,-2.4) {Sinh input\\Plain, EP+BVA, DT, CF};
-\node[box] (model) at (8.4,-2.4) {Model backend\\Request, response, usage};
-\node[box] (eval) at (0,-4.8) {Oracle và đánh giá\\Freeze, reference, PUT, report};
-\node[box] (sandbox) at (8.4,-4.8) {Sandbox runtime\\Domain, trace, lời gọi hàm};
-\node[box,text width=14cm] (store) at (4.2,-7.2) {Artifact và checkpoint\\Manifest / inputs / oracle / verdicts / execution cache};
-\draw[edge] (control)--node[left]{chọn config}(gen);
-\draw[edge] (data)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{cấp spec, PUT}(control);
+\node[box] (control) at (0,0) {Context đã chuẩn bị\\Đặc tả, chữ ký, base test và mã PUT};
+\node[box] (data) at (8.4,0) {Cohort cố định\\Các PUT và kết quả base test};
+\node[box] (gen) at (0,-2.4) {Sinh input theo concept\\EP/BVA, DT và ControlFlow};
+\node[box] (model) at (8.4,-2.4) {Mô hình ngôn ngữ\\Cụ thể hóa concept thành đối số};
+\node[box] (eval) at (0,-4.8) {Oracle và đánh giá\\Kiểm miền, lấy đáp án và chấm PUT};
+\node[box] (sandbox) at (8.4,-4.8) {Môi trường thực thi cô lập\\Chạy input và đo độ phủ};
+\node[box,text width=14cm] (store) at (4.2,-7.2) {Kết quả\\Bộ test bổ sung, PUT phát hiện thêm và mức tăng C1/C2};
+\draw[edge] (control)--node[left]{cấp context}(gen);
+\draw[edge] (data)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{cấp mã PUT}(control);
 \draw[edge] (gen)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{gọi model}(model);
-\draw[edge,dashed] (gen.east)--(4.2,-2.4)--node[right,font=\scriptsize,fill=white,inner sep=1pt]{trace CF}(4.2,-4.8)--(sandbox.west);
-\draw[edge] (gen)--node[left]{giao input đã freeze}(eval);
+\draw[edge,dashed] (gen.east)--(4.2,-2.4)--node[right,font=\scriptsize,fill=white,inner sep=1pt]{chạy thử}(4.2,-4.8)--(sandbox.west);
+\draw[edge] (gen)--node[left]{giao input đã chốt}(eval);
 \draw[edge] (eval)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{thực thi}(sandbox);
-\draw[edge] (eval)--node[left]{ghi kết quả}(store.north -| eval);
-\draw[edge] (sandbox)--node[right]{ghi observation}(store.north -| sandbox);
+\draw[edge] (eval)--node[left]{tổng hợp sai khác}(store.north -| eval);
+\draw[edge] (sandbox)--node[right]{tổng hợp độ phủ}(store.north -| sandbox);
 \end{tikzpicture}

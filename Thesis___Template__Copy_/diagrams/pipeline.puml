@@ -1,22 +1,19 @@
 @startuml
 !include thesis-style.iuml
 start
-:Qwen sinh mã từ đề HumanEval;
-:Lọc trùng theo cây cú pháp,\nchạy test cơ sở và cố định bộ PUT;
-:Chọn các PUT đạt test cơ sở;
-:Mô-đun ngữ cảnh ghép đặc tả, ràng buộc\nvà mã PUT trong giới hạn token;
-:Sinh test theo ba nhánh;
+:Nhận context đã chuẩn bị:\nđặc tả, chữ ký, contract, base test,\nmã PUT và độ phủ cơ sở;
+:Ghép context với hướng dẫn theo concept;
 fork
-  :**EP/BVA**\nChọn lớp\nrồi thử biên;
+  :**EP/BVA**\nTừ đặc tả, chọn lớp\nvà input sát biên;
 fork again
-  :**DT**\nLập quy tắc\nrồi chọn input;
+  :**DT**\nTừ điều kiện và ưu tiên,\nlập quy tắc và chọn input;
 fork again
-  :**ControlFlow**\nChọn đích C1/C2\nrồi đo đường chạy;
+  :**ControlFlow**\nTừ đích C1/C2 và mã PUT,\nsuy tình huống để sinh input\nvà sửa theo kết quả chạy thử;
 end fork
-:Bộ giải mã gắn đối số theo chữ ký;
-:Chốt tập input của các nhánh trong lần chạy;
+:Gắn đối số theo chữ ký\nvà chốt tập input;
 :Oracle kiểm miền, chạy tham chiếu hai lượt\nvà gộp input trùng, giữ nguồn sinh;
 :Bộ chấm thử mọi PUT đạt test cơ sở,\nchạy lại các input cho kết quả bất thường;
-:Gộp theo cặp mã task và mã PUT;
+:Đối chiếu độ phủ của base test và tập mở rộng\ntrên cùng PUT;
+:Tổng hợp số PUT bị phát hiện thêm,\nmức tăng C1/C2 và điểm pass@k;
 stop
 @enduml
