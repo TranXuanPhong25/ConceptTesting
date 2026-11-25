@@ -33,10 +33,15 @@ def test_frozen_runtime_can_load_input_type_metadata(tmp_path):
 def test_model_presets_are_preview_only_and_match_each_dataset():
     from final.src.benchmarks.pipeline import preview
     presets = json.loads(open('final/presets/benchmark_adapters.json').read())
-    assert len(presets) == 2
+    assert len(presets) == 3
     for preset in presets:
         values = dict(preset['parameters'])
         assert values.pop('preview_only') is True
         description = preview(values)
-        assert description['logical_call_cap'] == 3
+        if 'control_flow_4tool' in values['arms']:
+            assert description['logical_call_cap'] == 'pending'
+            assert values['context_tokens'] == 20480
+            assert values['completion_tokens'] == 4096
+        else:
+            assert description['logical_call_cap'] == 3
         assert description['candidate_count'] is None

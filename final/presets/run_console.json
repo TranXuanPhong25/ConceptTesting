@@ -1,20 +1,54 @@
 [
   {
-    "name": "Full164 · Plain vs EP+BVA v2 vs DT v2 · batch",
-    "description": "HumanEval · Plain, EP+BVA v2 và DT v2 · 20 input/task/arm, tối đa 471 logical calls, 4096 completion tokens/call.",
+    "name": "Full164 · EP+BVA VF3 Hybrid vs DT VF3 Hybrid · batch",
+    "description": "HumanEval · EP+BVA VF3 Hybrid và DT VF3 Hybrid · Round 1 lean strict schema (20 inputs) + Round 2 free reasoning & blind-spot audit (20 new inputs, retained cap 40), tối đa 628 logical calls, 4096 completion và 12288 context tokens/call.",
     "parameters": {
       "cohort": "humaneval164",
       "mode": "batch",
       "arms": [
-        "plain",
-        "ep_bva_v2",
-        "decision_table_v2"
+        "ep_bva_vf3_hybrid",
+        "decision_table_vf3_hybrid"
       ],
       "task_numbers": [],
       "inputs_per_task": 20,
       "completion_tokens": 4096,
-      "context_tokens": 8192,
-      "catalogue": true,
+      "context_tokens": 12288,
+      "timeout_seconds": 8
+    },
+    "preview_only": true
+  },
+  {
+    "name": "Full164 · EvalPlus Mini base · EP+BVA VF3 Hybrid vs DT VF3 Hybrid · batch",
+    "description": "HumanEval+ Mini base test · chỉ giữ PUT đã vượt toàn bộ base_input + plus_input của EvalPlus Mini và loại trùng với toàn bộ input EvalPlus Mini · EP+BVA VF3 Hybrid và DT VF3 Hybrid (20+20 inputs, 4096 completion, 12288 context).",
+    "parameters": {
+      "cohort": "humaneval_plus_mini",
+      "mode": "batch",
+      "arms": [
+        "ep_bva_vf3_hybrid",
+        "decision_table_vf3_hybrid"
+      ],
+      "task_numbers": [],
+      "inputs_per_task": 20,
+      "completion_tokens": 4096,
+      "context_tokens": 16384,
+      "timeout_seconds": 8
+    },
+    "preview_only": true
+  },
+  {
+    "name": "Full164 · EvalPlus Full base · EP+BVA VF3 Hybrid vs DT VF3 Hybrid · batch",
+    "description": "HumanEval+ Full base test · chỉ giữ PUT đã vượt toàn bộ base_input + plus_input của EvalPlus Full, đưa mẫu đại diện plus_input vào prompt và loại trùng với toàn bộ input EvalPlus Full · EP+BVA VF3 Hybrid và DT VF3 Hybrid (20+20 inputs, 4096 completion, 16384 context).",
+    "parameters": {
+      "cohort": "humaneval_plus_full",
+      "mode": "batch",
+      "arms": [
+        "ep_bva_vf3_hybrid",
+        "decision_table_vf3_hybrid"
+      ],
+      "task_numbers": [],
+      "inputs_per_task": 20,
+      "completion_tokens": 4096,
+      "context_tokens": 16384,
       "timeout_seconds": 8
     },
     "preview_only": true
@@ -24,28 +58,30 @@
     "description": "Một task HumanEval với recursive/flint-v1.0:free qua recursive/bf16, bật reasoning. Tối đa 20 input và một logical call.",
     "parameters": {
       "mode": "batch",
-      "arms": ["plain"],
-      "task_numbers": [0],
+      "arms": [
+        "plain"
+      ],
+      "task_numbers": [
+        0
+      ],
       "model_backend": "openrouter",
       "model_name": "recursive/flint-v1.0:free"
     },
     "preview_only": true
   },
   {
-    "name": "Full164 · EP+BVA VF3 Measured vs DT VF3 Measured · batch",
-    "description": "HumanEval · EP+BVA VF3 Measured và DT VF3 Measured · 20+10 input/task/arm, tối đa 628 logical calls, 4096 completion và 12288 context tokens/call.",
+    "name": "Full164 · Control-flow + 4-tool trace · batch",
+    "description": "HumanEval · ControlFlow dùng input và coverage trace từ 4 tool (CrossHair, Pynguin, UTBot, Ghostwriter; bỏ Klara) để tập trung LLM vào target C1/C2 còn thiếu · 20 input/task, 4096 completion và 20480 context tokens/call.",
     "parameters": {
       "cohort": "humaneval164",
       "mode": "batch",
       "arms": [
-        "ep_bva_vf3_measured",
-        "decision_table_vf3_measured"
+        "control_flow_4tool"
       ],
       "task_numbers": [],
       "inputs_per_task": 20,
       "completion_tokens": 4096,
-      "context_tokens": 12288,
-      "catalogue": true,
+      "context_tokens": 20480,
       "timeout_seconds": 8
     },
     "preview_only": true

@@ -9,7 +9,8 @@ from final.src.models import OPENROUTER_DEFAULT_MODEL
 from final.src.modular.arm_names import (
     ANALYSIS_FAMILY_COUNTS,
     CATALOGUE_ARM_NAMES,
-    VF3_MEASURED_ARM_NAMES,
+    VF3_HYBRID_ARM_NAMES,
+    VF3_STRUCTURED_ARM_NAMES,
     generation_call_cap,
     retained_input_budget,
 )
@@ -17,18 +18,24 @@ from final.src.modular.arm_names import (
 ROOT = Path(__file__).resolve().parents[3]
 COHORTS = {
     'humaneval164': 'final/out/cohorts/qwen35_27b_humaneval164/cohort.json',
+    'humaneval_plus_mini': 'final/out/cohorts/qwen35_27b_humaneval_plus_mini/cohort.json',
+    'humaneval_plus_full': 'final/out/cohorts/qwen35_27b_humaneval_plus_full/cohort.json',
 }
 DEFAULTS = {'cohort': 'humaneval164', 'mode': 'batch', 'arms': ['plain', *CATALOGUE_ARM_NAMES],
     'task_numbers': [], 'inputs_per_task': 20, 'completion_tokens': 4096, 'context_tokens': 8192,
     'temperature': .7, 'input_seed': 314159, 'reference_seed': 271828, 'timeout_seconds': 8.0,
     'per_put_base_examples': 12, 'scorer': 'confirm_first_failures', 'model_name': 'qwen3.5-27b-awq',
-    'catalogue': True, 'model_backend': 'qwen'}
+    'model_backend': 'qwen'}
 
 
 def normalize(values):
     """Resolve defaults, validate each config concern, then normalize task order."""
     validate_config_field_names(values)
     config = {**DEFAULTS, **values}
+    if 'catalogue' in values:
+        if values['catalogue'] is not True:
+            raise ValueError('catalogue is always enabled; disabling catalogue is not supported')
+        config.pop('catalogue', None)
     if config['model_backend'] == 'openrouter' and 'model_name' not in values:
         config['model_name'] = OPENROUTER_DEFAULT_MODEL
     config['arms'] = list(config['arms'])
@@ -36,9 +43,6 @@ def normalize(values):
 
     validate_cohort_and_generation_mode(config)
     validate_arm_selection(config)
-    # The catalogue switch is a strict boolean; strings such as "false" are invalid.
-    if type(config['catalogue']) is not bool:
-        raise ValueError('catalogue must be a boolean')
     validate_task_number_selection(config['task_numbers'])
     validate_generation_budgets(config)
     validate_scorer_and_served_model(config)
@@ -49,7 +53,7 @@ def normalize(values):
 
 def validate_config_field_names(values):
     """Reject unknown fields, including credentials that must stay outside config."""
-    unknown_fields = set(values) - set(DEFAULTS) - {'tool_sampling', 'pynguin'}
+    unknown_fields = set(values) - set(DEFAULTS) - {'tool_sampling', 'pynguin', 'tool_runs_dir', 'catalogue'}
     if unknown_fields:
         raise ValueError('Unknown config fields: ' + ', '.join(sorted(unknown_fields)))
 
@@ -69,8 +73,8 @@ def validate_arm_selection(config):
         allowed_arms = ('pynguin',)
         if config['arms'] != list(allowed_arms):
             raise ValueError('Pynguin modes require the fixed ordered arm selection: ' + ', '.join(allowed_arms))
-        if config['inputs_per_task'] > 20 or not config['catalogue']:
-            raise ValueError('Pynguin modes require suite <=20 and catalogue enabled')
+        if config['inputs_per_task'] > 20:
+            raise ValueError('Pynguin modes require suite <=20')
     elif config['mode'] == 'tools':
         from final.src.modular.tool_sampling.config import TOOL_ARMS, validate_budgets
         allowed_arms = TOOL_ARMS
@@ -82,7 +86,7 @@ def validate_arm_selection(config):
         if config['scorer'] != 'confirm_first_failures':
             raise ValueError('Tools require confirm_first_failures scorer')
     else:
-        allowed_arms = ('plain', 'direct', *CATALOGUE_ARM_NAMES, *VF3_MEASURED_ARM_NAMES, *ANALYSIS_FAMILY_COUNTS)
+        allowed_arms = ('plain', 'direct', *VF3_HYBRID_ARM_NAMES, *ANALYSIS_FAMILY_COUNTS)
 
     if config['mode'] != 'tools' and config.get('tool_sampling') is not None:
         raise ValueError('tool_sampling requires tools mode')
@@ -95,10 +99,13 @@ def validate_arm_selection(config):
     has_unknown_arms = bool(set(selected_arms) - set(allowed_arms))
     if not selected_arms or has_duplicate_arms or has_unknown_arms:
         raise ValueError('Unknown or duplicate arm for the selected mode')
-    if any(arm in VF3_MEASURED_ARM_NAMES for arm in selected_arms) and not config['catalogue']:
-        raise ValueError('VF3 measured arms require catalogue enabled')
-    if any(arm in VF3_MEASURED_ARM_NAMES for arm in selected_arms) and config['model_backend'] not in ('qwen', 'openrouter'):
-        raise ValueError('VF3 measured arms require qwen or openrouter backend (strict json_schema)')
+    if any(arm in VF3_STRUCTURED_ARM_NAMES for arm in selected_arms) and config['model_backend'] not in ('qwen', 'openrouter'):
+        raise ValueError('VF3 measured/hybrid arms require qwen or openrouter backend (strict json_schema)')
+    if config.get('tool_runs_dir') is not None:
+        if not isinstance(config['tool_runs_dir'], str) or not config['tool_runs_dir'].strip():
+            raise ValueError('tool_runs_dir must be a nonempty path string')
+        if 'control_flow_4tool' not in selected_arms:
+            raise ValueError('tool_runs_dir requires control_flow_4tool arm')
 
 
 def validate_task_number_selection(task_numbers):
@@ -170,14 +177,12 @@ def preview(values):
     for number in selected:
         row = available[number]
         passing = sum(program['base']['status']=='pass' for program in row['programs'])
-        reason = 'generation_shortfall' if row['generated']!=target_count else 'no_base_pass' if not passing else None
-        if reason:
-            skipped.append({'task_id':row['task_id'],'reason':reason})
+        if not passing:
+            skipped.append({'task_id':row['task_id'],'reason':'no_base_pass'})
             continue
         eligible.append({'task_id':row['task_id'],'base_pass_put_count':passing})
         if config['mode'] == 'pynguin':
             pynguin_owners += min(passing, config['pynguin']['owner_limit'])
-    # A preview requires at least one task with the expected PUT count and a base pass.
     if not eligible:
         raise ValueError('No eligible tasks for selected config')
     arms = ('tool_preparation_shared',) if config['mode'] == 'tools' else config['arms']
@@ -186,13 +191,17 @@ def preview(values):
         cap = generation_call_cap(arm)
         logical[arm] = cap if cap == 'pending' else cap * len(eligible)
     total_calls = 'pending' if 'pending' in logical.values() else sum(logical.values())
+    max_input_slots_by_arm = {}
+    for name in config['arms']:
+        budget = retained_input_budget(name, config['inputs_per_task'])
+        max_input_slots_by_arm[name] = budget if budget == 'pending' else len(eligible) * budget
     result = {'config':config,'cohort_path':str(path),'cohort_sha256':cohort['cohort_sha256'],
         'target_program_count':target_count,'selected_task_numbers':selected,
         'requested_task_count':len(selected),'eligible_task_count':len(eligible),
         'evaluated_base_pass_put_count':sum(row['base_pass_put_count'] for row in eligible),
         'logical_calls_by_arm':logical,'logical_call_cap':total_calls,
         'max_input_slots_per_arm':len(eligible)*config['inputs_per_task'],
-        'max_input_slots_by_arm':{name:len(eligible)*retained_input_budget(name,config['inputs_per_task']) for name in config['arms']},
+        'max_input_slots_by_arm':max_input_slots_by_arm,
         'input_budget_unit':'per task per arm','per_put_generation_quota_histogram':{},
         'eligible_tasks':eligible,'skips':skipped,
         'base_context':'spec/contract; no PUT outputs' if config['mode']=='tools' else 'original base tests',
@@ -200,7 +209,7 @@ def preview(values):
         'completion_token_cap_per_call':config['completion_tokens'],
         'completion_token_cap_total':total_calls if total_calls == 'pending' else total_calls*config['completion_tokens'],
         'catalogue_note':'Coverage đo sau freeze/domain/reference. Prose chưa audit là pending. Call cap có số cụ thể là upper bound.',
-        'context_note':'Visibility dựa vào tokenization của từng prompt. Call cap của ControlFlow chờ xếp batch target theo context.'}
+        'context_note':'Visibility dựa vào tokenization của từng prompt. Call cap và suite input cap của ControlFlow phụ thuộc số target theo context.'}
     if config['mode'] == 'pynguin':
         result['pynguin_budgets'] = {**config['pynguin'], 'owner_search_count_cap': pynguin_owners,
             'search_seconds_cap_total': pynguin_owners * config['pynguin']['search_seconds'],

@@ -35,7 +35,7 @@ async def adapter_benchmark(
     dataset: Literal['mbpp']='mbpp',
     candidate_path: str='',
     task_numbers: list[int]=[],
-    arms: list[Literal['plain','ep_bva_v2','decision_table_v2','control_flow']]=['plain','ep_bva_v2','decision_table_v2'],
+    arms: list[Literal['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid','control_flow','control_flow_4tool']]=['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid'],
     backend: Literal['qwen','vertex','openrouter']='qwen',
     model_name: str | None=None,
     inputs_per_task: int=20,
@@ -44,11 +44,13 @@ async def adapter_benchmark(
     temperature: float=.7,
     seed: int=314159,
     timeout_seconds: float=8,
+    tool_runs_dir: str='',
     preview_only: bool=True,
 ):
     """Import saved complete PUTs, then compare shared input-generation arms.
 
     candidate_path: JSONL under the workspace: task_id, id, code (complete source).
+    tool_runs_dir: Optional repo-local 4-tool runs directory for control_flow_4tool.
     preview_only: Validate/pin config/data/budget without a model, tokenizer or native call.
     Execution coverage and verified specification bugs are pending; detected means
     a confirmed disagreement with the dataset's canonical reference.
@@ -61,6 +63,11 @@ async def adapter_benchmark(
         if not source.is_relative_to(ROOT):
             raise ValueError('Choose a repository-local saved PUT JSONL')
         parameters['candidate_path'] = str(source)
+    if tool_runs_dir:
+        tools_source = (ROOT / tool_runs_dir).resolve()
+        if not tools_source.is_relative_to(ROOT):
+            raise ValueError('Choose a repository-local 4-tool runs directory')
+        parameters['tool_runs_dir'] = str(tools_source)
     run_id = str(get_run_context().flow_run.id)
     directory = OUT / ('adapters_'+run_id)
     submission = OUT / ('adapters_submission_'+run_id)

@@ -10,8 +10,8 @@
       ],
       "arms": [
         "plain",
-        "ep_bva_v2",
-        "decision_table_v2"
+        "ep_bva_vf3_hybrid",
+        "decision_table_vf3_hybrid"
       ],
       "backend": "qwen",
       "model_name": "qwen3.5-27b-awq",
@@ -35,14 +35,37 @@
       ],
       "arms": [
         "plain",
-        "ep_bva_v2",
-        "decision_table_v2"
+        "ep_bva_vf3_hybrid",
+        "decision_table_vf3_hybrid"
       ],
       "backend": "vertex",
       "model_name": "gemini-3.1-flash-lite",
       "inputs_per_task": 20,
       "completion_tokens": 4096,
       "context_tokens": 8192,
+      "temperature": 0.7,
+      "seed": 314159,
+      "timeout_seconds": 8,
+      "preview_only": true
+    }
+  },
+  {
+    "name": "mbpp · Control-flow + 4-tool trace · qwen3.5-27b-awq · chuẩn bị",
+    "description": "Preview mặc định, chưa launch workload. ControlFlow dùng input và coverage trace từ 4 tool MBPP+ (CrossHair, Pynguin, UTBot, Ghostwriter; bỏ Klara) để tập trung LLM vào target C1/C2 còn thiếu · 4096 completion, 20480 context, 20 input/task. Cần nhập candidate_path trước Run; số call phụ thuộc batch target còn thiếu (pending).",
+    "parameters": {
+      "dataset": "mbpp",
+      "candidate_path": "",
+      "task_numbers": [
+        11
+      ],
+      "arms": [
+        "control_flow_4tool"
+      ],
+      "backend": "qwen",
+      "model_name": "qwen3.5-27b-awq",
+      "inputs_per_task": 20,
+      "completion_tokens": 4096,
+      "context_tokens": 20480,
       "temperature": 0.7,
       "seed": 314159,
       "timeout_seconds": 8,

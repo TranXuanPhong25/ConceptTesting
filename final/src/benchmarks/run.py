@@ -44,7 +44,11 @@ def prepare(values, directory):
     save(directory/'preview.json', description)
     save(directory/'tasks_snapshot.json', tasks)
     save(directory/'cohort.json', cohort)
-    save(directory/'launch_plan.json', {'runtime':str(runtime), 'workspace':str(ROOT), 'dataset':config['dataset']})
+    plan = {'runtime':str(runtime), 'workspace':str(ROOT), 'dataset':config['dataset']}
+    if 'control_flow_4tool' in config['arms']:
+        resolved_tools = (ROOT / config['tool_runs_dir']).resolve() if config.get('tool_runs_dir') else (ROOT / 'final/out/mbppplus_put_pytest_tools_20261122')
+        plan['tool_runs_dir'] = str(resolved_tools)
+    save(directory/'launch_plan.json', plan)
     for name in ('config_snapshot.json','tasks_snapshot.json','cohort.json','launch_plan.json','preview.json'):
         hashes[str(directory/name)] = checksum(directory/name)
     save(directory/'source_snapshot.json', {'sources':hashes, 'archive':{}})
@@ -74,6 +78,8 @@ def execute(directory, *, replay=False):
         signal.signal(signal.SIGTERM, interrupt)
         save(directory/'status.json', {'state':'running','phase':'generation','pid':os.getpid()})
         try:
+            if plan.get('workspace'):
+                os.environ.setdefault('CONCEPTTESTER_WORKSPACE', plan['workspace'])
             if config['backend']=='qwen':
                 os.environ['FINAL_ENDPOINT_ENV_FILE'] = str(private_endpoint(directory, config['model_name']))
             elif config['backend']=='openrouter':
@@ -88,7 +94,12 @@ def execute(directory, *, replay=False):
                 with (Path(plan['workspace'])/'final/out/.boundary_native.lock').open('a+') as native:
                     fcntl.flock(native, fcntl.LOCK_EX)
                     return execute_program(*args, **kwargs)
-            result = run_benchmark(tasks, cohort, store, config, calls=Calls(model, store), executor=native_execution)
+            result = run_benchmark(
+                tasks, cohort, store, config,
+                calls=Calls(model, store),
+                executor=native_execution,
+                default_tool_runs_dir=plan.get('tool_runs_dir'),
+            )
             save(directory/'status.json', {'state':'complete','pid':os.getpid(),'read_only_replay_matches':None,'source_hashes_verified':None})
             return result
         except BaseException as error:

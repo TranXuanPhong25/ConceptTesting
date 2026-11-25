@@ -82,7 +82,6 @@ def prepare(values, directory):
     paths=[path for path in (ROOT/'final/src').rglob('*.py') if 'tests' not in path.parts and '__pycache__' not in path.parts]
     paths += [ROOT/'final/__init__.py',ROOT/'final/data/humaneval.jsonl',ROOT/'final/data/contracts.json',
               ROOT/'final/data/humanevalplus_v0.1.10_references.json']
-    paths += list((ROOT/'final/src/modular/fault_oriented_testing').glob('*.json'))
     if config['mode'] == 'pynguin':
         paths += [ROOT/'final/pynguin-requirements.txt']
     for source in paths:
@@ -92,10 +91,14 @@ def prepare(values, directory):
     endpoint=private_endpoint(directory,config['model_name']) if config['mode'] != 'pynguin' and config['model_backend']=='qwen' else None
     save(directory/'config_snapshot.json',config)
     save(directory/'preview.json',description)
-    save(directory/'launch_plan.json',{'runtime':str(runtime),'cohort':str(cohort),'workspace':str(ROOT),
+    launch_plan={'runtime':str(runtime),'cohort':str(cohort),'workspace':str(ROOT),
         'endpoint_env_file':str(endpoint) if endpoint is not None else None,'native_lock':str(ROOT/'final/out/.boundary_native.lock'),
         'execution_cache':str(ROOT/'final/out/execution_cache'),'task_numbers':description['selected_task_numbers'],
-        'target_program_count':description['target_program_count'],'logical_call_cap':description['logical_call_cap']})
+        'target_program_count':description['target_program_count'],'logical_call_cap':description['logical_call_cap']}
+    if 'control_flow_4tool' in config['arms']:
+        resolved_tools = (ROOT / config['tool_runs_dir']).resolve() if config.get('tool_runs_dir') else (ROOT / 'final/out/put_pytest_tools_20261122')
+        launch_plan['tool_runs_dir'] = str(resolved_tools)
+    save(directory/'launch_plan.json',launch_plan)
     for name in ('config_snapshot.json','preview.json','launch_plan.json'):hashes[str(directory/name)]=checksum(directory/name)
     save(directory/'source_snapshot.json',{'sources':hashes,'archive':{}})
     save(directory/'status.json',{'state':'prepared','new_model_calls':0})
@@ -199,10 +202,8 @@ def prepare_resume(source,directory, *, timeout_seconds=None, retry_404_request_
 def run(directory):
     from final.src.modular.arms.batch import DirectBatchArm
     from final.src.modular.arms.plain import PlainArm
-    from final.src.modular.arms.classical import CatalogueSettings
-    from final.src.modular.arms.fault_oriented import V2_ARMS
-    from final.src.modular.arms.vf3_measured import VF3_MEASURED_ARMS
-    from final.src.modular.arms.control_flow import ControlFlowArm
+    from final.src.modular.arms.vf3_hybrid import VF3_HYBRID_ARMS
+    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowFourToolArm
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.calls import RecordedModelCalls
     from final.src.modular.cohort import call_usage
@@ -214,6 +215,8 @@ def run(directory):
     from final.src.models import create_model
     from final.src.models.model import TransportError
     config=read(directory/'config_snapshot.json');plan=read(directory/'launch_plan.json')
+    if plan.get('workspace'):
+        os.environ.setdefault('CONCEPTTESTER_WORKSPACE', plan['workspace'])
     if plan.get('endpoint_env_file'):
         os.environ['FINAL_ENDPOINT_ENV_FILE']=plan['endpoint_env_file']
     def state(name,**extra):save(directory/'status.json',{'state':name,'pid':os.getpid(),'updated_utc':time.time(),**extra})
@@ -238,9 +241,15 @@ def run(directory):
                 if not error.retryable or time.time()>deadline:raise
                 time.sleep(30)
         save(directory/'endpoint_readiness.json',{'checked_utc':time.time(),**endpoint})
-    factories={'direct':DirectBatchArm,'plain':PlainArm,ControlFlowArm.name:ControlFlowArm}
-    for arm in (*V2_ARMS, *VF3_MEASURED_ARMS):
-        factories[arm.name] = lambda arm=arm: arm(CatalogueSettings(catalogue=config.get('catalogue', True)))
+    tool_runs_dir = plan.get('tool_runs_dir') or config.get('tool_runs_dir')
+    factories={
+        'direct':DirectBatchArm,
+        'plain':PlainArm,
+        ControlFlowArm.name:ControlFlowArm,
+        ControlFlowFourToolArm.name:lambda: ControlFlowFourToolArm(tool_runs_dir=tool_runs_dir),
+    }
+    for arm in VF3_HYBRID_ARMS:
+        factories[arm.name] = arm
     methods=tuple(factories[name]() for name in config['arms']) if config['mode'] == 'batch' else ()
     settings=PipelineSettings(input_budget=config['inputs_per_task'],input_tokens=config['completion_tokens'],
         input_temperature=config['temperature'],input_seed=config['input_seed'],reference_seed=config['reference_seed'],
@@ -276,15 +285,17 @@ def run(directory):
             state('waiting_native_lock')
             native_handle=Path(plan['native_lock']).open('a+')
             fcntl.flock(native_handle,fcntl.LOCK_EX)
+        gen_workers = 6 if config['mode'] == 'batch' and config.get('model_backend', 'qwen') in ('qwen', 'openrouter') else 1
         pipeline=BenchmarkPipeline(Path(plan['cohort']),ArtifactStore(directory),input_generator=generator,settings=settings,
             calls=RecordedModelCalls(model,ArtifactStore(directory)) if model is not None else None,
             execution_cache=InputExecutionCache(Path(plan['execution_cache'])),dataset=dataset,
-            on_before_evaluation=before_evaluation,on_step=record_step)
+            on_before_evaluation=before_evaluation,on_step=record_step,generation_workers=gen_workers)
         summary=pipeline.run(tasks,dataset.load_metadata())
         result={'arms':summary['arms'],'evaluated_base_pass':summary['evaluated_base_pass'],
+            'tested_base_pass':summary['tested_base_pass'],
             'writer_usage':call_usage(directory),'keepalive_usage':summary['keepalive_calls'],
             'read_only_replay_matches':None,'source_hashes_verified':None,'settings':config}
-        for key in ('pynguin', 'tester_calls_by_arm', 'control_flow'):
+        for key in ('pynguin', 'tester_calls_by_arm', 'control_flow', 'control_flow_4tool'):
             if key in summary:
                 result[key] = summary[key]
         if 'catalogues' in summary:

@@ -8,9 +8,13 @@ from final.src.orchestration import config,worker,service
 
 def test_default_batch_keeps_per_task_per_arm_budget():
     batch=config.preview({})
-    assert batch['logical_call_cap']==471 and batch['eligible_task_count']==157
-    assert batch['evaluated_base_pass_put_count']==1454
-    assert batch['max_input_slots_per_arm']==3140
+    assert batch['logical_call_cap']==795 and batch['eligible_task_count']==159
+    assert batch['evaluated_base_pass_put_count']==1465
+    assert batch['max_input_slots_per_arm']==3180
+    eligible = {row['task_id']: row['base_pass_put_count'] for row in batch['eligible_tasks']}
+    assert eligible['HumanEval/32'] == 3 and eligible['HumanEval/136'] == 8
+    assert len(batch['skips']) == 5
+    assert {row['reason'] for row in batch['skips']} == {'no_base_pass'}
 
 
 def test_openrouter_preview_resolves_flint_without_credentials(monkeypatch):
@@ -39,6 +43,10 @@ def test_control_flow_preview_leaves_batch_dependent_call_caps_pending():
     limits = config.preview({'arms': ['plain', 'control_flow']})
     assert limits['logical_calls_by_arm'] == {
         'plain': limits['eligible_task_count'],
+        'control_flow': 'pending',
+    }
+    assert limits['max_input_slots_by_arm'] == {
+        'plain': limits['eligible_task_count'] * 20,
         'control_flow': 'pending',
     }
     assert limits['logical_call_cap'] == limits['completion_token_cap_total'] == 'pending'
@@ -81,7 +89,7 @@ def test_private_endpoint_profiles_are_unique_even_when_artifact_leaf_is_run(tmp
 def prepared(tmp_path,monkeypatch):
     monkeypatch.setattr(worker,'private_endpoint',lambda directory,name:tmp_path/'private.env')
     path=tmp_path/'original'
-    worker.prepare({'cohort':'humaneval164','task_numbers':[72],'arms':['plain','ep_bva_v2']},path)
+    worker.prepare({'cohort':'humaneval164','task_numbers':[72],'arms':['plain','direct']},path)
     return path
 
 
@@ -101,8 +109,8 @@ def test_resume_keeps_attempt_history_and_rebuilds_only_path_metadata(prepared,t
     from final.src.orchestration.worker import inventory
     request={'messages':[],'temperature':.7,'max_tokens':2048,'seed':314231}
     attempt={'state':'unknown','request_id':digest(request),'attempt_number':1,'error':{'retryable':True}}
-    worker.save(prepared/'tasks/72/calls/ep_bva_v2_unknown_attempt_0000/request.json',request)
-    worker.save(prepared/'tasks/72/calls/ep_bva_v2_unknown_attempt_0000/attempt.json',attempt)
+    worker.save(prepared/'tasks/72/calls/direct_unknown_attempt_0000/request.json',request)
+    worker.save(prepared/'tasks/72/calls/direct_unknown_attempt_0000/attempt.json',attempt)
     worker.save(prepared/'tasks/72/reference_program.json',{'old_path':'fixture'})
     worker.save(prepared/'tasks/72/boundary/soft_bva/4/identity.json',{'old_path':'fixture'})
     worker.save(prepared/'status.json',{'state':'interrupted'})
@@ -113,7 +121,7 @@ def test_resume_keeps_attempt_history_and_rebuilds_only_path_metadata(prepared,t
     assert inventory(prepared)==before
     assert not (target/'tasks/72/reference_program.json').exists()
     assert not (target/'tasks/72/boundary/soft_bva/4/identity.json').exists()
-    assert worker.read(target/'tasks/72/calls/ep_bva_v2_unknown_attempt_0000/attempt.json')['attempt_number']==1
+    assert worker.read(target/'tasks/72/calls/direct_unknown_attempt_0000/attempt.json')['attempt_number']==1
 
 
 
@@ -173,6 +181,8 @@ def test_managed_adapter_freezes_and_replays_with_offline_empty_writer(prepared,
     result=worker.read(prepared/'result_digest.json')
     assert len(calls)==2 and result['writer_usage']['received']==2
     assert result['read_only_replay_matches'] is None
+    assert result['tested_base_pass'] == 0
+    assert result['evaluated_base_pass'] > 0
     assert all(row['valid_inputs']==row['detected']==0 for row in result['arms'].values())
     assert (prepared/'tasks/72/inputs.json').exists()
 
@@ -196,3 +206,30 @@ def test_task_error_log_reads_saved_records(tmp_path):
     assert 'rejected invalid_response×1' in row['generation'] and 'truncated' in row['generation']
     assert row['reference_rejected'] == 'domain_or_reference_rejects(timeout)×1'
     assert row['put_confirmed_failures'] == 'error:RecursionError×1'
+
+
+def test_catalogue_always_enabled_and_presets_match_flow_signature():
+    import ast
+
+    normalized = config.normalize({})
+    assert 'catalogue' not in normalized
+    # Legacy snapshots containing catalogue=True still normalize cleanly without exposing the key.
+    assert config.normalize({'catalogue': True}) == normalized
+    with pytest.raises(ValueError, match='always enabled'):
+        config.preview({'catalogue': False})
+
+    flows_path = Path(__file__).resolve().parents[1] / 'src' / 'orchestration' / 'flows.py'
+    tree = ast.parse(flows_path.read_text())
+    benchmark_fn = next(
+        node for node in tree.body
+        if isinstance(node, ast.AsyncFunctionDef) and node.name == 'benchmark'
+    )
+    flow_params = {arg.arg for arg in benchmark_fn.args.args}
+    assert 'catalogue' not in flow_params
+
+    for preset_file in ('run_console.json', 'criteria_pynguin.json'):
+        presets = json.loads((config.ROOT / 'final' / 'presets' / preset_file).read_text())
+        for preset in presets:
+            assert 'catalogue' not in preset['parameters']
+            resolved = config.normalize(preset['parameters'])
+            assert set(resolved) <= flow_params

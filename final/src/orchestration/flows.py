@@ -124,7 +124,8 @@ async def attach_outputs(directory):
     if summary_path.exists():
         result=json.loads(summary_path.read_text())
         rows=[{'arm':arm,**metrics} for arm,metrics in result.get('arms',{}).items()]
-        if rows:await create_table_artifact(table=rows,key='benchmark-results',description='Exact completed benchmark metrics')
+        if rows:await create_table_artifact(table=rows,key='benchmark-results',
+            description='tested_base_pass là số PUT vượt base test đã nhận ít nhất một input bổ sung hợp lệ của arm.')
         report=directory/'REPORT.md'
         if report.exists():await create_markdown_artifact(markdown=report.read_text()[:80000],key='benchmark-report')
         return result
@@ -134,9 +135,9 @@ async def attach_outputs(directory):
 
 @flow(name='HumanEval inputs',retries=0,log_prints=False,persist_result=False)
 async def benchmark(
-    cohort:Annotated[Literal['humaneval164'],Field(title='Frozen PUT cohort',description='Full HumanEval; task_numbers selects a subset.')]='humaneval164',
+    cohort:Annotated[Literal['humaneval164','humaneval_plus_mini','humaneval_plus_full'],Field(title='Frozen PUT cohort',description='HumanEval base, EvalPlus Mini base, or EvalPlus Full base; task_numbers selects a subset.')]='humaneval164',
     mode:Annotated[Literal['batch','tools','pynguin'],Field(title='Generation mode',description='Batch, tool sampling or Pynguin.')]='batch',
-    arms:Annotated[list[Literal['plain','direct','ep_bva_v2','decision_table_v2','ep_bva_vf3_measured','decision_table_vf3_measured','pynguin','control_flow','tool_direct','tool_hypothesis','tool_hypothesis_extra','tool_planner']],Field(title='Arms',description='batch: Plain, Control Flow, EP+BVA v2, DT v2, EP+BVA VF3 Measured and DT VF3 Measured.')]=['plain','ep_bva_v2','decision_table_v2'],
+    arms:Annotated[list[Literal['plain','direct','ep_bva_vf3_hybrid','decision_table_vf3_hybrid','pynguin','control_flow','control_flow_4tool','tool_direct','tool_hypothesis','tool_hypothesis_extra','tool_planner']],Field(title='Arms',description='batch: Plain, Control Flow, Control Flow + 4-tool trace, EP+BVA VF3 Hybrid and DT VF3 Hybrid.')]=['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid'],
     task_numbers:Annotated[list[int],Field(title='Task subset (empty means all)',description='HumanEval task numbers, such as 2, 11, 72.')]=[],
     inputs_per_task:Annotated[int,Field(title='Input budget per task per arm',ge=1,le=200)]=20,
     completion_tokens:Annotated[int,Field(title='Maximum completion tokens per call',ge=128,le=32768)]=4096,
@@ -149,9 +150,9 @@ async def benchmark(
     scorer:Annotated[Literal['confirm_first_failures','full_two_repeats'],Field(title='Scorer repeat policy')]='confirm_first_failures',
     model_name:Annotated[str | None,Field(title='Served model name',min_length=1,max_length=120)]=None,
     model_backend:Annotated[Literal['qwen','vertex','openrouter'],Field(title='Model backend')]='qwen',
-    catalogue:Annotated[bool,Field(title='Emit catalogue',description='EP/BVA/DT only. Uncheck for instruction-only ablation; completion cap stays shared.')]=True,
     tool_sampling:Annotated[dict | None,Field(title='Tool sampling budgets',description='Required for tools mode; explicit draws/query/time/audit/random budgets, including matching arms.')]=None,
     pynguin:Annotated[dict | None,Field(title='Pynguin settings',description='Pinned external Python environment, bounded per-owner upstream search; no credentials.')]=None,
+    tool_runs_dir:Annotated[str | None,Field(title='4-tool saved runs directory',description='Optional repo-local directory for control_flow_4tool; defaults to final/out/put_pytest_tools_20261122.')]=None,
     preview_only:Annotated[bool,Field(title='Preview only · no model calls',description='Checked: save config and budget preview without model, tokenizer or native calls.')]=False,
 ):
     """Choose a preset, edit parameters, Run. Each run freezes its own config/code.
@@ -159,7 +160,7 @@ async def benchmark(
     Args:
         cohort: Frozen HumanEval PUT set: all164 tasks or the known-bug diagnostic10-task subset.
         mode: Choose batch, tools or pynguin.
-        arms: Batch supports Plain, Direct, Control Flow, EP+BVA v2, DT v2, EP+BVA VF3 Measured and DT VF3 Measured.
+        arms: Batch supports Plain, Direct, Control Flow, EP+BVA v2, DT v2, EP+BVA VF3 Measured, DT VF3 Measured, EP+BVA VF3 Hybrid and DT VF3 Hybrid.
         task_numbers: HumanEval task IDs as numbers, e.g. 2, 11, 72. An empty list selects all tasks in the cohort.
         inputs_per_task: Total new-input budget per task per arm.
         completion_tokens: Maximum completion tokens in each individual writer call.
@@ -172,13 +173,19 @@ async def benchmark(
         scorer: confirm_first_failures runs a second PUT check only after a first failure. full_two_repeats runs the historical full repeat policy; both arms in a run use the same scorer.
         model_name: Model ID served by the selected backend.
         model_backend: Qwen, Vertex AI hoặc OpenRouter.
-        catalogue: Include compact catalogue for EP/BVA/DT; false is an instruction-only ablation.
         preview_only: Save resolved settings and input/call budget without model, tokenizer, or native calls.
     """
     parameters=locals().copy();parameters.pop('preview_only')
     if parameters['model_name'] is None:parameters.pop('model_name')
     if parameters.get('tool_sampling') is None:parameters.pop('tool_sampling')
     if parameters.get('pynguin') is None:parameters.pop('pynguin')
+    if not parameters.get('tool_runs_dir'):
+        parameters.pop('tool_runs_dir', None)
+    else:
+        resolved_tools = (ROOT / parameters['tool_runs_dir']).resolve()
+        if not resolved_tools.is_relative_to(ROOT):
+            raise ValueError('Choose a repository-local 4-tool runs directory')
+        parameters['tool_runs_dir'] = str(resolved_tools.relative_to(ROOT))
     config=normalize(parameters);description=preview(config)
     run_id=str(get_run_context().flow_run.id)
     async with get_client() as client:

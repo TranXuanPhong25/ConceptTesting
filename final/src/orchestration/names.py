@@ -34,6 +34,12 @@ def historical_run_name(directory, metrics=None):
 def benchmark_run_name(config, preview_only=False):
     selected = config.get('task_numbers', [])
     scope = f'{len(selected)} task' if selected else 'Full164'
+    cohort_tag = {
+        'humaneval_plus_mini': 'EvalPlus Mini base',
+        'humaneval_plus_full': 'EvalPlus Full base',
+    }.get(config.get('cohort', 'humaneval164'))
+    if cohort_tag:
+        scope = f'{scope} · {cohort_tag}'
     labels = {'direct': 'Direct', 'soft_bva': 'Soft BVA', 'boundary': 'Soft BVA'}
     labels.update(plain='Plain', equivalence='Weak EP', bva_normal='Normal BVA', ep_bva='EP + BVA',
                   decision_table='DT', ep_strong='Strong EP', bva_robust='Robust BVA',
@@ -41,8 +47,11 @@ def benchmark_run_name(config, preview_only=False):
     labels.update(pynguin='Pynguin')
     labels.update(ep_bva_v2='EP + BVA v2', decision_table_v2='DT v2',
                   ep_bva_vf3_measured='EP + BVA VF3 Measured',
-                  decision_table_vf3_measured='DT VF3 Measured')
-    labels.update(control_flow='Control-flow', control_flow_c_use='CF c-use')
+                  decision_table_vf3_measured='DT VF3 Measured',
+                  ep_bva_vf3_hybrid='EP + BVA VF3 Hybrid',
+                  decision_table_vf3_hybrid='DT VF3 Hybrid')
+    labels.update(control_flow='Control-flow', control_flow_4tool='Control-flow + 4-tool trace',
+                  control_flow_c_use='CF c-use')
     labels.update(tool_direct='Direct seeds', tool_hypothesis='Hypothesis',
                   tool_hypothesis_extra='Extra Hypothesis',
                   tool_planner='Combination planner')
