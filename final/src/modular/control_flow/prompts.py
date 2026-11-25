@@ -70,7 +70,8 @@ including currently unsupported scenarios, remain eligible; never claim coverage
 
 
 def messages(task, contract, programs, analyses, targets, input_budget, feedback=None, *,
-             prior_stage_inputs=None, instruction=INSTRUCTION):
+             prior_stage_inputs=None, prior_stage_summary=None,
+             max_prompt_prior_inputs=12, instruction=INSTRUCTION):
     payload = {'specification': task['prompt'], 'trusted_contract': contract,
                'parameter_names_from_signature': None, 'input_budget': input_budget,
                'programs': programs, 'analysis': analyses, 'targets': targets,
@@ -78,9 +79,19 @@ def messages(task, contract, programs, analyses, targets, input_budget, feedback
     from ..call_builder import CallBuilder
     payload['parameter_names_from_signature'] = list(CallBuilder.for_source(task['prompt'], task['entry_point']).signature.parameters)
     if prior_stage_inputs is not None:
-        payload['prior_stage_inputs'] = prior_stage_inputs
-        instruction += ('\nThe prior_stage_inputs extend the base suite. Use their source stages and '
-                        'technique labels as context, and the supplied residual targets as measured evidence. '
-                        'Do not repeat the prior calls or infer expected outputs from them.')
+        summary = prior_stage_summary
+        shown = prior_stage_inputs
+        if len(prior_stage_inputs) > max_prompt_prior_inputs:
+            from .tool_inputs import compact_prompt_prior_inputs
+            shown, auto_summary = compact_prompt_prior_inputs(prior_stage_inputs, limit=max_prompt_prior_inputs)
+            summary = summary or auto_summary
+        has_prior = bool(shown) or (summary is None or summary.get('total_prior_inputs', 0) > 0)
+        if has_prior:
+            payload['prior_stage_inputs'] = shown
+            if summary is not None:
+                payload['prior_stage_summary'] = summary
+            instruction += ('\nThe prior_stage_inputs extend the base suite. Use their source stages and '
+                            'technique labels as context, and the supplied residual targets as measured evidence. '
+                            'Do not repeat the prior calls or infer expected outputs from them.')
     return [{'role': 'system', 'content': instruction},
             {'role': 'user', 'content': json.dumps(payload, ensure_ascii=False, separators=(',', ':'))}]

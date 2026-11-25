@@ -446,3 +446,63 @@ def test_retry_repairs_invalid_concept_after_all_targets_hit(tmp_path):
     assert batch['rounds'][0]['errors']
     assert not batch['rounds'][1]['errors']
     assert batch['target_coverage']['covered'] == batch['target_coverage']['total']
+
+
+@pytest.mark.parametrize('target_count, expected_suite_budget', [
+    (4, 20),
+    (10, 20),
+    (15, 25),
+])
+def test_suite_input_budget_scales_with_selected_targets(
+    tmp_path, monkeypatch, target_count, expected_suite_budget,
+):
+    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+
+    targets = [
+        {'id': f'p0:C1:{line}', 'program_id': 'p0', 'criterion': 'C1',
+         'line': line, 'evidence_lines': [line]}
+        for line in range(1, target_count + 1)
+    ]
+
+    class Calls:
+        def __init__(self):
+            self.round_index = 0
+
+        def token_count(self, messages):
+            return 100
+
+        def complete(self, number, name, messages, **kwargs):
+            payload = json.loads(messages[-1]['content'])
+            target = payload['targets'][0]
+            raw = response(target['id'])
+            raw['concepts'][0].update(evidence_lines=target['evidence_lines'], predicate='', strategies={})
+            offset = self.round_index * 20
+            self.round_index += 1
+            raw['inputs'] = [
+                {'arguments': {'xs': [offset + idx], 'k': 1}, 'concept_id': 'distinct_equal'}
+                for idx in range(20)
+            ]
+            return ModelResponse(json.dumps(raw), finish_reason='stop')
+
+    ctx = TaskContext(
+        {'task_id': 'HumanEval/0', 'entry_point': 'f', 'prompt': SPEC, 'test': ''},
+        {'contract': '    assert isinstance(xs, list)\n    assert isinstance(k, int)\n'},
+        ArtifactStore(tmp_path),
+        PipelineSettings(input_budget=20, input_tokens=4096),
+        Calls(),
+        cohort_task={'generated': 1, 'programs': [program()]},
+        packet={'visible_put_ids': ['p0'], 'common': ''},
+    )
+    arm = ControlFlowArm(ControlFlowSettings(rounds=2, target_limit=6, candidate_limit=64))
+    monkeypatch.setattr(arm, '_analyze_programs', lambda *args: ([{
+        'program_id': 'p0', 'source_sha256': 'fixture',
+        'coverage_status': 'measured',
+        'targets': targets,
+    }], []))
+    monkeypatch.setattr(arm, 'trace', lambda context, program, records: [
+        {'domain': 'valid', 'status': 'executed', 'coverage': {'lines': [1]}}
+        for _ in records
+    ])
+    result = arm.run(ctx)
+    assert result['suite_input_budget'] == expected_suite_budget
+    assert len(result['inputs']) == expected_suite_budget

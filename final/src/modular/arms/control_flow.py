@@ -10,13 +10,27 @@ from ..call_builder import CallBuilder, input_identity
 from ..control_flow.analysis import analyze, hit
 from ..control_flow.prompts import INSTRUCTION, messages
 from ..control_flow.schema import parse_response
+from ..control_flow.tool_inputs import (
+    DEFAULT_MAX_PRIOR_INPUTS,
+    DEFAULT_MAX_PROMPT_PRIOR_INPUTS,
+    FOUR_TOOLS,
+    compact_prompt_prior_inputs,
+    default_tool_runs_dir,
+    is_sandbox_infrastructure_error,
+    load_four_tool_prior_inputs,
+)
 from ..input_prompts import compact_source
 from ..response_json import load_response_json
 from final.src.runtime.artifacts import digest
-from final.src.runtime.execution import execute
+from final.src.runtime.execution import ExecutionError, execute
 
 
 HYPOTHESIS_INPUT_LIMIT = 40
+SUITE_TARGET_OFFSET = 10
+
+
+def _suite_input_budget(base_budget, selected_target_count):
+    return max(base_budget, SUITE_TARGET_OFFSET + selected_target_count)
 
 def _measure_generation_time(discover):
     @wraps(discover)
@@ -69,12 +83,16 @@ class ControlFlowArm(InputGenerationMethod):
     default_input_tokens = 4096
     instruction = INSTRUCTION
 
-    def __init__(self, settings=None):
+    max_prompt_prior_inputs = DEFAULT_MAX_PROMPT_PRIOR_INPUTS
+
+    def __init__(self, settings=None, *, max_prompt_prior_inputs=DEFAULT_MAX_PROMPT_PRIOR_INPUTS):
         self.settings = settings or ControlFlowSettings()
+        self.max_prompt_prior_inputs = max_prompt_prior_inputs
 
     def configuration(self):
         return {
             "budgets": asdict(self.settings),
+            "suite_input_budget": f"max(input_budget, {SUITE_TARGET_OFFSET} + selected_targets)",
             "instruction": self.instruction,
             "tool_input_limits": {"hypothesis": HYPOTHESIS_INPUT_LIMIT},
             "trace_timeout_cap_seconds": 1,
@@ -105,12 +123,66 @@ class ControlFlowArm(InputGenerationMethod):
                     "context": context.task["prompt"],
                     "contract": context.metadata.get("contract", ""),
                     "tests": [record],
-                    "timeout": min(1, context.settings.timeout_seconds),
+                    "timeout": min(context.extensions.get("trace_timeout_cap", 1), context.settings.timeout_seconds),
                     "seed": context.settings.input_seed,
                 }
             )
             observations.extend(result['tests'])
         return observations
+
+    def trace_prior(self, context, program, records, *, chunk_size=16):
+        """Batch prior-stage traces with binary-split fallback; respects monkeypatched trace()."""
+        if not records:
+            return []
+        if "trace" in self.__dict__ or type(self).trace is not ControlFlowArm.trace:
+            return self.trace(context, program, records)
+
+        def run_chunk(chunk):
+            if len(chunk) == 1:
+                try:
+                    return self.trace(context, program, chunk)
+                except ExecutionError as error:
+                    if is_sandbox_infrastructure_error(error):
+                        raise
+                    return [{"domain": "unknown", "status": "error", "exception": "SandboxCrash"}]
+            try:
+                result = execute(
+                    {
+                        "mode": "control_flow",
+                        "source": program["code"],
+                        "entry": context.task["entry_point"],
+                        "context": context.task["prompt"],
+                        "contract": context.metadata.get("contract", ""),
+                        "tests": chunk,
+                        "timeout": min(context.extensions.get("trace_timeout_cap", 1), context.settings.timeout_seconds),
+                        "seed": context.settings.input_seed,
+                    }
+                )
+                tests = result.get("tests")
+                if not isinstance(tests, list) or len(tests) != len(chunk):
+                    raise ExecutionError("Malformed control_flow trace batch")
+                return tests
+            except ExecutionError as error:
+                if is_sandbox_infrastructure_error(error):
+                    raise
+                mid = len(chunk) // 2
+                return run_chunk(chunk[:mid]) + run_chunk(chunk[mid:])
+
+        observations = []
+        for offset in range(0, len(records), chunk_size):
+            observations.extend(run_chunk(records[offset : offset + chunk_size]))
+        return observations
+
+    def _prompt_prior_context(self, context, prior_inputs):
+        if prior_inputs is None:
+            return None, None
+        explicit_summary = context.extensions.get("prior_stage_summary")
+        if explicit_summary is None and len(prior_inputs) <= self.max_prompt_prior_inputs:
+            return prior_inputs, None
+        compact, auto_summary = compact_prompt_prior_inputs(
+            prior_inputs, limit=self.max_prompt_prior_inputs,
+        )
+        return compact, explicit_summary or auto_summary
 
     @_measure_generation_time
     def discover(self, context):
@@ -122,6 +194,7 @@ class ControlFlowArm(InputGenerationMethod):
         builder = CallBuilder.for_source(context.task['prompt'], context.task['entry_point'])
         # Input kế thừa từ các stage trước. None là luồng chạy không có stage trước.
         prior_inputs = context.extensions.get('prior_stage_inputs')
+        prompt_prior_inputs, prior_stage_summary = self._prompt_prior_context(context, prior_inputs)
         programs = [
             # Analysis có thể cập nhật base coverage, nên sửa trên bản sao của PUT.
             copy.deepcopy(program)
@@ -136,7 +209,8 @@ class ControlFlowArm(InputGenerationMethod):
         # Mỗi nhóm khai báo loại target, system prompt, danh sách target và số round dự kiến.
         for family, instruction, family_analyses, repeats in self._target_batches(analyses):
             batches, dropped_ids = self._prepare_target_rounds(
-                context, programs, analyses, prior_inputs, family_analyses, instruction,
+                context, programs, analyses, prompt_prior_inputs, family_analyses, instruction,
+                prior_stage_summary=prior_stage_summary,
             )
             for targets, _, _ in batches:
                 selected_targets.extend(targets)
@@ -218,7 +292,9 @@ class ControlFlowArm(InputGenerationMethod):
                 targets,
                 context.settings.input_budget,
                 feedback,
-                prior_stage_inputs=prior_inputs,
+                prior_stage_inputs=prompt_prior_inputs,
+                prior_stage_summary=prior_stage_summary,
+                max_prompt_prior_inputs=self.max_prompt_prior_inputs,
                 instruction=instruction,
             )
             if context.calls.token_count(request) + context.settings.input_tokens + 128 > context.settings.context_tokens:
@@ -323,8 +399,9 @@ class ControlFlowArm(InputGenerationMethod):
             if llm_checks_left == 0 and hypothesis_draws_left == 0:
                 break
 
-        # Giữ input đã qua domain, ưu tiên input đóng góp target mới và cắt theo budget cuối.
-        selected, selected_coverage = self._select_inputs(candidates, context.settings.input_budget)
+        # Giữ input đã qua domain, ưu tiên input đóng góp target mới và cắt theo budget cuối mở rộng theo số target.
+        suite_input_budget = _suite_input_budget(context.settings.input_budget, len(selected_targets))
+        selected, selected_coverage = self._select_inputs(candidates, suite_input_budget)
         return {
             # Giữ provenance trong luồng kế thừa để stage sau biết nguồn input.
             "inputs": [
@@ -335,6 +412,7 @@ class ControlFlowArm(InputGenerationMethod):
                 )
                 for row in selected
             ],
+            "suite_input_budget": suite_input_budget,
             "concepts": concepts,  # Concept đã parse từ các round.
             "status": "generated" if round_logs else "prompt_too_large",  # Đã xử lý round hay hết chỗ.
             "errors": errors,  # Lỗi generation đã tích lũy.
@@ -383,13 +461,16 @@ class ControlFlowArm(InputGenerationMethod):
                                 )
                             ],
                         }
+                targets_before_prior = None
+                if prior_inputs is not None and program['base'].get('coverage') is not None:
+                    targets_before_prior = len(analyze(program, context.task['entry_point'])['targets'])
                 added_coverage = []
-                if prior_inputs:
+                if prior_inputs and (targets_before_prior is None or targets_before_prior > 0):
                     observations = context.artifacts.load_or_compute(
                         f"{context.task_directory}/{self.name}/prior_{digest(program['id'])[:16]}.json",
                         lambda: [
                             {'input_id': row['input_id'], 'source_stage': row['source_stage'], **observation}
-                            for row, observation in zip(prior_inputs, self.trace(context, program, prior_inputs), strict=True)
+                            for row, observation in zip(prior_inputs, self.trace_prior(context, program, prior_inputs), strict=True)
                         ])
                     added_coverage = [row['coverage'] for row in observations
                                       if row.get('domain') == 'valid' and 'coverage' in row]
@@ -411,6 +492,7 @@ class ControlFlowArm(InputGenerationMethod):
                     analysis["baseline"].update(
                         prior_stage_calls=len(prior_inputs),
                         prior_stage_calls_with_coverage=len(added_coverage),
+                        targets_before_prior=targets_before_prior,
                     )
                 analyses.append(analysis)
             except (ValueError, SyntaxError) as error:
@@ -420,7 +502,10 @@ class ControlFlowArm(InputGenerationMethod):
     def _target_batches(self, analyses):
         return [('cfg', self.instruction, analyses, self.settings.rounds)]
 
-    def _prepare_target_rounds(self, context, programs, analyses, prior_inputs, family_analyses, instruction):
+    def _prepare_target_rounds(
+        self, context, programs, analyses, prior_inputs, family_analyses, instruction, *,
+        prior_stage_summary=None,
+    ):
         pending = [target for row in family_analyses for target in row['targets']]
         if not pending:
             return [], []
@@ -456,6 +541,8 @@ class ControlFlowArm(InputGenerationMethod):
                 targets,
                 context.settings.input_budget,
                 prior_stage_inputs=prior_inputs,
+                prior_stage_summary=prior_stage_summary,
+                max_prompt_prior_inputs=self.max_prompt_prior_inputs,
                 instruction=instruction,
             )
             if context.calls.token_count(request) + context.settings.input_tokens + 128 <= context.settings.context_tokens:
@@ -681,3 +768,129 @@ class ControlFlowArm(InputGenerationMethod):
                 row.get("total") is None for row in coverage
             ),
         }
+
+
+class ControlFlowFourToolArm(ControlFlowArm):
+    """ControlFlow seeded with strictly oracle-free 4-tool inputs and residual C1/C2 tracing."""
+
+    name = 'control_flow_4tool'
+    # Tool inputs (huge ints, long strings) need more time than LLM-written inputs.
+    trace_timeout_cap_seconds = 2
+
+    def __init__(
+        self,
+        settings=None,
+        *,
+        tool_runs_dir=None,
+        max_prior_inputs=DEFAULT_MAX_PRIOR_INPUTS,
+        max_prompt_prior_inputs=DEFAULT_MAX_PROMPT_PRIOR_INPUTS,
+    ):
+        super().__init__(settings, max_prompt_prior_inputs=max_prompt_prior_inputs)
+        self.tool_runs_dir = str(tool_runs_dir) if tool_runs_dir else None
+        self.max_prior_inputs = max_prior_inputs
+
+    def configuration(self):
+        return {
+            **super().configuration(),
+            "prior_source": "4tool_pytest_receipts",
+            "prior_tools": list(FOUR_TOOLS),
+            "max_prior_inputs": self.max_prior_inputs,
+            "max_prompt_prior_inputs": self.max_prompt_prior_inputs,
+            "tool_runs_dir": self.tool_runs_dir or "auto",
+            "trace_timeout_cap_seconds": self.trace_timeout_cap_seconds,
+        }
+
+    def _resolve_tool_runs_dir(self, context):
+        explicit = self.tool_runs_dir or context.extensions.get("tool_runs_dir")
+        return explicit if explicit else str(default_tool_runs_dir(context.task["task_id"]))
+
+    def _load_prior_inputs(self, context, programs):
+        runs_dir = self._resolve_tool_runs_dir(context)
+        return context.artifacts.load_or_compute(
+            f"{context.task_directory}/{self.name}/tool4_prior_inputs.json",
+            lambda: load_four_tool_prior_inputs(
+                context.task,
+                context.metadata,
+                programs,
+                tool_runs_dir=runs_dir,
+                max_prior_inputs=self.max_prior_inputs,
+                validate_timeout=min(2.0, context.settings.timeout_seconds),
+                seed=context.settings.reference_seed,
+            ),
+        )
+
+    @_measure_generation_time
+    def discover(self, context):
+        if context.calls is None or context.packet is None:
+            raise RuntimeError('Control-flow discovery requires prepared context and model calls')
+        base_pass_programs = [
+            program for program in context.cohort_task["programs"]
+            if program["base"]["status"] == "pass"
+        ]
+        loaded = self._load_prior_inputs(context, base_pass_programs)
+        upstream = context.extensions.get("prior_stage_inputs")
+        prior_inputs = [*(upstream or ()), *loaded["inputs"]]
+        _, prompt_summary = compact_prompt_prior_inputs(
+            prior_inputs, limit=self.max_prompt_prior_inputs,
+        )
+        run_context = copy.copy(context)
+        run_context.extensions = {
+            **context.extensions,
+            "prior_stage_inputs": prior_inputs,
+            "prior_stage_summary": prompt_summary,
+            "trace_timeout_cap": self.trace_timeout_cap_seconds,
+        }
+        result = super().discover(run_context)
+        analysis = context.artifacts.read(f"{context.task_directory}/{self.name}/analysis.json")
+        analyzed = analysis.get("programs", [])
+        if analyzed and all(
+            row.get("coverage_status") == "measured"
+            and row.get("baseline", {}).get("targets_before_prior") is not None
+            for row in analyzed
+        ):
+            before_total = sum(row["baseline"]["targets_before_prior"] for row in analyzed)
+            residual_total = sum(len(row["targets"]) for row in analyzed)
+            eliminated_total = max(0, before_total - residual_total)
+            closed_by_4tool = before_total > 0 and residual_total == 0
+        else:
+            before_total = None
+            residual_total = None
+            eliminated_total = None
+            closed_by_4tool = False
+
+        result["tool4_prior_summary"] = {
+            "loaded_stats": loaded["stats"],
+            "prior_inputs_traced": len(prior_inputs),
+            "prompt_prior_examples_shown": prompt_summary["shown_examples"],
+            "base_targets_before_4tool": before_total,
+            "residual_targets_after_4tool": residual_total,
+            "targets_eliminated_by_4tool": eliminated_total,
+            "closed_by_4tool": closed_by_4tool,
+            "analysis_error_count": len(analysis.get("errors", [])),
+        }
+        return result
+
+    def extend_summary(self, contexts, summary, reporting):
+        super().extend_summary(contexts, summary, reporting)
+        batches = [context.inputs['arms'][self.name] for context in contexts if not context.inputs.get('skip')]
+        prior_rows = [batch.get("tool4_prior_summary", {}) for batch in batches]
+        before_values = [row.get("base_targets_before_4tool") for row in prior_rows]
+        residual_values = [row.get("residual_targets_after_4tool") for row in prior_rows]
+        known_before = all(type(value) is int for value in before_values) and bool(before_values)
+        known_residual = all(type(value) is int for value in residual_values) and bool(residual_values)
+        summary[self.name].update(
+            prior_inputs_loaded=sum(row.get("prior_inputs_traced", 0) for row in prior_rows),
+            base_targets_before_4tool=sum(before_values) if known_before else None,
+            residual_targets_after_4tool=sum(residual_values) if known_residual else None,
+            targets_eliminated_by_4tool=(
+                sum(row.get("targets_eliminated_by_4tool") or 0 for row in prior_rows)
+                if known_before and known_residual
+                else None
+            ),
+            tasks_closed_by_4tool=sum(bool(row.get("closed_by_4tool")) for row in prior_rows),
+            tasks_with_residual_gaps=sum(
+                type(row.get("residual_targets_after_4tool")) is int
+                and row["residual_targets_after_4tool"] > 0
+                for row in prior_rows
+            ),
+        )

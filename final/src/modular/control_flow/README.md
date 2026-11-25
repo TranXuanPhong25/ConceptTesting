@@ -44,8 +44,9 @@ trên cả task trong mỗi arm, chia giữa các round và concept. Mỗi conce
 tối đa 32 draws và 2 giây sampling. `candidate_limit` (mặc định 64) là quota
 native trace cho input LLM, có thể tăng để dành một lượt cho mỗi PUT
 trong mỗi batch mới.
-Input tool có quota riêng, được dedup trước trace. Suite cuối dùng shared
-`input_budget` (mặc định 20). Trace tối đa 1 giây/input trong singleton bwrap.
+Input tool có quota riêng, được dedup trước trace. Suite cuối có trần
+`max(input_budget, 10 + số target đã xếp batch)` (mặc định tối thiểu 20). Trace
+tối đa 1 giây/input trong singleton bwrap.
 Hard timeout ở native C cho unknown/no coverage, lỗi infrastructure thật vẫn
 raise. Không suy infeasible từ timeout/no witness.
 
