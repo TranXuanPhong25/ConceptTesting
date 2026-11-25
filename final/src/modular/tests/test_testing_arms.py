@@ -7,8 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from final.src.models.core_model import ModelResponse
-from final.src.modular.arms.classical import CatalogueArm
-from final.src.modular.arms.fault_oriented import EpBvaV2Arm
+from final.src.modular.arms.vf3_hybrid import StructuredCatalogueArm, VF3_HYBRID_ARMS
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.catalogue import (Boundary, Catalogue, boundary_targets, decision_table_check,
@@ -28,7 +27,15 @@ def context(tmp_path, source='def f(x): pass'):
 
 
 def decode(arm, raw, tmp_path, source='def f(x): pass'):
-    return arm.decode_response(ModelResponse(json.dumps(raw),finish_reason='stop'), context(tmp_path,source))
+    res = arm._decode_inputs(ModelResponse(json.dumps(raw), finish_reason='stop'), context(tmp_path, source))
+    cat, errors = validate_catalogue(raw.get('catalogue'), arm.sections)
+    res.update(
+        catalogue=cat.model_dump(mode='json') if cat is not None else None,
+        catalogue_status='catalogue_invalid' if errors else cat.status,
+        catalogue_errors=errors,
+    )
+    res['status'] = res['catalogue_status']
+    return res
 
 
 def measure(raw, records, *, name='bva_normal', source='def f(x): pass', budget=20):
@@ -43,9 +50,9 @@ def measure(raw, records, *, name='bva_normal', source='def f(x): pass', budget=
 
 
 def boundary_only_arm():
-    arm=CatalogueArm()
-    arm.name='bva_normal'
-    arm.sections=('boundaries',)
+    arm = StructuredCatalogueArm()
+    arm.name = 'bva_normal'
+    arm.sections = ('boundaries',)
     return arm
 
 
@@ -128,7 +135,7 @@ def test_duplicate_empty_and_malformed_catalogues_preserve_valid_inputs(tmp_path
               {'classes':[{'id':'E','description':'a'},{'id':'E','description':'b'}]},
               {'classes':[{'id':'E','description':'empty','members':[]}]}]
     for raw in examples:
-        result=decode(EpBvaV2Arm(),{'catalogue':raw,'inputs':[{'arguments':{'x':2}}]},tmp_path)
+        result=decode(VF3_HYBRID_ARMS[0](),{'catalogue':raw,'inputs':[{'arguments':{'x':2}}]},tmp_path)
         assert result['catalogue_status']=='catalogue_invalid'
         assert result['inputs'][0]['args']=='(2,)'
 
@@ -234,15 +241,15 @@ def test_reference_survivors_exclude_base_and_rejected_but_keep_global_duplicate
     assert measured['boundaries'][0]['matched_values']==[2]
 
 
-def test_console_comparison_preset_has_v2_arms_and_shared_budget():
+def test_console_comparison_preset_has_vf3_hybrid_arms_and_shared_budget():
     from pathlib import Path
     presets = json.loads(Path('final/presets/run_console.json').read_text())
-    preset = next(preset for preset in presets if preset['name'] == 'Full164 · Plain vs EP+BVA v2 vs DT v2 · batch')
+    preset = next(preset for preset in presets if preset['name'] == 'Full164 · EP+BVA VF3 Hybrid vs DT VF3 Hybrid · batch')
     preview=config.preview(preset['parameters'])
-    assert preview['config']['arms']==['plain','ep_bva_v2','decision_table_v2']
+    assert preview['config']['arms']==['ep_bva_vf3_hybrid','decision_table_vf3_hybrid']
     assert preview['completion_token_cap_per_call']==4096
-    assert preview['logical_call_cap']==471
-    assert preview['max_input_slots_per_arm']==3140
+    assert preview['logical_call_cap']==636
+    assert preview['max_input_slots_by_arm']=={'ep_bva_vf3_hybrid':6360,'decision_table_vf3_hybrid':6360}
 
 
 def test_malformed_tagged_context_or_nominal_cannot_abort_generation_or_evaluation(tmp_path):
@@ -335,13 +342,12 @@ class BlockBenchmark(importlib.abc.MetaPathFinder):
             raise AssertionError('Benchmark dependency imported by Prefect config: '+fullname)
 sys.meta_path.insert(0, BlockBenchmark())
 from final.src.orchestration.config import normalize
-assert normalize({'arms':['plain','ep_bva_v2']})['completion_tokens']==4096
+assert normalize({'arms':['plain','ep_bva_vf3_hybrid']})['completion_tokens']==4096
 '''
     result=subprocess.run([sys.executable,'-c',script],capture_output=True,text=True)
     assert result.returncode==0,result.stderr
     from final.src.modular.arm_names import CATALOGUE_ARM_NAMES
-    from final.src.modular.arms.fault_oriented import V2_ARMS
-    assert set(CATALOGUE_ARM_NAMES)=={arm.name for arm in V2_ARMS}
+    assert set(CATALOGUE_ARM_NAMES)=={arm.name for arm in VF3_HYBRID_ARMS}
 
 
 def test_float_and_finite_enum_domains_infer_kind_when_optional_field_is_omitted():

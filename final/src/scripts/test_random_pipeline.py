@@ -27,7 +27,7 @@ from final.src.scripts._formatting import (
     render_banner,
 )
 
-DEFAULT_ARMS = ("ep_bva_v2", "decision_table_v2", "control_flow")
+DEFAULT_ARMS = ("ep_bva_vf3_hybrid", "decision_table_vf3_hybrid", "control_flow")
 
 
 def _preview(value, max_len: int = 90) -> str:
@@ -152,7 +152,7 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="+",
         choices=[arm.name for arm in available_arms()],
         default=list(DEFAULT_ARMS),
-        help="Input generation arms (default: ep_bva_v2 decision_table_v2 control_flow)",
+        help="Input generation arms (default: ep_bva_vf3_hybrid decision_table_vf3_hybrid control_flow)",
     )
     parser.add_argument("--num-tasks", type=int, default=1, help="Number of random tasks to run")
     parser.add_argument("--task-id", help="Optional explicit task ID instead of random selection")

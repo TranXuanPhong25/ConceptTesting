@@ -27,7 +27,7 @@ from final.src.scripts._formatting import (
 # ---------------------------------------------------------------------------
 CONFIG = {
     "dataset": "he-py",
-    "arms": ("ep_bva_v2", "decision_table_v2", "control_flow"),
+    "arms": ("ep_bva_vf3_hybrid", "decision_table_vf3_hybrid", "control_flow"),
     "cohort": Path("final/out/cohorts/qwen35_27b_humaneval164/cohort.json"),
     "artifacts": Path("final/out/scripts_v2_cf"),
     "model_backend": "vertex",
@@ -52,7 +52,7 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="+",
         choices=[arm.name for arm in available_arms()],
         default=list(CONFIG["arms"]),
-        help="Arms to generate and evaluate (default: ep_bva_v2 decision_table_v2 control_flow)",
+        help="Arms to generate and evaluate (default: ep_bva_vf3_hybrid decision_table_vf3_hybrid control_flow)",
     )
     parser.add_argument("--cohort", type=Path, default=CONFIG["cohort"])
     parser.add_argument("--artifacts", type=Path, default=CONFIG["artifacts"])

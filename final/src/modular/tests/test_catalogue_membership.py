@@ -154,20 +154,19 @@ def test_empty_checkable_class_has_no_witness_and_is_missed():
     assert result['classes'][0]['status'] == 'miss'
 
 
-def test_condition_predicates_are_in_v2_rendered_contracts():
-    from final.src.modular.arms.fault_oriented import EpBvaV2Arm, DecisionTableV2Arm
+def test_condition_predicates_are_in_rendered_contracts():
+    from final.src.modular.arms.vf3_hybrid import EpBvaArm, DecisionTableArm
     from final.src.modular.input_prompts import structured_input_prompt
     common = structured_input_prompt(task(), [], '', 20)
-    for factory in (EpBvaV2Arm,DecisionTableV2Arm):
-        prompt = factory().build_messages({'common':common})[1]['content']
-        assert 'condition_predicates' in prompt
-        assert 'class predicate' in prompt
-        assert 'covers alone earns no observed coverage' in prompt
+    ep_prompt = EpBvaArm().build_messages({'common': common})[1]['content']
+    dt_prompt = DecisionTableArm().build_messages({'common': common})[1]['content']
+    assert 'supplied JSON Schema' in ep_prompt and 'class predicate' in ep_prompt
+    assert 'supplied JSON Schema' in dt_prompt and 'C1..Cn' in dt_prompt
 
 
 def test_original_rule_id_cannot_shadow_class_but_valid_inputs_survive(tmp_path):
     from final.src.modular.catalogue import validate_catalogue
-    from final.src.modular.arms.classical import CatalogueArm
+    from final.src.modular.arms.vf3_hybrid import StructuredCatalogueArm
     from final.src.modular.tests.test_testing_arms import decode
     raw = {'classes':[{'id':'E','description':'negative','predicate':'x < 0'}],
            'boundaries':[bva()], 'conditions':{'C':[True,False]},
@@ -178,7 +177,7 @@ def test_original_rule_id_cannot_shadow_class_but_valid_inputs_survive(tmp_path)
                     {'id':'RF','conditions':{'C':False},'actions':['B'],'merged_from':['F']}]}
     _, errors = validate_catalogue(raw,('classes','boundaries','rules'))
     assert 'original_rule_id_collision:E' in errors
-    arm = CatalogueArm()
+    arm = StructuredCatalogueArm()
     arm.sections = ("classes", "boundaries", "rules")
     result = decode(arm,{'catalogue':raw,'inputs':[{'arguments':{'x':1},'covers':['E']}]},tmp_path)
     assert result['catalogue_status'] == 'catalogue_invalid'

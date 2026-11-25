@@ -1,8 +1,7 @@
 """Supported input-generation methods for the current pipeline."""
 from .plain import PlainArm
-from .fault_oriented import V2_ARMS
-from .vf3_measured import VF3_MEASURED_ARMS
-from .control_flow import ControlFlowArm
+from .vf3_hybrid import VF3_HYBRID_ARMS
+from .control_flow import ControlFlowArm, ControlFlowFourToolArm
 
 
 def default_arms():
@@ -12,9 +11,9 @@ def default_arms():
 def available_arms():
     return (
         PlainArm(),
-        *(arm() for arm in V2_ARMS),
-        *(arm() for arm in VF3_MEASURED_ARMS),
+        *(arm() for arm in VF3_HYBRID_ARMS),
         ControlFlowArm(),
+        ControlFlowFourToolArm(),
     )
 
 

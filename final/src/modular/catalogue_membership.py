@@ -4,7 +4,7 @@ import time
 from .catalogue import effective_boundary_context, selected_value, interval_contains, matches_context
 from .tool_sampling.membership import evaluate, expression
 
-MAX_PREDICATE_CHECKS = 512
+MAX_PREDICATE_CHECKS = 2048
 MAX_MEMBERSHIP_SECONDS = 5
 
 

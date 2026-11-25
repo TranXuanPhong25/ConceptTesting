@@ -39,20 +39,21 @@ def load_options(arguments=None):
     parser.add_argument("--cohort", type=Path, default=Path("final/out/cohorts/qwen35_27b_humaneval164/cohort.json"))
     parser.add_argument("--artifacts", type=Path, default=Path("final/out/modular_pipeline"))
     parser.add_argument("--arms", nargs="+", choices=[arm.name for arm in available_arms()],
-                        help="Input methods include plain (default) and control_flow")
+                        help="Input methods include plain (default), control_flow and control_flow_4tool")
+    parser.add_argument("--tool-runs-dir", type=Path,
+                        help="Optional 4-tool saved artifact directory for control_flow_4tool")
     parser.add_argument("--input-tokens", type=positive_integer,
                         help="Completion tokens/call; default 4096 with catalogue arms, otherwise 2048")
     parser.add_argument("--context-tokens", type=positive_integer, default=8192)
     parser.add_argument("--model-backend", choices=("qwen", "vertex", "openrouter"),
                         help="Live transport; defaults to FINAL_MODEL_BACKEND or existing Qwen backend")
     parser.add_argument("--model-name", help="Model ID for the selected live backend")
-    parser.add_argument("--catalogue-off", action="store_true", help="Instruction-only ablation for catalogue arms")
     parser.add_argument("--tool-config", type=Path,
                         help="Opt-in tool pipeline JSON: {budgets: {...}, preparations: optional task map}")
     parser.add_argument("--pynguin-config", type=Path, help="Opt-in PynguinSettings JSON; upstream input baseline")
     parser.add_argument("--task-ids", nargs="+", help="Explicit subset, e.g. HumanEval/0 HumanEval/18")
     parser.add_argument("--target-programs", type=positive_integer, default=10,
-                        help="Expected frozen programs per task; use 1 for representative smoke cohorts")
+                        help="Nominal number of generated programs per task, recorded in run settings")
     parser.add_argument("--input-budget", type=positive_integer, default=20,
                         help="Total input budget per arm per task")
     parser.add_argument("--execution-cache", type=Path, default=Path("final/out/execution_cache"),
@@ -63,7 +64,7 @@ def load_options(arguments=None):
 
 
 def load_pipeline_settings(parser, options):
-    if options.pynguin_config and (options.tool_config or options.arms or options.catalogue_off):
+    if options.pynguin_config and (options.tool_config or options.arms):
         parser.error('--pynguin-config cannot be combined with other generator options')
     tool_generator = None
     if options.pynguin_config:
@@ -74,8 +75,8 @@ def load_pipeline_settings(parser, options):
         from .pynguin.adapter import PynguinInputGenerator
         tool_generator = PynguinInputGenerator(pynguin_settings)
     if options.tool_config:
-        if options.arms or options.catalogue_off:
-            parser.error("--tool-config cannot be combined with --arms or --catalogue-off")
+        if options.arms:
+            parser.error("--tool-config cannot be combined with --arms")
         from .generators.tools import ToolInputGenerator
         document = json.loads(options.tool_config.read_text())
         if not isinstance(document, dict) or set(document) - {"budgets", "preparations", "semantic_controls"}:
@@ -83,13 +84,15 @@ def load_pipeline_settings(parser, options):
         tool_generator = ToolInputGenerator(document.get("budgets"), preparations=document.get("preparations"),
                                            semantic_controls=document.get("semantic_controls"))
     arms = selected_arms(options.arms) if options.arms else default_arms()
-    if options.catalogue_off:
-        from .arm_names import VF3_MEASURED_ARM_NAMES
-        if any(arm.name in VF3_MEASURED_ARM_NAMES for arm in arms):
-            parser.error("VF3 measured arms require catalogue enabled")
-        from .arms.classical import CatalogueSettings
-        arms = tuple(type(arm)(CatalogueSettings(catalogue=False)) if getattr(arm, "measures_catalogue", False)
-                     else arm for arm in arms)
+    if options.tool_runs_dir is not None:
+        if not any(arm.name == "control_flow_4tool" for arm in arms):
+            parser.error("--tool-runs-dir requires control_flow_4tool in --arms")
+        from .arms.control_flow import ControlFlowFourToolArm
+        arms = tuple(
+            ControlFlowFourToolArm(tool_runs_dir=options.tool_runs_dir)
+            if arm.name == "control_flow_4tool" else arm
+            for arm in arms
+        )
     input_tokens = options.input_tokens or max(
         4096 if tool_generator or any(getattr(arm, "measures_catalogue", False) for arm in arms) else 2048,
         *(getattr(arm, 'default_input_tokens', 2048) for arm in arms))
