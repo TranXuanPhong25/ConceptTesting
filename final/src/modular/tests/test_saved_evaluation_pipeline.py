@@ -71,3 +71,13 @@ def test_union_reads_recorded_outcomes_without_manifest_inputs_or_executors(tmp_
     save(source / 'modular_summary.json', {'arms': {}, 'evaluated_base_pass': 99})
     summary = Reporter.summarize_saved(ArtifactStore(source, read_only=True))
     assert summary['evaluated_base_pass'] == 2 and summary['arms']['A']['detected'] == 2
+
+    save(source / 'tasks/2/result.json', {
+        'task_id': 'HumanEval/2', 'base_pass': 3,
+        'arms': {'A': {'valid_inputs': 0, 'detected_put_ids': []},
+                 'B': {'valid_inputs': 1, 'detected_put_ids': []}},
+    })
+    summary = Reporter.summarize_saved(ArtifactStore(source, read_only=True))
+    assert summary['evaluated_base_pass'] == summary['tested_base_pass'] == 5
+    assert summary['arms']['A']['tested_base_pass'] == 2
+    assert summary['arms']['B']['tested_base_pass'] == 5

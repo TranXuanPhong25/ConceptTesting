@@ -30,56 +30,48 @@ class Reporter:
             rows = selected
         if not rows:
             raise FileNotFoundError("No saved task evaluation results")
+        summary.update(Reporter.result_counts(rows))
+        return summary
+
+    @staticmethod
+    def result_counts(rows):
         totals = {}
+        eligible_puts = 0
+        tested_puts = 0
         for row in rows:
             if row.get("skip"):
                 continue
+            base_pass = row["base_pass"]
+            eligible_puts += base_pass
+            if any(arm["valid_inputs"] for arm in row["arms"].values()):
+                tested_puts += base_pass
             for name, arm in row["arms"].items():
-                total = totals.setdefault(name, {"valid_inputs": 0, "detected": 0, "tasks_detected": 0})
-                total["valid_inputs"] += arm["valid_inputs"]
+                total = totals.setdefault(name, {
+                    "valid_inputs": 0, "detected": 0, "tasks_detected": 0, "tested_base_pass": 0,
+                })
+                valid_inputs = arm["valid_inputs"]
+                total["valid_inputs"] += valid_inputs
+                if valid_inputs:
+                    total["tested_base_pass"] += base_pass
                 total["detected"] += len(arm["detected_put_ids"])
                 total["tasks_detected"] += bool(arm["detected_put_ids"])
-        summary.update(
-            scored_tasks=len(rows),
-            arms=totals,
-            evaluated_base_pass=sum(row["base_pass"] for row in rows if not row.get("skip")),
-        )
-        return summary
+        return {
+            "scored_tasks": len(rows),
+            "arms": totals,
+            # Historical field name for the eligible PUT denominator.
+            "evaluated_base_pass": eligible_puts,
+            "tested_base_pass": tested_puts,
+        }
 
     def build_summary(self, contexts, cohort):
-        rows = []
-        totals = {}
-        skipped_tasks = []
-        for context in contexts:
-            result = context.result
-            rows.append(result)
-            if result.get("skip"):
-                skipped_tasks.append({"task_id": result["task_id"], "reason": result["skip"]})
-                continue
-            for arm_name, arm_result in result["arms"].items():
-                arm_totals = totals.setdefault(arm_name, {"valid_inputs": 0, "detected": 0, "tasks_detected": 0})
-                arm_totals["valid_inputs"] += arm_result["valid_inputs"]
-                arm_totals["detected"] += arm_result["detected"]
-                arm_totals["tasks_detected"] += arm_result["detected"] > 0
-        comparisons = []
-        generated_count = 0
-        base_pass_count = 0
-        for task_cohort in cohort["tasks"]:
-            generated_count += task_cohort["generated"]
-            base_pass_count += task_cohort["base_pass"]
-        evaluated_count = 0
-        for result in rows:
-            if not result.get("skip"):
-                evaluated_count += result["base_pass"]
+        rows = [context.result for context in contexts]
         summary = {
+            **self.result_counts(rows),
             "expected_tasks": len(contexts),
-            "scored_tasks": len(rows),
-            "generated": generated_count,
-            "base_pass": base_pass_count,
-            "evaluated_base_pass": evaluated_count,
-            "arms": totals,
-            "comparisons": comparisons,
-            "skips": skipped_tasks,
+            "generated": sum(task["generated"] for task in cohort["tasks"]),
+            "base_pass": sum(task["base_pass"] for task in cohort["tasks"]),
+            "comparisons": [],
+            "skips": [{"task_id": row["task_id"], "reason": row["skip"]} for row in rows if row.get("skip")],
         }
         artifacts = contexts[0].artifacts
         summary["writer_calls"] = cohort.get("generation_usage", {})
@@ -159,15 +151,17 @@ class Reporter:
         lines = [
             "# Fixed-program input-generation benchmark, reference-program oracle",
             "",
-            f"Tasks scored: {summary['scored_tasks']}/{summary['expected_tasks']}; "
-            f"frozen generated PUTs: {summary['generated']}; base passes: {summary['base_pass']}.",
+            f"Đã ghi {summary['scored_tasks']}/{summary['expected_tasks']} task records. "
+            f"Có {summary['generated']} PUT đã sinh, {summary['base_pass']} PUT vượt base test "
+            f"và {summary['tested_base_pass']}/{summary['evaluated_base_pass']} PUT đủ điều kiện đã nhận test bổ sung.",
             "",
-            "| Arm | Valid novel inputs | Detected PUTs | Tasks with detection |",
-            "|---|---:|---:|---:|",
+            "| Arm | Novel valid inputs | PUT đã nhận test bổ sung | PUT phát hiện sai khác | Task có phát hiện |",
+            "|---|---:|---:|---:|---:|",
         ]
         for arm_name, totals in summary["arms"].items():
             lines.append(
-                f"| {arm_name} | {totals['valid_inputs']} | {totals['detected']} | {totals['tasks_detected']} |"
+                f"| {arm_name} | {totals['valid_inputs']} | {totals['tested_base_pass']} | "
+                f"{totals['detected']} | {totals['tasks_detected']} |"
             )
         lines.append("")
         for comparison in summary["comparisons"]:

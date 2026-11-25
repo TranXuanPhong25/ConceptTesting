@@ -115,14 +115,17 @@ class ToolReporter(Reporter):
 
     def render(self, summary):
         lines = ['# Kết quả tool sampling EP/BVA/DT', '',
-                 f"Evaluation {summary['scored_tasks']}/{summary['expected_tasks']} task records; "
-                 f"{summary['evaluated_base_pass']} eligible PUTs. Coverage không chứng minh detection; "
+                 f"Đã ghi {summary['scored_tasks']}/{summary['expected_tasks']} task records. "
+                 f"{summary['tested_base_pass']}/{summary['evaluated_base_pass']} PUT đủ điều kiện đã nhận test bổ sung. "
+                 'Coverage không chứng minh detection; '
                  'semantic audit pending. Pool bị cap chỉ cho lower bound, không kết luận generation gap. '
                  'Status exercised ghi nhận sampler hoặc planner đã được dùng để sinh input.', '',
-                 '| Arm | Novel valid inputs | Detected PUTs / eligible PUTs | Wrong-value PUTs | Exception PUTs | Resource PUTs |', '|---|---:|---:|---:|---:|---:|']
+                 '| Arm | Novel valid inputs | PUT đã nhận test bổ sung | Detected PUTs / eligible PUTs | Wrong-value PUTs | Exception PUTs | Resource PUTs |',
+                 '|---|---:|---:|---:|---:|---:|---:|']
         for name, values in summary['arms'].items():
             kinds = summary['detection_kinds'][name]
-            lines.append(f"| {name} | {values['valid_inputs']} | {values['detected']}/{summary['evaluated_base_pass']} | {kinds['wrong_value']} | {kinds['crash']} | {kinds['resource']} |")
+            lines.append(f"| {name} | {values['valid_inputs']} | {values['tested_base_pass']} | "
+                         f"{values['detected']}/{summary['evaluated_base_pass']} | {kinds['wrong_value']} | {kinds['crash']} | {kinds['resource']} |")
         lines += ['', 'Chỉ reference sau global freeze cung cấp expected output. Không dùng diagnostic để sửa suite. '
                   'Primary parse errors loại trừ lẫn nhau; multi-label có thể đếm một candidate nhiều lần. '
                   'by_tool: shared inputs không được tính là exclusive của từng tool. '

@@ -40,20 +40,21 @@ class CatalogueReporter(Reporter):
         call_caps = ', '.join(f"{name}={'theo số batch target' if cap == 'pending' else cap}"
                               for name, cap in caps.items())
         lines = ['# Kết quả testing arms', '',
-            f"Đã evaluation {summary['scored_tasks']}/{summary['expected_tasks']} task records; "
-            f"{summary['evaluated_base_pass']} eligible base-pass PUTs. "
+            f"Đã ghi {summary['scored_tasks']}/{summary['expected_tasks']} task records. "
+            f"{summary['tested_base_pass']}/{summary['evaluated_base_pass']} PUT đủ điều kiện đã nhận test bổ sung. "
             'Detection dưới đây áp dụng cho frozen cohort và reference hiện có; catalogue coverage không chứng minh detection. '
             'Semantic audit và phần không kiểm được vẫn là `pending`.', '',
             f"Budget inputs/task theo arm {dict((name,retained_input_budget(name,settings['input_budget'])) for name in summary['arms'])}. "
             f"Generation call cap/task {call_caps}. Completion cap {settings['input_tokens']} tokens/call, "
             f"context cap {settings['context_tokens']} tokens và timeout {settings['timeout_seconds']} giây/input. "
             'Robust không đủ eligibility được skip trước model call.', '',
-            '| Arm | Novel valid inputs | Confirmed detected PUTs / eligible PUTs | Task có detection / eligible task | Wrong-value PUTs | Exception PUTs | Resource PUTs |',
-            '|---|---:|---:|---:|---:|---:|---:|']
+            '| Arm | Novel valid inputs | PUT đã nhận test bổ sung | Confirmed detected PUTs / eligible PUTs | Task có detection / eligible task | Wrong-value PUTs | Exception PUTs | Resource PUTs |',
+            '|---|---:|---:|---:|---:|---:|---:|---:|']
         eligible_tasks = summary['expected_tasks'] - len(summary['skips'])
         for name, values in summary['arms'].items():
             kinds = summary['detection_kinds'][name]
-            lines.append(f"| {name} | {values['valid_inputs']} | {values['detected']}/{summary['evaluated_base_pass']} | "
+            lines.append(f"| {name} | {values['valid_inputs']} | {values['tested_base_pass']} | "
+                f"{values['detected']}/{summary['evaluated_base_pass']} | "
                 f"{values['tasks_detected']}/{eligible_tasks} | {kinds['wrong_value']} | {kinds['crash']} | {kinds['resource']} |")
         lines += ['', 'Mỗi PUT lấy kind mạnh nhất trong các confirming inputs: wrong-value → exception → timeout/resource. '
                   'Một input phủ nhiều obligation vẫn chỉ là một input. Raw detection dùng toàn bộ novel valid inputs.', '',
