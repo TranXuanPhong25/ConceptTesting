@@ -21,6 +21,9 @@ if os.path.isdir("/deps"):
 from contracts import SAFE_BUILTINS, validate_test
 
 
+MAX_REFERENCE_OUTPUT_CHARS = 200000
+
+
 def execution_progress(mode=None, input_index=None):
     """Tell the parent whether a user call is active if SIGALRM cannot fire."""
     path = os.environ.get("FINAL_EXECUTION_PROGRESS")
@@ -167,8 +170,10 @@ def oracle(job):
                 value = fn(*copy.deepcopy(args),**copy.deepcopy(kwargs))
                 duration = time.monotonic()-started
                 literal = repr(value)
-                if len(literal)>200000:
-                    raise ValueError('Reference output too large')
+                if len(literal) > MAX_REFERENCE_OUTPUT_CHARS:
+                    results.append(dict(status='error', reason='reference_output_limit',
+                                        output_chars=len(literal), max_output_chars=MAX_REFERENCE_OUTPUT_CHARS))
+                    continue
                 ast.literal_eval(literal)
                 results.append(dict(status='ok',input_key=key,expected=literal,duration=duration))
         except Deadline:

@@ -9,6 +9,7 @@ from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.call_builder import CallBuilder, entry_function, input_signature
 from final.src.modular.context import PipelineSettings, TaskContext
 from final.src.modular.reference_oracle import run_reference_oracle
+from final.src.modular.references import TaskReferencePrograms
 
 
 @pytest.mark.parametrize('annotation,value', [
@@ -134,6 +135,26 @@ def test_unannotated_humaneval_inputs_reach_reference_with_contract(tmp_path, mo
     run_reference_oracle(context)
     assert context.oracle['tests'] == []
     assert context.oracle['rejected'][0]['reason'] == 'domain_or_reference_rejects'
+
+
+def test_oracle_reports_output_limit_without_losing_other_inputs(tmp_path):
+    task = {'task_id': 'Toy/1', 'entry_point': 'f', 'prompt': 'def f(n: int):\n    """Return n characters."""\n',
+            'canonical_solution': '    return "x" * n\n'}
+    context = TaskContext(task, {'contract': '    assert n >= 0\n'},
+                          ArtifactStore(tmp_path), PipelineSettings())
+    context.cohort_task = {'base_input_keys': []}
+    context.inputs = {'arms': {'plain': {'inputs': [
+        {'args': '(200000,)', 'kwargs': '{}'}, {'args': '(1,)', 'kwargs': '{}'},
+    ]}}}
+
+    result = run_reference_oracle(context, reference_programs=TaskReferencePrograms())
+    assert result['arm_indices'] == {'plain': [0]}
+    assert result['tests'][0]['expected'] == "'x'"
+    rejected, = result['rejected']
+    assert rejected['index'] == 0 and rejected['reason'] == 'reference_output_limit'
+    assert rejected['outcomes'] == [
+        {'status': 'error', 'reason': 'reference_output_limit', 'output_chars': 200002, 'max_output_chars': 200000}
+    ] * 2
 
 
 def test_model_any_cannot_override_a_declared_integer():

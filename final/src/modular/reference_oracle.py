@@ -73,10 +73,14 @@ def run_reference_oracle(context, *, execution_cache=None, reference_programs=No
         second_reference_result = reference_runs[1][raw_index]
         # VALIDATION START: domain/reference acceptance, repeat stability and base duplicates.
         if first_reference_result["status"] != "ok" or second_reference_result["status"] != "ok":
+            outcomes = [first_reference_result, second_reference_result]
+            reason = "reference_output_limit" if any(
+                outcome.get("reason") == "reference_output_limit" for outcome in outcomes
+            ) else "domain_or_reference_rejects"
             rejected_inputs.append({
                 "index": raw_index,
-                "reason": "domain_or_reference_rejects",
-                "outcomes": [first_reference_result, second_reference_result],
+                "reason": reason,
+                "outcomes": outcomes,
             })
             continue
         if (
