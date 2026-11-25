@@ -1,0 +1,26 @@
+@startuml
+!include thesis-style.iuml
+!pragma layout smetana
+skinparam defaultTextAlignment center
+skinparam rectangle {
+  BackgroundColor #F2F2F2
+  BorderColor #686868
+  FontColor #252525
+}
+skinparam nodesep 28
+skinparam ranksep 20
+
+rectangle "Vào hàm" as Entry
+rectangle "1   kq = 0" as Init
+rectangle "2   x > 0?" as Condition #E4E4E4
+rectangle "3   kq = x + 1" as Assign
+rectangle "4   return kq" as Return
+rectangle "Ra khỏi hàm" as Exit
+
+Entry -down-> Init
+Init -down-> Condition
+Condition -down-> Assign : đúng
+Condition -right-> Return : sai
+Assign -down-> Return
+Return -down-> Exit
+@enduml

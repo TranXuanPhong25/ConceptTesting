@@ -1,0 +1,31 @@
+@startuml
+!include thesis-style.iuml
+
+start
+:Nhận đặc tả, chữ ký, contract và base test.\nMã PUT đã lược chú thích và docstring;
+
+partition "Lượt đầu · JSON theo lược đồ bắt buộc" {
+  if (Nhánh sinh input) then (EP/BVA)
+    :Tạo lớp, biên, bộ đối số danh định và input.\nLược mô tả lớp dài;
+  else (DT)
+    :Tạo điều kiện Boolean, quy tắc gốc và input.\nLược mô tả hành động và lý do;
+  endif
+  :Kiểm cấu trúc danh mục và gắn đối số.\nBỏ lời gọi trùng nhau hoặc trùng test cơ sở;
+}
+
+partition "Đo độ phủ và tạo phản hồi" {
+  :Kiểm contract khi tính được.\nĐo lớp và biên hoặc quy tắc trên các đối số;
+  :Bỏ mục đã phủ khỏi danh sách cần thử thêm;
+  :Giữ ngữ cảnh ban đầu. Thêm tóm tắt danh mục,\nmục chưa phủ hoặc chưa xác định, lỗi và input đã giữ;
+}
+
+if (Đủ chỗ cho prompt và phần trả lời?) then (có)
+  :Lượt hai sinh input mới bằng JSON tự do.\nThử mục còn thiếu và ghi giả thuyết\nvề tình huống ngoài danh mục;
+  :Bỏ lời gọi trùng test cơ sở, lượt đầu\nhoặc trùng nhau rồi gộp input;
+else (không)
+  :Giữ tập input lượt đầu;
+endif
+
+:Đưa input đã giữ sang bước chốt.\nDùng danh mục lượt đầu làm mốc đo độ phủ;
+stop
+@enduml

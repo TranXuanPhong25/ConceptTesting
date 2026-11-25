@@ -1,108 +1,160 @@
-\chapter{Hiện thực và đánh giá}
+\chapter{Cài đặt và đánh giá}
 \label{chap:experiment}
 
-\section{Hiện thực và công nghệ sử dụng}
+\section{Cài đặt và công nghệ sử dụng}
 \label{sec:related-technologies}
 
-Phần sinh và chấm input được hiện thực bằng Python. \textit{coverage.py} đo dòng và cạnh thực thi để ControlFlow chọn đích chưa phủ. \textit{python-graphs} cung cấp quan hệ truy cập biến, còn Hypothesis lấy thêm giá trị khi concept mô tả được miền lấy mẫu~\cite{coverageBranchDocs,pythonGraphs,hypothesisIntroDocs}. Pydantic kiểm cấu trúc catalogue. Bubblewrap cô lập tiến trình chạy PUT và oracle~\cite{pydanticModelsDocs,bubblewrapDocs}.
+Phần sinh và chấm input được cài đặt bằng Python cùng các thư viện: \textit{coverage.py} đo dòng và cạnh thực thi để ControlFlow chọn đích chưa phủ, còn Hypothesis lấy thêm giá trị khi concept mô tả được miền lấy mẫu~\cite{coverageBranchDocs,hypothesisIntroDocs}. Ở khâu kiểm tra và thực thi, Pydantic đảm nhận kiểm cấu trúc danh mục concept, trong khi Bubblewrap cô lập tiến trình chạy PUT và oracle~\cite{pydanticModelsDocs,bubblewrapDocs}.
 
-\subsection{Đóng góp của sinh viên trong bản demo}
-
-Sinh viên trực tiếp thực hiện phần lõi sinh input (\texttt{InputGeneration}), các mô-đun xử lý, các stage và pipeline điều phối. Mô-đun chuẩn bị context gom thông tin của task và mã PUT đã qua base test. Các mô-đun sinh input tạo hướng dẫn EP/BVA, DT hoặc ControlFlow và chuyển phản hồi về bộ đối số. Stage sinh input chốt tập đầu vào để stage oracle và stage chấm PUT nhận đúng cùng một tập. Pipeline nối các stage theo thứ tự phụ thuộc, từ context đến bộ test bổ sung và kết quả đánh giá. Các thư viện nêu trên cung cấp cơ chế phân tích, lấy mẫu và thực thi mà các mô-đun gọi khi cần.
-
-Mã nguồn và hướng dẫn cài đặt có tại \href{https://github.com/TranXuanPhong25/ConceptTesting}{kho ConceptTesting trên GitHub}.
+Mã nguồn và hướng dẫn cài đặt có trên \href{https://github.com/TranXuanPhong25/ConceptTesting}{GitHub}.
 
 \section{Thiết lập và cách đếm}
 \label{sec:experiment-data}
 
-Thực nghiệm bắt đầu từ hai dấu hiệu test cơ sở còn thiếu. Phép đo coverage cho biết các dòng và cạnh chưa được chạy trên những PUT đã đạt. Khi thêm input, một số PUT cho sai khác lặp lại với tham chiếu. Mục~\ref{sec:coverage-results} đo mức tăng C1 và C2 của cùng bộ mã, còn các bảng phát hiện ghi số PUT bị loại thêm. HumanEval có phép đối chiếu trước và sau theo pass@k. MBPP dùng một bộ đề và mã khác để kiểm tra các thay đổi này.
+Thực nghiệm bắt đầu từ hai dấu hiệu cho thấy test cơ sở còn thiếu: phép đo coverage chỉ ra các dòng và cạnh chưa được chạy trên những PUT đã đạt, còn khi thêm input, một số PUT cho sai khác lặp lại với tham chiếu. Mục~\ref{sec:coverage-results} đo mức tăng C1 và C2 của cùng bộ mã, trong khi các bảng phát hiện ghi số PUT bị loại thêm; riêng HumanEval có phép đối chiếu trước và sau theo pass@k, còn MBPP dùng một bộ đề và mã khác để kiểm tra các thay đổi này.
 
-Tập HumanEval có 164 bài Python. Hai bài có ít hơn mười cài đặt và năm bài có tất cả PUT trượt test cơ sở. Bước sàng lọc để lại 157 bài với 1.454 PUT đủ điều kiện. Mỗi input mới được chấm bằng bản tham chiếu HumanEval+~\cite{chen2021evaluating,liu2023evalplus}. Với lần chạy dừng trước khi chấm hết, mẫu số là số PUT thực tế đã chấm. Thiết lập riêng của MBPP được trình bày ở Mục~\ref{sec:mbpp-results}.
+Tập HumanEval có 164 bài Python, trong đó hai bài có ít hơn mười cài đặt và năm bài có tất cả PUT trượt test cơ sở, nên bước sàng lọc để lại 157 bài với 1.454 PUT đủ điều kiện. Mỗi input mới được chấm bằng bản tham chiếu HumanEval+~\cite{chen2021evaluating,liu2023evalplus}, và với lần chạy dừng trước khi chấm hết, mẫu số là số PUT thực tế đã chấm (thiết lập riêng của MBPP được trình bày ở Mục~\ref{sec:mbpp-results}).
 
-Trên HumanEval, Qwen3.5-27B-AWQ và Gemini 3.1 Flash-Lite lần lượt sinh input cho các cấu hình. EP/BVA và DT bật catalogue. Mỗi nhánh có một lượt sinh, giới hạn 20 input cho mỗi bài và 4.096 token đầu ra. ControlFlow dùng tối đa hai lượt và 64 quan sát input--PUT để giữ lại tối đa 20 input mỗi bài. Thời hạn chấm là tám giây với ba nhánh của pipeline. Kết quả Naive Qwen lưu từ cấu hình đối chứng dùng ba giây. Phụ lục~\ref{app:reproduction} ghi số input và token thực tế của hai benchmark.
+Trên HumanEval, cấu hình chính dùng Qwen3.5-27B-AWQ để sinh test. Theo cơ chế ở Chương~\ref{chap:method}, EP/BVA và DT mỗi nhánh sinh tối đa 20 input ở lượt đầu bắt buộc theo cấu trúc yêu cầu và 20 input mới ở lượt hai theo JSON tự do. Mỗi lượt có trần 4.096 token đầu ra. Nhánh ControlFlow theo nghĩa vụ (Mục~\ref{sec:obligation-pipeline}) có hai bước đề xuất và dựng input, với tối đa một lần gọi lại khi phản hồi đề xuất có lỗi. Nhánh giữ tối đa 20 input do mô hình sinh mỗi bài và có thể giữ thêm mẫu từ Hypothesis. Ba nhánh được chấm với thời hạn tám giây mỗi input. Naive LLM với Qwen dùng ba giây. Mục~\ref{sec:ablation-one-pass} trình bày cấu hình một lượt dùng Qwen. Phép chấm bổ trợ dùng bộ test do Gemini 3.1 Flash-Lite sinh theo cùng cấu hình một lượt. Phụ lục~\ref{app:reproduction} trích các hướng dẫn dùng để sinh input.
 
-Qwen dùng trọng số \nolinkurl{QuantTrio/Qwen3.5-27B-AWQ} với lượng tử hóa AWQ và kiểu dữ liệu \texttt{float16}. Cấu hình phục vụ mô hình dùng hai GPU NVIDIA T4 (tensor parallel bằng 2). Trên HumanEval, EP/BVA và DT dùng cửa sổ ngữ cảnh 8.192 token. Hai cấu hình ControlFlow trong phép ablation dùng 12.288 token.
+Qwen chạy qua vLLM trên một GPU NVIDIA A100 của Google Colab, dùng trọng số \nolinkurl{QuantTrio/Qwen3.5-27B-AWQ} với lượng tử hóa AWQ và kiểu dữ liệu \texttt{float16}. Máy chủ đặt trần 40.960 token cho cả đầu vào lẫn đầu ra mỗi yêu cầu. Cấu hình chính trên HumanEval dùng cửa sổ ngữ cảnh 12.288 token. Gemini được gọi qua Vertex AI. Bộ chấm chạy PUT và tham chiếu trong các tiến trình cô lập trên Linux.
 
-Một nhánh phát hiện PUT nếu có ít nhất một input gây sai khác ở cả hai lượt chấm. Khi cả hai lượt đều trả sai so với tham chiếu, phát hiện thuộc nhóm \textit{sai giá trị} (wrong-value). Nếu một lượt vượt thời hạn, phát hiện được ghi là \textit{timeout}. Các trường hợp bất thường còn lại vào nhóm \textit{ngoại lệ} (exception), gồm cả lỗi bộ nhớ và lỗi vượt độ sâu đệ quy. Một PUT có thể thất bại theo nhiều kiểu trên các input khác nhau. Để mỗi PUT xuất hiện trong đúng một nhóm, bộ tổng hợp ưu tiên sai giá trị, rồi ngoại lệ và timeout. Lỗi của hạ tầng chấm được ghi riêng.
+Bộ chấm chỉ tính một PUT vào kết quả của nhánh nếu cùng một input gây sai khác ở cả hai lượt. Hai lượt cùng trả giá trị sai được xếp vào nhóm \textit{sai giá trị} (wrong-value). Nếu có lượt vượt thời hạn, bộ chấm ghi \textit{quá giờ} (timeout). Các sai khác còn lại thuộc nhóm \textit{ngoại lệ} (exception), gồm cả lỗi bộ nhớ và lỗi vượt độ sâu đệ quy. Khi nhiều input khiến cùng một PUT thất bại theo các cách khác nhau, bộ tổng hợp chỉ đếm PUT một lần, theo thứ tự ưu tiên sai giá trị, ngoại lệ rồi quá giờ. Lỗi của hạ tầng chấm được ghi riêng.
 
 Phép hợp dùng cặp mã task và mã PUT làm khóa. Nếu hai nhánh đều phát hiện cùng một PUT của một bài, tổng chỉ tăng một.
 
 \input{chapters/c4/benchmark_scores}
 
-\section{RQ2. Đối chiếu với Naive LLM}
+\section{RQ2. Đối chiếu với Naive LLM và EvalPlus}
 \label{sec:naive-comparison}
 
-Với bộ test do Qwen sinh, pipeline có 47 PUT mà baseline bỏ sót. Theo chiều ngược lại, có 13 PUT chỉ Naive LLM phát hiện. Hai phần riêng với Gemini là 34 và chín PUT. Bảng~\ref{tab:extra-detections} còn cho thấy vì sao tổng phát hiện chưa đủ để so sánh hai bộ test. EP/BVA của Qwen có 81 PUT, ít hơn 87 của baseline, nhưng số sai giá trị cao hơn, 67 so với 58.
+\subsection{So sánh với Naive LLM}
 
-Sau khi gộp kết quả từ hai mô hình, 105 PUT xuất hiện trong cả tập 149 của pipeline lẫn tập 120 của baseline. Trong 44 PUT riêng của pipeline, 22 PUT sai giá trị, 15 phát sinh ngoại lệ và bảy hết giờ. Phần riêng của baseline có 15 PUT, gồm ba sai giá trị, ba ngoại lệ và chín hết giờ. Các bộ test này được sinh với ngân sách khác nhau. Riêng kết quả hết giờ còn chịu ảnh hưởng của ngưỡng ba giây ở Naive LLM với Qwen và tám giây ở pipeline.
+Với bộ test do Qwen sinh, pipeline (174 PUT) và Naive LLM (87 PUT) phát hiện chung 78 PUT. Pipeline tìm riêng 96 PUT, gồm 41 sai giá trị, 36 ngoại lệ và 19 quá giờ. Naive LLM tìm riêng chín PUT, gồm một sai giá trị và tám quá giờ. Xét từng nhánh ở Bảng~\ref{tab:extra-detections}, EP/BVA và DT hai lượt đều phát hiện nhiều PUT hơn baseline ở cả ba nhóm sai khác.
 
-Khi thêm test của cả hai mô hình, pass@1 còn 80,56\% với pipeline và 82,35\% với baseline. Thứ tự đổi ở pass@10. Có 154 bài còn lời giải đạt sau khi chấm bằng test của pipeline, so với 153 bài ở baseline (Bảng~\ref{tab:before-after-passk}). Vì vậy, pipeline làm trượt nhiều PUT hơn, còn Naive LLM làm mất lời giải cuối cùng ở nhiều bài hơn.
+Ở Gemini, cấu hình EP/BVA và DT một lượt cùng ControlFlow gốc phát hiện 132 PUT, còn Naive LLM phát hiện 107 PUT. Khi bổ sung test của cấu hình Gemini này vào pipeline của Qwen và gộp cả hai nguồn Naive LLM, hai tập phát hiện lần lượt có 181 và 120 PUT, với 110 PUT chung. Tập sinh theo concept tìm riêng 71 PUT, gồm 32 sai giá trị, 32 ngoại lệ và bảy quá giờ. Tập Naive LLM tìm riêng mười PUT, gồm hai sai giá trị và tám quá giờ. Các bộ test khác nhau về ngân sách sinh. Chênh lệch ở nhóm quá giờ còn chịu ảnh hưởng của ngưỡng ba giây ở Naive LLM với Qwen và tám giây ở pipeline.
+
+Trên tập gộp của cả hai mô hình, test sinh theo concept đưa pass@1 xuống 78,58\%, còn Naive LLM đưa điểm xuống 82,35\%. Ở pass@10, hai tập để lại lời giải đạt trên lần lượt 154 và 153 bài (Bảng~\ref{tab:before-after-passk}). Naive LLM làm trượt ít PUT hơn nhưng loại lời giải đạt cuối cùng ở thêm một bài.
+
+\subsection{So sánh với bộ test HumanEval+}
+\label{sec:evalplus-comparison}
+
+Phép đối chiếu dùng bộ test HumanEval+ do EvalPlus phát hành và test của ConceptTesting với Qwen trên cùng 1.454 PUT thuộc 157 bài. Bộ chấm chính thức của EvalPlus xác nhận cả 1.454 PUT đều vượt base test. Mỗi bộ chấm giữ quy tắc so sánh và giới hạn thời gian riêng, nên kết quả phản ánh cả đầu vào lẫn thiết lập chấm.
+
+\begin{table}[!htbp]
+\centering
+\caption[Đối chiếu với HumanEval+ trên cùng tập PUT]{Số PUT bị loại thêm trên 1.454 PUT đã vượt base test. Pass@1 tính trên 162 bài đủ mười cài đặt.}
+\label{tab:evalplus-comparison}
+\small
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrr@{}}
+\toprule
+Bộ test & PUT bị loại thêm & PUT còn đạt & Pass@1 (\%) \\
+\midrule
+Chỉ base test & 0 & 1.454 & 89,75 \\
+HumanEval+ (EvalPlus) & 130 & 1.324 & 81,73 \\
+Base test + ConceptTesting & 174 & 1.280 & 79,01 \\
+Hợp hai bộ test bổ sung & 199 & 1.255 & 77,47 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Hai bộ test phát hiện chung 105 PUT. HumanEval+ phát hiện riêng 25 PUT, còn ConceptTesting phát hiện riêng 69 PUT, gồm 31 sai giá trị, 23 ngoại lệ và 15 quá giờ. Khi chấm theo hợp hai bộ test, một PUT bị loại nếu trượt ở ít nhất một bộ. Hợp hai bộ đưa pass@1 từ 81,73\% với HumanEval+ xuống 77,47\% trên cùng 162 bài.
+
+Trong 31 PUT mà chỉ ConceptTesting báo sai giá trị, lượt rà soát có hỗ trợ LLM đối chiếu input với đặc tả và mã PUT. Kết quả phân loại 14 PUT có lỗi chức năng rõ theo đặc tả, ba PUT thuộc trường hợp đặc tả để ngỏ, bốn PUT có sai khác do biểu diễn số thực hoặc cách so sánh của oracle, và mười PUT dùng input ngoài miền đặc tả. Tám trong 14 PUT có lỗi rõ thuộc bài tách từ ở Mục~\ref{sec:demo}. Phép đối chiếu dùng nguyên bộ ca đã phát hành của HumanEval+ và tập input đã sinh của ConceptTesting, nên số liệu mô tả độ bổ sung giữa hai bộ ca ở thiết lập đã chạy. Phép đối chiếu tương ứng với MBPP+ còn chờ thực hiện trên cùng tập PUT.
 
 \section{RQ3. Đóng góp của từng nhánh}
 \label{sec:detection-results}
 
 \subsection{Kết quả từ các tập test đã sinh}
 
-Hai nhánh EP/BVA và DT của Qwen gặp nhau ở 64 PUT. Tập hợp đạt 113 PUT. Trong 121 PUT của pipeline đầy đủ, các phần chỉ một nhánh phát hiện lần lượt là 17 PUT của EP/BVA, 30 của DT và tám của ControlFlow. Tám PUT sau cùng nằm ở một bài tách từ.
+Với cơ chế hai lượt trên Qwen, EP/BVA (133 PUT) và DT (140 PUT) phát hiện chung 119 PUT. So với nhánh kia, EP/BVA tìm riêng 14 PUT và DT tìm riêng 21 PUT. Tập hợp đạt 154 PUT trên 53 bài, gồm 107 PUT có sai khác không do tài nguyên (97 sai giá trị và 10 ngoại lệ logic). ControlFlow theo nghĩa vụ phát hiện 121 PUT, có 101 PUT chung với hợp EP/BVA và DT. Thêm nhánh này đưa tổng lên 174 PUT, gồm 20 PUT riêng trên 13 bài. Trong số 20 PUT riêng, 18 trường hợp liên quan đến giới hạn thời gian, bộ nhớ hoặc độ sâu đệ quy. Hai PUT còn lại thuộc HumanEval/50, gồm một sai giá trị và một ngoại lệ logic.
 
-Với Gemini, hai tập EP/BVA và DT giao nhau ở 98 PUT. Trong hợp 132 PUT của pipeline, EP/BVA tìm riêng 16 và DT tìm riêng 18. Cả 35 PUT mà ControlFlow phát hiện đều có mặt trong tập của ít nhất một trong hai nhánh kia. Các phát hiện của pipeline trải trên 44 trong 157 bài.
+\subsection{Ablation cấu hình EP/BVA và DT một lượt}
+\label{sec:ablation-one-pass}
 
-Một phép thử khác chia thêm ngân sách cho EP/BVA và DT của Qwen, để mỗi nhánh được sinh thêm sau khi nhận phản hồi. Khi đó hai nhánh hợp lại phát hiện 145 trên 1.454 PUT.
-
-\subsection{Ablation thông tin def--use trong prompt ControlFlow}
-\label{sec:ablation-cf-du}
-
-Khi ghép với cùng bộ test EP/BVA và DT của Qwen, ControlFlow gốc đưa số PUT phát hiện từ 113 lên 121. Cấu hình ẩn thông tin def--use khỏi prompt giữ được cả 121 PUT và tìm thêm PUT số 6 của HumanEval/144. Nếu chỉ tính riêng ControlFlow, thứ tự lại đổi (Bảng~\ref{tab:ablation-cf-du}).
-
-Cấu hình gốc cho mô hình biết một lần gán có thể đi tới lần đọc nào của cùng biến (Mục~\ref{sec:def-use}). Cấu hình còn lại bỏ danh sách cặp này, trạng thái phân tích và câu hướng dẫn dùng def--use ở cả lượt đầu lẫn lượt phản hồi. Mô hình vẫn đọc mã PUT, các input cơ sở và đường đi tới đích C1/C2. Ở lượt sau, nó còn nhận kết quả chạy thử. Hai cấu hình chọn đúng cùng 407 đích, dùng cùng seed và nhiệt độ \(0{,}7\). Mỗi bài có tối đa hai lượt sinh, 4.096 token đầu ra mỗi lượt và 20 input cuối. Cả hai bộ test được chấm trên cùng 1.454 PUT của 157 bài bằng tham chiếu HumanEval+.
+Cấu hình ablation dùng EP/BVA và DT V2 của Qwen. Mỗi nhánh sinh một lượt với tối đa 20 input mỗi bài và trần 4.096 token đầu ra. Cấu hình này kết hợp với ControlFlow gốc ở Mục~\ref{sec:concept-guidance}. So với cấu hình chính, phép đối chiếu thay cách lập prompt, lược đồ và ngân sách của EP/BVA và DT, đồng thời đổi biến thể ControlFlow. Bảng~\ref{tab:ablation-one-pass-detections} sử dụng cùng 1.454 PUT đã đạt base test và cùng oracle HumanEval+.
 
 \begin{table}[!htbp]
 \centering
-\caption{ControlFlow với hai cách cung cấp thông tin def--use cho Qwen trên HumanEval. Số token gồm prompt và phản hồi.}
-\label{tab:ablation-cf-du}
+\caption[Phát hiện thêm với V2 và ControlFlow gốc dùng Qwen]{Số PUT bị phát hiện thêm trên HumanEval với EP/BVA, DT V2 và ControlFlow gốc dùng Qwen}
+\label{tab:ablation-one-pass-detections}
 \small
-\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrr@{}}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrr@{}}
 \toprule
-Def--use trong prompt & \shortstack[r]{PUT lệch\\tham chiếu} & \shortstack[r]{Đích C1/C2\\đã tới} & \shortstack[r]{Input\\hợp lệ} & \shortstack[r]{Lượt gọi\\mô hình} & \shortstack[r]{Tổng\\token} \\
+Bộ test thêm & Sai giá trị & Ngoại lệ & Quá giờ & Tổng PUT \\
 \midrule
-Gửi khi có (gốc) & 39/1.454 & 198/407 & 708 & 140 & 861.504 \\
-Ẩn khỏi mô hình  & 30/1.454 & 202/407 & 783 & 144 & 822.397 \\
+EP/BVA & 67 & 9 & 5 & 81 \\
+DT & 65 & 17 & 14 & 96 \\
+Hợp EP/BVA và DT & 75 & 22 & 16 & 113 \\
+ControlFlow gốc & 38 & 0 & 1 & 39 \\
+V2 + ControlFlow gốc & 83 & 22 & 16 & 121 \\
+\midrule
+Naive LLM (baseline) & 58 & 13 & 16 & 87 \\
 \bottomrule
 \end{tabular*}
 \end{table}
 
-Trong 88 bài có đích để hỏi mô hình, 71 bài có ít nhất một cặp def--use trong prompt gốc. Trên 669 PUT của nhóm này, mỗi cấu hình phát hiện 22 PUT, trong đó 21 PUT trùng nhau. Cấu hình gốc tìm riêng PUT số 3 của HumanEval/2 với đầu vào \(10^{-5}\). Cấu hình ẩn tìm riêng PUT số 6 của HumanEval/144 trong bài kiểm tra tích hai phân số có phải số nguyên.
-
-Chín PUT còn lại mà chỉ cấu hình gốc phát hiện đều thuộc HumanEval/91. Bài này yêu cầu đếm các câu bắt đầu bằng từ \texttt{I}. Với chuỗi chỉ có một chữ \texttt{I}, tham chiếu trả 0, còn cả chín PUT đều trả 1 ở hai lượt chấm. Cấu hình ẩn bỏ sót trường hợp đó. Ngay ở cấu hình gốc, cả hai prompt của bài đều có danh sách def--use rỗng cho cả bốn PUT được đưa vào. Vì vậy, chín sai khác với tham chiếu này chưa phải bằng chứng rằng mô hình đã dùng một cặp def--use để chọn input.
-
-Với mục tiêu bổ sung test cho EP/BVA và DT, kết quả này ủng hộ việc bỏ thông tin def--use khỏi prompt mặc định của ControlFlow khi dùng Qwen trên HumanEval. Trong lần đối sánh này, pipeline giữ được toàn bộ phát hiện cũ, còn riêng ControlFlow dùng ít hơn 39.107 token dù gọi mô hình thêm bốn lần. Mỗi cấu hình mới chạy một lần trên toàn bộ tập bài. Cả hai vẫn tính def--use nội bộ, nên phép thử chưa đo chi phí có thể tiết kiệm nếu bỏ luôn bước phân tích.
-
-\subsection{Thiết kế ablation ngân sách giữa các nhánh}
-\label{sec:ablation}
-
-Bảng~\ref{tab:ablation} dành cho phép đối sánh đóng góp của từng nhánh với cùng ngân sách. Ngoài ba biến thể bỏ nguyên một nhánh, bảng có hai cách tách EP/BVA. Nếu giữ EP, prompt chọn đại diện cho các lớp tương đương. Nếu giữ BVA, prompt rút các biên trực tiếp từ đặc tả. Hai phép thử này vẫn dùng DT và ControlFlow.
-
-Mỗi cặp đối sánh dùng chung bộ PUT, mô hình sinh test, oracle và thời hạn chấm. Trần tổng token theo bài giữ cố định và được phân bổ lại theo quy tắc chốt trước nếu một nhánh bị bỏ. Sau khi lọc và gộp trùng, lấy số input hợp lệ nhỏ nhất giữa các cấu hình trên từng bài. Mỗi cấu hình giữ đúng số đó theo thứ tự đã định trước. Nếu số này bằng 0, bài vẫn đóng góp kết quả base test khi tính pass@1. Bảng sẽ ghi token thực dùng. Các ô kết quả để trống cho lần chạy theo thiết lập này.
+Với Qwen một lượt, EP/BVA và DT phát hiện chung 64 PUT, tìm riêng lần lượt 17 và 30 PUT. ControlFlow gốc bổ sung tám PUT của bài tách từ, đưa tập hợp từ 113 lên 121 PUT. EP/BVA một lượt phát hiện ít PUT hơn Naive LLM (81 so với 87), nhưng có nhiều PUT sai giá trị hơn (67 so với 58).
 
 \begin{table}[!htbp]
 \centering
-\caption{Ablation trên HumanEval với cùng ngân sách sinh test. PUT đếm số cài đặt bị phát hiện thêm. Token gồm phần prompt và phản hồi.}
+\caption[Điểm pass@k với V2 và ControlFlow gốc dùng Qwen]{Điểm pass@k trên 162 bài dùng test Qwen. Mức giảm pass@1 tính theo điểm phần trăm so với 89,75\% ở base test.}
+\label{tab:ablation-one-pass-scores}
+\small
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrr@{}}
+\toprule
+Bộ test thêm & \shortstack[r]{PUT\\còn đạt} & pass@1 & pass@5 & pass@10 & \shortstack[r]{Mức giảm\\pass@1} \\
+\midrule
+Hợp EP/BVA và DT V2 & 1.341 & 82,78 & 93,94 & 95,06 & 6,98 \\
+V2 + ControlFlow gốc & 1.333 & 82,28 & 93,80 & 95,06 & 7,47 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Trên Qwen, khi giữ ControlFlow gốc và thay EP/BVA, DT một lượt bằng cấu hình hai lượt, số PUT phát hiện tăng từ 121 lên 154. Thay tiếp ControlFlow gốc bằng biến thể theo nghĩa vụ đưa tổng lên 174 PUT và pass@1 còn 79,01\%.
+
+Khóa luận kiểm tra ảnh hưởng của số lượng input bằng cách lấy mẫu lại từ các tập đã lưu. Khi cắt lượt hai xuống tối đa 10 input mỗi bài, hợp EP/BVA và DT của Qwen đạt 135 PUT (99 không do tài nguyên) theo thứ tự sinh thô và 147 PUT (104 không do tài nguyên) theo tập giữ lại. Một phép đối chiếu khác lấy \(k_t=\min(n_A,n_B)\) input hợp lệ ở mỗi cấu hình trên từng bài, với 100 lần lấy mẫu đều không hoàn lại. Ở cùng số input hợp lệ, cơ chế hai lượt hỗn hợp phát hiện nhiều hơn cấu hình một lượt trung bình 24,5 PUT (16,0 không do tài nguyên) và nhiều hơn biến thể dùng lược đồ bắt buộc ở cả hai lượt trung bình 47,0 PUT (30,8 không do tài nguyên). Kết quả cho thấy chênh lệch vẫn xuất hiện khi khớp số input đã giữ. Phép lấy mẫu này giữ nguyên các lần sinh ban đầu và chỉ kiểm soát số input đem so sánh.
+
+\subsection{Ablation từng nhánh và từng lượt sinh}
+\label{sec:ablation}
+
+Bảng~\ref{tab:ablation} dùng các tập test do Qwen sinh trên cùng 1.454 PUT đã vượt base test. Pipeline chính dùng EP/BVA và DT hai lượt của VF3 cùng ControlFlow theo nghĩa vụ. Hai dòng V2 dùng EP/BVA và DT một lượt, lần lượt kết hợp với ControlFlow gốc và ControlFlow theo nghĩa vụ.
+
+Các dòng bắt đầu bằng “Chỉ” dùng riêng bộ test của các nhánh được nêu. Các dòng bỏ nhánh hoặc cắt lượt hai giữ các phần còn lại của pipeline chính. Với ControlFlow theo nghĩa vụ, dòng giữ input đề xuất chỉ dùng input đã chấm từ bước đề xuất và đề xuất lại. Cột token cộng token prompt và đầu ra đã ghi nhận của các lượt tương ứng. Pass@1 tính trên 162 bài có đủ mười PUT.
+
+Khi xét riêng lượt đầu của VF3, EP/BVA phát hiện 67 PUT, DT phát hiện 87 PUT và hợp hai nhánh phát hiện 107 PUT. Với cùng ControlFlow theo nghĩa vụ, V2 phát hiện 149 PUT, lượt đầu của cả hai nhánh VF3 phát hiện 153 PUT và VF3 đủ hai lượt phát hiện 174 PUT. Nếu chỉ cắt lượt hai của EP/BVA hoặc DT trong pipeline, tập hợp còn lần lượt 171 và 160 PUT. Giữ lượt hai của cả EP/BVA và DT giúp phát hiện thêm 21 PUT và tăng tổng chi phí sinh test từ 4.477.716 lên 6.147.301 token, tương ứng tăng 37,29\%. Để đo riêng tác dụng của thông tin phản hồi, cần đối chiếu hai lượt sinh thứ hai có cùng ngân sách, trong đó chỉ một lượt nhận thông tin phản hồi.
+
+\begin{table}[H]
+\centering
+\caption[Ablation trên HumanEval với test do Qwen sinh]{Ablation trên HumanEval với test do Qwen sinh. Các cột sai giá trị, ngoại lệ và quá giờ cộng thành tổng số PUT bị phát hiện thêm.}
 \label{tab:ablation}
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrrr@{}}
 \toprule
-& \multicolumn{3}{c}{Qwen sinh test} & \multicolumn{3}{c}{Gemini sinh test} \\
-\cmidrule(lr){2-4}\cmidrule(l){5-7}
-Cấu hình & PUT & pass@1 (\%) & Token & PUT & pass@1 (\%) & Token \\
+Cấu hình & \shortstack[r]{Sai\\giá trị} & \shortstack[r]{Ngoại\\lệ} & \shortstack[r]{Quá\\giờ} & \shortstack[r]{Tổng\\PUT} & \shortstack[r]{pass@1\\(\%)} & Token \\
 \midrule
-Pipeline đầy đủ  & & & & & & \\
-Bỏ nhánh EP/BVA  & & & & & & \\
-Bỏ nhánh DT      & & & & & & \\
-Bỏ ControlFlow   & & & & & & \\
-Giữ EP, bỏ BVA   & & & & & & \\
-Giữ BVA, bỏ EP   & & & & & & \\
+Pipeline chính & 98 & 52 & 24 & 174 & 79,01 & 6.147.301 \\
+V2 + ControlFlow gốc & 83 & 22 & 16 & 121 & 82,28 & 2.189.628 \\
+V2 + ControlFlow theo nghĩa vụ & 77 & 47 & 25 & 149 & 80,56 & 4.406.720 \\
 \midrule
-Naive LLM (baseline) & & & & & & \\
+Chỉ EP/BVA & 85 & 28 & 20 & 133 & 81,54 & 1.612.645 \\
+Chỉ DT & 88 & 34 & 18 & 140 & 81,11 & 1.456.060 \\
+Chỉ EP/BVA lượt đầu & 52 & 9 & 6 & 67 & 85,62 & 765.850 \\
+Chỉ DT lượt đầu & 63 & 19 & 5 & 87 & 84,38 & 633.270 \\
+Chỉ EP/BVA và DT lượt đầu & 79 & 20 & 8 & 107 & 83,15 & 1.399.120 \\
+Chỉ ControlFlow & 38 & 0 & 1 & 39 & 87,35 & 861.504 \\
+Chỉ ControlFlow theo nghĩa vụ & 52 & 44 & 25 & 121 & 82,28 & 3.078.596 \\
+\midrule
+Bỏ nhánh EP/BVA & 90 & 52 & 24 & 166 & 79,51 & 4.534.656 \\
+Bỏ nhánh DT & 86 & 46 & 24 & 156 & 80,12 & 4.691.241 \\
+Bỏ ControlFlow & 97 & 37 & 20 & 154 & 80,25 & 3.068.705 \\
+\midrule
+Cắt lượt hai EP/BVA & 95 & 52 & 24 & 171 & 79,20 & 5.300.506 \\
+Cắt lượt hai DT & 89 & 47 & 24 & 160 & 79,88 & 5.324.511 \\
+Cắt lượt hai EP/BVA và DT & 82 & 47 & 24 & 153 & 80,31 & 4.477.716 \\
+ControlFlow giữ input đề xuất & 97 & 37 & 23 & 157 & 80,06 & 4.780.555 \\
+\midrule
+Naive LLM (baseline) & 58 & 13 & 16 & 87 & 84,38 & 385.522 \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -130,28 +182,28 @@ Task và PUT & Đầu vào & Kết quả mong đợi & Quan sát qua hai lượt
 
 \subsection{Một ký tự tab làm lộ tám PUT trên cùng task}
 
-Theo HumanEval/125, khoảng trắng được ưu tiên trước dấu phẩy khi tách từ. Khi thiếu cả hai, hàm chuyển sang đếm chữ cái. Ở PUT 4, phép tách ban đầu nhận cả tab, còn dòng 8 chỉ tìm dấu cách thông thường. ControlFlow chọn cạnh \(8\rightarrow12\). Từ hai phép kiểm này, Qwen nêu tình huống có tab ở giữa hai từ và thiếu cả dấu cách lẫn dấu phẩy. Lời gọi với \texttt{a\textbackslash tb} cụ thể hóa tình huống đó.
+Trong ví dụ dùng ControlFlow gốc trên PUT 4 của HumanEval/125 (Mục~\ref{sec:concept-guidance}), phép tách ban đầu nhận cả tab, còn dòng 8 chỉ tìm dấu cách thường. Từ hai phép kiểm này và đích \(8\rightarrow12\) do ControlFlow chọn, Qwen đề xuất chuỗi có tab giữa hai từ, thiếu cả dấu cách thường lẫn dấu phẩy. Lời gọi cụ thể dùng \texttt{a\textbackslash tb}.
 
-Input này đưa PUT 4 qua cạnh \(8\rightarrow12\). Với cùng đầu vào, tham chiếu trả \texttt{['a', 'b']} và PUT 4 trả số nguyên \texttt{1} ở cả hai lượt. Chuỗi có tab cũng là chứng cứ cho tám PUT mà ControlFlow tìm thêm. Nhánh giữ 13 input hợp lệ qua hai lượt sinh. EP/BVA có 14 input và DT có 16, nhưng cả hai tập bỏ sót tám PUT đó. Ở ca này, ControlFlow chọn đích từ mã và độ phủ cạnh, chưa dùng được quan hệ DU của PUT 4.
+Input này đưa PUT 4 qua cạnh \(8\rightarrow12\), khiến PUT 4 trả số nguyên \texttt{1} ở cả hai lượt trong khi tham chiếu trả \texttt{['a', 'b']}. Chuỗi có tab làm lộ cả tám PUT mà ControlFlow tìm thêm trong 13 input hợp lệ. Trong ablation một lượt (Mục~\ref{sec:ablation-one-pass}), EP/BVA có 14 input và DT có 16 input trên bài này. Cả hai tập đều bỏ sót tám PUT. Với cơ chế hai lượt, mỗi nhánh tự sinh được ca chứa tab và phát hiện đủ tám PUT.
 
 \subsection{Ngày 29 tháng 2 và một PUT được pipeline và baseline cùng phát hiện}
 
-Đề HumanEval/124 cho tháng 2 có tối đa 29 ngày và không quy định năm nhuận. EP/BVA của Gemini gắn \texttt{02-29-2001} với lớp thử quy tắc 29 ngày của tháng 2. Naive LLM và DT cũng sinh chuỗi đó. Tham chiếu chấp nhận ngày này. PUT 7 áp dụng quy tắc năm nhuận của lịch thông dụng, nên trả \texttt{False} trong cả hai lượt.
+Đề HumanEval/124 cho tháng 2 có tối đa 29 ngày và không quy định năm nhuận. EP/BVA của Gemini gắn \texttt{02-29-2001} với lớp thử quy tắc 29 ngày của tháng 2, và cả Naive LLM lẫn DT cũng sinh chuỗi này; tham chiếu chấp nhận ngày đó, còn PUT 7 áp dụng quy tắc năm nhuận của lịch thông dụng nên trả \texttt{False} trong cả hai lượt.
 
-DT còn thử \texttt{02-29-2021} và cũng xác nhận sai khác ở PUT 7. Phép hợp vẫn tính đây là một PUT. Catalogue của DT ở bài này trượt kiểm tra cấu trúc. Bộ giải mã kiểm đối số riêng nên vẫn chuyển đủ 20 input hợp lệ sang bước chấm.
+DT còn thử \texttt{02-29-2021} và tiếp tục xác nhận sai khác ở PUT 7, nhưng phép hợp vẫn chỉ tính đây là một PUT. Đáng chú ý, dù danh mục concept của DT ở bài này trượt kiểm tra cấu trúc, bộ giải mã kiểm đối số riêng nên vẫn chuyển đủ 20 input hợp lệ sang bước chấm.
 
 \section{Đối chiếu trên MBPP}
 \label{sec:mbpp-results}
 
 \subsection{Sàng lọc bằng base test}
 
-Phép đối chiếu dùng test do Gemini sinh bắt đầu từ 378 bài của MBPP+. Trong đó, 337 bài có PUT do Qwen sinh, tổng cộng 3.041 PUT. Khi chạy lại các phép kiểm cơ sở đi kèm mỗi bài, 891 PUT trượt và 2.150 PUT đạt. Có 41 bài chưa có PUT và 81 bài có PUT nhưng tất cả đều trượt test cơ sở. Mười PUT đạt ở MBPP/785 chưa được chấm thêm vì context của bài vượt giới hạn. Mẫu số chung của phép đối chiếu là 2.140 PUT đã vượt base test trên 255 bài.
+Phép đối chiếu dùng test do Gemini sinh bắt đầu từ 378 bài của MBPP+. Trong đó, 337 bài có PUT do Qwen sinh (tổng cộng 3.041 PUT); khi chạy lại các phép kiểm cơ sở đi kèm mỗi bài, 891 PUT trượt và 2.150 PUT đạt, còn 41 bài chưa có PUT và 81 bài có tất cả PUT trượt test cơ sở. Do mười PUT đạt ở MBPP/785 chưa được chấm thêm vì ngữ cảnh vượt giới hạn token, mẫu số chung của phép đối chiếu là 2.140 PUT đã vượt base test trên 255 bài.
 
-Gemini 3.1 Flash-Lite sinh test cho cả ba nhánh và Naive LLM. Trần của mỗi nhánh và của baseline là 20 input mỗi bài, với thời hạn chấm tám giây mỗi lượt chạy. Naive LLM, EP/BVA và DT dùng một lượt sinh trong cửa sổ 8.192 token. ControlFlow dùng tối đa hai lượt với cửa sổ 18.192 token. Các cấu hình chấm cùng PUT và cùng bản tham chiếu MBPP+.
+Gemini 3.1 Flash-Lite sinh test cho cả ba nhánh và Naive LLM với trần 20 input mỗi bài và thời hạn chấm tám giây mỗi lượt chạy: Naive LLM, EP/BVA và DT dùng một lượt sinh trong cửa sổ 8.192 token, còn ControlFlow dùng tối đa hai lượt với cửa sổ 18.192 token; các cấu hình đều chấm trên cùng PUT và cùng bản tham chiếu MBPP+.
 
 \subsection{PUT được phát hiện thêm}
 
-Đối số phải khớp chữ ký và cho cùng kết quả qua hai lượt chạy tham chiếu. Bộ chấm ghi sai khác khi cùng input làm PUT trượt cả hai lượt. Lần chạy MBPP chưa lọc input trùng base test và chưa kiểm đủ miền theo đặc tả. Bảng~\ref{tab:mbpp-detections} đếm các sai khác lặp lại và để ngoài tổng các PUT chỉ gặp lỗi biểu diễn kết quả ở hạ tầng chấm. ConceptTesting và Naive LLM mỗi bên có bảy PUT như vậy.
+Đối số phải khớp chữ ký và cho cùng kết quả qua hai lượt chạy tham chiếu, còn bộ chấm ghi sai khác khi cùng input làm PUT trượt cả hai lượt. Lần chạy MBPP chưa lọc input trùng base test và chưa kiểm đủ miền theo đặc tả; Bảng~\ref{tab:mbpp-detections} đếm các sai khác lặp lại và để ngoài tổng các PUT chỉ gặp lỗi biểu diễn kết quả ở hạ tầng chấm (ConceptTesting và Naive LLM mỗi bên có bảy PUT như vậy).
 
 \begin{table}[!htbp]
 \centering
@@ -160,7 +212,7 @@ Gemini 3.1 Flash-Lite sinh test cho cả ba nhánh và Naive LLM. Trần của m
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrr@{}}
 \toprule
-Bộ test thêm & Sai giá trị & Ngoại lệ & Hết giờ & Tổng PUT \\
+Bộ test thêm & Sai giá trị & Ngoại lệ & Quá giờ & Tổng PUT \\
 \midrule
 Naive LLM (baseline) & 552 & 104 & 10 & 666 \\
 \midrule
@@ -173,19 +225,19 @@ ConceptTesting & 595 & 154 & 9 & \textbf{758} \\
 \end{tabular*}
 \end{table}
 
-Sau khi hợp test của ba nhánh, ConceptTesting ghi nhận 758 PUT, tương ứng 35,42\% số PUT được chấm thêm. Trong đó có 150 PUT Naive LLM bỏ sót. Baseline phát hiện riêng 58 PUT. Riêng DT ghi nhận 711 PUT ở cùng trần input mỗi bài với Naive LLM. Khi đã có EP/BVA và DT, ControlFlow bổ sung 15 PUT, gồm mười sai giá trị và năm ngoại lệ. Tập hợp có ngân sách sinh lớn hơn Naive LLM. Phép so sánh cùng ngân sách vẫn thuộc thiết kế ablation.
+Sau khi hợp test của ba nhánh, ConceptTesting ghi nhận 758 PUT (35,42\% số PUT được chấm thêm), trong đó có 150 PUT mà Naive LLM bỏ sót, còn baseline phát hiện riêng 58 PUT. Ở cùng trần input mỗi bài với Naive LLM, riêng DT ghi nhận 711 PUT; khi đã có EP/BVA và DT, ControlFlow bổ sung 15 PUT gồm mười sai giá trị và năm ngoại lệ. Do tập hợp có ngân sách sinh lớn hơn Naive LLM, các số liệu trên MBPP phản ánh kết quả ở ngân sách thực dùng của mỗi cấu hình.
 
 \subsection{Một lỗi làm tròn số ở sát lũy thừa}
 \label{sec:mbpp-rounding}
 
-MBPP/388 yêu cầu tìm lũy thừa lớn nhất của 2 không vượt quá số nguyên \(n\). Base test thử \(n=10,19,32\), và PUT 2 đều đạt. DT gắn \(n=2^{63}-1\) vào quy tắc dành cho số nguyên dương không phải lũy thừa của 2. Với đầu vào đó, đáp án là \(2^{62}\). PUT 2 tính logarit bằng số thực, nhận giá trị làm tròn thành 63 rồi trả \(2^{63}\) qua cả hai lượt. Giá trị trả về lớn hơn \(n\), vi phạm trực tiếp yêu cầu của bài. Trong các tập test của lần chạy này, chỉ DT làm lộ lỗi trên PUT 2.
+MBPP/388 yêu cầu tìm lũy thừa lớn nhất của 2 không vượt quá số nguyên \(n\), và PUT 2 vượt qua toàn bộ base test với \(n=10,19,32\). DT gắn \(n=2^{63}-1\) vào quy tắc dành cho số nguyên dương không phải lũy thừa của 2, trong khi đáp án đúng là \(2^{62}\); PUT 2 tính logarit bằng số thực, nhận giá trị làm tròn thành 63 rồi trả \(2^{63}\) qua cả hai lượt, lớn hơn \(n\) nên vi phạm trực tiếp yêu cầu của bài. Trong các tập test của lần chạy này, chỉ DT làm lộ lỗi trên PUT 2.
 
 \subsection{Baseline Naive LLM của Qwen trên 164 bài MBPP+}
 \label{sec:mbpp-qwen-plain}
 
-Tập 164 bài được chọn theo Mục~\ref{sec:mbpp-subset} để giảm chi phí và tài nguyên gọi mô hình, đồng thời có quy mô bằng HumanEval. Sau khi loại 46 bài trùng hoặc gần với HumanEval, phép lấy mẫu phân tầng giữ tỷ lệ các nhóm của 332 bài MBPP+ còn lại. Tập được chọn có 110 bài một tham số, so với 120 bài của HumanEval; số bài có nhánh lần lượt là 42 và 123. Vì phân bố cấu trúc vẫn khác, kết quả được báo riêng theo benchmark. Lần chạy dùng các đề, ca cơ sở và PUT của những bài được chọn.
+Tập 164 bài được chọn theo Mục~\ref{sec:mbpp-subset} để giảm chi phí và tài nguyên gọi mô hình, đồng thời có quy mô bằng HumanEval. Sau khi loại 46 bài trùng hoặc gần với HumanEval, phép lấy mẫu phân tầng giữ tỷ lệ các nhóm của 332 bài MBPP+ còn lại: tập được chọn có 110 bài một tham số (so với 120 bài của HumanEval) và 42 bài có nhánh (so với 123). Vì phân bố cấu trúc vẫn khác, kết quả được báo riêng theo benchmark trên các đề, ca cơ sở và PUT của những bài đã chọn.
 
-Trong 164 bài, 144 bài có tổng cộng 1.311 PUT. Base test loại 350 PUT. Lần chấm bổ sung xét 961 PUT đã đạt trên 114 bài. Hai nhóm bỏ qua gồm 20 bài chưa có PUT và 30 bài có PUT nhưng tất cả đều trượt base test. Qwen sinh input trực tiếp bằng Naive LLM. Tham chiếu chấp nhận 1.913 input.
+Trong 164 bài, 144 bài có tổng cộng 1.311 PUT và base test loại 350 PUT, để lại 961 PUT đã đạt trên 114 bài cho lần chấm bổ sung (20 bài chưa có PUT và 30 bài có toàn bộ PUT trượt base test). Qwen sinh input trực tiếp bằng Naive LLM và tham chiếu chấp nhận 1.913 input.
 
 \begin{table}[!htbp]
 \centering
@@ -194,34 +246,30 @@ Trong 164 bài, 144 bài có tổng cộng 1.311 PUT. Base test loại 350 PUT. 
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrr@{}}
 \toprule
-Bộ test thêm & Sai giá trị & Ngoại lệ & Hết giờ & Tổng PUT \\
+Bộ test thêm & Sai giá trị & Ngoại lệ & Quá giờ & Tổng PUT \\
 \midrule
 Naive LLM (Qwen) & 214 & 55 & 5 & \textbf{274} \\
 \bottomrule
 \end{tabular*}
 \end{table}
 
-Có ít nhất một PUT cho sai khác lặp lại ở 51 trong 114 bài được chấm. Tính theo PUT, tỷ lệ là 274 trên 961, tức 28,51\%. Đây là số đo theo tham chiếu. Việc kiểm miền theo từng đặc tả và lọc input trùng với base test còn chờ hoàn tất. Phép so sánh với ConceptTesting trên cùng mẫu Qwen này chưa được thực hiện.
+Có ít nhất một PUT cho sai khác lặp lại ở 51 trong 114 bài được chấm. Tính theo PUT, tỷ lệ là 274 trên 961, tức 28,51\%. Việc kiểm miền theo từng đặc tả và lọc input trùng với base test còn chờ hoàn tất. Mục~\ref{sec:mbpp-common-puts} đối chiếu với ConceptTesting trên phần mã mà hai lần chạy cùng chấm được.
 
 \section{Kiểm chứng bổ trợ bằng các công cụ sinh test}
 \label{sec:tool-aggregation}
 
-Để kiểm tra riêng giả thuyết base test còn bỏ sót hành vi, khóa luận đối chiếu với các suite của bốn công cụ sinh test tự động: CrossHair, Pynguin, UTBot Python và Hypothesis Ghostwriter. Mỗi công cụ sinh pytest trên cùng cohort PUT của benchmark. Các lời gọi được kiểm chữ ký và độ ổn định của reference; HumanEval còn có bước kiểm domain contract. Input được chấp nhận sau đó được chấm trên các PUT. Phép kiểm này cung cấp thêm bằng chứng về những PUT đã vượt base test nhưng vẫn lệch oracle; bốn công cụ không được tính là các arm của ConceptTesting.
+CrossHair, Pynguin, UTBot Python và Hypothesis Ghostwriter sinh test từ cùng bộ mã của mỗi benchmark. Để kiểm tra base test còn bỏ sót hành vi nào, phép chấm lấy các lời gọi từ test do công cụ sinh và dùng cài đặt tham chiếu để xác định đáp án. Mỗi lời gọi phải khớp chữ ký và cho cùng kết quả qua hai lượt chạy tham chiếu. Với HumanEval, input còn phải thỏa contract của bài.
 
-Phép đo bổ trợ dùng hai cohort được đánh giá riêng với các cấu hình ConceptTesting. Các số liệu này được giữ ngoài các bảng ConceptTesting ở Mục~\ref{sec:mbpp-results} và không được gộp vào số PUT phát hiện của pipeline.
-
-Hai cohort có lần lượt 3.041 PUT trên 378 task MBPP+ và 1.634 PUT trên 164 task HumanEval. Bảng~\ref{tab:tool-base-screen} ghi trạng thái của suite gốc. ``Bị loại'' là tổng của PUT fail assertion, PUT lỗi khi chạy và PUT hết giờ.
-
-Trạng thái trong bảng lấy từ run bổ trợ. Mẫu MBPP của phép đo ConceptTesting ở Mục~\ref{sec:mbpp-results} được báo riêng, nên hai số liệu không được cộng hoặc so trực tiếp.
+Phép kiểm dùng 3.041 PUT trên 378 bài MBPP+ và 1.634 PUT trên 164 bài HumanEval. ``Bị loại'' trong Bảng~\ref{tab:tool-base-screen} gồm PUT trượt phép kiểm, phát sinh lỗi khi chạy hoặc quá giờ.
 
 \begin{table}[!htbp]
 \centering
-\caption{Sàng lọc base test trong hai cohort dùng cho phép kiểm chứng bổ trợ}
+\caption{Sàng lọc hai tập PUT bằng base test cho phép kiểm chứng bổ trợ}
 \label{tab:tool-base-screen}
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrrrr@{}}
 \toprule
-Benchmark & Task & PUT & Đạt & Fail & Error & Timeout & Bị loại \\
+Benchmark & Task & PUT & Đạt & Fail & Error & Quá giờ & Bị loại \\
 \midrule
 MBPP+ & 378 & 3.041 & 2.133 & 775 & 131 & 2 & 908 \\
 HumanEval & 164 & 1.634 & 1.465 & 145 & 23 & 1 & 169 \\
@@ -233,7 +281,7 @@ Kết quả theo từng tool và dòng gộp được ghi ở Bảng~\ref{tab:to
 
 \begin{table}[!htbp]
 \centering
-\caption{PUT bị lệch oracle sau khi chạy các suite sinh test trên MBPP+ Full378}
+\caption{PUT lệch oracle với test do bốn công cụ sinh trên 378 bài MBPP+}
 \label{tab:tool-aggregation-mbpp}
 \scriptsize
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrr@{}}
@@ -252,7 +300,7 @@ Gộp 4 tool, loại trùng & 2.496/3.036 & 5.467 & 1.604/2.911 & 890/2.055 \\
 
 \begin{table}[!htbp]
 \centering
-\caption{PUT bị lệch oracle sau khi chạy các suite sinh test trên HumanEval Full164}
+\caption{PUT lệch oracle với test do bốn công cụ sinh trên 164 bài HumanEval}
 \label{tab:tool-aggregation-he}
 \scriptsize
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrr@{}}
@@ -269,25 +317,88 @@ Gộp 4 tool, loại trùng & 944/1.634 & 3.312 & 222/1.444 & 123/1.299 \\
 \end{tabular*}
 \end{table}
 
-Ở dòng gộp, 890 trên 2.055 PUT MBPP+ đã đạt base test vẫn có disagreement lặp lại với reference, tương ứng 43,31\%. HumanEval có 123 trên 1.299 PUT như vậy, tương ứng 9,47\%. Các tỷ lệ này cho biết base test đã bỏ qua những đầu vào có thể phân biệt các lời giải; chúng không phải là precision của tool và cũng chưa thay cho kết luận lỗi chức năng nếu đặc tả còn cho nhiều hành vi hợp lệ. Các số liệu của từng tool được giữ để xem pool input nào đóng góp vào dòng gộp, còn dòng gộp mới dùng cho nhận định về cohort.
+Sau khi gộp input từ bốn công cụ, 890 trong 2.055 PUT MBPP+ đã vượt base test lệch tham chiếu khi chấm thêm, tương ứng 43,31\%. Trên HumanEval, con số tương ứng là 123/1.299 PUT (9,47\%).
 
-Phép đo bổ trợ chưa có kết quả C1/C2, nên các bảng này chỉ phản ánh sai khác với oracle. Ngân sách và cách sinh của bốn tool khác nhau; kết quả chưa đủ để so sánh hiệu quả ở cùng ngân sách với Naive LLM hoặc từng arm ConceptTesting. Phần coverage sau đây đánh giá các bộ test của pipeline.
+Trên 237 bài MBPP+, nhóm công cụ và Naive LLM dùng Gemini chấm được cùng 1.980 PUT đã vượt base test. Nhóm công cụ ghi nhận 853 PUT lệch tham chiếu, Naive LLM ghi nhận 651 PUT lệch (trong đó có ba trường hợp chỉ gặp lỗi biểu diễn đầu ra) và hai bên trùng nhau ở 512 PUT. Hai phép chấm dùng chung bản tham chiếu nhưng khác quy tắc so sánh kết quả và thời hạn mỗi input (hai giây với nhóm công cụ, tám giây với Naive LLM).
+
+Trong một phép đo bổ trợ, hệ thống thêm input đã qua oracle của bốn công cụ vào base test rồi đo độ phủ trên các PUT đã vượt base test. Số PUT đạt C2 100\% tăng từ 703 lên 839 trong 1.159 PUT có nhánh của HumanEval và từ 366 lên 1.050 trong 1.450 PUT có nhánh của MBPP+. Mẫu số gồm cả PUT thuộc các bài chưa có input bổ sung.
 
 \input{chapters/c4/coverage_results}
 
-\section{Thực nghiệm dự kiến trên mã do mô hình khác sinh}
+\section{Dùng lại test trên các bộ mã khác}
 \label{sec:cross-model-evaluation}
 
-Phép thử này đo khả năng dùng lại test khi đổi mô hình sinh mã. Trên mỗi benchmark, mô hình A sinh bộ PUT nguồn. ConceptTesting dùng mô hình A để sinh input từ đặc tả và các PUT nguồn đã vượt base test. Hệ thống kiểm miền theo contract, lấy đáp án từ cài đặt tham chiếu và chốt các ca mới hợp lệ theo mã task. Mô hình B sinh bộ PUT độc lập từ đề và ví dụ công khai của đúng các task đó.
+Trên HumanEval, phép đánh giá dùng lại các tập input do Qwen và Gemini sinh với EP/BVA và DT V2 cùng ControlFlow gốc. Khi chấm lời giải của mô hình khác, bộ chấm giữ ca cơ sở và thêm input đã chọn cho đúng bài. Một input làm lộ sai khác nếu PUT lệch tham chiếu HumanEval+ qua hai lượt với thời hạn tám giây mỗi lượt.
 
-Trên bộ mã của B, lần chấm đầu dùng base test. Mốc thứ hai ghép các ca đã chốt từ A vào base test và giữ nguyên cách chấm các ca cơ sở. Kết quả cần ghi số PUT của B vượt base test, số PUT bị phát hiện thêm và tỷ lệ trên số PUT đã vượt base test được chấm thêm. C1 và C2 được đo trên cùng mã trước và sau để xem bộ test đã chốt còn bổ sung đường chạy nào. Điểm pass@k được so trên cùng tập task và bộ mẫu, với \(k\) phù hợp với số PUT của mỗi task. HumanEval và MBPP dùng hai bộ kết quả riêng.
+\subsection{Kết quả trên Qwen, GPT-6 Luna và Flint}
 
-Phép thử chưa được thực hiện. Kết quả sẽ được bổ sung sau khi chấm bộ PUT của B.
+GPT-6 Luna có 1.640 PUT trên 164 bài, trong đó 1.601 vượt HumanEval gốc; còn bộ mã Flint dùng để chấm lại có 270 PUT trên 161 bài, với 266 PUT đạt HumanEval gốc và 255 PUT đạt HumanEval+ (tính cả test cơ sở lẫn test bổ sung của EvalPlus). Bảng~\ref{tab:cross-model-he} chỉ tính PUT đã vượt test gốc và có kết quả chấm từ cả hai bộ test, riêng dòng cuối tách nhóm Flint đã vượt HumanEval+.
+Cột ``\% PUT fail'' lấy số PUT ở cột ``Hợp hai bộ test'' chia cho số PUT chung được chấm. Mỗi PUT lệch tham chiếu được tính một lần, kể cả khi cả hai bộ test đều phát hiện.
+
+\begin{table}[!htbp]
+\centering
+\caption[Số PUT lệch tham chiếu khi dùng lại test V2 và ControlFlow gốc]{Số PUT lệch tham chiếu khi dùng lại test EP/BVA, DT V2 và ControlFlow gốc do Gemini và Qwen sinh}
+\label{tab:cross-model-he}
+\small
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrrr@{}}
+\toprule
+Bộ mã & \shortstack[r]{PUT chung\\được chấm} & \shortstack[r]{Test\\Gemini} & \shortstack[r]{Test\\Qwen} & \shortstack[r]{Cả hai\\phát hiện} & \shortstack[r]{Hợp hai\\bộ test} & \% PUT fail \\
+\midrule
+Qwen & 1.454 & 79 & 121 & 72 & 128 & 8,80 \\
+GPT-6 Luna & 1.544 & 54 & 64 & 45 & 73 & 4,73 \\
+Flint đạt HumanEval gốc & 258 & 5 & 17 & 5 & 17 & 6,59 \\
+Flint đạt HumanEval+ & 250 & 3 & 9 & 3 & 9 & 3,60 \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Trên bộ mã Qwen đã dùng khi sinh test, tỷ lệ 8,80\% tương ứng với 128 trong 1.454 PUT đã vượt test gốc. Khi dùng lại test trên Luna, hai bộ phát hiện chung 45 PUT, nên phép hợp ghi nhận \(54+64-45=73\) PUT trên 1.544 PUT chung, tương ứng 4,73\%. Test Gemini tìm riêng 9 PUT và test Qwen tìm riêng 19 PUT, đều thuộc nhóm sai giá trị.
+
+Trên Flint, hợp hai bộ test làm lộ sai khác ở 17 trong 258 PUT đã vượt HumanEval gốc. Trong nhóm 250 PUT đã vượt HumanEval+ và được cả hai bộ test chấm, vẫn có 9 PUT lệch tham chiếu, tương ứng 3,60\%. Kết quả trên Luna và Flint cho thấy có thể dùng lại input theo từng bài để phát hiện thêm sai khác trên các cài đặt do mô hình khác sinh.
+
+EP/BVA và DT của Gemini trong phép đối chiếu này lấy từ một đợt sinh độc lập với hai nhánh tương ứng ở Bảng~\ref{tab:extra-detections}. Trên mã Luna, Gemini có 3.263 input hợp lệ và Qwen có 4.779. Hai bộ test cũng có thể thiếu input ở các bài khác nhau.
+
+Trong năm PUT Flint lệch tham chiếu khi dùng test Gemini, có ba PUT đã vượt HumanEval+: ở bài 137, một PUT dùng số thập phân để giữ phần chênh mà số thực của tham chiếu làm tròn, còn ở bài 157, hai PUT chấp nhận sai số khi kiểm tra đẳng thức Pythagore. Cách phân loại ba sai khác này vì thế phụ thuộc vào quy ước về độ chính xác số trong đặc tả.
+
+Lần sinh mở rộng bộ mã Flint đặt mục tiêu 1.454 PUT vượt HumanEval+; tại mốc 16 giờ 35 ngày 24/11/2026, đã có 801 PUT trên đủ 164 bài và 716 PUT vượt HumanEval+, còn kết quả phát hiện ở Bảng~\ref{tab:cross-model-he} thuộc bộ 270 PUT đã chấm.
+
+\subsection{Chấm mã GPT-4o công khai}
+\label{sec:gpt4o-evaluation}
+
+Nhóm rBridge công bố một lời giải GPT-4o cho mỗi bài trong 164 bài HumanEval~\cite{rbridgeDataset}, với phản hồi bài 41 chỉ có thân hàm nên được ghép vào prompt gốc. Khi chạy test gốc bằng bộ chấm của OpenAI với giới hạn ba giây mỗi lời giải~\cite{openaiHumanEvalScoring}, có 149 lời giải đạt và 15 lời giải trượt (trong đó một lời giải quá giờ); do mỗi bài chỉ có một lời giải, điểm đo được chính là pass@1.
+
+Trong 149 bài vượt HumanEval gốc, 146 bài có input bổ sung để chấm. Ba bài còn lại giữ kết quả test gốc khi tính điểm trên đủ 164 bài. Bảng~\ref{tab:gpt4o-rbridge-pass1} tính một lời giải là đạt nếu vượt cả test gốc lẫn các test được thêm cho bài đó.
+
+\begin{table}[!htbp]
+\centering
+\caption[Pass@1 của cùng 164 lời giải GPT-4o từ rBridge]{Pass@1 của 164 lời giải GPT-4o từ rBridge. Test bổ sung do Qwen và Gemini sinh bằng EP/BVA, DT V2 và ControlFlow gốc.}
+\label{tab:gpt4o-rbridge-pass1}
+\small
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrr@{}}
+\toprule
+Bộ test & \shortstack[r]{PUT bị loại\\thêm} & \shortstack[r]{Bài còn\\đạt} & \shortstack[r]{Pass@1\\(\%)} \\
+\midrule
+HumanEval gốc & -- & 149/164 & 90,85 \\
+Thêm test V2 + ControlFlow gốc của Qwen & 9 & 140/164 & 85,37 \\
+Thêm test V2 + ControlFlow gốc của Gemini & 8 & 141/164 & 85,98 \\
+Thêm test của cả hai mô hình & 10 & 139/164 & \textbf{84,76} \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Khi gộp hai bộ test, pass@1 giảm 6,10 điểm phần trăm. Trong mười lời giải lệch tham chiếu, bảy trả sai giá trị, một phát sinh ngoại lệ và hai quá giờ.
+
+EvalPerf công bố mã GPT-4o đã được chọn để đo hiệu năng thực thi~\cite{evalperfBenchmark}. Trên 580 PUT của 29 bài HumanEval, test của ConceptTesting làm 20 PUT quá giờ, và cả 20 cùng thuộc HumanEval/24. Trên 82 bài MBPP+ có 1.640 PUT nguồn, trong đó 1.020 PUT được chấm thêm bằng test ConceptTesting của Gemini, Naive LLM của Qwen hoặc cả hai, ghi nhận 177 PUT lệch tham chiếu (57 sai giá trị, 115 ngoại lệ và năm quá giờ). Các tỷ lệ này mô tả tập mẫu đã chọn cho EvalPerf, còn việc kết luận lỗi chức năng trên MBPP+ vẫn phụ thuộc vào kiểm miền đầu vào theo từng đề.
+
+\subsection{Đối chiếu trên cùng mã MBPP+}
+\label{sec:mbpp-common-puts}
+
+Trên 886 PUT MBPP+ mà cả hai lần chạy cùng chấm được, ConceptTesting dùng Gemini ghi nhận 293 PUT lệch tham chiếu, còn Naive LLM dùng Qwen trên tập 164 bài ghi nhận 264 PUT; hai bộ test cùng phát hiện 253 PUT và khi gộp lại đạt 304 PUT. Phép đối chiếu dùng chung mã và tham chiếu nhưng khác số nhánh sinh và ngân sách.
 
 \section{Giới hạn của kết quả}
 
-Gemini có 149 trong 157 catalogue EP/BVA qua được bộ đọc cấu trúc. Tuy vậy, 571 lớp trong các catalogue đó thiếu điều kiện hoặc bộ chọn để kiểm tư cách thành viên. Cả 169 biên cũng thiếu tham số và mốc danh định. Kết quả chấm thực thi vẫn xác nhận sai khác ở 114 PUT, nhưng chưa có số đo độ phủ lớp và biên.
+Dù 149 trong 157 danh mục concept của EP/BVA của Gemini qua được bộ đọc cấu trúc, 571 lớp trong đó vẫn thiếu điều kiện hoặc bộ chọn để kiểm tư cách thành viên và cả 169 biên đều thiếu tham số cùng mốc danh định; kết quả chấm thực thi vẫn xác nhận sai khác ở 114 PUT nhưng chưa có số đo độ phủ lớp và biên.
 
-Đi qua một cạnh mới chỉ xác nhận mục tiêu cấu trúc. Đầu ra của PUT vẫn có thể đúng. Ở bài tách từ, việc nhắm một cạnh của PUT 4 tạo ra một chuỗi làm lộ sai khác trên nhiều cài đặt. Kết quả theo số PUT còn phụ thuộc vào mức độ các lời giải của cùng một bài chia sẻ cách xử lý đầu vào.
+Đi qua một cạnh mới chỉ xác nhận mục tiêu cấu trúc, trong khi đầu ra của PUT vẫn có thể đúng. Ngược lại, ở bài tách từ, việc nhắm một cạnh của PUT 4 tạo ra một chuỗi làm lộ sai khác trên nhiều cài đặt, cho thấy kết quả theo số PUT còn phụ thuộc vào mức độ các lời giải của cùng một bài chia sẻ cách xử lý đầu vào.
 
-Kết quả giữ nguyên quy tắc lọc kiểu và miền đã dùng ở từng lần chạy. HumanEval và MBPP khác nhau về bộ PUT, điều kiện nhận task và mức kiểm miền. Tỷ lệ phát hiện dùng mẫu số là số PUT đã vượt base test và được chấm thêm. Khi đặc tả cho phép nhiều đáp án đúng, một sai khác lặp lại vẫn cần đối chiếu với đặc tả để xác định lỗi chức năng. Vì chưa có nhãn lỗi đầy đủ cho bộ PUT, chưa thể tính precision và recall. Chi phí sinh được báo qua số lần gọi mô hình và số token. Thực nghiệm chưa đo độ trễ đầu cuối trong cùng một cấu hình máy.
+Kết quả giữ nguyên quy tắc lọc kiểu và miền đã dùng ở từng lần chạy, trong đó HumanEval và MBPP khác nhau về bộ PUT, điều kiện nhận task và mức kiểm miền, còn tỷ lệ phát hiện dùng mẫu số là số PUT đã vượt base test và được chấm thêm. Khi đặc tả cho phép nhiều đáp án đúng, một sai khác lặp lại vẫn cần đối chiếu với đặc tả để xác định lỗi chức năng; vì chưa có nhãn lỗi đầy đủ cho bộ PUT, khóa luận cũng chưa thể tính precision và recall. Về hiệu năng, chi phí sinh hiện được báo qua số lần gọi mô hình và số token, còn độ trễ đầu cuối trên cùng một cấu hình máy chưa được đo. Tương tự, mức tăng C1/C2 ở Mục~\ref{sec:coverage-results} mới chỉ đo trên các tập PUT ban đầu, còn các bộ mã mới được đánh giá qua sai khác với tham chiếu.

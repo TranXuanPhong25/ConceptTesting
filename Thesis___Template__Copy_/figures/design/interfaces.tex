@@ -1,15 +1,15 @@
 \begin{tikzpicture}[font=\small,>=stealth,
  box/.style={draw,align=left,text width=5.5cm,minimum height=1.5cm},edge/.style={->}]
 \node[box] (pipe) at (0,0) {\textbf{Pipeline}\\Điều phối các stage sinh và chấm input};
-\node[box] (gen) at (8.4,0) {\textbf{InputGeneration}\\Nhận context và sinh bộ đối số};
-\node[box] (ctx) at (0,-3.1) {\textbf{Context}\\Đặc tả, chữ ký, base test và mã PUT};
-\node[box] (method) at (8.4,-3.1) {\textbf{Mô-đun concept}\\Hướng dẫn EP/BVA, DT hoặc ControlFlow};
+\node[box] (gen) at (8.4,0) {\textbf{Sinh input}\\Nhận ngữ cảnh và sinh bộ đối số};
+\node[box] (ctx) at (0,-3.1) {\textbf{Ngữ cảnh}\\Đặc tả, chữ ký, base test và mã PUT};
+\node[box] (method) at (8.4,-3.1) {\textbf{Nhánh sinh theo concept}\\Hướng dẫn EP/BVA, DT hoặc ControlFlow};
 \node[box] (oracle) at (0,-6.2) {\textbf{Oracle}\\Kiểm miền và xác định đáp án};
 \node[box] (calls) at (8.4,-6.2) {\textbf{Mô hình ngôn ngữ}\\Chuyển concept thành input cụ thể};
 \draw[edge] (pipe)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{gọi}(gen);
 \draw[edge] (pipe)--node[left]{tạo và truyền}(ctx);
 \draw[edge] (gen)--node[right]{áp dụng hướng dẫn}(method);
 \draw[edge] (ctx)--node[left]{cấp miền hợp lệ}(oracle);
-\draw[edge] (method)--node[right]{gửi concept và context}(calls);
+\draw[edge] (method)--node[right]{gửi concept và ngữ cảnh}(calls);
 \draw[edge,dashed] (ctx)--node[above,font=\scriptsize,fill=white,inner sep=1pt]{được dùng bởi}(method);
 \end{tikzpicture}

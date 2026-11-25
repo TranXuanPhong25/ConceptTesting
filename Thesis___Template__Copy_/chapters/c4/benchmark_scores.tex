@@ -3,7 +3,7 @@
 
 \subsection{Kết quả sàng lọc bằng base test}
 
-Sau khi lọc mã do Qwen sinh, hệ thống giữ 1.634 cài đặt theo Mục~\ref{sec:put-generation}. Cả Qwen lẫn Gemini sinh test trên cùng bộ mã đó. Hai nhóm cột trong Bảng~\ref{tab:extra-detections} chỉ hai nguồn test. Điểm trước và sau khi bổ sung đều được tính cho các PUT do Qwen sinh.
+Sau khi lọc mã do Qwen sinh, hệ thống giữ 1.634 cài đặt theo Mục~\ref{sec:put-generation}. Cả Qwen và Gemini đều sinh test cho cùng tập PUT này. Bảng~\ref{tab:extra-detections} ghi kết quả chính với Qwen. Mục~\ref{sec:ablation-one-pass} trình bày đối chiếu trên cấu hình một lượt của Qwen.
 
 \begin{table}[!htbp]
 \centering
@@ -23,35 +23,32 @@ Toàn bộ & 164 & 1.634 & \textbf{169} & \textbf{1.465} & \textbf{1.454} \\
 \end{tabular*}
 \end{table}
 
-Trong 169 PUT bị loại ở bước base, 145 trượt phép kiểm, 23 phát sinh lỗi thực thi và một hết giờ. HumanEval/32 có ba PUT đạt trong năm cài đặt đã sinh. HumanEval/136 có tám PUT đạt trong chín cài đặt. Cả hai bài đều thiếu so với mốc mười, nên 11 PUT đã đạt ở hai bài này chưa có kết quả test bổ sung. Bảng~\ref{tab:base-screen} ghi riêng chúng với các PUT đã trượt.
+Trong 169 PUT bị loại ở bước base, có 145 PUT trượt phép kiểm, 23 phát sinh lỗi thực thi và một quá giờ. Riêng HumanEval/32 có ba PUT đạt trong năm cài đặt đã sinh và HumanEval/136 có tám PUT đạt trong chín cài đặt; vì cả hai bài đều thiếu so với mốc mười, 11 PUT đã đạt này chưa có kết quả test bổ sung và được Bảng~\ref{tab:base-screen} tách riêng khỏi các PUT đã trượt.
 
 \subsection{Các PUT bị phát hiện thêm}
 
 \begin{table}[!htbp]
 \centering
-\caption{PUT bị phát hiện thêm trong 1.454 PUT đã vượt base test, theo nguồn sinh test}
+\caption[Phát hiện thêm trên HumanEval khi Qwen sinh test]{Số PUT bị phát hiện thêm khi Qwen sinh test, trên 1.454 PUT đã vượt base test}
 \label{tab:extra-detections}
 \small
-\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrrrrrr@{}}
+\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lrrrr@{}}
 \toprule
-& \multicolumn{4}{c}{Qwen sinh test} & \multicolumn{4}{c}{Gemini sinh test} \\
-\cmidrule(lr){2-5}\cmidrule(l){6-9}
-Bộ test thêm & \shortstack{Sai\\giá trị} & \shortstack{Ngoại\\lệ} & \shortstack{Hết\\giờ} & Tổng
-             & \shortstack{Sai\\giá trị} & \shortstack{Ngoại\\lệ} & \shortstack{Hết\\giờ} & Tổng \\
+Bộ test thêm & Sai giá trị & Ngoại lệ & Quá giờ & Tổng \\
 \midrule
-Naive LLM (baseline) & 58 & 13 & 16 &  87 & 69 & 22 & 16 & 107 \\
+Naive LLM (baseline) & 58 & 13 & 16 & 87 \\
 \midrule
-EP/BVA               & 67 &  9 &  5 &  81 & 63 & 31 & 20 & 114 \\
-DT                   & 65 & 17 & 14 &  96 & 73 & 23 & 20 & 116 \\
-ControlFlow          & 38 &  0 &  1 &  39 & 34 &  0 &  1 &  35 \\
+EP/BVA & 85 & 28 & 20 & 133 \\
+DT & 88 & 34 & 18 & 140 \\
+Hợp EP/BVA và DT & 97 & 37 & 20 & 154 \\
+ControlFlow theo nghĩa vụ & 52 & 44 & 25 & 121 \\
 \midrule
-EP/BVA và DT         & 75 & 22 & 16 & 113 & 76 & 35 & 21 & 132 \\
-Pipeline đầy đủ     & 83 & 22 & 16 & \textbf{121} & 76 & 35 & 21 & \textbf{132} \\
+Pipeline đầy đủ & 98 & 52 & 24 & \textbf{174} \\
 \bottomrule
 \end{tabular*}
 \end{table}
 
-Pipeline đầy đủ gộp EP/BVA, DT và ControlFlow theo mã PUT. Qwen và Gemini phát hiện chung 104 PUT, nên tổng hai nguồn là \(121+132-104=149\) PUT. Trong đó có 91 sai giá trị, 37 ngoại lệ và 21 hết giờ.
+Trên 1.454 PUT đã vượt base test, pipeline đầy đủ phát hiện thêm 174 PUT thuộc 63 bài. Trong phép chấm bổ trợ, tập phát hiện của Qwen có 125 PUT chung với tập 132 PUT từ cấu hình EP/BVA và DT một lượt cùng ControlFlow gốc của Gemini. Gộp hai nguồn cho 181 PUT trên 63 bài, gồm 102 sai giá trị, 57 ngoại lệ và 22 quá giờ.
 
 \subsection{Cách tính pass@k trên cùng một tập chương trình}
 
@@ -61,15 +58,15 @@ Giả sử bài \(i\) có \(n_i\) PUT và \(c_i\) trong số đó vượt toàn 
   \left(1-\frac{\binom{n_i-c_i}{k}}{\binom{n_i}{k}}\right),
   \qquad k\leq \min_{i\in T} n_i .
 \]
-Nếu bài \(i\) có ít hơn \(k\) PUT trượt, không thể chọn một mẫu gồm toàn PUT trượt nên xác suất đó bằng 0. Khi so trước và sau, \(n_i\) giữ nguyên. Trước khi bổ sung test, \(c_i\) là số PUT vượt base test. Sau khi bổ sung, mỗi PUT bị phát hiện thêm làm \(c_i\) giảm đúng một đơn vị, kể cả khi nhiều input cùng làm PUT đó trượt.
+Nếu bài \(i\) có ít hơn \(k\) PUT trượt, không thể chọn một mẫu gồm toàn PUT trượt nên xác suất đó bằng 0. Khi so trước và sau, \(n_i\) giữ nguyên: trước khi bổ sung test, \(c_i\) là số PUT vượt base test, còn sau khi bổ sung, mỗi PUT bị phát hiện thêm làm \(c_i\) giảm đúng một đơn vị, kể cả khi nhiều input cùng làm PUT đó trượt.
 
-Có 162 bài đủ mười cài đặt, tổng cộng 1.620 PUT. Bảng~\ref{tab:before-after-passk} tính điểm trên tập này. Năm bài không có PUT vượt base test vẫn góp điểm 0 ở cả hai mốc. Với \(k=1\), số mẫu theo bài bằng nhau nên điểm bằng số PUT còn đạt chia cho 1.620. Với \(k=10\), bài được điểm 1 nếu còn bất kỳ PUT nào đạt. Mốc \(k=5\) đo xác suất còn lời giải đạt khi chỉ chọn một nửa số cài đặt của mỗi bài.
+Bảng~\ref{tab:before-after-passk} tính điểm trên 162 bài đủ mười cài đặt, tổng cộng 1.620 PUT. Năm bài có toàn bộ PUT trượt base test góp điểm 0 ở cả hai mốc. Với \(k=1\), điểm bằng số PUT còn đạt chia cho 1.620 vì các bài có cùng số mẫu. Với \(k=10\), mỗi bài được điểm 1 nếu còn ít nhất một PUT đạt. Mốc \(k=5\) đo xác suất còn lời giải đạt khi chọn một nửa số cài đặt của mỗi bài.
 
-Cohort này được sinh theo lô và lọc trùng AST như Mục~\ref{sec:put-generation}. Phép so sánh giữ nguyên chương trình để đo thay đổi khi tăng cường test; các điểm trong bảng không được đối chiếu trực tiếp với điểm công bố từ completion lấy mẫu độc lập của mô hình.
+Tập PUT này được sinh theo lô và lọc trùng AST như Mục~\ref{sec:put-generation}. Phép so sánh giữ nguyên chương trình để đo thay đổi khi tăng cường test; các điểm trong bảng không được đối chiếu trực tiếp với điểm công bố từ completion lấy mẫu độc lập của mô hình.
 
 \begin{table}[!htbp]
 \centering
-\caption{Điểm của cùng mã Qwen trước và sau khi thêm test trên 162 bài. Các cột pass@k tính theo phần trăm, mức giảm tính bằng điểm phần trăm so với base test.}
+\caption[Điểm pass@k của mã Qwen trước và sau khi thêm test]{Điểm của cùng mã Qwen trước và sau khi thêm test trên 162 bài. Các cột pass@k tính theo phần trăm, mức giảm tính bằng điểm phần trăm so với base test.}
 \label{tab:before-after-passk}
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrrrr@{}}
@@ -79,25 +76,21 @@ Cohort này được sinh theo lô và lọc trùng AST như Mục~\ref{sec:put-
 -- & Chỉ base test & 1.454 & 89,75 & 96,14 & 96,91 & -- \\
 \midrule
 Qwen & Naive LLM (baseline) & 1.367 & 84,38 & 93,62 & 94,44 & 5,37 \\
-     & EP/BVA và DT       & 1.341 & 82,78 & 93,94 & 95,06 & 6,98 \\
-     & Pipeline đầy đủ    & 1.333 & 82,28 & 93,80 & 95,06 & 7,47 \\
-\midrule
-Gemini & Naive LLM (baseline) & 1.347 & 83,15 & 93,85 & 95,06 & 6,60 \\
-       & EP/BVA và DT      & 1.322 & 81,60 & 93,92 & 95,06 & 8,15 \\
-       & Pipeline đầy đủ   & 1.322 & 81,60 & 93,92 & 95,06 & 8,15 \\
+     & Hợp EP/BVA và DT & 1.300 & 80,25 & 93,66 & 95,06 & 9,51 \\
+     & Pipeline đầy đủ & 1.280 & 79,01 & 93,65 & 95,06 & 10,74 \\
 \midrule
 Cả hai & Naive LLM (baseline) & 1.334 & 82,35 & 93,20 & 94,44 & 7,41 \\
-       & Pipeline đầy đủ   & \textbf{1.305} & \textbf{80,56} & 93,66 & 95,06 & \textbf{9,20} \\
+       & \shortstack[l]{Pipeline Qwen +\\test Gemini một lượt} & \textbf{1.273} & \textbf{78,58} & 93,52 & 95,06 & \textbf{11,17} \\
 \bottomrule
 \end{tabular*}
 \end{table}
 
-Trên 162 bài, base test loại 166 PUT. Khi thêm test của pipeline từ hai mô hình, tổng bị loại tăng lên 315. Số bài còn lời giải đạt giảm từ 157 xuống 154, nên pass@10 giảm từ 96,91\% còn 95,06\%. Pass@1 giảm 9,20 điểm phần trăm.
+Trên 162 bài, base test loại 166 PUT. Khi thêm test của pipeline từ Qwen, tổng bị loại tăng lên 340 PUT, kéo pass@1 từ 89,75\% xuống 79,01\% (giảm 10,74 điểm phần trăm) và pass@10 từ 96,91\% xuống 95,06\%. Khi gộp thêm test từ cấu hình một lượt của Gemini, tổng bị loại tăng lên 347 PUT và pass@1 xuống 78,58\% (giảm 11,17 điểm phần trăm). Cả hai tập mở rộng còn ít nhất một PUT đạt ở 154 trong 162 bài.
 
-Nếu tính trên 164 bài, pass@1 ở mốc base là 89,57\%, với số mẫu thực tế là năm và chín ở hai bài thiếu cài đặt. Khi thêm test của pipeline, có thể chặn điểm toàn tập trong khoảng 79,57\% đến 80,48\%. Cận dưới giả sử cả 11 PUT chưa chấm thêm đều trượt. Cận trên giả sử cả 11 vẫn đạt. Hai bài thiếu mẫu khiến pass@10 cho tập 164 bài chưa xác định.
+Nếu tính trên 164 bài với số mẫu thực tế là năm và chín ở hai bài thiếu cài đặt, pass@1 ở mốc base là 89,57\%. Với pipeline từ Qwen, điểm toàn tập nằm trong khoảng 78,05\% đến 78,96\%, còn khi gộp thêm test Gemini nằm trong khoảng 77,62\% đến 78,53\%. Cận dưới giả sử cả 11 PUT chưa chấm thêm đều trượt và cận trên giả sử cả 11 vẫn đạt. Hai bài thiếu mẫu khiến pass@10 cho tập 164 bài chưa xác định.
 
 \subsection{Tác dụng đối với benchmark}
 
-Trên 1.454 PUT từng vượt base, pipeline phát hiện thêm 149, tương ứng 10,25\%. Riêng HumanEval/151 chịu ảnh hưởng của cách hiểu miền đầu vào. Đề bài yêu cầu danh sách số và chưa nói rõ về Boolean. Với \texttt{[True, False, True]}, tham chiếu tính mỗi \texttt{True} như số 1 và trả 2. Một PUT trả 0 qua cả hai lượt. Mười phát hiện của bài đều dựa trên những input có Boolean. Nếu chỉ giữ phát hiện có chứng cứ từ danh sách không chứa Boolean, còn 139 PUT và pass@1 là 81,17\% trên 162 bài, giảm 8,58 điểm phần trăm.
+HumanEval/151 yêu cầu danh sách số và để ngỏ việc chấp nhận Boolean. Với danh sách \texttt{[True, False, True]}, tham chiếu tính mỗi \texttt{True} như số 1 và trả 2, trong khi một PUT trả 0 qua cả hai lượt. Cả mười phát hiện của bài đều dựa trên input chứa Boolean. Khi bỏ mười phát hiện này, pipeline từ Qwen còn phát hiện 164 PUT (pass@1 là 79,63\%, giảm 10,12 điểm phần trăm), còn tập gộp với Gemini phát hiện 171 PUT (pass@1 là 79,20\%, giảm 10,56 điểm phần trăm trên 162 bài).
 
-Ở nhóm bài có cùng số mẫu, mức giảm pass@1 phản ánh số PUT bị phát hiện thêm. Qwen sinh bộ mã từ đặc tả và hệ thống lọc trùng theo cây cú pháp (Mục~\ref{sec:put-generation}). Vì các mô hình sinh test được xem một phần mã đó, kết quả phản ánh hiệu quả trên tập đã tham gia chọn input. Để đánh giá bộ test như một benchmark dùng lại, cần chốt input rồi chấm một bộ cài đặt mới. Trong thực nghiệm hiện tại, đáp án cho các input do pipeline sinh lấy từ cài đặt tham chiếu HumanEval+.
+Ở nhóm bài có cùng số mẫu, mức giảm pass@1 phản ánh số PUT bị phát hiện thêm. Các mô hình sinh test được xem một phần mã Qwen khi chọn input, nên kết quả trên tập mã đó phụ thuộc vào các cách cài đặt đã quan sát. Mục~\ref{sec:cross-model-evaluation} đánh giá lại các input đã chọn trên mã do mô hình khác sinh.

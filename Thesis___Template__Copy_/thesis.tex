@@ -78,6 +78,8 @@
 %\renewcommand{\cftsecpresnum}{Chương\space}
 \renewcommand{\cftchappresnum}{Chương }
 \AtBeginDocument{\addtolength\cftchapnumwidth{\widthof{\bfseries Chương }}}
+\addtolength{\cftsecnumwidth}{.4em}
+\addtolength{\cftsubsecnumwidth}{.45em}
 \setlength{\parskip}{0.4em}
 \setlength{\parindent}{0pt}
 %
@@ -152,11 +154,14 @@
 % Assurance
 \hypersetup{pageanchor=true}
 \input{chapters/assurance}\newpage\cleardoublepage
-\input{chapters/ai_assistance}\newpage\cleardoublepage
 % Tóm tắt
 \input{chapters/abtract_vi}\newpage\cleardoublepage
 \addcontentsline{toc}{chapter}{Mục lục}
-\tableofcontents\newpage\cleardoublepage
+\begingroup
+\renewcommand{\baselinestretch}{1.25}\selectfont
+\tableofcontents
+\endgroup
+\newpage\cleardoublepage
 %
 
 \newpage

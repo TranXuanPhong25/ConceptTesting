@@ -1,37 +1,36 @@
 {
   "date": "2026-11-24",
-  "document_pages": 62,
-  "references": 31,
+  "document_pages": 67,
+  "references": 34,
   "figures": 8,
-  "tables": 17,
+  "tables": 20,
   "scope": "ConceptTesting trên HumanEval và MBPP. Naive LLM là baseline riêng.",
-  "scope_of_table": "Chương 1 có bảng DT. Chương 3 có bảng HumanEval, hai bảng ablation, bảng ca demo, hai bảng MBPP, ba bảng kiểm chứng tool và các bảng C1/C2 coverage. Phụ lục có bảng định dạng phản hồi.",
+  "scope_of_table": "Bảng kỹ thuật ở Chương 1, kết quả sàng lọc, phát hiện, ablation, demo, coverage và chấm chéo ở Chương 3.",
   "verified_saved_result_rows": {
     "Qwen": 9,
     "Gemini": 7
   },
   "verified_cases": {
-    "HumanEval/0": "Hai cặp def–use từ dòng 6 đến dòng 7 và 8 trên PUT 0.",
     "HumanEval/124": "Naive LLM, EP/BVA và DT dùng Gemini cùng sinh 02-29-2001. PUT 7 sai giá trị ở cả hai lượt.",
-    "HumanEval/125": "Chuỗi có tab tạo wrong-value ở cả hai lượt trên đúng tám PUT ngoài EP/BVA và DT của Qwen. Cạnh 8→12 thuộc PUT 4, DU unsupported.",
+    "HumanEval/125": "Chuỗi có tab tạo wrong-value ở cả hai lượt trên đúng tám PUT ngoài EP/BVA và DT của Qwen. Cạnh 8→12 thuộc PUT 4.",
     "MBPP/388": "DT sinh n=2^63-1. PUT 2 vượt base test nhưng trả 2^63 ở cả hai lượt, vượt quá n."
   },
   "verified_usage_records": 5,
-  "model_or_benchmark_runs_launched": 0,
+  "model_or_benchmark_runs_launched": 1,
   "document_checks": {
     "undefined_citations": 0,
     "undefined_references": 0,
     "missing_glyphs": 0,
     "overfull_boxes": 0,
     "all_bibliography_entries_external": true,
-    "external_links": 31,
-    "resolved_cross_references": 51,
-    "figure_renderer": "PlantUML 1.2025.2, PDF vector",
+    "external_links": 34,
+    "resolved_cross_references": 62,
+    "figure_renderer": "PlantUML 1.2025.2, PDF vector. Hình 2.1 dùng ảnh PNG sinh viên cung cấp.",
     "tex_engine": "Tectonic 0.17.0"
   },
   "editorial_skill": "Humanizer",
   "personal_fields": "Dành cho sinh viên hoàn thiện.",
-  "pdf_sha256": "5bc4e32f93c2289f5c06f047c4979a62175a747bfc3e6a11f1f5f3647f400c32",
+  "pdf_sha256": "e8487918a7417781b257f2371d65547741ca150e588d932e43a24c516fd27e4d",
   "artifact_hashes": {
     "final/review/results_tables_20261118/REPORT.md": "059cb9f5d0a65c340f78a477fa0d46cf541dbbc5a84633a898479e28de418dfc",
     "final/review/results_tables_20261118/tables.json": "74243489d6ac432d07bf006d719579811b4f653dcf183666e7a1c50f618f0e96",
@@ -42,7 +41,7 @@
     "final/out/tool_outputs_without_klara/humaneval_results.json": "4c2e8ad3a3e8dcc13f6ae1c867a3ab3b7897f888902b1c166d2fad85265f2e89"
   },
   "human_eval_scores": {
-    "evidence": "final/review/results_tables_20261118/pass_at_k.json",
+    "evidence": "final/out/thesis_cf_repair_vf3_coverage_20261125_Mvc7RV/detection_summary.json",
     "source_cohort": "2a32bae531c339f2e403d748984ce5775734bdd8fd0fc9a02620392fbc23c7ed",
     "full_cohort_base": {
       "tasks": 164,
@@ -61,9 +60,9 @@
       9
     ],
     "pdf_pages_by_table": {
-      "3.1": 37,
-      "3.2": 37,
-      "3.3": 38
+      "3.1": 38,
+      "3.2": 39,
+      "3.3": 40
     }
   },
   "put_cohort_verification": {
@@ -99,38 +98,124 @@
       157,
       158,
       159,
-      160,
-      189,
-      190,
-      191,
-      192,
-      193,
-      194,
-      195,
-      197,
-      198,
-      199,
-      200,
-      201
+      160
     ],
     "textbook_public_copy_sha256": "1994ccc2db9d189572017f494d5cb2d48dc438ea84d26758ef81bb5215bcc514",
     "doi_count_added": 4,
-    "bibliography_pdf_start": 60,
-    "related_work_pdf_page": 20,
+    "bibliography_pdf_start": 64,
+    "related_work_pdf_page": 18,
     "theory_pdf_pages": [
+      15,
       16,
       17,
       18,
-      19,
-      20
+      19
     ]
   },
   "ablation": {
-    "status": "pending",
-    "pdf_page": 42,
-    "configurations": 7,
-    "empty_result_cells": 42,
-    "peer_reviewed": true
+    "status": "results_from_saved_artifacts",
+    "pdf_page": 45,
+    "configurations": 18,
+    "empty_result_cells": 0,
+    "peer_reviewed": false,
+    "one_pass_detections_pdf_page": 43,
+    "one_pass_passk_pdf_page": 44,
+    "verified_saved_rows": 18,
+    "matched_base_pass_puts": 1454,
+    "saved_feedback_removed_qwen_puts": {
+      "without_ep_feedback": 171,
+      "without_dt_feedback": 160,
+      "without_cf_feedback": 157
+    },
+    "cf_feedback_variant": "VF3 + saved oracle-confirmed input seeds from ControlFlow obligation propose/propose_retry",
+    "test_generator": "Qwen",
+    "failure_counts": {
+      "columns": [
+        "wrong_value",
+        "exception",
+        "timeout",
+        "total_puts"
+      ],
+      "rows": {
+        "full": [
+          98,
+          52,
+          24,
+          174
+        ],
+        "structured_one_pass": [
+          83,
+          22,
+          16,
+          121
+        ],
+        "ep": [
+          85,
+          28,
+          20,
+          133
+        ],
+        "dt": [
+          88,
+          34,
+          18,
+          140
+        ],
+        "cf": [
+          52,
+          44,
+          25,
+          121
+        ],
+        "without_ep": [
+          90,
+          52,
+          24,
+          166
+        ],
+        "without_dt": [
+          86,
+          46,
+          24,
+          156
+        ],
+        "without_cf": [
+          97,
+          37,
+          20,
+          154
+        ],
+        "without_ep_feedback": [
+          95,
+          52,
+          24,
+          171
+        ],
+        "without_dt_feedback": [
+          89,
+          47,
+          24,
+          160
+        ],
+        "without_cf_feedback": [
+          97,
+          37,
+          23,
+          157
+        ],
+        "naive": [
+          58,
+          13,
+          16,
+          87
+        ]
+      }
+    },
+    "same_cf_repair_comparison": {
+      "v2_with_cf_repair": 149,
+      "vf3_initial_with_cf_repair": 153,
+      "main": 174
+    }
   },
   "annotated_report_review": {
     "source_pdf": "full_concepttesting-kltn-20261a1fc99b2c5Jh0l.pdf",
@@ -139,7 +224,7 @@
     "source_matches_attached": false,
     "similarity_score_recomputed": false
   },
-  "theory_graph_pdf_page": 19,
+  "theory_graph_pdf_page": 18,
   "editorial_review": {
     "scope": "Lời cảm ơn, tóm tắt Việt/Anh, Chương 1–4, kết luận và phụ lục",
     "detector_rescored": false,
@@ -168,7 +253,7 @@
       "request_sha256": "10cca1b68c2a7da9ce4e0180f70f2e42d04c667ab6d632b01d774c9ad6a361f4"
     },
     "DT": {
-      "pdf_page": 28,
+      "pdf_page": 26,
       "block_tokens": [
         144,
         58,
@@ -176,19 +261,22 @@
         1441
       ],
       "context_tokens": 1764,
-      "request_sha256": "63582bd22b13345a421033342d0e16af33295a9b645c0319a3c1bae4659f990d"
+      "request_sha256": "63582bd22b13345a421033342d0e16af33295a9b645c0319a3c1bae4659f990d",
+      "shared_figure_with": "EP/BVA"
     },
     "ControlFlow": {
       "pdf_page": 31,
       "block_tokens": [
-        228,
+        233,
         223,
-        87,
+        77,
         164,
-        48
+        1044
       ],
-      "context_tokens": 750,
-      "request_sha256": "4c0ded8a8152bc215b04742aa468106a6195c3e0f17c243a747083a5e4606063"
+      "context_tokens": 1741,
+      "request_sha256": "4a9c8db960a49721285cc52a679532b97bbb38123b636430f28620016275fbcd",
+      "configuration": "CFG-only ControlFlow",
+      "counted_message": "user payload"
     }
   },
   "mbpp_saved_verification": {
@@ -208,18 +296,18 @@
     "baseline_result_digest_sha256": "0c622085269451adae2f7d5f9a22586ae04176bd7f7cc885f877b45abab43c2f",
     "controlflow_result_digest_sha256": "cc0bc84b59f7e2701a6e2c273e50da9d38adfdec9997a68958f69124f004836f",
     "base_receipt_manifests_verified": true,
-    "table_pdf_page": 44,
+    "table_pdf_page": 47,
     "witness": {
       "task": "MBPP/388",
       "put_id": 2,
       "input": 9223372036854775807,
       "expected": 4611686018427387904,
       "observed_twice": 9223372036854775808,
-      "pdf_page": 44
+      "pdf_page": 47
     }
   },
   "input_identity": {
-    "pdf_page": 34,
+    "pdf_page": 35,
     "python_hash_seeds_checked": [
       0,
       17,
@@ -237,12 +325,10 @@
     "numbered_chapters": [
       "Cơ sở lý thuyết",
       "Phân tích và thiết kế hệ thống",
-      "Hiện thực và đánh giá"
+      "Cài đặt và đánh giá"
     ],
-    "ai_disclosure_pdf_page": 5,
     "student_contributions": "Xác nhận trực tiếp trong trao đổi: lõi InputGeneration, module, stage, pipeline.",
-    "student_contributions_pdf_page": 35,
-    "demo_pdf_page": 42,
+    "demo_pdf_page": 45,
     "saved_demo_cases_verified": [
       "HumanEval/125 PUT 4",
       "HumanEval/124 PUT 7",
@@ -264,28 +350,86 @@
       "commits": 32
     },
     "root_readme_status": "Có bản cập nhật trong workspace.",
-    "doiT_similarity_status": "pending"
+    "doiT_similarity_status": "pending",
+    "assurance_pdf_page": 4
   },
   "concept_guidance": {
-    "pipeline_figure_pdf_page": 24,
-    "method_pdf_page": 25,
+    "pipeline_figure_pdf_page": 23,
+    "method_pdf_page": 24,
     "saved_concept_links_verified": [
       "HumanEval/124 EP/BVA",
       "HumanEval/125 ControlFlow",
       "MBPP/388 DT"
     ],
     "result_tables_checked_against_previous_draft": true,
-    "coverage_pdf_page": 47,
-    "coverage_prefect_run_id": "ed19682a-814a-45e8-b9da-b1bc847cc2dc"
+    "coverage_pdf_page": 51,
+    "coverage_prefect_run_id": "e2e80d8b-2c7d-49a8-8eee-57095ffecb76",
+    "ep_bva_dt_flow_pdf_page": 28
   },
   "cross_model_evaluation": {
-    "pdf_page": 51,
-    "design": "A sinh PUT nguồn và input qua ConceptTesting. Ghép ca đã chốt vào base test để chấm PUT độc lập của B trên cùng task.",
-    "benchmarks": [
-      "HumanEval",
-      "MBPP"
-    ],
-    "status": "pending"
+    "status": "completed_from_saved_artifacts",
+    "pdf_page": 54,
+    "table_pdf_page": 55,
+    "source_directory": "final/out/cross_model_saved_v2_cf_20261124_PffiV5",
+    "result_sha256": "61923bfd09ca05432632c622a706bb1b840838dedfe954914756c7854f06c49c",
+    "prefect_flow_run_id": "d1fea78b-2f1b-40d1-847c-6f1aa858c4f2",
+    "prefect_state": "Completed",
+    "human_eval": {
+      "qwen": {
+        "common_puts": 1454,
+        "gemini": 79,
+        "qwen": 121,
+        "shared": 72,
+        "union": 128
+      },
+      "luna": {
+        "common_puts": 1544,
+        "gemini": 54,
+        "qwen": 64,
+        "shared": 45,
+        "union": 73
+      },
+      "flint": {
+        "common_puts": 258,
+        "gemini": 5,
+        "qwen": 17,
+        "shared": 5,
+        "union": 17
+      },
+      "flint_official": {
+        "common_puts": 250,
+        "gemini": 3,
+        "qwen": 9,
+        "shared": 3,
+        "union": 9
+      }
+    },
+    "mbpp_saved_comparison": {
+      "common_puts": 886,
+      "gemini": 293,
+      "qwen": 264,
+      "shared": 253,
+      "union": 304
+    },
+    "flint_cohort": {
+      "source_directory": "final/out/flint_humaneval_retry_32768_20261123_D1CREw",
+      "prefect_flow_run_id": "75659702-e832-4b61-b881-d19f0bb21bcb",
+      "puts": 270,
+      "original_base_pass": 266,
+      "official_base_plus_pass": 255
+    },
+    "flint_expansion_snapshot": {
+      "source_directory": "final/out/flint_refill_1454_20261124_lljHUm",
+      "prefect_flow_run_id": "66247a60-4e18-4757-a1c0-f58a61eb6328",
+      "as_of": "2026-11-24T16:35:31+07:00",
+      "state": "running",
+      "total_puts": 801,
+      "official_base_plus_pass": 716,
+      "target_passes": 1454
+    },
+    "coverage_measured_for_new_cohorts": false,
+    "new_model_calls_for_thesis_update": 0,
+    "new_evaluation_runs_for_thesis_update": 0
   },
   "mbpp164_qwen_plain_verification": {
     "prefect_run_id": "49a8784b-dfc1-432c-9f01-2130abd1f9d6",
@@ -299,8 +443,7 @@
       "adapter-results",
       "mbpp164-source-comparison"
     ],
-    "table_pdf_page": 45,
-    "usage_pdf_page": 58,
+    "table_pdf_page": 48,
     "totals": {
       "generated_puts": 1311,
       "tasks_with_puts": 144,
@@ -365,7 +508,38 @@
       "base_pass_disagreement_evaluated": 1299
     },
     "coverage_trace_recorded": false,
-    "model_calls": 0
+    "separate_coverage_measurement": {
+      "prefect_run_id": "2ab0b6c7-1f89-4a68-a360-e20dbd147f1c",
+      "source": "final/out/tool_pytest_coverage_20261124_4ZYgYd/coverage_summary.csv",
+      "source_sha256": "a92a1e284d251cc5682a4aa469e81d9bc38dfac169562d16f43bf42fb22963b6",
+      "pdf_page": 50,
+      "human_eval": {
+        "branch_eligible_puts": 1159,
+        "base_full_c2_puts": 703,
+        "augmented_full_c2_puts": 839
+      },
+      "mbpp_plus": {
+        "branch_eligible_puts": 1450,
+        "base_full_c2_puts": 366,
+        "augmented_full_c2_puts": 1050
+      }
+    },
+    "model_calls": 0,
+    "matched_mbpp_vs_gemini_naive": {
+      "tasks": 237,
+      "shared_base_pass_puts": 1980,
+      "tools_reported": 853,
+      "gemini_reported": 651,
+      "shared_detections": 512,
+      "gemini_output_encoding_only": 3,
+      "timeouts_seconds": [
+        2,
+        8
+      ],
+      "put_source_equal": 3041,
+      "reference_source_equal": 378,
+      "recounted_from_saved_artifacts": true
+    }
   },
   "coverage_saved_verification": {
     "prefect_run_id": "ed19682a-814a-45e8-b9da-b1bc847cc2dc",
@@ -423,12 +597,47 @@
       }
     },
     "p90_p95_p99": "100/100/100 for base and reported suites in all three cohorts",
-    "limitations": "Coverage is observed execution evidence. PUT without branches is excluded from C2. Timeout and trace errors limit witnessed coverage. No C3 or condition coverage claim."
+    "limitations": "Coverage is observed execution evidence. PUT without branches is excluded from C2. Timeout and trace errors limit witnessed coverage. No C3 or condition coverage claim.",
+    "published_percentiles": {
+      "columns": [
+        "p10",
+        "p25",
+        "p90"
+      ],
+      "method": "Nội suy tuyến tính theo (n−1)q trên tỷ lệ coverage của từng PUT có mẫu số khác 0.",
+      "source_records": 4555,
+      "reexecuted_puts": 0,
+      "human_eval_qwen_c2": {
+        "base": [
+          75,
+          87.5,
+          100
+        ],
+        "concepttesting": [
+          83.33,
+          95.83,
+          100
+        ]
+      },
+      "mbpp_gemini_c2": {
+        "base": [
+          50,
+          50,
+          100
+        ],
+        "concepttesting": [
+          66.67,
+          91.67,
+          100
+        ]
+      }
+    },
+    "scope_note": "Historical measurement covering the one-pass HumanEval configuration and current MBPP figures. See human_eval_vf3_cf_repair_verification for the current main HumanEval configuration."
   },
   "pipeline_editorial_revision": {
     "preparation_pdf_pages": [
-      21,
-      23
+      20,
+      22
     ],
     "put_generation_is_data_preparation": true,
     "preparation_level": "Ý tưởng prompt, lọc trùng AST, chạy base test và lưu cohort JSON theo task; không mô tả từng hàm.",
@@ -442,8 +651,7 @@
   },
   "typed_language_outlook": {
     "pdf_pages": [
-      54,
-      55
+      60
     ],
     "scope": "Hướng nghiên cứu cho Java/C++; phân biệt Python kiểu động và type hint với kiểu tĩnh, giữ contract và oracle theo ngôn ngữ đích.",
     "sources": [
@@ -452,14 +660,324 @@
       "javaTypesSpec",
       "cppCompoundTypesSpec"
     ],
-    "adaptations": "Context kiểu, EP/BVA, dựng đối tượng và scenario, CFG/def--use, thực thi và oracle.",
+    "adaptations": "Context kiểu, EP/BVA, dựng đối tượng, CFG, coverage, thực thi và oracle.",
     "empirical_status": "Chưa thực hiện đánh giá mở rộng ngôn ngữ trong khóa luận.",
     "new_model_or_evaluation_runs": 0
   },
   "vietnamese_frontmatter": {
-    "abstract_pdf_page": 6,
+    "abstract_pdf_page": 5,
     "abstract_result_model": "Qwen",
     "english_cover": false,
     "english_abstract": false
+  },
+  "local_editorial_scan": {
+    "checker": "XLM-R ONNX Q4",
+    "scope": "Đoạn văn xuôi trong nguồn LaTeX, bỏ bảng và hình.",
+    "paragraphs": 183,
+    "edited_high_scoring_paragraphs": 17,
+    "edited_high_scoring_paragraphs_with_lower_score": 14,
+    "token_weighted_score_before": 27.98,
+    "token_weighted_score_after": 24.89,
+    "interpretation": "Tín hiệu của tool dùng để chọn đoạn rà, chưa hiệu chuẩn cho luận văn tiếng Việt."
+  },
+  "background_sources": {
+    "pdf_page": 12,
+    "public_scores_checked_on": "2026-11-24",
+    "sources": [
+      "openaiSimpleEvals",
+      "evalplusLeaderboard",
+      "li2026mercuryCoding",
+      "liu2023evalplus"
+    ],
+    "human_eval_suite": "HumanEval gốc"
+  },
+  "native_humaneval_gpt4o": {
+    "pdf_page": 55,
+    "source": "Trillion Labs rBridge",
+    "samples_per_task": 1,
+    "tasks": 164,
+    "passed": 149,
+    "failed": 15,
+    "timed_out": 1,
+    "pass@1": 0.9085365853658537,
+    "timeout_seconds": 3,
+    "new_model_calls": 0,
+    "source_directory": "final/out/gpt4o_rbridge_humaneval_original_20261124_tMuztw",
+    "prefect_flow_run_id": "9363a26b-4f29-42dd-af75-58028d8cb5d4",
+    "prefect_state": "Completed",
+    "report_sha256": "a8529ed4d34556cee7113941c9233e1acc2577d56c7b632b5263668cbabc567f",
+    "results_sha256": "f37948ead86e4d08681a613fd20cd9257b63cd7c57a5d826e4ea2141e212174a"
+  },
+  "gpt4o_saved_input_evaluation": {
+    "source_directory": "final/out/gpt4o_saved_input_eval_20261124_DolCTL",
+    "result_sha256": "c7273769e412235a108d71792d2d83fa915c4ee1f39b613ef45a0fd92a21858d",
+    "prefect_flow_run_id": "89ab3b09-f061-452f-acd0-3ef70b81a907",
+    "prefect_state": "Completed",
+    "table_pdf_page": 56,
+    "rbridge_source_puts": 164,
+    "base_pass": 149,
+    "evaluated_base_pass_puts": 146,
+    "base_pass_tasks_scored_only_on_base": [
+      "HumanEval/32",
+      "HumanEval/65",
+      "HumanEval/136"
+    ],
+    "pass_at_1_numerators": {
+      "base": 149,
+      "qwen_added": 140,
+      "gemini_added": 141,
+      "both_added": 139
+    },
+    "pass_at_1_denominator": 164,
+    "evalperf": {
+      "evalperf_humaneval": {
+        "evaluated": 580,
+        "detected": 20
+      },
+      "evalperf_mbppplus": {
+        "evaluated": 1020,
+        "detected": 177
+      }
+    }
+  },
+  "pipeline_source_sync": {
+    "origin_main": "ba0a90a4d4fbc7b44e24d1a7dc93c84bf34accb5",
+    "local_head": "5e3dcf1c0395a0bbe631f51a7681a7aa17cfb26a",
+    "obligation_worktree_head": "dc638379aebc9c569b6570809d58795f6cfab1ed",
+    "working_tree_sources_sha256": {
+      "final/src/modular/pipeline.py": "f1310a85ce6ba70c258c4167f11f56a5503be28bb1a52baf1f8680ce1cb0e02c",
+      "final/src/modular/input_preparation.py": "ab645a07b6bd83af519b191d0a245afa94ca33547c57a6fbd93dafe9f6661e3d",
+      "final/src/modular/generators/methods.py": "0024bda02d069a02f0595b22cbb6fa925c0afec43f878d4fa74e830625be7ff6",
+      "final/src/modular/arms/control_flow.py": "493cfdb8eb6f2b39dd7c3bf98579453682321ef78c21e0c4108cf34b87ec444c",
+      "final/src/modular/control_flow/analysis.py": "6db55ed37d568a2789a4531ffd6a68ae27f6919498e3093b99ec15cd502e32c9",
+      "final/src/modular/control_flow/prompts.py": "324ece7ba58a1c7495ddcce64f469d7ee62a7dd00166650ea252cc0e5339b9b8",
+      "final/src/modular/arms/vf3_measured.py": "b7447b4fb4d175e90f06c9843999929e018803156175969638f4bc02fb2d5300",
+      "final/src/modular/arms/vf3_hybrid.py": "2f64339f04148bdfd475d0914b8746dae96ea9b1b7eee2f4b0118184cb26d9e1",
+      "../ConceptTester-obligation-v1-repair/final/src/modular/arms/spec_obligation.py": "2a641598794b289331a18716832478ce8fcb55ba8b3ca39206ee4c015557c0f2",
+      "../ConceptTester-obligation-v1-repair/final/src/modular/spec_obligation/evidence.py": "db997a60c8beb885c2976e19b4936f566f167443417fa1a4de0bf11c5858bff0",
+      "../ConceptTester-obligation-v1-repair/final/src/modular/spec_obligation/prompts.py": "62f11fcd96e791b788bc8fd7d95de234e06d4cea787c61f6955e72f2efb9da5d",
+      "../ConceptTester-obligation-v1-repair/final/src/modular/spec_obligation/schema.py": "702e0650dd2474795a4bdc9f65f54d8ff0143a7bba4be84063b356a8ef535423"
+    },
+    "pdf_pages": {
+      "fig:architecture": 23,
+      "fig:cf-context": 31,
+      "fig:cf-mechanism": 32,
+      "sec:obligation-pipeline": 33,
+      "fig:obligation-pipeline": 33
+    },
+    "result_table_titles_and_labels_preserved": "Giữ nội dung các bảng còn dùng, LaTeX đánh lại số bảng.",
+    "new_benchmark_runs": 0,
+    "theory_graph": "CFG"
+  },
+  "qwen_serving_environment": {
+    "source": "Notebook do người dùng cung cấp và phần xác nhận GPU",
+    "platform": "Google Colab",
+    "gpus": 1,
+    "gpu": "NVIDIA A100",
+    "vllm": "0.31.0",
+    "model_repository": "QuantTrio/Qwen3.5-27B-AWQ",
+    "quantization": "awq",
+    "dtype": "float16",
+    "tensor_parallel_size": 1,
+    "max_model_len_tokens": 40960,
+    "gpu_memory_utilization": 0.95,
+    "max_num_seqs": 64,
+    "max_num_batched_tokens": 16384,
+    "human_eval_ep_bva_dt_client_context_tokens": 8192,
+    "setup_pdf_page": 38,
+    "human_eval_control_flow_client_context_tokens": 12288
+  },
+  "human_eval_plus_comparison": {
+    "pdf_page": 42,
+    "prefect_flow_run_id": "beb22373-d20c-47ef-9222-ad5a01c71690",
+    "eligible_puts": 1454,
+    "evalplus_rejected": 130,
+    "concepttesting_rejected": 174,
+    "shared_rejected": 105,
+    "union_rejected": 199,
+    "scope": "Kết quả đối chiếu từ các lượt chấm đã lưu trên cùng tập PUT."
+  },
+  "appendix_prompt_pdf_page": 61,
+  "human_eval_vf3_cf_repair_verification": {
+    "source_flow_runs": {
+      "vf3": "89c39f20-8b6b-4052-bafd-60c377618110",
+      "cf_repair": "581c3769-f033-4956-8869-006da410f192",
+      "previous_coverage": "ed19682a-814a-45e8-b9da-b1bc847cc2dc",
+      "evalplus": "beb22373-d20c-47ef-9222-ad5a01c71690"
+    },
+    "prefect_run_id": "e2e80d8b-2c7d-49a8-8eee-57095ffecb76",
+    "prefect_state": "Completed",
+    "source_directory": "final/out/thesis_cf_repair_vf3_coverage_20261125_Mvc7RV",
+    "artifact_hashes": {
+      "result_digest.json": "6325ef34527aaabcda1d6c8460237b41cc647f50c31bd261e79d0a488e361b9b",
+      "detection_summary.json": "d83bfe47baabcbd9c26df8d6786ae9f1d459d2900258e6be1db7dd0604604c7c",
+      "source_hashes.json": "ec8f74e410d2ef23d032c71720124f23dc41c3b35fb7933221eb2dbd0d139f12",
+      "REPORT.md": "56548057a629919636c50cf60107f1e36d13cdc10688b1dbf06139227a690b37"
+    },
+    "pdf_pages_by_table": {
+      "3.14": 51,
+      "3.15": 52
+    },
+    "new_model_calls": 0,
+    "new_model_tokens": 0,
+    "new_coverage_puts": 1454,
+    "c2_eligible_puts": 1151,
+    "cf_repair": {
+      "coverage": {
+        "c1": {
+          "puts": 1454,
+          "measured_puts": 1454,
+          "no_obligations": 0,
+          "full_puts": 1182,
+          "over95_puts": 1207,
+          "p10": 90.9090909090909,
+          "p25": 100.0,
+          "p90": 100.0,
+          "mean_percent": 97.67051578211179,
+          "improved_puts": 180,
+          "covered_obligations": 14605,
+          "total_obligations": 15114
+        },
+        "c2": {
+          "puts": 1454,
+          "measured_puts": 1151,
+          "no_obligations": 303,
+          "full_puts": 852,
+          "over95_puts": 853,
+          "p10": 83.33333333333334,
+          "p25": 93.75,
+          "p90": 100.0,
+          "mean_percent": 94.48320432087745,
+          "improved_puts": 198,
+          "covered_obligations": 6965,
+          "total_obligations": 7412
+        }
+      },
+      "detections": {
+        "wrong_value": 52,
+        "exception": 44,
+        "timeout": 25,
+        "total": 121,
+        "tasks": 48,
+        "non_resource": 54,
+        "resource": 67,
+        "pass": {
+          "1": 82.283950617284,
+          "5": 94.60121497158534,
+          "10": 95.67901234567901
+        }
+      }
+    },
+    "vf3_hybrid": {
+      "coverage": {
+        "c1": {
+          "puts": 1454,
+          "measured_puts": 1454,
+          "no_obligations": 0,
+          "full_puts": 1192,
+          "over95_puts": 1213,
+          "p10": 90.9090909090909,
+          "p25": 100.0,
+          "p90": 100.0,
+          "mean_percent": 97.80483478212855,
+          "improved_puts": 185,
+          "covered_obligations": 14627,
+          "total_obligations": 15114
+        },
+        "c2": {
+          "puts": 1454,
+          "measured_puts": 1151,
+          "no_obligations": 303,
+          "full_puts": 863,
+          "over95_puts": 863,
+          "p10": 83.33333333333334,
+          "p25": 97.5,
+          "p90": 100.0,
+          "mean_percent": 94.8202448449037,
+          "improved_puts": 208,
+          "covered_obligations": 6989,
+          "total_obligations": 7412
+        }
+      },
+      "detections": {
+        "wrong_value": 97,
+        "exception": 37,
+        "timeout": 20,
+        "total": 154,
+        "tasks": 53,
+        "non_resource": 107,
+        "resource": 47,
+        "pass": {
+          "1": 80.24691358024694,
+          "5": 93.65569272976681,
+          "10": 95.06172839506173
+        }
+      }
+    },
+    "vf3_and_cf_repair": {
+      "coverage": {
+        "c1": {
+          "puts": 1454,
+          "measured_puts": 1454,
+          "no_obligations": 0,
+          "full_puts": 1195,
+          "over95_puts": 1221,
+          "p10": 90.9090909090909,
+          "p25": 100.0,
+          "p90": 100.0,
+          "mean_percent": 97.83386393023582,
+          "improved_puts": 191,
+          "covered_obligations": 14636,
+          "total_obligations": 15114
+        },
+        "c2": {
+          "puts": 1454,
+          "measured_puts": 1151,
+          "no_obligations": 303,
+          "full_puts": 866,
+          "over95_puts": 867,
+          "p10": 83.33333333333334,
+          "p25": 100.0,
+          "p90": 100.0,
+          "mean_percent": 94.8848407672576,
+          "improved_puts": 213,
+          "covered_obligations": 6998,
+          "total_obligations": 7412
+        }
+      },
+      "detections": {
+        "wrong_value": 98,
+        "exception": 52,
+        "timeout": 24,
+        "total": 174,
+        "tasks": 63,
+        "non_resource": 109,
+        "resource": 65,
+        "pass": {
+          "1": 79.01234567901238,
+          "5": 93.65324319028024,
+          "10": 95.06172839506173
+        }
+      }
+    },
+    "coverage_added_over_vf3": {
+      "c1": 9,
+      "c2": 9
+    },
+    "new_detections_over_vf3": {
+      "wrong_value": 1,
+      "exception": 15,
+      "timeout": 4,
+      "total": 20,
+      "tasks": 13,
+      "non_resource": 2,
+      "resource": 18
+    },
+    "build_log": "final/out/thesis_cf_repair_vf3_coverage_20261125_Mvc7RV/pdf_build/thesis.log",
+    "build_warnings": {
+      "overfull_boxes": 0,
+      "undefined_references": 0,
+      "missing_glyphs": 0
+    }
   }
 }

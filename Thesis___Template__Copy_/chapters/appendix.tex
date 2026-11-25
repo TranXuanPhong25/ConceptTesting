@@ -1,67 +1,61 @@
-\chapter{Định dạng phản hồi và cấu hình thực nghiệm}
+\chapter{Trích đoạn prompt sinh đầu vào kiểm thử}
 \label{app:reproduction}
 
-\section{Đọc phản hồi của mô hình}
+\begin{lstlisting}[numbers=none,breakatwhitespace=false,literate={—}{{\textemdash}}1]
+Use the supplied lean JSON Schema; catalogue and inputs contain no expected outputs.
+Set catalogue.status="applicable" whenever the technique applies (never use "not_applicable"/"unresolved" for test summaries).
+Prioritize fault-revealing edge cases and contrasting inputs (up to 20 distinct novel calls, not duplicating base examples) that exercise your catalogue while welcoming additional bug-hunting tests beyond it.
 
-Với EP/BVA và DT, mã lớp, biên hoặc quy tắc do mô hình đặt rồi tham chiếu lại trong từng bộ đối số. ControlFlow dựng mã đích từ PUT trước khi gọi mô hình. Vì đã biết mã đích ban đầu, bộ giải mã có thể kiểm ngay mã và số dòng trong phản hồi.
+Set status="applicable" with one shared catalogue.nominal, unique class IDs E1, E2.. and boundary IDs B1, B2.. (never reuse IDs across sections), and spec-derived boundaries.
+Every class predicate MUST be pure executable Python boolean syntax ONLY over exact parameter names (NO English prose, NO undefined loop vars like i — use any/all generators and guard empty sequences/indices).
+For boundaries: use transform="length" (upper=null when unbounded, never invent upper=30), numeric_kind="discrete" with explicit values for unbounded discrete points (never both lower=null and upper=null), and positive step for floats.
+Include nominal and single-fault boundary inputs alongside broader fault-revealing edge cases.
 
-\begin{table}[htbp]
-\centering
-\caption{Các thành phần trong phản hồi sinh input theo concept}
-\label{tab:prompt-fields}
-\small
-\begin{tabular}{@{}p{.28\linewidth}p{.18\linewidth}p{.46\linewidth}@{}}
-\toprule
-Trường & Nhánh & Cách sử dụng \\
-\midrule
-\texttt{arguments} & Cả ba & Ghép giá trị vào đúng tham số trước khi kiểm miền. \\
-\texttt{classes}, \texttt{boundaries} & EP/BVA & Gắn lớp với một đại diện, gắn biên với đại lượng và bối cảnh mà mô hình muốn thay đổi. \\
-\texttt{rules} & DT & Ghi tổ hợp điều kiện và thứ tự hành động. Nếu gộp quy tắc, cần giữ mối liên hệ với quy tắc gốc. \\
-\texttt{covers} & EP/BVA và DT & Đọc ý định của mô hình khi chọn input. Cần chứng cứ riêng để xác nhận input thỏa điều kiện tương ứng. \\
-\texttt{target\_id}, \texttt{evidence\_lines} & ControlFlow & Đối chiếu đích và số dòng với đúng PUT đã cấp cho mô hình. \\
-\texttt{input\_relation}, \texttt{instruction} & ControlFlow & Nêu quan hệ đối số và cách dựng một ví dụ vượt qua các điều kiện dẫn tới đích. \\
-\texttt{concept\_id} & ControlFlow & Liên kết input cụ thể với tình huống mô hình đề xuất. \\
-\texttt{predicate}, \texttt{strategies} & ControlFlow & Diễn đạt phần có thể kiểm trên đối số và cách lấy mẫu. Khi thiếu mô tả máy đọc được, input trực tiếp vẫn có thể đem chạy thử. \\
-\bottomrule
-\end{tabular}
-\end{table}
+Model 2 to 4 independent specification conditions C1..Cn (1 only for truly single-predicate specs) as pure executable Python boolean syntax ONLY over exact parameter names (NO English prose, NO undefined vars — use any/all generators and guard empty sequences/indices).
+Mark each truth-table row R.. (e.g. R01: C1=false, C2=true) feasible (at least one, optional short fault_hypothesis), infeasible, or unresolved.
+Do not stop at one input per rule: generate diverse fault-revealing contrasts and tricky edge cases across feasible rules up to the 20-input budget.
 
-\subsection{Ba yêu cầu trong prompt}
+Return ONE valid plain JSON object (no markdown fences, no expected outputs, JSON literals only in arguments — no arithmetic like a + b): {"catalogue": {"gap_classes_or_rules": [...]}, "inputs": [{"arguments": {...}, "covers": [...]}]}.
+1. Cover any missed_targets or unknown_targets listed below.
+2. Critically audit existing_classes / existing_conditions against the specification and visible PUTs: what valid specification behaviors, domain subsets, or boundary interactions fall OUTSIDE those predicates or were modeled too narrowly (e.g., character/whitespace/encoding variants, numeric scale or precision limits, empty/singleton/duplicate/tie/order/sign edge cases, or multi-parameter interactions)?
+3. Use the free-form 'catalogue' object solely for concise gap reasoning and fault hypotheses (do NOT repeat Round 1's catalogue; strict predicate syntax is not required).
+4. Generate up to new_input_budget (20) NEW distinct concrete inputs — never repeat base examples or retained_inputs.
 
-Hai câu trong prompt EP/BVA đi cùng nhau. \emph{“keeping unrelated values ordinary”} chọn một giá trị điển hình cho mỗi đại lượng ngoài mục tiêu. Khi đã có bộ danh định, \emph{“varying one quantity at a time”} giữ các giá trị đó cố định. Nếu kết quả thay đổi ở cận, người đọc có thể biết đại lượng nào đã đổi.
+\end{lstlisting}
 
-DT dùng câu \emph{“Merge only when ordered actions agree and omitted conditions do not change behavior”}. Hai điều kiện phải đồng thời đúng để gộp. Nếu hai quy tắc có cùng hành động nhưng thứ tự ưu tiên khác nhau, cần một đầu vào đại diện cho mỗi quy tắc để thử khác biệt.
+Đoạn sau là hướng dẫn của ControlFlow theo nghĩa vụ dùng trong kết quả chính trên HumanEval.
 
-Câu \emph{“a structural path is only an approximation, never proof”} nhắc rằng đồ thị có thể nối hai điều kiện không thể cùng đúng với một input. Mô hình cần tìm quan hệ giữa các tham số cho đường được chọn. Một đích chỉ được xác nhận khi input hợp lệ thực sự chạy qua dòng hoặc cạnh đó.
+\begin{lstlisting}[numbers=none,breakatwhitespace=false]
+Give one novel, contract-valid seed for each feasible target within input_budget.
+For an arc, work backwards from its destination through every preceding guard in path.
+Use base_trace_gap to see which edge the base suite lacks and which exits it exercised.
+Arc sets do not establish execution order.
+When code transforms an input before testing it, find an admitted representation
+that separates the transformation from the next guard.
+Then give up to 6 concise obligations (prefer distinct program_ids) with program_id,
+line, requirement, pattern, scenario, instruction, counterexample, predicate and strategies.
+Use the spec and the supplied source to justify each scenario.
 
-\section{Số input và lượng sử dụng mô hình}
+First construct a novel input for each feasible missed or untried target.
+Keep earlier guards satisfied while changing the condition at the missing edge.
+Check the requested destination against the numbered source. Treat an unknown trace as inconclusive.
+Then spend remaining slots on distinct controls and contrasts for the spec and obligations,
+including requirements the draft overlooked.
+\end{lstlisting}
 
-Số input của một nhánh là số bộ đối số còn lại sau lọc. Một bộ xuất hiện ở hai nhánh đóng góp vào cả hai số đếm. Tổng token gồm phần prompt và phần trả lời. ControlFlow cho mỗi lần chạy thử input tối đa một giây. Khi phản hồi có miền lấy mẫu, Hypothesis có thể thử tối đa 32 mẫu trong hai giây cho mỗi concept ở mỗi lượt.
+Đoạn cuối dùng cho ControlFlow gốc trong ablation một lượt.
 
-\subsection{Qwen trên HumanEval}
+\begin{lstlisting}[numbers=none,breakatwhitespace=false]
+Discover testing CONCEPTS that help construct inputs for the supplied uncovered C1/C2 targets.
+Return ONLY one JSON object with keys concepts and inputs; no expected outputs or assertions.
+concepts (up to 6): [{id,target_id,name,input_relation,instruction,evidence_lines,predicate,strategies}].
+Use EXACT target_id from targets. A concept is a meaningful input scenario, not just a line number:
+explain the parameter relationship or operation behavior, the construction recipe, and the earlier
+guards needed to reach it. Keep semantic claims as hypotheses; never infer an oracle from PUT output.
+When the target suggests a plausible implementation mistake, prefer a valid input
+that would expose an observable difference between that mistake and the specified behavior.
+In instruction, name the suspected mistake and the observable behavior to check.
 
-Bước sinh mã ghi nhận 434 phản hồi Qwen từ 435 yêu cầu. Những phản hồi có số đo dùng 375.591 token prompt và 416.741 token đầu ra, tổng cộng 792.332 token. Khoản này phát sinh trước khi các nhánh sinh test bổ sung.
-
-Trong 157 task, EP/BVA giữ 2.402 input hợp lệ, còn DT giữ 2.378. Hai nhánh Qwen dùng cửa sổ 8.192 token. Có 314 phản hồi từ 316 lần gọi, tương ứng 766.010 token prompt và 562.114 token trả lời đã biết, tổng cộng 1.328.124 token. Hai lần gọi còn lại chưa rõ lượng sử dụng. Prompt khuyến khích input nhỏ và bước chấm dành tám giây.
-
-Số liệu ControlFlow Qwen ở bảng kết quả đến từ lần chấm đủ 1.454 PUT. Với 140 phản hồi và 861.504 token, nhánh giữ 708 input hợp lệ. Naive LLM giữ 2.876 input, nhận 156 phản hồi từ 157 lần gọi với 385.522 token đã biết.
-
-\subsection{Gemini trên HumanEval}
-
-Trong cửa sổ 18.192 token, Gemini giữ 2.613 input cho Naive LLM, 1.959 cho EP/BVA và 1.979 cho DT. Gộp riêng EP/BVA với DT còn 3.388 bộ đối số phân biệt. Ba cấu hình dùng 471 phản hồi, với 1.203.197 token prompt và 328.753 token trả lời, tổng cộng 1.531.950 token. Giới hạn sinh cho phép thử số nguyên có độ lớn tới \(2^{32}\). Khi đặc tả đặt cận thấp hơn, cận trong đề bài quyết định dữ liệu có hợp lệ hay không.
-
-ControlFlow Gemini có lần sinh và chấm riêng. Với 158 phản hồi và 817.492 token, nhánh giữ 736 input hợp lệ trên 157 task. Số lượt gọi thay đổi theo số bài có đích và số trường hợp cần lượt sửa.
-
-\subsection{Gemini trên MBPP}
-
-Trên 255 bài được chấm, tham chiếu chấp nhận 4.577 input của Naive LLM, 3.990 của EP/BVA và 4.076 của DT, đếm riêng theo nhánh. Ba cấu hình nhận 765 phản hồi và ghi nhận 1.754.788 token. ControlFlow giữ 1.459 input qua 274 phản hồi, với 1.082.114 token đã ghi. Có 19 lượt thử gửi yêu cầu của ba cấu hình đầu và 12 lượt của ControlFlow thiếu số đo token. Mỗi lượt sinh giới hạn 4.096 token đầu ra.
-
-\subsection{Qwen trên tập 164 bài MBPP+}
-
-Lần chạy Naive LLM ở Mục~\ref{sec:mbpp-qwen-plain} dùng Qwen3.5-27B-AWQ với cửa sổ 12.288 token. Mỗi bài được sinh tối đa 20 input qua một lượt có trần 4.096 token đầu ra. Thời hạn chấm là tám giây mỗi input. Cả 114 yêu cầu đều có phản hồi, với 107.922 token prompt và 65.543 token đầu ra, tổng cộng 173.465 token.
-
-\section{Môi trường thực nghiệm}
-
-Các phép chạy EP/BVA và DT dùng Python 3.11.14, EvalPlus 0.3.1 và Pydantic 2.14.2 cho cả Qwen và Gemini. Lần chạy ControlFlow Gemini còn dùng coverage.py 7.17.0, python-graphs 1.2.3 và Hypothesis 6.170.14. Gemini được gọi qua Vertex AI. PUT và tham chiếu chạy trong tiến trình cô lập trên Linux.
-
-Các input phải được chốt trước khi lấy đáp án tham chiếu. Một PUT chỉ được xem là vượt tập test bổ sung khi mọi input cần chấm đã có kết quả; trường hợp chưa chấm đủ được giữ riêng.
+In a feedback round revise concepts/strategies based on target hit,
+domain failures or runtime status.
+\end{lstlisting}

@@ -1,11 +1,11 @@
 @startuml
 !include context-blocks.iuml
-' Qwen, HumanEval/125, retry request. Edit each label and token count here.
-$block(spec, "Đặc tả, contract và tham số", 228)
+' Qwen, HumanEval/125, CFG-only retry. Counts describe the saved user message.
+$block(spec, "Đặc tả, contract, tham số và ngân sách", 233)
 $block(puts, "Mã PUT và lời gọi cơ sở", 223)
-$block(analysis, "Trạng thái độ phủ và def–use", 87)
+$block(analysis, "Trạng thái độ phủ của PUT", 77)
 $block(targets, "Đích C1/C2 và đường gợi ý", 164)
-$block(feedback, "Feedback của lượt trước", 48)
+$block(feedback, "Feedback từ lượt thử trước", 1044)
 
 spec -[hidden]-> puts
 puts -[hidden]-> analysis

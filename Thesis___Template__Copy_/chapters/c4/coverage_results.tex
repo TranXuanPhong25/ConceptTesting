@@ -3,15 +3,15 @@
 
 \subsection{Cách đo và các chỉ số}
 
-Độ phủ được đo trên cùng mã PUT trước và sau khi thêm input của từng nhánh. C1 là tỷ lệ dòng có thể thực thi đã được chạy. C2 là tỷ lệ cạnh đi ra từ các dòng có nhiều hơn một lối ra theo phân tích của coverage.py. Phạm vi gồm hàm chính và các hàm phụ trong source của PUT. Mỗi dòng trong các bảng dùng base test hợp với input của nhánh tương ứng. Tập ConceptTesting gồm EP/BVA, DT và ControlFlow.
+Độ phủ được đo trên cùng mã PUT trước và sau khi thêm input của từng nhánh: C1 là tỷ lệ dòng có thể thực thi đã được chạy, còn C2 là tỷ lệ cạnh đi ra từ các dòng có nhiều hơn một lối ra theo phân tích của \textit{coverage.py}, tính trên cả hàm chính lẫn các hàm phụ trong source của PUT. Mỗi dòng trong các bảng dùng base test hợp với input của nhánh tương ứng, trong đó tập ConceptTesting gồm EP/BVA, DT và ControlFlow.
 
-Phép đo đối chiếu các dòng và cạnh được thực thi bởi base test với tập mở rộng trên cùng PUT. Chỉ các input được tham chiếu chấp nhận mới đóng góp vào kết quả bổ sung. Thời hạn là tám giây mỗi input. Có 4.555 PUT trong ba cohort được đo, với 55.766 lượt chạy input để ghi nhận độ phủ.
+Phép đo đối chiếu dòng và cạnh quan sát được với base test trên cùng PUT. Các bộ test bổ sung chỉ dùng input đã qua oracle, với thời hạn đo tám giây mỗi input. Trên HumanEval, độ phủ cơ sở lấy từ dấu chạy lưu ở bước lọc PUT. Trên MBPP, bộ đo chạy lại test cơ sở trước khi thêm input.
 
-Trên từng PUT, số dòng hoặc cạnh có thể phủ giữ cố định giữa các tập test. Bảng ghi số PUT đạt 100\%, số PUT đạt trên 95\% và số PUT tăng độ phủ so với base. Mốc trên 95\% dùng so sánh chặt nên loại giá trị đúng bằng 95\%. Các cột p99, p95 và p90 là phân vị của tỷ lệ phủ trên các PUT, tính bằng nội suy tuyến tính. Đơn vị của ba cột là phần trăm độ phủ. PUT không có nhánh được loại khỏi mẫu số C2.
+Trên từng PUT, số dòng hoặc cạnh có thể phủ giữ cố định giữa các tập test. Bảng ghi số PUT đạt 100\%, số PUT đạt trên 95\% và số PUT tăng độ phủ so với base. Mốc trên 95\% dùng so sánh chặt nên loại giá trị đúng bằng 95\%. Các cột p10, p25 và p90 là phân vị của tỷ lệ phủ trên các PUT, tính bằng nội suy tuyến tính và biểu diễn theo phần trăm. p10 và p25 cho biết mức độ phủ ở phía thấp của phân bố. PUT không có nhánh được loại khỏi mẫu số C2.
 
 \subsection{Kết quả trên HumanEval}
 
-Mẫu đo gồm 1.454 PUT đã vượt base test, thuộc 157 task. Có 303 PUT không có nhánh, nên C2 dùng mẫu số 1.151. Ngay ở base test, 404 PUT chưa đạt C1 100\% và 454 PUT có nhánh chưa đạt C2 100\%. Hai bảng dưới cho biết từng bộ input bổ sung phần còn thiếu ra sao.
+Ở Qwen, EP/BVA và DT dùng VF3 Hybrid hai lượt. Dòng ConceptTesting của Qwen hợp hai nhánh này với ControlFlow theo nghĩa vụ. Ở Gemini, ConceptTesting dùng EP/BVA, DT một lượt và ControlFlow gốc. Dòng “Cả hai” hợp test của hai mô hình cho cùng bài. Mẫu gồm 1.454 PUT đã vượt base test thuộc 157 bài. Có 303 PUT không có nhánh, nên C2 dùng mẫu số 1.151. Với base test, 404 PUT chưa đạt C1 100\% và 454 PUT có nhánh chưa đạt C2 100\%. Hai bảng dưới ghi mức tăng độ phủ theo từng tập input.
 
 \begin{table}[!htbp]
 \centering
@@ -20,23 +20,27 @@ Mẫu đo gồm 1.454 PUT đã vượt base test, thuộc 157 task. Có 303 PUT 
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrrrrr@{}}
 \toprule
-Nguồn test & Test thêm & \shortstack{PUT\\100\%} & \shortstack{PUT\\$>95\%$} & p99 & p95 & p90 & \shortstack{PUT\\tăng phủ} \\
+Nguồn test & Test thêm & \shortstack{PUT\\100\%} & \shortstack{PUT\\$>95\%$} & p10 & p25 & p90 & \shortstack{PUT\\tăng phủ} \\
 \midrule
--- & Chỉ base test & 1.050 & 1.078 & 100 & 100 & 100 & 0 \\
-Qwen & Naive LLM & 1.174 & 1.199 & 100 & 100 & 100 & 154 \\
-Qwen & EP/BVA & 1.189 & 1.213 & 100 & 100 & 100 & 185 \\
-Qwen & DT & 1.168 & 1.196 & 100 & 100 & 100 & 159 \\
-Qwen & ControlFlow & 1.168 & 1.190 & 100 & 100 & 100 & 172 \\
-Qwen & EP/BVA và DT & 1.190 & 1.216 & 100 & 100 & 100 & 186 \\
-Qwen & ConceptTesting & 1.193 & 1.221 & 100 & 100 & 100 & 192 \\
-Gemini & Naive LLM & 1.171 & 1.195 & 100 & 100 & 100 & 168 \\
-Gemini & EP/BVA & 1.179 & 1.203 & 100 & 100 & 100 & 171 \\
-Gemini & DT & 1.187 & 1.209 & 100 & 100 & 100 & 182 \\
-Gemini & ControlFlow & 1.172 & 1.199 & 100 & 100 & 100 & 171 \\
-Gemini & EP/BVA và DT & 1.191 & 1.213 & 100 & 100 & 100 & 184 \\
-Gemini & ConceptTesting & 1.193 & 1.219 & 100 & 100 & 100 & 191 \\
-Cả hai & Naive LLM & 1.191 & 1.212 & 100 & 100 & 100 & 178 \\
-Cả hai & ConceptTesting & 1.194 & 1.221 & 100 & 100 & 100 & 193 \\
+-- & Chỉ base test & 1.050 & 1.078 & 87,5 & 94,44 & 100 & 0 \\
+\midrule
+\multirow{7}{*}{Qwen} & Naive LLM & 1.174 & 1.199 & 90,91 & 100 & 100 & 154 \\
+& EP/BVA hai lượt & 1.188 & 1.211 & 90,91 & 100 & 100 & 181 \\
+& DT hai lượt & 1.191 & 1.211 & 90,91 & 100 & 100 & 185 \\
+& ControlFlow gốc & 1.168 & 1.190 & 90 & 100 & 100 & 172 \\
+& ControlFlow theo nghĩa vụ & 1.182 & 1.207 & 90,91 & 100 & 100 & 180 \\
+& Hợp EP/BVA và DT & 1.192 & 1.213 & 90,91 & 100 & 100 & 185 \\
+& ConceptTesting & 1.195 & 1.221 & 90,91 & 100 & 100 & 191 \\
+\midrule
+\multirow{6}{*}{Gemini} & Naive LLM & 1.171 & 1.195 & 90,91 & 100 & 100 & 168 \\
+& EP/BVA & 1.179 & 1.203 & 90,91 & 100 & 100 & 171 \\
+& DT & 1.187 & 1.209 & 90,91 & 100 & 100 & 182 \\
+& ControlFlow gốc & 1.172 & 1.199 & 90 & 100 & 100 & 171 \\
+& Hợp EP/BVA và DT & 1.191 & 1.213 & 90,91 & 100 & 100 & 184 \\
+& ConceptTesting & 1.193 & 1.219 & 90,91 & 100 & 100 & 191 \\
+\midrule
+\multirow{2}{*}{Cả hai} & Naive LLM & 1.191 & 1.212 & 90,91 & 100 & 100 & 178 \\
+& ConceptTesting & 1.195 & 1.221 & 90,91 & 100 & 100 & 193 \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -47,30 +51,34 @@ Cả hai & ConceptTesting & 1.194 & 1.221 & 100 & 100 & 100 & 193 \\
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrrrrr@{}}
 \toprule
-Nguồn test & Test thêm & \shortstack{PUT\\100\%} & \shortstack{PUT\\$>95\%$} & p99 & p95 & p90 & \shortstack{PUT\\tăng phủ} \\
+Nguồn test & Test thêm & \shortstack{PUT\\100\%} & \shortstack{PUT\\$>95\%$} & p10 & p25 & p90 & \shortstack{PUT\\tăng phủ} \\
 \midrule
--- & Chỉ base test & 697 & 697 & 100 & 100 & 100 & 0 \\
-Qwen & Naive LLM & 833 & 833 & 100 & 100 & 100 & 168 \\
-Qwen & EP/BVA & 852 & 856 & 100 & 100 & 100 & 200 \\
-Qwen & DT & 833 & 833 & 100 & 100 & 100 & 174 \\
-Qwen & ControlFlow & 835 & 836 & 100 & 100 & 100 & 187 \\
-Qwen & EP/BVA và DT & 856 & 860 & 100 & 100 & 100 & 205 \\
-Qwen & ConceptTesting & 861 & 865 & 100 & 100 & 100 & 212 \\
-Gemini & Naive LLM & 838 & 841 & 100 & 100 & 100 & 188 \\
-Gemini & EP/BVA & 841 & 841 & 100 & 100 & 100 & 186 \\
-Gemini & DT & 850 & 853 & 100 & 100 & 100 & 198 \\
-Gemini & ControlFlow & 838 & 839 & 100 & 100 & 100 & 185 \\
-Gemini & EP/BVA và DT & 859 & 859 & 100 & 100 & 100 & 204 \\
-Gemini & ConceptTesting & 864 & 865 & 100 & 100 & 100 & 211 \\
-Cả hai & Naive LLM & 859 & 859 & 100 & 100 & 100 & 199 \\
-Cả hai & ConceptTesting & 867 & 868 & 100 & 100 & 100 & 215 \\
+-- & Chỉ base test & 697 & 697 & 75 & 87,5 & 100 & 0 \\
+\midrule
+\multirow{7}{*}{Qwen} & Naive LLM & 833 & 833 & 83,33 & 92,86 & 100 & 168 \\
+& EP/BVA hai lượt & 859 & 859 & 83,33 & 94,72 & 100 & 202 \\
+& DT hai lượt & 860 & 860 & 83,33 & 94,72 & 100 & 206 \\
+& ControlFlow gốc & 835 & 836 & 80 & 91,67 & 100 & 187 \\
+& ControlFlow theo nghĩa vụ & 852 & 853 & 83,33 & 93,75 & 100 & 198 \\
+& Hợp EP/BVA và DT & 863 & 863 & 83,33 & 97,5 & 100 & 208 \\
+& ConceptTesting & 866 & 867 & 83,33 & 100 & 100 & 213 \\
+\midrule
+\multirow{6}{*}{Gemini} & Naive LLM & 838 & 841 & 83,33 & 92,86 & 100 & 188 \\
+& EP/BVA & 841 & 841 & 83,33 & 92,86 & 100 & 186 \\
+& DT & 850 & 853 & 83,33 & 93,75 & 100 & 198 \\
+& ControlFlow gốc & 838 & 839 & 81,25 & 92,86 & 100 & 185 \\
+& Hợp EP/BVA và DT & 859 & 859 & 83,33 & 94,72 & 100 & 204 \\
+& ConceptTesting & 864 & 865 & 83,33 & 100 & 100 & 211 \\
+\midrule
+\multirow{2}{*}{Cả hai} & Naive LLM & 859 & 859 & 83,33 & 94,72 & 100 & 199 \\
+& ConceptTesting & 868 & 869 & 83,33 & 100 & 100 & 215 \\
 \bottomrule
 \end{tabular*}
 \end{table}
 
-Hợp test ConceptTesting từ Qwen và Gemini làm số PUT đạt C1 100\% tăng từ 1.050 lên 1.194. Với C2, số PUT đạt 100\% tăng từ 697 lên 867. Có 193 PUT tăng C1 và 215 PUT tăng C2, gồm cả các trường hợp tăng nhưng chưa đạt 100\%. C1 trung bình tăng từ 96,49\% lên 97,84\%, C2 trung bình tăng từ 91,59\% lên 94,91\%.
+Với Qwen, ControlFlow theo nghĩa vụ đạt C1 100\% trên 1.182 PUT và C2 100\% trên 852 PUT có nhánh. ControlFlow gốc đạt tương ứng 1.168 và 835 PUT. Khi thêm nhánh theo nghĩa vụ vào hợp EP/BVA và DT, độ phủ tiếp tục tăng trên 9 PUT theo C1 và 9 PUT theo C2. Số PUT đạt 100\% lần lượt đi từ 1.192 lên 1.195 và từ 863 lên 866.
 
-Từng nhánh đều bổ sung được đường chạy so với base test. Ở Qwen, EP/BVA đạt C2 100\% trên 852 PUT, DT trên 833 và ControlFlow trên 835. Tập hợp ba nhánh đạt 861. Với Gemini, tập hợp đạt 864, còn Naive LLM đạt 838. Khi gộp test hai mô hình, ConceptTesting có 867 PUT đạt C2 100\% và Naive LLM có 859. Các tập hợp dùng nhiều input và lượt sinh hơn một nhánh đơn lẻ.
+Hợp test ConceptTesting từ Qwen và Gemini đạt C1 100\% trên 1.195 PUT và C2 100\% trên 868 PUT có nhánh. So với base test, có 193 PUT tăng C1 và 215 PUT tăng C2. C1 trung bình tăng từ 96,49\% lên 97,84\% và C2 trung bình từ 91,59\% lên 94,91\%. Hợp test Naive LLM từ hai mô hình đạt C2 100\% trên 859 PUT. Các bộ test khác nhau về số input và lượt sinh.
 
 \subsection{Kết quả trên MBPP}
 
@@ -83,15 +91,15 @@ Với test do Gemini sinh, C1 dùng đủ 2.140 PUT còn C2 dùng 1.434 PUT có 
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrrrrr@{}}
 \toprule
-Nguồn test & Test thêm & \shortstack{PUT\\100\%} & \shortstack{PUT\\$>95\%$} & p99 & p95 & p90 & \shortstack{PUT\\tăng phủ} \\
+Nguồn test & Test thêm & \shortstack{PUT\\100\%} & \shortstack{PUT\\$>95\%$} & p10 & p25 & p90 & \shortstack{PUT\\tăng phủ} \\
 \midrule
--- & Chỉ base test & 1.095 & 1.101 & 100 & 100 & 100 & 0 \\
-Gemini & Naive LLM & 1.690 & 1.699 & 100 & 100 & 100 & 717 \\
-Gemini & EP/BVA & 1.731 & 1.738 & 100 & 100 & 100 & 751 \\
-Gemini & DT & 1.763 & 1.771 & 100 & 100 & 100 & 787 \\
-Gemini & ControlFlow & 1.715 & 1.725 & 100 & 100 & 100 & 755 \\
-Gemini & EP/BVA và DT & 1.770 & 1.779 & 100 & 100 & 100 & 795 \\
-Gemini & ConceptTesting & 1.777 & 1.788 & 100 & 100 & 100 & 800 \\
+-- & Chỉ base test & 1.095 & 1.101 & 75 & 83,33 & 100 & 0 \\
+Gemini & Naive LLM & 1.690 & 1.699 & 85,71 & 100 & 100 & 717 \\
+Gemini & EP/BVA & 1.731 & 1.738 & 86,64 & 100 & 100 & 751 \\
+Gemini & DT & 1.763 & 1.771 & 87,5 & 100 & 100 & 787 \\
+Gemini & ControlFlow & 1.715 & 1.725 & 85,71 & 100 & 100 & 755 \\
+Gemini & EP/BVA và DT & 1.770 & 1.779 & 88,24 & 100 & 100 & 795 \\
+Gemini & ConceptTesting & 1.777 & 1.788 & 88,89 & 100 & 100 & 800 \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -102,27 +110,27 @@ Gemini & ConceptTesting & 1.777 & 1.788 & 100 & 100 & 100 & 800 \\
 \small
 \begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}llrrrrrr@{}}
 \toprule
-Nguồn test & Test thêm & \shortstack{PUT\\100\%} & \shortstack{PUT\\$>95\%$} & p99 & p95 & p90 & \shortstack{PUT\\tăng phủ} \\
+Nguồn test & Test thêm & \shortstack{PUT\\100\%} & \shortstack{PUT\\$>95\%$} & p10 & p25 & p90 & \shortstack{PUT\\tăng phủ} \\
 \midrule
--- & Chỉ base test & 353 & 353 & 100 & 100 & 100 & 0 \\
-Gemini & Naive LLM & 972 & 972 & 100 & 100 & 100 & 755 \\
-Gemini & EP/BVA & 1.014 & 1.014 & 100 & 100 & 100 & 790 \\
-Gemini & DT & 1.043 & 1.043 & 100 & 100 & 100 & 822 \\
-Gemini & ControlFlow & 1.000 & 1.000 & 100 & 100 & 100 & 792 \\
-Gemini & EP/BVA và DT & 1.055 & 1.055 & 100 & 100 & 100 & 835 \\
-Gemini & ConceptTesting & 1.063 & 1.063 & 100 & 100 & 100 & 840 \\
+-- & Chỉ base test & 353 & 353 & 50 & 50 & 100 & 0 \\
+Gemini & Naive LLM & 972 & 972 & 50 & 85,71 & 100 & 755 \\
+Gemini & EP/BVA & 1.014 & 1.014 & 50 & 87,5 & 100 & 790 \\
+Gemini & DT & 1.043 & 1.043 & 56,52 & 90 & 100 & 822 \\
+Gemini & ControlFlow & 1.000 & 1.000 & 50 & 87,5 & 100 & 792 \\
+Gemini & EP/BVA và DT & 1.055 & 1.055 & 63,75 & 91,67 & 100 & 835 \\
+Gemini & ConceptTesting & 1.063 & 1.063 & 66,67 & 91,67 & 100 & 840 \\
 \bottomrule
 \end{tabular*}
 \end{table}
 
-ConceptTesting nâng số PUT đạt C1 100\% lên 1.777 và C2 100\% lên 1.063. Có 800 PUT tăng C1 và 840 PUT tăng C2. C2 trung bình tăng từ 73,53\% lên 92,38\%. Naive LLM đạt C2 100\% trên 972 PUT, còn DT đạt 1.043 PUT. Khi thêm ControlFlow vào EP/BVA và DT, có thêm tám PUT đạt C2 100\%.
+ConceptTesting nâng số PUT đạt C1 100\% lên 1.777 và C2 100\% lên 1.063, với 800 PUT tăng C1, 840 PUT tăng C2 và C2 trung bình tăng từ 73,53\% lên 92,38\%. Ở cấp nhánh, Naive LLM đạt C2 100\% trên 972 PUT, DT đạt 1.043 PUT, còn khi thêm ControlFlow vào EP/BVA và DT thì có thêm tám PUT đạt C2 100\%.
 
-Trên tập MBPP+ 164 bài dùng Qwen, C1 được đo trên 961 PUT, còn C2 dùng 634 PUT có nhánh. Naive LLM làm số PUT đạt C1 100\% tăng từ 520 lên 763, và C2 100\% từ 174 lên 429. Số PUT đạt trên 95\% tương ứng là 522 lên 765 đối với C1 và 174 lên 429 đối với C2. Có 300 PUT tăng C1 và 316 PUT tăng C2. Bộ số liệu này là mốc baseline cho phép đối chiếu ConceptTesting trên cùng cohort sau này.
+Trên tập MBPP+ 164 bài dùng Qwen, C1 được đo trên 961 PUT còn C2 dùng 634 PUT có nhánh. Naive LLM nâng số PUT đạt C1 100\% từ 520 lên 763 (mốc trên 95\% từ 522 lên 765) và C2 100\% từ 174 lên 429 (cùng mức trên 95\%), với 300 PUT tăng C1 và 316 PUT tăng C2. Bộ số liệu này là mốc baseline cho phép đối chiếu ConceptTesting trên cùng tập PUT sau này.
 
 \subsection{Ý nghĩa đối với bộ test tăng cường}
 
-Cả p90, p95 và p99 đều bằng 100\% ở base và các tập mở rộng của ba cohort. Hơn 10\% PUT đã đạt độ phủ đầy đủ ngay ở base, nên ba phân vị ở phía cao của phân bố giữ nguyên khi bổ sung test. Số PUT đạt 100\%, số PUT tăng phủ và giá trị trung bình cho thấy phần thay đổi nằm ở những chương trình mà base test chưa phủ đủ.
+Ở HumanEval với test ConceptTesting của Qwen, p90 của C2 giữ ở 100\%, trong khi p10 tăng từ 75\% lên 83,33\% và p25 từ 87,50\% lên 100\%. Trên MBPP với Gemini, p10 của C2 tăng từ 50\% lên 66,67\% và p25 từ 50\% lên 91,67\%. Các phân vị thấp cho thấy phần cải thiện ở những PUT còn thiếu test.
 
-Độ phủ cấu trúc và khả năng phát hiện lỗi cung cấp hai quan sát về cùng bộ test. Input có thể chạy qua cạnh mới rồi vẫn cho kết quả đúng. Một PUT đã phủ đầy đủ các dòng và nhánh cũng có thể sai trên giá trị khác đi qua cùng đường chạy. Vì vậy, kết quả coverage được đọc cùng số sai khác đã xác nhận ở các mục trước.
+Độ phủ cấu trúc và khả năng phát hiện lỗi cung cấp hai quan sát bổ sung nhau về cùng bộ test: một input có thể chạy qua cạnh mới nhưng vẫn cho kết quả đúng, ngược lại một PUT đã phủ đầy đủ các dòng và nhánh vẫn có thể sai trên giá trị khác đi qua cùng đường chạy. Vì vậy, kết quả coverage cần được đọc cùng số sai khác đã xác nhận ở các mục trước.
 
-Trong phép đo có timeout trên 21 PUT HumanEval, 14 PUT MBPP Gemini và hai PUT MBPP Qwen. Những dòng và cạnh đã chạy trước timeout vẫn đóng góp vào độ phủ. Các tỷ lệ phản ánh phần thực thi quan sát được trong giới hạn thời gian. Coverage này chưa cho biết mọi đường khả thi hoặc mọi quy tắc ngữ nghĩa đã được kiểm tra.
+Trong các bộ test đo lại, có lượt chạy quá giờ trên 21 PUT HumanEval. Con số tương ứng là 14 PUT với MBPP Gemini và hai PUT với MBPP Qwen. Dòng và cạnh quan sát được trước khi quá giờ vẫn đóng góp vào độ phủ. Do đó, các tỷ lệ phản ánh phần thực thi quan sát được trong giới hạn thời gian chứ chưa bảo đảm mọi đường khả thi hoặc mọi quy tắc ngữ nghĩa đã được kiểm tra.

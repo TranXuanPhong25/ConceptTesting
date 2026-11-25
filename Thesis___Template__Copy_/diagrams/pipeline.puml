@@ -1,19 +1,21 @@
 @startuml
 !include thesis-style.iuml
 start
-:Nhận context đã chuẩn bị:\nđặc tả, chữ ký, contract, base test,\nmã PUT và độ phủ cơ sở;
-:Ghép context với hướng dẫn theo concept;
-fork
-  :**EP/BVA**\nTừ đặc tả, chọn lớp\nvà input sát biên;
-fork again
-  :**DT**\nTừ điều kiện và ưu tiên,\nlập quy tắc và chọn input;
-fork again
-  :**ControlFlow**\nTừ đích C1/C2 và mã PUT,\nsuy tình huống để sinh input\nvà sửa theo kết quả chạy thử;
-end fork
-:Gắn đối số theo chữ ký\nvà chốt tập input;
-:Oracle kiểm miền, chạy tham chiếu hai lượt\nvà gộp input trùng, giữ nguồn sinh;
+:Nhận đề bài, contract, base test,\ntập PUT và độ phủ cơ sở;
+partition "Sinh input theo từng bài" {
+  split
+    :**EP/BVA**\nChọn lớp, đại diện\nvà giá trị sát biên;
+  split again
+    :**DT**\nChọn tổ hợp\nđiều kiện;
+  split again
+    :**ControlFlow**\nChọn đích C1/C2\nvà thử input trên PUT;
+  end split
+  :Nhận input từ ba nhánh, gắn đối số\ntheo chữ ký và giữ nguồn sinh;
+}
+:Chốt input của tất cả các bài;
+:Oracle kiểm miền, chạy tham chiếu hai lượt\nvà gộp input trùng;
+:Kiểm lớp, biên, quy tắc trên input qua oracle\nkhi cấu hình có danh mục concept;
 :Bộ chấm thử mọi PUT đạt test cơ sở,\nchạy lại các input cho kết quả bất thường;
-:Đối chiếu độ phủ của base test và tập mở rộng\ntrên cùng PUT;
-:Tổng hợp số PUT bị phát hiện thêm,\nmức tăng C1/C2 và điểm pass@k;
+:Tổng hợp kết quả theo nhánh;
 stop
 @enduml

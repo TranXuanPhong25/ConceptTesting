@@ -1,18 +1,20 @@
 @startuml
 !include thesis-style.iuml
 start
-:Đối chiếu đồ thị với độ phủ của test cơ sở;
-:Chọn đích C1/C2 theo lượt giữa các PUT,\nghép đoạn mã, đường dẫn và gợi ý def--use;
-if (Còn đích đưa được vào prompt?) then (có)
+:Đối chiếu CFG của từng PUT\nvới độ phủ cơ sở để tìm đích C1/C2;
+if (Có đích vừa cửa sổ ngữ cảnh?) then (có)
+  :Chia lô vừa cửa sổ ngữ cảnh,\ntối đa sáu đích mỗi lô;
   repeat
-    :LLM mô tả concept bằng quan hệ đối số,\ncách dựng input và dòng mã liên quan;
-    :Gộp input trực tiếp với mẫu từ Hypothesis,\nloại input cơ sở và input trùng;
-    :Chạy thử trên PUT sở hữu đích,\nghi miền, dòng và cạnh quan sát được;
-    :Xác định đích đã chạm, đích còn thiếu\nvà phản hồi cần sửa;
-  repeat while (Cần sửa và còn ngân sách?) is (có) not (dừng)
-  :Ưu tiên input hợp lệ chạm thêm đích,\nbổ sung input còn lại tới giới hạn;
+    :Gửi mã PUT, lời gọi cơ sở và đường gợi ý;\nnhận concept và đề xuất đối số;
+    :Gộp input trực tiếp và mẫu Hypothesis,\nloại lời gọi cơ sở và input trùng;
+    :Chạy thử trên PUT sở hữu đích,\nđối chiếu dòng và cạnh đã thấy;
+    if (Lô cuối còn đích hoặc lỗi và còn lượt?) then (có)
+      :Gửi trạng thái miền, đích còn thiếu\nvà kết quả kiểm concept để sửa;
+    endif
+  repeat while (Còn lô hoặc lượt sửa?) is (có) not (dừng)
+  :Ưu tiên input hợp lệ chạm thêm đích,\ngiữ thêm input trong ngân sách;
 else (không)
-  :Trả tập rỗng kèm lý do;
+  :Trả tập input rỗng;
 endif
 stop
 @enduml

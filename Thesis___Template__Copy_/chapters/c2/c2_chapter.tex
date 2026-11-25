@@ -4,14 +4,14 @@
 \section{Ca kiểm thử, miền đầu vào và oracle}
 \label{sec:testing-concepts}
 
-Với một hàm, ca kiểm thử ghi bộ đối số và đầu ra mong đợi~\cite[tr.~7--8]{pham2014kiemthu}. Cặp ngày 31, tháng 4 cho thấy vì sao kiểm riêng từng đối số chưa đủ. Hai giá trị đều là số nguyên, nhưng kết hợp lại thì nằm ngoài miền ngày hợp lệ. \textit{Test oracle} đối chiếu kết quả thực tế với yêu cầu của bài~\cite{istqb2024}.
+Với một hàm, ca kiểm thử ghi bộ đối số và đầu ra mong đợi~\cite[tr.~7--8]{pham2014kiemthu}. Khi xác định đầu vào, kiểm riêng từng đối số nhiều lúc chưa đủ: chẳng hạn cặp ngày 31, tháng 4 đều là số nguyên, nhưng kết hợp lại thì nằm ngoài miền ngày hợp lệ. Sau khi có đầu vào hợp lệ, \textit{test oracle} đảm nhận việc đối chiếu kết quả thực tế với yêu cầu của bài~\cite{istqb2024}.
 
 \section{Benchmark đánh giá sinh mã Python}
 \label{sec:code-benchmarks}
 
-HumanEval và MBPP thuộc nhóm benchmark đánh giá sinh mã bằng thực thi (\textit{execution-based code generation benchmarks}). Một task mô tả hành vi của hàm Python bằng ngôn ngữ tự nhiên. Hệ thống chấm chạy các unit test để kiểm tra độ đúng chức năng của mã sinh ra~\cite{chen2021evaluating,austin2021program}.
+Với HumanEval và MBPP, mô hình đọc yêu cầu viết một hàm Python, rồi bộ chấm chạy các unit test trên hàm trả về để kiểm tra hành vi. Hai bộ này thuộc nhóm benchmark đánh giá sinh mã bằng thực thi (\textit{execution-based code generation benchmarks})~\cite{chen2021evaluating,austin2021program}.
 
-HumanEval gồm 164 bài do tác giả viết. Mỗi bài có chữ ký hàm, docstring, lời giải tham chiếu và bộ unit test. MBPP (\textit{Mostly Basic Programming Problems}) gồm 974 bài Python ngắn ở mức lập trình cơ bản. Khi xây dựng bộ dữ liệu gốc, tác giả yêu cầu mỗi bài có một mô tả ngắn, một lời giải và ba ca kiểm thử~\cite{chen2021evaluating,austin2021program}.
+HumanEval gồm 164 bài do tác giả tự viết, mỗi bài có chữ ký hàm, docstring, lời giải tham chiếu và bộ unit test; trong khi đó, MBPP (\textit{Mostly Basic Programming Problems}) gồm 974 bài Python ngắn ở mức lập trình cơ bản, với mỗi bài gốc gồm một mô tả ngắn, một lời giải và ba ca kiểm thử~\cite{chen2021evaluating,austin2021program}.
 
 EvalPlus phát triển HumanEval+ và MBPP+ để tăng số ca kiểm tra độ đúng của mỗi lời giải~\cite{liu2023evalplus,evalplusMbppDataset}. Khóa luận lọc PUT bằng base test, rồi dùng cài đặt tham chiếu của các bộ dữ liệu mở rộng để lấy đáp án cho input do ConceptTesting sinh. Thiết lập này đo số cài đặt bị phát hiện thêm so với base test. Trên MBPP, lần chạy dùng tập 378 task của MBPP+ và các ca cơ sở đi kèm~\cite{mbppplusRelease}.
 
@@ -24,23 +24,23 @@ Kiểm thử chức năng lấy hành vi trong đặc tả làm căn cứ chọn
 
 Phân hoạch tương đương (EP) chia miền thành các lớp rời nhau. Các giá trị trong cùng một lớp tuân theo cùng quy tắc xử lý, nên có thể chọn một giá trị đại diện để thử. Cần tách lớp khi tìm thấy điều kiện làm thay đổi quy tắc cần kiểm~\cite[tr.~131--133]{pham2014kiemthu}.
 
-Hai chuỗi \texttt{"a b"} và \texttt{"a,b"} dài bằng nhau. Chuỗi đầu đại diện cho lớp tách theo khoảng trắng, còn chuỗi thứ hai đại diện cho lớp có dấu phẩy và thiếu khoảng trắng. \texttt{"abc"} thuộc lớp thứ ba vì thiếu cả hai dấu phân cách.
+Chẳng hạn, hai chuỗi \texttt{"a b"} và \texttt{"a,b"} dài bằng nhau nhưng thuộc hai lớp khác nhau: chuỗi đầu đại diện cho lớp tách theo khoảng trắng, còn chuỗi thứ hai đại diện cho lớp có dấu phẩy và thiếu khoảng trắng; riêng \texttt{"abc"} thuộc lớp thứ ba vì thiếu cả hai dấu phân cách.
 
 \subsection{Phân tích giá trị biên}
 
-BVA thông thường lấy một bộ đối số danh định làm mốc, tức các giá trị điển hình trong miền. Giữ những đối số khác như cũ, rồi lần lượt đưa đại lượng đang xét về hai cận và hai giá trị kề phía trong. Một lỗi so sánh lệch một đơn vị có thể chỉ xuất hiện ở các mốc này~\cite[tr.~122--126]{pham2014kiemthu}.
+BVA thông thường lấy một bộ đối số danh định làm mốc (tức các giá trị điển hình trong miền), giữ nguyên các đối số khác rồi lần lượt đưa đại lượng đang xét về hai cận và hai giá trị kề phía trong, vì một lỗi so sánh lệch một đơn vị có thể chỉ xuất hiện ở các mốc này~\cite[tr.~122--126]{pham2014kiemthu}.
 
-Với tháng \(m\) trong khoảng từ 1 đến 12, giữ ngày 15 và cùng một năm. Lấy tháng 6 làm mốc, sau đó thử 1, 2, 11 và 12. Nếu trong mã dùng \(m < 12\) thay cho \(m \le 12\), ca tháng 12 sẽ làm lộ lỗi. Khi các đối số phụ thuộc nhau, phải kiểm lại cả bộ sau mỗi thay đổi. Giữ ngày 31 rồi đổi tháng sang 4 sẽ ra ngoài miền. Biến thể kiểm thử giá trị biên mạnh (\textit{robust BVA}) còn dùng 0 và 13 để kiểm cách xử lý tháng ngoài miền theo đặc tả~\cite[tr.~123--126]{pham2014kiemthu}.
+Với tháng \(m\) trong khoảng từ 1 đến 12, ta giữ cố định ngày 15 và cùng một năm, lấy tháng 6 làm mốc rồi lần lượt thử 1, 2, 11 và 12; nếu trong mã dùng \(m < 12\) thay cho \(m \le 12\), ca tháng 12 sẽ làm lộ lỗi. Khi các đối số phụ thuộc nhau, cần kiểm lại cả bộ sau mỗi thay đổi vì giữ ngày 31 rồi đổi tháng sang 4 sẽ ra ngoài miền. Biến thể kiểm thử giá trị biên mạnh (\textit{robust BVA}) còn thử 0 và 13 để kiểm cách xử lý tháng ngoài miền theo đặc tả~\cite[tr.~123--126]{pham2014kiemthu}.
 
 \subsection{Kiểm thử bằng bảng quyết định}
 
 Một cột trong bảng quyết định (DT) ghi một tổ hợp điều kiện và hành động phải thực hiện khi tổ hợp đó xảy ra. Muốn biến cột thành ca kiểm thử, cần tìm một đầu vào thỏa các điều kiện rồi quan sát xem hàm có thực hiện đúng hành động ghi trong cột hay không~\cite[tr.~141--144]{pham2014kiemthu}.
 
-Ở Bảng~\ref{tab:word-split-rules}, cả hai tổ hợp có khoảng trắng đều tách theo khoảng trắng, bất kể có dấu phẩy hay không. Hai tổ hợp vì thế được ghi chung trong cột \(R_1\). Dấu gạch biểu thị điều kiện có thể nhận cả hai giá trị~\cite{istqb2024}. Với \(R_3\), hàm đếm chữ cái thường có chỉ số lẻ, bắt đầu đánh số từ \texttt{a} ở vị trí 0.
+Trong bài HumanEval/125 ở phần Mở đầu, có khoảng trắng là đủ để chọn cách tách theo khoảng trắng, dù chuỗi có dấu phẩy hay không. Bảng~\ref{tab:word-split-rules} ghi chung hai tổ hợp này trong cột \(R_1\). Dấu gạch biểu thị điều kiện có thể nhận cả hai giá trị~\cite{istqb2024}. Với \(R_3\), hàm đếm chữ cái thường có chỉ số lẻ, bắt đầu đánh số từ \texttt{a} ở vị trí 0.
 
 \begin{table}[!htbp]
 \centering
-\caption{Bảng quyết định cho bài toán tách từ của HumanEval}
+\caption{Bảng quyết định cho bài tách từ HumanEval/125}
 \label{tab:word-split-rules}
 \small
 \begin{tabular}{@{}lccc@{}}
@@ -60,47 +60,32 @@ Hành động & \makecell{Tách theo\\khoảng trắng} & \makecell{Tách theo\\
 
 \subsection{Đồ thị luồng điều khiển (CFG)}
 
-Trong đồ thị luồng điều khiển (\textit{control-flow graph}, CFG), mỗi đỉnh là một câu lệnh hoặc một nhóm lệnh chạy liền nhau. Cạnh hướng tới vị trí chương trình có thể chạy tiếp. Một điểm quyết định có một cạnh cho mỗi kết quả của điều kiện. Đường từ đỉnh vào đến đỉnh ra mô tả một thứ tự thực thi có thể có. Để đi đúng đường đó, đầu vào phải thỏa các điều kiện ở những điểm rẽ dọc đường~\cite[tr.~156--158]{pham2014kiemthu}.
+Trong đồ thị luồng điều khiển (\textit{control-flow graph}, CFG), mỗi đỉnh là một câu lệnh hoặc một nhóm lệnh chạy liền nhau, còn cạnh hướng tới vị trí chương trình có thể chạy tiếp, trong đó mỗi điểm quyết định có một cạnh cho từng kết quả của điều kiện. Đường từ đỉnh vào đến đỉnh ra mô tả một thứ tự thực thi có thể có; để đi đúng đường đó, đầu vào phải thỏa các điều kiện ở những điểm rẽ dọc đường~\cite[tr.~156--158]{pham2014kiemthu}.
 
-Hình~\ref{fig:cfg-dfg} dùng một hàm nhận \(x\) và trả \texttt{kq}. Nửa trái cho thấy biến được khởi tạo bằng 0 và chỉ đổi khi \(x > 0\). Truyền \(x = 1\) thì phần thân chạy qua \(1\to2\to3\to4\). Với \(x = 0\), chương trình đi thẳng theo cạnh \(2\to4\), bỏ qua phép gán thứ hai.
+Hình~\ref{fig:cfg} minh họa một hàm nhận \(x\) và trả \texttt{kq}, khởi tạo \texttt{kq} bằng 0 rồi cập nhật giá trị khi \(x > 0\): với \(x = 1\), đường chạy là \(1\to2\to3\to4\), còn với \(x = 0\), chương trình đi theo cạnh \(2\to4\) và bỏ qua phép gán thứ hai.
 
 \begin{figure}[!htbp]
 \centering
-\includegraphics[width=.89\linewidth,height=.45\textheight,keepaspectratio]{diagrams/cfg-dfg.pdf}
-\caption{CFG và DFG của một hàm có một nhánh. Các số 1 đến 4 chỉ cùng vị trí trong mã.}
-\label{fig:cfg-dfg}
+\includegraphics[width=.70\linewidth,height=.40\textheight,keepaspectratio]{diagrams/cfg.pdf}
+\caption{Đồ thị luồng điều khiển của hàm kiểm tra \(x > 0\).}
+\label{fig:cfg}
 \end{figure}
 
 \subsection{Độ phủ câu lệnh và độ phủ nhánh}
 
-Ca \(x = 1\) chạy cả bốn dòng, nên ví dụ đã đủ C1. Để đạt C2, cần quan sát cả hai kết quả của quyết định ở dòng 2. Thêm ca \(x = 0\) sẽ đi qua cạnh sai. Nếu điều kiện được ghép từ nhiều điều kiện con, có đủ hai lối ra vẫn chưa cho biết từng điều kiện con đã được đánh giá với những giá trị nào~\cite[tr.~158--160]{pham2014kiemthu}.
+Trong ví dụ trên, ca \(x = 1\) chạy cả bốn dòng nên đã đủ C1; để đạt C2, cần quan sát cả hai kết quả của quyết định ở dòng 2 bằng cách thêm ca \(x = 0\) đi qua cạnh sai. Nếu điều kiện được ghép từ nhiều điều kiện con, có đủ hai lối ra vẫn chưa cho biết từng điều kiện con đã được đánh giá với những giá trị nào~\cite[tr.~158--160]{pham2014kiemthu}.
 
-ControlFlow dùng dòng thực thi để xấp xỉ C1 và cạnh chuyển dòng để đo C2~\cite{coverageBranchDocs}. Từ mã nguồn, công cụ tìm các cạnh có thể đi. Cạnh chưa được test cơ sở chạy qua có thể được chọn làm đích sinh đầu vào ở Chương~\ref{chap:method}.
-
-\section{Kiểm thử luồng dữ liệu}
-\label{sec:data-flow-theory}
-
-\subsection{Đồ thị luồng dữ liệu (DFG)}
-
-Đồ thị luồng dữ liệu (\textit{data-flow graph}, DFG) gắn thông tin về biến lên đường thực thi. Theo cách biểu diễn trong giáo trình, đỉnh ghi nơi biến nhận giá trị (\textit{def}) hoặc được đọc để tính toán hay trả kết quả (\textit{c-use}). Nếu điều kiện rẽ nhánh đọc một biến, \textit{p-use} của biến được ghi trên cạnh tương ứng. Tham số nhận giá trị ở đỉnh vào hàm~\cite[tr.~189--195]{pham2014kiemthu}.
-
-Ở nửa phải Hình~\ref{fig:cfg-dfg}, cả hai cạnh ra từ dòng 2 mang nhãn \texttt{p-use(x)} vì hàm phải biết \(x\) mới chọn được lối đi. Dòng 3 đọc \(x\) khi tính \(x+1\), rồi ghi kết quả vào \texttt{kq}. Dòng 4 đọc \texttt{kq} để trả về. Các nhãn này cho phép lần ngược giá trị được đọc về phép gán đã tạo ra nó.
-
-\subsection{Cặp định nghĩa và sử dụng (def--use)}
-
-Một lần gán và một lần đọc tạo thành cặp def--use nếu giá trị của phép gán tới được chỗ đọc. Điều này đòi hỏi biến chưa bị gán lại ở đoạn giữa. Giáo trình gọi đường đi như vậy là \textit{def-clear}~\cite[tr.~193--195]{pham2014kiemthu}.
-
-Với \(x = 1\), dòng 3 thay giá trị của \texttt{kq}, nên dòng 4 nhận giá trị từ dòng 3. Với \(x = 0\), đường chạy bỏ qua dòng 3 và giữ giá trị ở dòng 1. Ca đầu tiên đủ phủ câu lệnh. Ca thứ hai cần để thấy cặp \(1\to4\) của \texttt{kq}.
-
-Theo \textit{all-defs}, mỗi lần gán có thể tới một chỗ sử dụng cần ít nhất một ca đưa giá trị đến một chỗ như vậy. \textit{all-uses} yêu cầu phủ từng cặp gán và sử dụng khả thi~\cite[tr.~197--201]{pham2014kiemthu}. Trong thực nghiệm, ControlFlow dùng cặp def--use tĩnh để gợi ý phép gán nào có thể đưa giá trị tới dòng cần thử. Việc chạy input xác nhận dòng hoặc cạnh đã đi qua. Oracle đối chiếu đầu ra.
+Trong hệ thống, ControlFlow dùng dòng thực thi để xấp xỉ C1 và cạnh chuyển dòng để đo C2~\cite{coverageBranchDocs}: công cụ tìm các cạnh có thể đi từ mã nguồn, rồi chọn những cạnh chưa được test cơ sở chạy qua làm đích sinh đầu vào ở Chương~\ref{chap:method}.
 
 \section{Nghiên cứu liên quan}
 \label{sec:related-work}
 
-SDART của Nguyễn Đức Anh và cộng sự tìm thêm dữ liệu kiểm thử C++ bằng phân tích tĩnh khi chiến lược chọn đường khó phủ thêm nhánh~\cite{nguyen2019sdart}. Hai nghiên cứu sau đưa mô hình ngôn ngữ vào kiểm thử concolic theo các cách khác nhau. ConAgent dùng tác tử LLM để khởi tạo đối tượng Qt và sinh dữ liệu cho đường chứa lệnh chưa phủ~\cite{trong2026conagent}. ConAI chạy concolic rồi dùng mô hình nhỏ đã tinh chỉnh để sinh thêm input cho các đường được chọn~\cite{tran2026conai}.
+EvalPlus và ConceptTesting cùng dùng LLM để tìm đầu vào mà bộ test cơ sở chưa xét. Trong EvalPlus, ChatGPT đọc mã tham chiếu và sinh các input hạt giống, sau đó bộ sinh biến đổi các giá trị theo kiểu dữ liệu để mở rộng tập ca. Ràng buộc của bài giúp loại các input không hợp lệ, còn chương trình tham chiếu cung cấp đáp án~\cite[{\S}~2]{liu2023evalplus}. ConceptTesting hướng mô hình bằng lớp tương đương, giá trị biên, tổ hợp điều kiện và các đích chưa phủ trên PUT. Mục~\ref{sec:evalplus-comparison} đối chiếu hai bộ test trên cùng tập lời giải HumanEval.
 
-SymPrompt đưa đường thực thi vào prompt. CoverUp chọn dòng hoặc nhánh chưa phủ rồi đưa phản hồi từ lượt chạy trước vào lần sửa test~\cite{ryan2024symprompt,pizzorno2025coverup}. DeepMOSA dùng thuật toán di truyền trên Python và gọi mô hình ngôn ngữ cho các nhánh còn thiếu khi độ phủ ngừng tăng~\cite{dao2026deepmosa}. ConceptTesting dùng độ phủ để chọn đích trong ControlFlow. Kết quả được đo bằng số PUT có sai khác lặp lại trên input mới.
+SDART của TS.Nguyễn Đức Anh và các đồng tác giả tìm thêm dữ liệu kiểm thử C++ bằng phân tích tĩnh khi chiến lược chọn đường khó phủ thêm nhánh~\cite{nguyen2019sdart}. Hai nghiên cứu kế tiếp đưa mô hình ngôn ngữ vào kiểm thử concolic theo các cách khác nhau: ConAgent dùng tác tử LLM để khởi tạo đối tượng Qt và sinh dữ liệu cho đường chứa lệnh chưa phủ~\cite{trong2026conagent}, còn ConAI chạy concolic rồi dùng mô hình nhỏ đã tinh chỉnh để sinh thêm input cho các đường được chọn~\cite{tran2026conai}.
 
-CrossHair, Pynguin, UTBot Python và Hypothesis Ghostwriter là các công cụ sinh test tự động có thể tạo thêm lời gọi từ mã PUT~\cite{crosshairDocs,pynguinDocs,utbotPythonDocs,hypothesisIntroDocs}. Khóa luận dùng các suite đã lưu của bốn công cụ này trong một phép kiểm chứng bổ trợ. Chúng giúp kiểm tra xem PUT đã vượt base test còn có thể lệch reference trên input khác hay không; chúng không thuộc các arm sinh input theo concept.
+Ở hướng kết hợp trực tiếp LLM với độ phủ, SymPrompt đưa đường thực thi vào prompt, CoverUp chọn dòng hoặc nhánh chưa phủ rồi đưa phản hồi từ lượt chạy trước vào lần sửa test~\cite{ryan2024symprompt,pizzorno2025coverup}, còn DeepMOSA dùng thuật toán di truyền trên Python và gọi mô hình ngôn ngữ cho các nhánh còn thiếu khi độ phủ ngừng tăng~\cite{dao2026deepmosa}. Tương tự hướng tiếp cận này, ConceptTesting dùng độ phủ để chọn đích trong ControlFlow, nhưng đánh giá hiệu quả bằng số PUT có sai khác lặp lại trên input mới.
 
-Mathews và Nagappan ghi nhận trường hợp oracle chấp nhận hành vi sai của chương trình~\cite{mathews2024design}. Để bước chấm độc lập với giả định của mô hình sinh test, ConceptTesting chốt input trước khi chạy tham chiếu. Số PUT bị phát hiện chỉ tính những sai khác lặp lại qua hai lượt.
+Khóa luận đối chiếu thêm với các suite do CrossHair, Pynguin, UTBot Python và Hypothesis Ghostwriter sinh từ mã PUT. Kết quả của bốn công cụ được báo riêng để xem chúng có tìm được lời gọi khiến một PUT đã vượt base test cho kết quả khác với tham chiếu hay không~\cite{crosshairDocs,pynguinDocs,utbotPythonDocs,hypothesisIntroDocs}.
+
+Về vấn đề oracle, Mathews và Nagappan ghi nhận trường hợp oracle chấp nhận hành vi sai của chương trình~\cite{mathews2024design}. Để bước chấm độc lập với giả định của mô hình sinh test, ConceptTesting chốt input trước khi chạy tham chiếu và chỉ tính vào số PUT bị phát hiện những sai khác lặp lại qua hai lượt.

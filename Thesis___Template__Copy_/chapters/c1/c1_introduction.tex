@@ -5,34 +5,33 @@
 
 \section*{Bối cảnh và lý do chọn đề tài}
 
-Thay dấu cách giữa hai từ bằng một ký tự tab. Theo bài toán tách từ của HumanEval, hàm vẫn phải trả cùng danh sách từ. Một cài đặt đã vượt test cơ sở lại trả số nguyên. Sai khác xuất hiện ngay khi bộ test thay đổi một ký tự mà đặc tả coi là khoảng trắng.
+Năm 2025, OpenAI báo cáo o4-mini đạt 99,3\% trên bộ test gốc của HumanEval ở cấu hình suy luận cao~\cite{openaiSimpleEvals}, còn trong một đánh giá độc lập trên cùng benchmark, Su và cộng sự ghi nhận Qwen3.5-27B đạt 96,95\% ở cấu hình suy luận thông thường~\cite{su2026massiveactivations}. Trên MBPP+, leaderboard EvalPlus ghi nhận GPT-4o đạt pass@1 là 72,2\%~\cite{evalplusLeaderboard}, trong khi phép đo công bố tháng 10/2026 cho thấy GPT-6 Luna và Claude Haiku 5.5 ở mức suy luận trung bình lần lượt đạt 84,3\% và 84,7\%~\cite{li2026mercuryCoding}.
 
-Điểm sinh mã của các mô hình mới đã tiến gần trần trên một số benchmark. Bảng kết quả do OpenAI công bố ghi nhận HumanEval đạt 90,2\% với GPT-4o, 94,5\% với GPT-4.1 và 99,3\% với o4-mini ở cấu hình suy luận cao~\cite{openaiSimpleEvals}. Khi nhiều lời giải vượt bộ test ban đầu, cần kiểm tra xem bộ test còn bỏ sót hành vi nào. EvalPlus đã cho thấy bổ sung test có thể làm lộ mã sai và thay đổi điểm cùng thứ hạng mô hình~\cite{liu2023evalplus}.
+Một điểm số cao cho biết nhiều lời giải vượt qua các ca đã có. Để tìm hành vi mà bộ test còn bỏ sót, cần thử những đầu vào hợp lệ chưa xuất hiện trong bộ test. Chẳng hạn, HumanEval/125 yêu cầu tách từ theo khoảng trắng, nên cả \texttt{a b} lẫn \texttt{a\textbackslash tb} phải cho cùng danh sách \texttt{['a', 'b']}. Một lời giải vượt hết test cơ sở lại trả về số nguyên khi gặp tab (Mục~\ref{sec:concept-guidance}). Ở quy mô benchmark, EvalPlus cũng ghi nhận việc bổ sung ca kiểm thử có thể làm thay đổi điểm và thứ hạng mô hình~\cite{liu2023evalplus}.
 
-Từ đặc tả, phân hoạch tương đương (EP) giúp chọn đầu vào đại diện cho từng lớp, phân tích giá trị biên (BVA) hướng việc thử sát cận và bảng quyết định (DT) làm rõ cách xử lý một tổ hợp điều kiện. Ở bài tách từ, EP gợi ý xét các loại dấu phân cách. Khi có mã, độ phủ còn cho biết bộ test cơ sở đã đi qua những lối rẽ nào trong phép kiểm dấu phân cách~\cite[ch.~5--6]{pham2014kiemthu}.
+Từ đặc tả, phân hoạch tương đương (EP) giúp chọn đầu vào đại diện cho từng lớp, phân tích giá trị biên (BVA) hướng việc thử sát cận và bảng quyết định (DT) làm rõ cách xử lý một tổ hợp điều kiện. Ở bài tách từ, EP gợi ý xét các loại dấu phân cách khác nhau, còn khi có mã nguồn, độ phủ cho biết bộ test cơ sở đã đi qua những lối rẽ nào trong phép kiểm dấu phân cách~\cite[ch.~5--6]{pham2014kiemthu}.
 
-Mô hình ngôn ngữ lớn (LLM) có thể dùng cả đặc tả lẫn mã để đề xuất đầu vào. SymPrompt đưa thông tin đường thực thi vào yêu cầu sinh test. CoverUp dùng độ phủ đo được để sửa prompt~\cite{ryan2024symprompt,pizzorno2025coverup}. Việc chọn đầu vào và xác định đáp án cần căn cứ riêng. Nếu lấy hành vi của cài đặt đang kiểm làm đáp án, ca mới có thể lặp lại đúng lỗi cần phát hiện~\cite{mathews2024design}.
+Mô hình ngôn ngữ lớn (LLM) có thể dùng cả đặc tả lẫn mã để đề xuất đầu vào; chẳng hạn, SymPrompt đưa thông tin đường thực thi vào yêu cầu sinh test, còn CoverUp dùng độ phủ đo được để sửa prompt~\cite{ryan2024symprompt,pizzorno2025coverup}. Tuy nhiên, việc chọn đầu vào và xác định đáp án cần căn cứ riêng, bởi nếu lấy hành vi của cài đặt đang kiểm làm đáp án, ca mới có thể lặp lại đúng lỗi cần phát hiện~\cite{mathews2024design}.
 
-Khóa luận đề xuất ConceptTesting để tăng cường bộ test cơ sở. Phương pháp phân tích đặc tả, các PUT đã vượt base test và đường chạy để tìm lớp đầu vào, tổ hợp điều kiện hoặc nhánh chưa được thử. Những tình huống này trở thành concept hướng dẫn mô hình chọn input. Mức tăng độ phủ và các sai khác lặp lại cho biết test mới đã bổ sung được gì cho lần chấm ban đầu.
+Để tăng cường bộ test cơ sở theo hướng tách biệt hai bước này, khóa luận đề xuất ConceptTesting: phương pháp phân tích đặc tả, các PUT đã vượt base test và đường chạy để tìm lớp đầu vào, tổ hợp điều kiện hoặc nhánh chưa được thử, rồi chuyển những tình huống đó thành concept hướng dẫn mô hình chọn input. Mức tăng độ phủ và các sai khác lặp lại cho biết test mới đã bổ sung được gì cho lần chấm ban đầu.
 
 \section*{Phát biểu bài toán}
 
-Mỗi đề hàm Python là một \textit{task}. Mỗi lời giải cần kiểm là một chương trình được kiểm thử (\textit{program under test}, PUT). Hệ thống nhận đặc tả, chữ ký, ràng buộc miền, test cơ sở và các PUT đã vượt bộ test đó. Những lời giải của cùng một task vẫn có thể mắc chung một lỗi.
+Mỗi đề hàm Python là một \textit{task}, còn mỗi lời giải cần kiểm là một chương trình được kiểm thử (\textit{program under test}, PUT). Hệ thống nhận đặc tả, chữ ký, ràng buộc miền, test cơ sở và các PUT đã vượt bộ test đó, kể cả khi nhiều lời giải của cùng một task vẫn mắc chung một lỗi.
 
-Từ các dữ liệu trên, hệ thống sinh bộ đối số mới và lọc theo miền của task. Bộ test bổ sung được đánh giá theo hai cách. Phép đo coverage đối chiếu dòng và cạnh được thực thi trước và sau khi thêm input trên cùng PUT. Oracle cung cấp đáp án để xác nhận các sai khác lặp lại. Vì một input có thể làm lộ lỗi trên nhiều PUT, số input, số PUT tăng độ phủ và số PUT có sai khác được đếm riêng.
-
+Từ các dữ liệu trên, hệ thống sinh bộ đối số mới và lọc theo miền của task. Bộ test bổ sung được đánh giá theo hai tiêu chí: số PUT có đầu ra khác so với oracle và độ phủ của bộ test mới.
 \section*{Mục tiêu và câu hỏi nghiên cứu}
 
-\textit{Concept} là ý tưởng dùng để hướng dẫn mô hình sinh test. Phân hoạch tương đương, giá trị biên và bảng quyết định cung cấp cách tìm tình huống trong đặc tả. Một phép kiểm trong PUT cũng có thể gợi ra tình huống. Chẳng hạn, hàm xử lý khoảng trắng có thể chỉ tìm dấu cách thông thường. Concept khi đó là thử một chuỗi có khoảng trắng thuộc loại khác. Mô hình chuyển tình huống này thành đối số cụ thể. Mục~\ref{sec:concept-guidance} mô tả cách từng nhánh đưa hướng dẫn đó vào prompt.
+\textit{Concept} là khái niệm, ý tưởng dùng để hướng dẫn mô hình sinh test. Về khái niệm, phân hoạch tương đương, giá trị biên và bảng quyết định cung cấp cách tìm tình huống trong đặc tả; về ý tưởng, một phép kiểm trong PUT cũng có thể gợi ra tình huống để kiểm thử. Chẳng hạn, một hàm xử lý khoảng trắng có thể chỉ tìm dấu cách thông thường; concept khi đó là thử một chuỗi có khoảng trắng thuộc loại khác như dấu tab để mô hình chuyển tình huống này thành đối số cụ thể (Mục~\ref{sec:concept-guidance} mô tả cách từng nhánh đưa hướng dẫn đó vào prompt).
 
 \begin{description}
 \item[RQ1.] Base test còn thiếu độ phủ trên bao nhiêu PUT? Sau khi thêm test của ConceptTesting, C1 và C2 tăng ra sao, có thêm bao nhiêu PUT bị phát hiện sai khác và điểm pass@k thay đổi thế nào?
-\item[RQ2.] Các bộ test sinh theo concept và sinh trực tiếp bằng LLM phát hiện chung bao nhiêu PUT? Mỗi cách phát hiện riêng bao nhiêu PUT và các sai khác đó thuộc loại nào?
-\item[RQ3.] Trong tập test hợp, mỗi nhánh phát hiện riêng bao nhiêu PUT? Trên HumanEval, mức đóng góp thay đổi ra sao khi bỏ một nhánh hoặc tách EP và BVA dưới cùng ngân sách?
+\item[RQ2.] ConceptTesting phát hiện chung và riêng bao nhiêu PUT khi đối chiếu với Naive LLM và với bộ test HumanEval+? Các sai khác phát hiện thêm thuộc loại nào?
+\item[RQ3.] Trong tập test hợp, mỗi nhánh phát hiện riêng bao nhiêu PUT? Trên HumanEval, khả năng phát hiện thay đổi thế nào khi dùng EP/BVA và DT V2, bỏ từng nhánh hoặc chỉ giữ input từ lượt sinh đầu của nhánh đó?
 \end{description}
 
 \section*{Phạm vi và cấu trúc khóa luận}
 
-HumanEval và MBPP là hai benchmark đánh giá độ đúng chức năng của mã Python sinh từ đặc tả. Khóa luận dùng chúng để đo khả năng phát hiện sai khác sau base test, với oracle lấy từ cài đặt tham chiếu HumanEval+ và MBPP+ (Mục~\ref{sec:code-benchmarks}). ConceptTesting gồm EP/BVA, DT và ControlFlow. EP và BVA dùng chung một lần sinh. HumanEval dùng test từ Qwen và Gemini. Trên MBPP, phép đối chiếu giữa ConceptTesting và Naive LLM dùng test của Gemini. Lần chạy riêng trên 164 bài ghi nhận thêm kết quả Naive LLM dùng Qwen.
+HumanEval và MBPP là hai benchmark đánh giá độ đúng chức năng của mã Python sinh từ đặc tả. Khóa luận dùng chúng để đo khả năng phát hiện sai khác sau base test, với oracle lấy từ cài đặt tham chiếu HumanEval+ và MBPP+ (Mục~\ref{sec:code-benchmarks}). ConceptTesting gồm ba nhánh EP/BVA, DT và ControlFlow. Trên HumanEval, cấu hình chính và các phép ablation dùng Qwen để sinh test. Gemini dùng EP/BVA và DT một lượt cùng ControlFlow gốc cho các phép chấm bổ trợ. Trên MBPP, phép đối chiếu giữa ConceptTesting và Naive LLM dùng test của Gemini. Kết quả Naive LLM với Qwen được ghi riêng trên tập 164 bài.
 
-Chương~\ref{chap:background} trình bày các kỹ thuật chọn ca kiểm thử và nghiên cứu liên quan. Chương~\ref{chap:method} mô tả yêu cầu, kiến trúc và luồng dữ liệu qua các mô-đun. Chương~\ref{chap:experiment} trình bày phần hiện thực, kịch bản demo và kết quả chấm trên hai benchmark.
+Cấu trúc phần còn lại gồm ba chương: Chương~\ref{chap:background} trình bày các kỹ thuật chọn ca và nghiên cứu liên quan, Chương~\ref{chap:method} mô tả yêu cầu cùng các bước xử lý của ConceptTesting, còn Chương~\ref{chap:experiment} trình bày cách cài đặt hệ thống, các ca demo và kết quả chấm trên hai benchmark.

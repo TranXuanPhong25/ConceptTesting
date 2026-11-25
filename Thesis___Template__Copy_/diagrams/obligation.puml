@@ -1,0 +1,16 @@
+@startuml
+!include thesis-style.iuml
+start
+:Đọc đặc tả, contract, mã PUT,\nCFG và các lời gọi cơ sở;
+partition "Lượt đề xuất" {
+  :Chọn đích C1/C2;\nLLM đề xuất input thử và nghĩa vụ theo đặc tả;
+  :Thử input trên PUT sở hữu đích;\nkiểm nghĩa vụ trên các lời gọi cơ sở;
+}
+partition "Lượt dựng input" {
+  :Gửi đích còn thiếu, quan sát thực thi\nvà nghĩa vụ chưa có bằng chứng;
+  :LLM dựng input mới;\nHypothesis lấy mẫu từ miền mô tả được;
+}
+:Kiểm miền, bỏ trùng và ưu tiên\ninput chạm thêm đích hoặc nghĩa vụ;
+:Chốt input để chấm bằng oracle chung;
+stop
+@enduml
