@@ -27,12 +27,9 @@ def prepare_task_packet(
 ) -> dict:
     """Select eligible visible PUTs and build the shared prompt fitting context limits."""
     cohort = context.cohort_task
-    generated_program_count = cohort["generated"]
-    target_program_count = context.settings.target_programs
     passing_programs = [program for program in cohort["programs"] if program["base"]["status"] == "pass"]
-    if generated_program_count != target_program_count or not passing_programs:
-        reason = "generation_shortfall" if generated_program_count != target_program_count else "no_base_pass"
-        return {"task_id": context.task["task_id"], "skip": reason}
+    if not passing_programs:
+        return {"task_id": context.task["task_id"], "skip": "no_base_pass"}
     programs = sorted(
         passing_programs,
         key=lambda program: hashlib.sha256(f"{context.task_number}:{program['id']}".encode()).hexdigest(),
@@ -54,6 +51,7 @@ def prepare_task_packet(
                 context.metadata["contract"],
                 context.settings.input_budget,
                 prior_stage_inputs=prior_stage_inputs,
+                extra_base_tests=cohort.get("extra_base_tests", ""),
             )
             for method in prompt_methods:
                 packet["prompt_tokens"][method.name] = context.calls.token_count(method.build_messages(packet))

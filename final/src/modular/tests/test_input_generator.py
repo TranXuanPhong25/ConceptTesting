@@ -41,9 +41,10 @@ def test_default_shell_has_no_concept_or_witness_stages(tmp_path, monkeypatch):
     artifacts = ArtifactStore(tmp_path / "run")
     model = PlainFixtureModel()
     calls = FixtureCalls(model, artifacts.directory)
-    pipeline = BenchmarkPipeline(path, artifacts, calls=calls, settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
+    pipeline = BenchmarkPipeline(path, artifacts, calls=calls, reference_programs=TaskReferencePrograms())
     result = pipeline.run([TASK], {TASK["task_id"]: META})
     assert set(result["arms"]) == {"plain"}
+    assert result["tested_base_pass"] == 1
     assert len(model.requests) == 1
     assert [e["stage"] for e in pipeline.stage_events if e["state"] == "complete"] == [
         "input_context", "input_generation", "reference_oracle", "put_evaluation"
@@ -94,6 +95,8 @@ def test_invalid_calls_are_saved_and_rejected_without_execution(tmp_path, monkey
                                  settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
     summary = pipeline.run([TASK], {TASK["task_id"]: META})
     assert summary["arms"]["new_method"]["valid_inputs"] == 0
+    assert summary["tested_base_pass"] == summary["arms"]["new_method"]["tested_base_pass"] == 0
+    assert summary["evaluated_base_pass"] == 1
     assert summary["diagnostics"]["oracle_rejections"]["input_type_rejects"] == 1
     assert not artifacts.exists("generation_frozen.json")
     assert artifacts.read("tasks/7/inputs.json")["arms"]["new_method"]["inputs"][0]["args"] == arguments

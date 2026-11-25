@@ -356,7 +356,7 @@ def test_tools_skip_ineligible_task_before_any_preparation_call(tmp_path):
     context.cohort_task = {'generated': 0, 'programs': []}
     generator = ToolInputGenerator(budgets())
     generator.prepare_context(context)
-    assert generator.generate(context) == {'task_id': 'HumanEval/7', 'skip': 'generation_shortfall'}
+    assert generator.generate(context) == {'task_id': 'HumanEval/7', 'skip': 'no_base_pass'}
     assert not (tmp_path / 'tasks/7/tool_generation.json').exists()
 
 

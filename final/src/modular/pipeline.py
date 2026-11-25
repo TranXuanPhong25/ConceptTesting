@@ -1,6 +1,7 @@
 """Orchestrate generation-before-oracle evaluation on a frozen PUT cohort."""
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import asdict
 import fcntl
@@ -9,6 +10,7 @@ import json
 from pathlib import Path
 import platform
 import sys
+import threading
 
 from .artifacts import ArtifactStore
 from .calls import CachedModelCalls
@@ -58,6 +60,7 @@ class BenchmarkPipeline:
         dataset=None,
         on_before_evaluation=None,
         on_step=None,
+        generation_workers: int = 1,
     ):
         self.artifacts = artifacts
         self.settings = settings or PipelineSettings()
@@ -90,6 +93,8 @@ class BenchmarkPipeline:
         self.reporter = input_generator.reporter() or Reporter()
         self.on_before_evaluation = on_before_evaluation
         self.on_step = on_step
+        self.generation_workers = max(1, int(generation_workers))
+        self._event_lock = threading.Lock()
         self.stage_events = []
 
     def _needs_input_context(self) -> bool:
@@ -118,12 +123,13 @@ class BenchmarkPipeline:
 
     def _record_event(self, context: TaskContext, name: str, state: str, **details) -> None:
         event = {"task_id": context.task["task_id"], "stage": name, "state": state, **details}
-        self.stage_events.append(event)
-        if not self.artifacts.read_only:
-            with self.artifacts.path("stage_events.jsonl").open("a") as event_file:
-                event_file.write(json.dumps(event) + "\n")
-        if self.on_step is not None:
-            self.on_step(context, name, state)
+        with self._event_lock:
+            self.stage_events.append(event)
+            if not self.artifacts.read_only:
+                with self.artifacts.path("stage_events.jsonl").open("a") as event_file:
+                    event_file.write(json.dumps(event) + "\n")
+            if self.on_step is not None:
+                self.on_step(context, name, state)
 
     def _run_step(self, context: TaskContext, name: str, action):
         self._record_event(context, name, "started")
@@ -157,9 +163,20 @@ class BenchmarkPipeline:
                 context = TaskContext(task, metadata[task["task_id"]], self.artifacts, self.settings, self.calls)
                 context.cohort_task = self.cohort_tasks[task["task_id"]]
                 contexts.append(context)
+
+            def _generate_one(ctx):
                 if needs_input_context:
-                    self._run_step(context, "input_context", lambda ctx=context: self.input_generator.prepare_context(ctx))
-                self._run_step(context, "input_generation", lambda ctx=context: self._generate_task(ctx))
+                    self._run_step(ctx, "input_context", lambda c=ctx: self.input_generator.prepare_context(c))
+                self._run_step(ctx, "input_generation", lambda c=ctx: self._generate_task(c))
+
+            if self.generation_workers > 1 and len(contexts) > 1:
+                with ThreadPoolExecutor(max_workers=self.generation_workers) as pool:
+                    futures = [pool.submit(_generate_one, ctx) for ctx in contexts]
+                    for future in futures:
+                        future.result()
+            else:
+                for ctx in contexts:
+                    _generate_one(ctx)
             # Finish generation for every task before any oracle or PUT receives the inputs.
             self.input_generator.validate_generation(contexts)
             if self.on_before_evaluation is not None:

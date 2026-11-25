@@ -31,8 +31,10 @@ def compact_source(source):
     return '\n'.join(f'{i+1}: {line.rstrip()}' for i,line in enumerate(lines) if line.strip())
 
 
-def structured_input_prompt(task, programs, contract, budget, *, prior_stage_inputs=()):
+def structured_input_prompt(task, programs, contract, budget, *, prior_stage_inputs=(), extra_base_tests=''):
     augmented_base = ''
+    if extra_base_tests:
+        augmented_base += '\n' + extra_base_tests.rstrip() + '\n'
     if prior_stage_inputs:
         augmented_base = ('\nADDITIONAL BASE INPUTS FROM EARLIER STAGES (no expected outputs):\n'
             'Treat these calls as part of the base suite. Use their source stage and supplied '
