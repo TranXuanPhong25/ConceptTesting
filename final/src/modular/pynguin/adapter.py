@@ -128,9 +128,6 @@ class PynguinInputGenerator(InputGenerator):
             return {'task_id':context.task['task_id'],'skip':context.packet['skip']}
         return {'task_id':context.task['task_id'],'arms':{'pynguin':self.run_task(context)}}
 
-    def run(self,context):
-        return self.run_task(context)
-
     def run_task(self,context):
         prefix=context.task_directory+'/pynguin/'
         provenance=self.provenance(context)

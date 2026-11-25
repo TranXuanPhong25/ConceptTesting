@@ -118,9 +118,6 @@ class BenchmarkPipeline:
             return "post_evaluation"
         return None
 
-    def _generate_task(self, context: TaskContext) -> dict:
-        return generate_task_inputs(context, self.input_generator)
-
     def _record_event(self, context: TaskContext, name: str, state: str, **details) -> None:
         event = {"task_id": context.task["task_id"], "stage": name, "state": state, **details}
         with self._event_lock:
@@ -167,7 +164,7 @@ class BenchmarkPipeline:
             def _generate_one(ctx):
                 if needs_input_context:
                     self._run_step(ctx, "input_context", lambda c=ctx: self.input_generator.prepare_context(c))
-                self._run_step(ctx, "input_generation", lambda c=ctx: self._generate_task(c))
+                self._run_step(ctx, "input_generation", lambda c=ctx: generate_task_inputs(c, self.input_generator))
 
             if self.generation_workers > 1 and len(contexts) > 1:
                 with ThreadPoolExecutor(max_workers=self.generation_workers) as pool:

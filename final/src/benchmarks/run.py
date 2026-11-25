@@ -86,9 +86,6 @@ def execute(directory, *, replay=False):
                 load_model_environment(plan['workspace'], config['backend'])
             from final.src.models import create_model
             model = create_model(backend=config['backend'], model_name=config['model_name'], context=config['context_tokens'])
-            class Calls(RecordedModelCalls):
-                def complete(self, *args, **kwargs):
-                    return super().complete(*args, **kwargs)
             def native_execution(*args, **kwargs):
                 # Release the shared CPU lock before the next model request.
                 with (Path(plan['workspace'])/'final/out/.boundary_native.lock').open('a+') as native:
@@ -96,7 +93,7 @@ def execute(directory, *, replay=False):
                     return execute_program(*args, **kwargs)
             result = run_benchmark(
                 tasks, cohort, store, config,
-                calls=Calls(model, store),
+                calls=RecordedModelCalls(model, store),
                 executor=native_execution,
                 default_tool_runs_dir=plan.get('tool_runs_dir'),
             )

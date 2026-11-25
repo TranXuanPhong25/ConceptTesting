@@ -8,10 +8,6 @@ from coverage.parser import PythonParser
 from ..call_builder import entry_function
 
 
-def _uncovered_c1_lines(statements, seen_lines, reachable_lines):
-    return sorted((statements - seen_lines) & reachable_lines)
-
-
 def _uncovered_c2_arcs(exit_counts, adjacency, seen_arcs, reachable_lines):
     for line, exits in sorted(exit_counts.items()):
         if exits <= 1 or line not in reachable_lines:
@@ -94,11 +90,7 @@ def analyze(program, entry):
 
     reachable_lines = paths.keys()
 
-    c1_lines = _uncovered_c1_lines(
-            parser.statements,
-            seen_lines,
-            reachable_lines,
-        )
+    c1_lines = sorted((parser.statements - seen_lines) & reachable_lines)
     for line in c1_lines:
         result['targets'].append(target('C1', line))
 

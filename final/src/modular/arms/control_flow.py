@@ -29,9 +29,6 @@ HYPOTHESIS_INPUT_LIMIT = 40
 SUITE_TARGET_OFFSET = 10
 
 
-def _suite_input_budget(base_budget, selected_target_count):
-    return max(base_budget, SUITE_TARGET_OFFSET + selected_target_count)
-
 def _measure_generation_time(discover):
     @wraps(discover)
     def measured(self, context):
@@ -400,7 +397,7 @@ class ControlFlowArm(InputGenerationMethod):
                 break
 
         # Giữ input đã qua domain, ưu tiên input đóng góp target mới và cắt theo budget cuối mở rộng theo số target.
-        suite_input_budget = _suite_input_budget(context.settings.input_budget, len(selected_targets))
+        suite_input_budget = max(context.settings.input_budget, SUITE_TARGET_OFFSET + len(selected_targets))
         selected, selected_coverage = self._select_inputs(candidates, suite_input_budget)
         return {
             # Giữ provenance trong luồng kế thừa để stage sau biết nguồn input.
