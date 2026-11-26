@@ -2,7 +2,7 @@
 import ast
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, ValidationError
 
-from ..input_buckets.predicates import expression
+from ..common.predicates import expression
 
 
 class Concept(BaseModel):

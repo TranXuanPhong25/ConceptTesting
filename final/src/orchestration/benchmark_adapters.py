@@ -11,6 +11,7 @@ from prefect.artifacts import create_markdown_artifact, create_table_artifact
 from prefect.context import get_run_context
 from prefect.client.orchestration import get_client
 from final.src.models import OPENROUTER_DEFAULT_MODEL
+from final.src.modular.context import DEFAULT_CONTEXT_TOKENS, DEFAULT_INPUT_TOKENS
 from .flows import ROOT, OUT, BENCHMARK_PYTHON, command, watch_worker, active_external_writers
 from .routing import endpoint_identity_for_profile
 
@@ -39,8 +40,8 @@ async def adapter_benchmark(
     backend: Literal['qwen','vertex','openrouter']='qwen',
     model_name: str | None=None,
     inputs_per_task: int=20,
-    completion_tokens: int=4096,
-    context_tokens: int=8192,
+    completion_tokens: int=DEFAULT_INPUT_TOKENS,
+    context_tokens: int=DEFAULT_CONTEXT_TOKENS,
     temperature: float=.7,
     seed: int=314159,
     timeout_seconds: float=8,

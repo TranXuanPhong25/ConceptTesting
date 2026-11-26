@@ -6,7 +6,7 @@ from typing import Annotated, Literal, Union
 
 from pydantic import BaseModel, ConfigDict, Field, JsonValue, create_model
 
-from ..input_buckets.predicates import validate_projection_types
+from ..common.predicates import validate_projection_types
 from .membership import expression, BOOLEAN_METHODS
 from .model import validate_model
 

@@ -1,6 +1,6 @@
 """Observed coverage must come from input membership, never model labels."""
 from final.src.modular.tests.test_testing_arms import measure, bva, task
-from final.src.modular.catalogue import measure_catalogue
+from final.src.modular.black_box.catalogue import measure_catalogue
 from final.src.modular.call_builder import CallBuilder
 
 
@@ -110,7 +110,7 @@ def test_missing_metadata_with_empty_inputs_is_unknown_not_zero_coverage():
 
 
 def test_membership_budget_exhaustion_keeps_unknown(monkeypatch):
-    import final.src.modular.catalogue_membership as membership
+    import final.src.modular.black_box.catalogue_membership as membership
     monkeypatch.setattr(membership,'MAX_PREDICATE_CHECKS',1)
     raw = {'classes':[{'id':'E','description':'positive','predicate':'x > 0'}]}
     observed = measure(raw,[{'arguments':{'x':-1}},{'arguments':{'x':2}}],name='equivalence')['observed']
@@ -155,18 +155,29 @@ def test_empty_checkable_class_has_no_witness_and_is_missed():
 
 
 def test_condition_predicates_are_in_rendered_contracts():
-    from final.src.modular.arms.vf3_hybrid import EpBvaArm, DecisionTableArm
-    from final.src.modular.input_prompts import structured_input_prompt
-    common = structured_input_prompt(task(), [], '', 20)
-    ep_prompt = EpBvaArm().build_messages({'common': common})[1]['content']
-    dt_prompt = DecisionTableArm().build_messages({'common': common})[1]['content']
+    from final.src.modular.plain import PlainArm
+    from final.src.modular.black_box import EpBvaArm, DecisionTableArm
+    from final.src.modular.input_prompts import input_prompt_blocks, structured_input_prompt
+    packet = {'prompt_blocks': input_prompt_blocks(task(), [], '', 20)}
+    plain_prompt = PlainArm().build_messages(packet)[1]['content']
+    ep_prompt = EpBvaArm().build_messages(packet)[1]['content']
+    dt_prompt = DecisionTableArm().build_messages(packet)[1]['content']
+    assert 'Return JSON:' in plain_prompt and 'Keep floats finite' not in plain_prompt
     assert 'supplied JSON Schema' in ep_prompt and 'class predicate' in ep_prompt
     assert 'supplied JSON Schema' in dt_prompt and 'C1..Cn' in dt_prompt
 
+    old_packet = {'common': structured_input_prompt(task(), [], '', 20)}
+    for arm in (PlainArm(), EpBvaArm(), DecisionTableArm()):
+        assert arm.build_messages(packet) == arm.build_messages(old_packet)
+
+    specification = dict(task(), prompt='INPUTS ONLY: no assertions or expected outputs.')
+    packet = {'prompt_blocks': input_prompt_blocks(specification, [], '', 20)}
+    assert f'SPECIFICATION:\n{specification["prompt"]}\n' in EpBvaArm().build_prompt(packet)
+
 
 def test_original_rule_id_cannot_shadow_class_but_valid_inputs_survive(tmp_path):
-    from final.src.modular.catalogue import validate_catalogue
-    from final.src.modular.arms.vf3_hybrid import StructuredCatalogueArm
+    from final.src.modular.black_box.catalogue import validate_catalogue
+    from final.src.modular.black_box import StructuredCatalogueArm
     from final.src.modular.tests.test_testing_arms import decode
     raw = {'classes':[{'id':'E','description':'negative','predicate':'x < 0'}],
            'boundaries':[bva()], 'conditions':{'C':[True,False]},

@@ -1,1 +1,4 @@
-"""Source-bound semantic scenarios and optional structural coverage objectives."""
+"""Repaired ControlFlow obligation arm."""
+from .arm import RepairedControlFlowObligationArm
+
+__all__ = ["RepairedControlFlowObligationArm"]

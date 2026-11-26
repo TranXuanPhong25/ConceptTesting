@@ -1,7 +1,7 @@
 """Trusted admission, safe projections and dependent construction regressions."""
 import pytest
 
-from final.src.modular.input_buckets.predicates import evaluate
+from final.src.modular.common.predicates import evaluate
 
 
 CONTRACT44 = '''
@@ -102,7 +102,7 @@ def test_domain_is_pinned_by_schema_and_local_validation():
 def test_generator_blocks_luna44_weakened_domain_and_preserves_raw(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.tests.test_tool_sampling import budgets
     spec = {'types': {'x':'int','base':'int'}, 'domain':'is_int(x) and is_int(base)',
         'domain_source_quote':'contract', 'strategies':{'x':{'kind':'int'},'base':{'kind':'int'}},
@@ -123,7 +123,7 @@ def test_generator_blocks_luna44_weakened_domain_and_preserves_raw(tmp_path):
 def test_generator_skips_model_when_trusted_contract_is_unsupported(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.tests.test_tool_sampling import budgets
     class Forbidden:
         def token_count(self,*args):
@@ -181,7 +181,7 @@ def test_subset_or_quantifier_without_container_type_guard_is_unsupported():
 def test_all_four_corrected_contracts_construct_clean_inputs_without_oracle(tmp_path,number,contract,source,types,strategies,inputs):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.tool_sampling.trusted_domain import compile_domain
     from final.src.modular.tool_sampling.gate import treatment_status
     from final.src.modular.tests.test_tool_sampling import budgets
@@ -240,7 +240,7 @@ def test_trusted_compiler_handles_depth_limits_and_shadowed_names():
 def test_llm_sampling_types_cannot_reject_trusted_polymorphic_seed(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import TaskContext,PipelineSettings
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.tool_sampling.trusted_domain import compile_domain
     from final.src.modular.tests.test_tool_sampling import budgets
     domain=compile_domain(CONTRACT137,['a','b'])['expression']

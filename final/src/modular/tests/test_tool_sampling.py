@@ -129,7 +129,7 @@ def budgets():
 def test_tool_generator_shares_pool_preserves_cap_and_replay_artifacts(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     task = {'task_id': 'HumanEval/7', 'entry_point': 'f',
             'prompt': 'def f(a: int, b: int = 0):\n    pass\n'}
     context = TaskContext(task, {'contract': ''}, ArtifactStore(tmp_path), PipelineSettings(input_budget=2))
@@ -146,7 +146,7 @@ def test_tool_generator_shares_pool_preserves_cap_and_replay_artifacts(tmp_path)
 
 
 def test_tool_budgets_are_explicit_and_reject_bools_or_empty_controls():
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     with pytest.raises(ValueError):
         ToolInputGenerator({'draws': 10})
     for field, value in [('draws', True), ('sample_seconds', float('inf')), ('random_seeds', []), ('arms', ['typo'])]:
@@ -175,7 +175,7 @@ def test_post_freeze_miss_taxonomy_distinguishes_selection_catalogue_and_pending
 def test_pipeline_tool_generator_freezes_before_audit_and_replays_without_work(tmp_path, monkeypatch):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.modular.references import TaskReferencePrograms
     from final.src.modular.tests.test_testing_arms_integration import write_fixture_cohort
@@ -203,7 +203,7 @@ def test_pipeline_tool_generator_freezes_before_audit_and_replays_without_work(t
         pytest.fail('Replay invoked workload')
     monkeypatch.setattr('final.src.modular.reference_oracle.execute', forbidden)
     monkeypatch.setattr('final.src.modular.put_evaluation.execute', forbidden)
-    monkeypatch.setattr('final.src.modular.generators.tools.sample_hypothesis', forbidden)
+    monkeypatch.setattr('final.src.modular.tool_sampling.generator.sample_hypothesis', forbidden)
     replay = BenchmarkPipeline(cohort, ArtifactStore(directory, read_only=True), input_generator=generator,
         settings=pipeline.settings, execution_cache=False, reference_programs=TaskReferencePrograms())
     assert replay.run([task], {'HumanEval/7': {'contract': '', 'atol': 0}}) == result
@@ -293,7 +293,7 @@ def test_detection_attribution_requires_exclusive_source_and_no_shared_witness()
 def test_malformed_seed_encoding_is_retained_in_ledger_without_breaking_artifacts(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     spec = model()
     spec['inputs'].append({'arguments': {'a': '\ud800', 'b': 0}})
     context = TaskContext({'task_id': 'HumanEval/7', 'entry_point': 'f',
@@ -351,7 +351,7 @@ def test_invalid_boundary_side_is_schema_error_before_selection():
 def test_tools_skip_ineligible_task_before_any_preparation_call(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     context = TaskContext({'task_id': 'HumanEval/7'}, {}, ArtifactStore(tmp_path), PipelineSettings())
     context.cohort_task = {'generated': 0, 'programs': []}
     generator = ToolInputGenerator(budgets())
@@ -364,7 +364,7 @@ def test_tools_skip_ineligible_task_before_any_preparation_call(tmp_path):
 def test_list_any_annotation_preserves_unconstrained_elements_and_does_not_disable_tools(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     task = {'task_id': 'HumanEval/22', 'entry_point': 'f',
             'prompt': 'from typing import List, Any\ndef f(values: List[Any]):\n    pass\n'}
     spec = {'types': {'values': 'list'}, 'domain': 'True', 'domain_source_quote': 'arbitrary list elements',
@@ -437,7 +437,7 @@ def test_generator_requests_schema_without_adding_model_calls(tmp_path):
     from final.src.models.core_model import ModelResponse
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     class Calls:
         requests = []
         def token_count(self, messages):
@@ -460,7 +460,7 @@ def test_generation_gate_blocks_invalid_preparation_before_freeze_or_evaluation(
     import json
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.modular.references import TaskReferencePrograms
     from final.src.modular.tests.test_testing_arms_integration import write_fixture_cohort
@@ -500,7 +500,7 @@ def test_tool_treatment_gate_distinguishes_actual_tools_from_unsupported():
 def test_real_tools_gate_requires_hypothesis_draw_and_planner_row(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.tool_sampling.gate import treatment_status
     config = budgets()
     config['draws'] = 1
@@ -549,7 +549,7 @@ def test_treatment_status_survives_summary_and_is_not_an_efficacy_claim(tmp_path
 def test_extra_hypothesis_arm_rejects_unusable_shared_strategies(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings, TaskContext
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.tool_sampling.gate import treatment_status
     config = budgets()
     config['arms'] = ['tool_hypothesis_extra']

@@ -10,9 +10,10 @@ from final.src.benchmarks.datasets import DatasetLoader
 from .artifacts import ArtifactStore
 from .calls import RecordedModelCalls
 from .pipeline import BenchmarkPipeline
-from .context import PipelineSettings
+from .context import DEFAULT_CONTEXT_TOKENS, DEFAULT_INPUT_TOKENS, PipelineSettings
 from .execution_cache import InputExecutionCache
-from .arms import available_arms, default_arms, selected_arms
+from . import available_arms, default_arms, selected_arms
+from .control_flow import ControlFlowFourToolArm
 from final.src.runtime.artifacts import save
 
 
@@ -42,9 +43,9 @@ def load_options(arguments=None):
                         help="Input methods include plain (default), control_flow and control_flow_4tool")
     parser.add_argument("--tool-runs-dir", type=Path,
                         help="Optional 4-tool saved artifact directory for control_flow_4tool")
-    parser.add_argument("--input-tokens", type=positive_integer,
-                        help="Completion tokens/call; default 4096 with catalogue arms, otherwise 2048")
-    parser.add_argument("--context-tokens", type=positive_integer, default=8192)
+    parser.add_argument("--input-tokens", type=positive_integer, default=DEFAULT_INPUT_TOKENS,
+                        help=f"Completion tokens per call (default: {DEFAULT_INPUT_TOKENS})")
+    parser.add_argument("--context-tokens", type=positive_integer, default=DEFAULT_CONTEXT_TOKENS)
     parser.add_argument("--model-backend", choices=("qwen", "vertex", "openrouter"),
                         help="Live transport; defaults to FINAL_MODEL_BACKEND or existing Qwen backend")
     parser.add_argument("--model-name", help="Model ID for the selected live backend")
@@ -55,7 +56,7 @@ def load_options(arguments=None):
     parser.add_argument("--target-programs", type=positive_integer, default=10,
                         help="Nominal number of generated programs per task, recorded in run settings")
     parser.add_argument("--input-budget", type=positive_integer, default=20,
-                        help="Total input budget per arm per task")
+                        help="Input budget per arm per task. VF3 uses a fixed budget.")
     parser.add_argument("--execution-cache", type=Path, default=Path("final/out/execution_cache"),
                         help="Shared per-input reference/PUT execution cache")
     parser.add_argument("--no-execution-cache", action="store_true", help="Use the original batch execution without shared input caching")
@@ -68,16 +69,15 @@ def load_pipeline_settings(parser, options):
         parser.error('--pynguin-config cannot be combined with other generator options')
     tool_generator = None
     if options.pynguin_config:
-        from .pynguin.config import PynguinSettings
+        from .pynguin import PynguinInputGenerator, PynguinSettings
         pynguin_settings = PynguinSettings(**json.loads(options.pynguin_config.read_text()))
         if options.input_budget > 20:
             parser.error('Pynguin requires --input-budget <=20')
-        from .pynguin.adapter import PynguinInputGenerator
         tool_generator = PynguinInputGenerator(pynguin_settings)
     if options.tool_config:
         if options.arms:
             parser.error("--tool-config cannot be combined with --arms")
-        from .generators.tools import ToolInputGenerator
+        from .tool_sampling import ToolInputGenerator
         document = json.loads(options.tool_config.read_text())
         if not isinstance(document, dict) or set(document) - {"budgets", "preparations", "semantic_controls"}:
             parser.error("Tool config accepts budgets, optional preparations and semantic_controls only")
@@ -87,19 +87,15 @@ def load_pipeline_settings(parser, options):
     if options.tool_runs_dir is not None:
         if not any(arm.name == "control_flow_4tool" for arm in arms):
             parser.error("--tool-runs-dir requires control_flow_4tool in --arms")
-        from .arms.control_flow import ControlFlowFourToolArm
         arms = tuple(
             ControlFlowFourToolArm(tool_runs_dir=options.tool_runs_dir)
             if arm.name == "control_flow_4tool" else arm
             for arm in arms
         )
-    input_tokens = options.input_tokens or max(
-        4096 if tool_generator or any(getattr(arm, "measures_catalogue", False) for arm in arms) else 2048,
-        *(getattr(arm, 'default_input_tokens', 2048) for arm in arms))
-    if input_tokens + 128 >= options.context_tokens:
+    if options.input_tokens + 128 >= options.context_tokens:
         parser.error("Completion reserve must leave prompt context")
     settings = PipelineSettings(target_programs=options.target_programs, input_budget=options.input_budget,
-                                input_tokens=input_tokens, context_tokens=options.context_tokens)
+                                input_tokens=options.input_tokens, context_tokens=options.context_tokens)
     if options.pynguin_config:
         pynguin_settings.validate_environment()
     return settings, arms, tool_generator

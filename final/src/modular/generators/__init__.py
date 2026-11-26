@@ -4,7 +4,7 @@ from .methods import MethodInputGenerator
 
 
 def default_input_generator():
-    from ..arms import default_arms
+    from .. import default_arms
 
     return generator_for_arms(default_arms())
 

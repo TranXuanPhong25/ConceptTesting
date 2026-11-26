@@ -66,13 +66,15 @@ frozen PUT cohort → input preparation → input generation
 |---|---|
 | `pipeline.py` | Điều phối generation/evaluation, ghi manifest và run lock |
 | `generators/` | Interface sinh input có thể thay thế; đọc saved inputs hiện có |
-| `arms/plain.py` | LLM sinh input trực tiếp |
-| `arms/classical.py` | Một completion/task/arm sinh inputs và catalogue EP/BVA/DT |
-| `arms/control_flow.py`, `control_flow/` | Opt-in concept discovery từ C1/C2, Hypothesis và sandbox coverage feedback; [contract/budget](control_flow/README.md) |
-| `catalogue.py` | Pydantic schema, compact envelope validation, mechanical checks và `measure_task_catalogues` sau reference/domain |
-| `catalogue_membership.py` | Observed EP/BVA/DT membership, witness indices, hit/miss/unknown và đối chiếu covers |
-| `catalogue_response.py` | Generation-only JSON Schema và executable metadata validation cho VF3 |
-| `arms/vf3_measured.py` | `ep_bva_vf3_measured`/`decision_table_vf3_measured`: JSON Schema + tối đa 1 feedback round |
+| `__init__.py` | Registry chọn arm cho CLI và pipeline |
+| `plain/` | Naive baseline sinh input trực tiếp |
+| `common/` | Interface và cơ chế chung cho các arm dùng model |
+| `control_flow/` | ControlFlow và biến thể 4-tool dùng chung engine C1/C2, Hypothesis và coverage feedback. [Contract và budget](control_flow/README.md) |
+| `tool_sampling/`, `pynguin/` | Generator, cấu hình và logic riêng cho từng hướng tool |
+| `spec_obligation/` | CF Obligation Repaired. [Protocol](spec_obligation/README.md) |
+| `black_box/vf3_hybrid.py`, `black_box/vf3_hybrid_schema.py` | Sinh catalogue và input EP/BVA, DT theo JSON Schema, sau đó thêm một lượt feedback |
+| `black_box/catalogue.py`, `black_box/catalogue_membership.py` | Kiểm tra catalogue, đo coverage class, boundary, rule và đối chiếu covers |
+| `black_box/catalogue_response.py` | Đọc JSON catalogue và phục hồi các input record đầy đủ khi response lỗi format |
 | `catalogue_reporting.py` | Report tiếng Việt, matched-budget comparison và token accounting theo arm |
 | `call_builder.py` | Encode named arguments thành Python literals |
 | `../benchmarks/datasets.py`, `cohort.py` | Load specs/domain metadata/references và frozen PUT cohort |
@@ -156,14 +158,15 @@ Budget mỗi task/arm: tối đa512predicate checks, ngừng bắt đầu check 
 extended sandbox call đang chạy có timeout riêng2giây. Cache condition checks
 để không evaluate lại cùng expression/input. Base coverage vẫn pending.
 
-VF3 giữ nguyên guidance, soft example và fault-hypothesis note của v2; annotation
-được schema chấp nhận và lưu lại. Cả hai vòng giữ full initial prompt/visible PUTs.
-Khi không vừa context, task/feedback báo `prompt_too_large` với lý do rõ ràng;
-không tự xóa examples, rút guidance hoặc giảm visible PUTs để vừa giới hạn.
+VF3 giữ nguyên guidance, soft example và fault-hypothesis note của v2. Schema
+chấp nhận và lưu annotation. Prompt chung giữ đủ visible PUTs, kể cả khi chỉ
+chạy Plain. Arm dùng prompt chung báo `prompt_too_large` nếu vượt giới hạn.
+Lượt feedback của VF3 dùng lại toàn bộ prompt ban đầu và cũng báo
+`prompt_too_large` nếu vượt giới hạn.
 
 VF3 (`ep_bva_vf3`, `decision_table_vf3`) dùng JSON Schema qua transport có sẵn,
-không sửa notebook hoặc cài decoder. Initial tối đa20inputs (settings.input_budget) và một feedback call
-để sửa metadata/bổ sung tối đa10 NEW inputs, tổng retained30inputs/arm khi initial budget20.
+không sửa notebook hoặc cài decoder. Mỗi lượt có budget cố định 20 input. Lượt
+feedback bổ sung input mới, đưa trần tổng lên 40 input mỗi task mỗi arm.
 Input xác định trùng cohort base_input_keys hoặc input đã retained bị loại trước coverage/quota.
 Plain vẫn20inputs. VF4 đã retired15/11/2026; implementation không còn trong active source. Feedback chỉ có trusted
 domain admission và membership, không PUT/oracle outcomes. Valid target definitions
@@ -332,7 +335,8 @@ run đang chạy không bị patch. Chỉ sửa code không tự cấp quyền r
 
 ## Source-bound obligation arms — 2026-11-13
 
-Opt-in `--arms spec_obligation`: standalone spec scenarios với CFG/DFG, original line/arc bindings, soft examples, bounded Hypothesis và robust direct-input parsing. Ngày17/11 user đã gỡ combined arm `control_flow_obligation` và evidence v5; shared feedback v4 và CF engine/construction vẫn giữ. [Protocol, limits và preset](spec_obligation/README.md).
+Chọn `control_flow_obligation_v1_repair` để dùng bản repaired lấy từ worktree.
+[Protocol hiện tại và lịch sử](spec_obligation/README.md).
 
 
 ## LargeInput stress arm

@@ -15,6 +15,7 @@ from prefect.artifacts import create_markdown_artifact,create_table_artifact
 from prefect.context import get_run_context
 from prefect.client.orchestration import get_client
 
+from final.src.modular.context import DEFAULT_CONTEXT_TOKENS, DEFAULT_INPUT_TOKENS
 from .config import ROOT,normalize,preview
 from .names import benchmark_run_name,historical_run_name
 from .task_log import task_error_rows
@@ -137,11 +138,11 @@ async def attach_outputs(directory):
 async def benchmark(
     cohort:Annotated[Literal['humaneval164','humaneval_plus_mini','humaneval_plus_full'],Field(title='Frozen PUT cohort',description='HumanEval base, EvalPlus Mini base, or EvalPlus Full base; task_numbers selects a subset.')]='humaneval164',
     mode:Annotated[Literal['batch','tools','pynguin'],Field(title='Generation mode',description='Batch, tool sampling or Pynguin.')]='batch',
-    arms:Annotated[list[Literal['plain','direct','ep_bva_vf3_hybrid','decision_table_vf3_hybrid','pynguin','control_flow','control_flow_4tool','tool_direct','tool_hypothesis','tool_hypothesis_extra','tool_planner']],Field(title='Arms',description='batch: Plain, Control Flow, Control Flow + 4-tool trace, EP+BVA VF3 Hybrid and DT VF3 Hybrid.')]=['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid'],
+    arms:Annotated[list[Literal['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid','pynguin','control_flow','control_flow_4tool','control_flow_obligation_v1_repair','tool_direct','tool_hypothesis','tool_hypothesis_extra','tool_planner']],Field(title='Arms',description='batch: Plain, Control Flow, Control Flow + 4-tool trace, CF Obligation Repaired, EP+BVA VF3 Hybrid and DT VF3 Hybrid.')]=['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid'],
     task_numbers:Annotated[list[int],Field(title='Task subset (empty means all)',description='HumanEval task numbers, such as 2, 11, 72.')]=[],
-    inputs_per_task:Annotated[int,Field(title='Input budget per task per arm',ge=1,le=200)]=20,
-    completion_tokens:Annotated[int,Field(title='Maximum completion tokens per call',ge=128,le=32768)]=4096,
-    context_tokens:Annotated[int,Field(title='Model context tokens',ge=512,le=131072)]=8192,
+    inputs_per_task:Annotated[int,Field(title='Input budget per task per arm',description='VF3 uses a fixed budget of 20 inputs per round.',ge=1,le=200)]=20,
+    completion_tokens:Annotated[int,Field(title='Maximum completion tokens per call',ge=128,le=32768)]=DEFAULT_INPUT_TOKENS,
+    context_tokens:Annotated[int,Field(title='Model context tokens',ge=512,le=131072)]=DEFAULT_CONTEXT_TOKENS,
     temperature:Annotated[float,Field(title='Generation temperature',ge=0,le=2)]=.7,
     input_seed:Annotated[int,Field(title='Input generation seed',ge=0,le=2147483483)]=314159,
     reference_seed:Annotated[int,Field(title='Reference and PUT seed',ge=0,le=2147483483)]=271828,
@@ -160,9 +161,9 @@ async def benchmark(
     Args:
         cohort: Frozen HumanEval PUT set: all164 tasks or the known-bug diagnostic10-task subset.
         mode: Choose batch, tools or pynguin.
-        arms: Batch supports Plain, Direct, Control Flow, EP+BVA v2, DT v2, EP+BVA VF3 Measured, DT VF3 Measured, EP+BVA VF3 Hybrid and DT VF3 Hybrid.
+        arms: Batch supports Plain, Control Flow, Control Flow + 4-tool trace, CF Obligation Repaired, EP+BVA VF3 Hybrid and DT VF3 Hybrid.
         task_numbers: HumanEval task IDs as numbers, e.g. 2, 11, 72. An empty list selects all tasks in the cohort.
-        inputs_per_task: Total new-input budget per task per arm.
+        inputs_per_task: Input budget per task per arm. VF3 uses a fixed budget of 20 inputs per round.
         completion_tokens: Maximum completion tokens in each individual writer call.
         context_tokens: Model context ceiling; both batch arm prompts must fit the same visible-PUT set.
         temperature: Generation temperature for the writer calls.

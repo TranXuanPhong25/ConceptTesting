@@ -38,10 +38,10 @@ def test_model_presets_are_preview_only_and_match_each_dataset():
         values = dict(preset['parameters'])
         assert values.pop('preview_only') is True
         description = preview(values)
+        assert values['completion_tokens'] == 8192
         if 'control_flow_4tool' in values['arms']:
             assert description['logical_call_cap'] == 'pending'
-            assert values['context_tokens'] == 20480
-            assert values['completion_tokens'] == 4096
+            assert values['context_tokens'] == 24576
         else:
             assert description['logical_call_cap'] == 3
         assert description['candidate_count'] is None

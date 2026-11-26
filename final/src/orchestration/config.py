@@ -6,9 +6,11 @@ import json
 import math
 from pathlib import Path
 from final.src.models import OPENROUTER_DEFAULT_MODEL
+from final.src.modular.context import DEFAULT_CONTEXT_TOKENS, DEFAULT_INPUT_TOKENS
 from final.src.modular.arm_names import (
     ANALYSIS_FAMILY_COUNTS,
     CATALOGUE_ARM_NAMES,
+    REPAIRED_OBLIGATION_ARM_NAME,
     VF3_HYBRID_ARM_NAMES,
     VF3_STRUCTURED_ARM_NAMES,
     generation_call_cap,
@@ -22,13 +24,13 @@ COHORTS = {
     'humaneval_plus_full': 'final/out/cohorts/qwen35_27b_humaneval_plus_full/cohort.json',
 }
 DEFAULTS = {'cohort': 'humaneval164', 'mode': 'batch', 'arms': ['plain', *CATALOGUE_ARM_NAMES],
-    'task_numbers': [], 'inputs_per_task': 20, 'completion_tokens': 4096, 'context_tokens': 8192,
+    'task_numbers': [], 'inputs_per_task': 20, 'completion_tokens': DEFAULT_INPUT_TOKENS, 'context_tokens': DEFAULT_CONTEXT_TOKENS,
     'temperature': .7, 'input_seed': 314159, 'reference_seed': 271828, 'timeout_seconds': 8.0,
     'per_put_base_examples': 12, 'scorer': 'confirm_first_failures', 'model_name': 'qwen3.5-27b-awq',
     'model_backend': 'qwen'}
 
 
-def normalize(values):
+def normalize(values, *, saved_run=False):
     """Resolve defaults, validate each config concern, then normalize task order."""
     validate_config_field_names(values)
     config = {**DEFAULTS, **values}
@@ -42,7 +44,7 @@ def normalize(values):
     config['task_numbers'] = list(config['task_numbers'])
 
     validate_cohort_and_generation_mode(config)
-    validate_arm_selection(config)
+    validate_arm_selection(config, saved_run=saved_run)
     validate_task_number_selection(config['task_numbers'])
     validate_generation_budgets(config)
     validate_scorer_and_served_model(config)
@@ -64,10 +66,10 @@ def validate_cohort_and_generation_mode(config):
         raise ValueError('Unknown cohort or mode')
 
 
-def validate_arm_selection(config):
+def validate_arm_selection(config, *, saved_run=False):
     """Require distinct arms supported by the selected generation mode."""
     if config['mode'] == 'pynguin':
-        from final.src.modular.pynguin.config import PynguinSettings
+        from final.src.modular.pynguin import PynguinSettings
         settings = PynguinSettings(**(config.get('pynguin') or {}))
         config['pynguin'] = settings.to_dict()
         allowed_arms = ('pynguin',)
@@ -86,7 +88,9 @@ def validate_arm_selection(config):
         if config['scorer'] != 'confirm_first_failures':
             raise ValueError('Tools require confirm_first_failures scorer')
     else:
-        allowed_arms = ('plain', 'direct', *VF3_HYBRID_ARM_NAMES, *ANALYSIS_FAMILY_COUNTS)
+        allowed_arms = ('plain', *VF3_HYBRID_ARM_NAMES, *ANALYSIS_FAMILY_COUNTS, REPAIRED_OBLIGATION_ARM_NAME)
+        if saved_run:
+            allowed_arms += ('direct',)
 
     if config['mode'] != 'tools' and config.get('tool_sampling') is not None:
         raise ValueError('tool_sampling requires tools mode')

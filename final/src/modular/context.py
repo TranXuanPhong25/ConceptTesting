@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
-from final.src.models.core_model import ModelResponse
-from .artifacts import ArtifactStore
+if TYPE_CHECKING:
+    from final.src.models.core_model import ModelResponse
+    from .artifacts import ArtifactStore
 
 JsonObject = dict[str, Any]
+DEFAULT_INPUT_TOKENS = 8192
+DEFAULT_CONTEXT_TOKENS = 16384
 
 
 class ModelCalls(Protocol):
@@ -26,12 +29,12 @@ class ModelCalls(Protocol):
 @dataclass(frozen=True)
 class PipelineSettings:
     input_budget: int = 20
-    input_tokens: int = 2048
+    input_tokens: int = DEFAULT_INPUT_TOKENS
     input_temperature: float = .7
     input_seed: int = 314159
     reference_seed: int = 271828
     writer_seed: int = 20261030
-    context_tokens: int = 8192
+    context_tokens: int = DEFAULT_CONTEXT_TOKENS
     timeout_seconds: float = 8
     target_programs: int = 10
     writer_rounds: int = 10

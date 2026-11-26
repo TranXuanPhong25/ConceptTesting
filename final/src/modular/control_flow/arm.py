@@ -5,12 +5,12 @@ import time
 from dataclasses import asdict, dataclass
 from functools import wraps
 
-from .base import InputGenerationMethod
 from ..call_builder import CallBuilder, input_identity
-from ..control_flow.analysis import analyze, hit
-from ..control_flow.prompts import INSTRUCTION, messages
-from ..control_flow.schema import parse_response
-from ..control_flow.tool_inputs import (
+from ..common import InputGenerationMethod
+from .analysis import analyze, hit
+from .prompts import INSTRUCTION, messages
+from .schema import parse_response
+from .tool_inputs import (
     DEFAULT_MAX_PRIOR_INPUTS,
     DEFAULT_MAX_PROMPT_PRIOR_INPUTS,
     FOUR_TOOLS,
@@ -77,7 +77,6 @@ class ControlFlowSettings:
 class ControlFlowArm(InputGenerationMethod):
     name = 'control_flow'
     uses_shared_prompt = False
-    default_input_tokens = 4096
     instruction = INSTRUCTION
 
     max_prompt_prior_inputs = DEFAULT_MAX_PROMPT_PRIOR_INPUTS

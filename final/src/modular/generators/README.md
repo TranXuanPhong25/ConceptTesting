@@ -26,7 +26,7 @@ Các hướng EP/BVA/DT v1 và `boundary_value_analysis/` đã được gỡ b�
 
 ```python
 from pathlib import Path
-from final.src.modular.arms.plain import PlainArm
+from final.src.modular.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings
 from final.src.modular.generators import MethodInputGenerator

@@ -2,9 +2,8 @@
 from __future__ import annotations
 
 import ast
-import inspect
 import math
-from ..call_builder import CallBuilder, entry_function, supported_value, MAX_CONTAINER_ITEMS
+from ..call_builder import MAX_CONTAINER_ITEMS, entry_function
 
 
 def bounded(value):
@@ -246,61 +245,3 @@ def declared_types(source, entry):
                 raise ValueError("unsupported_declared_type:" + text)
             result[arg.arg] = text
     return result
-
-
-def typed(arguments, types):
-    for name, tag in types.items():
-        value = arguments[name]
-        if tag == "list":
-            if type(value) is not list:
-                raise ValueError("argument_type_mismatch:" + name)
-        elif tag.startswith("list["):
-            inner = {"int": int, "float": float, "str": str}[tag[5:-1]]
-            if type(value) is not list or any(type(item) is not inner for item in value):
-                raise ValueError("argument_type_mismatch:" + name)
-        elif type(value) is not {"int": int, "bool": bool, "float": float, "str": str}[tag]:
-            raise ValueError("argument_type_mismatch:" + name)
-
-
-def bind_record(record, builder, types):
-    if "arguments" in record:
-        arguments = builder.decode_arguments(record["arguments"])
-        call = builder.build_values(arguments)
-        bound = builder.signature.bind(*ast.literal_eval(call["args"]), **ast.literal_eval(call["kwargs"]))
-    else:
-        args = ast.literal_eval(record["args"])
-        kwargs = ast.literal_eval(record.get("kwargs", "{}"))
-        if not isinstance(args, (tuple, list)) or not isinstance(kwargs, dict):
-            raise ValueError("invalid_base_call")
-        bound = builder.signature.bind(*args, **kwargs)
-    bound.apply_defaults()
-    arguments = dict(bound.arguments)
-    if not all(supported_value(value) for value in arguments.values()):
-        raise ValueError("unsupported_argument")
-    typed(arguments, types)
-    return arguments
-
-
-def membership(bucket, arguments):
-    try:
-        if not evaluate(bucket.get("domain", "True"), arguments):
-            return "invalid"
-        if not evaluate(bucket.get("context", "True"), arguments):
-            return "miss"
-        return "hit" if evaluate(bucket["predicate"], arguments) else "miss"
-    except (Exception, RecursionError):
-        return "unknown"
-
-
-def base_membership(bucket, records, builder, types):
-    statuses = []
-    for record in records:
-        try:
-            statuses.append(membership(bucket, bind_record(record, builder, types)))
-        except (Exception, RecursionError):
-            statuses.append("invalid")
-    if "hit" in statuses:
-        return "hit", statuses
-    if any(item in {"unknown", "invalid"} for item in statuses):
-        return "unknown", statuses
-    return "miss", statuses

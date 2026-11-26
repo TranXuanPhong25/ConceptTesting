@@ -1,7 +1,7 @@
 """Retired generators cannot be selected; retained research arms stay available."""
 import pytest
 
-from final.src.modular.arms import selected_arms
+from final.src.modular import selected_arms
 from final.src.orchestration.config import normalize
 
 
@@ -13,7 +13,7 @@ from final.src.orchestration.config import normalize
     'ep_bva_catalogue_then_inputs','decision_table_catalogue_then_inputs',
     'spec_obligation','large_input','data_flow','data_flow_feedback',
     'control_flow_c_use',
-    'soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table',
+    'direct','soft_bva','boundary','equivalence','bva_normal','ep_bva','decision_table',
     'ep_strong','bva_robust','bva_worst_case','ep_dt_bva',
 ])
 def test_retired_arm_is_rejected_by_registry_and_console(name):
@@ -24,7 +24,7 @@ def test_retired_arm_is_rejected_by_registry_and_console(name):
 
 
 def test_selected_baselines_and_original_cf_remain_available():
-    names=['plain','ep_bva_v2','decision_table_v2','control_flow']
+    names=['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid','control_flow','control_flow_obligation_v1_repair']
     assert [arm.name for arm in selected_arms(names)]==names
 
 

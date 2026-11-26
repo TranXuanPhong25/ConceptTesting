@@ -29,7 +29,7 @@ def program(source=SOURCE):
 def context(tmp_path, calls=None):
     return TaskContext({'task_id':'HumanEval/0', 'entry_point':'f', 'prompt':SPEC, 'test':''},
         {'contract':'    assert isinstance(xs, list)\n    assert isinstance(k, int)\n'},
-        ArtifactStore(tmp_path), PipelineSettings(input_budget=4, input_tokens=4096), calls,
+        ArtifactStore(tmp_path), PipelineSettings(input_budget=4, input_tokens=4096, context_tokens=8192), calls,
         cohort_task={'generated':1, 'programs':[program()]},
         packet={'visible_put_ids':['p0'], 'common':''})
 
@@ -72,7 +72,7 @@ def response(target_id):
 def test_retry_keeps_original_targets_and_base_examples(
     tmp_path, monkeypatch, first_hits, invalid_concept, expected_calls,
 ):
-    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+    from final.src.modular.control_flow import ControlFlowArm, ControlFlowSettings
 
     targets = [
         {'id': f'p0:C1:{line}', 'program_id': 'p0', 'criterion': 'C1',
@@ -173,7 +173,7 @@ def test_native_trace_preserves_source_and_checks_domain():
 
 
 def test_arm_discovers_then_uses_tool_feedback_and_replays(tmp_path):
-    from final.src.modular.arms.control_flow import ControlFlowArm
+    from final.src.modular.control_flow import ControlFlowArm
     class Calls:
         def __init__(self):self.requests=[]
         def token_count(self,messages):return 100
@@ -201,7 +201,7 @@ def test_arm_discovers_then_uses_tool_feedback_and_replays(tmp_path):
 
 
 def test_arm_is_explicit_and_default_stays_plain():
-    from final.src.modular.arms import selected_arms, default_arms
+    from final.src.modular import selected_arms, default_arms
     assert selected_arms(['control_flow'])[0].name=='control_flow'
     assert [a.name for a in default_arms()]==['plain']
 
@@ -226,7 +226,7 @@ def test_empty_concepts_do_not_silently_pass_contract():
 
 
 def test_unknown_concept_never_discards_a_valid_direct_attempt(tmp_path):
-    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+    from final.src.modular.control_flow import ControlFlowArm, ControlFlowSettings
     class Calls:
         def token_count(self,messages):return 100
         def complete(self,*args,**kwargs):
@@ -237,7 +237,7 @@ def test_unknown_concept_never_discards_a_valid_direct_attempt(tmp_path):
 
 
 def test_tiny_candidate_budget_counts_native_pairs(tmp_path):
-    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+    from final.src.modular.control_flow import ControlFlowArm, ControlFlowSettings
     class Calls:
         def token_count(self,messages):return 100
         def complete(self,number,name,messages,**kwargs):
@@ -262,8 +262,8 @@ def test_tiny_candidate_budget_counts_native_pairs(tmp_path):
 def test_control_flow_splits_prompt_and_traces_each_base_pass_put(
     tmp_path, monkeypatch, prompt_put_cap, blocked_puts, oversized_target, expected_batch_sizes,
 ):
-    from final.src.modular.arms.control_flow import ControlFlowArm
-    from final.src.modular.arms.plain import PlainArm
+    from final.src.modular.control_flow import ControlFlowArm
+    from final.src.modular.plain import PlainArm
     from final.src.modular.generators.methods import MethodInputGenerator
 
     class Calls:
@@ -318,7 +318,7 @@ def test_control_flow_splits_prompt_and_traces_each_base_pass_put(
 
 
 def test_tool_draw_budget_is_separate_from_llm_trace_budget(tmp_path, monkeypatch):
-    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+    from final.src.modular.control_flow import ControlFlowArm, ControlFlowSettings
 
     class Calls:
         def token_count(self, messages):
@@ -346,7 +346,7 @@ def test_tool_draw_budget_is_separate_from_llm_trace_budget(tmp_path, monkeypatc
 
 
 def test_no_gaps_makes_no_model_call(tmp_path):
-    from final.src.modular.arms.control_flow import ControlFlowArm
+    from final.src.modular.control_flow import ControlFlowArm
     class Calls:
         def token_count(self,messages):raise AssertionError('No prompt needed')
         def complete(self,*args,**kwargs):raise AssertionError('No gaps')
@@ -357,7 +357,7 @@ def test_no_gaps_makes_no_model_call(tmp_path):
 
 
 def test_baseline_replay_includes_recorded_call_33(tmp_path):
-    from final.src.modular.arms.control_flow import ControlFlowArm
+    from final.src.modular.control_flow import ControlFlowArm
     class Calls:
         def token_count(self,messages):return 100
         def complete(self,*args,**kwargs):return ModelResponse('{"concepts":[],"inputs":[]}',finish_reason='stop')
@@ -374,7 +374,7 @@ def test_baseline_replay_includes_recorded_call_33(tmp_path):
 
 
 def test_duplicate_input_keeps_new_concept_provenance(tmp_path):
-    from final.src.modular.arms.control_flow import ControlFlowArm
+    from final.src.modular.control_flow import ControlFlowArm
     class Calls:
         def __init__(self):self.count=0
         def token_count(self,messages):return 100
@@ -396,7 +396,7 @@ def test_duplicate_input_keeps_new_concept_provenance(tmp_path):
 
 
 def test_trace_uses_singleton_sandboxes(tmp_path,monkeypatch):
-    import final.src.modular.arms.control_flow as module
+    from final.src.modular.control_flow import arm as module
     sizes=[]
     def execute(job):
         sizes.append(len(job['tests']))
@@ -431,7 +431,7 @@ def test_constant_example_is_not_an_input_predicate(predicate):
 
 
 def test_retry_repairs_invalid_concept_after_all_targets_hit(tmp_path):
-    from final.src.modular.arms.control_flow import ControlFlowArm
+    from final.src.modular.control_flow import ControlFlowArm
     class Calls:
         def __init__(self):self.count=0
         def token_count(self,messages):return 100
@@ -456,7 +456,7 @@ def test_retry_repairs_invalid_concept_after_all_targets_hit(tmp_path):
 def test_suite_input_budget_scales_with_selected_targets(
     tmp_path, monkeypatch, target_count, expected_suite_budget,
 ):
-    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+    from final.src.modular.control_flow import ControlFlowArm, ControlFlowSettings
 
     targets = [
         {'id': f'p0:C1:{line}', 'program_id': 'p0', 'criterion': 'C1',

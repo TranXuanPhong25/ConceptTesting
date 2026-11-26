@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import Counter
 
 from .base import InputGenerator
-from ..catalogue import measure_task_catalogues
+from ..black_box import StructuredCatalogueArm, measure_task_catalogues
 from ..input_preparation import load_or_prepare_packet
 
 
@@ -72,7 +72,7 @@ class MethodInputGenerator(InputGenerator):
 
     def post_reference(self, context):
         catalogue_arms = tuple(
-            method.name for method in self.methods if getattr(method, "measures_catalogue", False)
+            method.name for method in self.methods if isinstance(method, StructuredCatalogueArm)
         )
         if catalogue_arms:
             measure_task_catalogues(context, catalogue_arms)

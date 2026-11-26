@@ -2,27 +2,11 @@
 import time
 
 from .catalogue import effective_boundary_context, selected_value, interval_contains, matches_context
-from .tool_sampling.membership import evaluate, expression
+from ..common.membership import membership_row, membership_summary
+from ..tool_sampling.membership import evaluate, expression
 
 MAX_PREDICATE_CHECKS = 2048
 MAX_MEMBERSHIP_SECONDS = 5
-
-
-def membership_row(identifier, outcomes, source_indices, *, checkable=True):
-    hits = [index for index, (value, _) in enumerate(outcomes) if value is True]
-    unknown = [index for index, (value, _) in enumerate(outcomes) if value is None]
-    return {'id':identifier,
-            'status':'hit' if hits else 'unknown' if unknown or not checkable else 'miss',
-            'input_indices':hits, 'source_input_indices':[source_indices[index] for index in hits],
-            'unknown_input_indices':unknown,
-            'input_statuses':['unknown' if value is None else 'hit' if value else 'miss'
-                              for value, _ in outcomes],
-            'errors':[{'input_index':index,'reason':error} for index, (_, error) in enumerate(outcomes) if error]}
-
-
-def membership_summary(rows):
-    return {'total':len(rows), **{status:sum(row['status'] == status for row in rows)
-                                 for status in ('hit','miss','unknown')}}
 
 
 def boolean_condition(value):

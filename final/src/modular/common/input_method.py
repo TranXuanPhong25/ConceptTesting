@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 
 from ..context import TaskContext, JsonObject
 from ..call_builder import CallBuilder
+from ..input_prompts import render_input_prompt
 from ..response_json import load_response_json
 
 
@@ -27,8 +28,11 @@ class InputGenerationMethod(ABC):
     def build_messages(self, packet: JsonObject) -> list[dict[str, str]]:
         return [
             {"role": "system", "content": "You generate valid Python function inputs to expose implementation bugs."},
-            {"role": "user", "content": packet["common"] + "\n" + self.build_guidance(packet)},
+            {"role": "user", "content": self.build_prompt(packet) + "\n" + self.build_guidance(packet)},
         ]
+
+    def build_prompt(self, packet: JsonObject) -> str:
+        return render_input_prompt(packet)
 
     @abstractmethod
     def build_guidance(self, packet: JsonObject) -> str:
@@ -49,8 +53,6 @@ class InputGenerationMethod(ABC):
         return accepted
 
     def decode_response(self, response, context):
-        settings = context.settings
-        rejected_records = []
         response_repairs = []
         try:
             decoded_response, response_repairs = load_response_json(response.text)
@@ -59,10 +61,18 @@ class InputGenerationMethod(ABC):
             if not isinstance(input_records, list):
                 raise ValueError("inputs must be a list")
         except (KeyError, TypeError, ValueError):
-            input_records = []
-            rejected_records.append({"reason": "invalid_response"})
+            result = {"inputs": [], "rejected": [{"reason": "invalid_response"}],
+                      "finish_reason": response.finish_reason}
+        else:
+            result = self._decode_input_records(input_records, context, finish_reason=response.finish_reason)
+        if response_repairs:
+            result["response_repairs"] = response_repairs
+        return result
+
+    def _decode_input_records(self, input_records, context, *, finish_reason):
+        rejected_records = []
         accepted_records = []
-        for record_index, input_record in enumerate(input_records[:settings.input_budget]):
+        for record_index, input_record in enumerate(input_records[:context.settings.input_budget]):
             try:
                 # VALIDATION START: shared named-argument encoder, or validated Python literals.
                 if isinstance(input_record, dict) and "arguments" in input_record:
@@ -77,10 +87,7 @@ class InputGenerationMethod(ABC):
                 if isinstance(input_record, dict) and "arguments" in input_record and type(error) is ValueError:
                     reason = str(error)
                 rejected_records.append({"index": record_index, "reason": reason})
-        result = {"inputs": accepted_records, "rejected": rejected_records, "finish_reason": response.finish_reason}
-        if response_repairs:
-            result["response_repairs"] = response_repairs
-        return result
+        return {"inputs": accepted_records, "rejected": rejected_records, "finish_reason": finish_reason}
 
     @staticmethod
     def validate_input_literal_fields(input_record: JsonObject) -> None:

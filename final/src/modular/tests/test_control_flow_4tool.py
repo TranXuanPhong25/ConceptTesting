@@ -8,8 +8,8 @@ import pytest
 
 from final.src.models.core_model import ModelResponse
 from final.src.modular.arm_names import ANALYSIS_FAMILY_COUNTS, generation_call_cap, retained_input_budget
-from final.src.modular.arms import available_arms, selected_arms
-from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowFourToolArm, ControlFlowSettings
+from final.src.modular import available_arms, selected_arms
+from final.src.modular.control_flow import ControlFlowArm, ControlFlowFourToolArm, ControlFlowSettings
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.catalogue_reporting import usage_by_arm
 from final.src.modular.context import PipelineSettings, TaskContext
@@ -318,7 +318,7 @@ def test_control_flow_4tool_focuses_llm_on_residual_targets_caps_prompt_and_repl
 
 
 def test_trace_prior_batches_chunks_and_isolates_poison_input(tmp_path, monkeypatch):
-    import final.src.modular.arms.control_flow as module
+    from final.src.modular.control_flow import arm as module
 
     chunk_sizes = []
 
@@ -389,8 +389,8 @@ def test_humaneval_registry_orchestration_preset_prepare_and_cli_wiring(tmp_path
     presets = json.loads((config.ROOT / "final/presets/run_console.json").read_text())
     preset = next(item for item in presets if item["name"] == "Full164 · Control-flow + 4-tool trace · batch")
     assert preset["preview_only"] is True
-    assert preset["parameters"]["context_tokens"] == 20480
-    assert preset["parameters"]["completion_tokens"] == 4096
+    assert preset["parameters"]["context_tokens"] == 24576
+    assert preset["parameters"]["completion_tokens"] == 8192
     preset_preview = config.preview(preset["parameters"])
     assert preset_preview["logical_call_cap"] == "pending"
 

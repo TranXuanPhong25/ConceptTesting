@@ -1,13 +1,13 @@
 """Generation-only catalogue contract; legacy catalogue readers stay tolerant."""
 import json
 
+from ..response_json import read_input_object, strip_code_fence
+
 
 def read_catalogue_response(text):
     """Restore a missing envelope around complete JSON values; never invent metadata."""
-    from .spec_obligation.schema import read_response
-    from .response_json import strip_code_fence
     try:
-        return read_response(text)
+        return read_input_object(text)
     except ValueError:
         if not isinstance(text,str) or len(text)>160000:
             raise

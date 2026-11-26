@@ -8,9 +8,11 @@ import math
 from pathlib import Path
 
 from final.src.models import OPENROUTER_DEFAULT_MODEL
+from final.src.modular.arm_names import VF3_HYBRID_ARM_NAMES, VF3_INPUTS_PER_ROUND
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.cohort import call_usage
 from final.src.modular.call_builder import CallBuilder
+from final.src.modular.context import DEFAULT_CONTEXT_TOKENS, DEFAULT_INPUT_TOKENS
 from final.src.modular.response_json import load_response_json
 from final.src.runtime.artifacts import digest, save
 from .datasets import DatasetLoader
@@ -19,8 +21,8 @@ from .language_runtime import execute_program, equivalent
 
 DEFAULTS = {'dataset':'mbpp', 'candidate_path':'', 'task_numbers':[],
     'arms':['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid'], 'backend':'qwen',
-    'model_name':'qwen3.5-27b-awq', 'inputs_per_task':20, 'completion_tokens':4096,
-    'context_tokens':8192, 'temperature':.7, 'seed':314159, 'timeout_seconds':8,
+    'model_name':'qwen3.5-27b-awq', 'inputs_per_task':20, 'completion_tokens':DEFAULT_INPUT_TOKENS,
+    'context_tokens':DEFAULT_CONTEXT_TOKENS, 'temperature':.7, 'seed':314159, 'timeout_seconds':8,
     'tool_runs_dir':''}
 ARM_NAMES = ('plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid','control_flow','control_flow_4tool')
 CONTROL_FLOW_ARMS = ('control_flow','control_flow_4tool')
@@ -185,7 +187,7 @@ def _generate_control_flow_arms(
     arm_factories=None,
     default_tool_runs_dir=None,
 ):
-    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowFourToolArm
+    from final.src.modular.control_flow import ControlFlowArm, ControlFlowFourToolArm
     from final.src.modular.context import PipelineSettings, TaskContext
 
     number = int(task['task_id'].split('/')[1])
@@ -312,17 +314,26 @@ def _summarize_control_flow_batches(prepared, arm_name):
 
 
 def messages_for(task, programs, arm_name, budget):
-    from final.src.modular.arms import selected_arms
+    from final.src.modular import selected_arms
     arm = selected_arms([arm_name])[0]
-    common = (f'Generate up to {budget} distinct new calls exposing specification violations. '
-        'Inputs only; expected outputs come from a separate reference after freeze. '
-        'Follow the specification and public examples. Never assume the implementations are correct. '
-        'Return JSON: {"inputs":[{"arguments":{}}]}.\narguments maps exact parameter names to JSON values. '
-        'No code or expressions in values. Respect language types and joint preconditions.\n'
-        'Keep sequences/strings modest (normally <=30 items); generation caps are not specification boundaries.\n'
-        f'LANGUAGE: {task["language"]}\nSPECIFICATION:\n{task["prompt"]}\nDECLARATION:\n{task["declaration"]}\n'
-        f'PUBLIC EXAMPLES:\n{task["example_test"]}\nBASE-PASSING PUTS:\n' + json.dumps(programs, ensure_ascii=False))
-    messages = arm.build_messages({'common': common})
+    blocks = {
+        'intro': (
+            f'Generate up to {budget} distinct new calls exposing specification violations. '
+            'Inputs only; expected outputs come from a separate reference after freeze. '
+            'Follow the specification and public examples. Never assume the implementations are correct. '
+        ),
+        'output': 'Return JSON: {"inputs":[{"arguments":{}}]}.',
+        'arguments': (
+            'arguments maps exact parameter names to JSON values. '
+            'No code or expressions in values. Respect language types and joint preconditions.\n'
+            'Keep sequences/strings modest (normally <=30 items); generation caps are not specification boundaries.\n'
+        ),
+        'task_context': (
+            f'LANGUAGE: {task["language"]}\nSPECIFICATION:\n{task["prompt"]}\nDECLARATION:\n{task["declaration"]}\n'
+            f'PUBLIC EXAMPLES:\n{task["example_test"]}\nBASE-PASSING PUTS:\n' + json.dumps(programs, ensure_ascii=False)
+        ),
+    }
+    messages = arm.build_messages({'prompt_blocks': blocks})
     messages[0]['content'] = f'Generate valid {task["language"]} function inputs as JSON.'
     return messages
 
@@ -449,7 +460,9 @@ def run_benchmark(
                 raise FileNotFoundError(prefix+'/inputs.json')
             batches = {}
             if standard_arms:
-                packets = {arm:messages_for(task, passing, arm, config['inputs_per_task']) for arm in standard_arms}
+                budgets = {arm: VF3_INPUTS_PER_ROUND if arm in VF3_HYBRID_ARM_NAMES else config['inputs_per_task']
+                           for arm in standard_arms}
+                packets = {arm:messages_for(task, passing, arm, budget) for arm, budget in budgets.items()}
                 # Reserve completion space for every standard arm before making any calls for the task.
                 if max((calls.token_count(messages) for messages in packets.values()), default=0) + config['completion_tokens'] + 128 >= config['context_tokens']:
                     if not cf_arms:
@@ -461,7 +474,7 @@ def run_benchmark(
                     for arm in standard_arms:
                         response = calls.complete(number, arm, packets[arm], temperature=config['temperature'],
                             max_tokens=config['completion_tokens'], seed=config['seed']+number)
-                        batches[arm] = decode(task, response, config['inputs_per_task'])
+                        batches[arm] = decode(task, response, budgets[arm])
             if cf_arms and not batches.get('skip'):
                 cf_batches = _generate_control_flow_arms(
                     task,

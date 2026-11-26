@@ -3,17 +3,17 @@ import copy
 import json
 import time
 
-from .base import InputGenerator
+from ..generators.base import InputGenerator
 from ..input_preparation import load_or_prepare_packet
-from ..tool_sampling.config import validate_budgets
+from .config import validate_budgets
 from ..call_builder import CallBuilder
-from ..input_buckets.predicates import declared_types
+from ..common.predicates import declared_types
 from ..response_json import load_response_json
-from ..tool_sampling.schema import preparation_schema, parse_preparation
-from ..tool_sampling.trusted_domain import compile_domain
-from ..tool_sampling.ledger import CandidateLedger, error
-from ..tool_sampling.constructors import sample_hypothesis, plan_combinations
-from ..tool_sampling.selection import select_suite, hits
+from .schema import preparation_schema, parse_preparation
+from .trusted_domain import compile_domain
+from .ledger import CandidateLedger, error
+from .constructors import sample_hypothesis, plan_combinations
+from .selection import select_suite, hits
 from final.src.runtime.artifacts import digest
 
 PREPARATION = '''Return one compact JSON object with exactly these keys:
@@ -167,7 +167,7 @@ class ToolInputGenerator(InputGenerator):
 
     def validate_generation(self, contexts):
         if self.semantic_controls is not None:
-            from ..tool_sampling.semantic_controls import check_controls
+            from .semantic_controls import check_controls
             reports = {}
             for context in contexts:
                 if context.inputs.get('skip'):
@@ -180,13 +180,13 @@ class ToolInputGenerator(InputGenerator):
             contexts[0].artifacts.write('semantic_controls_gate.json', {'ready':ready,'tasks':reports})
             if not ready:
                 raise ValueError('semantic_controls_gate: independent signed examples contradict or do not cover targets')
-        from ..tool_sampling.gate import validate_generation
+        from .gate import validate_generation
         validate_generation(contexts)
 
     def post_evaluation(self, context, execution_cache, reference_programs):
-        from ..tool_sampling.audit import run_tool_audit
+        from .audit import run_tool_audit
         run_tool_audit(context, self.config, execution_cache, reference_programs)
 
     def reporter(self):
-        from ..tool_sampling.reporting import ToolReporter
+        from .reporting import ToolReporter
         return ToolReporter()

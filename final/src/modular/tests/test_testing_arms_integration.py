@@ -6,8 +6,8 @@ import json
 import pytest
 
 from final.src.models.core_model import ModelResponse
-from final.src.modular.arms.vf3_hybrid import DecisionTableArm, EpBvaArm
-from final.src.modular.arms.plain import PlainArm
+from final.src.modular.black_box import DecisionTableArm, EpBvaArm
+from final.src.modular.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings
 from final.src.modular.pipeline import BenchmarkPipeline
@@ -189,6 +189,8 @@ def test_catalogue_manifest_tracks_schema_and_read_only_classifier_sources(tmp_p
     assert "sources" not in manifest
     assert "settings" in manifest
     assert manifest["settings"]["input_tokens"] == 4096
+    stage = next(stage for stage in manifest["stages"] if stage["name"] == "catalogue_measurement")
+    assert stage["configuration"]["arms"] == [EpBvaArm.name]
     assert [stage["name"] for stage in manifest["stages"]].index("catalogue_measurement") < [
         stage["name"] for stage in manifest["stages"]].index("put_evaluation")
 
@@ -236,7 +238,7 @@ def test_console_new_arm_worker_uses_shared_completion_cap_and_replays_empty_fix
     output = tmp_path / "console"
     preview = worker.prepare({"cohort": "humaneval164", "task_numbers": [0],
                               "arms": ["plain", "ep_bva_vf3_hybrid"]}, output)
-    assert preview["config"]["completion_tokens"] == 4096
+    assert preview["config"]["completion_tokens"] == 8192
     plan = worker.read(output / "launch_plan.json")
     plan.update(native_lock=str(tmp_path / "native.lock"), execution_cache=str(tmp_path / "cache"))
     worker.save(output / "launch_plan.json", plan)
@@ -245,9 +247,9 @@ def test_console_new_arm_worker_uses_shared_completion_cap_and_replays_empty_fix
     worker.save(output / "source_snapshot.json", source_snapshot)
     worker.run(output)
     assert len(requests) == 3  # plain + ep_bva_vf3_hybrid (2 rounds)
-    for name in ("plain", "ep_bva_vf3_hybrid_initial"):
+    for name in ("plain", "ep_bva_vf3_hybrid_initial", "ep_bva_vf3_hybrid_feedback"):
         request = worker.read(output / "tasks" / "0" / "calls" / name / "request.json")
-        assert request["max_tokens"] == 4096
+        assert request["max_tokens"] == 8192
     result = worker.read(output / "result_digest.json")
     assert result["read_only_replay_matches"] is None
     assert result["arms"]["ep_bva_vf3_hybrid"]["valid_inputs"] == 0

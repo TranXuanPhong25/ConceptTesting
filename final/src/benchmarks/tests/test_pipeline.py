@@ -107,7 +107,7 @@ def test_mbpp_preview_control_flow_4tool_leaves_caps_pending_and_validates_tool_
 
 
 def test_mbpp_control_flow_4tool_end_to_end_with_tuple_args_mixed_arms_and_replay(tmp_path):
-    from final.src.modular.arms.control_flow import ControlFlowFourToolArm, ControlFlowSettings
+    from final.src.modular.control_flow import ControlFlowFourToolArm, ControlFlowSettings
     from final.src.modular.call_builder import CallBuilder
 
     task = adapter_task({

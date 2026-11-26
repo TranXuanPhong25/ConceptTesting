@@ -22,7 +22,7 @@ semantic claim đã được chứng minh.
   tự thử thỏa relation và guards, rồi trả concrete input tìm được cùng
   `predicate` và `strategies` trong một response. Metadata sai vẫn giữ valid
   direct attempts. Không thực thi model-written code.
-- `arms/control_flow.py`: LLM discovery và Hypothesis constructors dùng chung
+- `control_flow/arm.py` chứa LLM discovery và Hypothesis constructors dùng chung
   candidate ledger; sandbox chạy original source, kiểm trusted admission rồi
   đo coverage.py. Feedback chỉ có domain/status/target hits và concept checks,
   không có actual output/reference. Input trùng merge provenance và reuse trace.
@@ -77,7 +77,7 @@ adaptive generator, **chưa có preset trong Prefect batch runner một completi
 Không tự chạy benchmark từ ví dụ dưới; mọi run cần lệnh người dùng.
 
 ```python
-from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowSettings
+from final.src.modular.control_flow import ControlFlowArm, ControlFlowSettings
 
 arm = ControlFlowArm(ControlFlowSettings(rounds=2, candidate_limit=64))
 # Truyền arms=(arm,) hoặc MethodInputGenerator([arm]) vào BenchmarkPipeline.

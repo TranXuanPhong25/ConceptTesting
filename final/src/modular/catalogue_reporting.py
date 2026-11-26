@@ -93,7 +93,8 @@ def usage_by_arm(directory, names):
         totals = {key:0 for key in ('prompt_tokens','completion_tokens','total_tokens')}
         for call in directory.glob('tasks/*/calls/*'):
             owned_names = (name, name + '_initial', name + '_feedback', name + '_propose',
-                           name + '_construct', name + '_reflection', name + '_catalogue', name + '_inputs')
+                           name + '_propose_retry', name + '_construct', name + '_reflection',
+                           name + '_catalogue', name + '_inputs')
             call_name = call.name.split('_unknown_attempt_', 1)[0]
             round_prefix = name + '_round_'
             round_call = call_name.startswith(round_prefix) and call_name[len(round_prefix):].isdecimal()

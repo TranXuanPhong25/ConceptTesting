@@ -7,10 +7,10 @@ from types import SimpleNamespace
 import pytest
 
 from final.src.models.core_model import ModelResponse
-from final.src.modular.arms.vf3_hybrid import StructuredCatalogueArm, VF3_HYBRID_ARMS
+from final.src.modular.black_box import StructuredCatalogueArm, VF3_HYBRID_ARMS
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.call_builder import CallBuilder
-from final.src.modular.catalogue import (Boundary, Catalogue, boundary_targets, decision_table_check,
+from final.src.modular.black_box.catalogue import (Boundary, Catalogue, boundary_targets, decision_table_check,
     measure_catalogue, measure_task_catalogues, validate_catalogue)
 from final.src.modular.context import PipelineSettings, TaskContext
 from final.src.modular.input_prompts import structured_input_prompt
@@ -247,7 +247,7 @@ def test_console_comparison_preset_has_vf3_hybrid_arms_and_shared_budget():
     preset = next(preset for preset in presets if preset['name'] == 'Full164 · EP+BVA VF3 Hybrid vs DT VF3 Hybrid · batch')
     preview=config.preview(preset['parameters'])
     assert preview['config']['arms']==['ep_bva_vf3_hybrid','decision_table_vf3_hybrid']
-    assert preview['completion_token_cap_per_call']==4096
+    assert preview['completion_token_cap_per_call']==8192
     assert preview['logical_call_cap']==636
     assert preview['max_input_slots_by_arm']=={'ep_bva_vf3_hybrid':6360,'decision_table_vf3_hybrid':6360}
 
@@ -338,11 +338,13 @@ import importlib.abc
 import sys
 class BlockBenchmark(importlib.abc.MetaPathFinder):
     def find_spec(self, fullname, path=None, target=None):
-        if fullname.startswith(('final.src.modular.arms', 'final.src.runtime', 'openai', 'langchain')):
+        if fullname.startswith(('final.src.modular.black_box', 'final.src.modular.control_flow',
+                                'final.src.modular.common', 'final.src.modular.plain',
+                                'final.src.runtime', 'openai', 'langchain')):
             raise AssertionError('Benchmark dependency imported by Prefect config: '+fullname)
 sys.meta_path.insert(0, BlockBenchmark())
 from final.src.orchestration.config import normalize
-assert normalize({'arms':['plain','ep_bva_vf3_hybrid']})['completion_tokens']==4096
+assert normalize({'arms':['plain','ep_bva_vf3_hybrid']})['completion_tokens']==8192
 '''
     result=subprocess.run([sys.executable,'-c',script],capture_output=True,text=True)
     assert result.returncode==0,result.stderr
@@ -358,9 +360,25 @@ def test_float_and_finite_enum_domains_infer_kind_when_optional_field_is_omitted
 
 
 def test_unknown_boundary_coverage_is_pending_instead_of_a_zero_count():
-    from final.src.modular.catalogue import count_uncovered_boundary_values
+    from final.src.modular.black_box.catalogue import count_uncovered_boundary_values
     assert count_uncovered_boundary_values([]) is None
     assert count_uncovered_boundary_values([{'missing_values':None}]) is None
     assert count_uncovered_boundary_values([{'missing_values':[1]}, {'missing_values':None}]) is None
     assert count_uncovered_boundary_values([{'missing_values':[]}])==0
     assert count_uncovered_boundary_values([{'missing_values':[1,2]}, {'missing_values':[3]}])==3
+
+
+def test_usage_accounting_separates_hybrid_from_control_flow(tmp_path):
+    from final.src.modular.catalogue_reporting import usage_by_arm
+    for name in ('spec_obligation_propose', 'spec_obligation_construct', 'control_flow_round_0',
+                 'control_flow_obligation_propose'):
+        path = tmp_path / 'tasks/0/calls' / name
+        path.mkdir(parents=True)
+        (path / 'attempt.json').write_text('{}')
+        (path / 'response.json').write_text(json.dumps({'usage': {
+            'prompt_tokens': 10, 'completion_tokens': 5, 'total_tokens': 15}}))
+    result = usage_by_arm(tmp_path, ['spec_obligation', 'control_flow', 'control_flow_obligation'])
+    assert result['spec_obligation']['received'] == 2
+    assert result['spec_obligation']['known_usage']['total_tokens'] == 30
+    assert result['control_flow']['received'] == 1
+    assert result['control_flow_obligation']['received'] == 1

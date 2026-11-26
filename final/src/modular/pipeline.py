@@ -12,6 +12,7 @@ import platform
 import sys
 import threading
 
+from .black_box import StructuredCatalogueArm
 from .artifacts import ArtifactStore
 from .calls import CachedModelCalls
 from .cohort import load_cohort
@@ -73,6 +74,7 @@ class BenchmarkPipeline:
         self.input_generator = input_generator
         # Input methods exposed for configuration and reporting.
         self.arms = tuple(getattr(input_generator, "methods", ()))
+        self.catalogue_arms = tuple(arm.name for arm in self.arms if isinstance(arm, StructuredCatalogueArm))
         self.calls = CachedModelCalls(artifacts) if artifacts.read_only else calls
         self.cohort_path = Path(cohort_path).resolve()
         self.cohort = load_cohort(self.cohort_path)
@@ -104,11 +106,10 @@ class BenchmarkPipeline:
         )
 
     def _post_reference_step(self) -> str | None:
-        has_catalogue_arms = any(getattr(arm, "measures_catalogue", False) for arm in self.arms)
         if isinstance(self.input_generator, MethodInputGenerator):
-            return "catalogue_measurement" if has_catalogue_arms else None
+            return "catalogue_measurement" if self.catalogue_arms else None
         if type(self.input_generator).post_reference is not InputGenerator.post_reference:
-            return "catalogue_measurement" if has_catalogue_arms else "post_reference"
+            return "catalogue_measurement" if self.catalogue_arms else "post_reference"
         return None
 
     def _post_evaluation_step(self) -> str | None:
@@ -215,6 +216,10 @@ class BenchmarkPipeline:
             self.input_generator.extend_summary(contexts, summary, self.reporter)
             self.artifacts.write_metadata("modular_summary.json", summary)
             report_text = self.reporter.render(summary)
+            for arm in self.arms:
+                render_summary = getattr(arm, "render_summary", None)
+                if render_summary is not None:
+                    report_text += render_summary(summary)
             self.artifacts.path("REPORT.md").write_text(report_text)
             return summary
 
@@ -241,7 +246,7 @@ class BenchmarkPipeline:
         post_ref_name = self._post_reference_step()
         if post_ref_name is not None:
             post_ref_config = (
-                {"arms": [arm.name for arm in self.arms if getattr(arm, "measures_catalogue", False)]}
+                {"arms": list(self.catalogue_arms)}
                 if post_ref_name == "catalogue_measurement"
                 else {}
             )
@@ -282,7 +287,7 @@ class BenchmarkPipeline:
             "coverage", "numpy", "scipy", "evalplus", "langchain-openai",
             "langchain-core", "openai", "httpx",
         ]
-        if any(getattr(arm, "measures_catalogue", False) for arm in self.arms):
+        if self.catalogue_arms:
             package_names.append("pydantic")
         package_names.extend(self.input_generator.runtime_dependencies())
         model = getattr(self.calls, "model", None)

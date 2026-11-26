@@ -33,6 +33,6 @@ def test_cli_only_lists_supported_methods():
     result = subprocess.run([sys.executable, "-m", "final.src.modular.run", "--help"],
                             cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
-    assert "{plain,ep_bva_vf3_hybrid,decision_table_vf3_hybrid,control_flow,control_flow_4tool}" in result.stdout
+    assert "{plain,ep_bva_vf3_hybrid,decision_table_vf3_hybrid,control_flow,control_flow_4tool,control_flow_obligation_v1_repair}" in result.stdout
     for removed in ("--legacy-generation", "--v11", "classical", "witness_only", "--catalogue-off"):
         assert removed not in result.stdout

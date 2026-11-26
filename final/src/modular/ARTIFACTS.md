@@ -31,7 +31,7 @@ Khi đọc một task, đi theo `cohort.json` → `packet.json` → `calls/<call
 
 | File | Ai tạo và dùng để làm gì |
 |---|---|
-| `packet.json` | `load_or_prepare_packet` / `prepare_task_packet` ghi PUT được chọn (`visible_put_ids`), context/prompt chung và token counts, hoặc lý do skip. |
+| `packet.json` | `load_or_prepare_packet` / `prepare_task_packet` ghi PUT được chọn (`visible_put_ids`), các khối prompt (`prompt_blocks`) và token counts, hoặc lý do skip. Packet cũ lưu prompt dạng chuỗi trong `common`. |
 | `inputs.json` | `generate_task_inputs` lưu batch chung gồm `task_id` và `arms`, hoặc `skip`. Mỗi arm có `inputs` và có thể kèm `rejected`, `catalogue`, `concepts` hay metadata riêng. Pipeline đọc lại file có sẵn khi resume và kiểm tra envelope trước khi giao cho oracle. |
 | `reference_program.json` | `run_reference_oracle` ghi provenance của reference khi provider bật tính năng đó. |
 | `oracle_<repeat>.json` | Kết quả từng lần chạy reference, trước bước tổng hợp input hợp lệ. |

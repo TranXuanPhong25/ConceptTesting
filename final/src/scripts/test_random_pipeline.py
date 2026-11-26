@@ -13,7 +13,7 @@ import random
 import time
 
 from final.src.benchmarks.PUT_generation import generate_puts, run_base_tests, save_cohort
-from final.src.modular.arms import available_arms, selected_arms
+from final.src.modular import available_arms, selected_arms
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.cohort import load_cohort

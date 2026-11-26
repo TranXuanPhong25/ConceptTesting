@@ -3,7 +3,7 @@ import ast
 import hashlib
 import textwrap
 
-from ..input_buckets.predicates import expression, FUNCTIONS
+from ..common.predicates import expression, FUNCTIONS
 
 TYPE_HELPERS = {'int':'is_int', 'float':'is_float', 'bool':'is_bool', 'str':'is_str', 'list':'is_list'}
 

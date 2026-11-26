@@ -56,8 +56,9 @@ lưu `reasoning_details` để lời gọi tiếp theo dùng `response.assistant
 
 Forms expose cohort, task subset, mode, arms, inputs/task, output/context tokens,
 temperature, generation/reference seeds, native timeout, served model name,
-scorer and `catalogue`. Batch supports `plain`, `direct`, `control_flow`,
-`ep_bva_v2` and `decision_table_v2`. ControlFlow xếp toàn
+scorer and `catalogue`. Batch supports `plain`, `control_flow`,
+`control_flow_4tool`, `control_flow_obligation_v1_repair`, `ep_bva_vf3_hybrid`
+and `decision_table_vf3_hybrid`. ControlFlow xếp toàn
 bộ target vừa context vào các prompt tối đa sáu target. Với run có ControlFlow,
 preview hiển thị `pending` cho tổng logical call và tổng completion token vì
 số batch phụ thuộc context thực tế.

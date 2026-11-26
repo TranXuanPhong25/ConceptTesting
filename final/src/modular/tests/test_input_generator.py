@@ -1,12 +1,16 @@
 """New methods plug into the orchestration/reference contract without concept stages."""
+from types import SimpleNamespace
+
 import pytest
 
+from final.src.modular.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings
 from final.src.modular.generators import InputGenerator, MethodInputGenerator
+from final.src.modular.input_preparation import prepare_task_packet
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.references import TaskReferencePrograms
-from final.src.modular.tests.helpers import TASK, META, write_cohort, PlainFixtureModel, FixtureCalls
+from final.src.modular.tests.helpers import TASK, META, write_cohort, PlainFixtureModel, FixtureCalls, make_context
 
 
 class SavedInputsGenerator(InputGenerator):
@@ -34,6 +38,18 @@ class CustomInputMethod:
         return {"inputs": [{"args": "([8, 9],)", "kwargs": "{}"}], "status": "generated"}
 
 
+
+
+def test_plain_prompt_overflow_keeps_all_visible_puts(tmp_path):
+    calls = SimpleNamespace(token_count=lambda messages: messages[-1]["content"].count('"code":') * 5000)
+    context = make_context(tmp_path, calls)
+
+    packet = prepare_task_packet(context, (PlainArm(),))
+
+    assert packet["skip"] == "prompt_too_large"
+    assert packet["reason"] == "full_prompt_exceeds_context"
+    assert set(packet["visible_put_ids"]) == {0, 1}
+    assert packet["required_prompt_tokens"] == 10000
 
 
 def test_default_shell_has_no_concept_or_witness_stages(tmp_path, monkeypatch):

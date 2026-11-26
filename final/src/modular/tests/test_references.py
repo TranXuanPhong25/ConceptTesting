@@ -7,7 +7,7 @@ import pytest
 
 from final.src.runtime.artifacts import digest, save
 from final.src.benchmarks.datasets import DatasetLoader, load_tasks
-from final.src.modular.arms.plain import PlainArm
+from final.src.modular.plain import PlainArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings, TaskContext
 from final.src.modular.generators.base import InputGenerator

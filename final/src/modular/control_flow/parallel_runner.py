@@ -22,12 +22,12 @@ from final.src.benchmarks.pipeline import (
     run_benchmark,
 )
 from final.src.models import create_model
-from final.src.modular.arms.control_flow import ControlFlowFourToolArm
+from final.src.modular.control_flow import ControlFlowFourToolArm
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.catalogue_reporting import usage_by_arm
 from final.src.modular.cohort import call_usage, load_cohort
-from final.src.modular.context import PipelineSettings, TaskContext
+from final.src.modular.context import DEFAULT_INPUT_TOKENS, PipelineSettings, TaskContext
 from final.src.modular.control_flow.tool_inputs import default_tool_runs_dir
 from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.methods import MethodInputGenerator
@@ -596,8 +596,8 @@ def parse_args(arguments=None):
     parser.add_argument("--dataset", choices=("humaneval", "mbpp", "both"), default="both")
     parser.add_argument("--output-dir", type=Path, help="Output directory (single dataset) or base prefix (both)")
     parser.add_argument("--workers", type=int, default=6, help="Concurrent task workers (match vLLM --max-num-seqs)")
-    parser.add_argument("--context-tokens", type=int, default=20480)
-    parser.add_argument("--completion-tokens", type=int, default=4096)
+    parser.add_argument("--context-tokens", type=int, default=24576)
+    parser.add_argument("--completion-tokens", type=int, default=DEFAULT_INPUT_TOKENS)
     parser.add_argument("--input-budget", type=int, default=20)
     parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--seed", type=int, default=314159)

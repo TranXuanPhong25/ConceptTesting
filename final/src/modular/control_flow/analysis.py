@@ -106,6 +106,17 @@ def analyze(program, entry):
     return result
 
 
+def unobserved_step(target, coverage):
+    """Find the first static arc absent from the trace's coverage set."""
+    if coverage is not None and 'arcs' in coverage:
+        arcs = coverage['arcs']
+        for step in target.get('path', []):
+            expected = step['arc']
+            if expected not in arcs:
+                return {'first_unobserved_arc': expected, 'observed_exits': [arc for arc in arcs if arc[0] == expected[0]]}
+    return {}
+
+
 def hit(target, observation):
     """A partial trace can witness a target even when execution later raises."""
     if observation.get('domain') != 'valid':

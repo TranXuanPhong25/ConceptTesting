@@ -16,7 +16,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
-from .call_builder import CallBuilder, decode_value, supported_value
+from ..call_builder import CallBuilder, decode_value, supported_value
 
 Number = int | float
 ConditionValue = str | bool | int | float
@@ -718,7 +718,7 @@ def measure_task_catalogues(context, arm_names) -> dict | None:
     """Measure frozen catalogues after domain/reference checks, before PUT execution."""
     if context.inputs.get("skip"):
         return None
-    from .arm_names import retained_input_budget
+    from ..arm_names import retained_input_budget
 
     measurements = {}
     for name in arm_names:

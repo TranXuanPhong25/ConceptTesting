@@ -1,5 +1,14 @@
 # Spec obligations
 
+## CF Obligation Repaired
+
+`control_flow_obligation_v1_repair` lấy từ worktree `ConceptTester-obligation-v1-repair`.
+Arm dùng proposal, tối đa một lần retry parse và một lượt construct. Quota input
+LLM và input lấy mẫu Hypothesis được ghi riêng. Chọn arm qua CLI hoặc Prefect.
+Static def-use của bản repaired dùng `python-graphs==1.2.3` từ dependency
+`control-flow`.
+Các mục bên dưới mô tả những arm cũ và protocol lịch sử.
+
 ## 17/11/2026 — Gỡ combined arm và evidence v5
 
 `control_flow_obligation` đã gỡ khỏi source, registry, CLI/Prefect và preset.

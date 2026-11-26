@@ -89,7 +89,7 @@ def test_private_endpoint_profiles_are_unique_even_when_artifact_leaf_is_run(tmp
 def prepared(tmp_path,monkeypatch):
     monkeypatch.setattr(worker,'private_endpoint',lambda directory,name:tmp_path/'private.env')
     path=tmp_path/'original'
-    worker.prepare({'cohort':'humaneval164','task_numbers':[72],'arms':['plain','direct']},path)
+    worker.prepare({'cohort':'humaneval164','task_numbers':[72],'arms':['plain']},path)
     return path
 
 
@@ -97,7 +97,7 @@ def test_prepare_freezes_resolved_config_cohort_and_code(prepared):
     snapshot=worker.read(prepared/'config_snapshot.json')
     assert snapshot['inputs_per_task']==20
     plan=worker.read(prepared/'launch_plan.json')
-    assert plan['target_program_count']==10 and plan['logical_call_cap']==2
+    assert plan['target_program_count']==10 and plan['logical_call_cap']==1
     assert Path(plan['cohort']).is_relative_to(prepared/'runtime')
 
     worker.save(prepared/'config_snapshot.json',{**snapshot,'inputs_per_task':99})
@@ -107,6 +107,8 @@ def test_prepare_freezes_resolved_config_cohort_and_code(prepared):
 def test_resume_keeps_attempt_history_and_rebuilds_only_path_metadata(prepared,tmp_path):
     from final.src.runtime.artifacts import digest
     from final.src.orchestration.worker import inventory
+    saved_config = worker.read(prepared/'config_snapshot.json')
+    worker.save(prepared/'config_snapshot.json', {**saved_config, 'arms': ['direct']})
     request={'messages':[],'temperature':.7,'max_tokens':2048,'seed':314231}
     attempt={'state':'unknown','request_id':digest(request),'attempt_number':1,'error':{'retryable':True}}
     worker.save(prepared/'tasks/72/calls/direct_unknown_attempt_0000/request.json',request)
@@ -119,6 +121,7 @@ def test_resume_keeps_attempt_history_and_rebuilds_only_path_metadata(prepared,t
     target=tmp_path/'resumed'
     worker.prepare_resume(prepared,target)
     assert inventory(prepared)==before
+    assert worker.read(target/'config_snapshot.json')['arms'] == ['direct']
     assert not (target/'tasks/72/reference_program.json').exists()
     assert not (target/'tasks/72/boundary/soft_bva/4/identity.json').exists()
     assert worker.read(target/'tasks/72/calls/direct_unknown_attempt_0000/attempt.json')['attempt_number']==1
@@ -179,7 +182,7 @@ def test_managed_adapter_freezes_and_replays_with_offline_empty_writer(prepared,
     worker.save(prepared/'source_snapshot.json',snapshot)
     worker.run(prepared)
     result=worker.read(prepared/'result_digest.json')
-    assert len(calls)==2 and result['writer_usage']['received']==2
+    assert len(calls)==1 and result['writer_usage']['received']==1
     assert result['read_only_replay_matches'] is None
     assert result['tested_base_pass'] == 0
     assert result['evaluated_base_pass'] > 0

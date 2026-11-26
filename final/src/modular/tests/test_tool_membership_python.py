@@ -50,7 +50,7 @@ def test_one_unsupported_target_does_not_disable_real_hypothesis_sampler(tmp_pat
     from final.src.modular.tests.test_tool_sampling import model,budgets
     from final.src.modular.context import TaskContext,PipelineSettings
     from final.src.modular.artifacts import ArtifactStore
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     raw=model()
     raw['targets'].append({**raw['targets'][0],'id':'unknown_target','predicate':'custom_logic(a)'})
     config=budgets();config['arms']=['tool_direct','tool_hypothesis']

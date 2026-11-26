@@ -109,7 +109,7 @@ def validate_timeout_amendment(source, original_config, timeout_seconds):
     """Only amend native timeout before any saved oracle/PUT evaluation exists."""
     if timeout_seconds is None:
         return original_config, None
-    amended_config = normalize({**original_config, 'timeout_seconds': timeout_seconds})
+    amended_config = normalize({**original_config, 'timeout_seconds': timeout_seconds}, saved_run=True)
     if amended_config['timeout_seconds'] == original_config['timeout_seconds']:
         return amended_config, None
     native_patterns = ('tasks/*/oracle_*.json', 'tasks/*/evaluation/*.json',
@@ -134,7 +134,7 @@ def prepare_resume(source,directory, *, timeout_seconds=None, retry_404_request_
                        and (source/'worker_started.json').is_file())
         if previous_state not in ('interrupted','cancelled') and not inferred_stop:
             raise ValueError('Only a stopped interrupted/cancelled run can resume')
-        original=inventory(source);original_config=normalize(read(source/'config_snapshot.json'));old_plan=read(source/'launch_plan.json')
+        original=inventory(source);original_config=normalize(read(source/'config_snapshot.json'), saved_run=True);old_plan=read(source/'launch_plan.json')
         config, timeout_amendment = validate_timeout_amendment(source, original_config, timeout_seconds)
         retry_grant = None
         for attempt_path in source.glob('tasks/*/calls/*/attempt.json'):
@@ -200,10 +200,10 @@ def prepare_resume(source,directory, *, timeout_seconds=None, retry_404_request_
 
 
 def run(directory):
-    from final.src.modular.arms.batch import DirectBatchArm
-    from final.src.modular.arms.plain import PlainArm
-    from final.src.modular.arms.vf3_hybrid import VF3_HYBRID_ARMS
-    from final.src.modular.arms.control_flow import ControlFlowArm, ControlFlowFourToolArm
+    from final.src.modular.plain import PlainArm
+    from final.src.modular.black_box import VF3_HYBRID_ARMS
+    from final.src.modular.control_flow import ControlFlowArm, ControlFlowFourToolArm
+    from final.src.modular.spec_obligation import RepairedControlFlowObligationArm
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.calls import RecordedModelCalls
     from final.src.modular.cohort import call_usage
@@ -224,7 +224,7 @@ def run(directory):
     def interrupted(*unused):raise Interrupted('Run interrupted; saved calls and retry history preserved')
     signal.signal(signal.SIGTERM,interrupted)
     if config['mode'] == 'pynguin':
-        from final.src.modular.pynguin.config import PynguinSettings
+        from final.src.modular.pynguin import PynguinSettings
         pynguin_settings = PynguinSettings(**config['pynguin'])
         pynguin_settings.validate_environment()
     model = None
@@ -243,10 +243,10 @@ def run(directory):
         save(directory/'endpoint_readiness.json',{'checked_utc':time.time(),**endpoint})
     tool_runs_dir = plan.get('tool_runs_dir') or config.get('tool_runs_dir')
     factories={
-        'direct':DirectBatchArm,
         'plain':PlainArm,
         ControlFlowArm.name:ControlFlowArm,
         ControlFlowFourToolArm.name:lambda: ControlFlowFourToolArm(tool_runs_dir=tool_runs_dir),
+        RepairedControlFlowObligationArm.name:RepairedControlFlowObligationArm,
     }
     for arm in VF3_HYBRID_ARMS:
         factories[arm.name] = arm
@@ -258,10 +258,10 @@ def run(directory):
     dataset=DatasetLoader('HE-py')
     tasks=[task for task in dataset.load_tasks() if int(task['task_id'].split('/')[-1]) in plan['task_numbers']]
     if config['mode'] == 'pynguin':
-        from final.src.modular.pynguin.adapter import PynguinInputGenerator
+        from final.src.modular.pynguin import PynguinInputGenerator
         generator = PynguinInputGenerator(pynguin_settings)
     elif config['mode'] == 'tools':
-        from final.src.modular.generators.tools import ToolInputGenerator
+        from final.src.modular.tool_sampling import ToolInputGenerator
         generator = ToolInputGenerator(config['tool_sampling'])
     else:
         generator=MethodInputGenerator(methods,empty_context_on_overflow=True,alternate_order=True)
@@ -295,7 +295,7 @@ def run(directory):
             'tested_base_pass':summary['tested_base_pass'],
             'writer_usage':call_usage(directory),'keepalive_usage':summary['keepalive_calls'],
             'read_only_replay_matches':None,'source_hashes_verified':None,'settings':config}
-        for key in ('pynguin', 'tester_calls_by_arm', 'control_flow', 'control_flow_4tool'):
+        for key in ('pynguin', 'tester_calls_by_arm', 'control_flow', 'control_flow_4tool', RepairedControlFlowObligationArm.name):
             if key in summary:
                 result[key] = summary[key]
         if 'catalogues' in summary:

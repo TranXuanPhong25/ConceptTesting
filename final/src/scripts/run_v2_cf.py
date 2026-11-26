@@ -8,7 +8,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from final.src.modular.arms import available_arms, selected_arms
+from final.src.modular import available_arms, selected_arms
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.context import PipelineSettings

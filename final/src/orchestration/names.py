@@ -1,6 +1,8 @@
 """Tên hiển thị trên Prefect; source directory và schema giữ nguyên."""
 from pathlib import Path
 
+from final.src.modular.arm_names import VF3_HYBRID_ARM_NAMES, VF3_INPUTS_PER_ROUND
+
 RESUME_PRESET_NAME = 'Resume · Tiếp tục run đã dừng'
 
 
@@ -51,10 +53,16 @@ def benchmark_run_name(config, preview_only=False):
                   ep_bva_vf3_hybrid='EP + BVA VF3 Hybrid',
                   decision_table_vf3_hybrid='DT VF3 Hybrid')
     labels.update(control_flow='Control-flow', control_flow_4tool='Control-flow + 4-tool trace',
-                  control_flow_c_use='CF c-use')
+                  control_flow_c_use='CF c-use', control_flow_obligation_v1_repair='CF Obligation Repaired')
     labels.update(tool_direct='Direct seeds', tool_hypothesis='Hypothesis',
                   tool_hypothesis_extra='Extra Hypothesis',
                   tool_planner='Combination planner')
-    arms = ' vs '.join(labels.get(name, name) for name in config['arms'])
+    arm_names = config['arms']
+    arms = ' vs '.join(labels.get(name, name) for name in arm_names)
     mode = {'batch': 'batch', 'per_put': 'per-PUT, shared budget', 'tools': 'tool sampling', 'pynguin': 'Pynguin baseline'}[config['mode']]
-    return ('Preview · ' if preview_only else '') + f'{scope} · {arms} · {mode} · {config["inputs_per_task"]} inputs mỗi task mỗi arm'
+    budget = f'{config["inputs_per_task"]} inputs mỗi task mỗi arm'
+    if all(name in VF3_HYBRID_ARM_NAMES for name in arm_names):
+        budget = f'{VF3_INPUTS_PER_ROUND} inputs mỗi lượt'
+    elif any(name in VF3_HYBRID_ARM_NAMES for name in arm_names):
+        budget = f'{VF3_INPUTS_PER_ROUND} inputs mỗi lượt VF3 · các arm khác dùng budget {config["inputs_per_task"]}'
+    return ('Preview · ' if preview_only else '') + f'{scope} · {arms} · {mode} · {budget}'

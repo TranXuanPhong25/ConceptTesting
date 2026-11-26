@@ -2,7 +2,7 @@
 import ast
 import time
 
-from ..input_buckets.predicates import expression
+from ..common.predicates import expression
 from .membership import evaluate
 
 

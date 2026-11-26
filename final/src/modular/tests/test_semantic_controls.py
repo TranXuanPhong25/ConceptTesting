@@ -36,7 +36,7 @@ def test_out_of_domain_negative_does_not_validate_target_semantics():
 
 
 def test_distinct_count_is_generic_for_strings_and_numeric_lists():
-    from final.src.modular.input_buckets.predicates import evaluate
+    from final.src.modular.common.predicates import evaluate
     assert evaluate('distinct_count(x)>1',{'x':'ab'})
     assert not evaluate('distinct_count(x)>1',{'x':'aa'})
     assert evaluate('distinct_count(x)>1',{'x':[7,8]})
@@ -46,7 +46,7 @@ def test_distinct_count_is_generic_for_strings_and_numeric_lists():
 def test_semantic_gate_blocks_before_oracle_with_valid_mechanical_preparation(tmp_path,monkeypatch):
     from final.src.modular.artifacts import ArtifactStore
     from final.src.modular.context import PipelineSettings
-    from final.src.modular.generators.tools import ToolInputGenerator
+    from final.src.modular.tool_sampling import ToolInputGenerator
     from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.modular.references import TaskReferencePrograms
     from final.src.modular.tests.test_testing_arms_integration import write_fixture_cohort
@@ -63,7 +63,7 @@ def test_semantic_gate_blocks_before_oracle_with_valid_mechanical_preparation(tm
 
 
 def test_generic_sequence_queries_cover_type_membership_stride_and_overlap():
-    from final.src.modular.input_buckets.predicates import evaluate
+    from final.src.modular.common.predicates import evaluate
     assert evaluate('any_type(xs,"int") and not all_type(xs,"int")',{'xs':[1,'a']})
     assert evaluate('any_in(s,"xyz") and any_not_in(s,"xyz")',{'s':'xa'})
     assert evaluate('all_in(s,"xyz")',{'s':'xy'})
@@ -83,7 +83,7 @@ def test_infeasible_declared_target_checks_negative_controls_without_fake_positi
 
 
 def test_distinct_count_supports_nested_json_values_generically():
-    from final.src.modular.input_buckets.predicates import evaluate
+    from final.src.modular.common.predicates import evaluate
     assert evaluate('distinct_count(x)==2',{'x':[[1],[2],[1]]})
     assert evaluate('distinct_count(x)==1',{'x':[{'a':[1]},{'a':[1]}]})
 

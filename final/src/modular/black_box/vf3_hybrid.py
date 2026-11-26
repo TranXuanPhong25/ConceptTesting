@@ -10,13 +10,16 @@ from pydantic import ValidationError
 
 from ..call_builder import CallBuilder
 from ..calls import structured_format
-from ..catalogue import Catalogue, bound_arguments, measure_catalogue, validate_catalogue
-from ..catalogue_response import read_catalogue_response
+from .catalogue import bound_arguments, measure_catalogue, validate_catalogue
+from .catalogue_response import read_catalogue_response
+from ..input_prompts import render_input_prompt
 from ..response_json import load_response_json
 from ..tool_sampling.membership import evaluate
 from ..tool_sampling.trusted_domain import compile_domain
-from ..vf3_hybrid_schema import canonical_response, membership_errors, response_type
-from .base import InputGenerationMethod
+from .vf3_hybrid_schema import canonical_catalogue, membership_errors, response_type
+from ..arm_names import VF3_INPUTS_PER_ROUND, VF3_RETAINED_INPUT_BUDGET
+from ..common import InputGenerationMethod
+from ..catalogue_reporting import CatalogueReporter
 
 EP_BVA_GUIDANCE = (
     "Use Equivalence Partitioning (EP) with normal Boundary Value Analysis (BVA). "
@@ -71,7 +74,7 @@ SOFT_EXAMPLES = {
 
 COMMON_R1_INSTRUCTION = """Use the supplied lean JSON Schema; catalogue and inputs contain no expected outputs.
 Set catalogue.status="applicable" whenever the technique applies (never use "not_applicable"/"unresolved" for test summaries).
-Prioritize fault-revealing edge cases and contrasting inputs (up to 20 distinct novel calls, not duplicating base examples) that exercise your catalogue while welcoming additional bug-hunting tests beyond it."""
+Prioritize fault-revealing edge cases and contrasting inputs that exercise your catalogue. Generate distinct novel calls up to the requested input budget, avoiding base examples and including useful bug-hunting tests beyond the catalogue."""
 
 EP_BVA_R1_INSTRUCTION = """Set status="applicable" with one shared catalogue.nominal, unique class IDs E1, E2.. and boundary IDs B1, B2.. (never reuse IDs across sections), and spec-derived boundaries.
 Every class predicate MUST be pure executable Python boolean syntax ONLY over exact parameter names (NO English prose, NO undefined loop vars like i — use any/all generators and guard empty sequences/indices).
@@ -80,7 +83,7 @@ Include nominal and single-fault boundary inputs alongside broader fault-reveali
 
 DT_R1_INSTRUCTION = """Model 2 to 4 independent specification conditions C1..Cn (1 only for truly single-predicate specs) as pure executable Python boolean syntax ONLY over exact parameter names (NO English prose, NO undefined vars — use any/all generators and guard empty sequences/indices).
 Mark each truth-table row R.. (e.g. R01: C1=false, C2=true) feasible (at least one, optional short fault_hypothesis), infeasible, or unresolved.
-Do not stop at one input per rule: generate diverse fault-revealing contrasts and tricky edge cases across feasible rules up to the 20-input budget."""
+Do not stop at one input per rule: generate diverse fault-revealing contrasts and tricky edge cases across feasible rules up to the requested input budget."""
 
 ROUND2_REASONING_INSTRUCTION = (
     "ROUND 2 — FREE REASONING & BLIND-SPOT AUDIT (NO STRICT JSON SCHEMA).\n"
@@ -93,7 +96,7 @@ ROUND2_REASONING_INSTRUCTION = (
     "empty/singleton/duplicate/tie/order/sign edge cases, or multi-parameter interactions)?\n"
     "3. Use the free-form 'catalogue' object solely for concise gap reasoning and fault hypotheses "
     "(do NOT repeat Round 1's catalogue; strict predicate syntax is not required).\n"
-    "4. Generate up to new_input_budget (20) NEW distinct concrete inputs — never repeat base examples or retained_inputs."
+    f"4. Generate up to {VF3_INPUTS_PER_ROUND} new distinct concrete inputs. Exclude base examples and retained_inputs."
 )
 
 
@@ -235,13 +238,10 @@ def _unhit_and_error_feedback(round0_feedback):
 class StructuredCatalogueArm(InputGenerationMethod):
     """Shared base class for black-box catalogue arms (EP, BVA, EP/BVA, DT).
 
-    Round 1: lean strict JSON Schema (configured input_budget, default 20) + pre-freeze observed feedback.
-    Round 2: free JSON blind-spot audit (20 new distinct inputs, retained cap = budget + 20).
+    Round 1: lean strict JSON Schema and pre-freeze observed feedback.
+    Round 2: free JSON blind-spot audit with the same budget for new distinct inputs.
     """
 
-    measures_catalogue = True
-    preserve_prompt_context = True
-    feedback_input_budget = 20
     sections: tuple[str, ...] = ()
     guidance: str = ""
     example_key: str = ""
@@ -252,15 +252,11 @@ class StructuredCatalogueArm(InputGenerationMethod):
             "catalogue": True,
             "sections": list(self.sections),
             "protocol": "catalogue-vf3-hybrid",
-            "max_model_calls": 2,
-            "oracle_feedback": False,
-            "feedback_input_budget": self.feedback_input_budget,
-            "retained_input_budget": f"configured-input-budget+{self.feedback_input_budget}",
+            "retained_input_budget": VF3_RETAINED_INPUT_BUDGET,
             "dt_condition_cap": 4 if "rules" in self.sections else None,
         }
 
     def reporter(self):
-        from ..catalogue_reporting import CatalogueReporter
         return CatalogueReporter()
 
     def extend_summary(self, contexts, summary, reporting):
@@ -286,19 +282,8 @@ class StructuredCatalogueArm(InputGenerationMethod):
             )
         return text + "\n\nVF3 HYBRID ROUND 1 OUTPUT CONTRACT:\n" + COMMON_R1_INSTRUCTION + "\n" + self.round1_instruction
 
-    def build_messages(self, packet):
-        common = re.sub(
-            r'Return JSON: .*?\.\narguments maps',
-            "Return one JSON object matching the supplied JSON Schema: catalogue and inputs. "
-            "covers labels are optional; no expected outputs.\narguments maps",
-            packet["common"],
-            count=1,
-            flags=re.DOTALL,
-        ).replace(
-            "INPUTS ONLY: no assertions or expected outputs.",
-            "Return inputs with a compact catalogue; no assertions or expected outputs.",
-        )
-        return super().build_messages({**packet, "common": common})
+    def build_prompt(self, packet):
+        return render_input_prompt(packet, "catalogue")
 
     def decorate_input(self, accepted, input_record, record_index):
         covers = input_record.get("covers")
@@ -321,15 +306,7 @@ class StructuredCatalogueArm(InputGenerationMethod):
 
     def _novel_inputs(self, context, batch, previous=()):
         builder = CallBuilder.for_source(context.task["prompt"], context.task["entry_point"])
-        cohort_task = context.cohort_task or {}
-        base_keys = set(cohort_task.get("base_input_keys", []))
-        for program in cohort_task.get("programs", ()):
-            for call in program.get("base", {}).get("calls", ()):
-                try:
-                    base_keys.add(_record_key(builder, call))
-                except (ValueError, TypeError, SyntaxError):
-                    pass
-
+        base_keys = set(context.cohort_task["base_input_keys"])
         seen = {_record_key(builder, row) for row in previous}
         retained, rejected = [], list(batch.get("rejected", []))
         for index, row in enumerate(batch.get("inputs", [])):
@@ -367,7 +344,7 @@ class StructuredCatalogueArm(InputGenerationMethod):
             context.task,
             measured_indices,
             arm_name=self.name,
-            input_budget=context.settings.input_budget + self.feedback_input_budget,
+            input_budget=VF3_RETAINED_INPUT_BUDGET,
         )
         observed = measured.get("observed", {})
         targets = []
@@ -399,9 +376,9 @@ class StructuredCatalogueArm(InputGenerationMethod):
             "membership_ready": batch.get("membership_ready", False),
         }
 
-    def _run_round1(self, context, *, call_name, input_budget):
+    def _run_round1(self, context, *, call_name):
         settings = context.settings
-        schema_model = response_type(context.task, self.sections, input_budget)
+        schema_model = response_type(context.task, self.sections)
         response = context.calls.complete(
             context.task_number,
             call_name,
@@ -411,12 +388,11 @@ class StructuredCatalogueArm(InputGenerationMethod):
             seed=settings.input_seed + context.task_number,
             response_format=structured_format(schema_model.model_json_schema()),
         )
-        call_context = replace(context, settings=replace(settings, input_budget=input_budget))
         try:
             raw, _ = load_response_json(response.text)
             validated = schema_model.model_validate(raw)
         except (ValidationError, ValueError, TypeError, RecursionError) as error:
-            result = self._decode_inputs(response, call_context)
+            result = self._decode_inputs(response, context)
             result.update(
                 structured_output_errors=[str(error)[:2000]],
                 catalogue=None, catalogue_status="catalogue_invalid", status="catalogue_invalid",
@@ -424,9 +400,10 @@ class StructuredCatalogueArm(InputGenerationMethod):
             )
             return result
 
-        canonical = canonical_response(validated.model_dump(mode="json"), self.sections, task=context.task)
-        result = super().decode_response(replace(response, text=json.dumps(canonical)), call_context)
-        catalogue, cat_errors = validate_catalogue(canonical.get("catalogue"), self.sections)
+        payload = validated.model_dump(mode="json")
+        result = self._decode_input_records(payload["inputs"], context, finish_reason=response.finish_reason)
+        canonical = canonical_catalogue(payload["catalogue"], self.sections, task=context.task)
+        catalogue, cat_errors = validate_catalogue(canonical, self.sections)
         mem_errors = membership_errors(catalogue, context.task) if catalogue is not None else list(cat_errors)
         cat_status = "catalogue_invalid" if cat_errors else catalogue.status
         result.update(
@@ -440,7 +417,7 @@ class StructuredCatalogueArm(InputGenerationMethod):
         )
         return result
 
-    def _run_round2(self, context, *, call_name, messages, input_budget):
+    def _run_round2(self, context, *, call_name, messages):
         settings = context.settings
         response = context.calls.complete(
             context.task_number,
@@ -451,14 +428,13 @@ class StructuredCatalogueArm(InputGenerationMethod):
             seed=settings.input_seed + context.task_number,
             response_format=None,
         )
-        r2_context = replace(context, settings=replace(settings, input_budget=input_budget))
-        decoded = self._decode_inputs(response, r2_context)
-        if decoded.get("rejected") or decoded.get("response_repairs") or len(decoded.get("inputs", [])) < input_budget:
+        decoded = self._decode_inputs(response, context)
+        if decoded.get("rejected") or decoded.get("response_repairs") or len(decoded["inputs"]) < VF3_INPUTS_PER_ROUND:
             recovered = _extract_input_items(response.text)
             if recovered:
                 recovered_decoded = self._decode_inputs(
                     replace(response, text=json.dumps({"inputs": recovered}, ensure_ascii=False, allow_nan=False)),
-                    r2_context,
+                    context,
                 )
                 if len(recovered_decoded.get("inputs", [])) > len(decoded.get("inputs", [])):
                     recovered_decoded["response_repairs"] = ["per_item_inputs_recovered"] + list(
@@ -492,11 +468,10 @@ class StructuredCatalogueArm(InputGenerationMethod):
     def generate(self, context):
         if context.calls is None or context.packet is None:
             raise RuntimeError("A structured catalogue arm requires prepared context and model calls")
-        first_budget = context.settings.input_budget
-        total_budget = first_budget + self.feedback_input_budget
+        context = replace(context, settings=replace(context.settings, input_budget=VF3_INPUTS_PER_ROUND))
         first = self._novel_inputs(
             context,
-            self._run_round1(context, call_name=f"{self.name}_initial", input_budget=first_budget),
+            self._run_round1(context, call_name=f"{self.name}_initial"),
         )
 
         directory = f"{context.task_directory}/{self.name}"
@@ -504,71 +479,70 @@ class StructuredCatalogueArm(InputGenerationMethod):
             f"{directory}/round_0_feedback.json",
             lambda: self._feedback(context, first),
         )
-        rounds = [{"call_name": f"{self.name}_initial", "input_budget": first_budget, "feedback": round0_feedback}]
+        rounds = [
+            {
+                "call_name": f"{self.name}_initial",
+                "input_budget": VF3_INPUTS_PER_ROUND,
+                "feedback": round0_feedback,
+            }
+        ]
         inputs = list(first["inputs"])
-        result = dict(first)
 
-        if self.feedback_input_budget > 0:
-            messages = self.build_messages(context.packet)
-            messages.append({
-                "role": "user",
-                "content": json.dumps(
-                    {
-                        "instruction": ROUND2_REASONING_INSTRUCTION,
-                        **_compact_existing_summary(first.get("catalogue"), is_dt="rules" in self.sections),
-                        "feedback": _unhit_and_error_feedback(round0_feedback),
-                        "retained_inputs": [{k: row[k] for k in ("args", "kwargs")} for row in inputs],
-                        "new_input_budget": self.feedback_input_budget,
-                    },
-                    ensure_ascii=False,
-                    separators=(",", ":"),
-                ),
-            })
-            if context.calls.token_count(messages) + context.settings.input_tokens + 128 <= context.settings.context_tokens:
-                second = self._novel_inputs(
+        messages = self.build_messages(context.packet)
+        messages.append({
+            "role": "user",
+            "content": json.dumps(
+                {
+                    "instruction": ROUND2_REASONING_INSTRUCTION,
+                    **_compact_existing_summary(first.get("catalogue"), is_dt="rules" in self.sections),
+                    "feedback": _unhit_and_error_feedback(round0_feedback),
+                    "retained_inputs": [{k: row[k] for k in ("args", "kwargs")} for row in inputs],
+                },
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ),
+        })
+        if context.calls.token_count(messages) + context.settings.input_tokens + 128 <= context.settings.context_tokens:
+            second = self._novel_inputs(
+                context,
+                self._run_round2(
                     context,
-                    self._run_round2(
-                        context,
-                        call_name=f"{self.name}_feedback",
-                        messages=messages,
-                        input_budget=self.feedback_input_budget,
-                    ),
-                    inputs,
-                )
-                inputs.extend(second["inputs"])
-                merged_repairs = list(first.get("response_repairs", [])) + [
-                    f"r2:{item}" for item in second.get("response_repairs", [])
-                ]
-                result = {
-                    **first,
-                    "inputs": inputs,
-                    "rejected": first.get("rejected", []) + second.get("rejected", []),
-                    "round_2_reasoning_catalogue": second.get("round_2_reasoning_catalogue"),
-                    "round_2_catalogue_role": "reasoning_only",
-                    "round_2_new_inputs": len(second["inputs"]),
-                    "round_2_finish_reason": second.get("finish_reason"),
-                }
-                if merged_repairs:
-                    result["response_repairs"] = merged_repairs
-                round1_feedback = context.artifacts.load_or_compute(
-                    f"{directory}/round_1_feedback.json",
-                    lambda: self._feedback(context, result),
-                )
-                rounds.append({
-                    "call_name": f"{self.name}_feedback",
-                    "input_budget": self.feedback_input_budget,
-                    "feedback": round1_feedback,
-                })
-            else:
-                result = {**first, "feedback_skip": "prompt_too_large"}
+                    call_name=f"{self.name}_feedback",
+                    messages=messages,
+                ),
+                inputs,
+            )
+            inputs.extend(second["inputs"])
+            merged_repairs = list(first.get("response_repairs", [])) + [
+                f"r2:{item}" for item in second.get("response_repairs", [])
+            ]
+            result = {
+                **first,
+                "inputs": inputs,
+                "rejected": first.get("rejected", []) + second.get("rejected", []),
+                "round_2_reasoning_catalogue": second.get("round_2_reasoning_catalogue"),
+                "round_2_catalogue_role": "reasoning_only",
+                "round_2_new_inputs": len(second["inputs"]),
+                "round_2_finish_reason": second.get("finish_reason"),
+            }
+            if merged_repairs:
+                result["response_repairs"] = merged_repairs
+            round1_feedback = context.artifacts.load_or_compute(
+                f"{directory}/round_1_feedback.json",
+                lambda: self._feedback(context, result),
+            )
+            rounds.append({
+                "call_name": f"{self.name}_feedback",
+                "input_budget": VF3_INPUTS_PER_ROUND,
+                "feedback": round1_feedback,
+            })
+        else:
+            result = {**first, "feedback_skip": "prompt_too_large"}
 
         return {
             **result,
-            "inputs": inputs[:total_budget],
+            "inputs": inputs[:VF3_RETAINED_INPUT_BUDGET],
             "rounds": rounds,
-            "model_calls": len(rounds),
-            "oracle_feedback": False,
-            "input_budget": total_budget,
             "status": result.get("status", "generated"),
         }
 

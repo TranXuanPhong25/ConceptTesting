@@ -6,7 +6,7 @@ import time
 from coverage.parser import PythonParser
 
 from ..call_builder import CallBuilder, entry_function
-from ..catalogue_membership import membership_row
+from ..common.membership import membership_row
 from ..control_flow.analysis import analyze
 from ..tool_sampling.ledger import predicate_status
 from final.src.runtime.artifacts import digest
@@ -24,6 +24,26 @@ def frozen_value(value):
             items.sort(key=repr)
         return (type(value).__name__, tuple(items))
     return (type(value).__name__, value)
+
+
+def _add_static_def_use(source, result):
+    result.update(def_use=[], data_flow_status='static_may_flow')
+    try:
+        from python_graphs import program_graph, program_graph_dataclasses as graph_types
+        graph = program_graph.get_program_graph(source)
+        pairs = set()
+        for edge in graph.edges:
+            if edge.type != graph_types.EdgeType.LAST_WRITE:
+                continue
+            use, definition = graph.nodes[edge.id1].ast_node, graph.nodes[edge.id2].ast_node
+            # python-graphs stores gast nodes, not stdlib ast nodes.
+            if (type(use).__name__ == 'Name' and type(use.ctx).__name__ == 'Load'
+                    and getattr(definition, 'lineno', None) is not None):
+                pairs.add((use.id, definition.lineno, use.lineno))
+        result['def_use'] = [{'variable': variable, 'definition': definition, 'use': use}
+                             for variable, definition, use in sorted(pairs)]
+    except Exception as error:
+        result.update(data_flow_status='unsupported', graph_error=type(error).__name__)
 
 
 class Evidence:
@@ -74,6 +94,8 @@ class Evidence:
                         'arcs': [list(arc) for arc in sorted({tuple(arc) for row in observations for arc in row['coverage']['arcs']})]}
             try:
                 analysis = analyze(program, context.task['entry_point'])
+                _add_static_def_use(program['code'], analysis)
+                analysis['targets'].sort(key=lambda target: target['criterion'] != 'C2')
                 parser = PythonParser(text=program['code'])
                 parser.parse_source()
                 function = entry_function(program['code'], context.task['entry_point'])

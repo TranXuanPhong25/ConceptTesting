@@ -14,7 +14,7 @@ import sys
 import tempfile
 import threading
 
-from ..input_buckets import predicates as legacy
+from ..common import predicates
 from ..call_builder import supported_value
 
 BUILTINS={'all','any','isinstance','type','str','bool','list','tuple','set','dict','sorted','reversed','enumerate','zip','range','round','pow','divmod','ord','chr','hex','bin','oct'}
@@ -25,7 +25,7 @@ METHODS={'isupper','islower','isalpha','isalnum','isdigit','isdecimal','isnumeri
          'issubset','issuperset','isdisjoint','union','intersection','difference',
          'symmetric_difference','keys','values','items','get'}
 BOOLEAN_METHODS={'isupper','islower','isalpha','isalnum','isdigit','isdecimal','isnumeric','isspace','isascii','istitle','startswith','endswith','issubset','issuperset','isdisjoint'}
-NODES=legacy.NODES+(ast.Is,ast.IsNot,ast.Mult,ast.Div,ast.FloorDiv,ast.Mod,ast.Pow,
+NODES=predicates.NODES+(ast.Is,ast.IsNot,ast.Mult,ast.Div,ast.FloorDiv,ast.Mod,ast.Pow,
     ast.BitAnd,ast.BitOr,ast.BitXor,
     ast.IfExp,ast.Slice,ast.Attribute,ast.keyword,ast.GeneratorExp,ast.ListComp,ast.SetComp,
     ast.DictComp,ast.Dict,ast.comprehension,ast.Store)
@@ -42,13 +42,13 @@ def expression(text,names):
             if not isinstance(node,NODES):raise ValueError('unsupported_predicate_node:'+type(node).__name__)
             super().generic_visit(node)
         def visit_Name(self,node):
-            if node.id.startswith('_') or node.id not in self.scope|set(legacy.FUNCTIONS)|BUILTINS:
+            if node.id.startswith('_') or node.id not in self.scope|set(predicates.FUNCTIONS)|BUILTINS:
                 raise ValueError('unknown_predicate_name:'+node.id)
         def visit_Attribute(self,node):
             raise ValueError('predicate_attribute_requires_allowed_method_call')
         def visit_Call(self,node):
             if isinstance(node.func,ast.Name):
-                if node.func.id not in set(legacy.FUNCTIONS)|BUILTINS:
+                if node.func.id not in set(predicates.FUNCTIONS)|BUILTINS:
                     raise ValueError('unsupported_predicate_call')
             elif isinstance(node.func,ast.Attribute) and node.func.attr in METHODS:
                 self.visit(node.func.value)
@@ -66,7 +66,7 @@ def expression(text,names):
                 if any(not isinstance(t,(ast.Name,ast.Tuple,ast.List,ast.Store)) for t in targets):
                     raise ValueError('invalid_comprehension_binding')
                 bound={t.id for t in targets if isinstance(t,ast.Name)}
-                if any(n.startswith('_') or n in set(legacy.FUNCTIONS)|BUILTINS for n in bound):
+                if any(n.startswith('_') or n in set(predicates.FUNCTIONS)|BUILTINS for n in bound):
                     raise ValueError('predicate_binding_shadows_helper')
                 self.scope|=bound
                 for condition in generator.ifs:self.visit(condition)
@@ -99,9 +99,9 @@ class PredicateSandbox:
         if not shutil.which('bwrap'):raise ValueError('predicate_sandbox_requires_bwrap')
         self.directory=tempfile.TemporaryDirectory(prefix='tool-membership-')
         folder=Path(self.directory.name)
-        for relative,source in [('support/__init__.py',None),('support/input_buckets/__init__.py',None),
-                ('support/call_builder.py',Path(legacy.__file__).parents[1]/'call_builder.py'),
-                ('support/input_buckets/predicates.py',Path(legacy.__file__)),
+        for relative,source in [('support/__init__.py',None),('support/common/__init__.py',None),
+                ('support/call_builder.py',Path(predicates.__file__).parents[1]/'call_builder.py'),
+                ('support/common/predicates.py',Path(predicates.__file__)),
                 ('predicate_worker.py',Path(__file__).with_name('predicate_worker.py'))]:
             target=folder/relative;target.parent.mkdir(parents=True,exist_ok=True)
             if source:shutil.copyfile(source,target)
@@ -165,8 +165,8 @@ def _extended(text,arguments_literal):
 def evaluate(text,arguments):
     if not isinstance(arguments,dict) or not supported_value(arguments):
         raise ValueError('unsupported_predicate_arguments')
-    try:legacy.expression(text,arguments)
+    try:predicates.expression(text,arguments)
     except (ValueError,SyntaxError):
         expression(text,arguments)
         return _extended(text,repr(arguments))
-    return legacy.evaluate(text,arguments)
+    return predicates.evaluate(text,arguments)

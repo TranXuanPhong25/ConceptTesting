@@ -13,7 +13,7 @@ def expired(*unused):raise PredicateTimeout()
 
 
 def main():
-    from support.input_buckets.predicates import FUNCTIONS
+    from support.common.predicates import FUNCTIONS
 
     resource.setrlimit(resource.RLIMIT_AS,(256*1024*1024,256*1024*1024))
     resource.setrlimit(resource.RLIMIT_CPU,(30,30))

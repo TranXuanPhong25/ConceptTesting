@@ -9,10 +9,11 @@ from typing import Annotated, Literal, Union
 
 from pydantic import Field, JsonValue, create_model
 
-from .call_builder import CallBuilder
+from ..arm_names import VF3_INPUTS_PER_ROUND
+from ..call_builder import CallBuilder
 from .catalogue import Boundary, Number, Schema, boundary_targets
-from .input_buckets.predicates import declared_types
-from .tool_sampling.schema import validate_expression
+from ..common.predicates import declared_types
+from ..tool_sampling.schema import validate_expression
 
 PositiveStep = Annotated[int, Field(gt=0)] | Annotated[float, Field(gt=0)]
 
@@ -73,12 +74,6 @@ def _annotation_allows_none(annotation):
         or (isinstance(child, ast.Attribute) and child.attr == "Optional")
         for child in ast.walk(node)
     )
-
-
-def _condition_sort_key(name):
-    if name.startswith("C") and name[1:].isdigit():
-        return (0, int(name[1:]), name)
-    return (1, 0, name)
 
 
 def _build_boundary_type(parameter_names, annotations, type_map):
@@ -186,7 +181,7 @@ def _build_dt_catalogue_type():
     return Union[tuple(variants)]
 
 
-def response_type(task, sections, input_budget):
+def response_type(task, sections):
     """Construct the lean strict Pydantic schema enforced during Round 1."""
     builder = CallBuilder.for_source(task["prompt"], task["entry_point"])
     parameter_names = tuple(builder.signature.parameters)
@@ -221,7 +216,7 @@ def response_type(task, sections, input_budget):
         "Vf3HybridResponse",
         __base__=Schema,
         catalogue=(catalogue_type, ...),
-        inputs=(list[input_record], Field(max_length=input_budget)),
+        inputs=(list[input_record], Field(max_length=VF3_INPUTS_PER_ROUND)),
     )
 
 
@@ -245,84 +240,52 @@ def _derive_numeric_boundary_values(boundary_dict):
     return [v for v in (boundary_dict.get("lower"), boundary_dict.get("upper")) if v is not None] or [0]
 
 
-def canonical_response(value, sections, *, task=None):
-    """Normalize lean Round 1 output into canonical Catalogue views."""
-    result = copy.deepcopy(value)
-    catalogue = result.get("catalogue")
-    if not isinstance(catalogue, dict):
-        return result
-
-    raw_annotations = {}
-    if task is not None:
-        builder = CallBuilder.for_source(task["prompt"], task["entry_point"])
-        raw_annotations = {
-            name: param.annotation
-            for name, param in builder.signature.parameters.items()
-            if param.annotation is not inspect.Parameter.empty
-        }
-
-    shared_nominal = catalogue.pop("nominal", None)
+def canonical_catalogue(value, sections, *, task):
+    """Adapt a schema-validated VF3 catalogue to the saved measurement format."""
+    catalogue = copy.deepcopy(value)
 
     if "classes" in sections:
-        catalogue.setdefault("classes", [])
-        for item in catalogue["classes"]:
-            if isinstance(item, dict) and not item.get("description"):
-                derived = item.get("fault_hypothesis") or item.get("predicate") or item.get("id") or "class"
-                item["description"] = str(derived)[:160]
+        for item in catalogue.setdefault("classes", []):
+            item["description"] = (item.get("fault_hypothesis") or item["predicate"])[:160]
 
     if "boundaries" in sections:
-        catalogue.setdefault("boundaries", [])
-        for boundary in catalogue["boundaries"]:
-            if not isinstance(boundary, dict):
-                continue
-            tested = boundary.get("parameter")
-            context = boundary.get("context") or {}
+        parameters = CallBuilder.for_source(task["prompt"], task["entry_point"]).signature.parameters
+        shared_nominal = catalogue.pop("nominal", None)
+        for boundary in catalogue.setdefault("boundaries", []):
+            tested = boundary["parameter"]
             cleaned_context = {
                 name: field_value
-                for name, field_value in context.items()
-                if name != tested and (field_value is not None or _annotation_allows_none(raw_annotations.get(name)))
+                for name, field_value in boundary["context"].items()
+                if name != tested and (field_value is not None or _annotation_allows_none(parameters[name].annotation))
             }
             boundary["context"] = cleaned_context
-            if not boundary.get("dimension"):
-                transform = boundary.get("transform", "identity")
-                boundary["dimension"] = (
-                    f"{tested}:count({boundary.get('count_value')!r})"
-                    if transform == "count"
-                    else f"{tested}:{transform}"
-                )
-            if not boundary.get("values"):
+            transform = boundary["transform"]
+            boundary["dimension"] = (
+                f"{tested}:count({boundary['count_value']!r})" if transform == "count" else f"{tested}:{transform}"
+            )
+            if "values" not in boundary:
                 boundary["values"] = _derive_numeric_boundary_values(boundary)
-            if boundary.get("nominal") is None and isinstance(shared_nominal, dict):
-                boundary["nominal"] = {**shared_nominal, **cleaned_context}
+            boundary["nominal"] = {**shared_nominal, **cleaned_context}
 
     if "rules" in sections:
-        catalogue.pop("conditions", None)
-        catalogue.pop("mutually_exclusive", None)
-        catalogue.setdefault("condition_predicates", {})
-        table = catalogue.get("rules")
-        if not isinstance(table, dict):
-            catalogue["original_rules"] = []
-            catalogue["rules"] = []
-        else:
-            condition_names = sorted(catalogue["condition_predicates"], key=_condition_sort_key)
-            original_rows = []
-            for identifier, outcome in table.items():
-                assignments = {name: bit == "1" for name, bit in zip(condition_names, identifier[1:])}
-                row = {"id": identifier, "conditions": assignments, **outcome}
-                row_status = row.get("status")
-                if row_status == "feasible":
-                    row.setdefault("actions", [f"rule:{identifier}"])
-                elif row_status in ("infeasible", "unresolved"):
-                    row.setdefault("actions", [])
-                    row.setdefault("reason", f"{row_status}_declared")
-                original_rows.append(row)
-            catalogue["original_rules"] = original_rows
-            catalogue["rules"] = [
-                {key: row[key] for key in ("id", "conditions", "actions", "fault_hypothesis") if key in row}
-                for row in original_rows
-                if row.get("status") == "feasible"
-            ]
-    return result
+        condition_names = sorted(catalogue.setdefault("condition_predicates", {}))
+        original_rows = []
+        for identifier, outcome in catalogue.get("rules", {}).items():
+            assignments = {name: bit == "1" for name, bit in zip(condition_names, identifier[1:])}
+            row = {"id": identifier, "conditions": assignments, **outcome}
+            if row["status"] == "feasible":
+                row["actions"] = [f"rule:{identifier}"]
+            else:
+                row["actions"] = []
+                row["reason"] = f"{row['status']}_declared"
+            original_rows.append(row)
+        catalogue["original_rules"] = original_rows
+        catalogue["rules"] = [
+            {key: row[key] for key in ("id", "conditions", "actions", "fault_hypothesis") if key in row}
+            for row in original_rows
+            if row["status"] == "feasible"
+        ]
+    return catalogue
 
 
 def membership_errors(catalogue, task):
@@ -365,4 +328,4 @@ def membership_errors(catalogue, task):
     return errors
 
 
-__all__ = ["canonical_response", "membership_errors", "response_type"]
+__all__ = ["canonical_catalogue", "membership_errors", "response_type"]
