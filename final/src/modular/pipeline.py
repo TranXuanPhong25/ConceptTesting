@@ -143,16 +143,20 @@ class BenchmarkPipeline:
 
     def run(self, tasks: list[dict] | None = None, metadata: dict | None = None) -> dict:
         if tasks is None:
+            #TODO: bỏ đi sau này, chỉ để datasset.loadd_task 
             if self.dataset is None:
                 raise ValueError("Tasks must be supplied when no dataset loader is configured")
             tasks = self.dataset.load_tasks()
         if metadata is None:
+            #TODO: bỏ đi sau này, chỉ để datasset.loadd_task 
+
             if self.dataset is None:
                 raise ValueError("Metadata must be supplied when no dataset loader is configured")
             metadata = self.dataset.load_metadata()
         if self.artifacts.read_only:
             # Rebuild the summary from saved results for the requested task IDs.
             return self.reporter.summarize_saved(self.artifacts, [task["task_id"] for task in tasks])
+        
         needs_input_context = self._needs_input_context()
         post_ref_name = self._post_reference_step()
         post_eval_name = self._post_evaluation_step()
