@@ -4,7 +4,7 @@ from __future__ import annotations
 import ast
 
 
-def validate_generated_inputs(result, *, task_id, input_budget):
+def validate_generated_inputs(result, *, task_id):
     """Check the batch envelope; individual invalid calls are rejected by the oracle."""
     if result["task_id"] != task_id:
         raise ValueError("Input generator must return a result for the current task")

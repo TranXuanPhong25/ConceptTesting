@@ -18,7 +18,7 @@ import time
 if os.path.isdir("/deps"):
     sys.path.insert(0, "/deps")
 
-from contracts import SAFE_BUILTINS, validate_test
+from contracts import SAFE_BUILTINS, bound_call_key, validate_test
 
 
 MAX_REFERENCE_OUTPUT_CHARS = 200000
@@ -49,21 +49,10 @@ def deadline(seconds):
         signal.setitimer(signal.ITIMER_REAL, 0)
 
 
-def frozen(value):
-    """Typed, order-independent identity for dict/set input values."""
-    if isinstance(value, dict):
-        return ("dict", tuple(sorted(((frozen(k), frozen(v)) for k, v in value.items()), key=repr)))
-    if isinstance(value, (list, tuple)):
-        return (type(value).__name__, tuple(frozen(v) for v in value))
-    if isinstance(value, (set, frozenset)):
-        return (type(value).__name__, tuple(sorted((frozen(v) for v in value), key=repr)))
-    return (type(value).__name__, repr(value))
-
-
 def input_key(signature, args, kwargs):
     bound = signature.bind(*args, **kwargs)
     bound.apply_defaults()
-    return repr(frozen(dict(bound.arguments)))
+    return bound_call_key(bound.arguments)
 
 
 def load(source, entry, context=""):

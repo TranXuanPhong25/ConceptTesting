@@ -103,7 +103,7 @@ def pin_baseline_source(source, output):
     plan['cohort'] = str(runtime / cohort_relative)
     save_json(plan_path, plan)
     snapshot_path = output / 'source_snapshot.json'
-    snapshot = json.loads(snapshot_path.read_text())
+    snapshot = json.loads(snapshot_path.read_text()) if snapshot_path.is_file() else {'sources': {}, 'archive': {}}
     # Remove old runtime identities before replacing them with the source clone.
     snapshot['sources'] = {name: value for name, value in snapshot['sources'].items()
                            if not Path(name).is_relative_to(runtime)}
@@ -127,7 +127,7 @@ def pin_baseline_source(source, output):
     driver_snapshot.parent.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(Path(__file__), driver_snapshot)
     snapshot['sources'][str(driver_snapshot)] = checksum(driver_snapshot)
-    save_json(receipt, {'source': str(source), 'source_cohort_sha256': source_preview['cohort_sha256'],
+    save_json(receipt, {'source': str(source),
         'runtime_policy': 'byte-identical original Direct runtime', 'packets': copied,
         'preparer_source_snapshot': str(driver_snapshot), 'preparer_sha256': checksum(driver_snapshot),
         'original_prompt_tokens_are_historical': True,
@@ -264,7 +264,8 @@ async def resume_after_baseline_generation(source_directory: str, baseline_flow_
     await attach_outputs(directory)
     receipt = json.loads((directory / 'import_receipts.json').read_text())
     artifact_id = await create_markdown_artifact(markdown='Đã giữ nguyên responses và retry history của V2; '
-        'chờ baseline bắt đầu evaluation.\n\n```json\n' + json.dumps(receipt.get('original_writer_usage', {}), indent=2) + '\n```',
+        'chờ baseline bắt đầu evaluation.\n\n```json\n'
+        + json.dumps(receipt.get('original_tester_calls') or receipt.get('original_writer_usage', {}), indent=2) + '\n```',
         key='sequence-progress', description='Resume V2 sau baseline generation freeze; không gọi lại received responses.')
     async with get_client() as client:
         readiness = await wait_for_baseline_evaluation(client, baseline_id, directory=directory, artifact_id=artifact_id)

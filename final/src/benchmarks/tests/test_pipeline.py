@@ -17,7 +17,7 @@ def test_mbpp_packet_never_contains_reference_body():
     from final.src.benchmarks.pipeline import messages_for
     task = fixture_task()
     task['reference_source'] += '# reference-only-marker\n'
-    messages = messages_for(task, [{'id':'p', 'code':'def f(x): return 2'}], 'ep_bva_vf3_hybrid', 20)
+    messages = messages_for(task, [{'id':'p', 'code':'def f(x): return 2'}], 'ep_bva_single', 20)
     assert 'reference-only-marker' not in json.dumps(messages)
     assert 'Add one.' in json.dumps(messages)
     assert 'Equivalence Partitioning (EP)' in json.dumps(messages)
@@ -37,6 +37,7 @@ def test_preview_missing_cohort_does_no_execution():
     assert description['cohort_status'] == 'pending'
     assert description['base_pass_put_count'] is None
     assert description['logical_call_cap'] == 3
+    assert description['config']['arms'] == ['plain', 'ep_bva_single', 'decision_table_single']
 
 
 def test_python_pipeline_freezes_before_reference_and_replays_without_work(tmp_path, monkeypatch):
@@ -48,15 +49,15 @@ def test_python_pipeline_freezes_before_reference_and_replays_without_work(tmp_p
         model_id = 'fixture'
         def token_count(self, messages): return 50
         def complete(self, *args, **kwargs):
-            assert not store.exists('generation_frozen.json')
+            assert not store.exists('tasks/11/inputs.json')
             return ModelResponse(json.dumps({'inputs':[{'arguments':{'x':3}}]}))
     real_execute = pipeline.execute_program
     def guarded_execute(task, code, inputs, **options):
         if not options.get('base'):
-            assert store.exists('generation_frozen.json')
+            assert store.exists('tasks/11/inputs.json')
         return real_execute(task, code, inputs, **options)
     monkeypatch.setattr(pipeline, 'execute_program', guarded_execute)
-    config = {'dataset':'mbpp', 'task_numbers':[11], 'arms':['plain','ep_bva_vf3_hybrid']}
+    config = {'dataset':'mbpp', 'task_numbers':[11], 'arms':['plain','ep_bva_single']}
     result = run_benchmark([task], cohort, store, config, calls=Calls())
     assert result['arms']['plain']['detected'] == 1
     assert result['evaluated_base_pass'] == 1
@@ -73,7 +74,7 @@ def test_unsupported_environment_does_not_become_zero_detection(tmp_path):
             executor=lambda *a,**k: {'status':'unsupported_environment','tests':[]})
 
 
-def test_replay_rejects_removed_generation_provenance(tmp_path):
+def test_replay_reads_saved_results_without_generation_provenance(tmp_path):
     store = ArtifactStore(tmp_path/'run')
     class Calls:
         model_id = 'fixture'
@@ -84,10 +85,12 @@ def test_replay_rejects_removed_generation_provenance(tmp_path):
             return ModelResponse(json.dumps({'inputs':[{'arguments':{'x':3}}]}))
     cohort = {'MBPP/11':[{'id':'p','code':'def f(x): return 2'}]}
     values = {'arms':['plain']}
-    run_benchmark([fixture_task()], cohort, store, values, calls=Calls())
+    expected = run_benchmark([fixture_task()], cohort, store, values, calls=Calls())
     store.path('tasks/11/calls/plain/request.json').unlink()
-    with pytest.raises(ValueError, match='Artifact changed'):
-        run_benchmark([fixture_task()], cohort, ArtifactStore(store.directory, read_only=True), values)
+    assert not store.exists('generation_frozen.json')
+    assert not store.exists('execution_frozen.json')
+    replay = ArtifactStore(store.directory, read_only=True)
+    assert run_benchmark([], {}, replay, {}) == expected
 
 
 def test_mbpp_preview_control_flow_4tool_leaves_caps_pending_and_validates_tool_dir():

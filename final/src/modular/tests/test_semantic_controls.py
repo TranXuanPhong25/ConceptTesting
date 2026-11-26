@@ -57,7 +57,7 @@ def test_semantic_gate_blocks_before_oracle_with_valid_mechanical_preparation(tm
     def forbidden(*args,**kwargs):pytest.fail('Oracle evaluated before independent target checks passed')
     monkeypatch.setattr('final.src.modular.reference_oracle.execute',forbidden)
     out=tmp_path/'run';pipeline=BenchmarkPipeline(cohort,ArtifactStore(out),input_generator=generator,
-      settings=PipelineSettings(target_programs=1),reference_programs=TaskReferencePrograms(),execution_cache=False)
+      settings=PipelineSettings(),reference_programs=TaskReferencePrograms())
     with pytest.raises(ValueError,match='semantic_controls_gate'):pipeline.run([task],{'HumanEval/7':{'contract':'','atol':0}})
     assert (out/'semantic_controls_gate.json').exists() and not(out/'generation_frozen.json').exists()
 

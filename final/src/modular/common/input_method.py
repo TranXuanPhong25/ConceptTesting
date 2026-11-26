@@ -15,10 +15,6 @@ class InputGenerationMethod(ABC):
     uses_model: bool = True
     uses_shared_prompt: bool = True
 
-    def reporter(self):
-        """Optional reporting extension for an arm's extra preparation work."""
-        return None
-
     def extend_summary(self, contexts, summary, reporting):
         """Optional arm-specific accounting after shared evaluation/reporting."""
 
@@ -64,7 +60,11 @@ class InputGenerationMethod(ABC):
             result = {"inputs": [], "rejected": [{"reason": "invalid_response"}],
                       "finish_reason": response.finish_reason}
         else:
-            result = self._decode_input_records(input_records, context, finish_reason=response.finish_reason)
+            result = self._decode_input_records(
+                input_records[:context.settings.input_budget],
+                context,
+                finish_reason=response.finish_reason,
+            )
         if response_repairs:
             result["response_repairs"] = response_repairs
         return result
@@ -72,11 +72,11 @@ class InputGenerationMethod(ABC):
     def _decode_input_records(self, input_records, context, *, finish_reason):
         rejected_records = []
         accepted_records = []
-        for record_index, input_record in enumerate(input_records[:context.settings.input_budget]):
+        builder = CallBuilder.for_source(context.task['prompt'], context.task['entry_point'])
+        for record_index, input_record in enumerate(input_records):
             try:
                 # VALIDATION START: shared named-argument encoder, or validated Python literals.
                 if isinstance(input_record, dict) and "arguments" in input_record:
-                    builder = CallBuilder.for_source(context.task["prompt"], context.task["entry_point"])
                     accepted = builder.build(input_record["arguments"], guidance_id=input_record.get("guidance_id"))
                 else:
                     accepted = self.parse_input(input_record)

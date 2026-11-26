@@ -41,7 +41,7 @@ def original_run(tmp_path):
     save(path, {"tasks": [record], "cohort_sha256": digest([record]), "dataset_sha256": "fixture-dataset"})
     artifacts = ArtifactStore(tmp_path / "old")
     pipeline = BenchmarkPipeline(path, artifacts, input_generator=FrozenFixtureGenerator(),
-        settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
+        settings=PipelineSettings(), reference_programs=TaskReferencePrograms())
     summary = pipeline.run([task], {task["task_id"]: METADATA[task["task_id"]]})
     assert summary["arms"]["plain"]["detected"] == 1
     return path, artifacts
@@ -95,8 +95,7 @@ def test_rescore_reuses_exact_inputs_without_instantiating_a_model(original_run,
         pytest.fail("Rescore must not create or call a model")
 
     monkeypatch.setattr("final.src.models.model.QwenModel.__init__", forbidden)
-    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / "corrected",
-                                                      cache_directory=tmp_path / "execution_cache")
+    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / "corrected")
     summary = pipeline.run(tasks, metadata)
     assert summary["arms"]["plain"]["detected"] == 0
     assert summary["reused_generation"]["new_model_calls"] == 0
@@ -115,8 +114,7 @@ def test_rescore_accepts_changed_inputs_without_original_freeze(original_run, tm
     path = source.path("tasks/97/inputs.json")
     record = json.loads(path.read_text());record["arms"]["plain"]["inputs"][0]["args"] = "(2, 3)"
     path.write_text(json.dumps(record))
-    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / "corrected",
-                                                      cache_directory=tmp_path / "cache")
+    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / "corrected")
     source.path("generation_frozen.json").unlink(missing_ok=True)
     pipeline.run(tasks, metadata)
     saved = pipeline.artifacts.read("tasks/97/inputs.json")
@@ -126,7 +124,7 @@ def test_rescore_accepts_changed_inputs_without_original_freeze(original_run, tm
 def test_rescore_refuses_original_output_directory(original_run, tmp_path):
     cohort, source = original_run
     with pytest.raises(ValueError, match="separate output directory"):
-        build_rescore_pipeline(source.directory, cohort, source.directory, cache_directory=tmp_path / "cache")
+        build_rescore_pipeline(source.directory, cohort, source.directory)
 
 
 def test_dataset_loader_returns_expected_reference_programs():

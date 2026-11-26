@@ -637,31 +637,71 @@ def count_uncovered_boundary_values(boundary_measurements):
     return uncovered_count
 
 
+def _measure_observations(
+    catalogue,
+    inputs,
+    task,
+    valid_indices,
+    *,
+    robust=False,
+    worst_case=False,
+):
+    builder = CallBuilder.for_source(task['prompt'], task['entry_point'])
+    valid_index_set = set(valid_indices)
+    source_indices = [index for index in range(len(inputs)) if index in valid_index_set]
+    records = [inputs[index] for index in source_indices]
+    arguments = [bound_arguments(builder, record) for record in records]
+    boundary_measurements = mechanical_boundaries(
+        catalogue,
+        arguments,
+        robust=robust,
+        worst_case=worst_case,
+    )
+    from .catalogue_membership import measure_membership
+
+    observed = measure_membership(
+        catalogue,
+        arguments,
+        records,
+        source_indices,
+        boundary_measurements,
+        builder.signature.parameters,
+    )
+    return records, arguments, boundary_measurements, observed
+
+
+def observe_catalogue(batch, task, valid_indices):
+    raw = batch.get('catalogue')
+    if raw is None:
+        return {}
+    catalogue = Catalogue.model_validate(raw)
+    _, _, _, observed = _measure_observations(catalogue, batch['inputs'], task, valid_indices)
+    return observed
+
+
 def measure_catalogue(batch, task, valid_indices, *, arm_name, input_budget):
     """Measure only arm-local inputs accepted by the twice-run reference."""
-    raw = batch.get("catalogue")
-    catalogue_status = batch.get("catalogue_status", batch.get("status", "pending"))
-    if raw is None or catalogue_status == "off":
-        return {"status": catalogue_status,
-                "errors": batch.get("catalogue_errors", []), "semantic_audit": "pending"}
-    if catalogue_status == "catalogue_invalid":
-        try:
-            catalogue = Catalogue.model_validate(raw)
-        except (ValidationError, ValueError, TypeError, RecursionError, OverflowError):
-            return {"status": "catalogue_invalid",
-                    "errors": batch.get("catalogue_errors", []), "semantic_audit": "pending"}
-        builder = CallBuilder.for_source(task["prompt"], task["entry_point"])
-        valid_index_set = set(valid_indices)
-        records = [record for index, record in enumerate(batch["inputs"]) if index in valid_index_set]
-        arguments = [bound_arguments(builder, record) for record in records]
-        boundary_measurements = mechanical_boundaries(
-            catalogue, arguments,
-            robust=arm_name == "bva_robust", worst_case=arm_name == "bva_worst_case")
-        from .catalogue_membership import measure_membership
-        source_indices = [index for index in range(len(batch["inputs"])) if index in valid_index_set]
-        observed = measure_membership(
-            catalogue, arguments, records, source_indices,
-            boundary_measurements, builder.signature.parameters)
+    raw = batch.get('catalogue')
+    catalogue_status = batch.get('catalogue_status', batch.get('status', 'pending'))
+    if raw is None or catalogue_status == 'off':
+        return {'status': catalogue_status,
+                'errors': batch.get('catalogue_errors', []), 'semantic_audit': 'pending'}
+    try:
+        catalogue = Catalogue.model_validate(raw)
+    except (ValidationError, ValueError, TypeError, RecursionError, OverflowError):
+        if catalogue_status == 'catalogue_invalid':
+            return {'status': 'catalogue_invalid',
+                    'errors': batch.get('catalogue_errors', []), 'semantic_audit': 'pending'}
+        raise
+    records, arguments, boundary_measurements, observed = _measure_observations(
+        catalogue,
+        batch['inputs'],
+        task,
+        valid_indices,
+        robust=arm_name == 'bva_robust',
+        worst_case=arm_name == 'bva_worst_case',
+    )
+    if catalogue_status == 'catalogue_invalid':
         return {
             "status": "catalogue_invalid",
             "errors": batch.get("catalogue_errors", []),
@@ -670,11 +710,6 @@ def measure_catalogue(batch, task, valid_indices, *, arm_name, input_budget):
             "observed": observed,
             "semantic_audit": "pending",
         }
-    catalogue = Catalogue.model_validate(raw)
-    builder = CallBuilder.for_source(task["prompt"], task["entry_point"])
-    valid_index_set = set(valid_indices)
-    records = [record for index, record in enumerate(batch["inputs"]) if index in valid_index_set]
-    arguments = [bound_arguments(builder, record) for record in records]
     obligation_ids = set()
     for section in (catalogue.classes, catalogue.boundaries, catalogue.rules):
         obligation_ids.update(item.id for item in section)
@@ -682,8 +717,6 @@ def measure_catalogue(batch, task, valid_indices, *, arm_name, input_budget):
     declared_ids, unknown_ids, unlabelled_inputs = collect_declared_coverage(
         records, obligation_ids, feasible_original_ids)
     class_measurements = measure_equivalence_classes(catalogue.classes, arguments)
-    boundary_measurements = mechanical_boundaries(catalogue, arguments,
-        robust=arm_name == "bva_robust", worst_case=arm_name == "bva_worst_case")
     decision_table_measurement = decision_table_check(catalogue)
     table_coverage = measure_original_rule_coverage(catalogue, declared_ids, feasible_original_ids)
     uncovered_boundary_values = count_uncovered_boundary_values(boundary_measurements)
@@ -696,10 +729,6 @@ def measure_catalogue(batch, task, valid_indices, *, arm_name, input_budget):
     # Coverage gaps alone do not prove the budget caused them.
     required_size = cartesian_total if cartesian_total is not None else normal_size
     budget_limited = required_size > input_budget if required_size is not None else None
-    from .catalogue_membership import measure_membership
-    source_indices = [index for index in range(len(batch['inputs'])) if index in valid_index_set]
-    observed = measure_membership(catalogue, arguments, records, source_indices,
-                                  boundary_measurements, builder.signature.parameters)
     return {"status": catalogue.status, "valid_input_records": len(records), "declared": {
                 "covered_ids": sorted(declared_ids & obligation_ids), "total_obligations": len(obligation_ids),
                 "status": "pending" if unlabelled_inputs else "self_reported", "unlabelled_inputs": unlabelled_inputs,
@@ -739,6 +768,5 @@ def measure_task_catalogues(context, arm_names) -> dict | None:
                 "errors": ["measurement:" + type(error).__name__],
                 "semantic_audit": "pending",
             }
-    context.extensions["catalogue_measurements"] = measurements
     context.artifacts.write(context.task_directory + "/catalogue_measurements.json", measurements)
     return measurements

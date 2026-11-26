@@ -15,7 +15,6 @@ import math
 from pathlib import Path
 
 from final.src.runtime.execution import execute
-from final.src.modular.execution_cache import InputExecutionCache
 from final.src.runtime.artifacts import digest
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -224,7 +223,6 @@ def audit_task(task, ref, records, output):
         evaluated = execute(evaluation_job) if valid else {"tests": []}
         write(evaluation_path, evaluated)
     witnesses = []
-    cache = InputExecutionCache(ROOT / "final/out/execution_cache")
     failed = [(position, outcome) for position, outcome in enumerate(evaluated["tests"])
               if outcome["status"] in ("fail", "error", "timeout")]
     # Replay up to three representatives/statuses, fixed before execution.
@@ -235,19 +233,15 @@ def audit_task(task, ref, records, output):
     for position in representatives:
         record = valid[position]
         repeats = []
-        receipts = []
-        for repeat in range(2):
-            reference_result, reference_receipt = cache.execute(
-                {**oracle_job, "tests": [record]}, repeat_index=repeat, executor=execute)
-            put_result, put_receipt = cache.execute(
-                {**evaluation_job, "tests": [record]}, repeat_index=repeat, executor=execute)
+        for _ in range(2):
+            reference_result = execute({**oracle_job, 'tests': [record]})
+            put_result = execute({**evaluation_job, 'tests': [record]})
             repeats.append({"oracle": reference_result["tests"][0], "put": put_result["tests"][0]})
-            receipts.append({"oracle": reference_receipt, "put": put_receipt})
         stable = (all(x["oracle"]["status"] == "ok" and x["oracle"]["expected"] == record["expected"]
                       and x["put"]["status"] in ("fail", "error", "timeout") for x in repeats)
                   and repeats[0]["put"]["status"] == repeats[1]["put"]["status"])
         witnesses.append({"candidate_index": candidate_indices[position], "input": record,
-                          "confirmed_in_two_isolated_runs": stable, "repeats": repeats, "cache_receipts": receipts})
+                          "confirmed_in_two_isolated_runs": stable, "repeats": repeats})
     result = {"task_id": task["task_id"], "entry": ref["entry_point"], "program_id": put["id"],
               "candidate_count": len(records), "valid_novel_count": len(valid),
               "screen_failures": len(failed), "witnesses": witnesses,

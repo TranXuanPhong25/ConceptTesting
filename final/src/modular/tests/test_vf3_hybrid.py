@@ -15,12 +15,8 @@ from final.src.modular.arm_names import (
     retained_input_budget,
 )
 from final.src.modular import available_arms, selected_arms
-from final.src.modular.black_box.vf3_hybrid import (
-    DecisionTableVf3HybridArm,
-    EpBvaVf3HybridArm,
-    VF3_HYBRID_ARMS,
-    _frozen_value as _frozen_base_value,
-)
+from final.src.modular.black_box import DecisionTableArm, EpBvaArm
+from final.src.runtime.contracts import bound_call_key
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.black_box.catalogue import validate_catalogue
 from final.src.modular.context import PipelineSettings, TaskContext
@@ -28,7 +24,7 @@ from final.src.modular.input_prompts import input_prompt_blocks, structured_inpu
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.references import TaskReferencePrograms
 from final.src.modular.tests.test_testing_arms_integration import META, TASK, make_pipeline
-from final.src.modular.black_box.vf3_hybrid_schema import canonical_catalogue, membership_errors, response_type
+from final.src.modular.black_box.vf3_hybrid_schema import membership_errors
 from final.src.orchestration import config, names, worker
 
 
@@ -60,8 +56,8 @@ def test_all_164_humaneval_tasks_compile_valid_vf3_hybrid_schemas_with_xgrammar_
     tasks = DatasetLoader("HE-py").load_tasks()
     assert len(tasks) == 164
     for item in tasks:
-        ep_schema = response_type(item, ("classes", "boundaries")).model_json_schema()
-        dt_schema = response_type(item, ("rules",)).model_json_schema()
+        ep_schema = EpBvaArm().response_type(item).model_json_schema()
+        dt_schema = DecisionTableArm().response_type(item).model_json_schema()
         for schema in (ep_schema, dt_schema):
             defs = schema.get("$defs", {})
             for branch in schema["properties"]["catalogue"]["anyOf"]:
@@ -79,7 +75,7 @@ def test_all_164_humaneval_tasks_compile_valid_vf3_hybrid_schemas_with_xgrammar_
 
 
 def test_lean_ep_bva_schema_forbids_null_count_value_and_merges_shared_nominal():
-    model = response_type(_str_task(), ("classes", "boundaries"))
+    model = EpBvaArm().response_type(_str_task())
 
     # transform="count" WITHOUT count_value or with count_value=None is rejected at JSON Schema level.
     for bad_boundary in (
@@ -116,7 +112,7 @@ def test_lean_ep_bva_schema_forbids_null_count_value_and_merges_shared_nominal()
 
     # Valid lean count + length + discrete boundaries canonicalize cleanly with shared nominal.
     two_param = _two_param_task()
-    two_model = response_type(two_param, ("classes", "boundaries"))
+    two_model = EpBvaArm().response_type(two_param)
     raw = {
         "catalogue": {
             "status": "applicable",
@@ -157,7 +153,7 @@ def test_lean_ep_bva_schema_forbids_null_count_value_and_merges_shared_nominal()
         "inputs": [{"arguments": {"numbers": [1.0], "threshold": 0.5}, "covers": ["E1"]}],
     }
     validated = two_model.model_validate(raw)
-    canonical = canonical_catalogue(validated.model_dump(mode="json")["catalogue"], ("classes", "boundaries"), task=two_param)
+    canonical = EpBvaArm().canonical_catalogue(validated.model_dump(mode="json")["catalogue"], task=two_param)
     catalogue, errors = validate_catalogue(canonical, ("classes", "boundaries"))
     assert errors == [] and catalogue.status == "applicable"
     assert membership_errors(catalogue, two_param) == []
@@ -169,7 +165,7 @@ def test_lean_ep_bva_schema_forbids_null_count_value_and_merges_shared_nominal()
 
 
 def test_lean_dt_schema_drops_infeasible_prose_and_canonicalizes_cleanly():
-    dt_model = response_type(_two_param_task(), ("rules",))
+    dt_model = DecisionTableArm().response_type(_two_param_task())
 
     # Extra prose fields like reason on infeasible row are forbidden in lean DT schema.
     with pytest.raises(ValidationError):
@@ -199,7 +195,7 @@ def test_lean_dt_schema_drops_infeasible_prose_and_canonicalizes_cleanly():
         "inputs": [{"arguments": {"numbers": [1.0, 1.05], "threshold": 0.1}, "covers": ["R11"]}],
     }
     validated = dt_model.model_validate(raw)
-    canonical = canonical_catalogue(validated.model_dump(mode="json")["catalogue"], ("rules",), task=_two_param_task())
+    canonical = DecisionTableArm().canonical_catalogue(validated.model_dump(mode="json")["catalogue"], task=_two_param_task())
     catalogue, errors = validate_catalogue(canonical, ("rules",))
     assert errors == [] and catalogue.status == "applicable"
     assert membership_errors(catalogue, _two_param_task()) == []
@@ -211,7 +207,7 @@ def test_lean_dt_schema_drops_infeasible_prose_and_canonicalizes_cleanly():
 def test_hybrid_round2_uses_free_json_and_the_fixed_budget(tmp_path, configured_budget):
     task_data = _str_task()
     contract = 'assert isinstance(txt, str)'
-    base_key = repr(_frozen_base_value({"txt": "a b"}))
+    base_key = bound_call_key({"txt": "a b"})
 
     r1_response = {
         "catalogue": {
@@ -276,7 +272,7 @@ def test_hybrid_round2_uses_free_json_and_the_fixed_budget(tmp_path, configured_
     ctx.cohort_task = {"base_input_keys": [base_key], "programs": []}
     ctx.packet = {"prompt_blocks": input_prompt_blocks(task_data, [], contract, configured_budget)}
 
-    batch = EpBvaVf3HybridArm().run(ctx)
+    batch = EpBvaArm().run(ctx)
     assert {"input_budget", "model_calls", "oracle_feedback"}.isdisjoint(batch)
 
     # Round 1 used strict json_schema; Round 2 used free JSON (response_format=None)!
@@ -300,9 +296,11 @@ def test_hybrid_round2_uses_free_json_and_the_fixed_budget(tmp_path, configured_
     # Round 1 strict catalogue stayed intact; Round 2 free reasoning catalogue preserved separately.
     assert batch["catalogue_status"] == "applicable"
     assert batch["membership_ready"] is True
-    assert batch["round_2_catalogue_role"] == "reasoning_only"
     assert batch["round_2_reasoning_catalogue"]["blind_spots"][0]["id"] == "GAP1"
-    assert [row["input_budget"] for row in batch["rounds"]] == [20, 20]
+    assert batch['rounds'] == [
+        {'call_name': f'{EpBvaArm.name}_initial'},
+        {'call_name': f'{EpBvaArm.name}_feedback'},
+    ]
     # Base and cross-round duplicates were dropped after decoding each capped batch.
     args_list = [row["args"] for row in batch["inputs"]]
     assert "('hello world',)" in args_list
@@ -312,7 +310,8 @@ def test_hybrid_round2_uses_free_json_and_the_fixed_budget(tmp_path, configured_
     assert "('a b',)" not in args_list
     assert len(args_list) == 20  # One retained from R1 and one duplicate removed from R2.
     # Round 1 feedback re-measured Round 1 strict catalogue over all retained inputs -> E2 is now HIT!
-    r1_targets = {row["id"]: row["status"] for row in batch["rounds"][1]["feedback"]["targets"]}
+    feedback = ctx.artifacts.read(f'{ctx.task_directory}/{EpBvaArm.name}/round_1_feedback.json')
+    r1_targets = {row['id']: row['status'] for row in feedback['targets']}
     assert r1_targets["E1"] == "hit" and r1_targets["E2"] == "hit"
 
 
@@ -352,6 +351,8 @@ def test_registry_orchestration_preview_preset_and_pipeline_replay_for_vf3_hybri
     worker.prepare({"arms": list(VF3_HYBRID_ARM_NAMES), "task_numbers": [0], "context_tokens": 12288}, prepared)
     assert (prepared / "runtime/final/src/modular/black_box/vf3_hybrid_schema.py").is_file()
     assert (prepared / "runtime/final/src/modular/black_box/vf3_hybrid.py").is_file()
+    assert (prepared / "runtime/final/src/modular/black_box/ep_bva.py").is_file()
+    assert (prepared / "runtime/final/src/modular/black_box/decision_table.py").is_file()
 
     # Full end-to-end pipeline + read-only replay.
     original, model, events, tasks = make_pipeline(tmp_path / "pipe", monkeypatch)
@@ -403,9 +404,8 @@ def test_registry_orchestration_preview_preset_and_pipeline_replay_for_vf3_hybri
 
     model.generate = fake_generate
     model.generate_prepared = lambda prepared, **kwargs: fake_generate(prepared.messages, max_tokens=prepared.output_tokens, **kwargs)
-    methods = (EpBvaVf3HybridArm(), DecisionTableVf3HybridArm())
+    methods = (EpBvaArm(), DecisionTableArm())
     settings = PipelineSettings(
-        target_programs=original.settings.target_programs,
         input_budget=20,
         input_tokens=4096,
         context_tokens=12288,
@@ -416,13 +416,13 @@ def test_registry_orchestration_preview_preset_and_pipeline_replay_for_vf3_hybri
         arms=methods,
         settings=settings,
         calls=original.calls,
-        execution_cache=False,
+
         reference_programs=TaskReferencePrograms(),
     )
     result = pipeline.run(tasks, {TASK["task_id"]: META})
     assert len(model.messages) == 4  # 2 arms x (R1 strict + R2 free)
     assert sum(rf is None for _, rf in model.messages) == 2
-    task_cat = result["catalogues"][TASK["task_id"]]
+    task_cat = pipeline.artifacts.read('tasks/7/catalogue_measurements.json')
     assert task_cat["ep_bva_vf3_hybrid"]["status"] == "applicable"
     assert task_cat["decision_table_vf3_hybrid"]["status"] == "applicable"
     # Round 2 input x=0 hit B1=0 (and R0 in DT) on Round 1's strict catalogue!
@@ -434,7 +434,7 @@ def test_registry_orchestration_preview_preset_and_pipeline_replay_for_vf3_hybri
         ArtifactStore(original.artifacts.directory, read_only=True),
         arms=methods,
         settings=settings,
-        execution_cache=False,
+
         reference_programs=TaskReferencePrograms(),
     )
     assert replay.run(tasks, {TASK["task_id"]: META}) == result
@@ -448,7 +448,7 @@ def test_vf3_hybrid_review_edge_cases_json_safe_r2_40_inputs_14_classes_and_sche
         "prompt": "def typed_fn(xs: list[int], n: int, flag: bool, sep: str = ','):\n    pass\n",
         "test": "",
     }
-    schema = response_type(typed_task, ("classes", "boundaries")).model_json_schema()
+    schema = EpBvaArm().response_type(typed_task).model_json_schema()
     defs = schema["$defs"]
     assert {"HybridNumericBoundary", "HybridCountBoundary", "HybridDiscreteBoundary"} <= set(defs)
     assert set(defs["HybridNumericBoundary"]["properties"]["parameter"]["enum"]) == {"xs", "n", "flag", "sep"}
@@ -505,10 +505,10 @@ def test_vf3_hybrid_review_edge_cases_json_safe_r2_40_inputs_14_classes_and_sche
     ctx.cohort_task = {"base_input_keys": [], "programs": []}
     ctx.packet = {"common": structured_input_prompt(typed_task, [], "", 20)}
 
-    batch = EpBvaVf3HybridArm().run(ctx)
+    batch = EpBvaArm().run(ctx)
     assert len(batch["inputs"]) == 40
-    assert batch["round_2_new_inputs"] == 20
-    assert batch["round_2_finish_reason"] == "stop"
+    first_feedback = ctx.artifacts.read(f'{ctx.task_directory}/{EpBvaArm.name}/round_0_feedback.json')
+    assert len(batch['inputs']) - len(first_feedback['admission']) == 20
     assert "r2:python_literal_fallback" in batch.get("response_repairs", [])
     # Strict JSON serializability (no set/NaN crash) and default param populated into nominal.
     json.dumps(batch, allow_nan=False)
@@ -516,7 +516,8 @@ def test_vf3_hybrid_review_edge_cases_json_safe_r2_40_inputs_14_classes_and_sche
     assert batch["catalogue"]["boundaries"][0]["nominal"]["sep"] == ","
     assert batch["membership_ready"] is True
     # All 14 classes x 40 inputs = 560 checks -> all 14 hit (zero membership_budget_exhausted unknowns!).
-    r1_targets = {row["id"]: row["status"] for row in batch["rounds"][1]["feedback"]["targets"] if row["kind"] == "classes"}
+    feedback = ctx.artifacts.read(f'{ctx.task_directory}/{EpBvaArm.name}/round_1_feedback.json')
+    r1_targets = {row['id']: row['status'] for row in feedback['targets'] if row['kind'] == 'classes'}
     assert len(r1_targets) == 14
     assert all(status == "hit" for status in r1_targets.values())
 
@@ -525,7 +526,7 @@ def test_vf3_hybrid_separate_id_patterns_and_round2_per_item_recovery(tmp_path):
     from final.src.modular.black_box.vf3_hybrid import _extract_input_items
 
     # 1. Schema forbids overlapping class/boundary IDs at token level (E<n> vs B<n>).
-    model = response_type(_str_task(), ("classes", "boundaries"))
+    model = EpBvaArm().response_type(_str_task())
     with pytest.raises(ValidationError):
         model.model_validate({
             "catalogue": {

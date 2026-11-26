@@ -21,8 +21,7 @@ Khi đọc một task, đi theo `cohort.json` → `packet.json` → `calls/<call
 | `modular_manifest.json` | `BenchmarkPipeline.write_manifest()` ghi task IDs, settings, stages, arms, generator, model và package versions. Dùng để xem config thực tế của run. |
 | `status.json` | Trạng thái do CLI hoặc runner ghi, có thể gồm phase, PID và thông tin lỗi tùy runner. |
 | `progress.json` | Tiến độ do một số worker ghi, ví dụ số task đã sinh input và số task đã evaluate. |
-| `stage_events.jsonl` | Mỗi dòng là một JSON event `started`, `complete` hoặc `failed` của một stage trên một task. |
-| `modular_summary.json` | Kết quả tổng hợp khi run xong. Replay dùng summary và các `result.json` đã lưu. |
+| `modular_summary.json` | Kết quả tổng hợp khi run xong. Replay đếm từ `result.json` và đối chiếu summary khi có. |
 | `rescore_metrics.json` | Metrics của output rescore, gồm detection kinds theo arm và union cùng số model calls mới. |
 | `manifest.json` | Tên manifest của pipeline cũ. CLI modular nhận diện tên này để chặn ghi vào run cũ. |
 | `generation_frozen.json`, `keepalive/*.json` | Có thể gặp trong output cũ hoặc runner khác. File đầu ghi dấu vết generation, file sau ghi observer/keepalive usage. Modular replay hiện tại lấy kết quả từ task results. |
@@ -38,7 +37,6 @@ Khi đọc một task, đi theo `cohort.json` → `packet.json` → `calls/<call
 | `oracle_valid.json` | Input đã qua oracle và expected output tương ứng, kèm mapping về arm và thông tin reject. `evaluate_puts` dùng dữ liệu này trong context. |
 | `catalogue_measurements.json` | `measure_task_catalogues` ghi kết quả đo class, boundary và rule cho các arm dùng catalogue, dựa trên input đã qua bước kiểm tra của oracle. |
 | `evaluation/<put_id>_0.json`, `evaluation/<put_id>_retry_1.json` | Kết quả chạy từng PUT, gồm lần đầu và lần xác nhận khi cần. |
-| `oracle_<repeat>_cache.json`, `evaluation/<put_id>_*_cache.json` | Receipt đi cùng lần execute khi bật execution cache, ghi hit/miss và số input thực sự chạy. |
 | `result.json` | Kết quả đánh giá của một task, dùng cho reporting và replay. Có `inputs.json` mới xác nhận batch đã được lưu, còn `result.json` là dấu mốc evaluation của task. |
 
 ### Model calls — `tasks/<n>/calls/<call>/`
@@ -63,6 +61,7 @@ Các path ở đây nằm trong `tasks/<n>/`, trừ hai file gate ở cấp run.
 | `control_flow/base_<hash>.json` | Trace từ các base calls đã ghi, dùng khi cần bổ sung baseline coverage. |
 | `control_flow/response_<round>.json` | Response và thông tin call theo round của CF. |
 | `control_flow/generation.json` | Batch riêng của CF, gồm input được chọn, concept, rounds và trace evidence. |
+| `<vf3_arm>/round_<n>_feedback.json` | Kết quả đo membership trước oracle cho từng lượt VF3. Batch giữ `call_name` để tra request và response. |
 | `boundary_plan.json`, `boundary_arm.json` | Kế hoạch chia input budget theo PUT và kết quả gộp cho arm `boundary`. |
 | `boundary/soft_bva/<put_id>/{identity,inputs_prompt,result}.json` | Identity dùng để đối chiếu checkpoint, prompt và kết quả soft BVA theo từng PUT. |
 | `tool_generation.json` | Batch của tool generator với candidate ledger, preparation và tool receipts theo arm. |

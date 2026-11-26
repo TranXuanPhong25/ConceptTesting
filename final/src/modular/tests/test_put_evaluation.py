@@ -6,7 +6,6 @@ import pytest
 
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings, TaskContext
-from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.put_evaluation import evaluate_programs, evaluate_puts
 
 
@@ -25,9 +24,8 @@ def evaluation_context(directory, input_count):
     return context
 
 
-@pytest.mark.parametrize("use_cache", [False, True])
 @pytest.mark.parametrize("input_count", [0, 3])
-def test_first_pass_and_empty_batches_never_run_confirmation(tmp_path, monkeypatch, use_cache, input_count):
+def test_first_pass_and_empty_batches_never_run_confirmation(tmp_path, monkeypatch, input_count):
     observed_inputs = []
 
     def executor(job):
@@ -35,9 +33,8 @@ def test_first_pass_and_empty_batches_never_run_confirmation(tmp_path, monkeypat
         return {"tests": [{"status": "pass"} for record in job["tests"]]}
 
     monkeypatch.setattr("final.src.modular.put_evaluation.execute", executor)
-    cache = InputExecutionCache(tmp_path / "cache") if use_cache else None
     context = evaluation_context(tmp_path / "run", input_count)
-    evaluate_puts(context, execution_cache=cache)
+    evaluate_puts(context)
     assert len(observed_inputs) == input_count
     assert context.result["base_pass"] == 1
     assert context.result["outcomes"] == {"4": {"failing": [], "unstable": [], "retested": []}}
@@ -46,18 +43,16 @@ def test_first_pass_and_empty_batches_never_run_confirmation(tmp_path, monkeypat
 
     expected = context.result
     context.artifacts = ArtifactStore(context.artifacts.directory, read_only=True)
-    evaluate_puts(context, execution_cache=cache)
+    evaluate_puts(context)
     assert context.result == expected
     assert len(observed_inputs) == input_count
-    if use_cache:
-        next_run = evaluation_context(tmp_path / "next_run", input_count)
-        evaluate_puts(next_run, execution_cache=cache)
-        assert next_run.result == expected
-        assert len(observed_inputs) == input_count
+    next_run = evaluation_context(tmp_path / 'next_run', input_count)
+    evaluate_puts(next_run)
+    assert next_run.result == expected
+    assert len(observed_inputs) == 2 * input_count
 
 
-@pytest.mark.parametrize("use_cache", [False, True])
-def test_only_failures_are_retested_with_original_indices_and_separate_checkpoints(tmp_path, monkeypatch, use_cache):
+def test_only_failures_are_retested_with_original_indices_and_separate_checkpoints(tmp_path, monkeypatch):
     statuses = {
         0: ["pass"], 1: ["fail", "fail"], 2: ["pass"],
         3: ["timeout", "pass"], 4: ["error", "timeout"], 5: ["fail", "pass"],
@@ -77,13 +72,12 @@ def test_only_failures_are_retested_with_original_indices_and_separate_checkpoin
         return {"tests": results}
 
     monkeypatch.setattr("final.src.modular.put_evaluation.execute", executor)
-    cache = InputExecutionCache(tmp_path / "cache") if use_cache else None
     context = evaluation_context(tmp_path / "run", 6)
     context.inputs["arms"]["flaky_only"] = {}
     context.oracle["arm_indices"]["flaky_only"] = [3, 5]
     old_second_run = {"tests": [{"status": "fail"}] * 6}
     context.artifacts.write("tasks/7/evaluation/4_1.json", old_second_run)
-    evaluate_puts(context, execution_cache=cache)
+    evaluate_puts(context)
 
     assert attempts == {0: 1, 1: 2, 2: 1, 3: 2, 4: 2, 5: 2}
     assert set(observed_seeds) == {context.settings.reference_seed + context.task_number}
@@ -96,11 +90,6 @@ def test_only_failures_are_retested_with_original_indices_and_separate_checkpoin
     assert context.artifacts.read("tasks/7/evaluation/4_retry_1.json") == {
         "tests": [{"status": "fail"}, {"status": "pass"}, {"status": "timeout"}, {"status": "pass"}],
     }
-    if use_cache:
-        receipts = context.extensions["input_execution_cache"]
-        assert receipts["tasks/7/evaluation/4_0.json"]["executed_inputs"] == 6
-        assert receipts["tasks/7/evaluation/4_retry_1.json"]["executed_inputs"] == 4
-        assert receipts["tasks/7/evaluation/4_retry_1.json"]["repeat_index"] == 1
 
     def unexpected_execution(job):
         pytest.fail("Read-only replay executed a program")
@@ -108,12 +97,11 @@ def test_only_failures_are_retested_with_original_indices_and_separate_checkpoin
     monkeypatch.setattr("final.src.modular.put_evaluation.execute", unexpected_execution)
     expected = context.result
     context.artifacts = ArtifactStore(context.artifacts.directory, read_only=True)
-    evaluate_puts(context, execution_cache=cache)
+    evaluate_puts(context)
     assert context.result == expected
 
 
-@pytest.mark.parametrize("use_cache", [False, True])
-def test_real_worker_confirms_mismatches_and_exceptions_but_skips_passes(tmp_path, use_cache):
+def test_real_worker_confirms_mismatches_and_exceptions_but_skips_passes(tmp_path):
     context = evaluation_context(tmp_path / "run", 4)
     context.cohort_task["programs"][0]["code"] = (
         "def choose(xs):\n"
@@ -122,14 +110,24 @@ def test_real_worker_confirms_mismatches_and_exceptions_but_skips_passes(tmp_pat
         "    return 0\n"
     )
     context.oracle["tests"][1]["expected"] = "1"
-    cache = InputExecutionCache(tmp_path / "cache") if use_cache else None
-    evaluate_puts(context, execution_cache=cache)
+    evaluate_puts(context)
     assert context.result["outcomes"] == {
         "4": {"failing": [1, 3], "unstable": [], "retested": [1, 3]},
     }
-    if use_cache:
-        receipts = context.extensions["input_execution_cache"]
-        assert sum(receipt["executed_inputs"] for receipt in receipts.values()) == 6
+
+
+def test_inputs_do_not_share_process_state(tmp_path):
+    context = evaluation_context(tmp_path, 2)
+    context.cohort_task['programs'][0]['code'] = (
+        'import os\n'
+        'def choose(xs):\n'
+        '    seen = int(os.environ.get("CONCEPTTESTER_TEST_SEEN", "0"))\n'
+        '    os.environ["CONCEPTTESTER_TEST_SEEN"] = "1"\n'
+        '    return seen\n'
+    )
+    evaluate_puts(context)
+    checkpoint = context.artifacts.read('tasks/7/evaluation/4_0.json')
+    assert [test['actual'] for test in checkpoint['tests']] == ['0', '0']
 
 
 @pytest.mark.parametrize("checkpoint", ["4_0.json", "4_retry_1.json"])

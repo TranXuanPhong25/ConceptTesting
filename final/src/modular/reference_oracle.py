@@ -1,14 +1,15 @@
 """Admit generated inputs against trusted domain and twice-run reference oracle."""
 from __future__ import annotations
 
-from final.src.runtime.execution import execute
+from final.src.runtime.execution import execute_isolated_inputs as execute
+from final.src.runtime.contracts import bound_call_key
 from .call_builder import CallBuilder
-from .execution_cache import cached_execution
+from .cohort import base_call_keys
 from .input_contract import validate_input_literal
 from .references import HumanEvalPlusReferencePrograms
 
 
-def run_reference_oracle(context, *, execution_cache=None, reference_programs=None) -> dict | None:
+def run_reference_oracle(context, *, reference_programs=None) -> dict | None:
     """Validate input types/domain and compute expected outputs using pinned references."""
     if context.inputs is None:
         raise RuntimeError("Reference execution requires generated or saved inputs")
@@ -25,6 +26,7 @@ def run_reference_oracle(context, *, execution_cache=None, reference_programs=No
         input_types=context.metadata.get("input_types"),
     )
     type_rejections = {}
+    input_keys = {}
     original_arm_indices = {}
     for arm_name, arm_record in context.inputs["arms"].items():
         original_arm_indices[arm_name] = []
@@ -32,7 +34,7 @@ def run_reference_oracle(context, *, execution_cache=None, reference_programs=No
             original_arm_indices[arm_name].append(len(raw_inputs))
             try:
                 validate_input_literal(input_record)
-                builder.validate_call(input_record)
+                input_keys[len(raw_inputs)] = bound_call_key(builder.validate_call(input_record))
             except (ValueError, TypeError, KeyError, SyntaxError, RecursionError) as error:
                 type_rejections[len(raw_inputs)] = str(error)
             raw_inputs.append(input_record)
@@ -52,7 +54,7 @@ def run_reference_oracle(context, *, execution_cache=None, reference_programs=No
         relative_path = context.task_directory + f"/oracle_{repeat_index}.json"
         outcome = {"tests": []}
         if admitted_indices:
-            outcome = cached_execution(context, relative_path, job, repeat_index, execute, execution_cache)
+            outcome = context.artifacts.load_or_compute(relative_path, lambda: execute(job))
         if len(outcome["tests"]) != len(admitted_indices):
             raise ValueError("Reference result count does not match admitted inputs")
         reference_runs.append(dict(zip(admitted_indices, outcome["tests"])))
@@ -60,7 +62,7 @@ def run_reference_oracle(context, *, execution_cache=None, reference_programs=No
     rejected_inputs = []
     raw_to_valid_index = {}
     valid_index_by_input_key = {}
-    base_input_keys = set(context.cohort_task["base_input_keys"])
+    base_input_keys = base_call_keys(context.cohort_task, builder.signature)
     for raw_index, input_record in enumerate(raw_inputs):
         if raw_index in type_rejections:
             rejected_inputs.append({
@@ -90,19 +92,20 @@ def run_reference_oracle(context, *, execution_cache=None, reference_programs=No
             rejected_inputs.append({"index": raw_index, "reason": "unstable_reference"})
             continue
         input_key = first_reference_result["input_key"]
-        if input_key in base_input_keys:
+        if input_key in base_input_keys or input_keys[raw_index] in base_input_keys:
             rejected_inputs.append({"index": raw_index, "reason": "base_duplicate"})
             continue
         # VALIDATION END: domain/reference acceptance, repeat stability and base duplicates.
-        if input_key not in valid_index_by_input_key:
-            valid_index_by_input_key[input_key] = len(valid_tests)
+        call_key = input_keys[raw_index]
+        if call_key not in valid_index_by_input_key:
+            valid_index_by_input_key[call_key] = len(valid_tests)
             valid_tests.append({
                 "args": input_record["args"],
                 "kwargs": input_record["kwargs"],
                 "expected": first_reference_result["expected"],
-                "input_key": input_key,
+                "input_key": call_key,
             })
-        raw_to_valid_index[raw_index] = valid_index_by_input_key[input_key]
+        raw_to_valid_index[raw_index] = valid_index_by_input_key[call_key]
     arm_indices = {}
     for arm_name, raw_indices in original_arm_indices.items():
         unique_indices = []

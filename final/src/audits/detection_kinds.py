@@ -80,11 +80,13 @@ def strongest_kind(kinds):
     raise ValueError("No confirming input")
 
 
-def classify_arm(evaluation_directory, arm):
+def classify_arm(evaluation_directory, arm, *, task_ids=None):
     """Map (task_id, put_id) -> {kind, inputs} for every PUT the arm detected."""
     detections = {}
     for result_path in sorted(Path(evaluation_directory).glob("tasks/*/result.json")):
         result = read(result_path)
+        if task_ids is not None and result['task_id'] not in task_ids:
+            continue
         if result.get("skip") or arm not in result.get("arms", {}):
             continue
         arm_indices = set(result["arm_indices"][arm])

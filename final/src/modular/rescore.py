@@ -12,7 +12,6 @@ from final.src.runtime.artifacts import save
 from final.src.benchmarks.datasets import DatasetLoader
 from .artifacts import ArtifactStore
 from .context import PipelineSettings
-from .execution_cache import InputExecutionCache
 from .generators.frozen import FrozenInputsGenerator
 from .pipeline import BenchmarkPipeline
 
@@ -33,7 +32,7 @@ def methods_for_rescore(records):
     return tuple(SavedInputMethod(record["name"], record.get("configuration", {})) for record in records)
 
 
-def build_rescore_pipeline(source_directory, cohort_path, output_directory, *, cache_directory, read_only=False):
+def build_rescore_pipeline(source_directory, cohort_path, output_directory, *, read_only=False):
     source = ArtifactStore(source_directory, read_only=True)
     manifest = source.read("modular_manifest.json")
     generator = FrozenInputsGenerator(source_directory, methods=methods_for_rescore(manifest["arms"]))
@@ -49,10 +48,9 @@ def build_rescore_pipeline(source_directory, cohort_path, output_directory, *, c
     if artifacts.directory == source.directory or artifacts.directory.is_relative_to(source.directory):
         raise ValueError("Rescore requires a separate output directory")
     if not read_only and artifacts.directory.exists():
-        raise ValueError("Rescore requires a new output directory; the execution cache can be shared")
+        raise ValueError('Rescore requires a new output directory')
     pipeline = BenchmarkPipeline(cohort_path, artifacts, input_generator=generator,
-        settings=PipelineSettings(**manifest["settings"]), calls=None,
-        execution_cache=InputExecutionCache(cache_directory,read_only=read_only),
+        settings=PipelineSettings.from_snapshot(manifest["settings"]),
         reference_programs=reference, dataset=dataset)
     return pipeline, tasks, metadata
 
@@ -62,7 +60,6 @@ def main(arguments=None):
     parser.add_argument("--source-run", type=Path, required=True)
     parser.add_argument("--cohort", type=Path, required=True)
     parser.add_argument("--artifacts", type=Path, required=True)
-    parser.add_argument("--execution-cache", type=Path, default=Path("final/out/execution_cache"))
     parser.add_argument('--replay',action='store_true',help='Summarize saved evaluation results without executing programs')
     options = parser.parse_args(arguments)
     if options.replay:
@@ -70,8 +67,11 @@ def main(arguments=None):
         summary = Reporter.summarize_saved(ArtifactStore(options.artifacts, read_only=True))
         print(json.dumps({"arms": summary["arms"], "new_model_calls": 0, "new_native_calls": 0}))
         return 0
-    pipeline, tasks, metadata = build_rescore_pipeline(options.source_run, options.cohort, options.artifacts,
-                                                      cache_directory=options.execution_cache)
+    pipeline, tasks, metadata = build_rescore_pipeline(
+        options.source_run,
+        options.cohort,
+        options.artifacts,
+    )
     status = pipeline.artifacts.path("status.json")
     save(status, {"state": "running", "pid": os.getpid(), "updated_utc": time.time(),
                   "phase": "rescore-only", "new_model_calls": 0})
@@ -93,7 +93,7 @@ def main(arguments=None):
     save(status, {"state": "complete", "pid": os.getpid(), "updated_utc": time.time(),
                   "scored_tasks": summary["scored_tasks"], "new_model_calls": 0})
     print(json.dumps({"scored_tasks": summary["scored_tasks"], "arms": summary["arms"],
-                      "new_model_calls": 0, "cache": summary.get("input_execution_cache")}, indent=2))
+                      "new_model_calls": 0}, indent=2))
     return 0
 
 

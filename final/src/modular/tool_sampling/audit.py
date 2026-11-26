@@ -55,7 +55,7 @@ def source_contributions(rows, failing_ids):
     return result
 
 
-def run_tool_audit(context, config, execution_cache, reference_programs):
+def run_tool_audit(context, config, reference_programs):
     if context.oracle is None and not context.inputs.get('skip'):
         raise RuntimeError('Pool audit requires reference evaluation')
     if context.inputs.get('skip'):
@@ -66,14 +66,14 @@ def run_tool_audit(context, config, execution_cache, reference_programs):
         results[name] = context.artifacts.load_or_compute(
             path,
             lambda name=name, batch=batch: audit_arm(
-                context, name, batch, config, execution_cache, reference_programs
+                context, name, batch, config, reference_programs
             ),
         )
     context.extensions['tool_sampling'] = results
     return results
 
 
-def audit_arm(context, name, batch, config, execution_cache, reference_programs):
+def audit_arm(context, name, batch, config, reference_programs):
     pool = unique_pool(batch)
     # Include the frozen suite first so a cap never hides selected witnesses.
     ordered = sorted(pool, key=lambda row: (not row['selected'], row['dedup_group']))
@@ -85,8 +85,8 @@ def audit_arm(context, name, batch, config, execution_cache, reference_programs)
     audit_context = replace(context, artifacts=audit_artifacts, inputs={'task_id': context.task['task_id'],
         'arms': {'pool_all': {'inputs': records, 'catalogue_status': 'off'}}},
         oracle=None, result=None, extensions={})
-    run_reference_oracle(audit_context, execution_cache=execution_cache, reference_programs=reference_programs)
-    evaluate_puts(audit_context, execution_cache=execution_cache)
+    run_reference_oracle(audit_context, reference_programs=reference_programs)
+    evaluate_puts(audit_context)
     first_reference = audit_artifacts.read(context.task_directory + '/oracle_0.json')['tests']
     indices = {item['input_key']: index for index, item in enumerate(audit_context.oracle['tests'])}
     candidates_by_index = {}
@@ -128,6 +128,5 @@ def audit_arm(context, name, batch, config, execution_cache, reference_programs)
             'candidate_to_oracle_index': index_by_candidate,
             'tool_receipts': batch['tool_receipts'], 'preparation_error': batch['preparation_error'],
             'unique_dt_rules_lost_to_cap': batch['selected_unique_dt_rules_lost_to_cap'],
-            'cache_receipts': audit_context.extensions.get('input_execution_cache', {}),
             'parse_interface_gap': 'unknown: no automatic raw repair or inferred detection',
             'semantic_audit': 'pending'}

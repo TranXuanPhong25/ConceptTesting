@@ -6,6 +6,27 @@ import hashlib
 import json
 
 
+def frozen_value(value, *, legacy=False):
+    if isinstance(value, dict):
+        items = tuple(
+            (frozen_value(key, legacy=legacy), frozen_value(item, legacy=legacy))
+            for key, item in value.items()
+        )
+        return ('dict', tuple(sorted(items, key=repr)) if legacy else items)
+    if isinstance(value, (list, tuple)):
+        return (type(value).__name__, tuple(frozen_value(item, legacy=legacy) for item in value))
+    if isinstance(value, (set, frozenset)):
+        items = (frozen_value(item, legacy=legacy) for item in value)
+        return (type(value).__name__, tuple(sorted(items, key=repr)))
+    return (type(value).__name__, repr(value))
+
+
+def bound_call_key(arguments, *, legacy=False):
+    # Normalize binding order while preserving any dict passed as an argument.
+    ordered = dict(sorted(arguments.items(), key=lambda item: repr(item[0])))
+    return repr(frozen_value(ordered, legacy=legacy))
+
+
 def parse_json(text: str) -> dict:
     text = text.strip()
     if text.startswith("```") and text.endswith("```"):

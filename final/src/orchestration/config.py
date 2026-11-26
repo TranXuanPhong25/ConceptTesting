@@ -1,7 +1,6 @@
 """Serializable, unit-explicit benchmark configurations and offline budget previews."""
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 from pathlib import Path
@@ -26,7 +25,7 @@ COHORTS = {
 DEFAULTS = {'cohort': 'humaneval164', 'mode': 'batch', 'arms': ['plain', *CATALOGUE_ARM_NAMES],
     'task_numbers': [], 'inputs_per_task': 20, 'completion_tokens': DEFAULT_INPUT_TOKENS, 'context_tokens': DEFAULT_CONTEXT_TOKENS,
     'temperature': .7, 'input_seed': 314159, 'reference_seed': 271828, 'timeout_seconds': 8.0,
-    'per_put_base_examples': 12, 'scorer': 'confirm_first_failures', 'model_name': 'qwen3.5-27b-awq',
+    'scorer': 'confirm_first_failures', 'model_name': 'qwen3.5-27b-awq',
     'model_backend': 'qwen'}
 
 
@@ -34,6 +33,7 @@ def normalize(values, *, saved_run=False):
     """Resolve defaults, validate each config concern, then normalize task order."""
     validate_config_field_names(values)
     config = {**DEFAULTS, **values}
+    config.pop('per_put_base_examples', None)
     if 'catalogue' in values:
         if values['catalogue'] is not True:
             raise ValueError('catalogue is always enabled; disabling catalogue is not supported')
@@ -55,7 +55,9 @@ def normalize(values, *, saved_run=False):
 
 def validate_config_field_names(values):
     """Reject unknown fields, including credentials that must stay outside config."""
-    unknown_fields = set(values) - set(DEFAULTS) - {'tool_sampling', 'pynguin', 'tool_runs_dir', 'catalogue'}
+    unknown_fields = set(values) - set(DEFAULTS) - {
+        'tool_sampling', 'pynguin', 'tool_runs_dir', 'catalogue', 'per_put_base_examples',
+    }
     if unknown_fields:
         raise ValueError('Unknown config fields: ' + ', '.join(sorted(unknown_fields)))
 
@@ -128,7 +130,6 @@ def validate_generation_budgets(config):
         'context_tokens': (512, 131072),
         'input_seed': (0, 2147483483),
         'reference_seed': (0, 2147483483),
-        'per_put_base_examples': (1, 300),
     }
     for field_name, (lower, upper) in integer_limits.items():
         value = config[field_name]
@@ -160,11 +161,7 @@ def validate_scorer_and_served_model(config):
 
 def load_cohort(config):
     path = ROOT / COHORTS[config['cohort']]
-    cohort = json.loads(path.read_text())
-    expected = hashlib.sha256(json.dumps(cohort['tasks'], sort_keys=True, ensure_ascii=False).encode()).hexdigest()
-    # Validate the frozen cohort contents before deriving any run budget.
-    cohort['cohort_sha256'] = expected
-    return path, cohort
+    return path, json.loads(path.read_text())
 
 
 def preview(values):
@@ -175,7 +172,6 @@ def preview(values):
     # Validate task membership in this cohort, beyond the global HumanEval ID range.
     if set(selected)-set(available):
         raise ValueError('Selected tasks are absent from cohort')
-    target_count = cohort.get('development_selection', {}).get('target_programs', 10)
     eligible, skipped = [], []
     pynguin_owners = 0
     for number in selected:
@@ -199,14 +195,13 @@ def preview(values):
     for name in config['arms']:
         budget = retained_input_budget(name, config['inputs_per_task'])
         max_input_slots_by_arm[name] = budget if budget == 'pending' else len(eligible) * budget
-    result = {'config':config,'cohort_path':str(path),'cohort_sha256':cohort['cohort_sha256'],
-        'target_program_count':target_count,'selected_task_numbers':selected,
+    result = {'config':config,'cohort_path':str(path),
+        'selected_task_numbers':selected,
         'requested_task_count':len(selected),'eligible_task_count':len(eligible),
         'evaluated_base_pass_put_count':sum(row['base_pass_put_count'] for row in eligible),
         'logical_calls_by_arm':logical,'logical_call_cap':total_calls,
-        'max_input_slots_per_arm':len(eligible)*config['inputs_per_task'],
         'max_input_slots_by_arm':max_input_slots_by_arm,
-        'input_budget_unit':'per task per arm','per_put_generation_quota_histogram':{},
+        'input_budget_unit':'per task per arm',
         'eligible_tasks':eligible,'skips':skipped,
         'base_context':'spec/contract; no PUT outputs' if config['mode']=='tools' else 'original base tests',
         'parser':'shared named-arguments parser',

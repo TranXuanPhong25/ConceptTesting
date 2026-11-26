@@ -52,6 +52,28 @@ def test_plain_prompt_overflow_keeps_all_visible_puts(tmp_path):
     assert packet["required_prompt_tokens"] == 10000
 
 
+def test_oversized_vf3_does_not_block_plain_or_remove_puts(tmp_path, monkeypatch):
+    from final.src.modular.black_box import EpBvaArm
+    from final.src.modular.spec_obligation import RepairedControlFlowObligationArm
+
+    calls = SimpleNamespace(token_count=lambda messages: 10000 if 'VF3 HYBRID' in messages[-1]['content'] else 1)
+    context = make_context(tmp_path, calls)
+    plain = PlainArm()
+    obligation = RepairedControlFlowObligationArm()
+    generator = MethodInputGenerator((plain, EpBvaArm(), obligation))
+    monkeypatch.setattr(plain, 'run', lambda ctx: {'inputs': []})
+
+    def run_obligation(ctx):
+        assert set(ctx.packet['visible_put_ids']) == {0, 1}
+        return {'inputs': []}
+
+    monkeypatch.setattr(obligation, 'run', run_obligation)
+    generator.prepare_context(context)
+    batches = generator.generate(context)['arms']
+    assert batches['ep_bva_vf3_hybrid']['status'] == 'prompt_too_large'
+    assert set(batches) == {plain.name, 'ep_bva_vf3_hybrid', obligation.name}
+
+
 def test_default_shell_has_no_concept_or_witness_stages(tmp_path, monkeypatch):
     path = write_cohort(tmp_path / "cohort.json")
     artifacts = ArtifactStore(tmp_path / "run")
@@ -74,7 +96,7 @@ def test_injected_generator_needs_no_arm_packet_model_or_concepts(tmp_path, monk
     artifacts = ArtifactStore(tmp_path / "run")
     generator = SavedInputsGenerator()
     pipeline = BenchmarkPipeline(path, artifacts, input_generator=generator,
-                                 settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
+                                 settings=PipelineSettings(), reference_programs=TaskReferencePrograms())
     summary = pipeline.run([TASK], {TASK["task_id"]: META})
     assert summary["arms"]["new_method"]["detected"] == 1
     assert "input_context" not in [e["stage"] for e in pipeline.stage_events]
@@ -83,7 +105,7 @@ def test_injected_generator_needs_no_arm_packet_model_or_concepts(tmp_path, monk
     assert pipeline.run([TASK], {TASK["task_id"]: META}) == summary
     assert generator.invocations == 1
     replay = BenchmarkPipeline(path, ArtifactStore(artifacts.directory, read_only=True),
-                               input_generator=SavedInputsGenerator(), settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
+                               input_generator=SavedInputsGenerator(), settings=PipelineSettings(), reference_programs=TaskReferencePrograms())
     assert replay.run([TASK], {TASK["task_id"]: META}) == summary
     assert replay.input_generator.invocations == 0
 
@@ -93,7 +115,7 @@ def test_any_input_producing_stage_can_use_method_adapter(tmp_path, monkeypatch)
     generator = MethodInputGenerator([CustomInputMethod()], prepare_packet=False)
     artifacts = ArtifactStore(tmp_path / "run")
     pipeline = BenchmarkPipeline(path, artifacts, input_generator=generator,
-                                 settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
+                                 settings=PipelineSettings(), reference_programs=TaskReferencePrograms())
     summary = pipeline.run([TASK], {TASK["task_id"]: META})
     assert summary["arms"]["another_method"]["valid_inputs"] == 1
     assert summary["arms"]["another_method"]["detected"] == 1
@@ -108,7 +130,7 @@ def test_invalid_calls_are_saved_and_rejected_without_execution(tmp_path, monkey
     monkeypatch.setattr("final.src.modular.reference_oracle.execute", lambda job: pytest.fail("Reference ran"))
     generator = SavedInputsGenerator(arguments)
     pipeline = BenchmarkPipeline(path, artifacts, input_generator=generator,
-                                 settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
+                                 settings=PipelineSettings(), reference_programs=TaskReferencePrograms())
     summary = pipeline.run([TASK], {TASK["task_id"]: META})
     assert summary["arms"]["new_method"]["valid_inputs"] == 0
     assert summary["tested_base_pass"] == summary["arms"]["new_method"]["tested_base_pass"] == 0
@@ -122,7 +144,7 @@ def test_saved_inputs_are_loaded_despite_generator_configuration_changes(tmp_pat
     path = write_cohort(tmp_path / "cohort.json")
     artifacts = ArtifactStore(tmp_path / "run")
     BenchmarkPipeline(path, artifacts, input_generator=SavedInputsGenerator(),
-                      settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})
+                      settings=PipelineSettings(), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})
     write = artifacts.write
 
     def reject_input_rewrite(relative_path, data):
@@ -133,7 +155,7 @@ def test_saved_inputs_are_loaded_despite_generator_configuration_changes(tmp_pat
     monkeypatch.setattr(artifacts, "write", reject_input_rewrite)
     changed = SavedInputsGenerator("([10, 11],)")
     BenchmarkPipeline(path, artifacts, input_generator=changed,
-                      settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})
+                      settings=PipelineSettings(), reference_programs=TaskReferencePrograms()).run([TASK], {TASK["task_id"]: META})
     assert changed.invocations == 0
 
 
@@ -141,7 +163,7 @@ def test_all_injected_inputs_freeze_before_reference_across_tasks(tmp_path):
     tasks = [TASK, {**TASK, "task_id": "HumanEval/8"}]
     path = write_cohort(tmp_path / "cohort.json", tasks)
     pipeline = BenchmarkPipeline(path, ArtifactStore(tmp_path / "run"), input_generator=SavedInputsGenerator(),
-                                 settings=PipelineSettings(target_programs=1), reference_programs=TaskReferencePrograms())
+                                 settings=PipelineSettings(), reference_programs=TaskReferencePrograms())
     pipeline.run(tasks, {task["task_id"]: META for task in tasks})
     generated_positions = [index for index, event in enumerate(pipeline.stage_events)
                            if event["stage"] == "input_generation" and event["state"] == "complete"]

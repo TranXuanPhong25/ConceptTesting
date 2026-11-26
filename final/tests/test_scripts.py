@@ -235,7 +235,7 @@ def test_random_pipeline_and_evaluate_saved_end_to_end(tmp_path, monkeypatch, ca
             "--output", str(eval_dir),
             "--dataset", "he-py",
             "--target-programs", "2",
-            "--no-execution-cache",
+
             "--per-task",
         ]
     )

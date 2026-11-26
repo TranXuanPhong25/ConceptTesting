@@ -11,9 +11,7 @@ from .artifacts import ArtifactStore
 from .calls import RecordedModelCalls
 from .pipeline import BenchmarkPipeline
 from .context import DEFAULT_CONTEXT_TOKENS, DEFAULT_INPUT_TOKENS, PipelineSettings
-from .execution_cache import InputExecutionCache
 from . import available_arms, default_arms, selected_arms
-from .control_flow import ControlFlowFourToolArm
 from final.src.runtime.artifacts import save
 
 
@@ -53,13 +51,8 @@ def load_options(arguments=None):
                         help="Opt-in tool pipeline JSON: {budgets: {...}, preparations: optional task map}")
     parser.add_argument("--pynguin-config", type=Path, help="Opt-in PynguinSettings JSON; upstream input baseline")
     parser.add_argument("--task-ids", nargs="+", help="Explicit subset, e.g. HumanEval/0 HumanEval/18")
-    parser.add_argument("--target-programs", type=positive_integer, default=10,
-                        help="Nominal number of generated programs per task, recorded in run settings")
     parser.add_argument("--input-budget", type=positive_integer, default=20,
                         help="Input budget per arm per task. VF3 uses a fixed budget.")
-    parser.add_argument("--execution-cache", type=Path, default=Path("final/out/execution_cache"),
-                        help="Shared per-input reference/PUT execution cache")
-    parser.add_argument("--no-execution-cache", action="store_true", help="Use the original batch execution without shared input caching")
     options = parser.parse_args(arguments)
     return parser, options
 
@@ -67,51 +60,50 @@ def load_options(arguments=None):
 def load_pipeline_settings(parser, options):
     if options.pynguin_config and (options.tool_config or options.arms):
         parser.error('--pynguin-config cannot be combined with other generator options')
-    tool_generator = None
+    tool_config = pynguin_settings = None
     if options.pynguin_config:
-        from .pynguin import PynguinInputGenerator, PynguinSettings
+        from .pynguin import PynguinSettings
         pynguin_settings = PynguinSettings(**json.loads(options.pynguin_config.read_text()))
         if options.input_budget > 20:
             parser.error('Pynguin requires --input-budget <=20')
-        tool_generator = PynguinInputGenerator(pynguin_settings)
     if options.tool_config:
         if options.arms:
             parser.error("--tool-config cannot be combined with --arms")
-        from .tool_sampling import ToolInputGenerator
         document = json.loads(options.tool_config.read_text())
         if not isinstance(document, dict) or set(document) - {"budgets", "preparations", "semantic_controls"}:
             parser.error("Tool config accepts budgets, optional preparations and semantic_controls only")
-        tool_generator = ToolInputGenerator(document.get("budgets"), preparations=document.get("preparations"),
-                                           semantic_controls=document.get("semantic_controls"))
-    arms = selected_arms(options.arms) if options.arms else default_arms()
-    if options.tool_runs_dir is not None:
-        if not any(arm.name == "control_flow_4tool" for arm in arms):
-            parser.error("--tool-runs-dir requires control_flow_4tool in --arms")
-        arms = tuple(
-            ControlFlowFourToolArm(tool_runs_dir=options.tool_runs_dir)
-            if arm.name == "control_flow_4tool" else arm
-            for arm in arms
-        )
+        tool_config = document
+    if options.tool_runs_dir is not None and 'control_flow_4tool' not in (options.arms or ()):
+        parser.error('--tool-runs-dir requires control_flow_4tool in --arms')
+    arms = None
+    if tool_config is None and pynguin_settings is None:
+        arms = selected_arms(options.arms, tool_runs_dir=options.tool_runs_dir) if options.arms else default_arms()
     if options.input_tokens + 128 >= options.context_tokens:
         parser.error("Completion reserve must leave prompt context")
-    settings = PipelineSettings(target_programs=options.target_programs, input_budget=options.input_budget,
-                                input_tokens=options.input_tokens, context_tokens=options.context_tokens)
+    settings = PipelineSettings(
+        input_budget=options.input_budget,
+        input_tokens=options.input_tokens,
+        context_tokens=options.context_tokens,
+    )
     if options.pynguin_config:
         pynguin_settings.validate_environment()
-    return settings, arms, tool_generator
+    return settings, arms, tool_config, pynguin_settings
 
 
-def construct_pipeline(parser, options, artifacts, settings, arms, tool_generator):
+def construct_pipeline(
+    parser,
+    options,
+    artifacts,
+    settings,
+    arms,
+    tool_config,
+    pynguin_settings,
+):
     calls = None
     model = None
     if artifacts.exists("manifest.json") or (artifacts.exists("status.json") and not artifacts.exists("modular_manifest.json")):
         parser.error("Use a new --artifacts directory for a modular run")
-    if tool_generator is None:
-        requires_model = any(arm.uses_model for arm in arms)
-    elif hasattr(tool_generator, "requires_model"):
-        requires_model = tool_generator.requires_model
-    else:
-        requires_model = getattr(tool_generator, "preparations", None) is None
+    requires_model = arms is not None or (tool_config is not None and tool_config.get('preparations') is None)
     if requires_model:
         from final.src.models import create_model
         model = create_model(
@@ -120,18 +112,17 @@ def construct_pipeline(parser, options, artifacts, settings, arms, tool_generato
             context=options.context_tokens,
         )
         calls = RecordedModelCalls(model, artifacts)
-    cache = False if options.no_execution_cache else InputExecutionCache(options.execution_cache)
     pipeline = BenchmarkPipeline(
         options.cohort,
         artifacts,
         calls=calls,
-        arms=None if tool_generator else arms,
-        input_generator=tool_generator,
+        arms=arms,
+        tool_config=tool_config,
+        pynguin_settings=pynguin_settings,
         settings=settings,
-        execution_cache=cache,
         dataset=DatasetLoader('HE-py'),
     )
-    return pipeline, model
+    return pipeline
 
 
 def prepare_pipeline(parser, options):
@@ -158,16 +149,23 @@ def main(arguments=None):
                 "mode": "replay",
                 "scored_tasks": summary["scored_tasks"],
                 "arms": summary["arms"],
-                "stage_events": 0,
             },
             indent=2,
         )
         print(results)
         return 0
-    settings, arms, tool_generator = load_pipeline_settings(parser, options)
+    settings, arms, tool_config, pynguin_settings = load_pipeline_settings(parser, options)
     tasks, metadata = prepare_pipeline(parser, options)
     artifacts = ArtifactStore(options.artifacts)
-    pipeline, model = construct_pipeline(parser, options, artifacts, settings, arms, tool_generator)
+    pipeline = construct_pipeline(
+        parser,
+        options,
+        artifacts,
+        settings,
+        arms,
+        tool_config,
+        pynguin_settings,
+    )
     status_path = artifacts.path("status.json")
     status = {"state": "running", "pid": os.getpid(), "updated_utc": time.time()}
     save(status_path, status)
@@ -197,7 +195,6 @@ def main(arguments=None):
         "mode": options.mode,
         "scored_tasks": summary["scored_tasks"],
         "arms": summary["arms"],
-        "stage_events": len(pipeline.stage_events),
     }
     print(json.dumps(result, indent=2))
     return 0

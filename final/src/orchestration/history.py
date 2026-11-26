@@ -69,7 +69,7 @@ def inspect_run(directory):
     source=directory/'generation' if (directory/'generation/tasks').exists() else directory
     responses=list(source.glob('tasks/*/calls/*/response.json'))
     received=len(responses)
-    usage=result.get('writer_usage') or result.get('source_generation_usage') or result.get('tester_calls',{})
+    usage = result.get('tester_calls') or result.get('writer_usage') or result.get('source_generation_usage', {})
     if usage:received=usage.get('received',received)
     description=clean({'source_state':state,'progress':progress,'received_responses':received,
         'metrics':metrics,'error':status.get('error'),'original_oracle_warning':directory.name=='v11_concept_inputs'})

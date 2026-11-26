@@ -40,8 +40,19 @@ def _measure_generation_time(discover):
     return measured
 
 
-def _round_log(round_index, family, targets, *, errors, repairs, sampling,
-               concept_checks, ledger_rows, llm_count, sampled_count):
+def _round_log(
+    round_index,
+    family,
+    targets,
+    *,
+    errors,
+    repairs,
+    sampling,
+    concept_checks,
+    ledger_rows,
+    llm_count,
+    sampled_count,
+):
     return {
         "round": round_index,  # Vị trí trong plan, đếm từ 0.
         "target_family": family,  # Nhóm CFG.

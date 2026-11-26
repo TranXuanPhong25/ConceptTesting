@@ -291,7 +291,7 @@ def test_control_flow_splits_prompt_and_traces_each_base_pass_put(
             return ModelResponse(json.dumps(raw), finish_reason='stop')
 
     ctx = context(tmp_path, Calls())
-    ctx.packet['skip'] = 'prompt_too_large'
+    ctx.packet['prompt_tokens'] = {'plain': ctx.settings.context_tokens}
     ctx.cohort_task['programs'] = [{**program(), 'id': f'p{n}'} for n in range(7)]
     arm = ControlFlowArm()
     monkeypatch.setattr(arm, 'trace', lambda ctx, pr, calls, **kwargs: [

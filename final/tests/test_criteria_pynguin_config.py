@@ -64,11 +64,11 @@ def test_missing_runtime_blocks_worker_before_endpoint_or_result(tmp_path, monke
 
 
 @pytest.mark.parametrize('name', ['ep_bva_vf4', 'decision_table_vf4'])
-def test_removed_vf4_arms_are_rejected_and_v2_is_kept(name):
+def test_removed_vf4_arms_are_rejected_and_vf3_is_kept(name):
     from final.src.modular import selected_arms
     with pytest.raises(ValueError):selected_arms([name])
     with pytest.raises(ValueError):config.normalize({'arms':[name]})
-    assert selected_arms(['ep_bva_v2','decision_table_v2','control_flow'])
+    assert selected_arms(['ep_bva_vf3_hybrid', 'decision_table_vf3_hybrid', 'control_flow'])
 
 
 def test_removed_hybrid_mode_is_rejected():

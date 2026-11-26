@@ -36,7 +36,7 @@ async def adapter_benchmark(
     dataset: Literal['mbpp']='mbpp',
     candidate_path: str='',
     task_numbers: list[int]=[],
-    arms: list[Literal['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid','control_flow','control_flow_4tool']]=['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid'],
+    arms: list[Literal['plain','ep_bva_single','decision_table_single','control_flow','control_flow_4tool']]=['plain','ep_bva_single','decision_table_single'],
     backend: Literal['qwen','vertex','openrouter']='qwen',
     model_name: str | None=None,
     inputs_per_task: int=20,

@@ -2,30 +2,36 @@
 
 
 def default_arms():
+    return selected_arms(('plain',))
+
+
+def arm_factories():
     from .plain import PlainArm
-
-    return (PlainArm(),)
-
-
-def available_arms():
     from .black_box import VF3_HYBRID_ARMS
     from .control_flow import ControlFlowArm, ControlFlowFourToolArm
     from .spec_obligation import RepairedControlFlowObligationArm
 
-    return (
-        *default_arms(),
-        *(arm() for arm in VF3_HYBRID_ARMS),
-        ControlFlowArm(),
-        ControlFlowFourToolArm(),
-        RepairedControlFlowObligationArm(),
-    )
+    return {
+        PlainArm.name: PlainArm,
+        **{arm.name: arm for arm in VF3_HYBRID_ARMS},
+        ControlFlowArm.name: ControlFlowArm,
+        ControlFlowFourToolArm.name: ControlFlowFourToolArm,
+        RepairedControlFlowObligationArm.name: RepairedControlFlowObligationArm,
+    }
 
 
-def selected_arms(names):
-    available = {arm.name: arm for arm in available_arms()}
+def available_arms():
+    return tuple(factory() for factory in arm_factories().values())
+
+
+def selected_arms(names, *, tool_runs_dir=None):
+    factories = arm_factories()
     result = []
     for name in names:
-        if name not in available:
+        if name not in factories:
             raise ValueError(f"Unknown input-generation method: {name}")
-        result.append(available[name])
+        if name == 'control_flow_4tool':
+            result.append(factories[name](tool_runs_dir=tool_runs_dir))
+        else:
+            result.append(factories[name]())
     return tuple(result)

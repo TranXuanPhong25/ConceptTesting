@@ -319,9 +319,7 @@ def main(arguments: list[str] | None = None) -> int:
         )
 
     arms = selected_arms(options.arms)
-    target_programs = max(1, max(cohort_by_id[t["task_id"]].get("generated", 1) for t in selected))
     settings = PipelineSettings(
-        target_programs=target_programs,
         input_budget=options.input_budget,
         input_tokens=options.input_tokens,
         context_tokens=options.context_tokens,
@@ -351,7 +349,6 @@ def main(arguments: list[str] | None = None) -> int:
         arms=arms,
         settings=settings,
         calls=calls,
-        execution_cache=False,
         dataset=dataset,
         on_step=on_step,
     )

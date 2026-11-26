@@ -100,8 +100,6 @@ def prepare(source, directory, *, native_lock=None):
                 imported.append({"source": str(path), "destination": str(destination), "sha256": expected})
         save(directory / "plan.json", {"source": str(source), "runtime": str(runtime),
             "cohort": read(source / "launch_plan.json")["cohort"], "settings": manifest["settings"],
-            "execution_cache": next(stage["configuration"]["execution_cache"]["directory"]
-                for stage in manifest["stages"] if stage["name"] == "put_evaluation"),
             "tasks": manifest["tasks"], "sandbox": descriptor, "new_model_calls": 0,
             "imported_task_results": len(list(source.glob("tasks/*/result.json"))),
             "scope": "evaluation only; original frozen runtime/scoring and exact source input ledger",
@@ -121,7 +119,6 @@ def worker(directory):
     from final.src.modular.context import PipelineSettings
     from final.src.modular.cohort import call_usage
     from final.src.benchmarks.datasets import load_tasks, load_metadata
-    from final.src.modular.execution_cache import InputExecutionCache
     from final.src.modular.generators.frozen import FrozenInputsGenerator
     from final.src.modular.pipeline import BenchmarkPipeline
     from final.src.runtime.execution import execute
@@ -163,10 +160,10 @@ def worker(directory):
             methods = FrozenPackets(source)
             tasks = [task for task in load_tasks() if task["task_id"] in plan["tasks"]]
             metadata = load_metadata()
-            settings = PipelineSettings(**plan["settings"])
+            settings = PipelineSettings.from_snapshot(plan["settings"])
             for attempt in range(2):
                 pipeline = BenchmarkPipeline(Path(plan["cohort"]), ArtifactStore(directory), input_generator=methods,
-                    settings=settings, execution_cache=InputExecutionCache(Path(plan["execution_cache"])))
+                    settings=settings)
                 save(directory / "status.json", {"state": "running", "pid": os.getpid(), "phase": "evaluation_only",
                      "new_model_calls": 0, "infrastructure_attempt": attempt + 1})
                 try:
@@ -180,7 +177,7 @@ def worker(directory):
                     smoke()
 
             replay = BenchmarkPipeline(Path(plan["cohort"]), ArtifactStore(directory, read_only=True), input_generator=FrozenPackets(source),
-                settings=settings, execution_cache=InputExecutionCache(pipeline.execution_cache.directory, read_only=True))
+                settings=settings)
             if replay.run(tasks, metadata) != summary:
                 raise ValueError("Read-only replay differs")
 

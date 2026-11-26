@@ -13,7 +13,7 @@ import sys
 from final.src.runtime.artifacts import save
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.calls import RecordedModelCalls
-from final.src.orchestration.worker import checksum, load_model_environment, private_endpoint
+from final.src.orchestration.worker import load_model_environment, private_endpoint
 from .datasets import DATA
 from .pipeline import normalize, preview, tasks_for, load_candidates, run_benchmark
 from .language_runtime import execute_program
@@ -34,12 +34,11 @@ def prepare(values, directory):
     sources = [p for p in (ROOT/'final/src').rglob('*')
         if p.is_file() and 'tests' not in p.parts and '__pycache__' not in p.parts and p.suffix in ('.py','.json')]
     sources += [ROOT/'final/__init__.py', ROOT/'final/data/humaneval.jsonl', ROOT/'final/data/contracts.json', *DATA.glob('*')]
-    hashes = {}
     for source in sources:
         target = runtime / source.relative_to(ROOT)
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source, target); target.chmod(0o444)
-        hashes[str(target)] = checksum(target)
+        shutil.copyfile(source, target)
+        target.chmod(0o444)
     save(directory/'config_snapshot.json', config)
     save(directory/'preview.json', description)
     save(directory/'tasks_snapshot.json', tasks)
@@ -49,9 +48,6 @@ def prepare(values, directory):
         resolved_tools = (ROOT / config['tool_runs_dir']).resolve() if config.get('tool_runs_dir') else (ROOT / 'final/out/mbppplus_put_pytest_tools_20261122')
         plan['tool_runs_dir'] = str(resolved_tools)
     save(directory/'launch_plan.json', plan)
-    for name in ('config_snapshot.json','tasks_snapshot.json','cohort.json','launch_plan.json','preview.json'):
-        hashes[str(directory/name)] = checksum(directory/name)
-    save(directory/'source_snapshot.json', {'sources':hashes, 'archive':{}})
     save(directory/'status.json', {'state':'prepared', 'new_model_calls':0, 'cohort_status':description['cohort_status']})
     return description
 

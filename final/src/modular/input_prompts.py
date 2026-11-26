@@ -45,17 +45,9 @@ def compact_source(source):
     return '\n'.join(f'{i+1}: {line.rstrip()}' for i,line in enumerate(lines) if line.strip())
 
 
-def input_prompt_blocks(task, programs, contract, budget, *, prior_stage_inputs=(), extra_base_tests=''):
-    augmented_base = ''
-    if extra_base_tests:
-        augmented_base += '\n' + extra_base_tests.rstrip() + '\n'
-    if prior_stage_inputs:
-        augmented_base = ('\nADDITIONAL BASE INPUTS FROM EARLIER STAGES (no expected outputs):\n'
-            'Treat these calls as part of the base suite. Use their source stage and supplied '
-            'technique labels to understand what was exercised. Derive which feasible decision-table '
-            'rules are still missing from the actual calls and generate distinct inputs for those rules. '
-            'Technique labels are hypotheses. Do not repeat these calls.\n'
-            + json.dumps(prior_stage_inputs, ensure_ascii=False, separators=(',', ':')) + '\n')
+def input_prompt_blocks(task, programs, contract, budget, *, extra_base_tests=''):
+    augmented_base = '\n' + extra_base_tests.rstrip() + '\n' if extra_base_tests else ''
+
     def intro(budget, output_scope, size_guidance=""):
         size = "small, " if size_guidance else ""
         return f"""Generate up to {budget} {size}distinct new calls to expose specification violations
@@ -101,9 +93,13 @@ def render_input_prompt(packet, variant="shared"):
     return common
 
 
-def structured_input_prompt(task, programs, contract, budget, *, prior_stage_inputs=(), extra_base_tests=''):
+def structured_input_prompt(task, programs, contract, budget, *, extra_base_tests=''):
     """Render the flat prompt used by the historical MBPP Pynguin runner."""
-    return render_input_prompt({"prompt_blocks": input_prompt_blocks(
-        task, programs, contract, budget,
-        prior_stage_inputs=prior_stage_inputs, extra_base_tests=extra_base_tests,
-    )})
+    blocks = input_prompt_blocks(
+        task,
+        programs,
+        contract,
+        budget,
+        extra_base_tests=extra_base_tests,
+    )
+    return render_input_prompt({'prompt_blocks': blocks})

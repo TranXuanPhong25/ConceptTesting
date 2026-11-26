@@ -19,11 +19,17 @@ class ModelCalls(Protocol):
 
     def token_count(self, messages: list[dict[str, str]]) -> int: ...
 
-    def complete(self, task_number: int, call_name: str, messages: list[dict[str, str]],
-                 *, temperature: float, max_tokens: int, seed: int, response_format: dict | None = None) -> ModelResponse: ...
-
-    def complete_structured(self, task_number: int, call_name: str, messages: list[dict[str, str]],
-                            *, schema: dict, temperature: float, max_tokens: int, seed: int) -> ModelResponse: ...
+    def complete(
+        self,
+        task_number: int,
+        call_name: str,
+        messages: list[dict[str, str]],
+        *,
+        temperature: float,
+        max_tokens: int,
+        seed: int,
+        response_format: dict | None = None,
+    ) -> ModelResponse: ...
 
 
 @dataclass(frozen=True)
@@ -33,12 +39,16 @@ class PipelineSettings:
     input_temperature: float = .7
     input_seed: int = 314159
     reference_seed: int = 271828
-    writer_seed: int = 20261030
     context_tokens: int = DEFAULT_CONTEXT_TOKENS
     timeout_seconds: float = 8
-    target_programs: int = 10
-    writer_rounds: int = 10
     scorer: str = "confirm_first_failures"
+
+    @classmethod
+    def from_snapshot(cls, settings):
+        settings = dict(settings)
+        for name in ('target_programs', 'writer_rounds', 'writer_seed'):
+            settings.pop(name, None)
+        return cls(**settings)
 
 
 @dataclass

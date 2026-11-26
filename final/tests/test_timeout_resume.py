@@ -42,7 +42,7 @@ def test_resume_timeout_eight_keeps_source_and_received_generation_bytes(stopped
     assert receipts['source']==str(source)
     assert receipts['config_amendment']['previous']==3
     assert receipts['config_amendment']['current']==8
-    assert receipts['original_writer_usage']['received']==1
+    assert receipts['original_tester_calls']['received'] == 1
     assert worker.read(target/'launch_plan.json')['resume_from']==str(source)
 
 

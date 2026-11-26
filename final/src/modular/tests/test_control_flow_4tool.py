@@ -405,7 +405,7 @@ def test_humaneval_registry_orchestration_preset_prepare_and_cli_wiring(tmp_path
         "--arms", "control_flow_4tool", "--tool-runs-dir", str(tmp_path),
         "--context-tokens", "20480", "--input-tokens", "4096",
     ])
-    _, arms, _ = modular_run.load_pipeline_settings(parser, options)
+    _, arms, _, _ = modular_run.load_pipeline_settings(parser, options)
     assert isinstance(arms[0], ControlFlowFourToolArm)
     assert arms[0].tool_runs_dir == str(tmp_path)
 

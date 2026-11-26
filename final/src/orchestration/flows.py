@@ -147,7 +147,6 @@ async def benchmark(
     input_seed:Annotated[int,Field(title='Input generation seed',ge=0,le=2147483483)]=314159,
     reference_seed:Annotated[int,Field(title='Reference and PUT seed',ge=0,le=2147483483)]=271828,
     timeout_seconds:Annotated[float,Field(title='Native timeout per input (seconds)',ge=.1,le=60)]=8,
-    per_put_base_examples:Annotated[int,Field(title='Legacy base examples field',ge=1,le=300,description='Retained for existing configuration snapshots.')]=12,
     scorer:Annotated[Literal['confirm_first_failures','full_two_repeats'],Field(title='Scorer repeat policy')]='confirm_first_failures',
     model_name:Annotated[str | None,Field(title='Served model name',min_length=1,max_length=120)]=None,
     model_backend:Annotated[Literal['qwen','vertex','openrouter'],Field(title='Model backend')]='qwen',
@@ -170,7 +169,6 @@ async def benchmark(
         input_seed: Seed plus task number for generation requests; it is not offset by PUT ID.
         reference_seed: Seed plus task number for domain/reference/PUT execution.
         timeout_seconds: Native execution timeout per input.
-        per_put_base_examples: Legacy configuration field.
         scorer: confirm_first_failures runs a second PUT check only after a first failure. full_two_repeats runs the historical full repeat policy; both arms in a run use the same scorer.
         model_name: Model ID served by the selected backend.
         model_backend: Qwen, Vertex AI hoặc OpenRouter.
@@ -248,7 +246,7 @@ async def resume_saved_batch(source_directory:str, timeout_seconds:float | None=
         imports = json.loads((directory/'import_receipts.json').read_text())
         grant = imports['retry_grant']
         await create_markdown_artifact(key='resume-retry-grant', markdown=(
-            f"Resume từ `{source_directory}`, giữ {imports['original_writer_usage']['received']} response đã lưu. "
+            f"Resume từ `{source_directory}`, giữ {imports['original_tester_calls']['received']} response đã lưu. "
             f"Cho phép retry HTTP 404 của đúng call `{grant['call']}` trong giới hạn {grant['max_attempts']} attempts."))
     while active_external_writers(exclude=directory):
         get_run_logger().info('Waiting for model writer on the same endpoint before resuming.')

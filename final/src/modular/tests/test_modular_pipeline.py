@@ -2,7 +2,7 @@
 from dataclasses import replace
 import pytest
 from final.src.modular.artifacts import ArtifactStore
-from final.src.modular.calls import CachedModelCalls, RecordedModelCalls
+from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.context import PipelineSettings
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.modular.references import TaskReferencePrograms
@@ -14,7 +14,7 @@ from final.src.modular.tests.test_input_generator import SavedInputsGenerator
 def pipeline_at(tmp_path):
     cohort = write_cohort(tmp_path / "cohort.json")
     return BenchmarkPipeline(cohort, ArtifactStore(tmp_path / "run"),
-        input_generator=SavedInputsGenerator(), settings=PipelineSettings(target_programs=1),
+        input_generator=SavedInputsGenerator(), settings=PipelineSettings(),
         reference_programs=TaskReferencePrograms())
 
 
@@ -36,8 +36,7 @@ def test_pipeline_selects_calls_for_artifact_mode(tmp_path, read_only):
     calls = object()
     pipeline = BenchmarkPipeline(cohort, artifacts, calls=calls)
     if read_only:
-        assert isinstance(pipeline.calls, CachedModelCalls)
-        assert pipeline.calls.artifacts is artifacts
+        assert pipeline.calls is None
     else:
         assert pipeline.calls is calls
 
@@ -59,7 +58,7 @@ def test_manifest_records_current_settings_without_hash_guards(tmp_path):
     pipeline = pipeline_at(tmp_path)
     pipeline.run([TASK], {TASK["task_id"]: META})
     pipeline.settings = replace(pipeline.settings, input_seed=7)
-    pipeline.write_manifest([TASK], {TASK["task_id"]: {**META, "atol": 1}})
+    pipeline.write_manifest([TASK])
     manifest = pipeline.artifacts.read("modular_manifest.json")
     assert manifest["settings"]["input_seed"] == 7
     assert "protocol" not in manifest
@@ -123,6 +122,24 @@ def test_read_only_summary_can_be_rebuilt_from_results(tmp_path, monkeypatch):
     assert replay.run([TASK], {TASK["task_id"]: META})["arms"] == expected["arms"]
 
 
+def test_replay_drops_counts_from_a_stale_summary(tmp_path):
+    from final.src.modular.reporting import Reporter
+
+    artifacts = ArtifactStore(tmp_path)
+    artifacts.write('tasks/7/result.json', {
+        'task_id': 'HumanEval/7',
+        'base_pass': 2,
+        'arms': {'plain': {'valid_inputs': 1, 'detected_put_ids': [0]}},
+    })
+    artifacts.write('modular_summary.json', {
+        'arms': {'plain': {'detected': 5}},
+        'detection_kinds': {'plain': {'wrong_value': 5}},
+    })
+    replay = Reporter.summarize_saved(artifacts)
+    assert replay['arms']['plain']['detected'] == 1
+    assert 'detection_kinds' not in replay
+
+
 @pytest.mark.parametrize("read_only", [False, True])
 def test_legacy_run_directory_is_rejected_without_modifying_it(tmp_path, read_only):
     pipeline = pipeline_at(tmp_path)
@@ -131,6 +148,6 @@ def test_legacy_run_directory_is_rejected_without_modifying_it(tmp_path, read_on
     original = path.read_bytes()
     pipeline.artifacts = ArtifactStore(pipeline.artifacts.directory, read_only=read_only)
     with pytest.raises(ValueError, match="new modular run directory"):
-        pipeline.write_manifest([TASK], {TASK["task_id"]: META})
+        pipeline.write_manifest([TASK])
     assert path.read_bytes() == original
     assert not pipeline.artifacts.exists("modular_manifest.json")

@@ -29,7 +29,6 @@ from final.src.modular.catalogue_reporting import usage_by_arm
 from final.src.modular.cohort import call_usage, load_cohort
 from final.src.modular.context import DEFAULT_INPUT_TOKENS, PipelineSettings, TaskContext
 from final.src.modular.control_flow.tool_inputs import default_tool_runs_dir
-from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.methods import MethodInputGenerator
 from final.src.modular.pipeline import BenchmarkPipeline, generate_task_inputs
 from final.src.runtime.artifacts import save
@@ -39,7 +38,6 @@ ORCH_PYTHON = ROOT / "final/.venv_orchestration/bin/python"
 NATIVE_LOCK = ROOT / "final/out/.boundary_native.lock"
 DEFAULT_HE_COHORT = ROOT / "final/out/cohorts/qwen35_27b_humaneval164/cohort.json"
 DEFAULT_MBPP_CANDIDATES = ROOT / "final/out/gemini_mbppplus_20261117_081625/candidates.jsonl"
-DEFAULT_EXECUTION_CACHE = ROOT / "final/out/execution_cache"
 
 
 def _sync_prefect(output_dir: Path, enabled: bool) -> None:
@@ -252,7 +250,6 @@ def run_humaneval(options, output_dir: Path) -> dict:
         reference_seed=options.reference_seed,
         context_tokens=options.context_tokens,
         timeout_seconds=options.timeout_seconds,
-        target_programs=10,
         scorer="confirm_first_failures",
     )
     cohort = load_cohort(cohort_path)
@@ -268,7 +265,7 @@ def run_humaneval(options, output_dir: Path) -> dict:
     def run_one_task(task: dict) -> str:
         nonlocal done_count, closed_count, residual_task_count
         arm = ControlFlowFourToolArm(tool_runs_dir=tool_runs_dir)
-        generator = MethodInputGenerator((arm,), empty_context_on_overflow=True)
+        generator = MethodInputGenerator((arm,))
         ctx = TaskContext(task, metadata[task["task_id"]], store, settings, get_calls())
         ctx.cohort_task = cohort_tasks[task["task_id"]]
         generator.prepare_context(ctx)
@@ -323,14 +320,13 @@ def run_humaneval(options, output_dir: Path) -> dict:
             })
             save(output_dir / "status.json", {"state": "running", "phase": "evaluation", "pid": os.getpid(), "updated_utc": time.time()})
             arm = ControlFlowFourToolArm(tool_runs_dir=tool_runs_dir)
-            generator = MethodInputGenerator((arm,), empty_context_on_overflow=True)
+            generator = MethodInputGenerator((arm,))
             pipeline = BenchmarkPipeline(
                 cohort_path,
                 store,
                 input_generator=generator,
                 settings=settings,
                 calls=None,
-                execution_cache=InputExecutionCache(DEFAULT_EXECUTION_CACHE),
                 dataset=dataset,
             )
             summary = pipeline.run(tasks, metadata)

@@ -14,11 +14,10 @@ Các arm dùng chung `BenchmarkPipeline`, được chọn bằng `arms`. Runtime
 
 Generation lưu inputs trước evaluation; không tạo `generation_frozen.json` hoặc quét source hashes. Manifest ghi task IDs, arms, settings, model và môi trường thực tế; không dùng để reject vì khác run cũ. Treatment/concept diagnostics của `MethodInputGenerator` không chặn evaluation.
 
-Rescore đọc input hiện có, giữ nguyên labels/config metadata mà không khởi tạo generator cũ hay model. Không ép input count theo budget generation cũ. Rescore phải dùng output directory mới ngoài source run; execution cache có thể dùng chung. Input sai literal/signature/type/domain được ghi rejection, không tính thành detection và không làm fail cả task. Sandbox, timeout, reference stability và confirmation vẫn giữ.
+Rescore đọc input hiện có, giữ nguyên labels/config metadata mà không khởi tạo generator cũ hay model. Không ép input count theo budget generation cũ. Rescore phải dùng output directory mới ngoài source run. Input sai literal/signature/type/domain được ghi rejection, không tính thành detection và không làm fail cả task. Sandbox, timeout, reference stability và confirmation vẫn giữ.
 
 `--mode replay` và rescore `--replay` chỉ đọc per-task `result.json` rồi tổng hợp counts; không chạy generation, reference hoặc PUT, không so với summary/hash cũ. Union đọc `result.json`, `oracle_valid.json` và evaluation observations để tính unique PUT/input attribution, kinds và comparisons. Các summary này mô tả lần evaluation đã lưu; sửa `inputs.json` không tự thay outcomes cũ.
 
-Hash trong `InputExecutionCache` vẫn giữ để phân biệt program/input/expected/timeout/seed/runtime/repeat. Đây là cache key, không phải guard cấm sửa source. Timeout outcomes hiện không được tái dùng từ shared cache. Artifact execution nguồn vẫn được bảo vệ khỏi ghi đè; manifest/summary metadata ghi theo lần chạy hiện tại. Historical snapshots trong `final/out/` không sửa; một số legacy precision/recovery controllers riêng vẫn có contract cũ và không thuộc đường modular CLI/Prefect/union mới.
 
 ## Hướng phát triển từ V2 — quyết định 17/11/2026
 
@@ -72,7 +71,8 @@ frozen PUT cohort → input preparation → input generation
 | `control_flow/` | ControlFlow và biến thể 4-tool dùng chung engine C1/C2, Hypothesis và coverage feedback. [Contract và budget](control_flow/README.md) |
 | `tool_sampling/`, `pynguin/` | Generator, cấu hình và logic riêng cho từng hướng tool |
 | `spec_obligation/` | CF Obligation Repaired. [Protocol](spec_obligation/README.md) |
-| `black_box/vf3_hybrid.py`, `black_box/vf3_hybrid_schema.py` | Sinh catalogue và input EP/BVA, DT theo JSON Schema, sau đó thêm một lượt feedback |
+| `black_box/ep_bva.py`, `black_box/decision_table.py` | Guidance, schema catalogue và nội dung feedback riêng của từng arm |
+| `black_box/vf3_hybrid.py`, `black_box/vf3_hybrid_schema.py` | Engine VF3 hai lượt và schema response dùng chung |
 | `black_box/catalogue.py`, `black_box/catalogue_membership.py` | Kiểm tra catalogue, đo coverage class, boundary, rule và đối chiếu covers |
 | `black_box/catalogue_response.py` | Đọc JSON catalogue và phục hồi các input record đầy đủ khi response lỗi format |
 | `catalogue_reporting.py` | Report tiếng Việt, matched-budget comparison và token accounting theo arm |
@@ -81,7 +81,6 @@ frozen PUT cohort → input preparation → input generation
 | `references.py` | Chọn corrected HumanEval+ reference |
 | `reference_oracle.py` | Kiểm domain, chạy reference lấy expected output |
 | `put_evaluation.py` | Chạy PUT một lần; hỗ trợ `confirm_first_failures` và `full_two_repeats` |
-| `execution_cache.py` | Cache kết quả từng input/program/repeat bằng SQLite |
 | `../runtime/execution.py` | Tạo subprocess và sandbox `bwrap` |
 | `../runtime/worker.py` | Load Python function và gọi bằng `args`/`kwargs` |
 | `../models/model.py`, `../models/vertex.py` | Qwen transport và LangChain Vertex AI; CLI chọn `--model-backend qwen\|vertex` |
@@ -99,10 +98,7 @@ trong checkpoint `evaluation/<program_id>_retry_1.json`. `unstable` chỉ kiểm
 status thay đổi trong nhóm này; input pass lần đầu không được kiểm tra stability.
 Reference/domain checks vẫn chạy hai lần cho mọi input.
 
-Mặc định execution cache chạy mỗi input trong sandbox riêng. Khi tắt cache,
-confirmation batch chỉ chứa các input fail lần đầu; global state từ các passing
-calls bị bỏ qua không được tái tạo trong batch này. Historical full-suite repeats
-giữ policy gốc, không được xem là cùng protocol với confirmation subset.
+Mỗi input của reference và PUT chạy trong một sandbox riêng.
 
 ## Chạy
 
@@ -110,7 +106,7 @@ giữ policy gốc, không được xem là cùng protocol với confirmation su
 final/.venv/bin/python -m final.src.modular.run --mode run \
   --cohort final/out/cohorts/qwen35_27b_humaneval164/cohort.json \
   --artifacts final/out/plain_ep_dt_v2 \
-  --arms plain ep_bva_v2 decision_table_v2 --target-programs 10 --input-budget 20
+  --arms plain ep_bva_vf3_hybrid decision_table_vf3_hybrid --input-budget 20
 ```
 
 Transport đọc configuration từ environment hoặc private env file hiện có.
@@ -120,7 +116,7 @@ CLI không còn các option concept/V11 hoặc legacy adapter.
 ## Testing arms EP/BVA/DT
 
 Các arm dùng chung visibility, input budget, CallBuilder, freeze, corrected
-reference, execution cache và scorer. Mỗi task/arm có tối đa một generation
+reference và scorer. Mỗi task/arm có tối đa một generation
 completion, không có feedback loop. Guidance kỹ thuật dài không quá 8 dòng;
 schema catalogue và shared input instructions là phần riêng.
 
@@ -251,19 +247,10 @@ final/.venv/bin/python -m final.src.modular.rescore \
   --source-run <saved-run> --cohort <cohort.json> --artifacts <new-output>
 ```
 
-## Execution cache và checkpoint
+## Sandbox và checkpoint
 
-Cache mặc định ở `final/out/execution_cache/results.sqlite3`; đổi bằng
-`--execution-cache <directory>`, tắt bằng `--no-execution-cache`.
-Key chứa source/context/contract/input/expected/seed/timeout/tolerance và runtime/
-harness/executor identity. Repeat 0 và 1 có entry riêng. Mỗi miss chạy một input
-trong sandbox mới. Timeout/infrastructure failures không được reuse.
-
-Run checkpoints là nguồn replay chính. Refactor thay source và executor identity,
-nên không ép reuse cache entries cũ và không migrate historical manifests.
-Dùng output directory mới cho source hiện tại. Frozen-input rescore có thể đọc
-inputs cũ vào output mới mà không gọi model. Cold cache có thể tốn thêm startup;
-cache duration lưu lại là thời gian lịch sử.
+Mỗi input được thực thi trong sandbox mới. Run mới và rescore tự thực thi reference
+và PUT. Resume dùng lại checkpoint của run nguồn. Replay đọc kết quả đã lưu.
 
 ## Kiểm tra
 

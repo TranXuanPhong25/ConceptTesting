@@ -13,8 +13,6 @@ class CatalogueReporter(Reporter):
         summary['settings'] = asdict(contexts[0].settings)
         summary['tester_calls_by_arm'] = usage_by_arm(contexts[0].artifacts.directory,
                                                      list(summary['arms']))
-        summary['catalogues'] = {context.task['task_id']: context.extensions.get('catalogue_measurements', {})
-                                for context in contexts}
         summary['generation_statuses'] = {}
         for context in contexts:
             for name, batch in context.inputs.get('arms', {}).items():
@@ -28,8 +26,9 @@ class CatalogueReporter(Reporter):
         # Saved evaluation observations only: no native/model execution.
         from final.src.audits.detection_kinds import classify_arm, kind_counts
         summary['detection_kinds'] = {}
+        task_ids = {row['task_id'] for row in task_results}
         for arm_name in names:
-            detections = classify_arm(contexts[0].artifacts.directory, arm_name)
+            detections = classify_arm(contexts[0].artifacts.directory, arm_name, task_ids=task_ids)
             summary['detection_kinds'][arm_name] = kind_counts(detections)
         return summary
 
@@ -47,7 +46,7 @@ class CatalogueReporter(Reporter):
             f"Budget inputs/task theo arm {dict((name,retained_input_budget(name,settings['input_budget'])) for name in summary['arms'])}. "
             f"Generation call cap/task {call_caps}. Completion cap {settings['input_tokens']} tokens/call, "
             f"context cap {settings['context_tokens']} tokens và timeout {settings['timeout_seconds']} giây/input. "
-            'Robust không đủ eligibility được skip trước model call.', '',
+            '',
             '| Arm | Novel valid inputs | PUT đã nhận test bổ sung | Confirmed detected PUTs / eligible PUTs | Task có detection / eligible task | Wrong-value PUTs | Exception PUTs | Resource PUTs |',
             '|---|---:|---:|---:|---:|---:|---:|---:|']
         eligible_tasks = summary['expected_tasks'] - len(summary['skips'])
@@ -65,7 +64,7 @@ class CatalogueReporter(Reporter):
                          f"{comparison['left_macro_fraction']} vs {comparison['right_macro_fraction']} trên "
                          f"{comparison['task_count']} task; {comparison['zero_valid_budget_tasks']} task có 0 matched inputs; "
                          f"paired permutation p={comparison['paired_permutation_pvalue']:.5g}.")
-        lines += ['', 'Catalogue accounting theo task nằm trong `catalogue_measurements.json` và summary. '
+        lines += ['', 'Catalogue theo task nằm trong `tasks/<n>/catalogue_measurements.json`. '
                   'Declared coverage dùng covers của inputs đã qua domain/reference, là self-report; '
                   'observed đo EP predicate/membership, boundary values trong context và DT condition predicates '
                   'trên từng input thật; hit/miss/unknown tách riêng, có witness indices và đối chiếu covers khai sai. '
@@ -78,11 +77,14 @@ class CatalogueReporter(Reporter):
                   'Cartesian/design cap vượt input budget ghi budget_limited; feasibility vẫn pending.', '',
                   'Config thực tế:', '```json', json.dumps(settings, ensure_ascii=False, indent=2), '```', '',
                   'Model calls/tokens thực tế theo arm (tester_calls; writer_calls là chi phí cohort đã có):',
-                  '```json', json.dumps({'tester_calls': summary['tester_calls'], 'tester_calls_by_arm':summary['tester_calls_by_arm'], 'writer_calls': summary['writer_calls'],
-                    'keepalive_calls': summary['keepalive_calls']}, ensure_ascii=False, indent=2), '```', '',
+                  '```json', json.dumps({
+                      'tester_calls': summary['tester_calls'],
+                      'tester_calls_by_arm': summary['tester_calls_by_arm'],
+                      'writer_calls': summary['writer_calls'],
+                  }, ensure_ascii=False, indent=2), '```', '',
                   'Fail/skip và catalogue status:', '```json',
                   json.dumps({'task_skips': summary['skips'], 'generation_statuses': summary['generation_statuses'],
-                              'diagnostics': summary['diagnostics'], 'catalogues': summary['catalogues']}, ensure_ascii=False, indent=2), '```', '']
+                              'diagnostics': summary['diagnostics']}, ensure_ascii=False, indent=2), '```', '']
         return '\n'.join(lines)
 
 

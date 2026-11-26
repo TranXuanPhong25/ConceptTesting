@@ -115,20 +115,18 @@ TARGET_CONSTRUCT = (
     'and within the trusted contract.')
 
 
-def target_propose_contract(obligation_limit=3):
-    distinct_note = ' (prefer distinct program_ids)' if obligation_limit > 3 else ''
-    risk_note = (' ' + IMPLEMENTATION_RISK_NOTE) if obligation_limit > 3 else ''
-    return (
+OBLIGATION_LIMIT = 6
+TARGET_PROPOSE_CONTRACT = (
         'Return one JSON object with "inputs" FIRST, then "obligations". Start with concrete inputs '
         '[{"arguments":{"EXACT parameter name":"JSON value"},"target_id":"exact coverage_targets id"}]. '
         'Give one novel, contract-valid seed for each feasible target within input_budget. For an arc, '
         'work backwards from its destination through every preceding guard in path. Use base_trace_gap '
         'to see which edge the base suite lacks and which exits it exercised. Arc sets do not establish '
         'execution order. When code transforms an input before testing it, find an admitted representation '
-        f'that separates the transformation from the next guard. Then give up to {obligation_limit} concise '
-        f'obligations{distinct_note} with program_id, line, requirement, pattern, scenario, instruction, '
-        f'counterexample, predicate and strategies. Use the spec and the supplied source to justify each scenario.{risk_note}'
-    )
+        f'that separates the transformation from the next guard. Then give up to {OBLIGATION_LIMIT} concise '
+        'obligations (prefer distinct program_ids) with program_id, line, requirement, pattern, scenario, instruction, '
+        f'counterexample, predicate and strategies. Use the spec and the supplied source to justify each scenario. {IMPLEMENTATION_RISK_NOTE}'
+)
 
 
 def compact_construct_obligations(obligations):
@@ -218,8 +216,17 @@ def repair_construct(context, proposal_request, draft, error, seed_feedback=None
     return fit_request(context, payload, protect_owners=True, history=history, system=proposal_request[0]['content'])
 
 
-def messages(context, evidence, *, hybrid, phase, obligations=(), targets=(), input_budget=20,
-             failed_proposal=None, target_seeds=False, seed_feedback=None, obligation_limit=3):
+def messages(
+    context,
+    evidence,
+    *,
+    phase,
+    obligations=(),
+    targets=(),
+    input_budget=20,
+    failed_proposal=None,
+    seed_feedback=None,
+):
     replay = saved_messages(context, evidence, phase, input_budget)
     if replay is not None:
         return replay
@@ -236,28 +243,23 @@ def messages(context, evidence, *, hybrid, phase, obligations=(), targets=(), in
             'numbered_source': '\n'.join(f'{i}: {line}' for i, line in enumerate(program['code'].splitlines(), 1))})
         analyses.append({key: value for key, value in analysis.items() if key != 'targets'})
     if phase == 'propose':
-        if obligation_limit == 3:
-            limit_text = 'At most3obligations.'
-        else:
-            limit_text = f'At most {obligation_limit} concise obligations (prefer distinct program_ids).'
-        risk_note = (' ' + IMPLEMENTATION_RISK_NOTE) if target_seeds else ''
         contract = ('Return JSON {"obligations":[{program_id,line,requirement,pattern,scenario,instruction,'
-                    f'counterexample,predicate,strategies}}],"inputs":[]}}. {limit_text} '
-                    f'All fields except predicate/strategies are required.{risk_note}')
+                    'counterexample,predicate,strategies}],"inputs":[]}. '
+                    f'At most {OBLIGATION_LIMIT} concise obligations (prefer distinct program_ids). '
+                    f'All fields except predicate/strategies are required. {IMPLEMENTATION_RISK_NOTE}')
+    elif targets:
+        contract = TARGET_CONSTRUCT
     else:
         contract = (
             CONSTRUCT_CONTRACT + ' Use the full input_budget across all supplied programs; do not stop early. '
             + IMPLEMENTATION_RISK_NOTE
-        ) if target_seeds else CONSTRUCT_CONTRACT
-    guided = target_seeds and bool(targets)
-    if guided and phase == 'construct':
-        contract = TARGET_CONSTRUCT
+        )
     prompt_obligations = (
         compact_construct_obligations(obligations)
-        if target_seeds and phase == 'construct'
+        if phase == 'construct'
         else list(obligations)
     )
-    payload = {'phase': phase, 'mode': 'coverage_and_spec' if hybrid else 'spec_obligation',
+    payload = {'phase': phase, 'mode': 'coverage_and_spec',
         'response_contract': contract, 'specification': context.task['prompt'],
         'trusted_contract': context.metadata.get('contract', ''),
         'parameter_names': list(evidence.builder.signature.parameters), 'input_budget': input_budget,
@@ -266,8 +268,8 @@ def messages(context, evidence, *, hybrid, phase, obligations=(), targets=(), in
     if seed_feedback is not None:
         payload['seed_feedback'] = [row.copy() for row in seed_feedback]
     payload['base_inputs_do_not_repeat'] = evidence.base_reminder()
-    request = fit_request(context, payload, protect_owners=target_seeds and phase == 'construct')
-    if not guided or phase != 'propose':
+    request = fit_request(context, payload, protect_owners=phase == 'construct')
+    if not targets or phase != 'propose':
         return request
     # Keep the original v1 proposal scope before budgeting the seed instructions.
     if not request or not payload['coverage_targets']:
@@ -275,7 +277,7 @@ def messages(context, evidence, *, hybrid, phase, obligations=(), targets=(), in
         payload['programs'] = [p for p in programs if p['program_id'] in owners]
         payload['analysis'] = [a for a in analyses if a['program_id'] in owners]
         payload['coverage_targets'] = list(targets)
-    payload['response_contract'] = target_propose_contract(obligation_limit)
+    payload['response_contract'] = TARGET_PROPOSE_CONTRACT
     payload['coverage_targets'] = [
         {**t, 'base_trace_gap': unobserved_step(t, evidence.by_id[t['program_id']]['base'].get('coverage'))}
         for t in payload['coverage_targets']]

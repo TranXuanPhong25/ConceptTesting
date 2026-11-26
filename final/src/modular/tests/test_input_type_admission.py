@@ -137,6 +137,28 @@ def test_unannotated_humaneval_inputs_reach_reference_with_contract(tmp_path, mo
     assert context.oracle['rejected'][0]['reason'] == 'domain_or_reference_rejects'
 
 
+def test_oracle_keeps_dict_order_distinct_from_a_saved_base_call(tmp_path):
+    from final.src.runtime.contracts import bound_call_key
+
+    task = {
+        'task_id': 'Toy/0',
+        'entry_point': 'f',
+        'prompt': 'def f(items):\n    """Return the first key."""\n',
+        'canonical_solution': '    return next(iter(items))\n',
+    }
+    context = TaskContext(task, {'contract': ''}, ArtifactStore(tmp_path), PipelineSettings())
+    base = {'args': "({'a': 1, 'b': 2},)", 'kwargs': '{}'}
+    reversed_order = {'args': "({'b': 2, 'a': 1},)", 'kwargs': '{}'}
+    context.cohort_task = {
+        'base_input_keys': [bound_call_key({'items': {'a': 1, 'b': 2}}, legacy=True)],
+        'programs': [{'base': {'calls': [base]}}],
+    }
+    context.inputs = {'arms': {'plain': {'inputs': [base, reversed_order]}}}
+    run_reference_oracle(context, reference_programs=TaskReferencePrograms())
+    assert context.oracle['rejected'] == [{'index': 0, 'reason': 'base_duplicate'}]
+    assert [row['expected'] for row in context.oracle['tests']] == ["'b'"]
+
+
 def test_oracle_reports_output_limit_without_losing_other_inputs(tmp_path):
     task = {'task_id': 'Toy/1', 'entry_point': 'f', 'prompt': 'def f(n: int):\n    """Return n characters."""\n',
             'canonical_solution': '    return "x" * n\n'}

@@ -21,10 +21,6 @@ class CachedModelCalls:
     def token_count(self, messages):
         raise RuntimeError("Tokenization is unavailable during read-only replay")
 
-    def complete_structured(self, task_number, call_name, messages, *, schema, temperature, max_tokens, seed):
-        return self.complete(task_number, call_name, messages, temperature=temperature,
-                             max_tokens=max_tokens, seed=seed, response_format=structured_format(schema))
-
     def complete(self, task_number, call_name, messages, *, temperature, max_tokens, seed, response_format=None):
         directory = f"tasks/{task_number}/calls/{call_name}"
         request = dict(messages=messages, temperature=temperature, max_tokens=max_tokens, seed=seed)
@@ -54,17 +50,6 @@ class RecordedModelCalls:
 
     def token_count(self, messages):
         return self.model.tokens(messages)
-
-    def complete_structured(self, task_number, call_name, messages, *, schema, temperature, max_tokens, seed):
-        return self.complete(
-            task_number,
-            call_name,
-            messages,
-            temperature=temperature,
-            max_tokens=max_tokens,
-            seed=seed,
-            response_format=structured_format(schema),
-        )
 
     def complete(self, task_number, call_name, messages, *, temperature, max_tokens, seed, response_format=None):
         structured = {} if response_format is None else {'response_format': response_format}

@@ -23,7 +23,7 @@ def program(identifier):
 
 def make_context(tmp_path, calls, count=2, budget=5):
     context = TaskContext(TASK, META, ArtifactStore(tmp_path),
-                          PipelineSettings(target_programs=count, input_budget=budget), calls)
+                          PipelineSettings(input_budget=budget), calls)
     context.cohort_task = {"task_id": TASK["task_id"], "generated": count, "base_pass": count,
                            "programs": [program(index) for index in range(count)], "base_input_keys": []}
     context.packet = {"visible_put_ids": list(range(count))}

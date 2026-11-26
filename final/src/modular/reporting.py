@@ -30,7 +30,28 @@ class Reporter:
             rows = selected
         if not rows:
             raise FileNotFoundError("No saved task evaluation results")
-        summary.update(Reporter.result_counts(rows))
+        counts = Reporter.result_counts(rows)
+        saved_arms = summary.get('arms', {})
+        if set(saved_arms) != set(counts['arms']) or any(
+            saved.get(key, value) != value
+            for arm, saved in saved_arms.items()
+            for key, value in counts['arms'][arm].items()
+        ) or any(
+            summary.get(key, value) != value for key, value in counts.items() if key != 'arms'
+        ):
+            return counts
+        summary.update(counts)
+        if 'detection_kinds' in summary:
+            from final.src.audits.detection_kinds import classify_arm, kind_counts
+
+            task_ids = {row['task_id'] for row in rows}
+            try:
+                summary['detection_kinds'] = {
+                    arm: kind_counts(classify_arm(artifacts.directory, arm, task_ids=task_ids))
+                    for arm in counts['arms']
+                }
+            except FileNotFoundError:
+                del summary['detection_kinds']
         return summary
 
     @staticmethod
@@ -77,56 +98,12 @@ class Reporter:
         summary["writer_calls"] = cohort.get("generation_usage", {})
         summary["tester_calls"] = call_usage(artifacts.directory)
         summary["diagnostics"] = self.collect_diagnostics(contexts)
-        observers = []
-        for record_path in (artifacts.directory / "keepalive").glob("*.json"):
-            observers.append(artifacts.read(str(record_path.relative_to(artifacts.directory))))
-        observer_totals = {
-            "attempts": len(observers),
-            "received": 0,
-            "unknown": 0,
-            "known_total_tokens": 0,
-            "not_sent": 0,
-            "unknown_completions": 0,
-        }
-        for observer in observers:
-            observer_totals["received"] += observer["state"] == "received"
-            observer_totals["not_sent"] += observer["state"] == "not_sent"
-            if observer["state"] not in ("received", "not_sent"):
-                observer_totals["unknown"] += 1
-                observer_totals["unknown_completions"] += bool(observer.get("completion_started", True))
-            observer_totals["known_total_tokens"] += observer.get("usage", {}).get("total_tokens", 0)
-        summary["keepalive_calls"] = observer_totals
         missing_footer_count = 0
         for response_path in (artifacts.directory / "tasks").glob("*/calls/*/response.json"):
             response = artifacts.read(str(response_path.relative_to(artifacts.directory)))
             if response.get("usage", {}).get("usage_footer_complete") is False:
                 missing_footer_count += 1
         summary["responses_with_missing_usage_footer"] = missing_footer_count
-        cache_receipts = [
-            receipt
-            for context in contexts
-            for receipt in context.extensions.get("input_execution_cache", {}).values()
-        ]
-        if cache_receipts:
-            summary["input_execution_cache"] = self.cache_accounting(cache_receipts)
-        return summary
-
-    @staticmethod
-    def cache_accounting(receipts):
-        summary = {
-            "input_records": 0,
-            "hits": 0,
-            "misses": 0,
-            "executed_inputs": 0,
-            "not_cached": 0,
-            "corrupt_entries": 0,
-            "missing_receipts": 0,
-        }
-        for receipt in receipts:
-            for name in summary:
-                if name != "missing_receipts":
-                    summary[name] += receipt.get(name, 0)
-            summary["missing_receipts"] += receipt.get("state") == "receipt_missing"
         return summary
 
     def collect_diagnostics(self, contexts):
@@ -178,8 +155,6 @@ class Reporter:
             f"Diagnostics: {summary['diagnostics']}.",
             f"Explicit skips: {summary['skips']}.",
         ])
-        if "input_execution_cache" in summary:
-            lines.extend(["", f"Per-input execution cache: {summary['input_execution_cache']}."])
         lines.append("")
         return "\n".join(lines)
 

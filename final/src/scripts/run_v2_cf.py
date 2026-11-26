@@ -12,7 +12,6 @@ from final.src.modular import available_arms, selected_arms
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.context import PipelineSettings
-from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.scripts._formatting import (
     collect_run_results,
@@ -39,8 +38,6 @@ CONFIG = {
     "input_tokens": 4096,
     "context_tokens": 8192,
     "scorer": "confirm_first_failures",
-    "execution_cache": Path("final/out/execution_cache"),
-    "use_execution_cache": True,
 }
 
 
@@ -74,8 +71,6 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("confirm_first_failures", "full_two_repeats"),
         default=CONFIG["scorer"],
     )
-    parser.add_argument("--execution-cache", type=Path, default=CONFIG["execution_cache"])
-    parser.add_argument("--no-execution-cache", action="store_true")
     parser.add_argument(
         "--replay",
         action="store_true",
@@ -104,14 +99,11 @@ def main(arguments: list[str] | None = None) -> int:
         )
         calls = RecordedModelCalls(model, artifacts)
         settings = PipelineSettings(
-            target_programs=options.target_programs,
             input_budget=options.input_budget,
             input_tokens=options.input_tokens,
             context_tokens=options.context_tokens,
             scorer=options.scorer,
         )
-        use_cache = CONFIG["use_execution_cache"] and not options.no_execution_cache
-        cache = InputExecutionCache(options.execution_cache) if use_cache else False
 
         pipeline = BenchmarkPipeline(
             options.cohort,
@@ -119,7 +111,6 @@ def main(arguments: list[str] | None = None) -> int:
             arms=arms,
             settings=settings,
             calls=calls,
-            execution_cache=cache,
             dataset=dataset,
         )
         pipeline.run(tasks, metadata)

@@ -7,7 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from final.src.models.core_model import ModelResponse
-from final.src.modular.black_box import StructuredCatalogueArm, VF3_HYBRID_ARMS
+from final.src.modular.black_box import EpBvaArm, VF3_HYBRID_ARMS
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.black_box.catalogue import (Boundary, Catalogue, boundary_targets, decision_table_check,
@@ -27,7 +27,7 @@ def context(tmp_path, source='def f(x): pass'):
 
 
 def decode(arm, raw, tmp_path, source='def f(x): pass'):
-    res = arm._decode_inputs(ModelResponse(json.dumps(raw), finish_reason='stop'), context(tmp_path, source))
+    res, _ = arm._decode_inputs(ModelResponse(json.dumps(raw), finish_reason='stop'), context(tmp_path, source))
     cat, errors = validate_catalogue(raw.get('catalogue'), arm.sections)
     res.update(
         catalogue=cat.model_dump(mode='json') if cat is not None else None,
@@ -50,7 +50,7 @@ def measure(raw, records, *, name='bva_normal', source='def f(x): pass', budget=
 
 
 def boundary_only_arm():
-    arm = StructuredCatalogueArm()
+    arm = EpBvaArm()
     arm.name = 'bva_normal'
     arm.sections = ('boundaries',)
     return arm
@@ -228,15 +228,14 @@ def test_reference_survivors_exclude_base_and_rejected_but_keep_global_duplicate
     class Reference:
         record_provenance=False
         def for_task(self,*args):return {'context':'','source':'','entry':'f','contract':''}
-    def execute(context,path,job,*args):
+    def execute(job):
         return {'tests':[{'status':'ok','expected':'2','input_key':'two'}, {'status':'error'},
                          {'status':'ok','expected':'1','input_key':'base'}, {'status':'ok','expected':'2','input_key':'two'}]}
-    monkeypatch.setattr(reference,'cached_execution',execute)
+    monkeypatch.setattr(reference, 'execute', execute)
     run_reference_oracle(ctx, reference_programs=Reference())
     assert ctx.oracle['catalogue_valid_input_indices']['bva_normal']==[0,3]
     assert ctx.oracle['arm_indices']['bva_normal']==[0]
-    measure_task_catalogues(ctx, [arm.name])
-    measured=ctx.extensions['catalogue_measurements']['bva_normal']
+    measured = measure_task_catalogues(ctx, [arm.name])['bva_normal']
     assert measured['valid_input_records']==2
     assert measured['boundaries'][0]['matched_values']==[2]
 
@@ -263,8 +262,8 @@ def test_malformed_tagged_context_or_nominal_cannot_abort_generation_or_evaluati
         ctx.inputs_frozen=True
         ctx.inputs={'arms':{'bva_normal':result}}
         ctx.oracle={'catalogue_valid_input_indices':{'bva_normal':[0]}}
-        measure_task_catalogues(ctx, [boundary_only_arm().name])
-        assert ctx.extensions['catalogue_measurements']['bva_normal']['status']=='catalogue_invalid'
+        measured = measure_task_catalogues(ctx, [boundary_only_arm().name])
+        assert measured['bva_normal']['status'] == 'catalogue_invalid'
 
 
 def test_strong_ep_contradictory_classes_never_expand_a_single_input():

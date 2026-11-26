@@ -218,6 +218,7 @@ class CallBuilder:
         bound = self.signature.bind(*ast.literal_eval(record["args"]), **ast.literal_eval(record["kwargs"]))
         bound.apply_defaults()
         self.build_values(bound.arguments)
+        return bound.arguments
 
     def decode_arguments(self, arguments):
         if not isinstance(arguments, dict) or set(arguments) - set(self.signature.parameters):

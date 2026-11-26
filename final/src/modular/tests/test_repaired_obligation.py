@@ -220,7 +220,7 @@ def test_repaired_arm_keeps_llm_quota_separate_from_hypothesis_inputs(tmp_path, 
     assert sum(any(s['tool'] == 'llm' for s in r['sources']) for r in selected) == 20
     assert {r['sources'][0]['obligation_id'] for r in selected if not any(s['tool'] == 'llm' for s in r['sources'])} == {'O1', 'O2', 'O3'}
     validate_generated_inputs({'task_id': ctx.task['task_id'], 'arms': {RepairedControlFlowObligationArm.name: result}},
-                              task_id=ctx.task['task_id'], input_budget=20)
+                          task_id=ctx.task['task_id'])
 
 
 def test_seed_miss_reaches_construct_and_repeated_seed_is_traced_once(tmp_path):
@@ -342,14 +342,14 @@ def test_targeted_construct_preserves_owners_and_obligations_under_token_pressur
         payload = json.loads(request[-1]['content'])
         return 10000 if any(a['program_id']=='other' for a in payload['analysis']) else 1
     ctx.calls.token_count = count
-    req = messages(ctx,evidence,hybrid=True,phase='construct',input_budget=4,targets=[target],
-                   obligations=[obligation],target_seeds=True,seed_feedback=[{'target_id':target['id'],'status':'untried'}])
+    req = messages(ctx,evidence,phase='construct',input_budget=4,targets=[target],
+                   obligations=[obligation],seed_feedback=[{'target_id':target['id'],'status':'untried'}])
     d = json.loads(req[-1]['content'])
     assert [p['program_id'] for p in d['programs']] == ['p0','other','last']
     assert [a['program_id'] for a in d['analysis']] == ['p0','last']
     assert d['coverage_targets'] == [target] and d['obligations'] == [obligation]
     ctx.calls.token_count = lambda req: 1
-    initial = messages(ctx,evidence,hybrid=True,phase='propose',input_budget=4,targets=[target],target_seeds=True)
+    initial = messages(ctx,evidence,phase='propose',input_budget=4,targets=[target])
     recovered = repair_construct(ctx, initial, 'public draft', 'decode_error', seed_feedback=d['seed_feedback'])
     # When context fits, repair_construct keeps non-owner PUTs alongside target owners.
     assert [p['program_id'] for p in json.loads(recovered[-1]['content'])['programs']] == ['p0', 'other', 'last']
@@ -450,8 +450,8 @@ def test_repaired_arm_uses_shared_oracle_and_read_only_replay(tmp_path, monkeypa
     monkeypatch.setattr('final.src.modular.reference_oracle.execute', oracle)
     pipeline = BenchmarkPipeline(cohort, ArtifactStore(directory),
         arms=(RepairedControlFlowObligationArm(),),
-        settings=PipelineSettings(target_programs=1, input_budget=4),
-        calls=FixtureCalls(Model(), directory), execution_cache=False, reference_programs=TaskReferencePrograms())
+        settings=PipelineSettings(input_budget=4),
+        calls=FixtureCalls(Model(), directory), reference_programs=TaskReferencePrograms())
     metadata = {task['task_id']: {**ctx.metadata, 'atol': 0}}
     result = pipeline.run([task], metadata)
     assert result['arms']['control_flow_obligation_v1_repair']['detected'] == 1
@@ -459,5 +459,5 @@ def test_repaired_arm_uses_shared_oracle_and_read_only_replay(tmp_path, monkeypa
     assert result['control_flow_obligation_v1_repair']['call_usage']['received'] == 2
     replay = BenchmarkPipeline(cohort, ArtifactStore(directory, read_only=True),
         arms=(RepairedControlFlowObligationArm(),), settings=pipeline.settings,
-        execution_cache=False, reference_programs=TaskReferencePrograms())
+        reference_programs=TaskReferencePrograms())
     assert replay.run([task], metadata) == result

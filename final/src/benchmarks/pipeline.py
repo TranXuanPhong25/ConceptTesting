@@ -8,23 +8,24 @@ import math
 from pathlib import Path
 
 from final.src.models import OPENROUTER_DEFAULT_MODEL
-from final.src.modular.arm_names import VF3_HYBRID_ARM_NAMES, VF3_INPUTS_PER_ROUND
 from final.src.modular.artifacts import ArtifactStore
+from final.src.modular.black_box import DecisionTableArm, EpBvaArm
 from final.src.modular.cohort import call_usage
 from final.src.modular.call_builder import CallBuilder
 from final.src.modular.context import DEFAULT_CONTEXT_TOKENS, DEFAULT_INPUT_TOKENS
 from final.src.modular.response_json import load_response_json
 from final.src.runtime.artifacts import digest, save
+from final.src.runtime.contracts import bound_call_key
 from .datasets import DatasetLoader
 from .language_runtime import execute_program, equivalent
 
 
 DEFAULTS = {'dataset':'mbpp', 'candidate_path':'', 'task_numbers':[],
-    'arms':['plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid'], 'backend':'qwen',
+    'arms':['plain','ep_bva_single','decision_table_single'], 'backend':'qwen',
     'model_name':'qwen3.5-27b-awq', 'inputs_per_task':20, 'completion_tokens':DEFAULT_INPUT_TOKENS,
     'context_tokens':DEFAULT_CONTEXT_TOKENS, 'temperature':.7, 'seed':314159, 'timeout_seconds':8,
     'tool_runs_dir':''}
-ARM_NAMES = ('plain','ep_bva_vf3_hybrid','decision_table_vf3_hybrid','control_flow','control_flow_4tool')
+ARM_NAMES = ('plain','ep_bva_single','decision_table_single','control_flow','control_flow_4tool')
 CONTROL_FLOW_ARMS = ('control_flow','control_flow_4tool')
 
 
@@ -246,7 +247,7 @@ def _generate_control_flow_arms(
         for index, row in enumerate(raw_batch.get('inputs', [])):
             try:
                 arguments = _call_to_arguments(builder, row)
-                key = digest(arguments)
+                key = bound_call_key(arguments)
                 if key in seen:
                     continue
                 seen.add(key)
@@ -314,28 +315,28 @@ def _summarize_control_flow_batches(prepared, arm_name):
 
 
 def messages_for(task, programs, arm_name, budget):
-    from final.src.modular import selected_arms
-    arm = selected_arms([arm_name])[0]
-    blocks = {
-        'intro': (
+    guidance = {
+        'plain': '',
+        'ep_bva_single': EpBvaArm.guidance,
+        'decision_table_single': DecisionTableArm.guidance,
+    }[arm_name]
+    output = 'Return JSON with an inputs array of objects with named arguments.'
+    if guidance:
+        output += ' Include a compact catalogue of the classes, boundaries, or rules you used.'
+    return [
+        {'role': 'system', 'content': f'Generate valid {task["language"]} function inputs as JSON.'},
+        {'role': 'user', 'content': (
             f'Generate up to {budget} distinct new calls exposing specification violations. '
-            'Inputs only; expected outputs come from a separate reference after freeze. '
             'Follow the specification and public examples. Never assume the implementations are correct. '
-        ),
-        'output': 'Return JSON: {"inputs":[{"arguments":{}}]}.',
-        'arguments': (
-            'arguments maps exact parameter names to JSON values. '
+            f'{output} Do not include expected outputs.\n'
+            'The arguments object maps exact parameter names to JSON values. '
             'No code or expressions in values. Respect language types and joint preconditions.\n'
             'Keep sequences/strings modest (normally <=30 items); generation caps are not specification boundaries.\n'
-        ),
-        'task_context': (
             f'LANGUAGE: {task["language"]}\nSPECIFICATION:\n{task["prompt"]}\nDECLARATION:\n{task["declaration"]}\n'
             f'PUBLIC EXAMPLES:\n{task["example_test"]}\nBASE-PASSING PUTS:\n' + json.dumps(programs, ensure_ascii=False)
-        ),
-    }
-    messages = arm.build_messages({'prompt_blocks': blocks})
-    messages[0]['content'] = f'Generate valid {task["language"]} function inputs as JSON.'
-    return messages
+            + '\n' + guidance
+        )},
+    ]
 
 
 def decode(task, response, budget):
@@ -348,11 +349,12 @@ def decode(task, response, budget):
     except (ValueError, TypeError, KeyError):
         return {'inputs':[], 'rejected':[{'reason':'invalid_response'}], 'catalogue':None}
     # Validate calls against the task signature before deduplicating within the response.
+    builder = CallBuilder.for_source(task['declaration'], task['entry_point'])
     for index, row in enumerate(records[:budget]):
         try:
             arguments = row['arguments']
-            CallBuilder.for_source(task['declaration'], task['entry_point']).build(arguments)
-            key = digest(arguments)
+            builder.build(arguments)
+            key = bound_call_key(arguments)
             if key in seen:
                 raise ValueError('duplicate input')
             seen.add(key)
@@ -364,19 +366,28 @@ def decode(task, response, budget):
 
 
 def input_union(batches, *, input_field="arguments"):
-    union, indices, keys = [], {}, []
+    union, indices, keys = [], {}, {}
     for arm, batch in batches.items():
         indices[arm] = []
         for record in batch['inputs']:
-            key = digest(record[input_field])
+            key = bound_call_key(record[input_field])
             if key not in keys:
+                keys[key] = len(union)
                 union.append(record[input_field])
-                keys.append(key)
-            indices[arm].append(keys.index(key))
+            indices[arm].append(keys[key])
     return union, indices
 
 
-def evaluate_task(task, programs, batches, store, *, timeout, executor=execute_program, input_field='arguments'):
+def evaluate_task(
+    task,
+    programs,
+    batches,
+    store,
+    *,
+    timeout,
+    executor=execute_program,
+    input_field='arguments',
+):
     """Score frozen inputs using the two-repeat MBPP reference and PUT receipts."""
     number = int(task['task_id'].split('/')[1])
     prefix = f'tasks/{number}'
@@ -425,14 +436,17 @@ def run_benchmark(
     arm_factories=None,
     default_tool_runs_dir=None,
 ):
-    from final.src.modular.calls import CachedModelCalls
+    if store.read_only:
+        if calls is not None:
+            raise ValueError('Replay cannot accept live calls')
+        return store.read('result_digest.json')
     config = normalize(values)
     executor = executor or execute_program
-    if store.read_only and calls is not None:
-        raise ValueError('Replay cannot accept live calls')
-    calls = calls or CachedModelCalls(store)
-    manifest = {'protocol':'dataset-adapters-v1', 'tasks_sha256':digest(tasks), 'cohort_sha256':digest(cohort),
-                'config':config, 'oracle':'stable reference disagreement; specification admission pending', 'coverage':'pending'}
+    manifest = {
+        'protocol': 'dataset-adapters-v1',
+        'config': config,
+        'oracle': 'stable reference disagreement; specification admission pending',
+    }
     store.write('adapter_manifest.json', manifest)
     standard_arms = [arm for arm in config['arms'] if arm not in CONTROL_FLOW_ARMS]
     cf_arms = [arm for arm in config['arms'] if arm in CONTROL_FLOW_ARMS]
@@ -456,13 +470,12 @@ def run_benchmark(
         if store.exists(prefix+'/inputs.json'):
             batches = store.read(prefix+'/inputs.json')
         else:
-            if store.read_only:
-                raise FileNotFoundError(prefix+'/inputs.json')
+            if calls is None:
+                raise RuntimeError('MBPP generation needs model calls or saved inputs')
             batches = {}
             if standard_arms:
-                budgets = {arm: VF3_INPUTS_PER_ROUND if arm in VF3_HYBRID_ARM_NAMES else config['inputs_per_task']
-                           for arm in standard_arms}
-                packets = {arm:messages_for(task, passing, arm, budget) for arm, budget in budgets.items()}
+                budget = config['inputs_per_task']
+                packets = {arm: messages_for(task, passing, arm, budget) for arm in standard_arms}
                 # Reserve completion space for every standard arm before making any calls for the task.
                 if max((calls.token_count(messages) for messages in packets.values()), default=0) + config['completion_tokens'] + 128 >= config['context_tokens']:
                     if not cf_arms:
@@ -472,9 +485,15 @@ def run_benchmark(
                             batches[arm] = {'inputs':[], 'rejected':[], 'status':'prompt_too_large'}
                 else:
                     for arm in standard_arms:
-                        response = calls.complete(number, arm, packets[arm], temperature=config['temperature'],
-                            max_tokens=config['completion_tokens'], seed=config['seed']+number)
-                        batches[arm] = decode(task, response, budgets[arm])
+                        response = calls.complete(
+                            number,
+                            arm,
+                            packets[arm],
+                            temperature=config['temperature'],
+                            max_tokens=config['completion_tokens'],
+                            seed=config['seed'] + number,
+                        )
+                        batches[arm] = decode(task, response, budget)
             if cf_arms and not batches.get('skip'):
                 cf_batches = _generate_control_flow_arms(
                     task,
@@ -492,22 +511,28 @@ def run_benchmark(
                 batches = {arm: batches[arm] for arm in config['arms']}
             store.write(prefix+'/inputs.json', batches)
         prepared.append((task, passing, batches))
-        if not store.read_only:
-            save(store.path('progress.json'), {'phase':'generation', 'task_id':task['task_id'], 'prepared_tasks':len(prepared), 'total_tasks':len(tasks)})
-    # Record the input batches and model artifacts before running the reference.
-    store.write('generation_frozen.json', {'cohort_sha256':digest(cohort),
-        'inputs':{task['task_id']:digest(batches) for task, _, batches in prepared},
-        'model_artifacts':artifact_hashes(store, ('tasks/*/calls/*/*.json',))})
+        save(store.path('progress.json'), {
+            'phase': 'generation', 'task_id': task['task_id'], 'prepared_tasks': len(prepared), 'total_tasks': len(tasks),
+        })
+    # The evaluation loop only starts after all input batches are saved.
     results = []
     for task, programs, batches in prepared:
         number = int(task['task_id'].split('/')[1]); prefix = f'tasks/{number}'
         if not programs or batches.get('skip'):
             result = {'task_id':task['task_id'], 'skip':'no_base_pass' if not programs else batches['skip']}
         else:
-            result = evaluate_task(task, programs, batches, store, timeout=config['timeout_seconds'], executor=executor)
+            result = evaluate_task(
+                task,
+                programs,
+                batches,
+                store,
+                timeout=config['timeout_seconds'],
+                executor=executor,
+            )
         store.write(prefix+'/result.json', result); results.append(result)
-        if not store.read_only:
-            save(store.path('progress.json'), {'phase':'evaluation','evaluated_or_skipped_tasks':len(results),'total_tasks':len(tasks)})
+        save(store.path('progress.json'), {
+            'phase': 'evaluation', 'evaluated_or_skipped_tasks': len(results), 'total_tasks': len(tasks),
+        })
     # Aggregate input memberships and detected PUTs per arm across tasks.
     totals = {arm:{'valid_inputs':0,'detected':0,'tasks_detected':0} for arm in config['arms']}
     for result in results:
@@ -522,17 +547,8 @@ def run_benchmark(
     for cf_arm in cf_arms:
         summary[cf_arm] = _summarize_control_flow_batches(prepared, cf_arm)
     store.write('result_digest.json', summary)
-    store.write('execution_frozen.json', artifact_hashes(store, ('tasks/*/base/*.json','tasks/*/reference_*.json',
-        'tasks/*/evaluation/*.json','tasks/*/result.json')))
-    if not store.read_only:
-        store.path('REPORT.md').write_text(render(summary))
+    store.path('REPORT.md').write_text(render(summary))
     return summary
-
-
-def artifact_hashes(store, patterns):
-    from .datasets import dataset_sha256
-    return {str(p.relative_to(store.directory)):dataset_sha256(p)
-            for pattern in patterns for p in sorted(store.directory.glob(pattern))}
 
 
 def render(summary):

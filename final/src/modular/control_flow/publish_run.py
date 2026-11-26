@@ -13,15 +13,16 @@ ROOT = Path(__file__).resolve().parents[4]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from prefect.client.orchestration import get_client
-from prefect.client.schemas.actions import ArtifactCreate, ArtifactUpdate
-from prefect.states import Completed, Failed, Running
-
-from final.src.orchestration.history import clean, historical_record
 from final.src.runtime.artifacts import save
 
 
 def publish_directory(output_dir: Path, *, port: int = 4200) -> dict:
+    from prefect.client.orchestration import get_client
+    from prefect.client.schemas.actions import ArtifactCreate, ArtifactUpdate
+    from prefect.states import Completed, Failed, Running
+
+    from final.src.orchestration.history import clean, historical_record
+
     output_dir = output_dir.resolve()
     os.environ.setdefault("PREFECT_API_URL", f"http://127.0.0.1:{port}/api")
     os.environ.setdefault("PREFECT_HOME", str(ROOT / "final/out/run_console/prefect_home"))

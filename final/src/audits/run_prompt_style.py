@@ -19,7 +19,6 @@ from final.src.modular.calls import RecordedModelCalls
 from final.src.modular.cohort import call_usage, load_cohort
 from final.src.modular.context import PipelineSettings
 from final.src.benchmarks.datasets import load_tasks
-from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.base import InputGenerator
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.runtime.artifacts import digest, save
@@ -282,8 +281,7 @@ def prepare_run(options, reuse_sources):
 def evaluate(directory, plan, read_only=False):
     tasks = [task for task in load_tasks() if task["task_id"] in plan["tasks"]]
     return BenchmarkPipeline(Path(plan["cohort"]), ArtifactStore(directory / "evaluation", read_only=read_only),
-        input_generator=FrozenStyleInputs(directory), settings=PipelineSettings(target_programs=1, input_budget=20),
-        execution_cache=InputExecutionCache(Path("final/out/execution_cache"), read_only=read_only),
+        input_generator=FrozenStyleInputs(directory), settings=PipelineSettings(input_budget=20),
     ).run(tasks, read(Path("final/data/contracts.json")))
 
 

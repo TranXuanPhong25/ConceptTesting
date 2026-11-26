@@ -68,10 +68,9 @@ def test_changed_original_input_ledger_is_rejected(inputs, tmp_path):
         exporter.export(naive, generation, evaluation, tmp_path / "export")
 
 
-def test_incompatible_cohort_is_rejected(inputs, tmp_path):
+def test_cohort_hash_does_not_block_saved_export(inputs, tmp_path):
     naive, generation, evaluation, _ = inputs
     manifest = read(evaluation / "modular_manifest.json")
     manifest['cohort_sha256'] = 'other'
     save(evaluation / "modular_manifest.json", manifest)
-    with pytest.raises(ValueError, match="Source identity mismatch"):
-        exporter.export(naive, generation, evaluation, tmp_path / "export")
+    assert exporter.export(naive, generation, evaluation, tmp_path / 'export')['inputs'] == 1

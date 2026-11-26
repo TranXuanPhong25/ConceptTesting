@@ -1,6 +1,25 @@
 """Frozen program cohort validation and recorded model-call accounting."""
+import ast
 import json
 from pathlib import Path
+
+from final.src.runtime.contracts import bound_call_key
+
+
+def base_call_keys(cohort_task, signature):
+    saved = set(cohort_task['base_input_keys'])
+    recorded = set()
+    for program in cohort_task.get('programs', []):
+        for call in program.get('base', {}).get('calls', []):
+            try:
+                bound = signature.bind(*ast.literal_eval(call['args']), **ast.literal_eval(call['kwargs']))
+            except (ValueError, TypeError, KeyError, SyntaxError, RecursionError):
+                continue
+            bound.apply_defaults()
+            saved.discard(bound_call_key(bound.arguments, legacy=True))
+            recorded.add(bound_call_key(bound.arguments))
+    return saved | recorded
+
 
 def load_cohort(path: Path):
     return json.loads(path.read_text())

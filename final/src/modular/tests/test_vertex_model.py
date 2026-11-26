@@ -193,5 +193,5 @@ def test_cli_selects_backend_without_keepalive(tmp_path, monkeypatch, backend):
     monkeypatch.setattr(models, 'create_model', factory)
     monkeypatch.setattr(cli, 'BenchmarkPipeline', Pipeline)
     assert cli.main(['--mode', 'run', '--model-backend', backend, '--model-name', 'fixture',
-                     '--artifacts', str(tmp_path), '--no-execution-cache']) == 0
+                     '--artifacts', str(tmp_path)]) == 0
     assert selected == [{'backend': backend, 'model_name': 'fixture', 'context': 16384}]

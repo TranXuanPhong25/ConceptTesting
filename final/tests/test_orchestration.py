@@ -10,7 +10,9 @@ def test_default_batch_keeps_per_task_per_arm_budget():
     batch=config.preview({})
     assert batch['logical_call_cap']==795 and batch['eligible_task_count']==159
     assert batch['evaluated_base_pass_put_count']==1465
-    assert batch['max_input_slots_per_arm']==3180
+    assert batch['max_input_slots_by_arm'] == {
+        'plain': 3180, 'ep_bva_vf3_hybrid': 6360, 'decision_table_vf3_hybrid': 6360,
+    }
     eligible = {row['task_id']: row['base_pass_put_count'] for row in batch['eligible_tasks']}
     assert eligible['HumanEval/32'] == 3 and eligible['HumanEval/136'] == 8
     assert len(batch['skips']) == 5
@@ -97,7 +99,7 @@ def test_prepare_freezes_resolved_config_cohort_and_code(prepared):
     snapshot=worker.read(prepared/'config_snapshot.json')
     assert snapshot['inputs_per_task']==20
     plan=worker.read(prepared/'launch_plan.json')
-    assert plan['target_program_count']==10 and plan['logical_call_cap']==1
+    assert 'target_program_count' not in plan and plan['logical_call_cap'] == 1
     assert Path(plan['cohort']).is_relative_to(prepared/'runtime')
 
     worker.save(prepared/'config_snapshot.json',{**snapshot,'inputs_per_task':99})
@@ -175,15 +177,15 @@ def test_managed_adapter_freezes_and_replays_with_offline_empty_writer(prepared,
     monkeypatch.setattr(worker.signal,'signal',lambda *args:None)
     monkeypatch.setenv('FINAL_ENDPOINT_ENV_FILE','fixture-before')
     plan=worker.read(prepared/'launch_plan.json')
-    plan.update(native_lock=str(tmp_path/'native.lock'),execution_cache=str(tmp_path/'cache'))
+    plan.update(native_lock=str(tmp_path/'native.lock'))
     worker.save(prepared/'launch_plan.json',plan)
-    snapshot=worker.read(prepared/'source_snapshot.json')
-    snapshot['sources'][str(prepared/'launch_plan.json')]=worker.checksum(prepared/'launch_plan.json')
-    worker.save(prepared/'source_snapshot.json',snapshot)
+    assert not (prepared/'source_snapshot.json').exists()
     worker.run(prepared)
     result=worker.read(prepared/'result_digest.json')
-    assert len(calls)==1 and result['writer_usage']['received']==1
-    assert result['read_only_replay_matches'] is None
+    assert len(calls) == 1 and result['tester_calls']['received'] == 1
+    assert result['writer_calls'] == worker.read(Path(plan['cohort'])).get('generation_usage', {})
+    assert 'writer_usage' not in result
+    assert worker.read(prepared/'progress.json')['evaluated_tasks'] == 1
     assert result['tested_base_pass'] == 0
     assert result['evaluated_base_pass'] > 0
     assert all(row['valid_inputs']==row['detected']==0 for row in result['arms'].values())

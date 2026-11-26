@@ -94,10 +94,6 @@ class PynguinInputGenerator(InputGenerator):
             config['missing_contract_policy'] = 'signature_only'
         return config
 
-    def reporter(self):
-        from ..catalogue_reporting import CatalogueReporter
-        return CatalogueReporter()
-
     def prepare_context(self, context):
         load_or_prepare_packet(context, ())
 

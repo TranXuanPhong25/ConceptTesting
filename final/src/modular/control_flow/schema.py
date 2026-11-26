@@ -1,5 +1,6 @@
 """Validate model concepts as source-bound hypotheses; retain direct inputs."""
 import ast
+import json
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, ValidationError
 
 from ..common.predicates import expression
@@ -52,7 +53,13 @@ def parse_response(raw, targets, parameter_names):
                             & set(parameter_names)) for clause in clauses):
                     raise ValueError('predicate_clause_must_depend_on_input; use empty predicate when unsupported')
             identifiers.add(concept.id)
-            result['concepts'].append(concept.model_dump())
+            document = concept.model_dump()
+            try:
+                json.dumps(document['strategies'], allow_nan=False)
+            except (ValueError, TypeError, RecursionError):
+                document['strategies'] = {}
+                result['errors'].append({'concept_index': index, 'reason': 'strategy_not_json_data'})
+            result['concepts'].append(document)
         except (ValidationError, ValueError, TypeError, SyntaxError) as error:
             result['errors'].append({'concept_index': index, 'reason': str(error)[:1000]})
     return result

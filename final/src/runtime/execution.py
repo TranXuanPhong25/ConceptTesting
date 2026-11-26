@@ -104,3 +104,25 @@ def execute(job: dict) -> dict:
             return result
         except (ValueError, OSError):
             raise ExecutionError("Sandbox returned no valid result") from None
+
+
+def execute_isolated_inputs(job):
+    """Give each input a fresh sandbox so trials cannot share process state."""
+    statuses = {'ok', 'invalid_domain', 'error', 'timeout'} if job['mode'] == 'oracle' else {
+        'pass', 'fail', 'error', 'timeout',
+    }
+    observations = []
+    for record in job['tests']:
+        outcome = execute({**job, 'tests': [record]})
+        tests = outcome.get('tests')
+        if not isinstance(tests, list) or len(tests) != 1 or not isinstance(tests[0], dict):
+            raise ExecutionError('Sandbox result does not match the single input')
+        observation = tests[0]
+        if observation.get('status') not in statuses:
+            raise ExecutionError('Sandbox returned an invalid input outcome')
+        if observation['status'] == 'ok' and not all(
+            isinstance(observation.get(name), str) for name in ('input_key', 'expected')
+        ):
+            raise ExecutionError('Oracle outcome is missing its input key or expected output')
+        observations.append(observation)
+    return {'tests': observations}

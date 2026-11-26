@@ -113,8 +113,8 @@ def make_pipeline(tmp_path, monkeypatch, *, malformed=False, tasks=None, fail=Fa
     monkeypatch.setattr("final.src.modular.put_evaluation.execute", fixture_evaluate)
     pipeline = BenchmarkPipeline(
         cohort, ArtifactStore(directory),
-        arms=(PlainArm(), EpBvaArm()), settings=PipelineSettings(target_programs=1, input_tokens=4096),
-        calls=FixtureCalls(model, directory), execution_cache=False, reference_programs=TaskReferencePrograms(),
+        arms=(PlainArm(), EpBvaArm()), settings=PipelineSettings(input_tokens=4096),
+        calls=FixtureCalls(model, directory), reference_programs=TaskReferencePrograms(),
     )
     return pipeline, model, native_events, tasks
 
@@ -131,15 +131,15 @@ def test_catalogue_pipeline_freezes_all_tasks_before_measurement_and_put(tmp_pat
                  if event["task_id"] == task["task_id"] and event["state"] == "complete"]
         assert names.index("input_generation") < names.index("reference_oracle")
         assert names.index("reference_oracle") < names.index("catalogue_measurement") < names.index("put_evaluation")
-        catalogue = result["catalogues"][task["task_id"]]["ep_bva_vf3_hybrid"]
+        path = f"tasks/{task['task_id'].split('/')[-1]}/catalogue_measurements.json"
+        catalogue = pipeline.artifacts.read(path)["ep_bva_vf3_hybrid"]
         assert catalogue["valid_input_records"] == 1
         assert catalogue["declared"]["covered_ids"] == ["B1", "E1"]
         assert catalogue["semantic_audit"] == "pending"
         observed = catalogue["observed"]
         assert observed["classes"][0]["status"] == "hit"
         assert observed["boundaries"][0]["status"] == "miss"
-        saved = pipeline.artifacts.read("tasks/" + task["task_id"].split("/")[-1] + "/catalogue_measurements.json")
-        assert saved["ep_bva_vf3_hybrid"]["observed"] == observed
+    assert 'catalogues' not in result
     assert result["arms"]["ep_bva_vf3_hybrid"]["detected"] == 2
     assert result["detection_kinds"]["ep_bva_vf3_hybrid"]["wrong_value"] == 2
     assert len(result["comparisons"]) == 1
@@ -154,7 +154,8 @@ def test_malformed_catalogue_preserves_valid_call_through_evaluation(tmp_path, m
     assert batch["catalogue_status"] == "catalogue_invalid"
     assert batch["inputs"][0]["args"] == "(2,)"
     assert result["arms"]["ep_bva_vf3_hybrid"]["valid_inputs"] == 1
-    assert result["catalogues"][TASK["task_id"]]["ep_bva_vf3_hybrid"]["status"] == "catalogue_invalid"
+    measured = pipeline.artifacts.read('tasks/7/catalogue_measurements.json')
+    assert measured['ep_bva_vf3_hybrid']['status'] == 'catalogue_invalid'
     assert events.count("put") == 1
 
 
@@ -173,8 +174,7 @@ def test_catalogue_run_replays_identically_without_fixture_generation_or_executi
     monkeypatch.setattr("final.src.modular.put_evaluation.execute", forbidden)
     replay = BenchmarkPipeline(
         pipeline.cohort_path, ArtifactStore(tmp_path / "run", read_only=True),
-        arms=(PlainArm(), EpBvaArm()), settings=pipeline.settings, execution_cache=False,
-        reference_programs=TaskReferencePrograms(),
+        arms=(PlainArm(), EpBvaArm()), settings=pipeline.settings, reference_programs=TaskReferencePrograms(),
     )
     assert replay.run(tasks, {TASK["task_id"]: META}) == expected
     assert {str(path.relative_to(tmp_path / "run")): path.read_bytes()
@@ -240,20 +240,18 @@ def test_console_new_arm_worker_uses_shared_completion_cap_and_replays_empty_fix
                               "arms": ["plain", "ep_bva_vf3_hybrid"]}, output)
     assert preview["config"]["completion_tokens"] == 8192
     plan = worker.read(output / "launch_plan.json")
-    plan.update(native_lock=str(tmp_path / "native.lock"), execution_cache=str(tmp_path / "cache"))
+    plan.update(native_lock=str(tmp_path / "native.lock"))
     worker.save(output / "launch_plan.json", plan)
-    source_snapshot = worker.read(output / "source_snapshot.json")
-    source_snapshot["sources"][str(output / "launch_plan.json")] = worker.checksum(output / "launch_plan.json")
-    worker.save(output / "source_snapshot.json", source_snapshot)
+    assert not (output / 'source_snapshot.json').exists()
     worker.run(output)
     assert len(requests) == 3  # plain + ep_bva_vf3_hybrid (2 rounds)
     for name in ("plain", "ep_bva_vf3_hybrid_initial", "ep_bva_vf3_hybrid_feedback"):
         request = worker.read(output / "tasks" / "0" / "calls" / name / "request.json")
         assert request["max_tokens"] == 8192
     result = worker.read(output / "result_digest.json")
-    assert result["read_only_replay_matches"] is None
     assert result["arms"]["ep_bva_vf3_hybrid"]["valid_inputs"] == 0
-    assert result["catalogues"]["HumanEval/0"]["ep_bva_vf3_hybrid"]["status"] == "not_applicable"
+    measured = worker.read(output / 'tasks/0/catalogue_measurements.json')
+    assert measured['ep_bva_vf3_hybrid']['status'] == 'not_applicable'
 
 
 def test_three_full_run_arms_share_one_plain_baseline_and_replay(tmp_path, monkeypatch):
@@ -261,8 +259,7 @@ def test_three_full_run_arms_share_one_plain_baseline_and_replay(tmp_path, monke
     methods = (PlainArm(), EpBvaArm(), DecisionTableArm())
     pipeline = BenchmarkPipeline(
         pipeline.cohort_path, pipeline.artifacts,
-        arms=methods, settings=pipeline.settings, calls=pipeline.calls, execution_cache=False,
-        reference_programs=TaskReferencePrograms(),
+        arms=methods, settings=pipeline.settings, calls=pipeline.calls, reference_programs=TaskReferencePrograms(),
     )
     summary = pipeline.run(tasks, {TASK["task_id"]: META})
     assert len(model.messages) == 5  # 1 plain + 2 ep_bva + 2 dt
@@ -280,6 +277,6 @@ def test_three_full_run_arms_share_one_plain_baseline_and_replay(tmp_path, monke
     replay = BenchmarkPipeline(
         pipeline.cohort_path,
         ArtifactStore(pipeline.artifacts.directory, read_only=True), arms=methods,
-        settings=pipeline.settings, execution_cache=False, reference_programs=TaskReferencePrograms(),
+        settings=pipeline.settings, reference_programs=TaskReferencePrograms(),
     )
     assert replay.run(tasks, {TASK["task_id"]: META}) == summary

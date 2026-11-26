@@ -4,6 +4,7 @@ import json
 import time
 
 from ..generators.base import InputGenerator
+from ..calls import structured_format
 from ..input_preparation import load_or_prepare_packet
 from .config import validate_budgets
 from ..call_builder import CallBuilder
@@ -71,7 +72,6 @@ class ToolInputGenerator(InputGenerator):
         messages = [{'role': 'system', 'content': PREPARATION},
                     {'role': 'user', 'content': context.task['prompt'] + '\nTrusted contract:\n' +
                      context.metadata['contract'] + '\nSuite budget: ' + str(min(20, context.settings.input_budget))}]
-        builder = CallBuilder.for_source(context.task['prompt'], context.task['entry_point'])
         schema = preparation_schema(builder, trusted_domain=authority['expression'])
         # Native response_format constrains structure; the local validator still
         # checks semantics of expressions and rejects unsupported requirements.
@@ -80,12 +80,15 @@ class ToolInputGenerator(InputGenerator):
             messages[1]['content'] += '\nTRUSTED_ADMISSION_DOMAIN (copy exactly): ' + authority['expression']
         if context.calls.token_count(messages) + context.settings.input_tokens + 128 > context.settings.context_tokens:
             return None, error('P1', 'invalid_response', 'preparation_prompt_too_large')
-        complete = getattr(context.calls, 'complete_structured', None)
-        if complete is None:
-            raise RuntimeError('Tool preparation requires structured-completion support; no unconstrained fallback')
-        response = complete(context.task_number, 'tool_preparation', messages, schema=schema,
-            temperature=context.settings.input_temperature, max_tokens=context.settings.input_tokens,
-            seed=context.settings.input_seed + context.task_number)
+        response = context.calls.complete(
+            context.task_number,
+            'tool_preparation',
+            messages,
+            temperature=context.settings.input_temperature,
+            max_tokens=context.settings.input_tokens,
+            seed=context.settings.input_seed + context.task_number,
+            response_format=structured_format(schema),
+        )
         if response.finish_reason != 'stop':
             return {'raw_response': response.text}, error('P1', 'truncated_response', response.finish_reason)
         try:
@@ -183,10 +186,6 @@ class ToolInputGenerator(InputGenerator):
         from .gate import validate_generation
         validate_generation(contexts)
 
-    def post_evaluation(self, context, execution_cache, reference_programs):
+    def post_evaluation(self, context, reference_programs):
         from .audit import run_tool_audit
-        run_tool_audit(context, self.config, execution_cache, reference_programs)
-
-    def reporter(self):
-        from .reporting import ToolReporter
-        return ToolReporter()
+        run_tool_audit(context, self.config, reference_programs)

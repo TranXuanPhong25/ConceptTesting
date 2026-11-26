@@ -11,7 +11,6 @@ from pathlib import Path
 
 from final.src.modular.artifacts import ArtifactStore
 from final.src.modular.context import PipelineSettings
-from final.src.modular.execution_cache import InputExecutionCache
 from final.src.modular.generators.frozen import FrozenInputsGenerator
 from final.src.modular.pipeline import BenchmarkPipeline
 from final.src.scripts._formatting import (
@@ -45,8 +44,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--input-budget", type=int, default=20)
     parser.add_argument("--target-programs", type=int, default=10)
     parser.add_argument("--timeout", type=int, default=8)
-    parser.add_argument("--execution-cache", type=Path, default=Path("final/out/execution_cache"))
-    parser.add_argument("--no-execution-cache", action="store_true")
     parser.add_argument("--per-task", action="store_true", help="Also print per-task breakdown table")
     return parser
 
@@ -70,19 +67,16 @@ def main(arguments: list[str] | None = None) -> int:
 
     artifacts = ArtifactStore(options.output)
     settings = PipelineSettings(
-        target_programs=options.target_programs,
         input_budget=options.input_budget,
         timeout_seconds=options.timeout,
         scorer=options.scorer,
     )
-    cache = False if options.no_execution_cache else InputExecutionCache(options.execution_cache)
 
     pipeline = BenchmarkPipeline(
         options.cohort,
         artifacts,
         input_generator=generator,
         settings=settings,
-        execution_cache=cache,
         dataset=dataset,
     )
     pipeline.run(tasks, metadata)

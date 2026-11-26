@@ -193,8 +193,7 @@ def test_pipeline_tool_generator_freezes_before_audit_and_replays_without_work(t
     monkeypatch.setattr('final.src.modular.put_evaluation.execute', evaluate)
     generator = ToolInputGenerator(budgets(), preparations={'HumanEval/7': model()})
     pipeline = BenchmarkPipeline(cohort, ArtifactStore(directory), input_generator=generator,
-        settings=PipelineSettings(input_budget=2, target_programs=1), execution_cache=False,
-        reference_programs=TaskReferencePrograms())
+        settings=PipelineSettings(input_budget=2), reference_programs=TaskReferencePrograms())
     result = pipeline.run([task], {'HumanEval/7': {'contract': '', 'atol': 0}})
     assert result['tool_sampling']['HumanEval/7']['tool_hypothesis']['pool_ceiling']['complete'] is True
     assert result['arms']['tool_hypothesis']['detected'] == 1
@@ -205,7 +204,7 @@ def test_pipeline_tool_generator_freezes_before_audit_and_replays_without_work(t
     monkeypatch.setattr('final.src.modular.put_evaluation.execute', forbidden)
     monkeypatch.setattr('final.src.modular.tool_sampling.generator.sample_hypothesis', forbidden)
     replay = BenchmarkPipeline(cohort, ArtifactStore(directory, read_only=True), input_generator=generator,
-        settings=pipeline.settings, execution_cache=False, reference_programs=TaskReferencePrograms())
+        settings=pipeline.settings, reference_programs=TaskReferencePrograms())
     assert replay.run([task], {'HumanEval/7': {'contract': '', 'atol': 0}}) == result
     assert (directory / 'tasks/7/inputs.json').read_bytes() == saved_inputs
 
@@ -217,7 +216,7 @@ def test_console_tool_preview_counts_shared_preparation_once_per_task():
                       'tool_sampling': config})
     assert result['logical_call_cap'] == result['eligible_task_count']
     assert result['logical_calls_by_arm'] == {'tool_preparation_shared': result['eligible_task_count']}
-    assert result['max_input_slots_per_arm'] == 20 * result['eligible_task_count']
+    assert set(result['max_input_slots_by_arm'].values()) == {20 * result['eligible_task_count']}
     assert result['tool_sampling_budgets']['audit_cap'] == 50
 
 
@@ -442,10 +441,9 @@ def test_generator_requests_schema_without_adding_model_calls(tmp_path):
         requests = []
         def token_count(self, messages):
             return 1
-        def complete(self, *args, **kwargs):
-            pytest.fail('Unconstrained completion called')
-        def complete_structured(self, task_number, call_name, messages, *, schema, **kwargs):
-            self.requests.append((task_number, call_name, schema))
+        def complete(self, task_number, call_name, messages, *, response_format, **kwargs):
+            assert response_format['type'] == 'json_schema'
+            self.requests.append((task_number, call_name, response_format['json_schema']['schema']))
             return ModelResponse(json.dumps(model()), {'total_tokens': 1}, 'stop')
     context = TaskContext({'task_id': 'HumanEval/7', 'entry_point': 'f',
         'prompt': 'def f(a: int, b: int = 0):\n    pass\n'}, {'contract': ''}, ArtifactStore(tmp_path),
@@ -475,7 +473,7 @@ def test_generation_gate_blocks_invalid_preparation_before_freeze_or_evaluation(
     monkeypatch.setattr('final.src.modular.reference_oracle.execute', forbidden)
     out = tmp_path/'run'
     pipeline = BenchmarkPipeline(cohort, ArtifactStore(out), input_generator=generator,
-        settings=PipelineSettings(target_programs=1), execution_cache=False, reference_programs=TaskReferencePrograms())
+        settings=PipelineSettings(), reference_programs=TaskReferencePrograms())
     with pytest.raises(ValueError, match='tool_generation_gate'):
         pipeline.run([task], {'HumanEval/7': {'contract': '', 'atol': 0}})
     gate = json.loads((out/'tool_generation_gate.json').read_text())

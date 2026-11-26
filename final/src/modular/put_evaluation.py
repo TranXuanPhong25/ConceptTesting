@@ -1,15 +1,17 @@
 """Execute base-passing PUTs on admitted oracle tests under the configured repeat policy."""
 from __future__ import annotations
 
-from final.src.runtime.execution import execute
-from .execution_cache import cached_execution
+from final.src.runtime.execution import execute_isolated_inputs as execute
 
 FAILURE_STATUSES = ("fail", "error", "timeout")
 
 
-def _confirm_first_failures(context, program, job, execution_cache) -> dict:
+def _confirm_first_failures(context, program, job) -> dict:
     evaluation_path = context.task_directory + f"/evaluation/{program['id']}"
-    first_result = cached_execution(context, evaluation_path + "_0.json", job, 0, execute, execution_cache)
+    first_result = context.artifacts.load_or_compute(
+        evaluation_path + '_0.json',
+        lambda: execute(job) if job['tests'] else {'tests': []},
+    )
     if len(first_result["tests"]) != len(job["tests"]):
         raise ValueError("First PUT evaluation result count does not match input count")
     # A first-run pass cannot fail both runs, so only retry fail/error/timeout.
@@ -26,13 +28,9 @@ def _confirm_first_failures(context, program, job, execution_cache) -> dict:
         retry_job = dict(job)
         retry_job["tests"] = retested_inputs
         # A separate path avoids reusing an old full-suite second-run checkpoint.
-        second_result = cached_execution(
-            context,
+        second_result = context.artifacts.load_or_compute(
             evaluation_path + "_retry_1.json",
-            retry_job,
-            1,
-            execute,
-            execution_cache,
+            lambda: execute(retry_job),
         )
         if len(second_result["tests"]) != len(retested_indices):
             raise ValueError("PUT confirmation result count does not match retested input count")
@@ -47,11 +45,14 @@ def _confirm_first_failures(context, program, job, execution_cache) -> dict:
     return {"failing": failing_indices, "unstable": unstable_indices, "retested": retested_indices}
 
 
-def _full_two_repeats(context, program, job, execution_cache) -> dict:
+def _full_two_repeats(context, program, job) -> dict:
     repeated_results = []
     for repeat_index in range(2):
         relative_path = context.task_directory + f"/evaluation/{program['id']}_{repeat_index}.json"
-        result = cached_execution(context, relative_path, job, repeat_index, execute, execution_cache)
+        result = context.artifacts.load_or_compute(
+            relative_path,
+            lambda: execute(job) if job['tests'] else {'tests': []},
+        )
         if len(result["tests"]) != len(job["tests"]):
             raise ValueError("PUT evaluation result count does not match input count")
         repeated_results.append(result["tests"])
@@ -67,7 +68,7 @@ def _full_two_repeats(context, program, job, execution_cache) -> dict:
     return {"failing": failing_indices, "unstable": unstable_indices}
 
 
-def evaluate_programs(context, *, execution_cache=None) -> dict:
+def evaluate_programs(context) -> dict:
     """Evaluate all base-passing PUTs for a task and aggregate arm detections."""
     scorer = context.settings.scorer
     if scorer not in ("confirm_first_failures", "full_two_repeats"):
@@ -88,9 +89,9 @@ def evaluate_programs(context, *, execution_cache=None) -> dict:
             "seed": context.settings.reference_seed + context.task_number,
         }
         if scorer == "full_two_repeats":
-            program_outcomes[str(program["id"])] = _full_two_repeats(context, program, job, execution_cache)
+            program_outcomes[str(program['id'])] = _full_two_repeats(context, program, job)
         else:
-            program_outcomes[str(program["id"])] = _confirm_first_failures(context, program, job, execution_cache)
+            program_outcomes[str(program['id'])] = _confirm_first_failures(context, program, job)
     arm_results = {}
     for arm_name, selected_indices in context.oracle["arm_indices"].items():
         selected_set = set(selected_indices)
@@ -119,12 +120,12 @@ def evaluate_programs(context, *, execution_cache=None) -> dict:
     }
 
 
-def evaluate_puts(context, *, execution_cache=None) -> dict:
+def evaluate_puts(context) -> dict:
     """Evaluate a task unless skipped, persist result.json, and store on context."""
     if context.inputs.get("skip"):
         result = {"task_id": context.task["task_id"], "skip": context.inputs["skip"]}
     else:
-        result = evaluate_programs(context, execution_cache=execution_cache)
+        result = evaluate_programs(context)
     context.artifacts.write(context.task_directory + "/result.json", result)
     context.result = result
     return result

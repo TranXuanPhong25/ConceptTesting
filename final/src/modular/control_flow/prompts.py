@@ -69,9 +69,20 @@ domain failures or runtime status. Unknown or a timeout does not mean unreachabl
 including currently unsupported scenarios, remain eligible; never claim coverage from your own labels.'''
 
 
-def messages(task, contract, programs, analyses, targets, input_budget, feedback=None, *,
-             prior_stage_inputs=None, prior_stage_summary=None,
-             max_prompt_prior_inputs=12, instruction=INSTRUCTION):
+def messages(
+    task,
+    contract,
+    programs,
+    analyses,
+    targets,
+    input_budget,
+    feedback=None,
+    *,
+    prior_stage_inputs=None,
+    prior_stage_summary=None,
+    max_prompt_prior_inputs=12,
+    instruction=INSTRUCTION,
+):
     payload = {'specification': task['prompt'], 'trusted_contract': contract,
                'parameter_names_from_signature': None, 'input_budget': input_budget,
                'programs': programs, 'analysis': analyses, 'targets': targets,

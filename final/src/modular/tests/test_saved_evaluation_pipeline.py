@@ -11,7 +11,7 @@ from final.src.modular.tests.test_references import original_run
 from final.src.audits.evaluate_input_union import evaluate
 
 
-def test_rescore_accepts_new_arm_and_inputs_over_old_budget_and_reuses_cache(original_run, tmp_path):
+def test_rescore_accepts_new_arm_and_inputs_over_old_budget(original_run, tmp_path):
     cohort, source = original_run
     manifest = source.read('modular_manifest.json')
     manifest['arms'] = [{'name': 'saved_custom_arm', 'configuration': {'retired_option': True}}]
@@ -22,24 +22,17 @@ def test_rescore_accepts_new_arm_and_inputs_over_old_budget_and_reuses_cache(ori
     calls = [{'args': '(2, 3)', 'kwargs': '{}'}, {'args': '(3, 4)', 'kwargs': '{}'}]
     batch = {'task_id': 'HumanEval/97', 'arms': {'saved_custom_arm': {'inputs': calls}}}
     save(source.path('tasks/97/inputs.json'), batch)
-    cache = tmp_path / 'shared_cache'
-    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / 'first', cache_directory=cache)
+    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / 'first')
     first = pipeline.run(tasks, metadata)
     assert first['arms']['saved_custom_arm']['valid_inputs'] == 2
-    assert first['input_execution_cache']['executed_inputs'] > 0
-    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / 'second', cache_directory=cache)
-    second = pipeline.run(tasks, metadata)
-    assert second['input_execution_cache']['executed_inputs'] == 0
-    assert second['input_execution_cache']['hits'] > 0
+    assert 'input_execution_cache' not in first
     batch['arms']['saved_custom_arm']['inputs'].append({'args': '(4, 5)', 'kwargs': '{}'})
     save(source.path('tasks/97/inputs.json'), batch)
-    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / 'third', cache_directory=cache)
+    pipeline, tasks, metadata = build_rescore_pipeline(source.directory, cohort, tmp_path / 'third')
     third = pipeline.run(tasks, metadata)
     assert third['arms']['saved_custom_arm']['valid_inputs'] == 3
-    assert third['input_execution_cache']['hits'] > 0
-    assert third['input_execution_cache']['executed_inputs'] > 0
     with pytest.raises(ValueError, match='new output directory'):
-        build_rescore_pipeline(source.directory, cohort, tmp_path / 'third', cache_directory=cache)
+        build_rescore_pipeline(source.directory, cohort, tmp_path / 'third')
 
 
 def test_union_reads_recorded_outcomes_without_manifest_inputs_or_executors(tmp_path, monkeypatch):

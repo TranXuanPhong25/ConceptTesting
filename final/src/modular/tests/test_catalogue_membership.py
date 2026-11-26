@@ -177,7 +177,7 @@ def test_condition_predicates_are_in_rendered_contracts():
 
 def test_original_rule_id_cannot_shadow_class_but_valid_inputs_survive(tmp_path):
     from final.src.modular.black_box.catalogue import validate_catalogue
-    from final.src.modular.black_box import StructuredCatalogueArm
+    from final.src.modular.black_box import EpBvaArm
     from final.src.modular.tests.test_testing_arms import decode
     raw = {'classes':[{'id':'E','description':'negative','predicate':'x < 0'}],
            'boundaries':[bva()], 'conditions':{'C':[True,False]},
@@ -188,7 +188,7 @@ def test_original_rule_id_cannot_shadow_class_but_valid_inputs_survive(tmp_path)
                     {'id':'RF','conditions':{'C':False},'actions':['B'],'merged_from':['F']}]}
     _, errors = validate_catalogue(raw,('classes','boundaries','rules'))
     assert 'original_rule_id_collision:E' in errors
-    arm = StructuredCatalogueArm()
+    arm = EpBvaArm()
     arm.sections = ("classes", "boundaries", "rules")
     result = decode(arm,{'catalogue':raw,'inputs':[{'arguments':{'x':1},'covers':['E']}]},tmp_path)
     assert result['catalogue_status'] == 'catalogue_invalid'

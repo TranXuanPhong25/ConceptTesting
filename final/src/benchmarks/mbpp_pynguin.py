@@ -127,7 +127,7 @@ def run(directory):
     tasks = json.loads((directory.parent / 'tasks_snapshot.json').read_text())
     cohort = json.loads((directory.parent / 'cohort.json').read_text())
     arm = config['arm']
-    settings = PipelineSettings(**config['settings'])
+    settings = PipelineSettings.from_snapshot(config['settings'])
     pynguin_settings = PynguinSettings(**config['pynguin'])
     seed_store = ArtifactStore(Path(config['seed_source'] or directory), read_only=True)
     search = PynguinInputGenerator(pynguin_settings, allow_missing_contract=True)

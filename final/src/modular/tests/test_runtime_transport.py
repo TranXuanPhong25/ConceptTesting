@@ -449,7 +449,7 @@ def test_cached_calls_do_not_read_legacy_model_metadata(tmp_path):
 
 def test_structured_call_schema_is_checkpointed_and_replay_rejects_changed_schema(tmp_path):
     from final.src.modular.artifacts import ArtifactStore
-    from final.src.modular.calls import RecordedModelCalls, CachedModelCalls
+    from final.src.modular.calls import RecordedModelCalls, CachedModelCalls, structured_format
     class StructuredFixture(FixtureTransportModel):
         model_id = 'fixture-structured'
         def generate_prepared(self, prepared, *, temperature, seed, response_format=None):
@@ -458,10 +458,10 @@ def test_structured_call_schema_is_checkpointed_and_replay_rejects_changed_schem
     calls = RecordedModelCalls(StructuredFixture(), ArtifactStore(tmp_path))
     arguments = dict(temperature=0, max_tokens=100, seed=1)
     schema = {'type': 'object', 'properties': {}, 'additionalProperties': False}
-    expected = calls.complete_structured(7, 'tool_preparation', [], schema=schema, **arguments)
+    expected = calls.complete(7, 'tool_preparation', [], response_format=structured_format(schema), **arguments)
     request = json.loads((tmp_path / 'tasks/7/calls/tool_preparation/request.json').read_text())
     assert request['response_format']['json_schema']['schema'] == schema
     cached = CachedModelCalls(ArtifactStore(tmp_path, read_only=True))
-    assert cached.complete_structured(7, 'tool_preparation', [], schema=schema, **arguments) == expected
+    assert cached.complete(7, 'tool_preparation', [], response_format=structured_format(schema), **arguments) == expected
     with pytest.raises(ValueError, match='mismatch'):
-        cached.complete_structured(7, 'tool_preparation', [], schema={'type': 'array'}, **arguments)
+        cached.complete(7, 'tool_preparation', [], response_format=structured_format({'type': 'array'}), **arguments)
