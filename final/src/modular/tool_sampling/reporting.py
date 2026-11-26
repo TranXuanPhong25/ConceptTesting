@@ -1,4 +1,4 @@
-"""Funnel, verified coverage and Vietnamese reports with explicit denominators."""
+"""Funnel, verified coverage and Vietnamese reports with explicit totals."""
 from collections import Counter
 from dataclasses import asdict
 import json
@@ -25,13 +25,13 @@ def funnel(batch):
     previous = len(rows)
     stages = []
     for name, count in counts:
-        stages.append({'stage': name, 'count': count, 'denominator': previous,
+        stages.append({'stage': name, 'count': count, 'total': previous,
                        'fraction': count / previous if previous else None})
         previous = count
     return {'stages': stages, 'total_candidates': len(rows), 'response_record_value_parsed': reached(3),
             'bound': reached(5), 'domain_valid': sum(row.get('domain') == 'true' for row in rows),
             'unique': len(unique), 'selected': sum(row['selected'] for row in unique),
-            'parse_errors': {'count': len(parse_rows), 'denominator': len(rows),
+            'parse_errors': {'count': len(parse_rows), 'total': len(rows),
                 'primary_exclusive': dict(primary), 'multi_label': dict(multilabel),
                 'at_least_two_errors': sum(len(row['errors']) >= 2 for row in parse_rows),
                 'other': sum(any(error['code'] == 'other' for error in row['errors']) for row in rows)},
@@ -70,9 +70,9 @@ def coverage(batch):
         actual = {name: [level for level, predicate in levels.items()
                          if predicate_status(predicate, arguments)[0] == 'true'] for name, levels in factors.items()}
         actual_levels[row['candidate_id']] = actual
-        unambiguous = {name: levels[0] for name, levels in actual.items() if len(levels) == 1}
-        for left, right in combinations(sorted(unambiguous), 2):
-            item = (left, unambiguous[left], right, unambiguous[right])
+        single_levels = {name: levels[0] for name, levels in actual.items() if len(levels) == 1}
+        for left, right in combinations(sorted(single_levels), 2):
+            item = (left, single_levels[left], right, single_levels[right])
             tuples.add(item)
             if row['selected']:
                 selected_tuples.add(item)

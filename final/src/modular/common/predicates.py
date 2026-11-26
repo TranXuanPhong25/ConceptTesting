@@ -151,10 +151,10 @@ NODES = (ast.Expression, ast.BoolOp, ast.And, ast.Or, ast.UnaryOp, ast.Not, ast.
          ast.UAdd, ast.BinOp, ast.Add, ast.Sub, ast.Compare, ast.Eq, ast.NotEq,
          ast.Lt, ast.LtE, ast.Gt, ast.GtE, ast.In, ast.NotIn, ast.Name, ast.Load,
          ast.Constant, ast.Call, ast.List, ast.Tuple, ast.Set, ast.Subscript, ast.Slice)
-FUNCTION_ARITY = {'split': 2, 'chars_in': 2, 'all_in_range': 3, 'is_instance': 2,
-                  'all_instance': 2, 'all_type': 2}
-FUNCTION_ARITY.update({'any_type':2,'any_in':2,'all_in':2,'any_not_in':2,
-                       'slice_values':3,'any_multiple':2,'overlapping_occurrences':2})
+FUNCTION_ARG_COUNT = {'split': 2, 'chars_in': 2, 'all_in_range': 3, 'is_instance': 2,
+                      'all_instance': 2, 'all_type': 2}
+FUNCTION_ARG_COUNT.update({'any_type':2,'any_in':2,'all_in':2,'any_not_in':2,
+                           'slice_values':3,'any_multiple':2,'overlapping_occurrences':2})
 
 
 def expression(text, names):
@@ -171,7 +171,7 @@ def expression(text, names):
             raise ValueError("unknown_predicate_name:" + node.id)
         if isinstance(node, ast.Call):
             if (not isinstance(node.func, ast.Name) or node.func.id not in FUNCTIONS
-                    or len(node.args) != FUNCTION_ARITY.get(node.func.id, 1) or node.keywords):
+                    or len(node.args) != FUNCTION_ARG_COUNT.get(node.func.id, 1) or node.keywords):
                 raise ValueError("unsupported_predicate_call")
         if isinstance(node, ast.Constant) and (type(node.value) not in (int, float, bool, str, type(None))
                 or len(repr(node.value)) > 256):

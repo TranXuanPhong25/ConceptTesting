@@ -60,7 +60,7 @@ def test_control_flow_usage_counts_split_rounds_and_archived_attempts(tmp_path):
     for name in ('control_flow_round_5', 'control_flow_round_5_unknown_attempt_0000'):
         worker.save(tmp_path / 'tasks' / '0' / 'calls' / name / 'attempt.json', {})
     usage = usage_by_arm(tmp_path, ['control_flow'])
-    assert usage['control_flow']['invocations'] == 2
+    assert usage['control_flow']['calls'] == 2
 
 
 @pytest.mark.parametrize('values',[

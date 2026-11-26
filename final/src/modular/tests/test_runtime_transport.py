@@ -226,7 +226,7 @@ def test_missing_remote_tokenizer_uses_conservative_local_estimate(transport_mod
     monkeypatch.setattr(transport_model, "request", missing_tokenizer)
     assert transport_model.tokens([{"role": "user", "content": "Việt 🧪"}]) >= 1
     assert operations == ["tokenize"]
-    assert transport_model.last_tokenizer_source == "local_conservative_estimate"
+    assert transport_model.last_tokenizer_source == "local_safe_estimate"
 
 
 def test_metadata_read_failure_is_sanitized_transport_error(transport_model, monkeypatch):
@@ -278,7 +278,7 @@ def test_prior_attempt_retry_preserves_unknown_and_reuses_saved_response(tmp_pat
     assert model.completion_calls == 2
     assert model.received_parameters[0] == model.received_parameters[1]
     accounting = call_usage(tmp_path)
-    assert accounting["invocations"] == 3
+    assert accounting["calls"] == 3
     assert accounting["received"] == 1
     assert accounting["unknown"] == 2
     assert pipeline.query(task_directory, "plain", **QUERY_ARGUMENTS) == result
@@ -312,7 +312,7 @@ def test_explicit_request_retry_extension_keeps_original_attempt_numbers(tmp_pat
     response = CheckpointedModelClient(model).query(task, 'plain', **QUERY_ARGUMENTS)
     assert response.finish_reason == 'stop' and model.completion_calls == 2
     assert json.loads((task / 'calls/plain/attempt.json').read_text())['attempt_number'] == 5
-    assert call_usage(tmp_path)['invocations'] == 5 and call_usage(tmp_path)['unknown'] == 4
+    assert call_usage(tmp_path)['calls'] == 5 and call_usage(tmp_path)['unknown'] == 4
     assert CheckpointedModelClient(model).query(task, 'plain', **QUERY_ARGUMENTS) == response
     assert model.completion_calls == 2
 
@@ -374,7 +374,7 @@ def test_legacy_unknown_counts_toward_three_total_attempts(tmp_path, monkeypatch
     with pytest.raises(CompletionRetryLimit):
         pipeline.query(task_directory, "plain", **QUERY_ARGUMENTS)
     assert model.completion_calls == 2
-    assert call_usage(tmp_path)["invocations"] == 3
+    assert call_usage(tmp_path)["calls"] == 3
     with pytest.raises(CompletionRetryLimit):
         pipeline.query(task_directory, "plain", **QUERY_ARGUMENTS)
     assert model.completion_calls == 2
@@ -408,7 +408,7 @@ def test_tokenizer_failure_records_no_completion_attempt(tmp_path):
     with pytest.raises(TransportError):
         pipeline.query(tmp_path / "tasks" / "16", "plain", **QUERY_ARGUMENTS)
     assert model.completion_calls == 0
-    assert call_usage(tmp_path)["invocations"] == 0
+    assert call_usage(tmp_path)["calls"] == 0
 
 
 def test_endpoint_configuration_can_refresh_without_recording_url(transport_model, tmp_path):

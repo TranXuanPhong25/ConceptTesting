@@ -26,7 +26,7 @@ def entry_function(source, entry_point):
 def input_signature(function):
     args = function.args
     if args.vararg or args.kwarg:
-        raise ValueError("variadic_signature_unsupported")
+        raise ValueError("varargs_signature_unsupported")
 
     parameters = []
     positional = args.posonlyargs + args.args
@@ -142,8 +142,8 @@ def validate_annotation(annotation, depth=0):
             raise ValueError("unsupported_type_annotation:" + annotation)
         return
     arguments = list(node.slice.elts) if isinstance(node.slice, ast.Tuple) else [node.slice]
-    arity = {"list": 1, "List": 1, "set": 1, "Set": 1, "dict": 2, "Dict": 2, "Optional": 1}
-    if name not in {*arity, "tuple", "Tuple", "Union"} or (name in arity and len(arguments) != arity[name]):
+    arg_count = {"list": 1, "List": 1, "set": 1, "Set": 1, "dict": 2, "Dict": 2, "Optional": 1}
+    if name not in {*arg_count, "tuple", "Tuple", "Union"} or (name in arg_count and len(arguments) != arg_count[name]):
         raise ValueError("unsupported_type_annotation:" + annotation)
     for index, argument in enumerate(arguments):
         if name in ("tuple", "Tuple") and len(arguments) == 2 and index == 1 and isinstance(argument, ast.Constant) and argument.value is Ellipsis:
@@ -242,7 +242,7 @@ class CallBuilder:
             else:
                 raise ValueError("missing_parameter")
             if not supported_value(value):
-                raise ValueError("unsupported_or_nonfinite_argument")
+                raise ValueError("unsupported_or_invalid_float_argument")
             annotation = parameter.annotation
             if annotation is not inspect.Parameter.empty and not matches_annotation(value, annotation):
                 raise ValueError("argument_type_mismatch:" + name)

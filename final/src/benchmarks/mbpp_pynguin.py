@@ -85,10 +85,10 @@ def report(directory, config, results):
     evaluated_puts = sum(row['base_pass'] for row in measured)
     valid_inputs = sum(row['arms'][arm]['valid_inputs'] for row in measured)
     assert len(detections) == sum(row['arms'][arm]['detected'] for row in measured)
-    assert usage['invocations'] <= config['physical_attempt_cap']
+    assert usage['calls'] <= config['physical_attempt_cap']
     assert usage['received'] <= config['logical_call_cap']
     if config.get('evaluation_repair'):
-        assert usage['invocations'] == config['imported_calls']['attempts']
+        assert usage['calls'] == config['imported_calls']['attempts']
         assert usage['received'] == config['imported_calls']['responses']
     summary = {
         'dataset': 'mbpp', 'config': config, 'tasks': len(measured),
@@ -110,7 +110,7 @@ def report(directory, config, results):
     outcome = f'{len(detections)} PUT phát hiện trên {evaluated_puts} PUT đã evaluation' if measured else 'Kết quả pending'
     (directory / 'REPORT.md').write_text(
         f'# MBPP+ · {config["label"]}\n\n{outcome}. '
-        'Các phát hiện là reference disagreement ổn định qua hai lần execution. '
+        'Các phát hiện là reference mismatch ổn định qua hai lần execution. '
         'MBPP+ dùng signature và reference admission. Spec audit còn pending.\n\n'
         f'Đã evaluation {len(measured)}/{config["requested_tasks"]} task, {evaluated_puts}/{config["requested_puts"]} PUT '
         f'và {valid_inputs} input memberships được reference chấp nhận. '

@@ -50,10 +50,10 @@ def _infer_entry_point(code: str, tests: list[str]) -> str:
     try:
         tree = ast.parse(code)
     except SyntaxError as error:
-        raise ValueError("MBPP canonical code is not valid Python") from error
+        raise ValueError("MBPP reference code is not valid Python") from error
     functions = [node.name for node in tree.body if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))]
     if not functions:
-        raise ValueError("MBPP canonical code has no top-level function")
+        raise ValueError("MBPP reference code has no top-level function")
     called = []
     for test in tests:
         try:

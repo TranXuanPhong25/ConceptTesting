@@ -34,7 +34,7 @@ def test_ledger_keeps_errors_at_earliest_stage_and_all_same_stage_errors():
     row = ledger.add({'oops': 3}, {'tool': 'direct', 'draw_index': 0})
     assert {e['code'] for e in row['errors']} == {'missing_field', 'unexpected_field'}
     assert row['primary_error']['stage'] == 'P2'
-    assert row['canonical_args'] is None and row['membership'] is None
+    assert row['standard_args'] is None and row['membership'] is None
     row = ledger.add({'arguments': {'a': True, 'b': float('inf')}}, {'tool': 'direct', 'draw_index': 1})
     assert {e['code'] for e in row['errors']} == {'bool_int_confusion', 'nan_inf', 'type_mismatch'}
     assert {e['stage'] for e in row['errors']} == {'P3'}
@@ -99,7 +99,7 @@ def test_hypothesis_real_constructor_is_seeded_and_respects_dependent_bounds():
     from final.src.modular.tool_sampling.ledger import CandidateLedger
     ledgers = [CandidateLedger('HumanEval/7', 'fixture', builder(), model()) for _ in range(2)]
     receipts = [sample_hypothesis(ledger, draws=25, seed=17, seconds=5) for ledger in ledgers]
-    calls = [[row['canonical_args'] for row in ledger.rows] for ledger in ledgers]
+    calls = [[row['standard_args'] for row in ledger.rows] for ledger in ledgers]
     assert calls[0] == calls[1] and len(calls[0]) > 1
     for call in calls[0]:
         a, b = ast.literal_eval(call['args'])
@@ -223,7 +223,7 @@ def test_console_tool_preview_counts_shared_preparation_once_per_task():
 @pytest.mark.parametrize('raw,code', [
     ([], 'wrong_record_type'),
     ({'args': 'not_a_literal'}, 'non_json_literal'),
-    ({'args': '(1, 2, 3)'}, 'arity_mismatch'),
+    ({'args': '(1, 2, 3)'}, 'arg_count_mismatch'),
     ({'args': '(1,)', 'kwargs': "{'unknown': 1}"}, 'unknown_kwarg'),
     ({'arguments': {'a': '\ud800'}}, 'string_encoding'),
     ({'arguments': {'a': 1, 'b': 2, 'unknown': 0}}, 'unknown_kwarg'),
@@ -426,7 +426,7 @@ def test_any_parameter_preserves_literal_types_without_accepting_unsafe_values()
     prepared = parse_preparation(raw, signature)
     ledger = CandidateLedger('HumanEval/7', 'fixture', signature, prepared)
     row = ledger.add({'arguments': {'a': '2,3', 'b': 0}}, {'tool': 'direct'})
-    assert ast.literal_eval(row['canonical_args']['args']) == ('2,3', 0)
+    assert ast.literal_eval(row['standard_args']['args']) == ('2,3', 0)
     bad = ledger.add({'arguments': {'a': float('inf'), 'b': 0}}, {'tool': 'direct'})
     assert bad['primary_error']['code'] == 'nan_inf'
 

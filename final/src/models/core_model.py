@@ -33,4 +33,4 @@ class CoreModel(ABC):
     @abstractmethod
     def generate(self, messages: list[dict[str, Any]], *, temperature: float,
                  max_tokens: int, seed: int) -> ModelResponse:
-        """One model invocation, without automatic retries."""
+        """One model call, without automatic retries."""

@@ -67,7 +67,7 @@ def expression(text,names):
                     raise ValueError('invalid_comprehension_binding')
                 bound={t.id for t in targets if isinstance(t,ast.Name)}
                 if any(n.startswith('_') or n in set(predicates.FUNCTIONS)|BUILTINS for n in bound):
-                    raise ValueError('predicate_binding_shadows_helper')
+                    raise ValueError('predicate_binding_overwrites_helper')
                 self.scope|=bound
                 for condition in generator.ifs:self.visit(condition)
             for field in ('elt','key','value'):

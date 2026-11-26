@@ -10,7 +10,7 @@ DEFAULT_REFERENCES = Path(__file__).resolve().parents[2] / "data/humanevalplus_v
 
 class TaskReferencePrograms:
     """Explicit task-provided references for controlled diagnostics and fixtures."""
-    record_provenance = False
+    record_source_info = False
 
     def configuration(self):
         return {"source": "task_canonical_solution", "policy": "original-task-reference"}
@@ -18,12 +18,12 @@ class TaskReferencePrograms:
     def for_task(self, task, metadata):
         return {"context": task["prompt"], "source": task["prompt"] + task["canonical_solution"],
                 "entry": task["entry_point"], "contract": metadata["contract"],
-                "provenance": self.configuration()}
+                "source_info": self.configuration()}
 
 
 class HumanEvalPlusReferencePrograms:
     """Only curated references/contracts: no plus inputs, test cases or model calls."""
-    record_provenance = True
+    record_source_info = True
 
     def __init__(self, path=DEFAULT_REFERENCES):
         self.path = Path(path).resolve()
@@ -40,4 +40,4 @@ class HumanEvalPlusReferencePrograms:
         record = self.package["tasks"][task["task_id"]]
         return {"context": record["prompt"], "source": record["prompt"] + record["canonical_solution"],
                 "entry": record["entry_point"], "contract": record["contract"],
-                "provenance": {**self.configuration(), "spec_compatibility": record["spec_compatibility"]}}
+                "source_info": {**self.configuration(), "spec_compatibility": record["spec_compatibility"]}}

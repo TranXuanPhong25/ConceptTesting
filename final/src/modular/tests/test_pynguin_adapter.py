@@ -25,13 +25,13 @@ def test_missing_runtime_is_explicit_and_replay_without_child(tmp_path):
     assert batch['status']=='unsupported_environment'
     assert generator.generate(ctx)['arms']['pynguin']==batch
     ctx.cohort_task['programs'][0]['code']+='\n# changed\n'
-    with pytest.raises(ValueError, match='provenance'): generator.run_task(ctx)
+    with pytest.raises(ValueError, match='source_info'): generator.run_task(ctx)
 
 def test_interrupted_intent_never_dispatches(tmp_path):
     generator=PynguinInputGenerator(PynguinSettings(python=PYTHON))
     ctx=context(tmp_path)
-    provenance=generator.provenance(ctx)
-    ctx.artifacts.write('tasks/1/pynguin/intent.json',provenance)
+    source_info=generator.source_info(ctx)
+    ctx.artifacts.write('tasks/1/pynguin/intent.json',source_info)
     result=generator.run_task(ctx)
     assert result['status']=='failed' and result['reason']=='interrupted_unknown'
 
@@ -66,7 +66,7 @@ def test_pipeline_manifest_hashes_assets_without_tool(tmp_path):
     pipeline.arms = pipeline.input_generator.methods
     pipeline.reference_programs = HumanEvalPlusReferencePrograms()
     assert pipeline.input_generator.configuration() == pipeline.generator_configuration()['configuration']
-    assert pipeline.input_generator.provenance(ctx)['owners'][0]['id'] == 'p1'
+    assert pipeline.input_generator.source_info(ctx)['owners'][0]['id'] == 'p1'
 
 
 def test_export_collection_has_aggregate_byte_budget(tmp_path):
@@ -95,7 +95,7 @@ def test_valid_inputs_survive_failed_owner_with_partial_metadata(tmp_path,monkey
         if index: return {'owner':owner['id'],'status':'failed','reason':'child_exit','calls':[]}
         return {'owner':owner['id'],'status':'complete','calls':[{'args':'(1,)','kwargs':'{}','test':'test_target.py::test_0'}]}
     monkeypatch.setattr(generator,'search_owner',search)
-    batch=generator.construct(ctx,'tasks/1/pynguin/',generator.provenance(ctx))
+    batch=generator.construct(ctx,'tasks/1/pynguin/',generator.source_info(ctx))
     assert batch['status']=='partial' and len(batch['inputs'])==1
     assert batch['pynguin']['partial'] is True
     assert batch['pynguin']['owner_failures']==[{'owner':'p2','status':'failed','reason':'child_exit'}]

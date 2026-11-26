@@ -103,7 +103,7 @@ class PynguinInputGenerator(InputGenerator):
         return [programs[identifier] for identifier in dict.fromkeys(visible)
                 if identifier in programs and programs[identifier]['base']['status']=='pass'][:self.settings.owner_limit]
 
-    def provenance(self,context):
+    def source_info(self,context):
         return {'task_id':context.task['task_id'],'entry':context.task['entry_point'],
                 'prompt_sha256':source_hash(context.task['prompt']),
                 'contract_sha256':source_hash(context.metadata.get('contract','')),
@@ -126,29 +126,29 @@ class PynguinInputGenerator(InputGenerator):
 
     def run_task(self,context):
         prefix=context.task_directory+'/pynguin/'
-        provenance=self.provenance(context)
+        source_info=self.source_info(context)
         artifacts=context.artifacts
         if artifacts.exists(prefix+'intent.json'):
-            if artifacts.read(prefix+'intent.json') != provenance: raise ValueError('Pynguin provenance mismatch')
+            if artifacts.read(prefix+'intent.json') != source_info: raise ValueError('Pynguin source_info mismatch')
             if artifacts.exists(prefix+'batch.json'):
                 saved=artifacts.read(prefix+'batch.json')
-                if saved['provenance']!=provenance or saved['batch_sha256']!=digest(saved['batch']):
-                    raise ValueError('Pynguin saved batch provenance mismatch')
+                if saved['source_info']!=source_info or saved['batch_sha256']!=digest(saved['batch']):
+                    raise ValueError('Pynguin saved batch source_info mismatch')
                 for owner in saved['batch']['pynguin']['owners']:
                     for exported in owner.get('exports',[]):
                         artifact=artifacts.read(exported['path'])
                         if source_hash(artifact['source'])!=exported['sha256']:
-                            raise ValueError('Pynguin exported test provenance mismatch')
+                            raise ValueError('Pynguin exported test source_info mismatch')
                 return saved['batch']
             return {'status':'failed','reason':'interrupted_unknown','inputs':[],'rejected':[],
-                    'pynguin':{'owners':[],'provenance':provenance}}
+                    'pynguin':{'owners':[],'source_info':source_info}}
         # Exclusive create makes concurrent callers share one dispatch budget.
         intent=artifacts.path(prefix+'intent.json')
         if artifacts.read_only: raise FileNotFoundError('Read-only replay requires Pynguin batch')
         intent.parent.mkdir(parents=True,exist_ok=True)
         with tempfile.NamedTemporaryFile(mode='w',dir=intent.parent,delete=False) as handle:
             temporary=Path(handle.name)
-            json.dump(provenance,handle,sort_keys=True)
+            json.dump(source_info,handle,sort_keys=True)
             handle.flush(); os.fsync(handle.fileno())
         try:
             os.link(temporary,intent)
@@ -156,13 +156,13 @@ class PynguinInputGenerator(InputGenerator):
             return self.run_task(context)
         finally:
             temporary.unlink()
-        batch=self.construct(context,prefix,provenance)
-        artifacts.write(prefix+'batch.json',{'provenance':provenance,'batch':batch,'batch_sha256':digest(batch)})
+        batch=self.construct(context,prefix,source_info)
+        artifacts.write(prefix+'batch.json',{'source_info':source_info,'batch':batch,'batch_sha256':digest(batch)})
         return batch
 
-    def construct(self,context,prefix,provenance):
+    def construct(self,context,prefix,source_info):
         batch={'status':'empty','inputs':[],'rejected':[],
-               'pynguin':{'owners':[],'provenance':provenance,'candidate_ledger':[],
+               'pynguin':{'owners':[],'source_info':source_info,'candidate_ledger':[],
                           'common_observer_coverage':'pending'}}
         if not Path(self.settings.python).is_file() or not shutil.which('bwrap'):
             return {**batch,'status':'unsupported_environment','reason':'missing_python_or_bwrap'}
@@ -219,12 +219,12 @@ class PynguinInputGenerator(InputGenerator):
                     identity=input_identity(builder.signature,record)
                     if identity in identities:
                         row['selection']='duplicate'
-                        identities[identity]['provenance'].append({'owner':owner['id'],'test':candidate['test']})
+                        identities[identity]['source_info'].append({'owner':owner['id'],'test':candidate['test']})
                     elif len(batch['inputs'])>=min(20,context.settings.input_budget):
                         row['selection']='input_budget'
                     else:
                         record.update(id='pynguin_'+str(len(batch['inputs'])),
-                                      provenance=[{'owner':owner['id'],'test':candidate['test']}])
+                                      source_info=[{'owner':owner['id'],'test':candidate['test']}])
                         batch['inputs'].append(record); identities[identity]=record
                         row['selection']='selected_stable_owner_test_order'
                 except (ValueError,TypeError,SyntaxError,RecursionError) as error:

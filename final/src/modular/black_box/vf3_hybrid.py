@@ -201,7 +201,7 @@ class StructuredCatalogueArm(InputGenerationMethod):
         """Build the technique-specific catalogue in the strict response schema."""
 
     @abstractmethod
-    def canonical_catalogue(self, value, *, task):
+    def normalize_catalogue(self, value, *, task):
         """Convert a validated catalogue to the saved measurement format."""
 
     @abstractmethod
@@ -326,8 +326,8 @@ class StructuredCatalogueArm(InputGenerationMethod):
 
         payload = validated.model_dump(mode="json")
         result = self._decode_input_records(payload["inputs"], context, finish_reason=response.finish_reason)
-        canonical = self.canonical_catalogue(payload["catalogue"], task=context.task)
-        catalogue, cat_errors = validate_catalogue(canonical, self.sections)
+        normalized = self.normalize_catalogue(payload["catalogue"], task=context.task)
+        catalogue, cat_errors = validate_catalogue(normalized, self.sections)
         mem_errors = membership_errors(catalogue, context.task) if catalogue is not None else list(cat_errors)
         cat_status = "catalogue_invalid" if cat_errors else catalogue.status
         result.update(

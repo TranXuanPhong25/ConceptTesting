@@ -99,7 +99,7 @@ def test_rescore_reuses_exact_inputs_without_instantiating_a_model(original_run,
     summary = pipeline.run(tasks, metadata)
     assert summary["arms"]["plain"]["detected"] == 0
     assert summary["reused_generation"]["new_model_calls"] == 0
-    assert summary["tester_calls"]["invocations"] == 0
+    assert summary["tester_calls"]["calls"] == 0
     assert pipeline.artifacts.read("tasks/97/inputs.json") == source.read("tasks/97/inputs.json")
     assert before == {path: path.read_bytes() for path in source.directory.rglob("*") if path.is_file()}
     assert pipeline.run(tasks, metadata) == summary

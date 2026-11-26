@@ -14,7 +14,7 @@ def validate_model(value, builder):
         raise ValueError('preparation_fields:' + ','.join(sorted(required)))
     try:
         # Seed inputs are decoded independently in the candidate ledger, where
-        # malformed encodings/literals must remain auditable rather than crash I/O.
+        # invalid encodings/literals must remain auditable rather than crash I/O.
         json.dumps({key: item for key, item in result.items() if key != 'inputs'},
                    ensure_ascii=False, allow_nan=False).encode('utf-8')
     except (ValueError, TypeError) as exc:
@@ -49,7 +49,7 @@ def validate_model(value, builder):
         seen.add(target['id'])
         if (not isinstance(target.get('origin'), str) or target.get('origin') not in {'spec', 'contract', 'impl'}
                 or not isinstance(target.get('source_quote'), str) or not target['source_quote'].strip()):
-            raise ValueError('target_provenance_required')
+            raise ValueError('target_source_info_required')
         if not isinstance(target.get('kind'), str) or target.get('kind') not in {'class', 'boundary', 'rule'}:
             raise ValueError('invalid_target_kind')
         if not isinstance(target.get('status', 'unresolved'), str) or target.get('status', 'unresolved') not in {'feasible', 'infeasible', 'unresolved'}:

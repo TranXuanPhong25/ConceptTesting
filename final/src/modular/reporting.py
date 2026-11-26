@@ -13,7 +13,7 @@ class Reporter:
 
     @staticmethod
     def summarize_saved(artifacts, task_ids=None):
-        """Aggregate recorded verdicts without constructing generation or execution jobs."""
+        """Aggregate recorded results without constructing generation or execution jobs."""
         summary = artifacts.read("modular_summary.json") if artifacts.exists("modular_summary.json") else {}
         rows = [
             artifacts.read(str(path.relative_to(artifacts.directory)))
@@ -79,7 +79,7 @@ class Reporter:
         return {
             "scored_tasks": len(rows),
             "arms": totals,
-            # Historical field name for the eligible PUT denominator.
+            # Historical field name for the eligible PUT total.
             "evaluated_base_pass": eligible_puts,
             "tested_base_pass": tested_puts,
         }

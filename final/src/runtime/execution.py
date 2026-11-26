@@ -71,7 +71,7 @@ def _timeout_fallback(job: dict, progress: Path) -> dict:
 
 def execute(job: dict) -> dict:
     if not shutil.which("bwrap"):
-        raise ExecutionError("bubblewrap is required; refusing unsandboxed execution")
+        raise ExecutionError("bubblewrap is required; refusing execution outside sandbox")
     python = Path(sys.executable).resolve()
     with tempfile.TemporaryDirectory(prefix="final-eval-") as temp:
         directory = Path(temp)

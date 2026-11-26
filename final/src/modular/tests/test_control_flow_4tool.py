@@ -362,9 +362,9 @@ def test_usage_by_arm_separates_control_flow_and_control_flow_4tool(tmp_path):
                 "usage": {"prompt_tokens": total // 2, "completion_tokens": total // 2, "total_tokens": total}
             })
     usage = usage_by_arm(tmp_path, ["control_flow", "control_flow_4tool"])
-    assert usage["control_flow"]["invocations"] == 1
+    assert usage["control_flow"]["calls"] == 1
     assert usage["control_flow"]["known_usage"]["total_tokens"] == 100
-    assert usage["control_flow_4tool"]["invocations"] == 2
+    assert usage["control_flow_4tool"]["calls"] == 2
     assert usage["control_flow_4tool"]["received"] == 1
     assert usage["control_flow_4tool"]["unknown"] == 1
     assert usage["control_flow_4tool"]["known_usage"]["total_tokens"] == 250

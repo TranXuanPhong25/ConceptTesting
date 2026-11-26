@@ -171,7 +171,7 @@ class EpBvaArm(StructuredCatalogueArm):
         applicable = create_model("ApplicableHybridCatalogue", __base__=Schema, **applicable_fields)
         return Union[applicable, non_applicable]
 
-    def canonical_catalogue(self, value, *, task):
+    def normalize_catalogue(self, value, *, task):
         catalogue = copy.deepcopy(value)
         for item in catalogue.setdefault("classes", []):
             item["description"] = (item.get("fault_hypothesis") or item["predicate"])[:160]

@@ -79,7 +79,7 @@ def observe_seeds(evidence, candidates, targets):
     """Try one novel seed per supplied target on its own PUT before construct."""
     unique = {}
     for row in candidates:
-        key = evidence.key(row['canonical_args'])
+        key = evidence.key(row['standard_args'])
         if key not in evidence.base_keys:
             unique.setdefault(key, row)
     seeds = list(unique.values())
@@ -92,7 +92,7 @@ def observe_seeds(evidence, candidates, targets):
         owner = target['program_id']
         pair = (row['candidate_id'], owner)
         if pair not in observations:
-            observations[pair] = trace_candidate(evidence, row, row['canonical_args'], owner, targets)
+            observations[pair] = trace_candidate(evidence, row, row['standard_args'], owner, targets)
             observations[pair]['trace_phase'] = 'propose'
     return observations
 
@@ -202,8 +202,8 @@ class RepairedControlFlowObligationArm(InputGenerationMethod):
             parse_failure = None
             try:
                 raw, repairs = read_input_object(response.text)
-                if phase == 'propose' and targets and 'complete_input_records_salvaged' in repairs:
-                    parse_failure = 'complete_input_records_salvaged'
+                if phase == 'propose' and targets and 'complete_input_records_recovered' in repairs:
+                    parse_failure = 'complete_input_records_recovered'
             except (ValueError, TypeError, RecursionError) as error:
                 raw, repairs = {}, []
                 result['errors'].append(str(error))
@@ -232,8 +232,8 @@ class RepairedControlFlowObligationArm(InputGenerationMethod):
                     retry_failure = None
                     try:
                         retry_raw, retry_repairs = read_input_object(retry_response.text)
-                        if 'complete_input_records_salvaged' in retry_repairs:
-                            retry_failure = 'complete_input_records_salvaged'
+                        if 'complete_input_records_recovered' in retry_repairs:
+                            retry_failure = 'complete_input_records_recovered'
                     except (ValueError, TypeError, RecursionError) as retry_error:
                         retry_raw, retry_repairs = {}, []
                         result['errors'].append('propose_retry:' + str(retry_error))
@@ -274,7 +274,7 @@ class RepairedControlFlowObligationArm(InputGenerationMethod):
                     if isinstance(label, str) and label in supplied_targets:
                         origin['target_id'] = label
                     try:
-                        ledger.add(evidence.canonical_call(row), origin)
+                        ledger.add(evidence.standard_call(row), origin)
                     except (ValueError, TypeError, KeyError, SyntaxError, RecursionError) as error:
                         result['rejected'].append({'source': origin, 'reason': str(error)[:500]})
             else:
@@ -340,16 +340,16 @@ class RepairedControlFlowObligationArm(InputGenerationMethod):
 
         candidates, candidate_keys = [], set()
         for row in ledger.pool():
-            if evidence.key(row['canonical_args']) in evidence.base_keys:
+            if evidence.key(row['standard_args']) in evidence.base_keys:
                 result['rejected'].append({'candidate_id': row['candidate_id'], 'reason': 'duplicate_base',
                                            'sources': row['sources']})
                 continue
-            key = evidence.key(row['canonical_args'])
+            key = evidence.key(row['standard_args'])
             if key in candidate_keys:
                 result['rejected'].append({'candidate_id': row['candidate_id'], 'reason': 'duplicate_generated'})
                 continue
             candidate_keys.add(key)
-            candidates.append({'call': row['canonical_args'], 'sources': row['sources'],
+            candidates.append({'call': row['standard_args'], 'sources': row['sources'],
                 'candidate_id': row['candidate_id'], 'observations': {}, 'target_hits': [], 'obligation_hits': []})
         owner_by_label = {}
         candidates = order_candidates_for_trace(candidates)
@@ -424,12 +424,12 @@ class RepairedControlFlowObligationArm(InputGenerationMethod):
             'hypothesis_receipts': len([row for batch in batches for row in batch.get('sampling', [])]),
             'hypothesis_unsupported': sum(row['status'] == 'unsupported' for batch in batches for row in batch.get('sampling', []))}
         histories = [batch['proposal_history_supplied'] for batch in batches if 'proposal_history_supplied' in batch]
-        salvaged = sum(any('complete_input_records_salvaged' in r['response_repairs']
+        recovered = sum(any('complete_input_records_recovered' in r['response_repairs']
                            for r in batch['rounds'] if r['phase'] == 'propose')
                        for batch in batches if 'proposal_history_supplied' in batch)
         retries = [batch['propose_retry'] for batch in batches if 'propose_retry' in batch]
         summary[self.name]['proposal_recovery'] = {'parse_error_tasks': len(histories),
-            'salvaged_input_tasks': salvaged, 'full_history_sent_tasks': sum(histories),
+            'recovered_input_tasks': recovered, 'full_history_sent_tasks': sum(histories),
             'history_not_sent_tasks': histories.count(False),
             'propose_retry_tasks': len(retries),
             'propose_retry_succeeded_tasks': sum(bool(r.get('succeeded')) for r in retries),
@@ -460,6 +460,6 @@ class RepairedControlFlowObligationArm(InputGenerationMethod):
                 f"Số task thiếu history là {recovery['history_not_sent_tasks']}. "
                 f"Trước construct có {seeds['observations']} lượt trace seed trên {seeds['tasks']} task có target. "
                 f"Trạng thái theo target gồm {seeds['target_status']}.\n\n"
-                f"Đã nhận {calls['received']} response trên {calls['invocations']} attempts, "
+                f"Đã nhận {calls['received']} response trên {calls['calls']} attempts, "
                 f"{calls['known_usage']['total_tokens']} token có usage và {calls['unknown']} attempts chưa rõ usage. "
                 f"Target hit được tính theo candidate đã trace. Oracle chấm các input trong suite cuối.\n")

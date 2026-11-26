@@ -40,7 +40,7 @@ def select_suite(ledger, cap):
         row['selected'] = True
         row['selection_reason'] = {'rank': len(chosen), 'new_targets': sorted(new),
                                    'membership_unknown': uncertain(row), 'unsupported_targets':sorted(unsupported),
-                                   'tie_break': 'rare_target,fault_rationale,spec_diversity,canonical_hash'}
+                                   'tie_break': 'rare_target,fault_rationale,spec_diversity,standard_hash'}
         chosen.append(row)
         covered.update(hits(row))
         vectors.add(vector(row))
@@ -51,4 +51,4 @@ def select_suite(ledger, cap):
             row['selection_reason'] = 'membership_unknown'
         else:
             row['selection_reason'] = 'over_cap' if hits(row) - covered else 'no_new_coverage'
-    return [dict(row['canonical_args'], candidate_id=row['candidate_id']) for row in chosen]
+    return [dict(row['standard_args'], candidate_id=row['candidate_id']) for row in chosen]

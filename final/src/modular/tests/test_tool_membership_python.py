@@ -96,7 +96,7 @@ def test_unsupported_target_does_not_erase_supported_target_selection_priority()
             self.rows=[]
             for key,rare in [('a',False),('b',True)]:
                 self.rows.append({'dedup_group':key,'candidate_id':key,'errors':[],
-                    'canonical_args':{'args':'(1,)','kwargs':'{}'},'selected':False,
+                    'standard_args':{'args':'(1,)','kwargs':'{}'},'selected':False,
                     'membership':{'common':{'context':'true','target':'true','hit':True},
                       'rare':{'context':'true','target':'true' if rare else 'false','hit':rare},
                       'unknown':{'context':'true','target':'unknown','hit':False}}})

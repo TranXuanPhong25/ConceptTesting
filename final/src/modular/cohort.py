@@ -36,7 +36,7 @@ def call_usage(directory):
             if type(value) in (int, float):
                 totals[key] += value
     return dict(
-        invocations=len(attempts),
+        calls=len(attempts),
         received=len(responses),
         unknown=len(attempts) - len(responses),
         known_usage=totals,

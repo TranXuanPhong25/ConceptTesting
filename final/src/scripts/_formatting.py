@@ -47,10 +47,10 @@ def render_banner(title: str, width: int = 78) -> str:
     return f"\n{bar}\n  {title}\n{bar}"
 
 
-def format_rate(numerator: int, denominator: int) -> str:
-    if denominator <= 0:
+def format_rate(numerator: int, total: int) -> str:
+    if total <= 0:
         return "n/a"
-    return f"{(100.0 * numerator / denominator):.1f}%"
+    return f"{(100.0 * numerator / total):.1f}%"
 
 
 def load_dataset_bundle(dataset_type: str):

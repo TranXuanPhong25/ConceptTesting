@@ -167,7 +167,7 @@ class ControlFlowArm(InputGenerationMethod):
                 )
                 tests = result.get("tests")
                 if not isinstance(tests, list) or len(tests) != len(chunk):
-                    raise ExecutionError("Malformed control_flow trace batch")
+                    raise ExecutionError("Invalid control_flow trace batch")
                 return tests
             except ExecutionError as error:
                 if is_sandbox_infrastructure_error(error):
@@ -410,7 +410,7 @@ class ControlFlowArm(InputGenerationMethod):
         suite_input_budget = max(context.settings.input_budget, SUITE_TARGET_OFFSET + len(selected_targets))
         selected, selected_coverage = self._select_inputs(candidates, suite_input_budget)
         return {
-            # Giữ provenance trong luồng kế thừa để stage sau biết nguồn input.
+            # Giữ nguồn gốc (source info) trong luồng kế thừa để stage sau biết nguồn input.
             "inputs": [
                 (
                     {**row["call"], "sources": row["sources"]}
@@ -658,7 +658,7 @@ class ControlFlowArm(InputGenerationMethod):
     def _queue_candidates(builder, pool, candidates, base_keys, candidates_per_round, *, retrace_existing=False):
         direct, sampled = [], []
         for row in pool:
-            call = row['canonical_args']
+            call = row['standard_args']
             key = repr(input_identity(builder.signature, call))
             if key in candidates:
                 for source_item in row['sources']:

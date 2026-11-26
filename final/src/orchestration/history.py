@@ -60,7 +60,7 @@ def inspect_run(directory):
     mode='batch' if directory.name.startswith('bva_batch') else 'single-PUT prompt-style' if directory.name.startswith('boundary_prompt_style') else 'per-PUT shared task budget' if directory.name.startswith('boundary_soft_humaneval164') else 'historical/replay'
     parameters=clean({'source_directory':str(directory.relative_to(ROOT)), 'mode':mode, 'settings':settings,
         'cohort_sha256':manifest.get('cohort_sha256',plan.get('cohort_sha256')),
-        'model':manifest.get('model') or result.get('reused_generation',{}).get('source_model') or 'see generation provenance',
+        'model':manifest.get('model') or result.get('reused_generation',{}).get('source_model') or 'see generation source info',
         'input_budget_unit':'per task per arm','generation_state':status.get('state'),
         'continuation_source':plan.get('continuation_source')})
     metrics=result.get('arms') or read_if(directory/'modular_summary.json').get('arms') or read_if(directory/'evaluation/modular_summary.json').get('arms',{})

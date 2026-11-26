@@ -33,7 +33,7 @@ def classify_misses(rows, failing_ids, *, suite_detected, complete):
 def unique_pool(batch):
     groups = {}
     for row in batch['candidate_ledger']:
-        if (row['canonical_args'] is not None and row.get('domain') == 'true'
+        if (row['standard_args'] is not None and row.get('domain') == 'true'
                 and not row.get('solver_rejected')
                 and not any(item['stage'].startswith('P') or item['stage'] == 'V1' for item in row['errors'])):
             groups.setdefault(row['dedup_group'], row)
@@ -79,7 +79,7 @@ def audit_arm(context, name, batch, config, reference_programs):
     ordered = sorted(pool, key=lambda row: (not row['selected'], row['dedup_group']))
     rows = ordered[:config['audit_cap']]
     complete = len(rows) == len(pool)
-    records = [dict(row['canonical_args'], candidate_id=row['candidate_id']) for row in rows]
+    records = [dict(row['standard_args'], candidate_id=row['candidate_id']) for row in rows]
     audit_artifacts = ArtifactStore(context.artifacts.path('tool_audit_execution/' + name),
                                    read_only=context.artifacts.read_only)
     audit_context = replace(context, artifacts=audit_artifacts, inputs={'task_id': context.task['task_id'],

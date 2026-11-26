@@ -216,7 +216,7 @@ def test_repaired_arm_keeps_llm_quota_separate_from_hypothesis_inputs(tmp_path, 
     assert result['llm_input_count'] == 20
     assert result['hypothesis_input_count'] == 39
     assert len(selected) == len(result['inputs']) == 59
-    assert {r['canonical_args']['args'] for r in selected} == {r['args'] for r in result['inputs']}
+    assert {r['standard_args']['args'] for r in selected} == {r['args'] for r in result['inputs']}
     assert sum(any(s['tool'] == 'llm' for s in r['sources']) for r in selected) == 20
     assert {r['sources'][0]['obligation_id'] for r in selected if not any(s['tool'] == 'llm' for s in r['sources'])} == {'O1', 'O2', 'O3'}
     validate_generated_inputs({'task_id': ctx.task['task_id'], 'arms': {RepairedControlFlowObligationArm.name: result}},
@@ -259,7 +259,7 @@ def test_seed_miss_reaches_construct_and_repeated_seed_is_traced_once(tmp_path):
     assert len(calls.requests) == 3
     assert result['propose_retry'] == {
         'retried': True, 'succeeded': False,
-        'trigger': 'complete_input_records_salvaged', 'retry_error': 'complete_input_records_salvaged',
+        'trigger': 'complete_input_records_recovered', 'retry_error': 'complete_input_records_recovered',
     }
     assert result['proposal_history_supplied'] and result['seed_observation_count'] == 1
     assert len(result['candidate_receipts']) == 2 and result['target_coverage'] == {'covered':2,'total':2}

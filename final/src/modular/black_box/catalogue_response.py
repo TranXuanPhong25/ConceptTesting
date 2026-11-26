@@ -26,7 +26,7 @@ def read_catalogue_response(text):
             if not isinstance(row,dict):break
             inputs.append(row)
         if not inputs:raise ValueError('no_complete_input_records') from None
-        return {'inputs':inputs},['complete_input_records_salvaged']
+        return {'inputs':inputs},['complete_input_records_recovered']
     tail=cleaned[end:].strip()
     if tail.startswith(','):tail=tail[1:].lstrip()
     if not tail:return {'inputs':inputs},['input_list_envelope_restored']

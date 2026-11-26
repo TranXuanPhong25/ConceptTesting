@@ -76,7 +76,7 @@ def _validate_domain_chunk(task: dict, contract: str, chunk: list[dict], *, time
         outcome = execute(job)
         tests = outcome.get("tests")
         if not isinstance(tests, list) or len(tests) != len(chunk):
-            raise ExecutionError("Malformed validate outcome")
+            raise ExecutionError("Invalid validate outcome")
         return tests
     except ExecutionError as error:
         if is_sandbox_infrastructure_error(error):

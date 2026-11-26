@@ -69,9 +69,9 @@ class CatalogueReporter(Reporter):
                   'observed đo EP predicate/membership, boundary values trong context và DT condition predicates '
                   'trên từng input thật; hit/miss/unknown tách riêng, có witness indices và đối chiếu covers khai sai. '
                   'Summary đếm số obligation, không phải số input; BVA hit toàn boundary cần đủ target values, '
-                  'single-fault vẫn là tiêu chí riêng. Original-rule denominator chỉ gồm declared feasible originals '
+                  'single-fault vẫn là tiêu chí riêng. Tổng số original rules chỉ gồm declared feasible originals '
                   '(hoặc unmerged rules khi không có original_rules); không chứng minh feasibility theo spec. '
-                  'mechanical BVA chỉ kiểm phần selector/context/nominal đọc được. DT denominator là feasible rules gốc; '
+                  'mechanical BVA chỉ kiểm phần selector/context/nominal đọc được. Tổng số DT rules là feasible rules gốc; '
                   'merged ID không tự phủ mọi combination. Thiếu metadata để kiểm thì pending. '
                   'Observed coverage đếm novel inputs. '
                   'Cartesian/design cap vượt input budget ghi budget_limited; feasibility vẫn pending.', '',
@@ -110,6 +110,6 @@ def usage_by_arm(directory, names):
                 for key in totals:
                     if type(usage.get(key)) in (int,float):
                         totals[key] += usage[key]
-        result[name] = {'invocations':attempts, 'received':received, 'unknown':attempts-received,
+        result[name] = {'calls':attempts, 'received':received, 'unknown':attempts-received,
                         'known_usage':totals, 'responses_with_incomplete_usage':missing_usage}
     return result

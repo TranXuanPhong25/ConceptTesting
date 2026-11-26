@@ -181,7 +181,7 @@ def worker(directory):
             if replay.run(tasks, metadata) != summary:
                 raise ValueError("Read-only replay differs")
 
-            if call_usage(directory)["invocations"]:
+            if call_usage(directory)["calls"]:
                 raise ValueError("Evaluation-only job unexpectedly recorded model calls")
             generation_usage = read(source / "export_receipts.json")["original_plain_usage"] if (source / "export_receipts.json").exists() else call_usage(source)
             report = {"arms": summary["arms"], "requested_tasks": len(tasks), "skips": summary["skips"],

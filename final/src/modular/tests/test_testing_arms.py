@@ -226,7 +226,7 @@ def test_reference_survivors_exclude_base_and_rejected_but_keep_global_duplicate
     ctx.inputs={'task_id':'HumanEval/0','arms':{'bva_normal':batch}}
     ctx.packet={}
     class Reference:
-        record_provenance=False
+        record_source_info=False
         def for_task(self,*args):return {'context':'','source':'','entry':'f','contract':''}
     def execute(job):
         return {'tests':[{'status':'ok','expected':'2','input_key':'two'}, {'status':'error'},

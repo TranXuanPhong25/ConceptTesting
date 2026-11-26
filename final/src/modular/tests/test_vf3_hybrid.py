@@ -153,18 +153,18 @@ def test_lean_ep_bva_schema_forbids_null_count_value_and_merges_shared_nominal()
         "inputs": [{"arguments": {"numbers": [1.0], "threshold": 0.5}, "covers": ["E1"]}],
     }
     validated = two_model.model_validate(raw)
-    canonical = EpBvaArm().canonical_catalogue(validated.model_dump(mode="json")["catalogue"], task=two_param)
-    catalogue, errors = validate_catalogue(canonical, ("classes", "boundaries"))
+    normalized = EpBvaArm().normalize_catalogue(validated.model_dump(mode="json")["catalogue"], task=two_param)
+    catalogue, errors = validate_catalogue(normalized, ("classes", "boundaries"))
     assert errors == [] and catalogue.status == "applicable"
     assert membership_errors(catalogue, two_param) == []
     # B1 nominal automatically merges B1's context threshold=0.25 so nominal never violates context.
-    assert canonical["boundaries"][0]["nominal"] == {"numbers": [1.0, 2.0], "threshold": 0.25}
-    assert canonical["boundaries"][1]["context"] == {}
-    assert canonical["boundaries"][2]["values"] == [0.0, 0.1]
-    assert canonical["classes"][0]["description"] == "misses short list"
+    assert normalized["boundaries"][0]["nominal"] == {"numbers": [1.0, 2.0], "threshold": 0.25}
+    assert normalized["boundaries"][1]["context"] == {}
+    assert normalized["boundaries"][2]["values"] == [0.0, 0.1]
+    assert normalized["classes"][0]["description"] == "misses short list"
 
 
-def test_lean_dt_schema_drops_infeasible_prose_and_canonicalizes_cleanly():
+def test_lean_dt_schema_drops_infeasible_prose_and_normalizes_cleanly():
     dt_model = DecisionTableArm().response_type(_two_param_task())
 
     # Extra prose fields like reason on infeasible row are forbidden in lean DT schema.
@@ -195,12 +195,12 @@ def test_lean_dt_schema_drops_infeasible_prose_and_canonicalizes_cleanly():
         "inputs": [{"arguments": {"numbers": [1.0, 1.05], "threshold": 0.1}, "covers": ["R11"]}],
     }
     validated = dt_model.model_validate(raw)
-    canonical = DecisionTableArm().canonical_catalogue(validated.model_dump(mode="json")["catalogue"], task=_two_param_task())
-    catalogue, errors = validate_catalogue(canonical, ("rules",))
+    normalized = DecisionTableArm().normalize_catalogue(validated.model_dump(mode="json")["catalogue"], task=_two_param_task())
+    catalogue, errors = validate_catalogue(normalized, ("rules",))
     assert errors == [] and catalogue.status == "applicable"
     assert membership_errors(catalogue, _two_param_task()) == []
-    assert [r["id"] for r in canonical["rules"]] == ["R01", "R11"]
-    assert canonical["rules"][1]["fault_hypothesis"] == "uses <= instead of <"
+    assert [r["id"] for r in normalized["rules"]] == ["R01", "R11"]
+    assert normalized["rules"][1]["fault_hypothesis"] == "uses <= instead of <"
 
 
 @pytest.mark.parametrize("configured_budget", [4, 20])
@@ -601,8 +601,8 @@ def test_vf3_hybrid_separate_id_patterns_and_round2_per_item_recovery(tmp_path):
     assert recovered_set[0]["arguments"]["values"][1] == {"__python_type__": "tuple", "items": [3, 4]}
 
 
-def test_truncated_response_salvages_only_complete_input_records():
+def test_truncated_response_recovers_only_complete_input_records():
     from final.src.modular.black_box.catalogue_response import read_catalogue_response
     raw, repairs = read_catalogue_response('{"inputs":[{"arguments":{"xs":[4,4]}},{"arguments":{"xs":[5,')
     assert raw['inputs'] == [{'arguments': {'xs': [4, 4]}}]
-    assert 'complete_input_records_salvaged' in repairs
+    assert 'complete_input_records_recovered' in repairs

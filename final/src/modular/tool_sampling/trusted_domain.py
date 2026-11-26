@@ -1,4 +1,4 @@
-"""Compile a conservative subset of trusted admission clauses, never model code."""
+"""Compile a safe subset of trusted admission clauses, never model code."""
 import ast
 import hashlib
 import textwrap
@@ -76,7 +76,7 @@ class TrustedExpressions(ast.NodeTransformer):
                 if (isinstance(loop.target, ast.Name) and isinstance(loop.iter, ast.Name)
                         and not loop.ifs and not loop.is_async):
                     if loop.target.id in set(TYPE_HELPERS) | set(FUNCTIONS) | {'type', 'isinstance'}:
-                        raise ValueError('trusted_quantifier_shadows_builtin')
+                        raise ValueError('trusted_quantifier_overwrites_builtin')
                     item = generator.elt
                     if (isinstance(item, ast.Call) and isinstance(item.func, ast.Name) and item.func.id == 'isinstance'
                             and len(item.args) == 2 and not item.keywords and isinstance(item.args[0], ast.Name)
@@ -171,7 +171,7 @@ def compile_domain(contract, names):
     try:
         reserved = set(FUNCTIONS) | set(TYPE_HELPERS) | {'type','isinstance','set','all','range','str','Exception','ValueError','math'}
         if names & reserved:
-            raise ValueError('trusted_parameter_shadows_builtin_or_helper:' + ','.join(sorted(names & reserved)))
+            raise ValueError('trusted_parameter_overwrites_builtin_or_helper:' + ','.join(sorted(names & reserved)))
         tree = ast.parse(textwrap.dedent(contract))
         if sum(1 for _ in ast.walk(tree)) > 512:
             raise ValueError('trusted_contract_node_limit')

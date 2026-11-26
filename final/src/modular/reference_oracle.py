@@ -17,8 +17,8 @@ def run_reference_oracle(context, *, reference_programs=None) -> dict | None:
         return None
     reference_programs = reference_programs or HumanEvalPlusReferencePrograms()
     reference = reference_programs.for_task(context.task, context.metadata)
-    if reference_programs.record_provenance:
-        context.artifacts.write(context.task_directory + "/reference_program.json", reference["provenance"])
+    if reference_programs.record_source_info:
+        context.artifacts.write(context.task_directory + "/reference_program.json", reference["source_info"])
     raw_inputs = []
     builder = CallBuilder.for_source(
         context.task["prompt"],

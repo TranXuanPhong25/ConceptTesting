@@ -98,7 +98,7 @@ class DecisionTableArm(StructuredCatalogueArm):
         )
         return Union[tuple(variants)]
 
-    def canonical_catalogue(self, value, *, task):
+    def normalize_catalogue(self, value, *, task):
         catalogue = copy.deepcopy(value)
         condition_names = sorted(catalogue.setdefault("condition_predicates", {}))
         original_rows = []

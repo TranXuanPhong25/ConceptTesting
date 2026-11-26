@@ -26,7 +26,7 @@ async def attach_adapter_outputs(directory):
     if (directory/'result_digest.json').exists():
         result = json.loads((directory/'result_digest.json').read_text())
         await create_table_artifact(key='adapter-results', table=[{'arm':arm, **metrics} for arm, metrics in result['arms'].items()],
-            description='Đơn vị detected là PUT có reference disagreement, chưa xác minh bug theo spec.')
+            description='Đơn vị detected là PUT có reference mismatch, chưa xác minh bug theo spec.')
         return result
     return config
 
@@ -54,7 +54,7 @@ async def adapter_benchmark(
     tool_runs_dir: Optional repo-local 4-tool runs directory for control_flow_4tool.
     preview_only: Validate/pin config/data/budget without a model, tokenizer or native call.
     Execution coverage and verified specification bugs are pending; detected means
-    a confirmed disagreement with the dataset's canonical reference.
+    a confirmed mismatch with the dataset's standard reference.
     """
     if model_name is None:
         model_name = OPENROUTER_DEFAULT_MODEL if backend == 'openrouter' else 'qwen3.5-27b-awq'

@@ -65,7 +65,7 @@ class Evidence:
         for program in context.cohort_task['programs']:
             for record in program['base'].get('calls', []):
                 try:
-                    self.base_keys.add(self.key(self.canonical_call(record)))
+                    self.base_keys.add(self.key(self.standard_call(record)))
                 except (ValueError, TypeError, KeyError, SyntaxError, RecursionError):
                     pass
         for program in self.programs:
@@ -74,7 +74,7 @@ class Evidence:
             self.base_complete[identifier] = isinstance(base.get('calls'), list)
             for index, record in enumerate(base.get('calls', [])):
                 try:
-                    call = self.canonical_call(record)
+                    call = self.standard_call(record)
                     self.base_keys.add(self.key(call))
                     self.base_records[identifier].append({'index': index, 'call': call})
                 except (ValueError, TypeError, SyntaxError, RecursionError) as error:
@@ -119,7 +119,7 @@ class Evidence:
         self.programs = [p for p in self.programs if p['id'] in self.analyses]
         self.by_id = {p['id']: p for p in self.programs}
 
-    def canonical_call(self, record):
+    def standard_call(self, record):
         if not isinstance(record, dict):
             raise ValueError('call_object_required')
         if 'arguments' in record:

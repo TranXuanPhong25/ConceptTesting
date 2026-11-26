@@ -46,7 +46,7 @@ def generation_text(inputs_record, calls_directory):
         reasons = Counter(row.get('reason', 'unknown') for row in record.get('rejected', []))
         repaired = record.get('packaging_repair_count', 0) + record.get('format_repair_slots', 0)
         if repaired:
-            # Repaired views keep the original rejection list for provenance.
+            # Repaired views keep the original rejection list for source info.
             details.append(f'repaired slots {repaired}')
             if reasons:
                 details.append('rejected before repair ' + counter_text(reasons))

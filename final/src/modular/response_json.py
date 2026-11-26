@@ -74,4 +74,4 @@ def read_input_object(text):
             inputs.append(record)
         if not inputs:
             raise ValueError('no_complete_input_records') from None
-        return {'inputs': inputs, 'obligations': []}, ['complete_input_records_salvaged']
+        return {'inputs': inputs, 'obligations': []}, ['complete_input_records_recovered']

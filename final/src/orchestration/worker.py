@@ -301,7 +301,11 @@ def run(directory):
         imports=read(directory/'import_receipts.json')
         old = imports.get('original_tester_calls') or imports['original_writer_usage']
         current = result['tester_calls']
-        result['new_tester_calls'] = {key: current[key] - old[key] for key in ('invocations', 'received', 'unknown')}
+        result['new_tester_calls'] = {
+            'calls': current['calls'] - old.get('calls', old.get('invocations', 0)),
+            'received': current['received'] - old['received'],
+            'unknown': current['unknown'] - old['unknown'],
+        }
     save(directory/'result_digest.json', result)
     state('complete')
 

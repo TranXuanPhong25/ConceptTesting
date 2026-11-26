@@ -1,4 +1,4 @@
-"""Compact catalogue validation and conservative measurements.
+"""Compact catalogue validation and safe measurements.
 
 Pydantic validates structure. Numeric intervals, named selectors, itertools products
 and math.nextafter cover the mechanical subset; observed predicates use the existing
@@ -317,7 +317,7 @@ def normal_design_size(catalogue, *, robust=False):
             if value != nominal_value:
                 groups[group].add((boundary.parameter, boundary.transform,
                                    json.dumps(boundary.count_value, sort_keys=True), value))
-        groups[group]  # retain a degenerate all-nominal design
+        groups[group]  # retain a minimal all-nominal design
     return sum(1 + len(values) for values in groups.values()) if groups else None
 
 
@@ -370,8 +370,8 @@ def validate_merged_rule_definitions(catalogue, originals_by_id, feasible_origin
         if original_with_same_id is not None:
             identical_conditions = merged_rule.conditions == original_with_same_id.conditions
             identical_actions = merged_rule.actions == original_with_same_id.actions
-            unambiguous_sources = merged_rule.merged_from in ([], [merged_rule.id])
-            if not (identical_conditions and identical_actions and unambiguous_sources):
+            single_sources = merged_rule.merged_from in ([], [merged_rule.id])
+            if not (identical_conditions and identical_actions and single_sources):
                 errors.append(f"ambiguous_merged_original_id:{merged_rule.id}")
         if len(merged_rule.merged_from) != len(set(merged_rule.merged_from)):
             errors.append(f"duplicate_merge_source:{merged_rule.id}")

@@ -100,7 +100,7 @@ def test_reference_rejection_keeps_raw_indices_and_catalogue_survivors(tmp_path,
     invalid = {'args': '(True,)', 'kwargs': '{}'}
     context.inputs = {'arms': {'a': {'inputs': [invalid, valid], 'catalogue_status': 'valid'},
                                'b': {'inputs': [valid, invalid]}}}
-    reference = SimpleNamespace(record_provenance=False, for_task=lambda *args: {
+    reference = SimpleNamespace(record_source_info=False, for_task=lambda *args: {
         'context': task['prompt'], 'source': '', 'entry': 'f', 'contract': ''})
     calls = []
     def execute(job):
@@ -187,7 +187,7 @@ def test_model_any_cannot_override_a_declared_integer():
     raw['domain'] = 'True'
     row = CandidateLedger('Toy/1', 'fixture', builder(), raw).add(
         {'arguments': {'a': '2,3', 'b': 0}}, {'tool': 'direct'})
-    assert row['canonical_args'] is None
+    assert row['standard_args'] is None
     assert row['primary_error']['code'] == 'type_mismatch'
 
 
@@ -208,14 +208,14 @@ def test_pynguin_cannot_admit_wrong_type_when_trusted_contract_accepts_it(tmp_pa
     assert [row['reason'] for row in batch['rejected']] == ['argument_type_mismatch:x'] * 2
 
 
-def test_type_schema_changes_invalidate_pynguin_batch_provenance(tmp_path):
+def test_type_schema_changes_invalidate_pynguin_batch_source_info(tmp_path):
     from final.src.modular.pynguin import PynguinInputGenerator, PynguinSettings
     from final.src.modular.tests.test_pynguin_adapter import context
     ctx = context(tmp_path)
     generator = PynguinInputGenerator(PynguinSettings(python='/missing/python'))
     generator.run_task(ctx)
     ctx.metadata['input_types'] = {'x': 'str'}
-    with pytest.raises(ValueError, match='provenance'):
+    with pytest.raises(ValueError, match='source_info'):
         generator.run_task(ctx)
 
 

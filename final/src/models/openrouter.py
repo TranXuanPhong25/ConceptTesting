@@ -19,7 +19,7 @@ class OpenRouterModel(QwenModel):
 
     def __init__(self, model=None, *, context=8192, timeout=300):
         super().__init__(context=context, timeout=timeout, expected_model=model or OPENROUTER_DEFAULT_MODEL)
-        self.last_tokenizer_source = 'local_conservative_estimate'
+        self.last_tokenizer_source = 'local_safe_estimate'
 
     def refresh_configuration(self):
         self.base_url = 'https://openrouter.ai/api/v1'

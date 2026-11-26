@@ -88,9 +88,9 @@ def sample_hypothesis(ledger, *, draws, seed, seconds, predicate=None, source=No
     def collect(values):
         if time.monotonic() - start >= seconds:
             raise SamplingStopped()
-        provenance = {'tool': 'hypothesis', 'seed': seed, 'draw_index': receipt['draws'], **(source or {})}
+        source_info = {'tool': 'hypothesis', 'seed': seed, 'draw_index': receipt['draws'], **(source or {})}
         receipt['draws'] += 1
-        row = ledger.add({'arguments': values}, provenance)
+        row = ledger.add({'arguments': values}, source_info)
         if predicate and row.get('domain') == 'true':
             try:
                 if evaluate(predicate, values):

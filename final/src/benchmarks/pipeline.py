@@ -145,7 +145,7 @@ def _encode_argument_value(value, depth=0):
         return value
     if type(value) is float:
         if not math.isfinite(value):
-            raise ValueError('nonfinite_float')
+            raise ValueError('inf_or_nan_float')
         return value
     if type(value) is list:
         return [_encode_argument_value(item, depth + 1) for item in value]
@@ -445,7 +445,7 @@ def run_benchmark(
     manifest = {
         'protocol': 'dataset-adapters-v1',
         'config': config,
-        'oracle': 'stable reference disagreement; specification admission pending',
+        'oracle': 'stable reference mismatch; specification admission pending',
     }
     store.write('adapter_manifest.json', manifest)
     standard_arms = [arm for arm in config['arms'] if arm not in CONTROL_FLOW_ARMS]
@@ -543,7 +543,7 @@ def run_benchmark(
     summary = {'dataset':config['dataset'], 'arms':totals, 'tasks':len(tasks), 'config':config,
         'evaluated_base_pass':sum(r.get('base_pass',0) for r in results), 'skips':[r for r in results if 'skip' in r],
         'tester_calls':call_usage(store.directory), 'coverage':'pending', 'verified_bugs':'pending',
-        'metric_scope':'confirmed reference disagreement; specification validity unverified'}
+        'metric_scope':'confirmed reference mismatch; specification validity unverified'}
     for cf_arm in cf_arms:
         summary[cf_arm] = _summarize_control_flow_batches(prepared, cf_arm)
     store.write('result_digest.json', summary)

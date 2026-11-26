@@ -67,7 +67,7 @@ class CandidateLedger:
     def add(self, raw, source, *, errors=()):
         row = {'candidate_id': identity((self.task_id, self.arm, repr(raw), source)),
                'task_id': self.task_id, 'arm': self.arm, 'sources': [source],
-               'raw': repr(raw), 'canonical_args': None, 'errors': list(errors),
+               'raw': repr(raw), 'standard_args': None, 'errors': list(errors),
                'primary_error': None, 'membership': None, 'dedup_group': None,
                'selected': False, 'selection_reason': None}
         self.rows.append(row)
@@ -77,7 +77,7 @@ class CandidateLedger:
             row['primary_error'] = min(row['errors'], key=lambda item: STAGES.index(item['stage']))
             stage = row['primary_error']['stage']
             row['selection_reason'] = 'parse_error' if stage.startswith('P') else 'invalid' if stage == 'V1' else 'membership_unknown'
-        if row['canonical_args'] is not None:
+        if row['standard_args'] is not None:
             group = row['dedup_group']
             if group in self.groups:
                 representative = self.groups[group]
@@ -152,7 +152,7 @@ class CandidateLedger:
             bound.apply_defaults()
             arguments = dict(bound.arguments)
         except (TypeError, ValueError) as exc:
-            code = 'type_mismatch' if str(exc).startswith('argument_type_mismatch:') else 'arity_mismatch'
+            code = 'type_mismatch' if str(exc).startswith('argument_type_mismatch:') else 'arg_count_mismatch'
             errors.append(error('P5', code, exc))
             return
         for key, value in arguments.items():
@@ -164,7 +164,7 @@ class CandidateLedger:
         except (TypeError, ValueError) as exc:
             errors.append(error('P5', 'call_builder_error', exc))
             return
-        row['canonical_args'] = call
+        row['standard_args'] = call
         row['bound_values'] = {name: repr(value) for name, value in arguments.items()}
         row['dedup_group'] = identity(input_identity(self.builder.signature, call))
         domain, detail = predicate_status(self.model['domain'], arguments)

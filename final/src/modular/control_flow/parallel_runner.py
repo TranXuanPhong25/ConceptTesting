@@ -165,7 +165,7 @@ def _render_vietnamese_report(dataset: str, digest_obj: dict) -> str:
         ),
         "",
         (
-            "**Giới hạn kết luận**: kết quả đo trên frozen cohort hiện có; với MBPP+ chỉ kiểm reference disagreement "
+            "**Giới hạn kết luận**: kết quả đo trên frozen cohort hiện có; với MBPP+ chỉ kiểm reference mismatch "
             "(chưa có executable domain contract chung, spec validity còn `pending`). "
             "Số liệu `detected` đếm unique PUT, không phải số input."
         ),
@@ -174,7 +174,7 @@ def _render_vietnamese_report(dataset: str, digest_obj: dict) -> str:
         f"- Dataset: `{label}` ({cfg['requested_task_count']} requested tasks, {digest_obj['eligible_tasks']} eligible tasks, {digest_obj['evaluated_base_pass']} base-pass PUTs)",
         f"- Model: `{cfg['model_name']}` (backend `{cfg['model_backend']}`), `context_tokens={cfg['context_tokens']}`, `completion_tokens={cfg['completion_tokens']}`, `inputs_per_task={cfg['inputs_per_task']}`, `timeout_seconds={cfg['timeout_seconds']}`, `workers={cfg['workers']}`",
         f"- 4-tool prior source (oracle-free): `{cfg['tool_runs_dir']}` (4 tool: CrossHair, Pynguin, UTBot, Ghostwriter; loại Klara)",
-        f"- Model calls: `{usage.get('received', 0)}/{usage.get('invocations', 0)}` responses/attempts (unknown `{usage.get('unknown', 0)}`), known tokens: `{usage.get('known_usage', {}).get('total_tokens', 0)}`",
+        f"- Model calls: `{usage.get('received', 0)}/{usage.get('calls', 0)}` responses/attempts (unknown `{usage.get('unknown', 0)}`), known tokens: `{usage.get('known_usage', {}).get('total_tokens', 0)}`",
         "",
         "## So sánh union với bộ 4 tool đã lưu",
         f"- Saved 4-tool detected PUTs (trên tập task chạy): `{union.get('tools4_base_pass_detected')}`",

@@ -37,7 +37,7 @@ def test_flint_keeps_reasoning_through_a_saved_turn(tmp_path, monkeypatch):
     response = calls.complete(0, 'initial', messages, **sampling)
     assert response.reasoning_details == reasoning
     assert response.usage['cost'] == 0
-    assert response.usage['tokenizer_prompt_tokens_source'] == 'local_conservative_estimate'
+    assert response.usage['tokenizer_prompt_tokens_source'] == 'local_safe_estimate'
     cached = CachedModelCalls(ArtifactStore(tmp_path, read_only=True)).complete(0, 'initial', messages, **sampling)
     assert cached == response
 

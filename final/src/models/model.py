@@ -209,7 +209,7 @@ class QwenModel(CoreModel):
                 time.sleep((5, 20)[attempt_number])
             except TransportError as error:
                 if error.http_status == 404:
-                    self.last_tokenizer_source = "local_conservative_estimate"
+                    self.last_tokenizer_source = "local_safe_estimate"
                     return self._estimate_tokens(messages)
                 if not error.retryable or attempt_number == 2:
                     raise
@@ -217,7 +217,7 @@ class QwenModel(CoreModel):
 
     @staticmethod
     def _estimate_tokens(messages):
-        """Bound context conservatively when an OpenAI-compatible server lacks /tokenize."""
+        """Bound context safely when an OpenAI-compatible server lacks /tokenize."""
         serialized = json.dumps(messages, ensure_ascii=False, separators=(",", ":"))
         return max(1, math.ceil(len(serialized.encode("utf-8")) / 3) + 8)
 

@@ -114,11 +114,11 @@ def _inspect_stage_data(context, stage_name: str) -> None:
             failing = outcome.get("failing", [])
             failing_set = set(failing)
             caught_by = [name for name, idxs in arm_indices.items() if idxs & failing_set]
-            verdict = "DETECTED" if failing else "survived"
+            status = "DETECTED" if failing else "survived"
             rows.append(
                 [
                     put_id,
-                    verdict,
+                    status,
                     len(failing),
                     ", ".join(caught_by) if caught_by else "-",
                     _preview(failing[:5], 30),
@@ -126,7 +126,7 @@ def _inspect_stage_data(context, stage_name: str) -> None:
             )
         print(
             format_table(
-                ["PUT ID", "Verdict", "Failing Inputs", "Caught By Arms", "Failing Indices"],
+                ["PUT ID", "Result", "Failing Inputs", "Caught By Arms", "Failing Indices"],
                 rows,
                 alignments=["<", "<", ">", "<", "<"],
             )

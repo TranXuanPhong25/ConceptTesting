@@ -40,7 +40,7 @@ def parse_json(text: str) -> dict:
 def fingerprint(source: str, entry: str) -> str:
     """Ignore formatting, comments, docstrings, annotations, and identifier renames.
 
-    This is a conservative structural filter, not a proof of algorithmic diversity.
+    This is a safe structural filter, not a proof of algorithmic diversity.
     A shared binding map also handles helper names and comprehension variables.
     """
     tree = ast.parse(source)
@@ -175,7 +175,7 @@ def validate_test(record: dict) -> dict:
             for target in ast.walk(node.target):
                 if isinstance(target, ast.Name):
                     if target.id in allowed or target.id.startswith("_"):
-                        raise ValueError("Comprehension cannot shadow reserved names")
+                        raise ValueError("Comprehension cannot overwrite reserved names")
                     allowed.add(target.id)
         if isinstance(node, (ast.Lambda, ast.NamedExpr, ast.Await, ast.Yield, ast.YieldFrom)):
             raise ValueError("Unsupported predicate expression")
